@@ -279,6 +279,7 @@ static CommandArray commands[] = {
 	{"typein", CmdIgnoreParameter, One_Opt_One_NormParam},
 	{"marginpar", CmdIgnoreParameter, One_Opt_One_NormParam},
 	{"baselineskip", Cmd_OptParam_Without_braces, 0},
+	{"psfrag", CmdIgnoreParameter, No_Opt_Two_NormParam},
 	{"lineskip", Cmd_OptParam_Without_braces, 0},
 	{"vsize", Cmd_OptParam_Without_braces, 0},
 	{"setbox", Cmd_OptParam_Without_braces, 0},
