@@ -1,11 +1,11 @@
 <HTML>
 <HEAD>
-<!-- Created by texi2html 1.56k from l2r.texi on 23 October 2001 -->
+<!-- Created by texi2html 1.56k from l2r.texi on 24 October 2001 -->
 
 <TITLE>LaTeX2rtf</TITLE>
 </HEAD>
 <BODY>
-<H1>@l2r{}</H1>
+<H1>LaTeX2rtf</H1>
 <ADDRESS>Georg Lehner,</ADDRESS>
 <P>
 <P><HR><P>
@@ -14,41 +14,52 @@
 <LI><A NAME="TOC1" HREF="l2r.html#SEC1">History &#38; Copyright</A>
 <LI><A NAME="TOC2" HREF="l2r.html#SEC2">Introduction</A>
 <LI><A NAME="TOC3" HREF="l2r.html#SEC3">Availability</A>
-<LI><A NAME="TOC4" HREF="l2r.html#SEC4">Invoking LaTeX2RTF</A>
+<LI><A NAME="TOC4" HREF="l2r.html#SEC4">Installing LaTeX2RTF</A>
 <UL>
-<LI><A NAME="TOC5" HREF="l2r.html#SEC5">Verbosity</A>
-<LI><A NAME="TOC6" HREF="l2r.html#SEC6">Isolatin</A>
-<LI><A NAME="TOC7" HREF="l2r.html#SEC7">Languages</A>
+<LI><A NAME="TOC5" HREF="l2r.html#SEC5">General</A>
+<LI><A NAME="TOC6" HREF="l2r.html#SEC6">@acronym{UNIX}</A>
+<LI><A NAME="TOC7" HREF="l2r.html#SEC7">Windows</A>
+<LI><A NAME="TOC8" HREF="l2r.html#SEC8">Macintosh</A>
+<LI><A NAME="TOC9" HREF="l2r.html#SEC9">Problems Compiling</A>
+<LI><A NAME="TOC10" HREF="l2r.html#SEC10">Problems with <CODE>make test</CODE></A>
 </UL>
-<LI><A NAME="TOC8" HREF="l2r.html#SEC8">Features</A>
+<LI><A NAME="TOC11" HREF="l2r.html#SEC11">Using LaTeX2RTF</A>
 <UL>
-<LI><A NAME="TOC9" HREF="l2r.html#SEC9">Support for the Hyperlatex Style</A>
-<LI><A NAME="TOC10" HREF="l2r.html#SEC10">LaTeX2e</A>
-<LI><A NAME="TOC11" HREF="l2r.html#SEC11">Character encoding</A>
-<LI><A NAME="TOC12" HREF="l2r.html#SEC12">Cross References</A>
-<LI><A NAME="TOC13" HREF="l2r.html#SEC13">Pagestyles</A>
-<LI><A NAME="TOC14" HREF="l2r.html#SEC14">Internationalization</A>
+<LI><A NAME="TOC12" HREF="l2r.html#SEC12">General assumptions made by LaTeX2RTF</A>
+<LI><A NAME="TOC13" HREF="l2r.html#SEC13">LaTeX2RTF Options</A>
+<LI><A NAME="TOC14" HREF="l2r.html#SEC14">Debugging</A>
 </UL>
-<LI><A NAME="TOC15" HREF="l2r.html#SEC15">Configuring_LaTeX2rtf</A>
+<LI><A NAME="TOC15" HREF="l2r.html#SEC15">Features</A>
 <UL>
-<LI><A NAME="TOC16" HREF="l2r.html#SEC16">Input_processing</A>
-<LI><A NAME="TOC17" HREF="l2r.html#SEC17">Output_formatting</A>
-<LI><A NAME="TOC18" HREF="l2r.html#SEC18">Direct Conversion Configuration</A>
-<LI><A NAME="TOC19" HREF="l2r.html#SEC19"><TT>`ignore.cfg'</TT></A>
-<LI><A NAME="TOC20" HREF="l2r.html#SEC20">Font Configuration</A>
-<LI><A NAME="TOC21" HREF="l2r.html#SEC21"><TT>`language.cfg'</TT></A>
+<LI><A NAME="TOC16" HREF="l2r.html#SEC16">LaTeX2e</A>
+<LI><A NAME="TOC17" HREF="l2r.html#SEC17">Input Encoding</A>
+<LI><A NAME="TOC18" HREF="l2r.html#SEC18">Language Support</A>
+<LI><A NAME="TOC19" HREF="l2r.html#SEC19">Cross References</A>
+<LI><A NAME="TOC20" HREF="l2r.html#SEC20">Equations</A>
+<LI><A NAME="TOC21" HREF="l2r.html#SEC21">Tables</A>
+<LI><A NAME="TOC22" HREF="l2r.html#SEC22">Graphics</A>
+<LI><A NAME="TOC23" HREF="l2r.html#SEC23">Pagestyles</A>
+<LI><A NAME="TOC24" HREF="l2r.html#SEC24">Hyperlatex</A>
 </UL>
-<LI><A NAME="TOC22" HREF="l2r.html#SEC22">Error Messages and Logging of @l2r{} Activity</A>
-<LI><A NAME="TOC23" HREF="l2r.html#SEC23">@l2r{} under Development</A>
+<LI><A NAME="TOC25" HREF="l2r.html#SEC25">Configuring LaTeX2RTF</A>
 <UL>
-<LI><A NAME="TOC24" HREF="l2r.html#SEC24">Unimplemented Features</A>
-<LI><A NAME="TOC25" HREF="l2r.html#SEC25">Missing and Faulty command line options</A>
-<LI><A NAME="TOC26" HREF="l2r.html#SEC26">Known Bugs</A>
-<LI><A NAME="TOC27" HREF="l2r.html#SEC27">Reporting Bugs</A>
-<LI><A NAME="TOC28" HREF="l2r.html#SEC28">Todo List</A>
+<LI><A NAME="TOC26" HREF="l2r.html#SEC26">Input processing</A>
+<LI><A NAME="TOC27" HREF="l2r.html#SEC27">Output formatting</A>
+<LI><A NAME="TOC28" HREF="l2r.html#SEC28">Direct Conversion Configuration</A>
+<LI><A NAME="TOC29" HREF="l2r.html#SEC29">Ignore Command Configuration</A>
+<LI><A NAME="TOC30" HREF="l2r.html#SEC30">Font Configuration</A>
+<LI><A NAME="TOC31" HREF="l2r.html#SEC31">Language Configuration</A>
 </UL>
-<LI><A NAME="TOC29" HREF="l2r.html#SEC29">Index of Commandline and Configurationfile Options</A>
-<LI><A NAME="TOC30" HREF="l2r.html#SEC30">Concept Index</A>
+<LI><A NAME="TOC32" HREF="l2r.html#SEC32">Error Messages and Logging of LaTeX2RTF Activity</A>
+<LI><A NAME="TOC33" HREF="l2r.html#SEC33">LaTeX2RTF under Development</A>
+<UL>
+<LI><A NAME="TOC34" HREF="l2r.html#SEC34">Unimplemented Features</A>
+<LI><A NAME="TOC35" HREF="l2r.html#SEC35">Missing and faulty command line options</A>
+<LI><A NAME="TOC36" HREF="l2r.html#SEC36">Known Bugs</A>
+<LI><A NAME="TOC37" HREF="l2r.html#SEC37">Reporting Bugs</A>
+<LI><A NAME="TOC38" HREF="l2r.html#SEC38">Todo List</A>
+</UL>
+<LI><A NAME="TOC39" HREF="l2r.html#SEC39">Index of Commandline and Configuration file Options</A>
 </UL>
 <P><HR><P>
 
@@ -60,22 +71,24 @@
 
 
 <P>
-In 1994 the first Version of @l2r{} was written by a group of students of
-the Viena University supervised by Ralf Schlatterbeck. They created a simple
+In 1994 the first Version of LaTeX2rtf was written by Fernando Dorner and Andreas Granzer of
+the Viena University supervised by Ralf Schlatterbeck in a one-semester course. They created a simple
 @latex{} parser and added most of the infrastructure for the program. This
-was version 1.0 of @l2r{}.  In 1995, work on @l2r{} was
-continued with a second group of students. The result was @l2r{} version
-1.5.
+was version 1.0 of LaTeX2rtf.  In 1995, work on LaTeX2rtf{} was
+continued in another 
+one-semester course by Friedrich Polzer and Gerhard Trisko. The result was LaTeX2rtf version
+1.5.  <A HREF="mailto:ralf@zoo.priv.at">Ralf Schlatterbeck</A> maintained and extended LaTeX2rtf until 1998.
 
 
 <P>
-In 1998 <A HREF="mailto:jorge_lehner@gmx.net">Georg Lehner</A> found the reference to @l2r{} on
+In 1998 <A HREF="mailto:jorge_lehner@gmx.net">Georg Lehner</A> found the reference to LaTeX2rtf on
 the <A HREF="http://www.fz-juelich.de/isr/1/texconv.htm">TeX Conversion Webpage</A>  of
 <A HREF="mailto:W.Hennings@fz-juelich.de">Wilfried Hennings</A> and added some functionality and took
-over the maintainence of the program. Wilfried Hennings actually coordinates
+over the maintainence of the program.  The last version release by Georg is 1.8aa.
+Wilfried Hennings now coordinates
 the development of the program and maintains the project on 
 <A HREF="http://sourceforge.net/projects/latex2rtf/">SourceForge</A> where there are also
-mailing lists for users
+(low volume) mailing lists for users
 <A HREF="mailto:latex2rtf-users@lists.sourceforge.net">latex2rtf-users@lists.sourceforge.net</A>
 and developers
 <A HREF="mailto:latex2rtf-developers@lists.sourceforge.net">latex2rtf-developers@lists.sourceforge.net</A>.
@@ -86,7 +99,7 @@ or
 
 
 <P>
-As of October 2001, version 1.9k of @l2r{} is available. 
+As of October 2001, version 1.9k of LaTeX2rtf is available. 
 Afterwards there shall be a jump to Version 2.0 with a complete redesign, but
 this is not history but future ...
 
@@ -101,7 +114,7 @@ available in the original sources and documentation.
 <H1><A NAME="SEC2" HREF="l2r.html#TOC2">Introduction</A></H1>
 
 <P>
-@l2r{} is a translator program from @latex{} text into "rich text format"
+LaTeX2rtf is a translator program from @latex{} text into "rich text format"
 files.  These files are commonly referred to  as RTF files and are published
 standard format by Microsoft.  This standard is somewhat ambiguous in places
 and Microsoft ignores various parts of the standard that are inconvenient, but
@@ -111,7 +124,7 @@ imported by several textprocessors.
 
 
 <P>
-@l2r{} translates the text and much of the formatting information from @latex{}
+LaTeX2rtf translates the text and much of the formatting information from @latex{}
 to RTF, but the typeset output is not nearly as good as what you would get from
 using @latex{} directly.  So, why bother translating? There are three purposes:
 
@@ -120,65 +133,65 @@ using @latex{} directly.  So, why bother translating? There are three purposes:
 <OL>
 <LI>
 
-      You use @latex{} and hate everything beginning with MS-@enddots{} But you have to
-      share your documents to people which don't even now that there exist other
-      things than MS-@enddots{}
+You use @latex{} and hate everything beginning with MS-@enddots{} But
+you have to share your documents to people which don't even now that
+there exist other things than MS-@enddots{}
       
 <LI>
 
-      You know somebody who frequently sends you very fine @latex{} documents. 
-      Unfortunately, you are "on the other side" and need to import her files, 
-      steal some part and then desktop publish it in your fine MS-... environment.
+You know somebody who frequently sends you very fine @latex{} documents.
+Unfortunately, you are "on the other side" and need to import her
+files, steal some part and then desktop publish it in your fine
+MS-... environment.
       
 <LI>
 
-      You maybe have both things, @latex{} and MS-..., or you don't. But you like
-      the way how @latex{} and friends work, and you don't want to type in a
-      letter to your friends with about 345 characters and end up with a <TT>`.doc'</TT>
-      file of 32,845 byte. So you edit your documents either with <TT>`edit.com'</TT> or
-      <TT>`edlin'</TT> in the structured form that @latex{} encourages, and then you use
-      MS-..., or MS-...-Viewer or any other RTF-rendering software to print out
-      your file.  Yes, this somewhat bizarre, but we are all somewhat bizarre, are
-      we not?
-      
+You maybe have both things, @latex{} and MS-..., or you don't. But
+you like the way how @latex{} and friends work, and you don't want to
+type in a letter to your friends with about 345 characters and end up
+with a <TT>`.doc'</TT> file of 32,845 byte. So you edit your documents
+either with <TT>`edit.com'</TT> or <TT>`edlin'</TT> in the structured form that
+@latex{} encourages, and then you use MS-..., or MS-...-Viewer
+or any other RTF-rendering software to print out your file.  Yes, this
+somewhat bizarre, but we are all somewhat bizarre, are we not? 
 </OL>
 
 <P>
 There are drawbacks to the conversion process. In fact, don't expect any
-@latex{} file to be converted like you want, don't expect it to be converted
-without errors or warnings, and don't be especially surprised if it doesn't
-convert at all.  @l2r{} is known to have many bugs and many missing features.
-The number seems to grow more and more each day.  Nevertheless, we can categorically
-state that there are some special cases,  in which a @latex{} file will be translated
-to RTF satisfactorily by @l2r{} -- This was sort of disclaimer, ok? Ok!
+@latex{} file to be converted like you want, don't expect it to be
+converted without errors or warnings, and don't be especially surprised
+if it doesn't convert at all.  LaTeX2rtf is known to have many bugs and
+many missing features. The number seems to grow more and more each day. 
+Nevertheless, we can categorically state that there are some special
+cases,  in which a @latex{} file will be translated to RTF
+satisfactorily by LaTeX2rtf -- This was sort of disclaimer, ok? Ok!
 
 
 <P>
-@latex{} is a system for typesetting text and therefore it focuses on the logical
-structure of a document, whilst RTF is meant to be a transport format for a
-family of Desktop Publishing Software, dealing mostly with the design of a
-text.
+@latex{} is a system for typesetting text and therefore it focuses on
+the logical structure of a document, whilst RTF is meant to be a
+transport format for a family of Desktop Publishing Software, dealing
+mostly with the design of a text.
 
 
 <P>
-Although the possible different commands and styles in @latex{} are much more
-flexible and standardized than in RTF, only a small subset of commands has been
-implemented to date.  See section <A HREF="l2r.html#SEC24">Unimplemented Features</A>.
+Although the possible different commands and styles in @latex{} are much
+more flexible and standardized than in RTF, only a small subset of
+commands has been implemented to date.  See section <A HREF="l2r.html#SEC34">Unimplemented Features</A>.
 
 
 <P>
-Some of the capabilities of @l2r{} are restricted in scope 
-or buggy.  See section <A HREF="l2r.html#SEC26">Known Bugs</A>.
+Some of the capabilities of LaTeX2rtf are restricted in scope or buggy. 
+See section <A HREF="l2r.html#SEC36">Known Bugs</A>.
 
 
 <P>
-RTF is a moving target, i.e., Microsoft does not stop inventing new
-extensions and features for it. So you cannot view newer RTF files with older
-word Processors.  @l2r{} eventually will generate RTF output that is
-unreadable with your Program.  The syntax and semantics of RTF are 
-somewhat artistic, i.e., you can generate a
-syntactically correct RTF file that cannot be displayed by some/most word
-processors.
+RTF is a moving target, because Microsoft does not stop inventing new
+extensions and features for it. So you cannot view newer RTF files with
+older word Processors.  LaTeX2rtf eventually will generate RTF output that
+is unreadable with your Program.  The syntax and semantics of RTF are
+somewhat artistic, i.e., you can generate a syntactically correct RTF
+file that cannot be displayed by some/most word processors.
 
 
 <P>
@@ -191,7 +204,7 @@ corresponding newsgroups, etc. <A HREF="http://www.primate.wisc.edu/">http://www
 <H1><A NAME="SEC3" HREF="l2r.html#TOC3">Availability</A></H1>
 
 <P>
-@l2r{} is available for many Unix Platforms, for the Macintosh, and for MS-DOS, 
+LaTeX2rtf is available for many Unix Platforms, for the Macintosh, and for MS-DOS, 
 including all versions of MS Windows 95.
 
 
@@ -204,133 +217,210 @@ windows versions, the Win32 version has been discontinued.
 
 
 <P>
+Subsequent to 1.8aa, <A HREF="mailto:prahl@ece.ogi.edu">Scott Prahl</A> has fixed
+many bugs, improved handling of tabular environments, 
+added code to significantly improve handling of equations,
+added macro expansion of <CODE>\newcommand</CODE> definitions, 
+improved handling of citations, and added some support for
+<CODE>\includegraphics</CODE> files.
+
+
+<P>
 You find the latest version on <A HREF="http://sourceforge.net/projects/latex2rtf/">SourceForge</A>
 and -- with some delay -- on CTAN sites: e.g., <A HREF="http://www.dante.de">http://www.dante.de</A> or
 <A HREF="http://www.ctan.org">http://www.ctan.org</A>.
 
 
 <P>
-There are a couple of persons working on the @l2r{}-revival, coordinated by
+There are a couple of persons working on the LaTeX2rtf revival, coordinated by
 <A HREF="mailto:W.Hennings@fz-juelich.de">Wilfried Hennings</A>.
 Contact the mailing_list for the latest news.
 
 
 
 
-<H1><A NAME="SEC4" HREF="l2r.html#TOC4">Invoking LaTeX2RTF</A></H1>
+<H1><A NAME="SEC4" HREF="l2r.html#TOC4">Installing LaTeX2RTF</A></H1>
+
+
+
+<H2><A NAME="SEC5" HREF="l2r.html#TOC5">General</A></H2>
+
+
+
+<H2><A NAME="SEC6" HREF="l2r.html#TOC6">@acronym{UNIX}</A></H2>
 
 <P>
-The @l2r{} command converts a @latex{} file into RTF text format. The text and
-much of the formatting information is translated to RTF making the new file
-look similar to the original.  The command line syntax is:
+The documentation of the program is found in the <TT>`doc/'</TT> directory in the
+file <TT>`latex2rtf.info'</TT> in the GNU info format.  For your convenience, you
+can find <TT>`.html'</TT> and <TT>`.pdf'</TT> versions of the manual there as well.
 
 
+<P>
+To install (on a @acronym{UNIX} system)
+
+<OL>
+<LI>
+
+Edit  <TT>`Makefile'</TT> for your local configuration. The install part supports
+multiple directories to install to, you will normally only need one. Be
+sure to correctly configure the <TT>`LIBDIR'</TT> variable to the directory where
+support files (ending in <TT>`.cfg'</TT>) will be found by the program. This is
+normally the same as the <TT>`LIBINSTALL'</TT> variable.
+
+<LI><CODE>make</CODE>
+
+<LI>If this is not your first time installation, you may want to preserve
+
+  your old configuration (<TT>`*.cfg'</TT>) files. Copy them to a safe place before
+  installing.
+
+<LI><CODE>make install</CODE>
+
+<LI>If you have problems with make install (for example if your <CODE>mkdir</CODE>
+
+  doesn't support the @option{-p} option) and you do not need multiple install
+  targets, try:
+  <CODE>make simple_install</CODE>
+  
+<LI>Define the environment variable @env{RTFPATH}. This is typically
+
+<CODE>/usr/local/lib/latex2rtf</CODE>
+
+<LI>Run <CODE>make test</CODE> to test your installation
+
+</OL>
+
+<P>
+Open the <TT>`latex2rtf'</TT> directory and type
 
 <PRE>
-latex2rtf [-options] inputfile.[tex]
+make
+make test
+sudo make install
 </PRE>
 
-<P>
-The <CODE>-options</CODE> may consist of one or more of the following
 
 
-<DL COMPACT>
-
-<DT><CODE>-a auxfile</CODE>
-<DD>
-specify an <TT>`.aux'</TT> file (for table and figure references) that differs from
-<TT>`inputfile.aux'</TT>. If this is
-omitted, the name of the inputfile with the suffix replaced `.aux' will be
-taken.
-
-<DT><CODE>-V</CODE>
-<DD>
-prints version information on standard output and exits.
-
-<DT><CODE>-C codepage</CODE>
-<DD>
-used to specify the character set (code page) used in the @latex{} document. 
-This is only important when non-ansi characters are included in the @latex{}
-document.
-Typically this is done in a @latexe{} file by using
-
-<PRE>
-\usepackage[codepage]{inputenc}
-</PRE>
-
-This command is not needed if the above command is already in the @latexe{}
-file.  You may select any of the following code pages:
-ansinew, applemac, cp437, cp437de, cp850, cp852, cp865, decmulti, cp1250, 
-cp1252, latin1, latin2, latin3, latin4, latin5, latin9, and next.  Support
-for the Eastern European codepages is pretty weak at the moment.  The default
-behavior is to use ansinew (code page 1252).
-
-<DT><CODE>-l language</CODE>
-<DD>
-used to set the language used by the @latex{} document.  Typically, this is 
-specified in a @latexe{} document by including
-
-<PRE>
-\usepackage[language]{babel}
-</PRE>
-
-where <CODE>language</CODE> is one of the languages supported by the <CODE>babel</CODE>
-package.   THis All languages listed in the
-babel system are supported so far as translations for "Chapter," "References,"
-and the like.  Specific support for specific options of the german style
-package are explictly supported.  The french translated names are found in the
-<TT>`french.cfg'</TT> file in the <TT>`cfg/'</TT> directory.
-
-<DT><CODE>-d</CODE>
-<DD>
-The `-d' option determines the amount of debugging information to send to
-stderr while translating. `0' means only Errors, `1' Warning Messages
-(default) also.  These numbers can go as high as `7'.
-</DL>
+<H2><A NAME="SEC7" HREF="l2r.html#TOC7">Windows</A></H2>
 
 <P>
-Unless an outputfile is specified with the `-o' option, the resulting RTF is
-produced on standard output.
+The file <TT>`L2R.BAT'</TT> is for use with the @acronym{DJGPP} generated version 
+<TT>`LATEX2RT.EXE'</TT>.
 
 
 <P>
-The `.aux'-file is needed for cross-references and citations. You have to
-provide both, the `.tex'- and the `.aux'-file to be able to convert @latex{}-files
-with this features.
+The @acronym{UNIX} and Mac distributions do not contain an executable for DOS / Windows.
+Instead, get the DOS / Windows port as file <TT>`latex2rtf-x.xx_dos.zip'</TT>
+(where x.xx is the version number) from  <A HREF="http://sourceforge.net/projects/latex2rtf/">http://sourceforge.net/projects/latex2rtf/</A>
+
+
+
+
+<H2><A NAME="SEC8" HREF="l2r.html#TOC8">Macintosh</A></H2>
+
+<P>
+If you want a MacOS X version, make sure that you have installed
+the developer tools CD that is appropriate for your OS version, and
+then follow the directions above for @acronym{UNIX} installation.
 
 
 <P>
-You can specify a bblfile (for citations) with the `-b' option. If this is
-omitted, the name of the inputfile with the suffix replaced by `.bbl' will be
-taken.
+There is a classic MacOS PPC port of the 1.9k of LaTeX2rtf and I have
+made a binary distribution of this application.  Unfortunately, because
+I (Scott Prahl) do all development under MacOS X, the binaries for
+the Classic version often lags (far) behind the current @acronym{UNIX}
+version.
 
 
 <P>
-If inputfile is not specified, standard input is read.
+To convert a @latex{} file, just drag the file onto the LaTeX2rtf application
+icon.  The translation is best if there are <TT>`.aux'</TT> and <TT>`.bbl'</TT> 
+files in the same folder as the <TT>`.tex'</TT> file to be converted.  These
+should be generated using @latex{} and <TT>`bibtex'</TT>.  
+
+
+
+
+<H2><A NAME="SEC9" HREF="l2r.html#TOC9">Problems Compiling</A></H2>
+
+<P>
+The code for LaTeX2rtf is standard @acronym{ANSI} C.  Some possible pitfalls
+are
+
+<UL>
+<LI>Not correctly defining your compiler in the Makefile.
+
+The default is to use <CODE>gcc</CODE>.  
+
+<LI>Encountering errors because the compiler options.  During development
+
+all compiler warnings are turned on.  However, different compilers have
+different interpretations of @option{-Wall} and @option{-pedantic} and 
+so may generate errors that were not found in a different development
+system.  Plese report these, but a quick fix is to remove all compiler
+options.
+
+<LI>Not defining @env{RTFPATH}.
+
+<LI>Not defining @env{HAS_NO_STRDUP} in the Makefile when your system
+
+lacks this facility.
+</UL>
+
+
+
+<H2><A NAME="SEC10" HREF="l2r.html#TOC10">Problems with <CODE>make test</CODE></A></H2>
+
+<P>
+All the files in the <TT>`test'</TT> directory are converted (with more or less
+success) using LaTeX2rtf and are tested before each CVS check-in and with
+all released tarballs.  If you have successfully compiled LaTeX2rtf then
+problems are probably caused by
+
+
+
+<UL>
+
+<LI>Not defining @env{RTFPATH}.
+
+<LI>Not defining @env{HAS_NO_STRDUP} in the Makefile when your system
+
+lacks this facility.
+</UL>
+
+
+
+<H1><A NAME="SEC11" HREF="l2r.html#TOC11">Using LaTeX2RTF</A></H1>
+
+
+
+<H2><A NAME="SEC12" HREF="l2r.html#TOC12">General assumptions made by LaTeX2RTF</A></H2>
+
+<P>
+LaTeX2rtf assumes that the <TT>`.tex'</TT> file you want to convert is a valid
+@latex{} document.  The chances of a successful LaTeX2rtf conversion are 
+slightly better than the proverbial snowball's if the <TT>`.tex'</TT> file
+doesn't <CODE>latex</CODE> properly.  Use
+@latex{} to find and correct errors before using LaTeX2rtf. 
 
 
 <P>
 User defined @latex{} commands are ignored. If you are familiar with the RTF
 format and the commands can be translated by simply inserting a format string
 into the RTF file you can add these commands to the <TT>`direct.cfg'</TT> configuration
-file.  See section <A HREF="l2r.html#SEC18">Direct Conversion Configuration</A>.
+file.  See section <A HREF="l2r.html#SEC28">Direct Conversion Configuration</A>.
 
 
 <P>
-To correctly convert font names you must edit the fonts.cfg configuration file.
+To correctly convert font names you must edit the <TT>`fonts.cfg'</TT> configuration file.
 
 
 <P>
 You have to specify the font names you use and how the @latex{} default font names
-should be converted to RTF. @xref(Font Configuration).
+should be converted to RTF.  See section <A HREF="l2r.html#SEC30">Font Configuration</A>.
 @latex{} variables and user defined commands are not evaluated. They will be
-simply ignored. To let @l2r{} know the names of variables you can add them
-in the <TT>`ignore.cfg'</TT> file. See section <TT>`ignore.cfg'</TT> for a format description.
-
-
-<P>
-The language dependent sectioning names can be redefined to meet the idiom of
-the @latex{} document. See See section <TT>`language.cfg'</TT> for a description.
+simply ignored. To let LaTeX2rtf know the names of variables you can add them
+in the <TT>`ignore.cfg'</TT> file.  See section <A HREF="l2r.html#SEC29">Ignore Command Configuration</A>.
 
 
 <P>
@@ -348,20 +438,14 @@ the beginning or ending of RTFPATH.
 
 
 <P>
-CAUTION: Please make sure that the input file is a correct @latex{} file. Use
-@latex{} to find and correct errors before using @l2r{}. The conversion command
-does not properly handle all errors caused by corrupt input files.
-
-
-<P>
-Make sure that the configuration files are in the correct directory. @l2r{}
+Make sure that the configuration files are in the correct directory. LaTeX2rtf
 will need at least <TT>`fonts.cfg'</TT>, <TT>`direct.cfg'</TT>, <TT>`ignore.cfg'</TT>, <TT>`english.cfg'</TT>.
-You may have to change one ore more of them to suit your needs, see section
-Configuring_LaTeX2rtf for details.
+You may have to change one ore more of them to suit your needs.
+See section <A HREF="l2r.html#SEC25">Configuring LaTeX2RTF</A>.
 
 
 <P>
-@xref{Missing and faulty command line options}, for actual implementations
+See section <A HREF="l2r.html#SEC35">Missing and faulty command line options</A>, for actual implementations
 irregularities.
 
 
@@ -371,156 +455,218 @@ See See section Reporting_Bugs on how to reach the maintainer.
 
 
 
-<H2><A NAME="SEC5" HREF="l2r.html#TOC5">Verbosity</A></H2>
+<H2><A NAME="SEC13" HREF="l2r.html#TOC13">LaTeX2RTF Options</A></H2>
 
 <P>
-With the `-v' option you can specify how much of its internal working @l2r{}
+The LaTeX2rtf command converts a @latex{} file into RTF text format. The text and
+much of the formatting information is translated to RTF making the new file
+look similar to the original.  The command line syntax is:
+
+
+
+<PRE>
+latex2rtf [-options] inputfile.[tex]
+</PRE>
+
+<P>
+If inputfile is not specified, standard input is read.
+The <CODE>-options</CODE> may consist of one or more of the following
+
+
+<DL COMPACT>
+
+<DT><CODE>-a auxfile</CODE>
+<DD>
+specify an <TT>`.aux'</TT> file (for table and figure references) that
+differs from <TT>`inputfile.aux'</TT>. If this is omitted, the name of the
+inputfile with the suffix replaced <TT>`.aux''</TT>will be taken.  You must
+provide both files (<TT>`.tex'</TT> and the <TT>`.aux'</TT>) to be able to
+convert cross-references in a @latex{} file.  The <TT>`.aux'</TT> is created
+by running the <TT>`inputfile.tex'</TT> through <CODE>latex</CODE>.
+
+<DT><CODE>-b bblfile</CODE>
+<DD>
+Unless an <TT>`bblfile'</TT> is specified with the <CODE>-b</CODE> option, LaTeX2rtf uses a
+<TT>`inputfile.bbl'</TT>.  The <TT>`bblfile'</TT> file is used for citations and is typically
+created by running <TT>`inputfile.aux'</TT> through <TT>`bibtex'</TT>.
+
+<DT><CODE>-d</CODE>
+<DD>
+The @option{-d} option determines the amount of debugging information to send to
+stderr while translating. `0' means only Errors, `1' Warning Messages
+(default) also.  These numbers can go as high as `7'.
+
+<DT><CODE>-l language</CODE>
+<DD>
+used to set the language used by the @latex{} document.  Typically, this
+is specified in a @latexe{} document by including
+<CODE>\usepackage[language]{babel}</CODE> where <CODE>language</CODE> is one of
+the languages supported by the <CODE>babel</CODE> package.   All languages
+listed in the babel system are supported so far as translations for
+"Chapter," "References," and the like.  Specific support for
+specific options of the german style package are explictly supported. 
+The french translated names are found in the <TT>`french.cfg'</TT> file in
+the <TT>`cfg/'</TT> directory.  See section <A HREF="l2r.html#SEC31">Language Configuration</A>.
+
+<DT><CODE>-o outputfile</CODE>
+<DD>
+Unless an <TT>`outputfile'</TT> is specified with the <CODE>-o</CODE> option, the resulting RTF 
+filename is
+formed by removing <TT>`.tex'</TT> from the <TT>`inputfile'</TT> and appending <TT>`.rtf'</TT>.
+
+<DT><CODE>-C codepage</CODE>
+<DD>
+used to specify the character set (code page) used in the @latex{} document. 
+This is only important when non-ansi characters are included in the @latex{}
+document.
+Typically this is done in a @latexe{} file by using
+<CODE>\usepackage[codepage]{inputenc}</CODE>
+This command is not needed if the above command is already in the @latexe{}
+file.  You may select any of the following code pages:
+ansinew, applemac, cp437, cp437de, cp850, cp852, cp865, decmulti, cp1250, 
+cp1252, latin1, latin2, latin3, latin4, latin5, latin9, and next.  Support
+for the Eastern European codepages is pretty weak at the moment.  The default
+behavior is to use ansinew (code page 1252).
+
+<DT><CODE>-V</CODE>
+<DD>
+prints version information on standard output and exits.
+
+</DL>
+
+
+
+<H2><A NAME="SEC14" HREF="l2r.html#TOC14">Debugging</A></H2>
+
+<P>
+With the @option{-d} option you can specify how much of its internal working LaTeX2rtf
 is reporting.
 
 
 <P>
 If there is a logfile specified the output goes to this file. Nonetheless
 Warnings and Errors are logged to stderr always.
-(Actually) possible values of `-v' are
+(Actually) possible values of @option{-d} are
 
 
 
 <OL>
 <LI>
 
-	  only errors (=`-q').
+only errors (=@option{-q}).
 <LI>
 
-      Translation Warnings (default).
+Translation Warnings (default).
 <LI>
 
-      does not really do anything at the moment
+does not really do anything at the moment
 <LI>
 
-      Reasonably high level debugging messages
+Reasonably high level debugging messages
 <LI>
 
-      Show all function calls
+Show all function calls
 <LI>
 
-	  Show all each character as it is processed
+Show all each character as it is processed
 <LI>
 
-	  Show processing of characters as they are output as well
+Show processing of characters as they are output as well
 </OL>
 
 
 
-<H2><A NAME="SEC6" HREF="l2r.html#TOC6">Isolatin</A></H2>
+<H1><A NAME="SEC15" HREF="l2r.html#TOC15">Features</A></H1>
 
 <P>
-It is not necesary to specify the -l option if you use \usepackage{isolatin1}
-or \documentstyle[isolatin1]{...}. @l2r{} automagically detects this
-packages/style options and switches to processing of ISO-Latin1 codes.
-
-
-
-
-<H2><A NAME="SEC7" HREF="l2r.html#TOC7">Languages</A></H2>
-
-<P>
-Do not append the `.cfg' suffix to the idiom parameter to -i switch. If you
-specify an idiom that does not exist in the search path for configuration files
-as described above the program aborts.
-
-
-<P>
-In the actual version there are four language files delivered: english, french,
-german, spanish. If you specify \usepackage or a documentstyle option with one
-of these idioms @l2r{} automagically loads the correct language file and you
-can omit the -l switch.
-
-
-<P>
-See See section <TT>`language.cfg'</TT> for details on how to write a `idiom.cfg' file
-for your language by yourself.
-
-
-
-
-<H1><A NAME="SEC8" HREF="l2r.html#TOC8">Features</A></H1>
-
-<P>
-In this chapter you find what styles is @l2r{} supposed to translate
+In this chapter you find what styles is LaTeX2rtf supposed to translate
 correctly to RTF.
 
 
 
 
-<H2><A NAME="SEC9" HREF="l2r.html#TOC9">Support for the Hyperlatex Style</A></H2>
+<H2><A NAME="SEC16" HREF="l2r.html#TOC16">LaTeX2e</A></H2>
 
 <P>
-Otfried Schwarzkopf has created the "Hyperlatex Markup Language" which is a
-"little package that allows you to use @latex{} to prepare documents in HTML."
-It brings an Emacs lisp program with it to convert the Hyperlatex file to HTML.
-Hyperlatex can be obtained from the CTAN-sites, see section Availability.
-There are two handsome commands that avoid typing: \link and \xlink that
-generate an "internal" label which then is used in the following \Ref and
-\Pageref commands.
+LaTeX2rtf understands most of the commands introduced with @latexe{}.  It supports both
+the old 2.09 version of <CODE>\documentstyle[options]{format#}</CODE> and the newer
+<CODE>\documentclass[options]{format}</CODE>.  
 
 
-<P>
-@latex{} makes it possible to write `\link{anchor}[ltx]{label}', which typesets:
-`anchor ltx'. @l2r{} does NOT support this aproach since the optional
-parameter is thrown away right now, see section LaTeX2rtf_under_Development for
-details.
 
+
+<H2><A NAME="SEC17" HREF="l2r.html#TOC17">Input Encoding</A></H2>
 
 <P>
-Note that you have to update your `.cfg' files if you are upgrading, since
-there are a lot of HTML oriented commands in Hyperlatex that we simply can
-`ignore'.
+It is not necesary to specify the @option{-C} option if you use <CODE>\usepackage{isolatin1}</CODE>
+or <CODE>\documentstyle[isolatin1]{...}</CODE>. LaTeX2rtf automagically detects these
+packages/style options and switches to processing of ISO-Latin1 codes.
 
 
 
 
-<H2><A NAME="SEC10" HREF="l2r.html#TOC10">LaTeX2e</A></H2>
-
-<P>
-@l2r{} understands \documentclass{...} and \usepackage{...}, but the
-optional parameter of the latter is thrown away. See See section Known_Bugs.
-
-
-
-
-<H2><A NAME="SEC11" HREF="l2r.html#TOC11">Character encoding</A></H2>
+<H2><A NAME="SEC18" HREF="l2r.html#TOC18">Language Support</A></H2>
 
 <P>
-If using the -l command line option or the isolatin1 package or style,
-@l2r{} automagically interprets the contents of the input file as ISO_8859_1
-encoded and generates the corresponding RTF tokens on output.
-In some situations this conversion does not take place, or is faulty. See See
-section Known_Bugs.
+The following languages from the Babel package are supported: afrikaans,
+german, nynorsk, spanish, bahasa, dutch, icelandic, polish, swedish,
+basque, english, portuges, turkish, brazil, esperanto, irish, romanian,
+usorbian, breton, estonian, italian, samin, welsh, catalan, finnish,
+latin, scottish, croatian, lsorbian, serbian, czech, french, magyar,
+slovak, danish, galician, norsk, slovene,
 
 
 <P>
-If you have another package that provides support for this or another codepage
-please notify us (section Reporting_Bugs), to include support for it.
+The only thing that these files do is to translate various words usually
+emitted by @latex{} during processing.  For example, this ensures that the
+LaTeX2rtf will provide the correct translation of the word "Chapter" in
+the converted document.
 
-
-
-
-<H2><A NAME="SEC12" HREF="l2r.html#TOC12">Cross References</A></H2>
 
 <P>
-If RTF version 1.1 is chosen (see section Missing_and_Faulty_command_line
-options) \label, \ref, and \pageref commands from @latex{} are translated to
-hidden text in the RTF file. This makes it possible to correctly edit the
-resulting file in the target word processor. If RTF version 1.4 (or higher) is
-chosen, crossreference updating is automated by the RTF reader.
+You can select any of the above languages using the @option{-l} option.  This
+is not needed if your @latex{} file contains <CODE>\usepackage[language]{babel}</CODE>.
 
-
-
-
-<H2><A NAME="SEC13" HREF="l2r.html#TOC13">Pagestyles</A></H2>
 
 <P>
-If there is no \pagestyle command, the RTF output is generated as with plain
+Encountering the `german' package or documentstyle option (by H.Partl of the
+Viena University) makes LaTeX2rtf behave like that: German Quotes, German
+Umlauts by <CODE>"a</CODE>, etc@enddots{}  This support is programmed directly into LaTeX2rtf
+and supporting similar features for other languages will require patching the
+source code.
+
+
+<P>
+See section <A HREF="l2r.html#SEC31">Language Configuration</A>, for details on how to write a <TT>`language.cfg'</TT> file
+for your language by yourself.
+
+
+
+
+<H2><A NAME="SEC19" HREF="l2r.html#TOC19">Cross References</A></H2>
+
+<P>
+Cross references are broken currently.
+
+
+
+
+<H2><A NAME="SEC20" HREF="l2r.html#TOC20">Equations</A></H2>
+
+
+
+<H2><A NAME="SEC21" HREF="l2r.html#TOC21">Tables</A></H2>
+
+
+
+<H2><A NAME="SEC22" HREF="l2r.html#TOC22">Graphics</A></H2>
+
+
+
+<H2><A NAME="SEC23" HREF="l2r.html#TOC23">Pagestyles</A></H2>
+
+<P>
+If there is no <CODE>\pagestyle</CODE> command, the RTF output is generated as with plain
 pagestyle, i.e. each page get's its page number centered at the bottom.
 
 
@@ -535,42 +681,46 @@ Note that these features require RTF Version 1.4.
 
 
 
-<H2><A NAME="SEC14" HREF="l2r.html#TOC14">Internationalization</A></H2>
+<H2><A NAME="SEC24" HREF="l2r.html#TOC24">Hyperlatex</A></H2>
 
 <P>
-@l2r{} translates automatically the sectioning titles for `Part',
-`References', `Bibliography' and `Abstract' if it encounters a `german' or
-`spanish' package or documentstyle option.
-
-
-<P>
-The other fixed sectioning titles ("Table of Contents" and the like) are not
-yet needed, because @l2r{} does not handle these @latex{} features.
-
-
-<P>
-@xref{Missing and faulty command line options}, for information on
-other languages.
+Otfried Schwarzkopf has created the "Hyperlatex Markup Language" which is a
+"little package that allows you to use @latex{} to prepare documents in HTML."
+It brings an Emacs lisp program with it to convert the Hyperlatex file to HTML.
+Hyperlatex can be obtained from the CTAN-sites, see section Availability.
+There are two handsome commands that avoid typing: \link and \xlink that
+generate an "internal" label which then is used in the following \Ref and
+\Pageref commands.
 
 
 <P>
-Encountering the `german' package or documentstyle option (by H.Partl of the
-Viena University) makes @l2r{} behave like that: German Quotes, German
-Umlauts by `"a', etc. ...
+@latex{} makes it possible to write `\link{anchor}[ltx]{label}', which typesets:
+`anchor ltx'. LaTeX2rtf does NOT support this aproach since the optional
+parameter is thrown away right now, See section <A HREF="l2r.html#SEC33">LaTeX2RTF under Development</A>.
 
-
-
-
-<H1><A NAME="SEC15" HREF="l2r.html#TOC15">Configuring_LaTeX2rtf</A></H1>
-
-
-
-<H2><A NAME="SEC16" HREF="l2r.html#TOC16">Input_processing</A></H2>
 
 <P>
-On processing input @l2r{} first converts the @latex{} special characters. If
+Note that you have to update your <TT>`.cfg'</TT> files if you are upgrading, since
+there are a lot of HTML oriented commands in Hyperlatex that we simply can
+`ignore'.
+
+
+
+
+<H1><A NAME="SEC25" HREF="l2r.html#TOC25">Configuring LaTeX2RTF</A></H1>
+
+<P>
+This chapter is out of date and needs to be revised.
+
+
+
+
+<H2><A NAME="SEC26" HREF="l2r.html#TOC26">Input processing</A></H2>
+
+<P>
+On processing input LaTeX2rtf first converts the @latex{} special characters. If
 it encounters one of the standard commands it is converted internally. If a
-command is not known to @l2r{} it is first looked up in the section
+command is not known to LaTeX2rtf it is first looked up in the section
 <TT>`direct.cfg'</TT> and the RTF code specified there is output. If not found there it
 is looked up in the section <TT>`ignore.cfg'</TT>, since there are a lot of @latex{}
 commands that do not show up in the .dvi output (cross reference information
@@ -585,7 +735,7 @@ distributions configuration files.
 
 
 <P>
-@l2r{} accepts Unix-like, MSDOS and Macintosh line ending codes (\n, \r\n
+LaTeX2rtf accepts Unix-like, MSDOS and Macintosh line ending codes (\n, \r\n
 and \r).
 
 
@@ -596,11 +746,11 @@ encoding.
 
 
 
-<H2><A NAME="SEC17" HREF="l2r.html#TOC17">Output_formatting</A></H2>
+<H2><A NAME="SEC27" HREF="l2r.html#TOC27">Output formatting</A></H2>
 
 <P>
 Since the RTF-Readers normally have their own mood of typesetting and font
-handling we have to convert the @latex{} fonts to RTF fontnames.   See section <A HREF="l2r.html#SEC20">Font Configuration</A>.
+handling we have to convert the @latex{} fonts to RTF fontnames.   See section <A HREF="l2r.html#SEC30">Font Configuration</A>.
 
 
 <P>
@@ -618,18 +768,18 @@ WingDings if you feel somewhat strange today...
 <P>
 The standard @latex{} styles have some fixed Title names like `Part', `Reference'
 or `Bibliography' that appeared in English or German in the output with the
-original versions of @l2r{}.
+original versions of LaTeX2rtf.
 
 
 <P>
-Now you can determine what should appear at this places with an appropiate
+Now you can determine what should appear at this places with an appropriate
 section <TT>`language.cfg'</TT> file.
 Actually I grep-ed the descriptions out of the `babel' files from teTeX to
 supply english, german and spanish translations.
 
 
 <P>
-On writing output, @l2r{} generates \n (lf, Newline) as line ending code.
+On writing output, LaTeX2rtf generates \n (lf, Newline) as line ending code.
 Your RTF-Reader should accept this on any platform. If you ftp your RTf-file
 from or to MSDOS platforms the line ending code can be converted to \r\n. As
 this should also be legal to any RTf-Reader the resulting RTF-rendering should
@@ -638,10 +788,10 @@ not be affected.
 
 
 
-<H2><A NAME="SEC18" HREF="l2r.html#TOC18">Direct Conversion Configuration</A></H2>
+<H2><A NAME="SEC28" HREF="l2r.html#TOC28">Direct Conversion Configuration</A></H2>
 
 <P>
-The file direct.cfg is used for converting @latex{} commands by simple text
+The file <TT>`direct.cfg'</TT> is used for converting @latex{} commands by simple text
 replacement. The format consists of lines with a @latex{} command with backslash
 followed by comma. The rest of the line until a '.' character will be written
 to the RTF file when the command is recognized in the @latex{} file. Lines
@@ -651,17 +801,19 @@ font name fontname is listed in the fonts configuration file at least as dummy.
 
 
 <P>
-To write the '*' character use "**". example:
-`\alpha,{\f*Symbol* a}. #alpha under Windows Symbol Font'
-`\copyright,{\ansi\'a9\pc}.'
+To write the '*' character use "**". 
+
+<PRE>
+\alpha,{\f*Symbol* a}. #alpha under Windows Symbol Font
+\copyright,{\ansi\'a9\pc}.
+</PRE>
 
 
 
-
-<H2><A NAME="SEC19" HREF="l2r.html#TOC19"><TT>`ignore.cfg'</TT></A></H2>
+<H2><A NAME="SEC29" HREF="l2r.html#TOC29">Ignore Command Configuration</A></H2>
 
 <P>
-The file ignore.cfg is used for defining how to ignore certain commands. This
+The file <TT>`ignore.cfg'</TT> is used for defining how to ignore certain commands. This
 file is used for recognition of @latex{}-variables, user defined variables, and
 some simple commands. All variables are ignored but the converter must know the
 names to correctly ignore assignments to variables. Lines in this file consist
@@ -673,64 +825,67 @@ variable followed by '.'. Possible Types are:
 
 <DT><SAMP>`NUMBER'</SAMP>
 <DD>
-       simple numeric value
+simple numeric value
 <DT><SAMP>`MEASURE'</SAMP>
 <DD>
-       numeric value with following unit of measure
+numeric value with following unit of measure
 <DT><SAMP>`OTHER'</SAMP>
 <DD>
-       ignores anything to the first character after '=' and from there to next
-      space. eg. \setbox\bak=\hbox
+ignores anything to the first character after '=' and from there to next
+space. e.g., <CODE>\setbox\bak=\hbox</CODE>
 <DT><SAMP>`COMMAND'</SAMP>
 <DD>
-       ignores anything to next '\' and from there to the occurence of anything
-      but a letter. eg. \newbox\bak
+ignores anything to next '\' and from there to the occurence of anything
+but a letter e.g., <CODE>\newbox\bak</CODE>
 <DT><SAMP>`SINGLE'</SAMP>
 <DD>
-       ignore single command. eg. \noindent
+ignore single command e.g., <CODE>\noindent</CODE>
 <DT><SAMP>`PARAMETER'</SAMP>
 <DD>
-       ignores a command with one paramter, eg. \foo{bar}
+ignores a command with one parameter e.g., <CODE>\foo{bar}</CODE>
 <DT><SAMP>`PACKAGE'</SAMP>
 <DD>
-       does not produce a Warning message if PACKAGE is encountered, eg.
-      `PACKAGE,kleenex.'
+does not produce a Warning message if PACKAGE is encountered, e.g.,
+`PACKAGE,kleenex.'
 <DT><SAMP>`ENVCMD'</SAMP>
 <DD>
-       proceses contents of unknown environment as if it were plain @latex{} eg.
-      `ENVCMD,iflatex.' treats: `\begin{iflatex} text \end{iflatex} ' as
-      `text'.
+proceses contents of unknown environment as if it were plain @latex{}
+eg. `ENVCMD,environ.' Therefore <CODE>\begin{environ} text
+\end{environ}</CODE>' as `text'.
 <DT><SAMP>`ENVIRONMENT'</SAMP>
 <DD>
-       ignores contents of that environment, e.g., with `ENVIRONMENT,ifhtml.'
-      `\begin{ifhtml} text \end{ifhtml} ' ignores `text'.
+ignores contents of that environment, e.g., with `ENVIRONMENT,ifhtml.'
+<CODE>\begin{ifhtml} text \end{ifhtml}</CODE> ignores `text'.
 </DL>
 
 <P>
 The types are in upper case exactly as above. Do not use spaces. Lines starting
 with a '#' character are ignored. After the '.' everything is ignored to end of
 line. Example:
-`\pagelength,MEASURE.'
+
+<PRE>
+\pagelength,MEASURE.'
+</PRE>
 
 
 
-
-<H2><A NAME="SEC20" HREF="l2r.html#TOC20">Font Configuration</A></H2>
+<H2><A NAME="SEC30" HREF="l2r.html#TOC30">Font Configuration</A></H2>
 
 <P>
 The file <TT>`fonts.cfg'</TT> contains the fonts conversion table. A line consists of a
 font name in @latex{} followed by comma and a font name in RTF. The end is marked
 by a '.'. No spaces are allowed. The @latex{} font will be converted to the RTF
-font if encountered in the @latex{} file. If multi- ple translations for a @latex{}
+font if encountered in the @latex{} file. If multiple translations for a @latex{}
 font are specified, only the first is used. All fonts in a @latex{} file that are
 not in this file will be mapped to the default font. All RTF fonts listed in
 this file will be in every RTF file header whether used or not. Lines starting
 with a '#' character are ignored. After the '.' everything is ignored to end of
 line. To add a RTF font not used as substitute for a @latex{} font - for example a
-Symbol font used in direct.cfg - use a dummy @latex{} name like in the following
-example:
-`Dummy3,MathematicalSymbols.'
+Symbol font used in <TT>`direct.cfg'</TT> -- use a dummy @latex{} name like in the following
 
+<PRE>
+Dummy3,MathematicalSymbols.
+</PRE>
 
 <P>
 Make sure you use the correct font name. Take care of spaces in font names. The
@@ -740,52 +895,66 @@ default fonts are named Roman (command \rm), Slanted (command \sl), Sans Serif
 
 
 
-<H2><A NAME="SEC21" HREF="l2r.html#TOC21"><TT>`language.cfg'</TT></A></H2>
+<H2><A NAME="SEC31" HREF="l2r.html#TOC31">Language Configuration</A></H2>
 
 <P>
-The file(s) <TT>`language.cfg'</TT> control the traduction of @latex{}'s "hardcoded"
+The file(s) <TT>`language.cfg'</TT> control the translation of @latex{}'s "hardcoded"
 sectioning names.
 
 
 <P>
 I have put in what I found whith grep "\renewcommand" * in the @latex{} style
 directory (teTex, babel), the tokens have the "name" stripped of and are all
-uppercase i.e. `\contentsname' mutes to `CONTENTS'. Actually @l2r{} uses
+uppercase i.e. `\contentsname' mutes to `CONTENTS'. Actually LaTeX2rtf uses
 only REF and PART.
-  CONTENTS
-       Contents.
-  LISTFIGURE
-       List of Figures.
-  LISTTABLE
-       List of Tables.
-  REF
-       Bibliography.
-  REFARTICLE
-       Reference (Bibliography in the article style).
-  INDEX
-       Index.
-  FIGURE
-       Figure.
-  TABLE
-       Table.
-  PART
-       Part.
-  APPENDIX
-       Appendix.
-  ABSTRACT
-       Abstract.
 
+
+<DL COMPACT>
+
+<DT>@env{CONTENTS}
+<DD>
+Contents.
+<DT>@env{LISTFIGURE}
+<DD>
+List of Figures.
+<DT>@env{LISTTABLE}
+<DD>
+List of Tables.
+<DT>@env{REF}
+<DD>
+Bibliography.
+<DT>@env{REFARTICLE}
+<DD>
+Reference (Bibliography in the article style).
+<DT>@env{INDEX}
+<DD>
+Index.
+<DT>@env{FIGURE}
+<DD>
+Figure.
+<DT>@env{TABLE}
+<DD>
+Table.
+<DT>@env{PART}
+<DD>
+Part.
+<DT>@env{APPENDIX}
+<DD>
+Appendix.
+<DT>@env{ABSTRACT}
+<DD>
+Abstract.
+</DL>
 
 <P>
 Actually there is an english, a french, a german and a spanish Version. You are
 welcome contribute with <TT>`language.cfg'</TT> files in other idioms to include them in
-the distribution. Send them to Jorge.Lehner@gmx.net or W.Hennings@fz-
-juelich.de.
+the distribution. Send them to <A HREF="mailto:Jorge.Lehner@gmx.net">Jorge.Lehner@gmx.net</A> or <A HREF="mailto:W.Hennings@fz-juelich.de">W.Hennings@fz-juelich.de</A>.
 
 
 
 
-<H1><A NAME="SEC22" HREF="l2r.html#TOC22">Error Messages and Logging of @l2r{} Activity</A></H1>
+<H1><A NAME="SEC32" HREF="l2r.html#TOC32">Error Messages and Logging of LaTeX2RTF Activity</A></H1>
 
 <P>
 Note: Error reporting and logging is one of the most chaotic aspects of the
@@ -794,22 +963,29 @@ time.
 
 
 <P>
-As stated in section Verbosity @l2r{} provides a means to control the amount
-of information it put's out on stderr.
-  Fatal error messages
-      indicate a bug in the source code. PLEASE report them, if they do not
-      apear in the documentation, see section Reporting_Bugs. Note: By now you
-      won't be informed by the program if an error is fatal or not. Try to find
-      it out by context ...
-  Error messages
-      always abort the program. They are thrown on conditions that do not allow
-      further converting of the input file, but should be either documented as
-      missing or unimplemented feature, or should be able to be corrected by
-      the user (e.g. missing `.cfg' files).
-  Warning messages
-      inform you, that there is some conversion loss from @latex{} to RTF, or that
-      the output file has some restrictions on some RTF Readers.
+As stated in the Debugging section, LaTeX2rtf provides a means to control the amount
+of information it puts out on stderr.
+<DL COMPACT>
 
+<DT><SAMP>`Fatal error messages'</SAMP>
+<DD>
+indicate a bug in the source code. PLEASE report them, if they do not
+apear in the documentation, see section Reporting_Bugs. Note: By now you
+won't be informed by the program if an error is fatal or not. Try to find
+it out by context ...
+
+<DT><SAMP>`Error messages'</SAMP>
+<DD>
+always abort the program. They are thrown on conditions that do not allow
+further converting of the input file, but should be either documented as
+missing or unimplemented feature, or should be able to be corrected by
+the user (e.g. missing <TT>`.cfg'</TT> files).
+
+<DT><SAMP>`Warning messages'</SAMP>
+<DD>
+inform you, that there is some conversion loss from @latex{} to RTF, or that
+the output file has some restrictions on some RTF Readers.
+</DL>
 
 <P>
 Error and Warning messages should follow the GNU Coding standards, i.e. they
@@ -828,23 +1004,27 @@ The other messages only indicate `filename' (sometimes wrong) and linenumber
 
 
 <P>
-Don't try to encounter any sense in Verbosity levels above 3, these are for my
+Don't try to encounter any sense in debugging levels above 3, these are for my
 own delight only and can change significantly between versions.
 
 
 
 
-<H1><A NAME="SEC23" HREF="l2r.html#TOC23">@l2r{} under Development</A></H1>
+<H1><A NAME="SEC33" HREF="l2r.html#TOC33">LaTeX2RTF under Development</A></H1>
+
+<P>
+This chapter needs extensive revision.
 
 
 
-<H2><A NAME="SEC24" HREF="l2r.html#TOC24">Unimplemented Features</A></H2>
+
+<H2><A NAME="SEC34" HREF="l2r.html#TOC34">Unimplemented Features</A></H2>
 
 
 <UL>
 <LI>@latex{} passes the optional parameters of \\documentstyle on to \\usepackage,
 
-      @l2r{} doesn't do this. @l2r{}{} now accepts optional arguments to
+      LaTeX2rtf doesn't do this. LaTeX2rtf{}{} now accepts optional arguments to
       \\usepackage, but only uses them if they contain latin1
 <LI>Add more input encoding features (other isolatin1 aproaches, other
 
@@ -867,7 +1047,7 @@ own delight only and can change significantly between versions.
       flexibility in configuration and extension.
 <LI>newcounter, newenvironment, newcommand, ...
 
-<LI>Include the GNU gettext package to internationalize @l2r{}'s Messages.
+<LI>Include the GNU gettext package to internationalize LaTeX2rtf's Messages.
 
 <LI>Switch over to GNU getopt() and long options.
 
@@ -881,14 +1061,17 @@ left-((, right-))'
 
 
 
-<H2><A NAME="SEC25" HREF="l2r.html#TOC25">Missing and Faulty command line options</A></H2>
+<H2><A NAME="SEC35" HREF="l2r.html#TOC35">Missing and faulty command line options</A></H2>
 
 <P>
 In this section you find comments about missing and buggy command line options.
-  `-V'
+  @option{-V}
        The Version information output is not compatible with the GNU Coding
       Standards.
-  `-v'
+
+
+<P>
+  @option{-d}
        Information logging and Error reporting is not implemented consistently.
       So do expect confusing Messages and inconsistent format. The linenumber
       and filename of the offending spot in the input in the most cases is not
@@ -896,81 +1079,93 @@ In this section you find comments about missing and buggy command line options.
   `'
        There should be an option to intersperse RTF-Output with the @latex{}-input
       that produced it to have a better hand for debugging.
-  `-o'
+      
+  @option{-o}
        Actually you must specify an output filename. Maybe further on the
       meaning of this option changes, as writing `-o filename' takes more
       typework then `&#62; filename'. Either you may specify the name, or you must
       not do it, depending on whether we choose to use GNU getopt or not.
-  `-l'
-       There is only one coding scheme for the input file, ISO-Latin1.
-  `-q'
-       There should be a `-q' (quiet) option, to suppress Warning Messages. By
-      now this can be achieved by the -v 0 option.
+
+
+<P>
+  @option{-q}
+       There should be a @option{-q} (quiet) option, to suppress Warning Messages. By
+      now this can be achieved by the -d0 option.
+      
   `-rmajor.minor'
        There should be an option that restrict the generation of RTF code with
       version greater than major,minor. Actually this is done at compile time.
       There are some Warning messages if "newer" RTF Code is generated, but it
       is not consistent at all.
-  `-h'
+      
+  @option{-h}
        The default values for search pathes and switches changeable by
       commandlineoptions should be shown.
 
 
 <P>
-There is a need for a `--language' option (`-l' is yet used, and could be
-changed to -e # (--encoding). `-i' as for `--international' is chosen meanwhile
+There is a need for a `--language' option (@option{-l} is yet used, and could be
+changed to -e # (--encoding). @option{-i} as for `--international' is chosen meanwhile
 so that the user can select an alternate language file, see section Output
 formatting.
 
 
 <P>
-It would be useful to implement the GNU long option names, e.g.: `--verbosity',
+It would be useful to implement the GNU long option names, e.g.: `--debug',
 `--output_file', `--quiet', etc.
 
 
 
 
-<H2><A NAME="SEC26" HREF="l2r.html#TOC26">Known Bugs</A></H2>
+<H2><A NAME="SEC36" HREF="l2r.html#TOC36">Known Bugs</A></H2>
 
-<P>
-   1. The first parameter of a \link{anchor}[ltx]{label} is converted to the
+
+<OL>
+<LI>The first parameter of a \link{anchor}[ltx]{label} is converted to the
+
       rtf-output. Label is stored to hyperref for later use, the optional
       parameter is ignored. [ltx] should be processed as Otfried recommends it,
       to use for exclusive @latex{} output.e.g: \link{readhere}[~\Ref]{explaining:
       chapter}. Since {explaining:chapter} is yet read by @latex{} and hyperlatex
-      when [...] is evaluated it produces the correct reference. @l2r{} is
+      when [...] is evaluated it produces the correct reference. LaTeX2rtf is
       only strolling from left to right through the text and can't remember
       what she will see in the future.
-   2. The optional argument of \item[...] in the description environment is
+<LI>The optional argument of \item[...] in the description environment is
+
       converted to isolatin1 if applicable, but not @latex{} converted. Try `\item
       [Best~Friends]'.
-   3. The \section* command is accepted, but as I don't know how to produce a
+<LI>The \section* command is accepted, but as I don't know how to produce a
+
       section without numbering it in rtf it does precisly this: print a
       section number.
-   4. CmdLabel can generate rtf1.4 Page references and Bookmarks, but Section
+<LI>CmdLabel can generate rtf1.4 Page references and Bookmarks, but Section
+
       References only with restrictions: The section reference copies the
       information of the `.aux' file to a locked rtf field. The better way
       would be, to include the section text in a bookmark if there is a label
       following, and write the bookmark with the label name, since then Word
       could update the section information.
-   5. The diagnostics routine does not output the correct (actual)
+<LI>The diagnostics routine does not output the correct (actual)
+
       inputfilename. (`.aux', `.bbl', <CODE>\input</CODE>).
-   6. The @l2r{} macro of this document does NOT produce the correct @latex{}-
+<LI>The LaTeX2rtf{} macro of this document does NOT produce the correct @latex{}-
+
       Logo. Somebody can send me a correct version, and for @latexe{} also?!
-   7. To provide the end-of-line-code features a "cleaned up" temporary file is
+<LI>To provide the end-of-line-code features a "cleaned up" temporary file is
+
       written and then read in as inputfile. This gets us into other troubles
       with input redirection and <CODE>\input</CODE> or <CODE>\include</CODE>ed @latex{}-files. This
       procedure is meant as a temporary means to provide this functionality and
       will be removed in the future.
+</OL>
 
 
 
-
-<H2><A NAME="SEC27" HREF="l2r.html#TOC27">Reporting Bugs</A></H2>
+<H2><A NAME="SEC37" HREF="l2r.html#TOC37">Reporting Bugs</A></H2>
 
 <P>
-Report bugs to Jorge.Lehner@gmx.net (Georg Lehner). Ralf Schlatterbeck is no
-longer the maintainer and will forward all mails refering @l2r{} to me.
+Report bugs to <A HREF="mailto:Jorge.Lehner@gmx.net">Georg Lehner)</A>. Ralf Schlatterbeck is no
+longer the maintainer and will forward all mails refering LaTeX2rtf to me.
 
 
 <P>
@@ -980,13 +1175,13 @@ reporting a bug in the program:
 
 <P>
 Tell me the version of the program. For the executable you get the version by
-specifying the `-V' option to @l2r{}. For the sources the version is the
+specifying the @option{-V} option to LaTeX2rtf. For the sources the version is the
 version number of the file `version.h'.
 
 
 <P>
 The Operating System and version number where you are running or trying to
-install @l2r{}. Be sure to check the file `Makefile' for settings that may
+install LaTeX2rtf. Be sure to check the file `Makefile' for settings that may
 be specific to your machine, especially for some versions of SunOS there may be
 settings which are needed to compile successfully. Do this before writing to
 me.
@@ -1008,86 +1203,63 @@ question. I will, however, try to fix reported bugs in upcoming releases.
 
 
 
-<H2><A NAME="SEC28" HREF="l2r.html#TOC28">Todo List</A></H2>
+<H2><A NAME="SEC38" HREF="l2r.html#TOC38">Todo List</A></H2>
 
-<P>
-    * Make this Manual more consistent, the Todo and Known Bug List shorter and
+
+<UL>
+<LI>Make this Manual more consistent, the Todo and Known Bug List shorter and
+
       the Features List longer.
-    * Harmonize all of the error and warning messages.
-    * Put warnings everwhere aplicable about producing RTF 1.4 tokens.
-    * Provide a Testsuite.
-    * Be more specific about implementing on Unix Platforms.
-    * Provide an Error and Warning recovery guide to the user.
-    * Explain details of the MSDOS executable in a separate chapter.
-    * Add a chapter with lists of all @latex{} commands that convert, and that do
+<LI>Harmonize all of the error and warning messages.
+
+<LI>Put warnings everwhere aplicable about producing RTF 1.4 tokens.
+
+<LI>Provide a Testsuite.
+
+<LI>Be more specific about implementing on Unix Platforms.
+
+<LI>Provide an Error and Warning recovery guide to the user.
+
+<LI>Explain details of the MS-DOS executable in a separate chapter.
+
+<LI>Add a chapter with lists of all @latex{} commands that convert, and that do
+
       not convert to RTF, including their status (for future releases, never,
       partially functional, ...).
-    * The following comes from Ralf: - Redesign the input routines -&#62; do not
-      use lseek -&#62; then the program can read from pipes. - Change the Makefile
-      to use default rules for generating .o files. Also use generic rules in
-      some other places (clean target) - For ignored commands the number of
-      arguments to ignore should also be given - Environment definition
-      produced with \newtheorem should be supported - Move version control
-      archive (currently RCS) to CVS. - Change how the current version is
+<LI>The following comes from Ralf:
+
+
+<OL>
+<LI>Redesign the input routines to not
+
+      use lseek so that LaTeX2rtf can read from pipes. 
+<LI>Change the Makefile
+
+      to use default rules for generating .o files. 
+<LI>Also use generic rules in
+
+      some other places (clean target) 
+<LI>For ignored commands the number of
+
+      arguments to ignore should also be given 
+<LI>Environment definition
+
+      produced with <CODE>\newtheorem</CODE> should be supported 
+<LI>Move version control
+
+      archive (currently RCS) to CVS. 
+<LI>Change how the current version is
+
       computed (currently version.h defines the version of the whole package
       this should change to a CVS (or RCS) version tag from which a version.h
       file should automatically be generated).
+</OL>
+
+</UL>
 
 
 
-
-<H1><A NAME="SEC29" HREF="l2r.html#TOC29">Index of Commandline and Configurationfile Options</A></H1>
-
-<P>
-Jump to:  - - - a - c - e - f - i - l - m - n - o - p - r - s - t - v
-***** - *****
-    * -h
-    * -l
-    * -o
-    * -q
-    * -rmajor.minor
-    * -v
-    * -V
-***** a *****
-    * ABSTRACT
-    * APPENDIX
-***** c *****
-    * COMMAND
-    * CONTENTS
-***** e *****
-    * ENVCMD
-    * ENVIRONMENT
-***** f *****
-    * FIGURE
-***** i *****
-    * INDEX
-***** l *****
-    * LISTFIGURE
-    * LISTTABLE
-***** m *****
-    * MEASURE
-***** n *****
-    * NUMBER
-***** o *****
-    * OTHER
-***** p *****
-    * PACKAGE
-    * PARAMETER
-    * PART
-***** r *****
-    * REF
-    * REFARTICLE
-***** s *****
-    * SINGLE
-***** t *****
-    * TABLE
-***** v *****
-    * Verbosity levels
-
-
-
-
-<H1><A NAME="SEC30" HREF="l2r.html#TOC30">Concept Index</A></H1>
+<H1><A NAME="SEC39" HREF="l2r.html#TOC39">Index of Commandline and Configuration file Options</A></H1>
 
 <P>
 Jump to:
@@ -1106,7 +1278,7 @@ Jump to:
 
 
 <P><HR><P>
-This document was generated on 23 October 2001 using
+This document was generated on 24 October 2001 using
 <A HREF="http://wwwinfo.cern.ch/dis/texi2html/">texi2html</A>&nbsp;1.56k.
 </BODY>
 </HTML>
