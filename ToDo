@@ -1,9 +1,11 @@
 Fit & Finish:
 
+	Add documentation for -F
+	Improve manpage for latex2png
+	
 	Improve spacing before and after \section etc.
 	Improve font sizes in \section etc.
 	Reset footnote numbering at each new chapter
-	Improve alignment of inline equations
 	
 Potential Features:
 
