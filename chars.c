@@ -1,4 +1,4 @@
-/* $Id: chars.c,v 1.5 2001/09/16 05:11:19 prahl Exp $
+/* $Id: chars.c,v 1.6 2001/09/26 03:31:50 prahl Exp $
 
    purpose : handles special characters and logos
 */
@@ -26,7 +26,6 @@ void
 CmdUmlauteChar(int code)
 /*****************************************************************************
  purpose : converts german symbols from LaTeX to RTF
- globals : fRtf
  ******************************************************************************/
 {
 	int            num;
@@ -82,10 +81,9 @@ CmdUmlauteChar(int code)
 }
 
 void 
-CmdLApostrophChar( /* @unused@ */ int code)
+CmdLApostrophChar( int code)
 /******************************************************************************
  purpose: converts special symbols from LaTeX to RTF
- globals : fRtf
  ******************************************************************************/
 {
 	int            num;
@@ -135,7 +133,7 @@ CmdLApostrophChar( /* @unused@ */ int code)
 }
 
 void 
-CmdRApostrophChar( /* @unused@ */ int code)
+CmdRApostrophChar(int code)
 /******************************************************************************
  purpose: converts special symbols from LaTeX to RTF
  ******************************************************************************/
@@ -399,11 +397,11 @@ CmdCedillaChar(int code)
 	free(cParam);
 }
 
+void 
+CmdVecChar(int code)
 /*****************************************************************************
  purpose: converts \vec{o} from LaTeX to RTF
  ******************************************************************************/
-void 
-CmdVecChar( /* @unused@ */ int code)
 {
 	int             num;
 	int             upsize;
@@ -447,6 +445,8 @@ CmdVecChar( /* @unused@ */ int code)
 	free(cParam);
 }
 
+void 
+CmdBreveChar(int code)
 /*****************************************************************************
  purpose: converts \u{o} and \breve{o} from LaTeX to RTF
           this version works on a Macintosh.
@@ -454,8 +454,6 @@ CmdVecChar( /* @unused@ */ int code)
 		  always treats \'28 as a '(' 
           we could just fake it with a u
  ******************************************************************************/
-void 
-CmdBreveChar( /* @unused@ */ int code)
 {
 	int             num;
 	char           *cParam;
@@ -518,12 +516,12 @@ CmdHacekChar(int code)
 	free(cParam);
 }
 
+void 
+CmdDotChar(int code)
 /******************************************************************************
  purpose: converts \.{o} and \dot{o} from LaTeX to RTF
           need something that looks like \\O(a,\\S(\f2\'26)) in RTF file
  ******************************************************************************/
-void 
-CmdDotChar(int code)
 {
 	int             num;
 	char           *cParam;
@@ -541,13 +539,13 @@ CmdDotChar(int code)
 	free(cParam);
 }
 
+void 
+CmdUnderbarChar(int code)
 /******************************************************************************
  purpose: converts \.{o} and \dot{o} from LaTeX to RTF
           need something that looks like \\O(a,\\S(\f2\'26)) in RTF file
  ******************************************************************************/
-void 
-CmdUnderbarChar(int code)
-{
+ {
 	int             num;
 	char           *cParam;
 	
@@ -611,6 +609,7 @@ CmdLogo(int code)
 	float           FloatFsize;
 	float           DnSize;
 
+	SetTexMode(MODE_HORIZONTAL);
 	font_num = RtfFontNumber("Roman");
 	fprintRTF("{\\b0\\i0\\scaps0\\f%d ",font_num);
 	
@@ -654,7 +653,8 @@ CmdLogo(int code)
 	fprintRTF("}");
 }
 
-void CmdFrenchAbbrev(int code)
+void 
+CmdFrenchAbbrev(int code)
 /******************************************************************************
   purpose: makes \\ier, \\ieme, etc
  ******************************************************************************/

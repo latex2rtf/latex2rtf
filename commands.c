@@ -1,4 +1,4 @@
-/*  $Id: commands.c,v 1.23 2001/09/19 05:06:51 prahl Exp $
+/*  $Id: commands.c,v 1.24 2001/09/26 03:31:50 prahl Exp $
 
     Defines subroutines to translate LaTeX commands to RTF
 */
@@ -19,6 +19,7 @@
 #include "commands.h"
 #include "parser.h"
 #include "biblio.h"
+#include "ignore.h"
 
 void            error(char *);
 
@@ -86,6 +87,7 @@ static CommandArray commands[] = {
 	{"mathsl",   CmdFontShape, F_SHAPE_SLANTED_2},
 	
 	{"tiny",         CmdFontSize, 10},
+	{"ssmall",   	 CmdFontSize, 12},  /* from moresize.sty */
 	{"scriptsize",   CmdFontSize, 14},
 	{"footnotesize", CmdFontSize, 16},
 	{"small",        CmdFontSize, 18},
@@ -95,7 +97,7 @@ static CommandArray commands[] = {
 	{"LARGE",        CmdFontSize, 34},
 	{"huge",         CmdFontSize, 40},
 	{"Huge",         CmdFontSize, 50},
-    {"HUGE",         CmdFontSize, 60 },
+    {"HUGE",         CmdFontSize, 60},  /* from moresize.sty */
 	
 	/* ---------- OTHER FONT STUFF ------------------- */
 	{"em",           CmdEmphasize, F_EMPHASIZE_1},
@@ -106,6 +108,8 @@ static CommandArray commands[] = {
 	{"mathnormal",   CmdTextNormal, F_TEXT_NORMAL_3},
 
 	{"centerline", CmdAlign, PAR_CENTERLINE},
+	{"vcenter",    CmdAlign, PAR_VCENTER},
+	
 	/* ---------- LOGOS ------------------- */
 	{"LaTeX", CmdLogo, CMD_LATEX},
 	{"LaTeXe", CmdLogo, CMD_LATEXE},
@@ -135,7 +139,9 @@ static CommandArray commands[] = {
 
 	{"ldots", CmdLdots, 0},
 	{"maketitle", CmdMakeTitle, 0},
-	{"par", CmdParagraph, 0},
+	{"par", CmdEndParagraph, 0},
+	{"noindent", CmdIndent, INDENT_NONE},
+	{"indent", CmdIndent, INDENT_USUAL},
 	{"section", CmdSection, SECT_NORM},
 	{"section*", CmdSection, SECT_NORM},
 	{"caption", CmdCaption, 0},
@@ -181,6 +187,7 @@ static CommandArray commands[] = {
 	{"fbox", CmdIgnoreParameter, No_Opt_One_NormParam},
 	{"quad", CmdQuad, 1},
 	{"qquad", CmdQuad, 2},
+	{"textsuperscript", CmdSuperscript, 0},
 	{"hspace*", CmdIgnoreParameter, No_Opt_One_NormParam},
 	{"vspace", CmdIgnoreParameter, No_Opt_One_NormParam},
 	{"vspace*", CmdIgnoreParameter, No_Opt_One_NormParam},
@@ -238,7 +245,7 @@ static CommandArray commands[] = {
     {"Frac", CmdFraction, 0},
 	{"sqrt", CmdRoot, 0},
     {"int",  CmdIntegral, 0},
-	{"nonumber",CmdFormula, EQN_NO_NUMBER},
+	{"nonumber",CmdNonumber, EQN_NO_NUMBER},
 	{"", NULL, 0}
 };
 
@@ -380,7 +387,6 @@ static CommandArray params[] = {
 	{"itemize", CmdList, ITEMIZE},
 	{"description", CmdList, DESCRIPTION},
 	{"verbatim", CmdVerbatim, 1},
-    {"Verbatim", CmdVerbatim, 1},
 	{"verse", CmdVerse, 0},
 	{"tabular", CmdTabular, TABULAR},
 	{"tabular*", CmdTabular, TABULAR_1},
@@ -389,18 +395,19 @@ static CommandArray params[] = {
 	{"array", CmdTabular, TABULAR_2},
 
 	{"multicolumn", CmdMultiCol, 0},
-	{"math", CmdFormula, EQN_MATH},
-	{"displaymath", CmdFormula2, EQN_DISPLAYMATH},
-	{"equation", CmdFormula2, EQN_EQUATION},
-	{"equation*", CmdFormula2, EQN_EQUATION_STAR},
-	{"eqnarray*", CmdFormula2, EQN_ARRAY_STAR},
-	{"eqnarray", CmdFormula2, EQN_ARRAY},
+	{"displaymath", CmdDisplayMath, EQN_DISPLAYMATH},
+	{"equation", CmdDisplayMath, EQN_EQUATION},
+	{"equation*", CmdDisplayMath, EQN_EQUATION_STAR},
+	{"eqnarray*", CmdDisplayMath, EQN_ARRAY_STAR},
+	{"eqnarray", CmdDisplayMath, EQN_ARRAY},
 	{"letter", CmdLetter, 0},
 	{"table", CmdTable, TABLE},
 	{"table*", CmdTable, TABLE_1},
 	{"thebibliography", CmdThebibliography, 0},
 	{"abstract", CmdAbstract, 0},
 	{"titlepage", CmdTitlepage, 0},
+	
+	{"math", CmdMath, EQN_MATH},
 	{"em", CmdEmphasize, F_EMPHASIZE_3},
 	{"rmfamily", CmdFontFamily, F_FAMILY_ROMAN_3},
 	{"sffamily", CmdFontFamily, F_FAMILY_SANSSERIF_3},
@@ -496,8 +503,8 @@ globals: command-functions have side effects or recursive calls
 
 	/* unknown environment must be ignored */
 	if (AddParam == ON) {
-		sprintf(unknown_environment, "%s%s%s", "end{", cCommand, "}");
-		/* Ignore_Environment(unknown_environment); */
+		sprintf(unknown_environment, "\\%s%s%s", "end{", cCommand, "}");
+		Ignore_Environment(cCommand);
 		diagnostics(WARNING, "Environment <%s> ignored.  Not defined in commands.c", cCommand);
 	}
 	return FALSE;

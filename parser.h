@@ -13,6 +13,7 @@ char            getRawTexChar(void);
 char            getTexChar(void);
 char            getNonSpace(void);
 char            getNonBlank(void);
+int             getSameChar(char c);
 
 void            ungetTexChar(char c);
 

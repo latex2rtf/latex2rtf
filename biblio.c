@@ -1,4 +1,4 @@
-/* $Id: biblio.c,v 1.3 2001/09/18 03:40:25 prahl Exp $ 
+/* $Id: biblio.c,v 1.4 2001/09/26 03:31:50 prahl Exp $ 
  
 This file contains routines to handle bibliographic and cite commands
 */
@@ -18,6 +18,7 @@ This file contains routines to handle bibliographic and cite commands
 #include "biblio.h"
 #include "parser.h"
 #include "preamble.h"
+#include "lengths.h"
 
 void 
 CmdNoCite(int code)
@@ -92,12 +93,17 @@ CmdThebibliography(int code)
 		char * s = getParam();   /*throw away widest_label */
 		free(s);
 		
-		fprintRTF("\\par\\par\\pard{\\fs28 \\b ");
+		CmdEndParagraph(0);
+		CmdIndent(INDENT_NONE);
+		fprintRTF("{");
+		CmdStartParagraph(0);
+		fprintRTF("\\fs28\\b ");
 		if (g_document_type == FORMAT_ARTICLE)
 			ConvertBabelName("REFNAME");
 		else
 			ConvertBabelName("BIBNAME");
-		fprintRTF("}\n\\par\\par");
+		CmdEndParagraph(0);
+		fprintRTF("}");
 	}
 	
 }
@@ -107,16 +113,26 @@ CmdBibitem(int code)
 {
 	char label[256];
 	char *key;
+	int  old_indent;	
 	
 	/* new paragraph for bib entry */
-	fprintRTF("\\par\n\\pard ");
-
+	CmdEndParagraph(0);
+	old_indent = getLength("parindent");
+	setLength("parindent", -350);
+	CmdStartParagraph(0);
+	fprintRTF("\\li350 ");
+	
 	if (!getBracketParam(label, 255)) {
 		key = getParam();
+		fprintRTF("[");
 		ScanAux("bibcite", key, 0);
+		fprintRTF("]");
 		free(key);
 	} else 
-		fprintRTF("%s", label);
+		fprintRTF("[%s]", label);
+
+	fprintRTF("\\tab ");
+	setLength("parindent", old_indent);
 }
 
 void 

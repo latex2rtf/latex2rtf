@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.22 2001/09/18 05:20:10 prahl Exp $ 
+/* $Id: funct1.c,v 1.23 2001/09/26 03:31:50 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -24,20 +24,84 @@ Authors:  Dorner, Granzer, Polzer, Trisko, Schlatterbeck, Lehner, Prahl
 #include "lengths.h"
 #include "preamble.h"
 
-extern bool     bInDocument;	/* true if File-Pointer is in the document */
-extern bool     g_processing_equation;	/* true at a formula-convertion */
-extern int      g_paragraph_counter;
 extern bool     twocolumn;	/* true if twocolumn-mode is enabled */
 extern int      indent;		/* includes the left margin e.g. for itemize-commands */
-static bool     NoNewLine;
-extern bool     bNewPar;
-extern bool     mbox;
 extern enum     TexCharSetKind TexCharSet;
 
 static void     CmdLabel1_4(int code, char *text);
 static void     CmdLabelOld(int code, char *text);
 void            CmdPagestyle( /* @unused@ */ int code);
 void            CmdHeader(int code);
+
+static bool  g_paragraph_no_indent = FALSE;
+static bool  g_paragraph_inhibit_indent = FALSE;
+
+void
+CmdStartParagraph(int code)
+/******************************************************************************
+     purpose : RTF codes to create a new paragraph.  If the paragraph should
+               not be indented then emit \fi0 otherwise use the current value
+               of \parindent as the indentation of the first line.
+ ******************************************************************************/
+{
+	int parindent;
+	
+	diagnostics(4,"CmdStartParagraph mode = %d", GetTexMode());
+	
+	fprintRTF("\\q%c\\li%d ", alignment, indent);
+
+	if (g_paragraph_no_indent || g_paragraph_inhibit_indent) 
+		parindent = 0;
+	else
+		parindent = getLength("parindent");
+	
+	fprintRTF("\\fi%d ", parindent);
+	
+	SetTexMode(MODE_HORIZONTAL);
+	g_paragraph_no_indent = FALSE;
+	g_paragraph_inhibit_indent = FALSE;
+}
+
+void
+CmdEndParagraph(int code)
+/******************************************************************************
+     purpose : ends the current paragraph and return to MODE_VERTICAL.
+ ******************************************************************************/
+{
+	int mode = GetTexMode();
+
+	diagnostics(4,"CmdEndParagraph mode = %d", GetTexMode());
+	if (mode != MODE_VERTICAL) {
+		fprintRTF("\\par\n");
+		SetTexMode(MODE_VERTICAL);
+	}
+	g_paragraph_inhibit_indent = FALSE;
+}
+
+void
+CmdIndent(int code)
+/******************************************************************************
+ purpose : set flags so that CmdStartParagraph() does the right thing
+     
+     	   INDENT_INHIBIT allows the next paragraph to be indented if
+     	   a paragraph break occurs before CmdStartParagraph() is called
+     			     		
+           INDENT_NONE tells CmdStartParagraph() to not indent the next paragraph
+           
+           INDENT_USUAL has CmdStartParagraph() uses the value of \parindent
+ ******************************************************************************/
+{
+	if (code == INDENT_NONE)
+		g_paragraph_no_indent = TRUE;
+	
+	else if (code == INDENT_INHIBIT) 
+		g_paragraph_inhibit_indent = TRUE;
+
+	else if (code == INDENT_USUAL) {
+		g_paragraph_no_indent = FALSE;
+		g_paragraph_inhibit_indent = FALSE;
+	}
+}
 
 void 
 CmdBeginEnd(int code)
@@ -58,13 +122,12 @@ CmdBeginEnd(int code)
 		break;
 	case CMD_END:
 		(void) CallParamFunc(s, OFF);
+		CmdIndent(INDENT_INHIBIT);
 		break;
 	default:
 		assert(0);
 	}
 	free(s);
-/*	c = getNonBlank();
-	ungetTexChar(c);*/
 }
 
 void 
@@ -73,58 +136,64 @@ CmdAlign(int code)
     purpose : sets the alignment for a paragraph
   parameter : code: alignment centered, justified, left or right
      globals: alignment: alignment of paragraphs
-              bNewPar
  ********************************************************************************/
 {
+	char * s;
 	static char     old_alignment_before_center = JUSTIFIED;
 	static char     old_alignment_before_right = JUSTIFIED;
 	static char     old_alignment_before_left = JUSTIFIED;
 	static char     old_alignment_before_centerline = JUSTIFIED;
 
+	if (code == PAR_VCENTER){
+		s = getParam();
+		free(s);
+		return;
+	}
+	
+	CmdEndParagraph(0);
 	switch (code) {
 	case (PAR_CENTERLINE):
 		old_alignment_before_centerline = alignment;
 		alignment = CENTERED;
-		fprintRTF("\\par\n{\\pard\\q%c ", alignment);
-		diagnostics(4,"Entering Convert from CmdAlign");
+		fprintRTF("{");
+		diagnostics(4,"Entering Convert from CmdAlign (centerline)");
 		Convert();
-		diagnostics(4,"Exiting Convert from CmdAlign");
+		diagnostics(4,"Exiting Convert from CmdAlign (centerline)");
 		alignment = old_alignment_before_centerline;
-		fprintRTF("\\par}\n\\pard\\q%c ", alignment);
-		bNewPar = TRUE;
+		CmdEndParagraph(0);
+		fprintRTF("}");
 		break;
 
+
 	case (PAR_CENTER | ON):
+		CmdIndent(INDENT_NONE);
 		old_alignment_before_center = alignment;
 		alignment = CENTERED;
-		fprintRTF("{\\pard\\q%c ", alignment);
 		break;
 	case (PAR_CENTER | OFF):
 		alignment = old_alignment_before_center;
-		fprintRTF("\\par}\n\\pard\\q%c ", alignment);
-		bNewPar = TRUE;
+		CmdEndParagraph(0);
+		CmdIndent(INDENT_INHIBIT);
 		break;
 
 	case (PAR_RIGHT | ON):
 		old_alignment_before_right = alignment;
 		alignment = RIGHT;
-		fprintRTF("{\\pard\\q%c ", alignment);
+		CmdIndent(INDENT_NONE);
 		break;
 	case (PAR_RIGHT | OFF):
 		alignment = old_alignment_before_right;
-		fprintRTF("\\par}\n\\pard\\q%c ", alignment);
-		bNewPar = TRUE;
+		CmdIndent(INDENT_INHIBIT);
 		break;
 
 	case (PAR_LEFT | ON):
 		old_alignment_before_left = alignment;
 		alignment = LEFT;
-		fprintRTF("{\\pard\\q%c ", alignment);
+		CmdIndent(INDENT_NONE);
 		break;
 	case (PAR_LEFT | OFF):
 		alignment = old_alignment_before_left;
-		fprintRTF("\\par}\n\\pard\\q%c ", alignment);
-		bNewPar = TRUE;
+		CmdIndent(INDENT_INHIBIT);
 		break;
 	}
 }
@@ -164,51 +233,45 @@ Environment(int code)
 /******************************************************************************
   purpose: pushes/pops the new environment-commands on/from the stack
 parameter: code includes the type of the environment
-globals  : bIndocument
  ******************************************************************************/
 {
-	if (code & ON) {	/* on switch */
+	if (code & ON) {
 		code &= ~(ON);	/* mask MSB */
-		diagnostics(4,"Entering Environment");
-		if (code == DOCUMENT) 
-			bInDocument = TRUE;
-		
+		diagnostics(4,"Entering Environment (%d)", code);		
 		PushEnvironment(code);
 	} else {		/* off switch */
-		diagnostics(4,"Exiting Environment");
+		diagnostics(4,"Exiting  Environment (%d)", code);
 		PopEnvironment();
 	}
 }
-
 
 void 
 CmdSection(int code)
 /******************************************************************************
   purpose: converts the LaTeX-section-commands into similar Rtf-styles
 parameter: code: type of section-recursion-level
- globals : bNewPar
-           bBlankLine
  ******************************************************************************/
 {
 	char            optparam[100] = "";
 	char            *heading;
-	char			c;
+/*	char			c;
 	int				DefFont = DefaultFontFamily();
-	
+*/	
 	getBracketParam(optparam, 99);
 	heading = getParam();
 	diagnostics(4,"entering CmdSection [%s]{%s}",optparam,heading);
-	g_paragraph_counter = 0;
+	
+	CmdEndParagraph(0);
+	CmdIndent(INDENT_NONE);
+	CmdStartParagraph(0);
 	
 	switch (code) {
 	case SECT_PART:
 		incrementCounter("part");
-		fprintRTF("\\par\\pard\\page");
+		fprintRTF("\\page");
 		fprintRTF("{\\qc\\b\\fs40 ");
 		ConvertBabelName("PARTNAME");
 		fprintRTF("%d\\par ", getCounter("part"));
-		ConvertString(heading);
-		fprintRTF("\\par}\n\\page");
 		break;
 
 	case SECT_CHAPTER:
@@ -216,38 +279,43 @@ parameter: code: type of section-recursion-level
 		setCounter("section",0);
 		setCounter("subsection",0);
 		setCounter("subsubsection",0);
-		fprintRTF("\\par\\pard\\page\\pard{\\pntext\\pard\\plain\\b\\fs32\\kerning28 ");
+/*		fprintRTF("\\pard\\page\\pard{\\pntext\\pard\\plain\\b\\fs32\\kerning28 ");
 		fprintRTF("%d\\par \\par }\\pard\\plain\n", getCounter("chapter"));
 		fprintRTF("%s\\f%d%s{", HEADER11, DefFont, HEADER12);
-		ConvertString(heading);
-		fprintRTF("}\n");
-		bNewPar = FALSE;
-		bBlankLine = TRUE;
+*/
+		fprintRTF("\\page{\\plain\\b\\fs32\\kerning28 ");
+		ConvertBabelName("CHAPTERNAME");
+		fprintRTF(" %d\\par}", getCounter("chapter"));
+		fprintRTF("{\\fi0\\plain\\b\\fs40\\kerning28 ");
 		break;
 
 	case SECT_NORM:
 		incrementCounter("section");
 		setCounter("subsection",0);
 		setCounter("subsubsection",0);
-		fprintRTF("{\\par\\pard\\pntext\\pard\\plain\\b");
+/*
+		fprintRTF("{\\pard\\pntext\\plain\\b");
 		if (g_document_type == FORMAT_ARTICLE) {
 			fprintRTF("\\fs32\\kerning28 %d\\tab}\\pard\\plain\n", getCounter("section"));
-			fprintRTF("%s\\f%d%s{", HEADER11, DefFont, HEADER12);
+			fprintRTF("%s%s{", HEADER11, HEADER12);
 		} else {
 			fprintRTF("\\fs24 %d.%d\\tab}\\pard\\plain\n", getCounter("chapter"),getCounter("section"));
-			fprintRTF("%s\\f%d%s{", HEADER21, DefFont, HEADER22);
+			fprintRTF("%s%s{", HEADER21, HEADER22);
+		}
+*/
+		fprintRTF("{\\plain\\b");
+		if (g_document_type == FORMAT_ARTICLE) {
+			fprintRTF("\\fs32 %d.  ", getCounter("section"));
+		} else {
+			fprintRTF("\\fs24 %d.%d  ", getCounter("chapter"),getCounter("section"));
 		}
 
-		ConvertString(heading);
-		fprintRTF("}\n");
-		bNewPar = FALSE;
-		bBlankLine = TRUE;
 		break;
 
 	case SECT_SUB:
 		incrementCounter("subsection");
 		setCounter("subsubsection",0);
-		fprintRTF("{\\par\\pard\\pntext\\pard\\plain\\b");
+/*		fprintRTF("{\\par\\pard\\pntext\\pard\\plain\\b");
 		if (g_document_type == FORMAT_ARTICLE) {
 			fprintRTF("\\fs24 %d.%d\\tab}\\pard\\plain\n", getCounter("section"), getCounter("subsection"));
 			fprintRTF("%s\\f%d%s{", HEADER21, DefFont, HEADER22);
@@ -255,16 +323,16 @@ parameter: code: type of section-recursion-level
 			fprintRTF("\\fs24 %d.%d.%d\\tab}\\pard\\plain\n", getCounter("chapter"), getCounter("section"), getCounter("subsection"));
 			fprintRTF("%s\\f%d%s{", HEADER31, DefFont, HEADER32);
 		}
-
-		ConvertString(heading);
-		fprintRTF("}\n");
-		bNewPar = FALSE;
-		bBlankLine = TRUE;
+*/
+		fprintRTF("{\\plain\\b\\fs24 ");
+		if (g_document_type != FORMAT_ARTICLE) 
+			fprintRTF("%d.", getCounter("chapter"));
+		fprintRTF("%d.%d  ", getCounter("section"), getCounter("subsection"));
 		break;
 
 	case SECT_SUBSUB:
 		incrementCounter("subsubsection");
-		fprintRTF("{\\par\\pard\\pntext\\pard\\plain\\b");
+/*		fprintRTF("{\\par\\pard\\pntext\\pard\\plain\\b");
 		if (g_document_type == FORMAT_ARTICLE) {
 			fprintRTF("\\fs24 %d.%d.%d\\tab}\\pard\\plain\n", getCounter("section"), getCounter("subsection"), getCounter("subsubsection"));
 			fprintRTF("%s\\f%d%s{", HEADER31, DefFont, HEADER32);
@@ -272,21 +340,23 @@ parameter: code: type of section-recursion-level
 			fprintRTF("\\fs24 %d.%d.%d.%d\\tab}\\pard\\plain\n", getCounter("chapter"), getCounter("section"), getCounter("subsection"), getCounter("subsubsection"));
 			fprintRTF("%s\\f%d%s{", HEADER41, DefFont, HEADER42);
 		}
-
-		ConvertString(heading);
-		fprintRTF("}\n");
-		bNewPar = FALSE;
-		bBlankLine = TRUE;
+*/
+		fprintRTF("{\\plain\\b\\fs24 ");
+		if (g_document_type != FORMAT_ARTICLE) 
+			fprintRTF("%d.", getCounter("chapter"));
+		fprintRTF("%d.%d", getCounter("section"), getCounter("subsection"));
+		fprintRTF(".%d  ", getCounter("subsubsection"));
 		break;
 	}
 	
-	fprintRTF("\\par\\pard");
-	CmdTextNormal(F_TEXT_NORMAL);
-	fprintRTF("\\f%d\\q%c\n", DefFont, alignment);
-	if (heading) free(heading);
-	c = getNonBlank();
-	ungetTexChar(c);
+	ConvertString(heading);
+	CmdEndParagraph(0);
+	fprintRTF("}");
+	if (code == SECT_PART)
+		fprintRTF("\\page");
 
+	if (heading) free(heading);
+	CmdIndent(INDENT_NONE);
 }
 
 
@@ -298,28 +368,43 @@ CmdCaption(int code)
 {
 	char           *thecaption;
 	char            lst_entry[300];
+	int				n;
+	char   			old_align;
 	
+	old_align = alignment;
+	alignment = CENTERED;
+
 	getBracketParam(lst_entry,299);  /* discard entry for list of tables or figures */
 	
 	diagnostics(4, "entering CmdCaption [%s]", lst_entry);
 
+	CmdEndParagraph(0);
+	CmdIndent(INDENT_NONE);
+	CmdStartParagraph(0);
+	fprintRTF("{");
+
 	if (g_processing_figure) {
 		incrementCounter("figure");
-		fprintRTF("\\par\n{\\pard\\qc ");
 		ConvertBabelName("FIGURENAME");
-		fprintRTF(" %d: ",getCounter("figure"));
+		n = getCounter("figure");
 	} else {
 		incrementCounter("table");
-		fprintRTF("\\par\n{\\pard\\qc ");
 		ConvertBabelName("TABLENAME");
-		fprintRTF(" %d: ",getCounter("table"));
+		n = getCounter("table");
 	}
+
+	fprintRTF(" ");
+	if (g_document_type != FORMAT_ARTICLE) 
+		fprintRTF("%d.", getCounter("chapter"));
+	fprintRTF("%d:  ", n);
 
 	thecaption = getParam();
 	diagnostics(4, "in CmdCaption [%s]", thecaption);
 	ConvertString(thecaption);
 	free(thecaption);
-	fprintRTF("\\par}\n\\pard\\q%c\n", alignment);
+	fprintRTF("}");
+	CmdEndParagraph(0);
+	alignment = old_align;
 	diagnostics(4, "exiting CmdCaption");
 }
 
@@ -458,91 +543,68 @@ CmdFootNote(int code)
 void 
 CmdQuote(int code)
 /******************************************************************************
-  purpose: converts the LaTeX-Quote-commands into similar Rtf-commands
-parameter: code: QUOTE and QUOTATION On/Off
-		 specifies the recursion-level of these commands
- globals : NoNewLine: true if no newline should be printed into the Rtf-File
-	   indent : includes the left-indent-position
+  purpose: handles \begin{quote} ... \end{quote} 
+                   \begin{quotation} ... \end{quotation}
+  globals:   indent which is the left-indent-position
  ******************************************************************************/
 {
+	CmdEndParagraph(0);
+
 	switch (code) {
 	case (QUOTATION | ON):
 		case (QUOTE | ON):
 		diagnostics(4,"Entering CmdQuote");
-		PushBrace();
 		indent += 512;
-		NoNewLine = TRUE;
-		fprintRTF("\n{\\par\\li%d ", indent);
+		CmdIndent(INDENT_NONE);
 		break;
 		
 	case (QUOTATION | OFF):
 	case (QUOTE | OFF):
 		diagnostics(4,"Exiting CmdQuote");
-		(void) PopBrace();
+		CmdIndent(INDENT_INHIBIT);
 		indent -= 512;
-		NoNewLine = FALSE;
-		if (indent>0)
-			fprintRTF("\\par}\n\\li%d ", indent);
-		else
-	    	fprintRTF("\\par}\n\\pard\\q%c ", alignment);
-		break;
 	}
 }
-
 
 void 
 CmdList(int code)
 /******************************************************************************
-  purpose : converts the LaTeX-environments itemize, description and enumerate
-	    to similar Rtf-styles
-	    (only the begin/end-commands and not the commands inside the environment
-	     see also function CmdItem)
-parameter : code : type of environment and on/off-state
- globals  : nonewline, indent: look at funtction CmdQuote
+  purpose : set indentation and counters for itemize, description and enumerate
+ globals  : indent
  ******************************************************************************/
 {
+	CmdEndParagraph(0);
+	CmdIndent(INDENT_INHIBIT);
+
 	switch (code) {
 		case (ITEMIZE | ON):
 		PushEnvironment(ITEMIZE);
 		indent += 512;
-		NoNewLine = FALSE;
-		bNewPar = FALSE;
 		break;
 	case (ITEMIZE | OFF):
 		PopEnvironment();
 		indent -= 512;
-		NoNewLine = FALSE;
-		fprintRTF("\n\\par\\fi0\\li%d ", indent);
-		bNewPar = TRUE;
 		break;
+
 	case (ENUMERATE | ON):
 		PushEnvironment(ENUMERATE);
 		g_enumerate_depth++;
 		CmdItem(RESET_ITEM_COUNTER);
 		indent += 512;
-		NoNewLine = TRUE;
-		bNewPar = FALSE;
 		break;
 	case (ENUMERATE | OFF):
 		PopEnvironment();
 		g_enumerate_depth--;
 		indent -= 512;
-		NoNewLine = FALSE;
-		fprintRTF("\n\\par\\fi0\\li%d ", indent);
-		bNewPar = TRUE;
 		break;
+
 	case (DESCRIPTION | ON):
 		PushEnvironment(DESCRIPTION);
 		indent += 512;
-		NoNewLine = FALSE;
-		bNewPar = FALSE;
 		break;
 	case (DESCRIPTION | OFF):
 		PopEnvironment();
 		indent -= 512;
-		NoNewLine = FALSE;
-		fprintRTF("\n\\par\\fi0\\li%d ", indent);
-		bNewPar = TRUE;
 		break;
 	}
 }
@@ -550,13 +612,9 @@ parameter : code : type of environment and on/off-state
 void 
 CmdItem(int code)
 /******************************************************************************
- purpose : makes the same as the function CmdList except that
-	   here are only \-commands are handled and in the function
-	   CmdList only the \begin or \end{environment}-command is handled
-parameter : code : type of environment and on/off-state
- globals  : nonewline, indent: look at function CmdQuote
-            bNewPar:
-            fRtf: Rtf-file-pointer
+ purpose : handles \item command.  Since the \item command is delimited by 
+           a later \item command or the ending of an environment (\end{itemize})
+           this routine will get called recursively.
  ******************************************************************************/
 {
 	char            itemlabel[100];
@@ -568,8 +626,11 @@ parameter : code : type of environment and on/off-state
 	}
 
 	diagnostics(4, "Entering CmdItem depth=%d item=%d",g_enumerate_depth,item_number[g_enumerate_depth]);
-	fprintRTF("\n\\par\\fi0\\li%d ", indent);
 
+	CmdEndParagraph(0);
+	CmdIndent(INDENT_NONE);
+	CmdStartParagraph(0);
+	
 	if (getBracketParam(itemlabel, 99)) {	/* \item[label] */
 
 		fprintRTF("{\\b ");	/* bold on */
@@ -614,35 +675,33 @@ parameter : code : type of environment and on/off-state
 	}
 	
 	Convert();
+	CmdEndParagraph(0);
+	CmdIndent(INDENT_NONE);
 	diagnostics(4, "Exiting Convert() from CmdItem");
-	bNewPar = FALSE;
 }
 
 void 
-CmdBox( /* @unused@ */ int code)
+CmdBox(int code)
 /******************************************************************************
   purpose: converts the LaTeX \box-commands into  an similar Rtf-style
-  globals: mbox
  ******************************************************************************/
 {
-	bool			was_processing_equation = FALSE;
+	int mode = GetTexMode();
 	
-	if (g_processing_equation) {
-		g_processing_equation = FALSE;
-		was_processing_equation = TRUE;
+	diagnostics(4, "Entering CmdBox()");
+	if (mode == MODE_MATH || mode == MODE_DISPLAYMATH)
 		fprintRTF("{\\i0 ");	/* brace level without math italics */
-	}
 	
-	mbox = TRUE;
+	SetTexMode(MODE_RESTRICTED_HORIZONTAL);
 	diagnostics(4, "Entering Convert() from CmdBox");
 	Convert();
 	diagnostics(4, "Exiting Convert() from CmdBox");
-	mbox = FALSE;
-		
-	if (was_processing_equation){
-		g_processing_equation = TRUE;
-		fprintRTF("}");
-	}
+	
+	if (mode == MODE_MATH || mode == MODE_DISPLAYMATH)
+		fprintRTF("}");	/* brace level without math italics */
+
+	SetTexMode(mode);
+	diagnostics(4, "Exited CmdBox()");
 }
 
 void
@@ -756,6 +815,7 @@ CmdVerb(int code)
 		}
 	}
 
+	SetTexMode(MODE_HORIZONTAL);
 	num = TexFontNumber("Typewriter");
 	fprintRTF("{\\b0\\i0\\scaps0\\f%d ", num);
 
@@ -777,9 +837,13 @@ CmdVerbatim(int code)
 	char            cThis;
 
 	if (code & ON) {
+		
 		diagnostics(4, "Entering CmdVerbatim");
+		CmdEndParagraph(0);
+		CmdIndent(INDENT_NONE);
+		CmdStartParagraph(0);
 		num = TexFontNumber("Typewriter");
-		fprintRTF("{\\b0\\i0\\scaps0\\f%d ", num);
+		fprintRTF("\\b0\\i0\\scaps0\\f%d ", num);
 	
 		for (;;) {
 			cThis = getRawTexChar();
@@ -806,7 +870,7 @@ CmdVerbatim(int code)
 		}
 	} else {
 		diagnostics(4, "Exiting CmdVerbatim");
-		fprintRTF("}");
+		CmdEndParagraph(0);
 	}
 		
 }
@@ -815,20 +879,26 @@ void
 CmdVerse(int code)
 /******************************************************************************
   purpose: converts the LaTeX-Verse-environment to a similar Rtf-style
-parameter: code: turns on/off handling routine
-  globals: NoNewLine
-           bNewPar
  ******************************************************************************/
 {
+	static int previous_indentation;
+	static int previous_parindent;
+	
+	CmdEndParagraph(0);
 	switch (code) {
 		case ON:
-		fprintRTF("\\par\n\\pard\\q%c\\fi-567\\li1134\\ri1134\\keep ", alignment);
-		NoNewLine = FALSE;
-		bNewPar = TRUE;
+		CmdIndent(INDENT_USUAL);
+		previous_indentation = indent;
+		previous_parindent = getLength("parindent");
+		indent = 1134;
+		setLength("parindent", -567);
+		CmdStartParagraph(0);
+		fprintRTF("\\ri1134\\keep ");
 		break;
 	case OFF:
-		fprintRTF("\\par\n\\pard\\q%c ", alignment);
-		bNewPar = TRUE;
+		setLength("parindent", previous_parindent);
+		indent = previous_indentation;
+		CmdIndent(INDENT_INHIBIT);
 		break;
 	}
 }
@@ -1260,15 +1330,18 @@ parameter: code: newpage or newcolumn-option
  globals: twocolumn: true if twocolumn-mode is set
  ******************************************************************************/
 {
+	CmdEndParagraph(0);
 	switch (code) {
-		case NewPage:fprintRTF("\\page ");	/* causes new page */
-		break;
-	case NewColumn:
-		if (twocolumn)
-			fprintRTF("\\column ");	/* new column */
-		else
+		case NewPage:
 			fprintRTF("\\page ");	/* causes new page */
-		break;
+			break;
+			
+		case NewColumn:
+			if (twocolumn)
+				fprintRTF("\\column ");	/* new column */
+			else
+				fprintRTF("\\page ");	/* causes new page */
+			break;
 	}			/* switch */
 }
 
@@ -1445,8 +1518,7 @@ CmdColsep(int code)
 	}
 	actCol++;
 
-	if (g_processing_equation) {	/* means that we are in an eqnarray
-					 * or array */
+	if (GetTexMode() == MODE_DISPLAYMATH) {	/* in an eqnarray or array environment */
 		fprintRTF("\\tab ");
 	} else {
 		fprintRTF(" \\cell \\pard \\intbl ");

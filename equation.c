@@ -16,14 +16,63 @@
 #include "funct1.h"
 #include "lengths.h"
 
-extern bool     g_processing_equation;	/* true at a formula-convertion */
+void
+CmdSuperscript(int code)
+/******************************************************************************
+ purpose   : Handles superscripts ^\alpha, ^a, ^{a} and \textsuperscript{a}
+ ******************************************************************************/
+{
+	char           *s = NULL;
+	int  size, newsize, upsize;
+
+	if ((s = getMathParam())) {
+		size = CurrentFontSize();
+		newsize = size / 1.2;
+		upsize = size / 3;
+		fprintRTF("{\\up%d\\fs%d ",upsize,newsize);
+		ConvertString(s);
+		fprintRTF("}");
+		free(s);
+	}
+}
 
 void
-CmdFormula(int code)
+CmdSubscript(int code)
 /******************************************************************************
- purpose   : sets the Math-Formula-Mode depending on the code-parameter
- parameter : type of braces which include the formula
- globals   : g_processing_equation
+ purpose   : Handles superscripts ^\alpha, ^a, ^{a}
+ ******************************************************************************/
+{
+	char           *s = NULL;
+	int  size, newsize, upsize;
+
+	if ((s = getMathParam())) {
+		size = CurrentFontSize();
+		newsize = size / 1.2;
+		upsize = size / 3;
+		fprintRTF("{\\dn%d\\fs%d ",upsize,newsize);
+		ConvertString(s);
+		fprintRTF("}");
+		free(s);
+	}
+}
+
+void
+CmdNonumber(int code)
+/******************************************************************************
+ purpose   : Handles \nonumber to suppress numbering in equations
+ ******************************************************************************/
+{
+	int mode = GetTexMode();
+	
+	if (mode == MODE_MATH || mode == MODE_DISPLAYMATH)
+		g_suppress_equation_number = TRUE;
+}
+
+void
+CmdMath(int code)
+/******************************************************************************
+ purpose   : sets the TeX mode to math or horizontal as appropriate
+             for $...$ \( ... \) and \begin{math} ... \end{math}
  ******************************************************************************/
 {
 	int true_code = code & ~ON;
@@ -32,48 +81,43 @@ CmdFormula(int code)
 	
 		case EQN_MATH:
 			if (code & ON) {
+				diagnostics(4, "CmdMath() ... \\begin{math}");
 				fprintRTF("\\i ");
-				g_processing_equation = TRUE;
-				diagnostics(4, "Switching g_processing_equation on with \\begin{math}");
+				SetTexMode(MODE_MATH);
 			} else {
-				g_processing_equation = FALSE;
-				diagnostics(4, "Switching g_processing_equation off with \\end{math}");
+				diagnostics(4, "CmdMath() ... \\end{math}");
+				SetTexMode(MODE_HORIZONTAL);
 			}
 			break;
 	
-		case EQN_NO_NUMBER:
-			if (g_processing_eqnarray)
-				g_suppress_equation_number = TRUE;
-			break;
-		
 		case EQN_DOLLAR:
-			if (g_processing_equation) {
-				fprintRTF("}");
-				g_processing_equation = FALSE;
-				diagnostics(4, "Switching g_processing_equation off with $");
-			} else {
+			if (GetTexMode() != MODE_MATH) {
+				diagnostics(4, "Exiting CmdMath() ... $");
 				fprintRTF("{\\i ");
-				g_processing_equation = TRUE;
-				diagnostics(4, "Switching g_processing_equation on with $");
+				SetTexMode(MODE_MATH);
+			} else {
+				diagnostics(4, "Entering CmdMath() ... $");
+				fprintRTF("}");
+				SetTexMode(MODE_HORIZONTAL);
 			}
 			break;
 	
 		case EQN_RND_OPEN:	/* \( */
+			diagnostics(4, "CmdMath() ... \\(");
 			fprintRTF("{\\i ");
-			g_processing_equation = TRUE;
-			diagnostics(4, "Switching g_processing_equation on with \\(");
+			SetTexMode(MODE_MATH);
 			break;
 	
 		case EQN_RND_CLOSE:	/* \) */
+			diagnostics(4, "CmdMath() ... \\)");
 			fprintRTF("}");
-			g_processing_equation = FALSE;
-			diagnostics(4, "Switching g_processing_equation off with \\)");
+			SetTexMode(MODE_HORIZONTAL);
 			break;
 	}
 }
 
 void 
-CmdFormula2(int code)
+CmdDisplayMath(int code)
 /******************************************************************************
  purpose: creates a displayed equation
           \begin{equation} gets a right justified equation number
@@ -82,43 +126,45 @@ CmdFormula2(int code)
           $$ gets no equation number
  ******************************************************************************/
 {
-	int width, mid, true_code,a,b,c;
+	int width, mid, mode, true_code,a,b,c;
 	width = getLength("textwidth");
 	mid = width/2;
+	mode = GetTexMode();
 	true_code = code & ~ON;
 	
 	if (true_code == EQN_DOLLAR_DOLLAR) {
-		if (!g_processing_equation) {
-			g_processing_equation = TRUE;
+		if (mode != MODE_DISPLAYMATH) {
+			diagnostics(4,"Entering CmdDisplayMath -- $$");
+			CmdEndParagraph(0);
+			SetTexMode(MODE_DISPLAYMATH);
 			g_show_equation_number = FALSE;
-			fprintRTF("\\par\\par\n{\\pard\\i\\tqc\\tx%d\n\\tab ", mid);
-			diagnostics(4,"Entering CmdFormula2 -- $$");
+			fprintRTF("{\\pard\\i\\tqc\\tx%d\\tab ", mid);
 		} else {
-			g_processing_equation = FALSE;
-			fprintRTF("\\par\\par\n}");
-			diagnostics(4,"Exiting CmdFormula2 -- $$");
+			diagnostics(4,"Exiting CmdDisplayMath -- $$");
+			CmdEndParagraph(0);
+			CmdIndent(INDENT_INHIBIT);
+			fprintRTF("}");
 		}
 		return;
 	}
 	
 	if (true_code == EQN_BRACKET_OPEN) {
-		g_processing_equation = TRUE;
+		diagnostics(4,"Entering CmdDisplayMath -- \\[");
+		SetTexMode(MODE_DISPLAYMATH);
 		g_show_equation_number = TRUE;
 		fprintRTF("\\par\\par\n{\\pard\\i\\tqc\\tx%d\\tqr\\tx%d\n\\tab ", mid, width);
-		diagnostics(4,"Entering CmdFormula2 -- \\[");
 		return;
 	}
 
 	if (true_code == EQN_BRACKET_CLOSE) {
-		g_processing_equation = FALSE;
+		diagnostics(4,"Exiting CmdDisplayMath -- \\]");
+		SetTexMode(MODE_VERTICAL);
 		fprintRTF("\\par\\par\n}");
-		diagnostics(4,"Exiting CmdFormula2 -- \\]");
 		return;
 	}
 
 	if (code & ON) {  /* \begin{equation}, etc. */
 
-		g_processing_equation = TRUE;
 		g_suppress_equation_number = FALSE;
 		
 		a = 0.25 *width;
@@ -127,49 +173,48 @@ CmdFormula2(int code)
 		fprintRTF("\\par\\par\n\\pard\\i");
 		switch (true_code) {
 		case EQN_DISPLAYMATH:
+			diagnostics(4,"Entering CmdDisplayMath -- displaymath");
 			g_show_equation_number = FALSE;
 			fprintRTF("\\tqc\\tx%d", mid);
-			diagnostics(4,"Entering CmdFormula2 -- displaymath");
 			break;
 
 		case EQN_EQUATION_STAR:
+			diagnostics(4,"Entering CmdDisplayMath -- equation*");
 			g_show_equation_number = FALSE;
 			fprintRTF("\\tqc\\tx%d", mid);
-			diagnostics(4,"Entering CmdFormula2 -- equation*");
 			break;
 
 		case EQN_EQUATION:
-			actCol = 5;							/* avoid adding \tabs */
+			diagnostics(4,"Entering CmdDisplayMath -- equation");
+			actCol = 5;							/* avoid adding \tabs when finishing */
 			g_show_equation_number = TRUE;
 			fprintRTF("\\tqc\\tx%d\\tqr\\tx%d", mid, width);
-			diagnostics(4,"Entering CmdFormula2 -- equation");
 			break;
 
 		case EQN_ARRAY_STAR:
+			diagnostics(4,"Entering CmdDisplayMath -- eqnarray* ");
 			g_show_equation_number = FALSE;
 			g_processing_eqnarray = TRUE;
 			g_processing_tabular = TRUE;
 			actCol = 1;
-			diagnostics(4,"Entering CmdFormula2 -- eqnarray* ");
 			fprintRTF("\\tqr\\tx%d\\tqc\\tx%d\\tql\\tx%d", a, b, c);
 			break;
 
 		case EQN_ARRAY:
+		    diagnostics(4,"Entering CmdDisplayMath --- eqnarray");
 			g_show_equation_number = TRUE;
 			g_processing_eqnarray = TRUE;
 			g_processing_tabular = TRUE;
 			actCol = 1;
-		    diagnostics(4,"Entering CmdFormula2 --- eqnarray");
 			fprintRTF("\\tqr\\tx%d\\tqc\\tx%d\\tql\\tx%d\\tqr\\tx%d ", a, b, c, width);
 			break;
 		}
 		fprintRTF("\n\\tab ");
-				
+		SetTexMode(MODE_DISPLAYMATH);
 		
 	} else {
 	
-		diagnostics(4,"Exiting CmdFormula2");
-		g_processing_equation = FALSE;
+		diagnostics(4,"Exiting CmdDisplayMath");
 		
 		if (g_show_equation_number && !g_suppress_equation_number) {
 			incrementCounter("equation");
@@ -177,7 +222,9 @@ CmdFormula2(int code)
 					fprintRTF("\\tab ");
 			fprintRTF("\\tab{\\i0 (%d)}", getCounter("equation"));
 		}
-		fprintRTF("\\par\\par\n");
+
+		CmdEndParagraph(0);
+		CmdIndent(INDENT_INHIBIT);
 
 		if (true_code == EQN_ARRAY || true_code == EQN_ARRAY_STAR) {
 			g_processing_tabular = FALSE;
@@ -215,7 +262,11 @@ CmdFraction(int code)
 	char           *denominator, *numerator;
 
 	numerator = getParam();
+	skipSpaces();
 	denominator = getParam();
+
+	diagnostics(4,"CmdFraction -- numerator   = <%s>", numerator);
+	diagnostics(4,"CmdFraction -- denominator = <%s>", denominator);
 
 	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\F(");
 	ConvertString(numerator);

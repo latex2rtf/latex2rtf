@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.23 2001/09/19 05:06:51 prahl Exp $ */
+/* $Id: main.c,v 1.24 2001/09/26 03:31:50 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -15,6 +15,7 @@
 #include "direct.h"
 #include "ignore.h"
 #include "version.h"
+#include "funct1.h"
 #include "cfg.h"
 #include "encode.h"
 #include "parser.h"
@@ -34,8 +35,6 @@ char           *BblName = NULL;
 
 char           *progname;	            /* name of the executable file */
 char           *latexname = "stdin";	/* name of LaTex-File */
-char            alignment = JUSTIFIED;	/* default for justified: */
-fpos_t          pos_begin_kill;
 bool            GermanMode = FALSE;	    /* support germanstyle */
 
 char           *g_language = "english";	/* before \begin{document} "g_language".cfg is read in */
@@ -66,24 +65,22 @@ int             g_enumerate_depth = 0;
 bool            g_suppress_equation_number = FALSE;
 bool            g_aux_file_missing = FALSE;	/* assume that it exists */
 
-int             RecursionLevel = 0;
-bool            mbox = FALSE;
 bool            g_processing_equation = FALSE;
-bool            bNewPar = FALSE;
+bool            g_document_type = FORMAT_ARTICLE;
+bool            g_processing_tabular = FALSE;
+
 int             indent = 0;
-bool            NoNewLine = FALSE;
-bool            bInDocument = FALSE;
+char            alignment = JUSTIFIED;	/* default for justified: */
+
+int             RecursionLevel = 0;
 int             tabcounter = 0;
 bool            twocolumn = FALSE;
 bool            titlepage = FALSE;
-bool            g_document_type = FORMAT_ARTICLE;
 bool            tabbing_on = FALSE;
 bool            tabbing_return = FALSE;
 bool            tabbing_on_itself = FALSE;
-bool            TITLE_AUTHOR_ON = FALSE;
-bool            g_processing_tabular = FALSE;
-bool            g_preprocessing = FALSE;
-bool            bBlankLine = TRUE;	/* handle pseudo-blank lines (with spaces) correctly */
+fpos_t          pos_begin_kill;
+
 int             colCount;			/* number of columns in a tabular environment */
 int             actCol;				/* actual column in the tabular environment */
 char           *colFmt = NULL;
@@ -236,11 +233,13 @@ globals: initializes in- and outputfile fTex, fRtf,
 	OpenTexFile(input, &fTex);
 	OpenRtfFile(output, &fRtf);
 
+	
 	InitializeStack();
 	InitializeLatexLengths();
 	InitializeDocumentFont(TexFontNumber("Roman"), 20, F_SHAPE_UPRIGHT, F_SERIES_MEDIUM);
 
 	PushEnvironment(PREAMBLE);
+	SetTexMode(MODE_VERTICAL);
     ConvertLatexPreamble(); 
 	WriteRtfHeader();
 	
@@ -294,7 +293,7 @@ globals: progname; latexname; linenumber;
 
 	switch (num) {
 	case ERR_EOF_INPUT:
-		if (g_processing_include || g_preprocessing)
+		if (g_processing_include)
 			return;	/* SAP - HACK end of file ok in include files */
 		sprintf(text, "%s%s%s%ld%s", "unexpected end of input file in: ", latexname, " at linenumber: ", getLinenumber(), "\n");
 		error(text);
@@ -337,10 +336,7 @@ globals: progname; latexname; linenumber;
 void
 diagnostics(int level, char *format,...)
 {
-	va_list       apf;/* LEG240698 The GNU libc info says that
-				 * after using the vfprintf function on some
-				 * systems the ap pointer is destroyed. Well,
-				 * let's use a second one for safety */
+	va_list        apf;
 	FILE           *errfile;
 	int            i;
 	
@@ -513,7 +509,8 @@ params: f - pointer to filepointer to invalidate
 globals: progname;
  ****************************************************************************/
 {
-	fprintf(*f, "}\n");
+	CmdEndParagraph(0);
+	fprintf(*f, "}\n}}}}}");
 	if (*f != stdout) {
 		if (fclose(*f) == EOF) {
 			diagnostics(WARNING, "Error closing RTF-File");
@@ -560,6 +557,12 @@ purpose: output filter to track of brace depth and font settings
 	
 	while ( *text ) {
 	
+/*			if (TexCharSet == ISO_8859_1)
+				Write_ISO_8859_1(cThis);
+			else
+				Write_Default_Charset(cThis);
+*/
+
 		fputc(*text, fRtf);
 		
 		if (*text == '{')

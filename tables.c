@@ -1,4 +1,4 @@
-/* $Id: tables.c,v 1.3 2001/09/19 05:06:51 prahl Exp $
+/* $Id: tables.c,v 1.4 2001/09/26 03:31:56 prahl Exp $
 
    Translation of tabbing and tabular environments
 */
@@ -389,6 +389,9 @@ parameter: type of array-environment
 	if (code & ON) {	/* on switch */
 		code &= ~(ON);	/* mask MSB */
 
+		CmdEndParagraph(0);
+		CmdIndent(INDENT_NONE);
+		
 		if ((code == FIGURE) || (code == FIGURE_1))
 			g_processing_figure = TRUE;
 
@@ -396,6 +399,7 @@ parameter: type of array-environment
 	} else {		/* off switch */
 		code &= ~(OFF);	/* mask MSB */
 		g_processing_figure = FALSE;
+		CmdEndParagraph(0);
 	}
 }
 

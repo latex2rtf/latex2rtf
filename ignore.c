@@ -1,4 +1,4 @@
-/* $Id: ignore.c,v 1.15 2001/09/16 05:11:19 prahl Exp $
+/* $Id: ignore.c,v 1.16 2001/09/26 03:31:50 prahl Exp $
 
   purpose : ignores variable-name-commands which can't be converted from LaTeX2Rtf
 	    (variable-command-formats must be added by the user in the file
@@ -21,7 +21,6 @@
 
 static void     IgnoreVar(void);
 static void     IgnoreCmd(void);
-static void 	Ignore_Environment(char *searchstring);
 
 bool 
 TryVariableIgnore(char *command)
@@ -112,7 +111,38 @@ purpose : ignores anything till an alphanumeric character
 }
 
 void 
-Ignore_Environment(char *searchstring)
+Ignore_Environment(char *cCommand)
+/******************************************************************************
+  purpose: function, which ignores an unconvertable environment in LaTex
+           and writes text unchanged into the Rtf-file.
+parameter: searchstring : includes the string to search for
+	   example: \begin{unknown} ... \end{unknown}
+		    searchstring="end{unknown}"
+ ******************************************************************************/
+{
+	char            unknown_environment[100];
+	char            *buffer;
+	int				font;
+
+	diagnostics(4, "Entering IgnoreEnvironment <%s>", cCommand);
+	
+	sprintf(unknown_environment, "\\%s%s%s", "end{", cCommand, "}");
+	font = TexFontNumber("Typewriter");
+	CmdEndParagraph(0);
+	CmdStartParagraph(0);
+	fprintRTF("\\qc [Sorry. Ignored ");
+	fprintRTF("{\\plain\\f%d\\\\begin\\{%s\\} ... \\\\end\\{%s\\}}]", font, cCommand, cCommand);
+	CmdEndParagraph(0);
+	CmdIndent(INDENT_INHIBIT);
+
+	buffer = getTexUntil(unknown_environment);
+	free(buffer);
+	
+	diagnostics(4, "Exiting IgnoreEnvironment");
+}
+
+void 
+Ignore_Environment2(char *searchstring)
 /******************************************************************************
   purpose: function, which ignores an unconvertable environment in LaTex
            and writes text unchanged into the Rtf-file.
@@ -124,9 +154,11 @@ parameter: searchstring : includes the string to search for
 	char            thechar;
 	bool            found = FALSE;
 	int             i, j, endstring;
+	
 	endstring = strlen(searchstring) - 1;
 	while ((thechar = getTexChar()) && !found) {
 		if (thechar == '\\') {
+		
 			for (i = 0; i <= endstring; i++) {
 				thechar = getTexChar();
 
@@ -141,7 +173,7 @@ parameter: searchstring : includes the string to search for
 				for (j = 0; j < i; j++)
 					switch (searchstring[j]) {
 					case '\n':
-						fprintRTF("\\par \n");
+						fprintRTF("\\par\n");
 						break;
 					case '\\':
 					case '{':

@@ -1,4 +1,4 @@
-/* $Id: funct1.h,v 1.17 2001/09/18 05:20:10 prahl Exp $ */
+/* $Id: funct1.h,v 1.18 2001/09/26 03:31:50 prahl Exp $ */
 
 #define AST_FORM 100
 #define EMPHASIZE 1
@@ -11,11 +11,20 @@ void            Format(int code);
 #define CMD_END 2
 void            CmdBeginEnd(int code);
 
-#define PAR_CENTER 1
-#define PAR_RIGHT 2
-#define PAR_LEFT 3
+#define PAR_CENTER     1
+#define PAR_RIGHT      2
+#define PAR_LEFT       3
 #define PAR_CENTERLINE 4
-void            CmdParagraph(int code);
+#define PAR_VCENTER    5
+
+#define INDENT_NONE    1
+#define INDENT_INHIBIT 2
+#define INDENT_USUAL   3
+
+void            CmdStartParagraph(int code);
+void            CmdEndParagraph(int code);
+void            CmdIndent(int code);
+
 void            CmdAlign(int code);
 void            CmdToday(int code);
 void            CmdIgnore(int code);
@@ -50,22 +59,17 @@ void            CmdCounter(int code);
 #define LENGTH_NEW   1
 #define LENGTH_SET   2
 #define LENGTH_ADD   3
+
 void            CmdLength(int code);
-
 void            CmdCaption(int code);
-
 void            CmdBox(int code);
-
 void            CmdInclude(int code);
-
 void            CmdVerb(int code);
-
 void            CmdVerbatim(int code);
-
 void            CmdVerse(int code);
-
 void            TranslateGerman(void);
 void            GermanPrint(int code);
+
 #define GP_CK 1
 #define GP_LDBL 2
 #define GP_L 3
@@ -79,6 +83,7 @@ void            IgnoreNewCmd(int code);
 #define LABEL 1
 #define REF 2
 #define PAGEREF 3
+
 /* LEG190498 Start */
 #define HYPER 100
 #define HYPERREF HYPER+REF

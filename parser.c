@@ -1,4 +1,4 @@
-/*  $Id: parser.c,v 1.13 2001/09/18 05:20:10 prahl Exp $
+/*  $Id: parser.c,v 1.14 2001/09/26 03:31:50 prahl Exp $
 
    Contains declarations for a generic recursive parser for LaTeX code.
 */
@@ -162,26 +162,45 @@ skipSpaces(void)
 	ungetTexChar(c);
 }
 
+int 
+getSameChar(char c)
+/***************************************************************************
+ Description: returns the number of characters that are the same as c
+****************************************************************************/
+{
+	char            currentChar;
+	int 			count=-1;
+	
+	do {
+		currentChar = getTexChar();
+		count++;
+	} while (currentChar == c);
+
+	ungetTexChar(currentChar);
+
+	return count;
+}
+
 void
 parseBrace()
 /****************************************************************************
   Description: Skip text to balancing close brace                          
  ****************************************************************************/
 {
-	while (getTexChar() != '}') {
-		switch (currentChar) {
-			case '{':
+	char currentChar;
+	char lastChar = ' ';
+	
+	currentChar = getTexChar();
 
+	while (currentChar != '}' || lastChar == '\\') {    /* avoid \}  */
+		if (currentChar == '{' && lastChar != '\\')		/* avoid \{ */
 			parseBrace();
-			break;
-
-/*		case '[':
-
-			parseBracket();
-			break;
-*/
-		default: /* Skip other characters */ ;
-		}
+		else
+			if (currentChar == '\\' && lastChar == '\\')  /* avoid \\} */
+				lastChar = ' ';
+			else
+				lastChar = currentChar;
+		currentChar = getTexChar();
 	}
 }
 
@@ -417,8 +436,10 @@ getTexUntil(char * target)
 		i++;
 	}
 	
-	if (i == 4096)
-		error("Could not find target in 4096 characters");
+	if (i == 4096) {
+		sprintf(buffer,"Could not find <%s> in 4096 characters", target);
+		error(buffer);
+	}
 	
 	buffer[i-len] = '\0';
 

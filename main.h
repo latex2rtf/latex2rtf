@@ -1,4 +1,4 @@
-/* $Id: main.h,v 1.19 2001/09/18 05:20:10 prahl Exp $ */
+/* $Id: main.h,v 1.20 2001/09/26 03:31:50 prahl Exp $ */
 
 #undef HAS_NO_GETOPT
 
@@ -110,14 +110,10 @@ extern int      headings;
 
 /* Global flags of Convert routine */
 extern int      RecursionLevel;
-extern bool     mbox;
-extern bool     bNewPar;
 extern int      indent;
-extern bool     bInDocument;
 extern int      tabcounter;
 extern bool     tabbing_on;
 extern bool     g_processing_tabular;
-extern bool     bBlankLine;
 extern int      colCount;
 extern int      actCol;
 extern int      tabcounter;
