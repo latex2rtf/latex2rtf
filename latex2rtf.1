@@ -1,0 +1,177 @@
+.\" $Id: latex2rtf.1,v 1.1 2001/08/12 15:32:27 prahl Exp $
+.\" History:
+.\" $Log: latex2rtf.1,v $
+.\" Revision 1.1  2001/08/12 15:32:27  prahl
+.\" Initial revision
+.\"
+.\" Revision 1.6  1994/06/21  08:14:11  ralf
+.\" Added BUGS section
+.\"
+.\" Revision 1.5  1994/06/17  15:13:07  ralf
+.\" Added description of RTFPATH
+.\"
+.\" Revision 1.4  1994/06/17  14:42:29  ralf
+.\" Added description of -V option
+.\"
+.\" Revision 1.3  1994/06/17  14:19:41  ralf
+.\" Corrected various bugs, for example interactive read of arguments
+.\"
+.\" Revision 1.2  1994/06/17  12:07:30  ralf
+.\" Corrected typos
+.\"
+.\" Revision 1.1  1994/06/17  11:30:33  ralf
+.\" Initial revision
+.\"
+.TH latex2rtf 1
+.SH NAME
+latex2rtf \- Converts LaTeX file to RTF text-format
+.SH SYNTAX
+latex2rtf [-V] [ -o
+.I outputfile
+] [
+.I inputfile
+]
+.PP
+.SH DESCRIPTION
+The
+.PN rtf2latex
+command
+converts a LaTeX file into RTF text format. The text and much of the formatting
+information is translated to RTF making the new file look very similar to the
+original. If 
+.I inputfile
+is not specified, standard input is read. Unless an 
+.I outputfile
+is specified the resulting RTF is produced on standard output.
+The \-V option prints version information on standard output and exits.
+.PP
+User defined LaTex commands are ignored. If you are familiar with the
+RTF format and
+the commands can be translated by simply inserting a format string
+into the RTF
+file you can add these commands to the 
+.B direct.cfg
+configuration file.
+See format description below.
+.PP
+To correctly convert font names you must edit the 
+.B fonts.cfg
+configuration file.
+You have to specify the font names you use and how the LaTeX default font names
+should be converted to RTF. See format description below.
+.PP
+LaTeX variables and user defined commands are not evaluated.
+They will be simply ignored. To let
+.PN rtf2latex
+know the names of variables you can add them in the 
+.B ignore.cfg
+file.
+See format description below.
+.PP
+The environment variable RTFPATH may contain a search path for the
+support files (all files ending in .cfg). If no file is found during the
+search in the search-path or if the environment variable is not set, the
+compiled-in default for the configuration-file directory is used. If the
+files are not found at all the program aborts.
+.PP
+\\label, \\ref, and \\pageref commands from LaTeX are translated to
+hidden text in the RTF file. This makes it possible to correctly edit
+the resulting file in the target word processor.
+.SH CAUTION
+Please make sure that the input file is a correct LaTeX file. Use LaTeX
+to find and correct errors before using
+.PN rtf2latex.
+The conversion command does not properly handle all
+errors because of corrupt input files.
+.PP
+Make sure that the configuration files 
+.B direct.cfg
+and
+.B fonts.cfg
+are in the correct directory.
+You may have to change
+.B fonts.cfg
+or
+.B direct.cfg
+to suit your needs.
+.SH CONFIGURATION FILES
+.B direct.cfg
+is used for converting LaTeX commands by simple text exchange.
+Write the LaTex command with backslash, followed by comma.
+The rest of the line until the '.' character will be written to the RTF file
+when the command is recognized in the LaTeX file.
+After the '#' character everything is ignored until end of line.
+To select a specific font use 
+.I *fontname*.
+Make sure that the font name 
+.I fontname
+is listed in the fonts configuration file at least as dummy.
+To write the '*' character use "**".
+example:
+.EX
+\\alpha,{\\f*Symbol* a}. #alpha under Windows Symbol Font
+\\copyright,{\\ansi\\'a9\\pc}.
+.EE
+.B fonts.cfg
+contains the fonts conversion table.
+A line consists of a font name in LaTeX followed by comma and a font
+name in RTF. The end is marked by a dot.
+No spaces are allowed.
+The LaTeX font will be converted to the RTF font if encountered in the
+LaTeX file.
+If multiple translations for a LateX font are specified,
+only the first is used.
+All fonts in a LaTeX file that are not in this file will be mapped to the
+default font.
+All RTF fonts listed in this file will be in every RTF file header whether
+used or not.
+After the '#' character everything is ignored till end of line.
+To add a RTF font not used as substitute for a LaTeX font \- for example
+a Symbol font used in 
+.B direct.cfg
+\- use a dummy LaTeX name like in the following example:
+.EX
+Dummy3,MathematicalSymbols.
+.EE
+Make sure you use the correct font name. Take care of spaces in font names.
+The default fonts are named Roman (command \\rm), Slanted (command \\sl),
+Sans Serif (command \\sf), Typewriter (command \\tt).
+.PP
+.B ignore.cfg
+is the file for defining how to ignore certain commands.
+This file is used for recognition of LaTeX-variables, user defined variables,
+and some simple commands.
+All variables are ignored but the converter must know the names to correctly
+ignore assignments to variables.
+Write the variable-name with backslash, followed by comma
+then write the type of the variable followed by '.'.
+Possible Types are:
+.br
+NUMBER : simple numeric value
+.br
+MEASURE : numeric value with following unit of measure
+.br
+OTHER: ignores anything to the first character after '='
+and from there to next space. eg. \\setbox\\bak=\\hbox
+.br
+COMMAND: ignores anything to next '\\' and from there to occurence
+of anything but a letter. eg. \newbox\bak
+.br
+SINGLE: ignore single command. eg. \noindent
+.br
+Please write the type in upper case exactly as above.
+Do not use spaces.
+After the '#' character everything is ignored till end of line.
+Example:
+.EX
+\\pagelenght,MEASURE.
+.EE
+.SH BUGS
+Some environments like figure are currently ignored. It would be nice to scan
+the included information and convert things if possible.
+.PP
+The configuration files are reopened for each token, there should really
+be an internal representation of the configuration files that is read
+once and then consulted by more efficient mechanisms.
+.SH SEE ALSO
+rtf2LaTeX(1), LaTeX User's Guide & Reference Manual by Leslie Lamport

@@ -1,0 +1,25 @@
+latex2rtf is a translator program that translates LaTeX text into the
+RTF format used by several textprocessors, including Microsoft Word and
+Word for Windows. It was written by Fernando Dorner and Andreas Granzer
+in a one-semester course in our department. For the Copyright of the
+Program see the file Copyright.
+
+To install
+- Edit Makefile for your local configuration. The install part supports
+  multiple directories to install to, you will normally only need one.
+  Be sure to correctly configure the LIBDIR variable to the directory
+  where support files (ending in .cfg) will be found by the program.
+  This is normally the same as the LIBINSTALL variable.
+- make
+- make install
+- If you have problems with make install (for example if your mkdir
+  doesn't support the -p option) and you do not need multiple install
+  targets, try:
+  make simple_install
+- Try the program and report any errors to the address below.
+
+--
+Ralf Schlatterbeck
+Treitlstr.3/182/1                            email: ralf@vmars.tuwien.ac.at
+A-1040 Wien                                  Phone: +43/1/58801/8176
+Austria                                      FAX:   +43/1/569149
