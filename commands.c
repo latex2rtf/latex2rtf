@@ -1,4 +1,4 @@
-/*  $Id: commands.c,v 1.48 2002/03/02 20:16:28 prahl Exp $
+/*  $Id: commands.c,v 1.49 2002/03/11 05:28:37 prahl Exp $
  
     Defines subroutines to translate LaTeX commands to RTF
 */
@@ -420,7 +420,7 @@ static CommandArray params[] = {
 	{"tabbing", CmdTabbing, TABBING},
 	{"figure", CmdFigure, FIGURE},
 	{"figure*", CmdFigure, FIGURE_1},
-	{"picture", CmdIgnoreEnviron, IGNORE_PICTURE},
+	{"picture", CmdPicture, 0},
 	{"minipage", CmdMinipage, 0},
 
 	{"quote", CmdQuote, QUOTE},

@@ -224,9 +224,9 @@ SaveEquationAsFile(char *pre, char *eq, char *post)
 
 	
 void
-WriteEquationAsBitmap(char *pre, char *eq, char *post)
+WriteLatexAsBitmap(char *pre, char *eq, char *post)
 /******************************************************************************
- purpose   : Convert Equation to Bitmap and write to RTF file
+ purpose   : Convert LaTeX to Bitmap and write to RTF file
  ******************************************************************************/
 {
 	char *png, *pdf, *name, *cmd;
@@ -619,7 +619,7 @@ CmdEquation(int code)
 	if ((inline_equation && g_equation_inline_bitmap)  || 
 		(!inline_equation && g_equation_display_bitmap) ) {
 			PrepareRtfEquation(true_code,FALSE);
-			WriteEquationAsBitmap(pre,eq,post);
+			WriteLatexAsBitmap(pre,eq,post);
 			FinishRtfEquation(true_code,FALSE);
 	}
 

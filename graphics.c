@@ -1,4 +1,4 @@
-/* $Id: graphics.c,v 1.4 2002/03/08 06:46:59 prahl Exp $ 
+/* $Id: graphics.c,v 1.5 2002/03/11 05:28:37 prahl Exp $ 
 This file contains routines that handle LaTeX graphics commands
 */
 
@@ -10,6 +10,9 @@ This file contains routines that handle LaTeX graphics commands
 #include "graphics.h"
 #include "parser.h"
 #include "util.h"
+#include "commands.h"
+#include "convert.h"
+#include "equation.h"
 
 /* macros to extract big-endian short and long ints: */
 /*
@@ -445,4 +448,23 @@ draft=true/false.
 	free(filename);
 }
 
-
+void 
+CmdPicture(int code)
+/******************************************************************************
+  purpose: handle \begin{picture} ... \end{picture}
+           by converting to png image and inserting
+ ******************************************************************************/
+{
+	char *pre, *post, *picture;	
+	
+	if (code & ON) {
+		pre = strdup("\\begin{picture}");
+		post = strdup("\\end{picture}");
+		picture=getTexUntil(post,0);
+		WriteLatexAsBitmap(pre,picture,post);
+		ConvertString(post);  /* to balance the \begin{picture} */
+		free(pre);
+		free(post);
+		free(picture);
+	}
+}
