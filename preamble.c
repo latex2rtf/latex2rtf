@@ -439,7 +439,7 @@ setDocumentOptions(char *optionlist)
 			/* do nothing ... but don't complain */
 		}
 		else if (strcmp(option, "color") == 0) {
-			diagnostics(WARNING, "Limited color support");
+			diagnostics(WARNING, "Color support limited to eight basic colors");
 		}
 		else if (!TryVariableIgnore(option)) {
 			diagnostics(WARNING, "Unknown style option %s ignored", option);

@@ -987,22 +987,22 @@ getSection(char **body, char **header, char **label)
 	                     "\\label", "\\input", "\\include", "\\verb", "\\url",
 	                     "\\newcommand", "\\def" , "\\renewcommand", "\\endinput"};
 
-	int ncommands = 31;
+	int ncommands = 33;
 
 	const int b_verbatim_item   = 2;
 	const int b_figure_item     = 3;
-	const int b_equation_item   = 4;
-	const int b_equation_item2  = 5;
+	const int b_figure_item2    = 4;
+	const int b_equation_item   = 5;
 	const int b_eqnarray_item   = 6;
 	const int b_table_item      = 7;
 	const int b_description_item= 8;
 	const int e_verbatim_item   = 9;
 	const int e_figure_item     = 10;
-	const int e_equation_item   =11;
-	const int e_equation_item2  =12;
-	const int e_eqnarray_item   =13;
-	const int e_table_item      =14;
-	const int e_description_item=15;
+	const int e_equation_item   = 11;
+	const int e_equation_item2  = 12;
+	const int e_eqnarray_item   = 13;
+	const int e_table_item      = 14;
+	const int e_description_item= 15;
 
 	const int label_item   = 24;
 	const int input_item   = 25;
@@ -1288,7 +1288,7 @@ getSection(char **body, char **header, char **label)
 			continue;
 		}
 			
-		if (i==b_figure_item || i==b_equation_item || i==b_equation_item2 || i==b_eqnarray_item ||
+		if (i==b_figure_item || i==b_figure_item2 || i==b_equation_item || i==b_eqnarray_item ||
 			i==b_table_item  || i==b_description_item){
 			label_depth++;		/* labels now will not be the section label */
 			index = 0;
