@@ -335,6 +335,7 @@ ConvertWholeDocument(void)
 	char * body, *sec_head, *sec_head2, *label;
 	char t[] = "\\begin{document}";
 
+	PushEnvironment(DOCUMENT);  /* because we use ConvertString in preamble.c */
 	PushEnvironment(PREAMBLE);
 	SetTexMode(MODE_VERTICAL);
 	ConvertLatexPreamble(); 
