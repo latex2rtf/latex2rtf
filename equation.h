@@ -15,6 +15,7 @@
 void			CmdEquation(int code);
 void            CmdFraction(int code);
 void            CmdRoot(int code);
+void            CmdLim(int code);
 void            CmdIntegral(int code);
 void            CmdSuperscript(int code);
 void            CmdSubscript(int code);

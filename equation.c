@@ -194,6 +194,9 @@ EquationNeedsFields(char *eq)
 	if (strstr(eq,"\\over")) return 1;
 	if (strstr(eq,"\\stackrel")) return 1;
 	if (strstr(eq,"\\dfrac")) return 1;
+	if (strstr(eq,"\\lim")) return 1;
+	if (strstr(eq,"\\liminf")) return 1;
+	if (strstr(eq,"\\limsup")) return 1;
 	return 0;
 }
 
@@ -730,6 +733,42 @@ CmdFraction(int code)
 
 	free(nptr);
 	free(dptr);
+}
+
+void 
+CmdLim(int code)
+/******************************************************************************
+ purpose: handles \lim
+parameter: 0=\lim, 1=\limsup, 2=\liminf
+ ******************************************************************************/
+{
+	char cThis, *s, *lower_limit=NULL;
+
+	cThis = getNonBlank();
+    if (cThis == '_')
+        lower_limit = getBraceParam();
+    else
+        ungetTexChar(cThis);
+
+	if (code == 0)
+		s=strdup("lim");
+	else if (code == 1)
+		s=strdup("lim sup");
+	else
+		s=strdup("lim inf");
+
+    if (lower_limit) 
+    	fprintRTF("\\\\a\\\\ac(");
+
+    fprintRTF("%s",s);
+
+    if (lower_limit) {
+		fprintRTF("%c",g_field_separator);
+        ConvertString(lower_limit);
+    	fprintRTF(")");
+    }
+    
+    free(s);
 }
 
 void 

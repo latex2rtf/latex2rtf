@@ -6,6 +6,7 @@ Fit & Finish:
 
 Potential Features:
 
+	New diagnostic level to replace Warning for expected stuff
 	Support \includegraphics options (both graphics and graphicx)
 
 	Translation when .aux is absent.
@@ -15,6 +16,7 @@ Potential Features:
 	
 	Add default page numbering
 	
+        Add support for \usepackage{endfloat}
 	Add support for \usepackage{fullpage}
 	Add support for \usepackage{doublespace}
 	Add support for \mark commands
