@@ -12,6 +12,7 @@
 #include "counters.h"
 #include "funct1.h"
 #include "lengths.h"
+#define getMathParam getBraceParam
 
 void
 CmdSuperscript(int code)
@@ -238,7 +239,7 @@ CmdRoot(int code)
 	char           *power;
 
 	power = getBracketParam();
-	root = getParam();
+	root = getBraceParam();
 	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\R(");
 	if (power && strlen(power)>0)
 		ConvertString(power);
@@ -258,9 +259,9 @@ CmdFraction(int code)
 {
 	char           *denominator, *numerator;
 
-	numerator = getParam();
+	numerator = getBraceParam();
 	skipSpaces();
-	denominator = getParam();
+	denominator = getBraceParam();
 
 	diagnostics(4,"CmdFraction -- numerator   = <%s>", numerator);
 	diagnostics(4,"CmdFraction -- denominator = <%s>", denominator);

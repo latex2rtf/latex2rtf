@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.31 2001/10/13 19:19:10 prahl Exp $ 
+/* $Id: funct1.c,v 1.32 2001/10/13 20:04:56 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -169,7 +169,7 @@ CmdIndent(int code)
 void 
 CmdBeginEnd(int code)
 /***************************************************************************
- purpose: reads the parameter after the \begin or \end-command; ( see also getParam )
+ purpose: reads the parameter after the \begin or \end-command; ( see also getBraceParam )
 	      after reading the parameter the CallParamFunc-function calls the
 	      handling-routine for that special environment
  parameter: code: CMD_BEGIN: start of environment
@@ -177,7 +177,7 @@ CmdBeginEnd(int code)
  ***************************************************************************/
 {
 /*	char            c;*/
-	char           *s = getParam();
+	char           *s = getBraceParam();
 
 	switch (code) {
 	case CMD_BEGIN:
@@ -208,7 +208,7 @@ CmdAlign(int code)
 	static char     old_alignment_before_centerline = JUSTIFIED;
 
 	if (code == PAR_VCENTER){
-		s = getParam();
+		s = getBraceParam();
 		free(s);
 		return;
 	}
@@ -322,7 +322,7 @@ parameter: code: type of section-recursion-level
 	int				DefFont = DefaultFontFamily();
 */	
 	toc_entry = getBracketParam();
-	heading = getParam();
+	heading = getBraceParam();
 	
 	if (toc_entry) {
 		diagnostics(4,"entering CmdSection [%s]{%s}",toc_entry,heading);
@@ -472,7 +472,7 @@ CmdCaption(int code)
 		fprintRTF("%d.", getCounter("chapter"));
 	fprintRTF("%d:  ", n);
 
-	thecaption = getParam();
+	thecaption = getBraceParam();
 	diagnostics(4, "in CmdCaption [%s]", thecaption);
 	ConvertString(thecaption);
 	free(thecaption);
@@ -491,13 +491,13 @@ CmdCounter(int code)
 	char            *s, *s2, *s3, *s4;
 	int              num;
 	
-	s = getParam();
+	s = getBraceParam();
 		
 	diagnostics(4,"Entering CmdCounter(), <%s>", s);
 	
 	if (code == COUNTER_ADD || code == COUNTER_SET) {
 	
-		s2 = getParam();
+		s2 = getBraceParam();
 
 		if ((s3 = strchr(s2,'{')) && (s4 = strchr(s2,'}')) ) {
 			s3++;
@@ -538,7 +538,7 @@ CmdLength(int code)
 	
 
 	if (code == LENGTH_ADD || code == LENGTH_SET || code == LENGTH_NEW) {
-		s = getParam();
+		s = getBraceParam();
 		if (strlen(s)<=1) {
 			free(s);
 			fprintf(stderr,"missing argument in \\newlength \\addtolength or \\setlength");
@@ -796,7 +796,7 @@ CmdInclude(int code)
 
 	strcpy(fname, "");
 
-	fname = getParam();
+	fname = getBraceParam();
 	if (strstr(fname, "german.sty") != NULL) {
 		GermanMode = TRUE;
 		PushEnvironment(GERMAN_MODE);
@@ -1143,7 +1143,7 @@ CmdLabel(int code)
 	char           *label;
 	char            cThis;
 
-	label=getParam();
+	label=getBraceParam();
 	
 	switch (code) {
 	
@@ -1159,7 +1159,7 @@ CmdLabel(int code)
 	return;
 	
 	if (code < HYPER) {
-		label = getParam();
+		label = getBraceParam();
 		ungetTexChar(label[strlen(label) - 1]);	/* somewhat screwy */
 	} else {
 		label = hyperref;
@@ -1346,7 +1346,7 @@ CmdLink(int code)
 	/* LEG190498 now should come processing of the optional parameter */
 	diagnostics(4, "  Converted optional parameter");
 
-	param2 = getParam();
+	param2 = getBraceParam();
 	diagnostics(4, "  Converted second parameter");
 
 	if (hyperref != NULL)
@@ -1611,7 +1611,7 @@ CmdGraphics(int code)
 	options = getBracketParam();
 	if (options) free(options);
 	
-	filename = getParam();
+	filename = getBraceParam();
 
 	if (strstr(filename, ".pict") || strstr(filename, ".PICT")) {
 		/* SAP fixes for Mac Platform */
@@ -1668,7 +1668,7 @@ CmdVerbosityLevel(int code)
             in the LaTeX file!
  ***************************************************************************/
 {
-	char * s = getParam();
+	char * s = getBraceParam();
 	g_verbosity_level = atoi(s);
 	free(s);
 

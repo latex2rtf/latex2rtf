@@ -27,7 +27,7 @@ CmdSignature(int code)
 {
 	if (g_letterSignature) 
 		free(g_letterSignature);
-	g_letterSignature = getParam();
+	g_letterSignature = getBraceParam();
 }
 
 void 
@@ -39,7 +39,7 @@ CmdAddress(int code)
 {
 	if (g_letterReturnAddress) 
 		free(g_letterReturnAddress);
-	g_letterReturnAddress = getParam();
+	g_letterReturnAddress = getBraceParam();
 }
 
 void 
@@ -54,7 +54,7 @@ parameter: code: on/off-option for environment
 		PushEnvironment(code);
 		if (g_letterToAddress) 
 			free(g_letterToAddress);
-		g_letterToAddress = getParam();
+		g_letterToAddress = getBraceParam();
 	} else {		/* off switch */
 		PopEnvironment();
 	}
@@ -88,7 +88,7 @@ CmdOpening(int code)
 	diagnostics(4, "Exiting Convert() from CmdOpening");
 
 /*  finally print the opening*/
-	s = getParam();
+	s = getBraceParam();
 	ConvertString(s);	
 	free(s);
 	
@@ -113,7 +113,7 @@ CmdClosing( /* @unused@ */ int code)
 	alignment = RIGHT;
 	fprintRTF("\n\\par\\pard\\q%c ", alignment);	
 	diagnostics(5, "Entering ConvertString() from CmdClosing");
-	s = getParam();
+	s = getBraceParam();
 	ConvertString(s);
 	free(s);
 	diagnostics(5, "Exiting ConvertString() from CmdClosing");
@@ -136,7 +136,7 @@ CmdPs(int code)
  purpose: translate encl and cc into appropriate language
  ******************************************************************************/
 {
-	char * s = getParam();
+	char * s = getBraceParam();
 	
 	if (code == LETTER_ENCL)
 		ConvertBabelName("ENCLNAME");

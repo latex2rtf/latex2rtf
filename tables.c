@@ -1,4 +1,4 @@
-/* $Id: tables.c,v 1.7 2001/10/13 19:19:10 prahl Exp $
+/* $Id: tables.c,v 1.8 2001/10/13 20:04:56 prahl Exp $
 
    Translation of tabbing and tabular environments
 */
@@ -290,7 +290,7 @@ parameter: type of array-environment
 			diagnostics(5, "Discarding bracket string in tabular [%s]\n",dummy); 
 			free(dummy);
 		}
-		colParams = getParam();	/* colParams should now the column instructions */
+		colParams = getBraceParam();	/* colParams should now the column instructions */
 
 		diagnostics(4, "Entering CmdTabular() with options {%s}\n",colParams); 
 

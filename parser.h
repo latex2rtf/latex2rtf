@@ -21,10 +21,10 @@ void            skipToEOL(void);
 void            skipSpaces(void);
 
 void            CmdIgnoreParameter(int);
-char           *getParam(void);
+char           *getBraceParam(void);
+char           *getBracketParam(void);
 char           *getMathParam(void);
 char           *getSimpleCommand(void);
-char *          getBracketParam(void);
 char           *getTexUntil(char * target, int raw);
 int             getDimension(void);
 void			parseBrace(void);

@@ -1,4 +1,4 @@
-/* $Id: biblio.c,v 1.6 2001/10/13 19:19:10 prahl Exp $ 
+/* $Id: biblio.c,v 1.7 2001/10/13 20:04:56 prahl Exp $ 
  
 This file contains routines to handle bibliographic and cite commands
 */
@@ -21,7 +21,7 @@ CmdNoCite(int code)
  purpose: handle the \nocite{tag} 
  ******************************************************************************/
 {
-	free(getParam());	/* just skip the parameter */
+	free(getBraceParam());	/* just skip the parameter */
 }
 
 void 
@@ -45,7 +45,7 @@ parameter: if FALSE (0) work as normal
 		}
 		reference=strdup(hyperref);
 	} else
-		reference = getParam();
+		reference = getBraceParam();
 
 	str1 = reference;
 	while ((str2 = strchr(str1, ',')) != NULL) {
@@ -85,7 +85,7 @@ void
 CmdThebibliography(int code)
 {
 	if (code & ON) {
-		char * s = getParam();   /*throw away widest_label */
+		char * s = getBraceParam();   /*throw away widest_label */
 		free(s);
 		
 		CmdEndParagraph(0);
@@ -121,7 +121,7 @@ CmdBibitem(int code)
 		fprintRTF("[%s]", label);
 		free(label);
 	} else {
-		key = getParam();
+		key = getBraceParam();
 		fprintRTF("[");
 		ScanAux("bibcite", key, 0);
 		fprintRTF("]");

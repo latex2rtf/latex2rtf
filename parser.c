@@ -1,4 +1,4 @@
-/*  $Id: parser.c,v 1.20 2001/10/13 19:19:10 prahl Exp $
+/*  $Id: parser.c,v 1.21 2001/10/13 20:04:56 prahl Exp $
 
    Contains declarations for a generic recursive parser for LaTeX code.
 */
@@ -16,21 +16,13 @@
 #include "l2r_fonts.h"
 #include "lengths.h"
 
-#define POSSTACKSIZE   256	/* Size of stack to save positions              */
+static char     g_parser_currentChar;	/* Global current character                 */
+static char     g_parser_lastChar;
+static char     g_parser_penultimateChar;
 
-static char     currentChar;	/* Global current character                 */
-static char     lastChar;
-static char     penultimateChar;
-
-long            posStack[POSSTACKSIZE];
-long            lineStack[POSSTACKSIZE];
-int             stackIndex = 0;
 extern FILE    *fTex;
 
 static void     parseBracket();	/* parse an open/close bracket sequence              */
-
-char 			ungetcharbuffer[512];
-int				ungetcounter = -1;
 
 #define CR (char) 0x0d
 #define LF (char) 0x0a
@@ -62,14 +54,14 @@ getRawTexChar()
 	else if (thechar == '\t')
 		thechar = ' ';
 
-	currentChar = (char) thechar;
+	g_parser_currentChar = (char) thechar;
 
-	if (currentChar == '\n')
+	if (g_parser_currentChar == '\n')
 		linenumber++;
 
-	penultimateChar = lastChar;
-	lastChar = currentChar;
-	return currentChar;
+	g_parser_penultimateChar = g_parser_lastChar;
+	g_parser_lastChar = g_parser_currentChar;
+	return g_parser_currentChar;
 }
 
 #undef CR
@@ -84,13 +76,13 @@ getTexChar()
 ****************************************************************************/
 {
 	char            cThis;
-	char            cSave = lastChar;
-	char            cSave2 = penultimateChar;
+	char            cSave = g_parser_lastChar;
+	char            cSave2 = g_parser_penultimateChar;
 
 	while ((cThis = getRawTexChar()) && cThis == '%' && cSave != '\\') {
 		skipToEOL();
-		penultimateChar = cSave2;
-		lastChar = cSave;
+		g_parser_penultimateChar = cSave2;
+		g_parser_lastChar = cSave;
 	}
 	return cThis;
 }
@@ -107,8 +99,8 @@ purpose: rewind the filepointer in the LaTeX-file by one
 	if (c == '\n')
 		linenumber--;
 
-	lastChar = penultimateChar;
-	penultimateChar = '\0';	/* no longer know what that it was */
+	g_parser_lastChar = g_parser_penultimateChar;
+	g_parser_penultimateChar = '\0';	/* no longer know what that it was */
 }
 
 void 
@@ -128,13 +120,9 @@ getNonBlank(void)
  Description: get the next non-blank character from the input stream
 ****************************************************************************/
 {
-	char            currentChar;
-
-	do {
-		currentChar = getTexChar();
-	} while (currentChar == ' ' || currentChar == '\n');
-
-	return currentChar;
+	char            c;
+	while ((c = getTexChar()) && (c == ' ' || c == '\n'));
+	return c;
 }
 
 char 
@@ -143,13 +131,9 @@ getNonSpace(void)
  Description: get the next non-space character from the input stream
 ****************************************************************************/
 {
-	char            currentChar;
-
-	do {
-		currentChar = getTexChar();
-	} while (currentChar == ' ');
-
-	return currentChar;
+	char            c;
+	while ((c = getTexChar()) && c == ' ');
+	return c;
 }
 
 void 
@@ -169,15 +153,15 @@ getSameChar(char c)
  Description: returns the number of characters that are the same as c
 ****************************************************************************/
 {
-	char            currentChar;
+	char            cThis;
 	int 			count=-1;
 	
 	do {
-		currentChar = getTexChar();
+		cThis = getTexChar();
 		count++;
-	} while (currentChar == c);
+	} while (cThis == c);
 
-	ungetTexChar(currentChar);
+	ungetTexChar(cThis);
 
 	return count;
 }
@@ -208,11 +192,11 @@ getDelimitedText(char left, char right)
 		buffer[size] = getTexChar();
 		marker = buffer[size];
 
-		if (buffer[size] != right || lastChar == '\\') {    	/* avoid \}  */
-			if (buffer[size] == left && lastChar != '\\') 		/* avoid \{ */
+		if (buffer[size] != right || last_char == '\\') {    	/* avoid \}  */
+			if (buffer[size] == left && last_char != '\\') 		/* avoid \{ */
 				lefts_needed++;
 			else {
-				if (buffer[size] == '\\' && lastChar == '\\')   /* avoid \\} */
+				if (buffer[size] == '\\' && last_char == '\\')   /* avoid \\} */
 					marker = ' ';
 			}
 		} else 
@@ -267,7 +251,7 @@ CmdIgnoreParameter(int code)
 
 	while (regParmCount) {
 		cThis = getNonBlank();
-		switch (currentChar) {
+		switch (cThis) {
 		case '{':
 
 			regParmCount--;
@@ -301,35 +285,6 @@ CmdIgnoreParameter(int code)
 	return;
 }
 
-char * 
-getBracketParam(void)
-/******************************************************************************
-  purpose: return bracketed parameter
-  			
-  \item[1]   --->  "1"        \item[]   --->  ""        \item the  --->  NULL
-       ^                           ^                         ^
-
-  \item [1]  --->  "1"        \item []  --->  ""        \item  the --->  NULL
-       ^                           ^                         ^
- ******************************************************************************/
-{
-	char            c, *text;
-
-	c = getNonBlank();
-
-	if (c == '[') {
-		text = getDelimitedText('[',']');
-		diagnostics(5, "getBracketParam [%s]", text);
-
-	} else {
-		ungetTexChar(c);
-		text = NULL;
-		diagnostics(5, "getBracketParam []");
-	}
-	
-	return text;
-}
-
 char    *
 getSimpleCommand(void)
 /**************************************************************************
@@ -361,8 +316,37 @@ getSimpleCommand(void)
 	return strdup(buffer);
 }
 
+char * 
+getBracketParam(void)
+/******************************************************************************
+  purpose: return bracketed parameter
+  			
+  \item[1]   --->  "1"        \item[]   --->  ""        \item the  --->  NULL
+       ^                           ^                         ^
+
+  \item [1]  --->  "1"        \item []  --->  ""        \item  the --->  NULL
+       ^                           ^                         ^
+ ******************************************************************************/
+{
+	char            c, *text;
+
+	c = getNonBlank();
+
+	if (c == '[') {
+		text = getDelimitedText('[',']');
+		diagnostics(5, "getBracketParam [%s]", text);
+
+	} else {
+		ungetTexChar(c);
+		text = NULL;
+		diagnostics(5, "getBracketParam []");
+	}
+	
+	return text;
+}
+
 char           *
-getParam(void)
+getBraceParam(void)
 /**************************************************************************
      purpose: allocates and returns the next parameter in the LaTeX file
               if ^ indicates the current file position then

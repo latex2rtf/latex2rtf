@@ -1,4 +1,4 @@
-/* $Id: preamble.c,v 1.19 2001/10/13 19:19:10 prahl Exp $
+/* $Id: preamble.c,v 1.20 2001/10/13 20:04:56 prahl Exp $
 
 purpose : Handles LaTeX commands that should only occur in the preamble.
           These are gathered together because the entire preamble must be
@@ -363,7 +363,7 @@ CmdDocumentStyle(int code)
 	char            *optionlist;
 
 	optionlist = getBracketParam();
-	format = getParam();
+	format = getBraceParam();
 
 	if (optionlist)
 		diagnostics(4, "Documentstyle/class[%s]{%s}", optionlist,format);
@@ -406,7 +406,7 @@ CmdUsepackage(int code)
 	char            *optionlist;
 
 	optionlist = getBracketParam();
-	package=getParam();
+	package=getBraceParam();
 
 	if (optionlist)
 		diagnostics(4, "Package {%s} with options [%s]", package, optionlist);
@@ -453,15 +453,15 @@ CmdTitle(int code)
 {
 	switch (code) {
 	case TITLE_TITLE:
-		g_preambleTitle = getParam();
+		g_preambleTitle = getBraceParam();
 		break;
 
 	case TITLE_AUTHOR:
-		g_preambleAuthor = getParam();
+		g_preambleAuthor = getBraceParam();
 		break;
 
 	case TITLE_DATE:
-		g_preambleDate = getParam();
+		g_preambleDate = getBraceParam();
 		break;
 
 	case TITLE_TITLEPAGE:
@@ -510,7 +510,7 @@ CmdPreambleBeginEnd(int code)
    purpose: catch missed \begin{document} command 
 ***************************************************************************/
 {
-	char           *cParam = getParam();
+	char           *cParam = getBraceParam();
 	
 	if (strcmp(cParam,"document"))
 		diagnostics(ERROR, "\\begin{%s} found before \\begin{document}.  Giving up.  Sorry", cParam);
@@ -565,7 +565,7 @@ Needs to be terminated for:
 	static char    *style = "";
 
 	pagestyledefined = TRUE;
-	style = getParam();
+	style = getBraceParam();
 	if (strcmp(style, "empty") == 0) {
 		if (pagenumbering) {
 			fprintRTF("{\\footer}");
@@ -656,7 +656,7 @@ CmdHyphenation(int code)
           used with TeX's hyphenation algorithms 
  ******************************************************************************/
 {
-	char           *hyphenparameter = getParam();
+	char           *hyphenparameter = getBraceParam();
 	free(hyphenparameter);
 }
 
@@ -832,7 +832,7 @@ void CmdHeadFoot(int code)
  adapted from code by Taupin in ltx2rtf
  ******************************************************************************/
 {
-  char *HeaderText = getParam();
+  char *HeaderText = getBraceParam();
   
   diagnostics(4,"CmdHeadFoot code=%d <%s>",code, HeaderText);
   switch(code)

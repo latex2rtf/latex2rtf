@@ -1,4 +1,4 @@
-/* $Id: chars.c,v 1.12 2001/10/12 05:45:07 prahl Exp $
+/* $Id: chars.c,v 1.13 2001/10/13 20:04:56 prahl Exp $
 
    purpose : handles special characters and logos
 */
@@ -27,7 +27,7 @@ CmdUmlauteChar(int code)
  ******************************************************************************/
 {
 	int            num;
-	char           *cParam = getParam();
+	char           *cParam = getBraceParam();
 	if (cParam == NULL)
 		return;
 
@@ -85,7 +85,7 @@ CmdLApostrophChar( int code)
  ******************************************************************************/
 {
 	int            num;
-	char           *cParam = getParam();
+	char           *cParam = getBraceParam();
 	if (cParam == NULL)
 		return;
 
@@ -137,7 +137,7 @@ CmdRApostrophChar(int code)
  purpose: converts special symbols from LaTeX to RTF
  ******************************************************************************/
 {
-	char           *cParam = getParam();
+	char           *cParam = getBraceParam();
 	if (cParam == NULL)
 		return;
 
@@ -195,7 +195,7 @@ CmdMacronChar(int code)
  purpose: converts special symbols from LaTeX to RTF
  ******************************************************************************/
 {
-	char           *cParam = getParam();
+	char           *cParam = getBraceParam();
 	if (cParam == NULL)
 		return;
 
@@ -214,7 +214,7 @@ CmdHatChar(int code)
  ******************************************************************************/
 {
 	int            num;
-	char           *cParam = getParam();
+	char           *cParam = getBraceParam();
 	if (cParam == NULL)
 		return;
 
@@ -270,7 +270,7 @@ CmdOaccentChar(int code)
 {
 	char           *cParam;
 	
-	cParam = getParam();
+	cParam = getBraceParam();
 	if (cParam == NULL)
 		return;
 
@@ -310,7 +310,7 @@ CmdTildeChar( int code)
 	int             num;
 	char           *cParam;
 	
-	cParam = getParam();
+	cParam = getBraceParam();
 	if (cParam == NULL)
 		return;
 
@@ -350,7 +350,7 @@ CmdCedillaChar(int code)
  purpose: converts \c{c} from LaTeX to RTF
  ******************************************************************************/
 {
-	char           *cParam = getParam();
+	char           *cParam = getBraceParam();
 	if (cParam == NULL)
 		return;
 
@@ -383,7 +383,7 @@ CmdVecChar(int code)
 	int             upsize;
 	char           *cParam;
 	
-	cParam = getParam();
+	cParam = getBraceParam();
 	if (cParam == NULL)
 		return;
 
@@ -437,7 +437,7 @@ CmdBreveChar(int code)
 	int             upsize;
 	char           *cParam;
 	
-	cParam = getParam();
+	cParam = getBraceParam();
 	if (cParam == NULL)
 		return;
 
@@ -456,7 +456,7 @@ CmdUnderdotChar(int code)
  ******************************************************************************/
 {
 	int             dnsize;
-	char           *cParam = getParam();
+	char           *cParam = getBraceParam();
 	if (cParam == NULL)
 		return;
 
@@ -481,7 +481,7 @@ CmdHacekChar(int code)
 	int             upsize;
 	char           *cParam;
 	
-	cParam = getParam();
+	cParam = getBraceParam();
 	if (cParam == NULL)
 		return;
 
@@ -506,7 +506,7 @@ CmdDotChar(int code)
 	int             num;
 	char           *cParam;
 	
-	cParam = getParam();
+	cParam = getBraceParam();
 	if (cParam == NULL)
 		return;
 
@@ -530,7 +530,7 @@ CmdUnderbarChar(int code)
 	int             num;
 	char           *cParam;
 	
-	cParam = getParam();
+	cParam = getBraceParam();
 	if (cParam == NULL)
 		return;
 
@@ -678,7 +678,7 @@ CmdFrenchAbbrev(int code)
     case IEREF: fprintRTF("re"); break;  	
     case IERESF: fprintRTF("res"); break;  	
     case FUP: 
-    			fuptext=getParam();
+    			fuptext=getBraceParam();
         		ConvertString(fuptext); 
         		free(fuptext);
         		break;  	
