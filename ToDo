@@ -3,8 +3,14 @@ Fit & Finish:
 	Improve spacing before and after \section etc.
 	Improve font sizes in \section etc.
 	Reset footnote numbering at each new chapter
-	
+		
 Potential Features:
+
+	support \raggedright
+	Improve support for other RTF parsers than Word
+	Expand -f support to crossrefences 
+	Expand -f support to array
+	Expand -f support to weird characters
 
 	Allow macro files to be found in another directory
 	Constrain RTF output so it works with more RTF readers
