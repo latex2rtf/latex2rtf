@@ -124,7 +124,15 @@ setPackageInputenc(char * option)
 		strcpy(g_charset_encoding_name, "raw");
 		g_fcharset_number = 255;            /* OEM in RTF Specification */
 
-	} else if (strcmp(option, "raw852") == 0 || strcmp(option, "raw1250") == 0 ) { 
+	} else if (strcmp(option, "raw437") == 0 ) { 
+		g_fcharset_number=254;  			/* IBM PC in RTF Specification */
+		strcpy(g_charset_encoding_name, "raw");
+
+	} else if (strcmp(option, "raw852") == 0) { 
+		g_fcharset_number=255;  			/* Microsoft bug ... */
+		strcpy(g_charset_encoding_name, "raw");
+
+	} else if (strcmp(option, "raw1250") == 0 ) { 
 		g_fcharset_number=238;  			/* East European in RTF Specification */
 		strcpy(g_charset_encoding_name, "raw");
 
@@ -134,10 +142,6 @@ setPackageInputenc(char * option)
 
 	} else if (strcmp(option, "raw1253") == 0 ) { 
 		g_fcharset_number=161;  			/* Greek in RTF Specification */
-		strcpy(g_charset_encoding_name, "raw");
-
-	} else if (strcmp(option, "raw437") == 0 ) { 
-		g_fcharset_number=254;  			/* IBM PC in RTF Specification */
 		strcpy(g_charset_encoding_name, "raw");
 
 	} else
