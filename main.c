@@ -58,6 +58,10 @@ char		   *g_aux_name = NULL;
 char		   *g_bbl_name = NULL;
 char		   *g_home_dir = NULL;
 
+
+/*** interpret comment lines that follow the '%' with this string ***/
+const char * InterpretCommentString  = "latex2rtf:";
+
 char		   *progname;				/* name of the executable file */
 bool			GermanMode = FALSE;		/* support germanstyle */
 bool			FrenchMode = FALSE;		/* support frenchstyle */

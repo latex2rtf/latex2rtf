@@ -417,10 +417,20 @@ getTexChar()
 	char            cThis;
 	char            cSave = g_parser_lastChar;
 	char            cSave2 = g_parser_penultimateChar;
-
+	int				i;
+	
 	cThis = getRawTexChar();
 	while (cThis == '%' && even(g_parser_backslashes)) {
-		skipToEOL();
+	
+  		/* look for %latex2rtf comment */
+  		for (i = 0; i < strlen(InterpretCommentString); i++) {
+    		cThis=getRawTexChar();
+   			if (cThis=='\n') break;
+   			if (cThis!=InterpretCommentString[i]) {
+				skipToEOL();
+				break;
+			}
+		}
 		g_parser_penultimateChar = cSave2;
 		g_parser_lastChar = cSave;
 		cThis = getRawTexChar();

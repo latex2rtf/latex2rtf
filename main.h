@@ -1,4 +1,4 @@
-/* $Id: main.h,v 1.62 2003/09/03 05:27:38 prahl Exp $ */
+/* $Id: main.h,v 1.63 2003/09/26 04:34:28 prahl Exp $ */
 
 #if defined(UNIX)
 #define ENVSEP ':'
@@ -42,6 +42,9 @@
 /*** error constants ***/
 #include <assert.h>
 #include <stdio.h>
+
+/*** interpret comment lines that follow the '%' with this string ***/
+extern const char  * InterpretCommentString;
 
 typedef int		bool;
 
