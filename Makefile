@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.78 2002/11/29 16:36:38 prahl Exp $
+# $Id: Makefile,v 1.79 2002/12/31 16:51:38 prahl Exp $
 
 CC=gcc
 MKDIR=mkdir -p
@@ -169,7 +169,7 @@ install: latex2rtf doc/latex2rtf.1 $(CFGS) scripts/latex2png
 
 install-info: doc/latex2rtf.info
 	$(MKDIR) $(INFO_INSTALL)
-	cp doc/latex2rtf.info $(BIN_INSTALL)
+	cp doc/latex2rtf.info $(INFO_INSTALL)
 	install-info --info-dir=$(INFO_INSTALL) doc/latex2rtf.info
 
 realclean: checkdir clean

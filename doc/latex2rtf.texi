@@ -35,6 +35,11 @@ LaTeX2RTF
 @end iftex
 @end macro
 
+@dircategory TeX
+@direntry
+* latex2rtf: (latex2rtf).           Convert LaTeX to RTF.
+@end direntry
+
 @ifinfo
 This file documents @ltor{}, a converter that translates @latex{} to RTF.
 
@@ -50,7 +55,9 @@ the results, provided the printed document carries a copying permission
 notice identical to this one except for the removal of this paragraph
 (this paragraph not being relevant to the printed manual).
 
-@end ignore Permission is granted to copy and distribute modified
+@end ignore 
+
+Permission is granted to copy and distribute modified
 versions of this manual under the conditions for verbatim copying,
 provided also that the sections entitled ``Copying'' and ``GNU General
 Public License'' are included exactly as in the original, and provided
