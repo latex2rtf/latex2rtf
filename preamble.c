@@ -1,4 +1,4 @@
-/* $Id: preamble.c,v 1.25 2001/10/27 17:42:19 prahl Exp $
+/* $Id: preamble.c,v 1.26 2001/11/05 05:43:12 prahl Exp $
 
 purpose : Handles LaTeX commands that should only occur in the preamble.
           These are gathered together because the entire preamble must be
@@ -780,7 +780,7 @@ WritePageSize(void)
 	diagnostics(4, "Writepagesize bottom margin =%d pt", n/20);
 	
 	fprintRTF("\\pgnstart%d", getCounter("page"));
-	fprintRTF("\\widowctrl\\qj\n");
+	fprintRTF("\\widowctrl\\qj\\ftnbj\n");
 }
 
 static void

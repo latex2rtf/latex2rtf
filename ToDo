@@ -1,9 +1,13 @@
 Bugs:
- 	Improve spacing before and after \section etc.
+ 	Fix line numbering
+	Remove 32k limit for section sizes
+	Added \section* support to parsing sections
+	Add support for secnumdepth
+	Add final scanning routine for section labels
+	Improve spacing before and after \section etc.
 	Improve font sizes in \section etc.
 	Add support for using the local cfg directory
 	Add support for \def now that \newcommand is working
-	Cross referencing is all messed up
 
 Features:
 	Add support for \usepackage{fullpage}
