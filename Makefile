@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.77 2002/11/29 13:25:12 whennings Exp $
+# $Id: Makefile,v 1.78 2002/11/29 16:36:38 prahl Exp $
 
 CC=gcc
 MKDIR=mkdir -p
@@ -61,9 +61,9 @@ CFGS=cfg/fonts.cfg cfg/direct.cfg cfg/ignore.cfg \
 
 DOCS= doc/latex2rtf.1   doc/latex2png.1    doc/latex2rtf.texi doc/latex2rtf.pdf \
       doc/latex2rtf.txt doc/latex2rtf.info doc/latex2rtf.html doc/credits \
-      doc/copying.txt   doc/Makefile       doc/latex2png.hlp  doc/latex2rtf.hlp
+      doc/copying.txt   doc/Makefile       doc/latex2pn.txt  doc/latex2rt.txt
 
-README= README README.DOS README.Mac Copyright ChangeLog 
+README= README README.DOS README.Mac README.OS2 Copyright ChangeLog
 
 SCRIPTS= scripts/version scripts/latex2png scripts/latex2png_1 scripts/latex2png_2 \
 	scripts/latex2pn.bat scripts/README \
