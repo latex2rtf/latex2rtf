@@ -1,4 +1,4 @@
-/* $Id: preamble.c,v 1.24 2001/10/27 14:02:09 prahl Exp $
+/* $Id: preamble.c,v 1.25 2001/10/27 17:42:19 prahl Exp $
 
 purpose : Handles LaTeX commands that should only occur in the preamble.
           These are gathered together because the entire preamble must be
@@ -69,7 +69,7 @@ setPackageBabel(char * option)
 void
 setPackageInputenc(char * option)
 {
-	g_preambleEncoding = strdup(option);
+	g_preambleEncoding = strdup_noblanks(option);
 
 	if (strcmp(option, "ansinew") == 0)
 		strcpy(g_encoding, "cp1252");
@@ -314,7 +314,7 @@ setDocumentOptions(char *optionlist)
 
 	while (option) {
 
-		while (*option == ' ') option++;  /*skip leading blanks */
+/*		while (*option == ' ') option++;  skip leading blanks */
 		diagnostics(4, "                    option   <%s>", option);
 		if      (strcmp(option, "10pt"       ) == 0 ||
 			     strcmp(option, "11pt"       ) == 0 || 
@@ -359,14 +359,17 @@ CmdDocumentStyle(int code)
  purpose: parse \documentstyle[options]{format} or \documentclass[options]{format}
  ******************************************************************************/
 {
-	char            *format;
-	char            *optionlist;
+	char            *format, *format_with_spaces;
+	char            *options,*options_with_spaces;
 
-	optionlist = getBracketParam();
-	format = getBraceParam();
-
-	if (optionlist)
-		diagnostics(4, "Documentstyle/class[%s]{%s}", optionlist,format);
+	options_with_spaces = getBracketParam();
+	format_with_spaces = getBraceParam();
+	
+	format = strdup_noblanks(format_with_spaces);
+	free(format_with_spaces);
+	
+	if (options_with_spaces)
+		diagnostics(4, "Documentstyle/class[%s]{%s}", options_with_spaces,format);
 	else
 		diagnostics(4, "Documentstyle/class{%s}",format);
 
@@ -386,12 +389,14 @@ CmdDocumentStyle(int code)
 	else if (strcmp(format, "slides") == 0)
 		g_document_type = FORMAT_SLIDES;
 
-	else
+	else 
 		fprintf(stderr, "\nDocument format <%s> unknown, using article format", format);
-
-	if (optionlist) {
-		setDocumentOptions(optionlist);
-		free(optionlist);
+	
+	if (options_with_spaces) {
+		options = strdup_noblanks(options_with_spaces);
+		free(options_with_spaces);
+		setDocumentOptions(options);
+		free(options);
 	}
 	free(format);
 }
@@ -402,25 +407,30 @@ CmdUsepackage(int code)
  purpose: handle \usepackage[option]{packagename}
 ******************************************************************************/
 {
-	char            *package;
-	char            *optionlist;
+	char            *package,*package_with_spaces;
+	char            *options,*options_with_spaces;
 
-	optionlist = getBracketParam();
-	package=getBraceParam();
-
-	if (optionlist)
-		diagnostics(4, "Package {%s} with options [%s]", package, optionlist);
-	else
+	options = NULL;
+	options_with_spaces = getBracketParam();
+	package_with_spaces = getBraceParam();
+	package = strdup_noblanks(package_with_spaces);
+	free(package_with_spaces);
+	
+	if (options_with_spaces){
+		options = strdup_noblanks(options_with_spaces);
+		free(options_with_spaces);
+		diagnostics(4, "Package {%s} with options [%s]", package, options);
+	} else
 		diagnostics(4, "Package {%s} with no options", package);
 
-	if (strcmp(package, "inputenc") == 0  && optionlist)
-		setPackageInputenc(optionlist);
+	if (strcmp(package, "inputenc") == 0  && options)
+		setPackageInputenc(options);
 		
 	else if (strcmp(package, "isolatin1") == 0)
 		setPackageInputenc("latin1");
 
-	else if (strcmp(package, "babel") == 0 && optionlist)
-		setPackageBabel(optionlist);
+	else if (strcmp(package, "babel") == 0 && options)
+		setPackageBabel(options);
 		
 	else if (strcmp(package, "german")  == 0 ||
 		     strcmp(package, "ngerman")  == 0 ||
@@ -440,8 +450,8 @@ CmdUsepackage(int code)
 	else
 		setDocumentOptions(package);
 	
-	if (optionlist)
-		free(optionlist);
+	if (options)
+		free(options);
 	free(package);
 }
 
@@ -575,11 +585,10 @@ Needs to be terminated for:
 		PlainPagestyle();
 	else if (strcmp(style, "headings") == 0) {
 		headings = TRUE;
-		/*--- but here code to put section information in header, pagenumbering
-		      in header */
+		/* insert code to put section information in header, pagenumbering in header */
 	} else if (strcmp(style, "myheadings") == 0) {
 		headings = TRUE;
-		/*--- but here code to put empty section information in header, will be
+		/*--- insert code to put empty section information in header, will be
 		      provided by markboth, markright
 		      pagenumbering in header */
 	} else {
