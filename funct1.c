@@ -1396,7 +1396,7 @@ CmdFigure(int code)
   		   This is only complicated because we need to know what to
   		   label the caption before the caption is processed.  So 
   		   we just slurp the figure environment, extract the tag, and
-  		   the process the environment as usual.
+  		   then process the environment as usual.
  ******************************************************************************/
 {
 	char            *loc, *figure_contents;
