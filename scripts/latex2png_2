@@ -1,24 +1,41 @@
 #!/bin/sh
 # Part of latex2rtf by Scott Prahl (Nov 2002)
 #
-# This version uses latex and dvips
-#              with ghostscript
-#              and  pnmcrop and pnmtopng
+# This version uses latex with dvips
+#              and ghostscript
+#              and various netpbm utilities
+#
+# This script file will convert a latex file into a PNG image.
+# Because latex2rtf also needs to convert EPS files, these are 
+# also converted.  By default latex2png assumes that the input
+# file is a latex file, however, if the extension is .eps, then
+# the file is treated an EPS file. 
+#
+# When the latex file contains the tag 'INLINE_DOT_ON_BASELINE' then
+# a dot is assumed to have been placed at the beginning of a latex
+# This dot is used to locate the baseline of the equation for 
+# alignment in the RTF file.  This shell script will create a PGN
+# (portable gray map) file that can be used to determine the 
+# height of the equation baseline
+#
+#set -x  # uncomment for debugging
 #
 
 DVIPS="dvips -E -R"
 GHOSTSCRIPT="gs -dQUIET -dNOPAUSE -dBATCH -dSAFER"
 LATEX="latex --interaction batchmode"
 PNMCROP="pnmcrop"
+PNMCUT="pnmcut"
 PNMTOPNG="pnmtopng"
+PPMTOPGM="ppmtopgm"
 TEXINPSEP=":"
 
 help()
 {
-    cat <<HELP
+cat <<HELP
 latex2png -- convert latex file to PNG image
 
-USAGE: latex2png [-d density] [-h] [-k] [-c] [-g] [-m] [-H home dir] latex_file
+USAGE: latex2png [-d density] [-h] [-k] [-c] [-g] [-m] [-H home dir] file[.tex|.eps]
 
 OPTIONS: 
          -c color image
@@ -27,33 +44,32 @@ OPTIONS:
 
          -d density     (default 144 dpi)
          -h help        (default '.')
-         -H /home/dir   directory to be included in search path
-         -i             used to locate baseline of equations
-         -k             keep intermediate files (for debugging)
+         -H /home/dir	directory to be included in search path
+         -k         	keep intermediate files (for debugging)
 
 EXAMPLE: 
-         latex2png -d 144 /tmp/file   #create /tmp/file.png at 144 dpi
+		 latex2png -d 144 /tmp/file   #create /tmp/file.png at 144 dpi
+		 latex2png file.eps           #create file.png
+		 latex2png file.tex           #create file.png via latex
          latex2png -H . /tmp/file     #search the cwd for image files
 
 HELP
-    exit 0
+exit 0
 }
 
-opt_d=144
-opt_i=0
-opt_k=0
-home_dir="."
-device="b"                      #black & white
-ext="pbm"
-output="pbmraw"
+opt_d=144		# default to 144 dpi
+opt_k=0			# default to killing intermediate files
+home_dir="."	# default to current directory
+ext="tex"		# default to latex input
+out="ppm"		# default to color output
+inline=0		# default to no special equation processing
 
 while [ -n "$1" ]; do
 case $1 in
-    -g) ext="pgm";  output="pgmraw"; shift 1;; #gray
-    -c) ext="ppm";  output="ppmraw";  shift 1;; #color
-    -m) ext="pbm";  output="pbmraw"; shift 1;; #monochrome
+    -g) out="pgm";   shift 1;; #gray
+    -c) out="ppm";   shift 1;; #color
+    -m) out="pbm";   shift 1;; #monochrome
     -h) help;        shift 1;;
-    -i) opt_i=1;     shift 1;;
     -k) opt_k=1;     shift 1;; 
     -d) opt_d=$2;    shift 2;; #shift by 2 due to argument
     -H) home_dir=$2; shift 2;;
@@ -63,15 +79,20 @@ case $1 in
 esac
 done
 
-# input check:
+# is there an input file?
 if [ -z "$1" ] ; then
- echo "error: no latex_file specified"
+ echo "error: no input file specified"
  exit 1
 fi
 
+# is it an eps file?
+if [ `echo $1 | grep -c eps$` -eq 1 ] ; then
+	ext="eps"
+fi
+
 #process 'latex2png file.tex' and 'latex2png file' equivalently
-name=`basename "$1" ".tex"`
-dir=`dirname "$1"`
+name=`basename $1 ".$ext"`
+dir=`dirname $1`
 
 #add $home_dir to latex/dvips search path
 cd $home_dir
@@ -79,40 +100,79 @@ TEXINPUTS=`pwd`${TEXINPSEP}
 export TEXINPUTS
 cd $dir
 
-$LATEX $name > /dev/null
-
-if [ ! -e "$name.dvi" ] ; then
-    echo "error: latex failed to translate $name.tex to $name.dvi"
-    exit 1
+# does the input file exist?
+if [ ! -f "$name.$ext" ] ; then
+	echo "error: input file $name.$ext does not exist"
+	exit 1
 fi
 
-$DVIPS -o $name.ps $name.dvi >& /dev/null
+rm -f $name.png
 
-if [ ! -e "$name.ps" ] ; then
-    echo "error: dvips failed to translate $name.dvi to $name.ps"
-    exit 1
+if [ $ext = "tex" ] ; then
+
+	inline=`grep -c -E INLINE_DOT_ON_BASELINE $name.$ext`
+
+	LATEX $name > /dev/null
+	
+	if [ ! -e "$name.dvi" ] ; then
+		echo "error: latex failed to translate $name.tex to $name.dvi"
+		exit 1
+	fi
+	
+	$DVIPS -o $name.eps $name.dvi >& /dev/null
+	
+	if [ ! -e "$name.eps" ] ; then
+		echo "error: dvips failed to translate $name.dvi to $name.eps"
+		exit 1
+	fi
 fi
 
-$GHOSTSCRIPT -sDEVICE=${output} -r${opt_d} -sOutputFile=$name.$ext $name.ps >& /dev/null
+$GHOSTSCRIPT -sDEVICE=$out -r${opt_d} -sOutputFile=$name.$out $name.eps >& /dev/null
 
-if [ ! -e "$name.$ext" ] ; then
-    echo "error: ghostscript failed to translate $name.ps to $name.$ext"
-    exit 1
+if [ ! -e "$name.$out" ] ; then
+	echo "error: ghostscript failed to translate $name.eps to $name.$out"
+	exit 1
 fi
 
-$PNMCROP $name.$ext | $PNMTOPNG > $name.png 2> /dev/null
+# $inline is for images of equations that include an extra dot on the baseline
+#    this dot must be cropped out, and its height must be determined.
+#    The height is determined from $name.pgm --- the first column of the image
+#    The dot is then cropped out of $name.tmp.png and finally extra white space
+#    in $name.tmp.png is removed to create the final image $name.png
+# 
+if [ $inline -eq 1 ] ; then
+	rm -f $name.pgm $name.tmp.$out
+	
+	$PNMCROP $name.$out > $name.tmp.$out
+
+	$PNMCUT -width 1 $name.tmp.$out | $PPMTOPGM > $name.pgm
+
+	offset=`expr ${opt_d} / 72 + 2`
+	$PNMCUT -left $offset $name.tmp.$out | $PNMCROP | $PNMTOPNG > $name.png
+	
+	if [ $opt_k -eq 0 ] ; then
+		rm -f $name.tmp.$out
+	fi
+else
+	$PNMCROP $name.$out | $PNMTOPNG > $name.png
+fi
 
 if [ ! -e "$name.png" ] ; then
-    echo "error: pnmcrop or pnmtopng failed to crop and translate $name.$ext to $name.png"
+    echo "error: pnmcrop or pnmtopng failed to crop and translate $name.$out to $name.png"
     exit 1
 fi
 
 if [ $opt_k -eq 0 ] ; then
-    rm -f $name.dvi
-    rm -f $name.aux
-    rm -f $name.log
-    rm -f $name.ps
-    rm -f $name.$ext
+
+    rm -f $name.dvi $name.aux $name.log
+
+	if [ $ext != "eps" ] ; then
+		rm -f $name.eps
+	fi
+
+	if [ $inline -eq 0 -o $out != "pgm" ] ; then
+    		rm -f $name.$out
+    fi
 fi
 
 exit 0

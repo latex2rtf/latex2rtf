@@ -456,9 +456,9 @@ int width, height;
 		right  = LETONS(right);
 	}
 
-	diagnostics(1,"top = %d, bottom = %d", top, bottom);
-	diagnostics(1,"left = %d, right = %d", left, right);
-	diagnostics(1,"width = %d, height = %d", width, height);
+	diagnostics(4,"top = %d, bottom = %d", top, bottom);
+	diagnostics(4,"left = %d, right = %d", left, right);
+	diagnostics(4,"width = %d, height = %d", width, height);
 	fprintRTF("\n{\\pict\\macpict\\picw%d\\pich%d\n", width, height);
 
 	fseek(fp, -10L, SEEK_CUR);
@@ -513,14 +513,14 @@ char refchunk[5] = "IHDR";
 }
 
 void 
-PutPngFile(char * s, double scale, int full_path)
+PutPngFile(char * s, double scale, double baseline, int full_path)
 /******************************************************************************
      purpose : Include .png file in RTF
  ******************************************************************************/
 {
 	FILE *fp;
 	char *png;
-	unsigned long width, height, w, h;
+	unsigned long width, height, w, h, b;
 	int iscale;
 
 	if (full_path)
@@ -531,16 +531,23 @@ PutPngFile(char * s, double scale, int full_path)
 
 	GetPngSize(png, &width, &height);
 
-	diagnostics(1,"width = %ld, height = %ld", width, height);
-	if (width==0) return;
+	diagnostics(4,"width = %ld, height = %ld, baseline = %g", width, height, baseline);
+
+	if (width==0 || height==0) return;
 	
 	fp = fopen(png, "rb");
 	free(png);
 	if (fp == NULL) return;
 
-	w = (unsigned long)( 100000.0*width  )/ ( 20* POINTS_PER_M );
-	h = (unsigned long)( 100000.0*height )/ ( 20* POINTS_PER_M );
-	fprintRTF("\n{\\pict\\pngblip\\picw%ld\\pich%ld", w, h);
+	w = (unsigned long)( 100000.0*width   )/ ( 20* POINTS_PER_M );
+	h = (unsigned long)( 100000.0*height  )/ ( 20* POINTS_PER_M );
+	b = (unsigned long)( 100000.0*baseline*scale)/ ( 20* POINTS_PER_M );
+
+	diagnostics(4,"width = %ld, height = %ld, baseline = %ld", w, h, b);
+	
+	fprintRTF("\n{");
+	if (b) fprintRTF("\\dn%ld",b);
+	fprintRTF("\\pict\\pngblip\\picw%ld\\pich%ld", w, h);
 	fprintRTF("\\picwgoal%ld\\pichgoal%ld", width*20, height*20);
 	if (scale != 1.0) {
 		iscale = (int) (scale * 100);
@@ -600,7 +607,7 @@ PutJpegFile(char * s)
 		height = LETONS(height);
 	}
 
-	diagnostics(1,"width = %d, height = %d", width, height);
+	diagnostics(4,"width = %d, height = %d", width, height);
 
 	w = (unsigned long)( 100000.0*width  )/ ( 20* POINTS_PER_M );
 	h = (unsigned long)( 100000.0*height )/ ( 20* POINTS_PER_M );
@@ -673,7 +680,7 @@ PutEmfFile(char *s, int full_path)
 	
 	w = (unsigned long)( 100000.0*width  )/ ( 20* POINTS_PER_M );
 	h = (unsigned long)( 100000.0*height )/ ( 20* POINTS_PER_M );
-	diagnostics(1,"width = %ld, height = %ld", width, height);
+	diagnostics(4,"width = %ld, height = %ld", width, height);
 	fprintRTF("\n{\\pict\\emfblip\\picw%ld\\pich%ld", w, h);
 	fprintRTF("\\picwgoal%ld\\pichgoal%ld\n", width*20, height*20);
 
@@ -754,7 +761,7 @@ PutWmfFile(char *s)
 		height = 200;
 	}
 
-	diagnostics(1,"width = %d, height = %d", width, height);
+	diagnostics(4,"width = %d, height = %d", width, height);
 	fprintRTF("\n{\\pict\\wmetafile1\\picw%d\\pich%d\n", width, height);
 
 	rewind(fp);
@@ -776,7 +783,7 @@ PutEpsFile(char *s)
 
 	if (0) {
 		png = eps_to_png(s);
-		PutPngFile(png,1.0, TRUE);
+		PutPngFile(png, 1.0, 0.0, TRUE);
 		my_unlink(png);
 		free(png);
 	}
@@ -818,7 +825,7 @@ PutTiffFile(char *s)
 	sprintf(cmd, "convert %s %s", tiff, tmp_png);	
 	system(cmd);
 	
-	PutPngFile(tmp_png, 1.0, TRUE);
+	PutPngFile(tmp_png, 1.0, 0.0, TRUE);
 	my_unlink(tmp_png);
 	
 	free(tmp_png);
@@ -849,7 +856,7 @@ PutGifFile(char *s)
 	sprintf(cmd, "convert %s %s", gif, tmp_png);	
 	system(cmd);
 	
-	PutPngFile(tmp_png, 1.0, TRUE);
+	PutPngFile(tmp_png, 1.0, 0.0, TRUE);
 	my_unlink(tmp_png);
 
 	free(tmp_png);
@@ -858,21 +865,109 @@ PutGifFile(char *s)
 	free(png);
 }
 
+static int
+ReadLine(FILE *fp)
+/****************************************************************************
+purpose: reads up to and and including a line ending (CR, CRLF, or LF)
+ ****************************************************************************/
+{
+	int thechar;
+	while (1) {
+	 	thechar = getc(fp);
+	 	if (thechar == EOF ) {fclose(fp); return 0;}
+	 	if (thechar == 0x0a) return 1;      				/* LF */
+		if (thechar == 0x0d) {
+			thechar = getc(fp);
+	 		if (thechar == EOF ) {fclose(fp); return 0;} 
+			if (thechar == 0x0d) return 1;  				/* CR LF */
+			ungetc(thechar,fp);		                      	/* CR */
+			return 1;
+		}
+	}
+}
+
+long 
+GetBaseline(char *s, char *pre)
+/****************************************************************************
+purpose: reads a .pbm file to determine the baseline for an equation
+		 the .pbm file should have dimensions of 1xheight
+ ****************************************************************************/
+{
+	FILE *fp;
+	int thechar;
+	char *pbm;
+	char magic[250];
+	long baseline, width, height, items, top, bottom;
+	
+	/* baseline=0 if not an inline image */
+	if ((strcmp(pre,"$")!=0) && (strcmp(pre,"\\begin{math}")!=0) && (strcmp(pre,"\\(")!=0)) 
+		return 0;
+		
+	pbm = strdup_together(s,".pbm");
+	baseline = 4;
+		
+	diagnostics(4, "GetBaseline opening=<%s>",pbm);
+
+	fp = fopen(pbm, "rb");
+	if (fp == NULL) {free(pbm); return baseline;}
+
+	items = fscanf(fp,"%2s", magic);			/* ensure that file begins with "P4" */
+	if ((items!=1) || (strcmp(magic,"P4")!=0)) goto Exit;
+
+	items = fscanf(fp," %s", magic);
+	while ((items==1) && (magic[0]=='#')) {		/* skip any comment lines in pbm file */
+		if (!ReadLine(fp)) goto Exit;
+		items = fscanf(fp,"%s", magic);
+	}
+	
+	items = sscanf(magic, "%ld", &width);		/* make sure image width is 1 */
+	if ((items != 1) || (width != 1)) goto Exit;
+	
+	items=fscanf(fp," %ld", &height);  /* read height */
+	if (items != 1) goto Exit;
+
+	diagnostics(4, "width=%ld height=%ld", width, height);
+			
+	if (!ReadLine(fp)) goto Exit;				/* pixel map should start on next line */
+
+	for (top=height; top>0; top--) {			/* seek first black pixel (0x00) */
+		thechar = getc(fp);
+		if (thechar == EOF) goto Exit;		
+		if (thechar != 0  ) break;
+	}
+
+	for (bottom=top-1; bottom>0; bottom--) {	/* seek first black pixel (0x00) */
+		thechar = getc(fp);
+		if (thechar == EOF) goto Exit;		
+		if (thechar == 0  ) break;
+	}
+		
+	baseline = (bottom+top)/2;
+
+	diagnostics(4, "top=%ld bottom=%ld baseline=%ld", top, bottom, baseline);
+	
+Exit:
+	free(pbm);
+	fclose(fp);
+	return baseline;	
+}
+
 void
-PutLatexFile(char *s, double scale, char *options)
+PutLatexFile(char *s, double scale, char *pre)
 /******************************************************************************
  purpose   : Convert LaTeX to Bitmap and insert in RTF file
  ******************************************************************************/
 {
 	char *png, *cmd;
-	int err, cmd_len;
+	int err, cmd_len, baseline,second_pass;
 	unsigned long width, height, rw, rh;
-	unsigned long max=32767/20;
-	int resolution = g_dots_per_inch*2; /*points per inch */
+	double maxsize=32767/20;
+	int resolution = g_dots_per_inch; /*points per inch */
 	
 	diagnostics(4, "Entering PutLatexFile");
 
 	png = strdup_together(s,".png");
+
 
 	cmd_len = strlen(s)+25;
 	if (g_home_dir)
@@ -880,30 +975,31 @@ PutLatexFile(char *s, double scale, char *options)
 
 	cmd = (char *) malloc(cmd_len);
 
-	/* iterate until png is small enough for Word */
 	do {
-		resolution /= 2;
+		second_pass = FALSE; 	/* only needed if png is too large for Word */
 		if (g_home_dir==NULL)
 			sprintf(cmd, "latex2png -d %d %s", resolution, s);	
 		else
 			sprintf(cmd, "latex2png -d %d -H \"%s\" %s", resolution, g_home_dir, s);	
 
 		diagnostics(1, "cmd = <%s>", cmd);
-		err = system(cmd);
-		if (err==0){
-			GetPngSize(png, &width, &height);
-			diagnostics(1, "png size width=%d height =%d", width, height);
-		}
+		err=system(cmd);
+		if (err) break;
+
+		GetPngSize(png, &width, &height);
+		baseline=GetBaseline(s, pre);
+		diagnostics(4, "png size height=%d baseline=%d width=%d", height, baseline, width);
 		
-		if(width>max || height>max){  
-			rw=((resolution*max)/width)*2;
-		 	rh=((resolution*max)/height)*2; 
+		if( (width>maxsize && height!=0) || (height>maxsize && width!=0) ){  
+			second_pass = TRUE;
+			rw=(resolution*maxsize)/width;
+		 	rh=(resolution*maxsize)/height; 
 			resolution=rw<rh?rw:rh;
 		}
-	} while (!err && resolution>10 && ( (width>max) || (height>max)) );
+	} while (resolution>10 && ( (width>maxsize) || (height>maxsize)) );
 	
 	if (err==0)
-		PutPngFile(png, scale*72.0/resolution, TRUE);
+		PutPngFile(png, scale*72.0/resolution, baseline, TRUE);
 	
 	free(png);
 	free(cmd);
@@ -970,7 +1066,7 @@ code=4 => psfig
 		PutPictFile(filename, FALSE);
 		
 	else if (strstr(filename, ".png")  || strstr(filename, ".PNG"))
-		PutPngFile(filename, 1.0, FALSE);
+		PutPngFile(filename, 1.0, 0.0, FALSE);
 
 	else if (strstr(filename, ".gif")  || strstr(filename, ".GIF"))
 		PutGifFile(filename);

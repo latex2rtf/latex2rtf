@@ -241,7 +241,10 @@ SaveEquationAsFile(char *pre, char *eq_with_spaces, char *post)
 		fprintf(f, "\\thispagestyle{empty}\n");
 		fprintf(f, "\\begin{document}\n");
 		fprintf(f, "\\setcounter{equation}{%d}\n",getCounter("equation"));
-		if (strstr(pre, "equation"))
+		if ((strcmp(pre,"$")==0) || (strcmp(pre,"\\begin{math}")==0) || (strcmp(pre,"\\(")==0)) {
+			fprintf(f, "%%INLINE_DOT_ON_BASELINE\n");
+			fprintf(f, "%s\n.\\quad %s\n%s", pre, eq, post);
+		} else if (strstr(pre, "equation"))
 			fprintf(f, "$$%s$$", eq);
 		else
 			fprintf(f, "%s\n%s\n%s", pre, eq, post);
@@ -288,7 +291,7 @@ WriteLatexAsBitmap(char *pre, char *eq, char *post)
 	} else
 		name = SaveEquationAsFile(pre,eq,post);
 	
-	PutLatexFile(name,scale,"");
+	PutLatexFile(name,scale,pre);
 }
 
 static void 
