@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.24 2001/09/26 03:31:50 prahl Exp $ */
+/* $Id: main.c,v 1.25 2001/10/07 05:42:18 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -37,7 +37,8 @@ char           *progname;	            /* name of the executable file */
 char           *latexname = "stdin";	/* name of LaTex-File */
 bool            GermanMode = FALSE;	    /* support germanstyle */
 
-char           *g_language = "english";	/* before \begin{document} "g_language".cfg is read in */
+char            g_language[20] = "english";	/* before \begin{document} "g_language".cfg is read in */
+char            g_encoding[20] = "cp1252";
 bool            twoside = FALSE;
 int      		g_verbosity_level = WARNING;
 static FILE    *logfile = NULL;
@@ -94,8 +95,6 @@ static void     InitializeLatexLengths(void);
 
 void           *GetCommandFunc(char *cCommand);
 
-enum TexCharSetKind TexCharSet = SEVEN_BIT;	/* default SEVEN_BIT for converting special chars */
-
 extern char *optarg;
 extern int   optind;
 extern int getopt(int ac, char *const av[], const char *optstring);
@@ -131,12 +130,10 @@ globals: initializes in- and outputfile fTex, fRtf,
 			output = optarg;
 			break;
 		case 'l':
-			TexCharSet = ISO_8859_1;
-			fprintf(stderr, "Latin-1 (= ISO 8859-1) special characters will be ");
-			fprintf(stderr, "converted into RTF-Commands!\n");
+			setPackageInputenc("latin1");
 			break;
 		case 'i':
-			g_language = optarg;
+			setPackageBabel(optarg);
 			break;
 		case 'v':
 			{
@@ -557,23 +554,22 @@ purpose: output filter to track of brace depth and font settings
 	
 	while ( *text ) {
 	
-/*			if (TexCharSet == ISO_8859_1)
-				Write_ISO_8859_1(cThis);
-			else
-				Write_Default_Charset(cThis);
-*/
-
-		fputc(*text, fRtf);
-		
-		if (*text == '{')
-			PushFontSettings();
-		
-		if (*text == '}')
-			PopFontSettings();
+		if (*text < 0)
 			
-		if (*text == '\\')
-			MonitorFontChanges(text);
-		
+			WriteEightBitChar(text[0]);
+			
+		else {		
+			fputc(*text, fRtf);
+			
+			if (*text == '{')
+				PushFontSettings();
+			
+			if (*text == '}')
+				PopFontSettings();
+				
+			if (*text == '\\')
+				MonitorFontChanges(text);
+		}
 		text++;
 	}			
 }

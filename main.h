@@ -1,4 +1,4 @@
-/* $Id: main.h,v 1.20 2001/09/26 03:31:50 prahl Exp $ */
+/* $Id: main.h,v 1.21 2001/10/07 05:42:18 prahl Exp $ */
 
 #undef HAS_NO_GETOPT
 
@@ -133,7 +133,8 @@ extern int      g_enumerate_depth;
 extern bool     g_suppress_equation_number;
 extern bool     g_aux_file_missing;
 extern int    	g_document_type;
-extern char    *g_language;
+extern char     g_language[20];
+extern char     g_encoding[20];
 extern int      g_verbosity_level;
 
 void fprintRTF(char *format, ...);

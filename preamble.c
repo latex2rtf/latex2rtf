@@ -1,4 +1,4 @@
-/* $Id: preamble.c,v 1.10 2001/09/18 03:40:25 prahl Exp $
+/* $Id: preamble.c,v 1.11 2001/10/07 05:42:18 prahl Exp $
 
 purpose : Handles LaTeX commands that should only occur in the preamble.
           These are gathered together because the entire preamble must be
@@ -46,37 +46,57 @@ static char * g_preambleCHEAD = NULL;
 static char * g_preambleLHEAD = NULL;
 static char * g_preambleRHEAD = NULL;
 
-static void setPackageBabel(char * option);
-static void setPackageInputenc(char * option);
 static void setPaperSize(char * size);
 static void setDocumentOptions(char *optionlist);
 static void WriteFontHeader(void);
 static void WriteStyleHeader(void);
 static void WritePageSize(void);
 
-static void
+void
 setPackageBabel(char * option)
 {
 	if (strcmp(option, "german") == 0 ||
 	    strcmp(option, "ngerman") == 0 ) {
 			GermanMode = TRUE;
 			PushEnvironment(GERMAN_MODE);
-			g_language = strdup("german");
+			strcpy(g_language, "german");
 	}
 	
 	if (strcmp(option, "french") == 0)
 	{
 		PushEnvironment(FRENCH_MODE);
-		g_language = strdup(option);
+		strcpy(g_language, "french");
 	}
 		
 }
 
-static void
+void
 setPackageInputenc(char * option)
 {
 	g_preambleEncoding = strdup(option);
-	fprintf(stderr,"\n Input Encoding <%s> not supported yet", option);
+
+	if (strcmp(option, "ansinew") == 0)
+		strcpy(g_encoding, "cp1252");
+		
+	else if (strcmp(option, "applemac") == 0 ||
+	         strcmp(option, "cp437") == 0 ||
+	         strcmp(option, "cp437de") == 0 ||
+	         strcmp(option, "cp850") == 0 ||
+	         strcmp(option, "cp852") == 0 ||
+	         strcmp(option, "cp865") == 0 ||
+	         strcmp(option, "decmulti") == 0 ||
+	         strcmp(option, "cp1250") == 0 ||
+	         strcmp(option, "cp1252") == 0 ||
+	         strcmp(option, "latin1") == 0 ||
+	         strcmp(option, "latin2") == 0 ||
+	         strcmp(option, "latin3") == 0 ||
+	         strcmp(option, "latin4") == 0 ||
+	         strcmp(option, "latin5") == 0 ||
+	         strcmp(option, "latin9") == 0 ||
+	         strcmp(option, "next") == 0 ) 
+		strcpy(g_encoding, option);
+	else
+		diagnostics(WARNING,"\n Input Encoding <%s> not supported", option);
 }
 
 static void
@@ -292,14 +312,11 @@ setDocumentOptions(char *optionlist)
 			g_preambleTwoside = TRUE;
 		else if (strcmp(option, "twocolumn") == 0) 
 			g_preambleTwocolumn = TRUE;
-		else if (strcmp(option, "titlepage") == 0) {
+		else if (strcmp(option, "titlepage") == 0)
 			g_preambleTitlepage = TRUE;
-		} else if (strcmp(option, "isolatin1") == 0) {
-			TexCharSet = ISO_8859_1;
-			fprintf(stderr, "\nisolatin1 style option encountered.");
-			fprintf(stderr, "\nLatin-1 (= ISO 8859-1) special characters will be ");
-			fprintf(stderr, "converted into RTF-Commands!\n");
-		} else if (strcmp(option, "hyperlatex") == 0) {
+		else if (strcmp(option, "isolatin1") == 0)
+			setPackageInputenc("latin1");
+		else if (strcmp(option, "hyperlatex") == 0) {
 			PushEnvironment(HYPERLATEX); 
 		} else if (strcmp(option, "fancyhdr") == 0) {
 			diagnostics(WARNING, "Only partial support for %s", option);
@@ -364,6 +381,9 @@ CmdUsepackage(int code)
 	if (strcmp(package, "inputenc") == 0)
 		setPackageInputenc(optionlist);
 		
+	else if (strcmp(package, "isolatin1") == 0)
+		setPackageInputenc("latin1");
+
 	else if (strcmp(package, "babel") == 0)
 		setPackageBabel(optionlist);
 		

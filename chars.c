@@ -1,4 +1,4 @@
-/* $Id: chars.c,v 1.6 2001/09/26 03:31:50 prahl Exp $
+/* $Id: chars.c,v 1.7 2001/10/07 05:42:18 prahl Exp $
 
    purpose : handles special characters and logos
 */
@@ -25,7 +25,7 @@ void            LaTeXlogo();
 void 
 CmdUmlauteChar(int code)
 /*****************************************************************************
- purpose : converts german symbols from LaTeX to RTF
+ purpose : converts characters with diaeresis from LaTeX to RTF
  ******************************************************************************/
 {
 	int            num;
