@@ -1,4 +1,4 @@
-/* $Id: xref.c,v 1.8 2001/11/05 05:28:57 prahl Exp $ 
+/* $Id: xref.c,v 1.9 2001/11/14 04:31:23 prahl Exp $ 
  
 This file contains routines to handle cross references :
 	\label{key}, \ref{key},   \pageref{key}, \bibitem{key},
@@ -78,7 +78,7 @@ parameter: if FALSE (0) work as normal
            if HYPERLATEX get reference string from remembered \link parameter
  ******************************************************************************/
 {
-	char            *reference, *str1, *str2, *nonblank;
+	char            *reference, *str1, *str2, *nonblank,*text;
 
 	fprintRTF("[");
 
@@ -89,8 +89,10 @@ parameter: if FALSE (0) work as normal
 			return;
 		}
 		reference = strdup(hyperref);
-	} else
+	} else {
+		text = getBracketParam();
 		reference = getBraceParam();
+	}
 
 	nonblank = strdup_noblanks(reference);
 	diagnostics(4,"before <%s>, after <%s>", reference, nonblank);
@@ -103,6 +105,11 @@ parameter: if FALSE (0) work as normal
 	}
 
 	ScanAux("bibcite", str1, 0);
+	if (text) {
+		fprintRTF(", ");
+		ConvertString(text);
+		free(text);
+	}
 	fprintRTF("]");
 	free(nonblank);
 	free(reference);
@@ -236,8 +243,10 @@ purpose: handles \label \ref \pageref \cite
 {
 	char *text, *signet;
 	char *str1, *comma, *s, *str;
+	char *option = NULL;
 	
 	int mode = GetTexMode();
+	option = getBracketParam();
 	text = getBraceParam();
 	if (strlen(text)==0) {
 		free(text);
@@ -286,6 +295,10 @@ purpose: handles \label \ref \pageref \cite
 				free(signet);
 			} while (comma != NULL);
 
+			if (option) {
+				fprintRTF(", ");
+				ConvertString(option);
+			}
 			fprintRTF("]");
 			free(str);
 			break;
@@ -300,6 +313,7 @@ purpose: handles \label \ref \pageref \cite
 	}
 	
 	free(text);
+	if (option) free(option);
 }
 
 char * 
