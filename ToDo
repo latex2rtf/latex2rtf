@@ -26,14 +26,12 @@ Bugs:
 		step four in appendix has bad equation processing
 		
 	excalibur.tex
-		extraneous label text in section 7.3.6
 		word disregards \* MERGEFORMAT in same section
 		
 Features:
 	support \hsize
 	support ## in macro expansion
 	add support for \symbol{\'134}
-	add support for \newtheorem
 	
 	Add default page numbering
 	

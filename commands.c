@@ -1,4 +1,4 @@
-/*  $Id: commands.c,v 1.44 2002/02/24 19:48:19 prahl Exp $
+/*  $Id: commands.c,v 1.45 2002/02/24 20:28:07 prahl Exp $
  
     Defines subroutines to translate LaTeX commands to RTF
 */
@@ -265,6 +265,7 @@ static CommandArray commands[] = {
 	{"nonumber",CmdNonumber, EQN_NO_NUMBER},
 	{"char",CmdChar,0},
 	{"htmladdnormallink",CmdHtml,LABEL_HTMLADDNORMALREF},
+	{"htmlref",CmdHtml, LABEL_HTMLREF},
 	{"nobreakspace", CmdNonBreakSpace, 0},
 	{"", NULL, 0}
 };
@@ -330,6 +331,7 @@ static CommandArray PreambleCommands[] = {
 	{"include", CmdInclude, 0},
 	{"input", CmdInclude, 0},
 	{"htmladdnormallink",CmdHtml, LABEL_HTMLADDNORMALREF},
+	{"htmlref",CmdHtml, LABEL_HTMLREF},
 	{"nobreakspace", CmdNonBreakSpace, 0},
 	{"", NULL, 0}
 };				/* end of list */

@@ -10,6 +10,7 @@
 #define LABEL_HYPERPAGEREF	6
 #define LABEL_PAGEREF		7
 #define LABEL_HTMLADDNORMALREF 8
+#define LABEL_HTMLREF 9
 
 void    CmdFootNote(int code);
 void    CmdLabel(int code);

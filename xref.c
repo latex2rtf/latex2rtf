@@ -1,4 +1,4 @@
-/* $Id: xref.c,v 1.14 2002/02/19 05:43:04 prahl Exp $ 
+/* $Id: xref.c,v 1.15 2002/02/24 20:28:08 prahl Exp $ 
  
 This file contains routines to handle cross references :
 	\label{key}, \ref{key},   \pageref{key}, \bibitem{key},
@@ -369,6 +369,12 @@ purpose: handles \htmladdnormallink{text}{link}
 			
 		fprintRTF("{\\field{\\*\\fldinst{ HYPERLINK \"%s\" }{{}}}",ref);
 		fprintRTF("{\\fldrslt{\\ul %s}}}", text);
+		free(text);
+		free(ref);
+	} else if (code == LABEL_HTMLREF) {
+		text = getBraceParam();
+		ref = getBraceParam();
+		ConvertString(text);
 		free(text);
 		free(ref);
 	}

@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.58 2002/02/24 19:48:19 prahl Exp $ 
+/* $Id: funct1.c,v 1.59 2002/02/24 20:28:07 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -727,7 +727,6 @@ parameter: code: type of section-recursion-level
 			setCounter("subparagraph",0);
 			resetTheoremCounter("subsubsection");
 			unit_label = FormatUnitNumber("subsubsection");
-			fprintRTF("%s", unit_label);
 			if (g_section_label) fprintRTF("{{\\*\\bkmkstart LBL_%s}",g_section_label);
 			fprintRTF("%s", unit_label);
 			if (g_section_label) fprintRTF("{\\*\\bkmkend LBL_%s}}",g_section_label);
