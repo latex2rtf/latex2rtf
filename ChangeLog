@@ -1,3 +1,8 @@
+2004-10-03 15:35  prahl
+
+ fix font handling in equations so that ${\rm A}$ typesets in roman.
+	Update ToDo and ChangeLog
+	
 2004-10-03 12:25  prahl
 
  Fix for mis-numbering of figures and tables in reports
@@ -2132,9 +2137,9 @@
 
  Revised fonts.cfg, removed Ferdsch, now set the default font correctly
 	and begun the process of eliminating the $Log: ChangeLog,v $
-	and begun the process of eliminating the Revision 1.22  2004/10/03 22:35:24  prahl
-	and begun the process of eliminating the fix font handling in equations so that ${\rm A}$ typesets in roman.
-	and begun the process of eliminating the Update ToDo and ChangeLog
+	and begun the process of eliminating the Revision 1.23  2004/10/04 04:27:43  prahl
+	and begun the process of eliminating the add babel_spanish.tex and fig_size.tex to distribution
+	and begun the process of eliminating the fixes for \centering in table and figure environments
 	and begun the process of eliminating the comments in files.
 	
 2001-08-12 14:15  prahl

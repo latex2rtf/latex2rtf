@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.106 2004/10/03 19:25:50 prahl Exp $
+# $Id: Makefile,v 1.107 2004/10/04 04:27:43 prahl Exp $
 
 CC=gcc
 MKDIR=mkdir -p
@@ -90,7 +90,7 @@ TEST=   test/Makefile test/bracecheck test/accentchars.tex test/array.tex  \
 	test/theorem.tex test/picture.tex test/eqns-koi8.tex test/tabbing.tex \
 	test/chem.tex test/linux.tex test/color.tex test/subsup.tex \
 	test/babel_german.tex  test/babel_russian.tex test/babel_french.tex \
-	test/babel_frenchb.tex test/babel_czech.tex \
+	test/babel_frenchb.tex test/babel_czech.tex test/babel_spanish.tex \
 	test/bib_apacite.tex    test/bib_apalike.tex test/bib_apalike2.tex \
 	test/bib_natbib1.tex    test/bib_natbib2.tex test/bib_natbib3.tex test/bib_apanat.tex \
 	test/bib_authordate.tex test/bib_simple.tex test/bib_simple.bib\
@@ -102,7 +102,7 @@ TEST=   test/Makefile test/bracecheck test/accentchars.tex test/array.tex  \
 	test/enc_koi8-u.tex test/enc_maccyr.tex test/enc_macukr.tex \
 	test/fig_test.eps test/fig_testb.pdf test/fig_test.tex \
 	test/fig_test2.tex test/fig_testc.ps test/fig_testc.pdf test/fig_testd.ps \
-	test/fig_testd.pdf test/fig_test3.tex \
+	test/fig_testd.pdf test/fig_test3.tex test/fig_size.tex \
 	test/head_book.tex test/head_report.tex test/head_article.tex \
 	test/endnote.tex   test/bib_harvard.tex test/report.tex
 

@@ -1231,8 +1231,15 @@ parameter: type of array-environment
 {
     char *location, *table_contents;
     char endtable[] = "\\end{table}";
+	static char     oldalignment;
 
     if (code & ON) {
+		CmdEndParagraph(0);
+		oldalignment = alignment;
+		alignment = JUSTIFIED;
+
+		CmdVspace(VSPACE_BIG_SKIP);
+		CmdStartParagraph(0);
 
         location = getBracketParam();
         if (location)
@@ -1254,6 +1261,9 @@ parameter: type of array-environment
             CmdEndParagraph(0);
         if (g_table_label)
             free(g_table_label);
+		alignment = oldalignment;
+		CmdEndParagraph(0);
+		CmdVspace(VSPACE_BIG_SKIP);
     }
 }
 

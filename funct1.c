@@ -1630,8 +1630,15 @@ void CmdFigure(int code)
 {
     char *loc, *figure_contents;
     char *endfigure = ((code & ~ON) == FIGURE) ? "\\end{figure}" : "\\end{figure*}";
-
+	static char     oldalignment;
+			
     if (code & ON) {
+		CmdEndParagraph(0);
+		oldalignment = alignment;
+		alignment = JUSTIFIED;
+
+		CmdVspace(VSPACE_BIG_SKIP);
+		CmdStartParagraph(0);
         loc = getBracketParam();
         diagnostics(4, "entering CmdFigure [%s]", (loc) ? loc : "");
         g_processing_figure = TRUE;
@@ -1662,6 +1669,9 @@ void CmdFigure(int code)
             free(g_figure_label);
         g_processing_figure = FALSE;
         diagnostics(4, "exiting CmdFigure");
+		alignment = oldalignment;
+		CmdEndParagraph(0);
+		CmdVspace(VSPACE_BIG_SKIP);
     }
 }
 
