@@ -1,25 +1,11 @@
 /*
- * $Id: main.c,v 1.12 2001/08/12 19:48:12 prahl Exp $
+ * $Id: main.c,v 1.13 2001/08/12 21:15:46 prahl Exp $
  * History:
  * $Log: main.c,v $
- * Revision 1.12  2001/08/12 19:48:12  prahl
- * 1.9h
- * 	Turned hyperlatex back on.  Still not tested
- * 	Turned isolatin1 back on.  Still not tested.
- * 	Eliminated use of \\ in code for comments
- * 	Eliminated \* within comments
- * 	Eliminated silly char comparison to EOF
- * 	Revised README to eliminate DOS stuff
- * 	Added support for \pagebreak
- * 	Added support for \quad, \qquad, \, \; and \> (as spaces)
- * 	Improved support for \r accent
- * 	Made minor changes to accentchars.tex
- * 	fixed bugs in \textit{s_$c$} and $\bf R$
- * 	fixed longstanding bugs in stack cleaning
- * 	fixed ' in math mode
- * 	log-like functions now typeset in roman
- * 	Added test cases to eqns.tex
- * 	default compiler options empty until code is more portable
+ * Revision 1.13  2001/08/12 21:15:46  prahl
+ *         Removed last two // comments
+ *         Explicitly cast char to int in isalpha() and isdigit()
+ *         Began the process of supporting Babel better
  *
  * Revision 1.11  1998/10/28 06:10:25  glehner
  * Added "errno.h"
@@ -346,7 +332,7 @@ int             DefFont = 0;		/* contains default TeX Roman font number*/
 void 
 Convert()
 /****************************************************************************
-purpose: convertes inputfile and writes result to outputfile
+purpose: converts inputfile and writes result to outputfile
 globals: fTex, fRtf and all global flags for convert (see above)
  ****************************************************************************/
 {
@@ -356,12 +342,22 @@ globals: fTex, fRtf and all global flags for convert (see above)
 	char            cNext;
 	int             count = 0;
 	int             i;
+	bool            babelMode = FALSE;
 
 	RecursionLevel++;
 	PushLevels();
 	++ConvertFlag;
+/*	if (!strstr(g_babel_language,"english"))
+		babelMode = TRUE;
+*/		
 	while ((cThis = getTexChar()) && cThis != '\0') {
 		diagnostics(5, "Current character in Convert() is %c", cThis);
+
+/*		if (babelMode) {
+			cThis = babelConvert(cThis, g_babel_language);
+			if (cThis == '\0') break;
+		}
+*/		
 		switch (cThis) {
 
 		case '\\':
@@ -611,7 +607,7 @@ globals: fTex, fRtf and all global flags for convert (see above)
 		default:
 			bBlankLine = FALSE;
 			if (bInDocument) {
-				if (isupper(cThis) && ((cLast == '.') || (cLast == '!') || (cLast == '?') || (cLast == ':')))
+				if (isupper((int)cThis) && ((cLast == '.') || (cLast == '!') || (cLast == '?') || (cLast == ':')))
 					fprintf(fRtf, " ");
 
 				if (TexCharSet == ISO_8859_1)
@@ -1118,7 +1114,7 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 
 	/* LEG180498 Commands consist of letters and can have an optional * at the end */
 	for (i = 0; i < MAXCOMMANDLEN; i++) {
-		if (!isalpha(cThis) && (cThis != '*')) {
+		if (!isalpha((int)cThis) && (cThis != '*')) {
 			bool            found_nl = FALSE;
 
 			/* all spaces after commands are ignored, a single \n may occur */

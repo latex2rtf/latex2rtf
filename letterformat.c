@@ -134,15 +134,15 @@ CmdClosing( /* @unused@ */ int code)
 void 
 CmdPs(int code)
 /******************************************************************************
- purpose: translate encl and cc into new appropriate language
+ purpose: translate encl and cc into appropriate language
  ******************************************************************************/
 {
 	char * s = getParam();
 	
 	if (code == LETTER_ENCL)
-		fprintf(fRtf, "encl: ");
+		ConvertBabelName("ENCLNAME");
 	else if (code == LETTER_CC)
-		fprintf(fRtf, "cc: ");
+		ConvertBabelName("CCNAME");
 	
 	ConvertString(s);
 	free(s);

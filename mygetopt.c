@@ -1,5 +1,5 @@
 /*
- * $Id: mygetopt.c,v 1.9 2001/08/12 19:48:12 prahl Exp $ History: $Log:
+ * $Id: mygetopt.c,v 1.10 2001/08/12 21:15:46 prahl Exp $ History: $Log:
  * mygetopt.c,v $ Revision 1.1  1998/11/12 13:05:43  glehner Initial revision
  * 
  * 

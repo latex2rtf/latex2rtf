@@ -1,25 +1,11 @@
 /*
- * $Id: funct2.c,v 1.12 2001/08/12 19:48:12 prahl Exp $
+ * $Id: funct2.c,v 1.13 2001/08/12 21:15:46 prahl Exp $
  * History:
  * $Log: funct2.c,v $
- * Revision 1.12  2001/08/12 19:48:12  prahl
- * 1.9h
- * 	Turned hyperlatex back on.  Still not tested
- * 	Turned isolatin1 back on.  Still not tested.
- * 	Eliminated use of \\ in code for comments
- * 	Eliminated \* within comments
- * 	Eliminated silly char comparison to EOF
- * 	Revised README to eliminate DOS stuff
- * 	Added support for \pagebreak
- * 	Added support for \quad, \qquad, \, \; and \> (as spaces)
- * 	Improved support for \r accent
- * 	Made minor changes to accentchars.tex
- * 	fixed bugs in \textit{s_$c$} and $\bf R$
- * 	fixed longstanding bugs in stack cleaning
- * 	fixed ' in math mode
- * 	log-like functions now typeset in roman
- * 	Added test cases to eqns.tex
- * 	default compiler options empty until code is more portable
+ * Revision 1.13  2001/08/12 21:15:46  prahl
+ *         Removed last two // comments
+ *         Explicitly cast char to int in isalpha() and isdigit()
+ *         Began the process of supporting Babel better
  *
  * Revision 1.10  1998/11/05 13:21:49  glehner
  * *** empty log message ***
@@ -647,33 +633,24 @@ parameter: code: on/off-option
 void
 CmdAbstract(int code)
 {
-	static char     oldalignment = JUSTIFIED;
+	static char     oldalignment;
 
+	fprintf(fRtf, "\n\\par\n\\par\\pard ");
+	if (code == ON) {
+		if (!article || !titlepage) 
+			fprintf(fRtf, "\\page");
 
-	switch (code) {
-	case ON:
-		if ((article) && (titlepage)) {
-			fprintf(fRtf, "\n\\par\n\\par\\pard ");
-			fprintf(fRtf, "\\pard\\qj ");	/* blocked */
-			fprintf(fRtf,
-				"{\\b\\fs%d %s}\\par ",
-			      CurrentFontSize(), TranslateName("ABSTRACT"));
-		} else {
-			fprintf(fRtf, "\n\\par\n\\par\\pard \\page ");
-			fprintf(fRtf, "\\pard\\qj ");	/* blocked */
-			fprintf(fRtf,
-				"{\\b\\fs%d %s}\\par ",
-			      CurrentFontSize(), TranslateName("ABSTRACT"));
-		}
+		fprintf(fRtf, "\\pard\\qj ");
+		fprintf(fRtf, "{\\b\\fs%d ", CurrentFontSize());
+		ConvertBabelName("ABSTRACTNAME");
+		fprintf(fRtf, "}\\par ");
 		oldalignment = alignment;
 		alignment = JUSTIFIED;
-		break;
-	case OFF:
+	} else {
 		fprintf(fRtf, "\\pard ");
 		alignment = oldalignment;
 		fprintf(fRtf, "\n\\par\\q%c ", alignment);
-		break;
-	}			/* switch */
+	}
 }
 
 void 
@@ -797,6 +774,7 @@ parameter: type of array-environment
 	int             i, n;
 	static bool     bWarningDisplayed = FALSE;
 	int             openBracesInParam = 1;
+	char           *colParams;
 
 
 	if (code & ON) {	/* on switch */
@@ -807,10 +785,10 @@ parameter: type of array-environment
 		g_processing_tabular = TRUE;
 
 		getBracketParam(dummy, 50);	/* throw it away */
-		/* fprintf(stderr, "the bracket string is '%s'\n",dummy); */
-		getBraceParam(dummy, 50);	/* dummy should now the column instructions */
+		diagnostics(5, "Discarding bracket string in tabular [%s]\n",dummy); 
+		colParams = getParam();	/* colParams should now the column instructions */
 
-		diagnostics(4, "Entering CmdTabular() with options {%s}\n",dummy); 
+		diagnostics(4, "Entering CmdTabular() with options {%s}\n",colParams); 
 
 		if (!bWarningDisplayed) {
 			diagnostics(WARNING, "Tabular or array environment: May need resizing");
@@ -823,9 +801,9 @@ parameter: type of array-environment
 		n = 0;
 		colFmt[n++] = ' ';	/* colFmt[0] unused */
 		i = 0;
-		while (dummy[i]) {
-			/* fprintf(stderr,"char='%c'\n",dummy[i]); */
-			switch (dummy[i++]) {
+		while (colParams[i]) {
+			/* fprintf(stderr,"char='%c'\n",colParams[i]); */
+			switch (colParams[i++]) {
 			case 'c':
 				colFmt[n++] = 'c';
 				break;
@@ -856,6 +834,7 @@ parameter: type of array-environment
 			}
 		}
 
+		free(colParams);
 		colFmt[n] = '\0';
 		colCount = n - 1;
 		actCol = 1;
@@ -944,7 +923,6 @@ parameter: type of array-environment
 	}
 }
 
-/******************************************************************************/
 void 
 CmdNoCite( /* @unused@ */ int code)
 /******************************************************************************
@@ -962,8 +940,8 @@ void
 CmdGraphics(int code)
 {
 	char            options[255];
-	char            fullpath[1023], filename[255];
-	char           *dp;
+	char            fullpath[1023];
+	char           *filename;
 	int             cc, i;
 	short           top, left, bottom, right;
 	FILE           *fp;
@@ -972,10 +950,13 @@ CmdGraphics(int code)
 
 	getBracketParam(options, 255);
 	getBracketParam(options, 255);
-	getBraceParam(filename, 255);
+	filename = getParam();
 
 	if (strstr(filename, ".pict") || strstr(filename, ".PICT")) {
 		/* SAP fixes for Mac Platform */
+#ifdef __MWERKS__
+		{
+		char           *dp;
 		strcpy(fullpath, latexname);
 		dp = strrchr(fullpath, ':');
 		if (dp != NULL) {
@@ -984,35 +965,24 @@ CmdGraphics(int code)
 		} else
 			strcpy(fullpath, "");
 		strcat(fullpath, filename);
-		/* SAP end fix */
+		}
+#else
+		strcpy(fullpath,filename);
+#endif
 
 		fprintf(stderr, "processing picture %s\n", fullpath);
 		fp = fopen(fullpath, "rb");
 
-		if (fseek(fp, 514L, SEEK_CUR)) {
-			fclose(fp);
-			return;
-		}
-		if (fread(&top, 2, 1, fp) < 1) {
-			fclose(fp);
-			return;
-		}
-		if (fread(&left, 2, 1, fp) < 1) {
-			fclose(fp);
-			return;
-		}
-		if (fread(&bottom, 2, 1, fp) < 1) {
-			fclose(fp);
-			return;
-		}
-		if (fread(&right, 2, 1, fp) < 1) {
-			fclose(fp);
-			return;
-		}
-		if (fseek(fp, -10L, SEEK_CUR)) {
-			fclose(fp);
-			return;
-		}
+		if (fseek(fp, 514L, SEEK_CUR) ||     /* skip 512 byte header + 2 bytes for version info */
+		    (fread(&top, 2, 1, fp) < 1) ||    /* read the pict file dimensions in points */
+		    (fread(&left, 2, 1, fp) < 1) || 
+			(fread(&bottom, 2, 1, fp) < 1) || 
+			(fread(&right, 2, 1, fp) < 1) || 
+			fseek(fp, -10L, SEEK_CUR)) {    /* move back ten bytes so that entire file will be encoded */
+				free(filename);
+				fclose(fp);
+				return;
+			}
 		fprintf(fRtf, "\n{\\pict\\macpict\\picw%d\\pich%d\n", right - left, bottom - top);
 
 		i = 0;
@@ -1024,15 +994,16 @@ CmdGraphics(int code)
 			}	/* keep lines 254 chars long */
 		}
 
-		fclose(fp);
 		fprintf(fRtf, "}\n");
+		fclose(fp);
+		free(filename);
 	}
 }
 
 void 
 CmdCite(int code)
 /******************************************************************************
- purpose: opens existing aux-file and reads the citing-number
+ purpose: opens existing aux-file and reads the citation number
 LEG190498
 parameter: if FALSE (0) work as normal
            if HYPERLATEX get reference string from remembered \link parameter
@@ -1046,7 +1017,7 @@ parameter: if FALSE (0) work as normal
 	   hyperref: NULL, or the last used reference by \link command.
  ******************************************************************************/
 {
-	char            reference[255];
+	char            *reference;
 	char           *str1, *str2;
 
 	fprintf(fRtf, "[");
@@ -1057,9 +1028,9 @@ parameter: if FALSE (0) work as normal
 			fprintf(fRtf, "?]");
 			return;
 		}
-		strcpy(reference, hyperref);
+		reference=strdup(hyperref);
 	} else
-		getBraceParam(reference, 255);
+		reference = getParam();
 
 	str1 = reference;
 	while ((str2 = strchr(str1, ',')) != NULL) {
@@ -1074,6 +1045,7 @@ parameter: if FALSE (0) work as normal
 		bCite = TRUE;
 
 	fprintf(fRtf, "]");
+	free(reference);
 }
 
 FILE           *
@@ -1117,12 +1089,12 @@ MakeBiblio(FILE * fBbl)
 	int             refcount = 0;
 	char           *str;
 
+	fprintf(fRtf, "\\par\\par\\pard{\\fs28 \\b ");
 	if (article)
-		fprintf(fRtf, "\\par \\par \\pard{\\fs28 \\b %s}",
-			TranslateName("REFARTICLE"));
+		ConvertBabelName("REFNAME");
 	else
-		fprintf(fRtf, "\\par \\par \\pard{\\fs28 \\b %s}",
-			TranslateName("REF"));
+		ConvertBabelName("BIBNAME");
+	fprintf(fRtf, "}\n");
 
 	while (fgets(BblLine, 255, fBbl) != NULL) {
 		if (strstr(BblLine, "\\begin{thebibliography}"))

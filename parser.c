@@ -1,25 +1,11 @@
 /*
- * $Id: parser.c,v 1.9 2001/08/12 19:48:12 prahl Exp $
+ * $Id: parser.c,v 1.10 2001/08/12 21:15:46 prahl Exp $
  * History:
  * $Log: parser.c,v $
- * Revision 1.9  2001/08/12 19:48:12  prahl
- * 1.9h
- * 	Turned hyperlatex back on.  Still not tested
- * 	Turned isolatin1 back on.  Still not tested.
- * 	Eliminated use of \\ in code for comments
- * 	Eliminated \* within comments
- * 	Eliminated silly char comparison to EOF
- * 	Revised README to eliminate DOS stuff
- * 	Added support for \pagebreak
- * 	Added support for \quad, \qquad, \, \; and \> (as spaces)
- * 	Improved support for \r accent
- * 	Made minor changes to accentchars.tex
- * 	fixed bugs in \textit{s_$c$} and $\bf R$
- * 	fixed longstanding bugs in stack cleaning
- * 	fixed ' in math mode
- * 	log-like functions now typeset in roman
- * 	Added test cases to eqns.tex
- * 	default compiler options empty until code is more portable
+ * Revision 1.10  2001/08/12 21:15:46  prahl
+ *         Removed last two // comments
+ *         Explicitly cast char to int in isalpha() and isdigit()
+ *         Began the process of supporting Babel better
  *
  * Revision 1.2  1998/10/27 04:51:38  glehner
  * Changed function prototype of parseBrace & parseBracket to
@@ -410,7 +396,7 @@ getSimpleCommand(void)
 	for (size = 0; size < 127; size++) {
 		buffer[size] = getTexChar();
 
-		if (!isalpha(buffer[size])) {
+		if (!isalpha((int)buffer[size])) {
 			ungetTexChar(buffer[size]);
 			break;
 		}
@@ -561,7 +547,7 @@ getDimension(void)
 	}
 	
 /* obtain number */
-	while (i<19 && (isdigit(cThis) || cThis=='.' || cThis == ',')){
+	while (i<19 && (isdigit((int)cThis) || cThis=='.' || cThis == ',')){
 		if (cThis==',') cThis = '.';
 		buffer[i++] = cThis;
 		cThis = getTexChar();

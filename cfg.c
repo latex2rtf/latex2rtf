@@ -1,25 +1,11 @@
 /*
- * $Id: cfg.c,v 1.10 2001/08/12 19:48:12 prahl Exp $
+ * $Id: cfg.c,v 1.11 2001/08/12 21:15:46 prahl Exp $
  * History:
  * $Log: cfg.c,v $
- * Revision 1.10  2001/08/12 19:48:12  prahl
- * 1.9h
- * 	Turned hyperlatex back on.  Still not tested
- * 	Turned isolatin1 back on.  Still not tested.
- * 	Eliminated use of \\ in code for comments
- * 	Eliminated \* within comments
- * 	Eliminated silly char comparison to EOF
- * 	Revised README to eliminate DOS stuff
- * 	Added support for \pagebreak
- * 	Added support for \quad, \qquad, \, \; and \> (as spaces)
- * 	Improved support for \r accent
- * 	Made minor changes to accentchars.tex
- * 	fixed bugs in \textit{s_$c$} and $\bf R$
- * 	fixed longstanding bugs in stack cleaning
- * 	fixed ' in math mode
- * 	log-like functions now typeset in roman
- * 	Added test cases to eqns.tex
- * 	default compiler options empty until code is more portable
+ * Revision 1.11  2001/08/12 21:15:46  prahl
+ *         Removed last two // comments
+ *         Explicitly cast char to int in isalpha() and isdigit()
+ *         Began the process of supporting Babel better
  *
  * Revision 1.7  1998/11/12 15:15:42  glehner
  * Cleaned up includes, moved from .h file to .c
@@ -58,31 +44,23 @@
   purpose : Read config files and provide lookup routines
  *****************************************************************************/
 
-
-/****************************** includes *************************************/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 
 #include "main.h"
+#include "funct1.h"
 #include "cfg.h"
 #include "util.h"
-/****************************************************************************/
 
-
-
-/******************************* typedefs & structures **********************/
 typedef struct ConfigInfoT {
 	 /* @observer@ */ char *filename;
 	 /* @owned@ *//* @null@ */ ConfigEntryT **config_info;
 	size_t          config_info_size;
 	bool            remove_leading_backslash;
 }               ConfigInfoT;
-/****************************************************************************/
 
-
-/********************************* global variables *************************/
 static ConfigInfoT configinfo[] =
 {
 	{"direct.cfg", NULL, 0, FALSE},
@@ -94,17 +72,12 @@ static ConfigInfoT configinfo[] =
 #define CONFIG_SIZE (sizeof(configinfo) / sizeof(ConfigInfoT))
 /*
  * LEG200698 I would have prefered to make the reading of the language file
- * apart, since the language is known some steps after reading the
+ * separate, since the language is known some steps after reading the
  * configuration files. Since the search functions rely on the index into
  * configinfo this is not trivial. So I reread the language file to the array
  * at the moment the name is known.
  */
 
-/****************************************************************************/
-
-/********************************* functions ********************************/
-
-/***/
 static int 
 cfg_compare(ConfigEntryT ** el1, ConfigEntryT ** el2)
 /****************************************************************************
@@ -238,14 +211,14 @@ read_cfg(FILE * cfgfile
 		if (*line == '#' || *line == '\0') {
 			continue;
 		}
-		cmdend = strchr(line, '.');
+		cmdend = strrchr(line, '.');
 		if (cmdend == NULL) {
-			ParseError("Illegal format, expected '.', got\n\"%s\"", line);
+			ParseError("Bad config file, missing final period\nBad line is \"%s\"", line);
 		}
 		*cmdend = '\0';
 		if (do_remove_backslash) {
 			if (*line != '\\') {
-				ParseError("Illegal format, expected '\\', got\n\"%s\"", line);
+				ParseError("Bad config file, missing initial'\\'\nBad line is\"%s\"", line);
 			} else {
 				line++;
 			}
@@ -265,7 +238,7 @@ read_cfg(FILE * cfgfile
 		line = strdup(line);
 		cmdend = strchr(line, ',');
 		if (cmdend == NULL) {
-			ParseError("Illegal format, expected ',', got\n\"%s\"", line);
+			ParseError("Bad config file, missing ',' between elements\nBad line is\"%s\"", line);
 		}
 		*cmdend++ = '\0';
 
@@ -285,8 +258,6 @@ read_cfg(FILE * cfgfile
 }
 
 
-
-/***/
 void 
 ReadCfg(void)
 /****************************************************************************
@@ -310,8 +281,6 @@ ReadCfg(void)
 	}
 }
 
-/***/
-/* @null@ */
 static ConfigEntryT **
 search_rtf(const char *theTexCommand, int WhichCfg)
 /****************************************************************************
@@ -399,8 +368,6 @@ CfgNext(int WhichCfg, ConfigEntryT ** last)
 	return last;
 }
 
-
-
 /****************************************************************************
  * opens and reads the language configuration file named in lang
 
@@ -434,19 +401,16 @@ ReadLg(char *lang)
 	(void) fclose(fp);
 }
 
-
-
 /****************************************************************************
- *LEG030598
-
  purpose : returns a pointer to the Printout name of a Heading, since
            this is read from a language file it provides translation
            capability.
  params  : name, name of heading.
-
  ****************************************************************************/
-char     *
-TranslateName(char *name)
+void
+ConvertBabelName(char *name)
 {
-	return SearchRtfCmd(name, LANGUAGE_A);
+	char *s = SearchRtfCmd(name, LANGUAGE_A);
+	if (s != NULL)
+		ConvertString(s);
 }

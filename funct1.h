@@ -1,25 +1,11 @@
 /*
- * $Id: funct1.h,v 1.12 2001/08/12 19:48:12 prahl Exp $
+ * $Id: funct1.h,v 1.13 2001/08/12 21:15:46 prahl Exp $
  * History:
  * $Log: funct1.h,v $
- * Revision 1.12  2001/08/12 19:48:12  prahl
- * 1.9h
- * 	Turned hyperlatex back on.  Still not tested
- * 	Turned isolatin1 back on.  Still not tested.
- * 	Eliminated use of \\ in code for comments
- * 	Eliminated \* within comments
- * 	Eliminated silly char comparison to EOF
- * 	Revised README to eliminate DOS stuff
- * 	Added support for \pagebreak
- * 	Added support for \quad, \qquad, \, \; and \> (as spaces)
- * 	Improved support for \r accent
- * 	Made minor changes to accentchars.tex
- * 	fixed bugs in \textit{s_$c$} and $\bf R$
- * 	fixed longstanding bugs in stack cleaning
- * 	fixed ' in math mode
- * 	log-like functions now typeset in roman
- * 	Added test cases to eqns.tex
- * 	default compiler options empty until code is more portable
+ * Revision 1.13  2001/08/12 21:15:46  prahl
+ *         Removed last two // comments
+ *         Explicitly cast char to int in isalpha() and isdigit()
+ *         Began the process of supporting Babel better
  *
  * Revision 1.5  1998/11/04 13:39:40  glehner
  * Changed ON-Flag to 0x4000 for little int compilers.

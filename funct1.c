@@ -1,25 +1,11 @@
 /*
- * $Id: funct1.c,v 1.12 2001/08/12 19:48:12 prahl Exp $
+ * $Id: funct1.c,v 1.13 2001/08/12 21:15:46 prahl Exp $
  * History:
  * $Log: funct1.c,v $
- * Revision 1.12  2001/08/12 19:48:12  prahl
- * 1.9h
- * 	Turned hyperlatex back on.  Still not tested
- * 	Turned isolatin1 back on.  Still not tested.
- * 	Eliminated use of \\ in code for comments
- * 	Eliminated \* within comments
- * 	Eliminated silly char comparison to EOF
- * 	Revised README to eliminate DOS stuff
- * 	Added support for \pagebreak
- * 	Added support for \quad, \qquad, \, \; and \> (as spaces)
- * 	Improved support for \r accent
- * 	Made minor changes to accentchars.tex
- * 	fixed bugs in \textit{s_$c$} and $\bf R$
- * 	fixed longstanding bugs in stack cleaning
- * 	fixed ' in math mode
- * 	log-like functions now typeset in roman
- * 	Added test cases to eqns.tex
- * 	default compiler options empty until code is more portable
+ * Revision 1.13  2001/08/12 21:15:46  prahl
+ *         Removed last two // comments
+ *         Explicitly cast char to int in isalpha() and isdigit()
+ *         Began the process of supporting Babel better
  *
  * Revision 1.9  1998/10/28 06:19:38  glehner
  * Changed all occurences of eol-output to "\r\n" to allow
@@ -342,7 +328,8 @@ parameter: code: type of section-recursion-level
 		incrementCounter("part");
 		fprintf(fRtf, "\\par\\pard\\page");
 		fprintf(fRtf, "{\\qc\\b\\fs40 ");
-		fprintf(fRtf, "%s %d\\par ", TranslateName("PART"), getCounter("part"));
+		ConvertBabelName("PARTNAME");
+		fprintf(fRtf, "%d\\par ", getCounter("part"));
 		ConvertString(heading);
 		fprintf(fRtf, "\\par}\n\\page\\par \\pard\\q%c", alignment);
 		break;
@@ -434,10 +421,14 @@ CmdCaption(int code)
 
 	if (g_processing_figure) {
 		incrementCounter("figure");
-		fprintf(fRtf, "\n\\par\\pard\\qc {%s %d: ", TranslateName("FIGURE"), getCounter("figure"));
+		fprintf(fRtf, "\n\\par\\pard\\qc {");
+		ConvertBabelName("FIGURENAME");
+		fprintf(fRtf, " %d: ",getCounter("figure"));
 	} else {
 		incrementCounter("table");
-		fprintf(fRtf, "\n\\par\\pard\\qc {%s %d: ", TranslateName("TABLE"), getCounter("table"));
+		fprintf(fRtf, "\n\\par\\pard\\qc {");
+		ConvertBabelName("TABLENAME");
+		fprintf(fRtf, " %d: ",getCounter("table"));
 	}
 
 	thecaption = getParam();
@@ -904,7 +895,7 @@ CmdVerb(int code)
 	int             num;
 
 	while ((cThis = getRawTexChar())) {
-		if ((cThis != ' ') && (cThis != '*') && !isalpha(cThis)) {
+		if ((cThis != ' ') && (cThis != '*') && !isalpha((int)cThis)) {
 			markingchar = cThis;
 			break;
 		}
@@ -1280,7 +1271,6 @@ ConvertString(char *string)
      purpose : converts string in TeX-format to Rtf-format
    parameter : string   will be converted, result is written to Rtf-file
      globals : linenumber
-               fTex
  ******************************************************************************/
 {
 	FILE           *fp, *LatexFile;

@@ -1,5 +1,8 @@
 Changes to latex2rtf by Scott Prahl
-
+1.9i
+	Removed last two // comments
+	Explicitly cast char to int in isalpha() and isdigit()
+	
 1.9h 
 	Turned hyperlatex back on.  Still not tested
 	Turned isolatin1 back on.  Still not tested.

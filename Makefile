@@ -5,8 +5,8 @@
 # Recent changes by Scott Prahl
 
 CC=gcc    # C-Compiler 
-#CFLAGS=-g -Wall -ansi -pedantic $(XCFLAGS)
-CFLAGS=$(XCFLAGS) # Use -O here if you want it optimized
+CFLAGS=-g -Wall -ansi -pedantic $(XCFLAGS)
+#CFLAGS=$(XCFLAGS) # Use -O here if you want it optimized
 COPY=cp
 INSTALL=install
 DIR_MODE=755
@@ -111,8 +111,17 @@ SOURCES=commands.c commands.h chars.c chars.h direct.c direct.h encode.c encode.
     Makefile README README.DOS README.Mac Copyright\
     mygetopt.c optind.c version \
     debian.README debian.control debian.rules ChangeLog l2r.bat
-SUPPORT=cfg/direct.cfg cfg/fonts.cfg cfg/ignore.cfg \
-    cfg/english.cfg cfg/german.cfg cfg/spanish.cfg cfg/french.cfg
+
+SUPPORT=cfg/fonts.cfg     cfg/direct.cfg   cfg/ignore.cfg \
+    cfg/afrikaans.cfg cfg/bahasa.cfg cfg/basque.cfg cfg/brazil.cfg cfg/breton.cfg \
+    cfg/catalan.cfg cfg/croatian.cfg cfg/czech.cfg cfg/danish.cfg cfg/dutch.cfg \
+    cfg/english.cfg cfg/esperanto.cfg cfg/estonian.cfg cfg/finnish.cfg cfg/french.cfg \
+    cfg/galician.cfg cfg/german.cfg cfg/icelandic.cfg cfg/irish.cfg cfg/italian.cfg \
+    cfg/latin.cfg cfg/lsorbian.cfg cfg/magyar.cfg cfg/norsk.cfg cfg/nynorsk.cfg \
+    cfg/polish.cfg cfg/portuges.cfg cfg/romanian.cfg cfg/samin.cfg cfg/scottish.cfg \
+    cfg/serbian.cfg cfg/slovak.cfg cfg/slovene.cfg cfg/spanish.cfg cfg/swedish.cfg \
+    cfg/turkish.cfg cfg/usorbian.cfg cfg/welsh.cfg 
+
 MANUALS=latex2rtf.1
 MSDOS=l2r.bat l2r.exe
 DOCS= doc/l2r.html doc/credits doc/copying.txt doc/Makefile
@@ -184,7 +193,7 @@ doc:	checkdir change.log
 	cd doc && $(MAKE) -k
 
 test: latex2rtf
-	cd test && $(MAKE) -k
+	cd test && $(MAKE) 
 
 clean: checkdir
 	rm -f $(OBJS) core latex2rtf.tar.gz \
