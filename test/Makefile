@@ -13,7 +13,7 @@ all:	accentchars.rtf array.rtf cite.rtf eqns.rtf fonts.rtf fontsize.rtf \
 	enc_maccyr.rtf enc_macukr.rtf eqns-koi8.rtf \
 	defs.rtf qualisex.rtf ttgfsr7.rtf excalibur.rtf include.rtf ch.rtf\
 	spago1.rtf theorem.rtf picture.rtf tabbing.rtf figtest.rtf \
-	apalike.rtf chem.rtf
+	apalike.rtf chem.rtf linux.rtf
 
 LATEX= latex
 BIBTEX= bibtex
@@ -63,6 +63,10 @@ apalike.rtf: apalike.tex apalike.bib
 	$(LATEX) apalike > latex.log
 	$(LATEX2RTF) $(OPTIONS) apalike
 
+linux.rtf: linux.tex
+	$(LATEX) linux > latex.log
+	$(LATEX) linux > latex.log
+	$(LATEX2RTF) $(OPTIONS) linux
 
 check:
 	./bracecheck

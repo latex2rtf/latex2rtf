@@ -222,8 +222,8 @@ globals: fTex, fRtf and all global flags for convert (see above)
 			CleanStack();
 			PushBrace();
 			fprintRTF("{");
-			Convert();    /* CHB */
-			CleanStack(); /* CHB */
+			/*Convert();
+			CleanStack();   These two commands cause problems.*/
 			break;
 			
 		case '}':

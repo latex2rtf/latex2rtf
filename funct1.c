@@ -1756,6 +1756,8 @@ roman_item(int n)
 
 void CmdNonBreakSpace(int code)
 {
+	char cThis=getNonSpace();
+	ungetTexChar(cThis);
 	fprintRTF("\\~");
 }
 
