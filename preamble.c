@@ -512,6 +512,12 @@ void CmdUsepackage(int code)
     if (strcmp(package, "inputenc") == 0 && options)
         setPackageInputenc(options);
 
+    else if (strcmp(package, "graphics") == 0)
+        g_graphics_package = GRAPHICS_GRAPHICS;
+
+    else if (strcmp(package, "graphicx") == 0)
+        g_graphics_package = GRAPHICS_GRAPHICX;
+
     else if (strcmp(package, "isolatin1") == 0)
         setPackageInputenc("latin1");
 

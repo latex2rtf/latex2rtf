@@ -9,6 +9,10 @@
 #define TITLE_DATE 3
 #define TITLE_TITLEPAGE 4
 
+#define GRAPHICS_NONE     0
+#define GRAPHICS_GRAPHICS 1
+#define GRAPHICS_GRAPHICX 2
+
 #define CFOOT 1
 #define LFOOT 2
 #define RFOOT 3

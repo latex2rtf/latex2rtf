@@ -323,7 +323,7 @@ void WriteLatexAsBitmap(char *pre, char *eq, char *post)
     } else
         name = SaveEquationAsFile(pre, eq, post);
 
-    PutLatexFile(name, scale, pre);
+    PutLatexFile(name, 0, 0, scale, pre);
 }
 
 static void PrepareRtfEquation(int code, int EQ_Needed)

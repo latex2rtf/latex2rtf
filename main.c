@@ -119,6 +119,7 @@ bool g_equation_comment = FALSE;
 double g_png_equation_scale = 1.22;
 double g_png_figure_scale = 1.35;
 bool g_latex_figures = FALSE;
+int  g_graphics_package = GRAPHICS_NONE;
 
 int indent = 0;
 char alignment = JUSTIFIED;     /* default for justified: */

@@ -916,6 +916,9 @@ int getDimension(void)
     skipSpaces();
     buffer[0] = tolower((int) getTexChar());
 
+	if (buffer[0] == '\0')  /* no units specified ... assume points */
+        return (int) (num * 20);
+	
 /* skip "true" */
     if (buffer[0] == 't') {
         cThis = getTexChar();

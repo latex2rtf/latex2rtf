@@ -40,6 +40,7 @@ Authors:
 #include "convert.h"
 #include "equation.h"
 #include "funct1.h"
+#include "preamble.h"
 
 #define POINTS_PER_M 2834.65
 
@@ -497,6 +498,31 @@ static char *eps_to_emf(char *eps)
     return emf;
 }
 
+/* figure out appropriate scaling
+here h and w are the actual height and width of the image in twips
+     target_h and target_w are the desired size of the image in twips
+     s                     is the scaling desired as a fraction
+*/
+static void AdjustScaling(double h, double w, double target_h, double target_w, double s, int *sx, int *sy)
+{
+	*sx=100;
+	*sy=100;
+	
+	if (s!=0) {
+		*sx = (int)(s * 100);
+		*sy = (int)(s * 100);
+	diagnostics(1,"AdjustScaling xscale=%d yscale=%d", *sx, *sy);
+		return;
+	}
+
+	if (target_h != 0 && h != 0) 
+		*sy = (int) (100.0 * target_h / h);
+		
+	if (target_w != 0 && w != 0) 
+		*sx = (int) (100.0 * target_w / w);
+		
+	diagnostics(1,"AdjustScaling xscale=%d yscale=%d", *sx, *sy);
+}
 
 static void PutHexFile(FILE * fp)
 
@@ -516,7 +542,7 @@ static void PutHexFile(FILE * fp)
     }
 }
 
-static void PutPictFile(char *s, double scale, double baseline, int full_path)
+static void PutPictFile(char *s, double height0, double width0, double scale, double baseline, int full_path)
 
 /******************************************************************************
      purpose : Include .pict file in RTF
@@ -527,6 +553,7 @@ static void PutPictFile(char *s, double scale, double baseline, int full_path)
     short buffer[5];
     short top, left, bottom, right;
     int width, height;
+    int sx,sy;
 
     if (full_path)
         pict = strdup(s);
@@ -564,11 +591,10 @@ static void PutPictFile(char *s, double scale, double baseline, int full_path)
     diagnostics(4, "left = %d, right = %d", left, right);
     diagnostics(4, "width = %d, height = %d", width, height);
     fprintRTF("\n{\\pict\\macpict\\picw%d\\pich%d\n", width, height);
-    if (scale != 1.0) {
-        int iscale = (int) (scale * 100);
 
-        fprintRTF("\\picscalex%d\\picscaley%d", iscale, iscale);
-    }
+	AdjustScaling(height*20,width*20,height0,width0,scale,&sx,&sy);
+    if (sx != 100 && sy != 100)
+        fprintRTF("\\picscalex%d\\picscaley%d", sx,sy);
 
     fseek(fp, -10L, SEEK_CUR);
     PutHexFile(fp);
@@ -622,7 +648,7 @@ static void GetPngSize(char *s, unsigned long *w, unsigned long *h)
     fclose(fp);
 }
 
-void PutPngFile(char *s, double scale, double baseline, int full_path)
+void PutPngFile(char *s, double height0, double width0, double scale, double baseline, int full_path)
 
 /******************************************************************************
      purpose : Include .png file in RTF
@@ -631,8 +657,8 @@ void PutPngFile(char *s, double scale, double baseline, int full_path)
     FILE *fp;
     char *png;
     unsigned long width, height, w, h, b;
-    int iscale;
-
+	int sx, sy;
+	
     if (full_path)
         png = strdup(s);
     else
@@ -641,7 +667,7 @@ void PutPngFile(char *s, double scale, double baseline, int full_path)
 
     GetPngSize(png, &width, &height);
 
-    diagnostics(4, "width = %ld, height = %ld, baseline = %g", width, height, baseline);
+    diagnostics(1, "width = %ld, height = %ld, baseline = %g", width, height, baseline);
 
     if (width == 0 || height == 0)
         return;
@@ -655,17 +681,18 @@ void PutPngFile(char *s, double scale, double baseline, int full_path)
     h = (unsigned long) (100000.0 * height) / (20 * POINTS_PER_M);
     b = (unsigned long) (100000.0 * baseline * scale) / (20 * POINTS_PER_M);
 
-    diagnostics(4, "width = %ld, height = %ld, baseline = %ld", w, h, b);
+    diagnostics(1, "width = %ld, height = %ld, baseline = %ld", w, h, b);
 
     fprintRTF("\n{");
     if (b)
         fprintRTF("\\dn%ld", b);
     fprintRTF("\\pict\\pngblip\\picw%ld\\pich%ld", w, h);
     fprintRTF("\\picwgoal%ld\\pichgoal%ld", width * 20, height * 20);
-    if (scale != 1.0) {
-        iscale = (int) (scale * 100);
-        fprintRTF("\\picscalex%d\\picscaley%d", iscale, iscale);
-    }
+
+	AdjustScaling(height*20,width*20,height0,width0,scale,&sx,&sy);
+    if (sx != 100 && sy != 100)
+        fprintRTF("\\picscalex%d\\picscaley%d", sx,sy);
+
     fprintRTF("\n");
     rewind(fp);
     PutHexFile(fp);
@@ -673,7 +700,7 @@ void PutPngFile(char *s, double scale, double baseline, int full_path)
     fclose(fp);
 }
 
-static void PutJpegFile(char *s, double scale, double baseline, int full_path)
+static void PutJpegFile(char *s, double height0, double width0, double scale, double baseline, int full_path)
 
 /******************************************************************************
      purpose : Include .jpeg file in RTF
@@ -685,6 +712,7 @@ static void PutJpegFile(char *s, double scale, double baseline, int full_path)
     int m=0, c;
     unsigned short width, height;
     unsigned long w, h;
+    int sx, sy;
 
     jpg = strdup_together(g_home_dir, s);
     fp = fopen(jpg, "rb");
@@ -729,11 +757,10 @@ static void PutJpegFile(char *s, double scale, double baseline, int full_path)
     h = (unsigned long) (100000.0 * height) / (20 * POINTS_PER_M);
     fprintRTF("\n{\\pict\\jpegblip\\picw%ld\\pich%ld", w, h);
     fprintRTF("\\picwgoal%ld\\pichgoal%ld\n", width * 20, height * 20);
-    if (scale != 1.0) {
-        int iscale = (int) (scale * 100);
 
-        fprintRTF("\\picscalex%d\\picscaley%d", iscale, iscale);
-    }
+	AdjustScaling(height*20,width*20,height0,width0,scale,&sx,&sy);
+    if (sx != 100 && sy != 100)
+        fprintRTF("\\picscalex%d\\picscaley%d", sx,sy);
 
     rewind(fp);
     PutHexFile(fp);
@@ -741,7 +768,7 @@ static void PutJpegFile(char *s, double scale, double baseline, int full_path)
     fclose(fp);
 }
 
-static void PutEmfFile(char *s, double scale, double baseline, int full_path)
+static void PutEmfFile(char *s, double height0, double width0, double scale, double baseline, int full_path)
 {
     FILE *fp;
     char *emf;
@@ -757,7 +784,8 @@ static void PutEmfFile(char *s, double scale, double baseline, int full_path)
     long FrameBottom;           /* Bottom side of inclusive picture frame */
     unsigned long Signature;    /* Signature ID (always 0x464D4520) */
     unsigned long w, h, width, height;
-
+	int sx, sy;
+	
     if (full_path)
         emf = strdup(s);
     else
@@ -816,11 +844,10 @@ static void PutEmfFile(char *s, double scale, double baseline, int full_path)
     diagnostics(4, "width = %ld, height = %ld", width, height);
     fprintRTF("\n{\\pict\\emfblip\\picw%ld\\pich%ld", w, h);
     fprintRTF("\\picwgoal%ld\\pichgoal%ld\n", width * 20, height * 20);
-    if (scale != 1.0) {
-        int iscale = (int) (scale * 100);
 
-        fprintRTF("\\picscalex%d\\picscaley%d", iscale, iscale);
-    }
+	AdjustScaling(height*20,width*20,height0,width0,scale,&sx,&sy);
+    if (sx != 100 && sy != 100)
+        fprintRTF("\\picscalex%d\\picscaley%d", sx,sy);
 
 /* write file */
     rewind(fp);
@@ -834,7 +861,7 @@ static void PutEmfFile(char *s, double scale, double baseline, int full_path)
     fclose(fp);
 }
 
-static void PutWmfFile(char *s, double scale, double baseline, int full_path)
+static void PutWmfFile(char *s, double height0, double width0, double scale, double baseline, int full_path)
 
 /******************************************************************************
  purpose   : Insert WMF file (from g_home_dir) into RTF file
@@ -850,7 +877,7 @@ static void PutWmfFile(char *s, double scale, double baseline, int full_path)
     short Top;                  /* Top coordinate in twips */
     short Right;                /* Right coordinate in twips */
     short Bottom;               /* Bottom coordinate in twips */
-    int width, height;
+    int width, height, sx, sy;
     unsigned long int magic_number = (unsigned long int) 0x9AC6CDD7;
 
     /* open the proper file */
@@ -914,11 +941,10 @@ static void PutWmfFile(char *s, double scale, double baseline, int full_path)
 
     diagnostics(4, "width = %d, height = %d", width, height);
     fprintRTF("\n{\\pict\\wmetafile1\\picw%d\\pich%d\n", width, height);
-    if (scale != 1.0) {
-        int iscale = (int) (scale * 100);
 
-        fprintRTF("\\picscalex%d\\picscaley%d", iscale, iscale);
-    }
+	AdjustScaling(height,width,height0,width0,scale,&sx,&sy);
+    if (sx != 100 && sy != 100)
+        fprintRTF("\\picscalex%d\\picscaley%d", sx,sy);
 
     rewind(fp);
     PutHexFile(fp);
@@ -931,7 +957,7 @@ static void PutWmfFile(char *s, double scale, double baseline, int full_path)
     fclose(fp);
 }
 
-static void PutPdfFile(char *s, double scale, double baseline, int full_path)
+static void PutPdfFile(char *s, double height0, double width0, double scale, double baseline, int full_path)
 {
     char *png;
 
@@ -940,13 +966,13 @@ static void PutPdfFile(char *s, double scale, double baseline, int full_path)
     png = pdf_to_png(s);
     scale *= 72.0 / g_dots_per_inch;
     if (png) {
-        PutPngFile(png, scale, baseline, TRUE);
+        PutPngFile(png, height0, width0, scale, baseline, TRUE);
         my_unlink(png);
         free(png);
     }
 }
 
-static void PutEpsFile(char *s, double scale, double baseline, int full_path)
+static void PutEpsFile(char *s, double height0, double width0, double scale, double baseline, int full_path)
 {
     char *png, *emf, *pict;
 
@@ -956,7 +982,7 @@ static void PutEpsFile(char *s, double scale, double baseline, int full_path)
         png = eps_to_png(s);
         scale *= 72.0 / g_dots_per_inch;
         if (png) {
-            PutPngFile(png, scale, baseline, TRUE);
+            PutPngFile(png, height0, width0, scale, baseline, TRUE);
             my_unlink(png);
             free(png);
         }
@@ -965,7 +991,7 @@ static void PutEpsFile(char *s, double scale, double baseline, int full_path)
     if (0) {
         pict = eps_to_pict(s);
         if (pict) {
-            PutPictFile(pict, scale, baseline, TRUE);
+            PutPictFile(pict, height0, width0, scale, baseline, TRUE);
             my_unlink(pict);
             free(pict);
         }
@@ -974,14 +1000,14 @@ static void PutEpsFile(char *s, double scale, double baseline, int full_path)
     if (0) {
         emf = eps_to_emf(s);
         if (emf) {
-            PutEmfFile(emf, scale, baseline, TRUE);
+            PutEmfFile(emf, height0, width0, scale, baseline, TRUE);
             my_unlink(emf);
             free(emf);
         }
     }
 }
 
-static void PutTiffFile(char *s, double scale, double baseline, int full_path)
+static void PutTiffFile(char *s, double height0, double width0, double scale, double baseline, int full_path)
 
 /******************************************************************************
  purpose   : Insert TIFF file (from g_home_dir) into RTF file as a PNG image
@@ -1007,7 +1033,7 @@ static void PutTiffFile(char *s, double scale, double baseline, int full_path)
     diagnostics(2, "system graphics command = [%s]", cmd);
     system(cmd);
 
-    PutPngFile(tmp_png, scale, baseline, TRUE);
+    PutPngFile(tmp_png, height0, width0, scale, baseline, TRUE);
     my_unlink(tmp_png);
 
     free(tmp_png);
@@ -1016,7 +1042,7 @@ static void PutTiffFile(char *s, double scale, double baseline, int full_path)
     free(png);
 }
 
-static void PutGifFile(char *s, double scale, double baseline, int full_path)
+static void PutGifFile(char *s, double height0, double width0, double scale, double baseline, int full_path)
 
 /******************************************************************************
  purpose   : Insert GIF file (from g_home_dir) into RTF file as a PNG image
@@ -1042,7 +1068,7 @@ static void PutGifFile(char *s, double scale, double baseline, int full_path)
     diagnostics(2, "system graphics command = [%s]", cmd);
     system(cmd);
 
-    PutPngFile(tmp_png, scale, baseline, TRUE);
+    PutPngFile(tmp_png, height0, width0, scale, baseline, TRUE);
     my_unlink(tmp_png);
 
     free(tmp_png);
@@ -1168,7 +1194,7 @@ static char *get_latex2png_name()
 #endif
 }
 
-void PutLatexFile(char *s, double scale, char *pre)
+void PutLatexFile(char *s, double height0, double width0, double scale, char *pre)
 
 /******************************************************************************
  purpose   : Convert LaTeX to Bitmap and insert in RTF file
@@ -1217,7 +1243,7 @@ void PutLatexFile(char *s, double scale, char *pre)
     } while (resolution > 10 && ((width > maxsize) || (height > maxsize)));
 
     if (err == 0)
-        PutPngFile(png, scale * 72.0 / resolution, (double) baseline, TRUE);
+        PutPngFile(png, height0, width0, scale * 72.0 / resolution, (double) baseline, TRUE);
 
     free(l2p);
     free(png);
@@ -1360,6 +1386,190 @@ char *append_graphic_extension(char *s)
 
 }
 
+static void free_strings(int n, char *strings[]) 
+{
+	int i;
+	if (strings==NULL) return;
+	
+	for (i=0; i<n; i++) {
+		if (strings[i]) free(strings[i]);
+	}
+	free(strings);
+	strings=NULL;
+}
+
+/* splits a string into pieces ... the original string remains intact 
+   example "key1=value1,key2=value2" becomes
+	   piece[0]="key1=value1"
+	   piece[1]="key2=value2"   
+*/
+static void split_string(char *s, char delim, int *n, char ***strings)
+{
+	char *t, *p;
+	int i=0;
+	*n=0;
+	
+	if (s==NULL) return;
+	
+/* count number of entries and allocate that many pieces */
+	i=0;
+	t=s;
+	while ( (p=strchr(t,delim)) != 0) {
+		i++;
+		t=p+1;
+	}
+	diagnostics(1,"number of strings = %d",i+1);
+	*n = i+1;
+	*strings = malloc(sizeof(char *) * (i+1));
+
+/* copy each piece into array of strings */
+	i=0;
+	t=s;
+	while ( (p=strchr(t,delim)) != NULL) {
+		*p='\0';
+		(*strings)[i]=strdup(t);
+		*p=delim;
+		t=p+1;
+		diagnostics(6,"piece[%d]=<%s>",i,(*strings)[i]);
+		i++;
+	}
+	(*strings)[i]=strdup(t);
+	diagnostics(6,"piece[%d]=<%s>",i,(*strings)[i]);
+}
+
+static void HandleGraphicsOptions(char *opt, char *opt2, double *h, double *w, double *s)
+{
+	double llx=0;
+	double lly=0;
+	double urx=0;
+	double ury=0;
+	char **part;
+	int count,i;
+
+	*s=0.0;
+	*h=0;
+	*w=0;
+
+	diagnostics(1,"HandleGraphicsOptions <%s> <%s>",opt,opt2);
+	
+	if (opt==NULL) return;
+	
+	split_string(opt, ',', &count, &part);
+	
+/*  \includegraphics[llx,lly][urx,ury]{filename} */
+	if (opt2) {
+		char **part2;
+		int count2;
+	
+		split_string(opt2, ',', &count2, &part2);
+		if (count == 2 && count2 == 2) {
+		
+			PushSource(NULL, part[0]);
+			llx=getDimension();
+			PopSource();
+			PushSource(NULL, part[1]);
+			lly=getDimension();
+			PopSource();
+			
+			PushSource(NULL, part2[0]);
+			urx=getDimension();
+			PopSource();
+			PushSource(NULL, part2[1]);
+			ury=getDimension();
+			PopSource();
+			
+			*h = ury-lly;
+			*w = urx-llx;
+		} 
+		
+		free_strings(count,part);
+		free_strings(count2,part2);
+		return;
+	}
+
+/*  \includegraphics[llx,lly]{filename} for graphics */
+
+	if (g_graphics_package == GRAPHICS_GRAPHICS) {
+
+		if (count == 2) {
+			PushSource(NULL, part[0]);
+			*w=getDimension();
+			PopSource();
+			PushSource(NULL, part[1]);
+			PopSource();
+			*h=getDimension();
+			*s = 1.0;
+		}
+		free_strings(count,part);
+		return;
+	}
+
+/*  \includegraphics[key=value,key1=value1]{filename} for graphicx */
+
+	for (i=0; i<count; i++) {
+		char *value;
+		
+		diagnostics(1,"part[%d]=<%s>", i, part[i]);
+		
+		value=strchr(part[i],'=');
+		if (value==NULL) continue;
+		value++;
+		
+		diagnostics(1,"value=<%s>",value);
+		
+		PushSource(NULL,value);
+		
+		if (strstr(part[i],"height"))
+			*h=getDimension();
+
+		else if (strstr(part[i],"natheight")) 
+			*h=getDimension();
+
+		else if (strstr(part[i],"totalheight"))
+			*h=getDimension();
+
+		else if (strstr(part[i],"width")) 
+			*w=getDimension();
+
+		else if (strstr(part[i],"natwidth")) 
+			*w=getDimension();
+		
+		else if (strstr(part[i],"bbllx")) 
+			llx=getDimension();
+
+		else if (strstr(part[i],"bblly"))
+			lly=getDimension();
+
+		else if (strstr(part[i],"bburx"))
+			urx=getDimension();
+
+		else if (strstr(part[i],"bbury"))
+			ury=getDimension();
+		
+		else if (strstr(part[i],"bb")) {
+			llx=getDimension();
+			lly=getDimension();
+			urx=getDimension();
+			ury=getDimension();
+			
+		} else if (strstr(part[i],"scale")) {
+			sscanf(value, "%lf", s);   /* just a float, not a dimension */
+		}
+
+		PopSource();			
+        diagnostics(1, "image scale  = %lf", *s);
+        diagnostics(1, "image height = %lf", *h);
+        diagnostics(1, "image width  = %lf", *w);
+	}
+	free_strings(count,part);
+
+	if (urx)
+		*w=urx-llx;
+	if (ury)
+		*h=ury-lly;
+}
+
+
 void CmdGraphics(int code)
 
 /*
@@ -1383,28 +1593,20 @@ code=4 => psfig
 {
     char *options, *options2;
     char *filename=NULL, *fullpathname, *fullname;
-    double scale = 1.0;
+    double scale = 0.0;
     double baseline = 0.0;
-    double x;
-    char *p;
+    double height =0;
+    double width = 0;
 
     if (code == 0) {            /* could be \includegraphics*[0,0][5,5]{file.pict} */
         options = getBracketParam();
         options2 = getBracketParam();
-        if (options2)
-            free(options2);
-
-        if (options) {          /* \includegraphics[scale=0.5]{file.png} */
-            p = strstr(options, "scale");
-            if (p) {
-                p = strchr(p, '=');
-                if (p && (sscanf(p + 1, "%lf", &x) == 1))
-                    scale = x;
-            }
-            free(options);
-        }
         filename = getBraceParam();
-        diagnostics(1, "image scale = %g", scale);
+
+        HandleGraphicsOptions(options,options2,&height,&width,&scale);
+        
+        if (options) free(options);
+        if (options2)free(options2);
     }
 
     if (code == 1) {            /* \epsffile{filename.eps} */
@@ -1448,42 +1650,42 @@ code=4 => psfig
     fullname = strdup_absolute_path(filename);
     fullpathname = append_graphic_extension(fullname);
     free(fullname);
-
+	
     if (has_extension(fullpathname, ".pict"))
-        PutPictFile(fullpathname, scale, baseline, TRUE);
+        PutPictFile(fullpathname, height, width, scale, baseline, TRUE);
 
     else if (has_extension(fullpathname, ".png"))
-        PutPngFile(fullpathname, scale, baseline, TRUE);
+        PutPngFile(fullpathname, height, width, scale, baseline, TRUE);
 
     else if (has_extension(fullpathname, ".gif"))
-        PutGifFile(fullpathname, scale, baseline, TRUE);
+        PutGifFile(fullpathname, height, width, scale, baseline, TRUE);
 
     else if (has_extension(fullpathname, ".emf"))
-        PutEmfFile(fullpathname, scale, baseline, TRUE);
+        PutEmfFile(fullpathname, height, width, scale, baseline, TRUE);
 
     else if (has_extension(fullpathname, ".wmf"))
-        PutWmfFile(fullpathname, scale, baseline, TRUE);
+        PutWmfFile(fullpathname, height, width, scale, baseline, TRUE);
 
     else if (has_extension(fullpathname, ".eps"))
-        PutEpsFile(fullpathname, scale, baseline, TRUE);
+        PutEpsFile(fullpathname, height, width, scale, baseline, TRUE);
 
     else if (has_extension(fullpathname, ".pdf"))
-        PutPdfFile(fullpathname, scale, baseline, TRUE);
+        PutPdfFile(fullpathname, height, width, scale, baseline, TRUE);
 
     else if (has_extension(fullpathname, ".ps"))
-        PutEpsFile(fullpathname, scale, baseline, TRUE);
+        PutEpsFile(fullpathname, height, width, scale, baseline, TRUE);
 
     else if (has_extension(fullpathname, ".tiff"))
-        PutTiffFile(fullpathname, scale, baseline, TRUE);
+        PutTiffFile(fullpathname, height, width, scale, baseline, TRUE);
 
     else if (has_extension(fullpathname, ".tif"))
-        PutTiffFile(fullpathname, scale, baseline, TRUE);
+        PutTiffFile(fullpathname, height, width, scale, baseline, TRUE);
 
     else if (has_extension(fullpathname, ".jpg"))
-        PutJpegFile(fullpathname, scale, baseline, TRUE);
+        PutJpegFile(fullpathname, height, width, scale, baseline, TRUE);
 
     else if (has_extension(fullpathname, ".jpeg"))
-        PutJpegFile(fullpathname, scale, baseline, TRUE);
+        PutJpegFile(fullpathname, height, width, scale, baseline, TRUE);
 
     else
         diagnostics(WARNING, "Conversion of '%s' not supported", filename);
