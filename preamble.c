@@ -72,7 +72,8 @@ setPackageBabel(char * option)
 			ReadLanguage("german");
 	}
 	
-	if (strcmp(option, "french") == 0)
+	if (strcmp(option, "french") == 0 ||
+	    strcmp(option, "frenchb") == 0)
 	{
 		FrenchMode = TRUE;
 		PushEnvironment(FRENCH_MODE);
@@ -409,6 +410,7 @@ setDocumentOptions(char *optionlist)
 			     strcmp(option, "english") == 0 || 
 			     strcmp(option, "russian") == 0 || 
 			     strcmp(option, "czech"  ) == 0 || 
+			     strcmp(option, "frenchb"  ) == 0 || 
 				 strcmp(option, "french")  == 0) 
 			setPackageBabel(option);
 		else if (strcmp(option, "twoside") == 0) 
@@ -524,12 +526,13 @@ CmdUsepackage(int code)
 	else if (strcmp(package, "isolatin1") == 0)
 		setPackageInputenc("latin1");
 
-	else if (strcmp(package, "babel") == 0 && options)
-		setPackageBabel(options);
-		
-	else if (strcmp(package, "german" )  == 0 ||
+	else if (strcmp(package, "babel") == 0) {
+		if (options) setPackageBabel(options);	
+			
+	} else if (strcmp(package, "german" )  == 0 ||
 		     strcmp(package, "ngerman")  == 0 ||
 		     strcmp(package, "czech"  )  == 0 ||
+		     strcmp(package, "frenchb")  == 0 ||
 		     strcmp(package, "french")  == 0) 
 		setPackageBabel(package);
 
@@ -614,8 +617,9 @@ CmdMakeTitle(int code)
 		ConvertString(g_preambleDate);
 	fprintRTF("}");
 	
-	fprintRTF("\n\\par\n\\par\\pard\\q%c ", alignment);
+	CmdEndParagraph(0);
 	alignment = JUSTIFIED;
+//	fprintRTF("\n\\par\n\\par\\pard\\q%c ", alignment);
 	if (g_preambleTitlepage)
 		fprintRTF("\\page ");
 
