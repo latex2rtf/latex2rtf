@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.91 2003/09/28 14:49:37 prahl Exp $
+# $Id: Makefile,v 1.92 2003/09/28 21:00:29 prahl Exp $
 
 CC=gcc
 MKDIR=mkdir -p
@@ -57,7 +57,7 @@ CFGS=cfg/fonts.cfg cfg/direct.cfg cfg/ignore.cfg \
     cfg/latin.cfg cfg/lsorbian.cfg cfg/magyar.cfg cfg/norsk.cfg cfg/nynorsk.cfg \
     cfg/polish.cfg cfg/portuges.cfg cfg/romanian.cfg cfg/samin.cfg cfg/scottish.cfg \
     cfg/serbian.cfg cfg/slovak.cfg cfg/slovene.cfg cfg/spanish.cfg cfg/swedish.cfg \
-    cfg/turkish.cfg cfg/usorbian.cfg cfg/welsh.cfg cfg/russian.cfg
+    cfg/turkish.cfg cfg/usorbian.cfg cfg/welsh.cfg cfg/russian.cfg cfg/inc_test.tex
 
 DOCS= doc/latex2rtf.1   doc/latex2png.1    doc/latex2rtf.texi doc/latex2rtf.pdf \
       doc/latex2rtf.txt doc/latex2rtf.info doc/latex2rtf.html doc/credits \
