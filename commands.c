@@ -220,6 +220,7 @@ static CommandArray commands[] = {
 	{"footnotemark", CmdIgnoreParameter, One_Opt_No_NormParam},
 	{"label", CmdLabel, LABEL_LABEL},
 	{"ref", CmdLabel, LABEL_REF},
+	{"eqref", CmdLabel, LABEL_EQREF},
 	{"pageref", CmdLabel, LABEL_PAGEREF},
 	{"cite", CmdCite, CITE_CITE},
 	{"bibliography", CmdBibliography, 0},
@@ -244,7 +245,6 @@ static CommandArray commands[] = {
 	{"addvspace", CmdIgnoreParameter, No_Opt_One_NormParam},
 	{"addcontentsline", CmdIgnoreParameter, No_Opt_Three_NormParam},
 	{"addcontents", CmdIgnoreParameter, No_Opt_Two_NormParam},
-	{"numberline", CmdIgnoreParameter, No_Opt_Two_NormParam},
 	{"stretch", CmdIgnoreParameter, No_Opt_One_NormParam},
 	{"typeaout", CmdIgnoreParameter, No_Opt_One_NormParam},
 	{"index", CmdIndex, 0},
@@ -322,6 +322,11 @@ static CommandArray commands[] = {
 	{"textcolor", CmdTextColor, 0},
 	{"citename", CmdCiteName, 0},
 	{"shortcite", CmdCite, CITE_SHORT},
+	{"tableofcontents", CmdListOf, TABLE_OF_CONTENTS},
+	{"listoffigures", CmdListOf, LIST_OF_FIGURES},
+	{"listoftables", CmdListOf, LIST_OF_TABLES},
+	{"numberline", CmdNumberLine, 0},
+	{"contentsline", CmdContentsLine, 0},
 
 	{"", NULL, 0}
 };

@@ -35,6 +35,7 @@ Authors:
 #include "preamble.h"
 #include "lengths.h"
 #include "l2r_fonts.h"
+#include "style.h"
 
 char * g_figure_label = NULL;
 char * g_table_label = NULL;
@@ -88,8 +89,9 @@ ScanAux(char *token, char * reference, int code)
 /*************************************************************************
 purpose: obtains a reference from .aux file
 
-code=0 means \token{reference}{number}       -> "number"
-code=1 means \token{reference}{{sect}{line}} -> "sect"
+code==0 means \token{reference}{number}       -> "number"
+code==1 means \token{reference}{{sect}{line}} -> "sect"
+
  ************************************************************************/
 {
 	static FILE    *fAux = NULL;
@@ -423,8 +425,10 @@ purpose: handles \label \ref \pageref \cite
 		
 		case LABEL_HYPERREF:
 		case LABEL_REF:
+		case LABEL_EQREF:
 			signet = strdup_nobadchars(text);
 			s = ScanAux("newlabel", text, 1);
+			if (code==LABEL_EQREF) fprintRTF("(");
 			if (g_fields_use_REF) {
 				fprintRTF("{\\field{\\*\\fldinst{\\lang1024 REF BM%s \\\\* MERGEFORMAT }}",signet);
 				fprintRTF("{\\fldrslt{");
@@ -434,6 +438,7 @@ purpose: handles \label \ref \pageref \cite
 			else
 				fprintRTF("?");
 			if (g_fields_use_REF) fprintRTF("}}}");
+			if (code==LABEL_EQREF) fprintRTF(")");
 				
 			free(signet);
 			if (s) free(s);
@@ -912,4 +917,102 @@ purpose: handles \citename from authordate bib style
 	
 	free(s);
 	
+}
+
+void
+CmdNumberLine(int code)
+/******************************************************************************
+purpose: handles \numberline{3.2.1}
+******************************************************************************/
+{		
+	char *number;
+	number = getBraceParam();
+	diagnostics(4,"Entering CmdNumberLine [%s]", number);
+	ConvertString(number);
+	fprintRTF("\\tab ");
+	free(number);
+}
+
+void
+CmdContentsLine(int code)
+/******************************************************************************
+purpose: handles \citename from authordate bib style
+******************************************************************************/
+{		
+	char *type, *text, *num, *contents_type;
+	
+	type = getBraceParam();
+	text = getBraceParam();
+	num = getBraceParam();
+	
+	diagnostics(1,"Entering CmdContentsLine %s [%s]", type, text);
+
+	CmdStartParagraph(TITLE_PAR);
+	fprintRTF("{");
+	contents_type=strdup_together("contents_",type);
+	InsertStyle(contents_type);
+	fprintRTF(" ");
+	ConvertString(text);
+	CmdEndParagraph(0);
+	fprintRTF("}");
+
+	free(type);
+	free(text);
+	free(num);
+	free(contents_type);
+}
+
+
+void
+CmdListOf(int code)
+/******************************************************************************
+purpose: handles \listoffigures \tableofcontents \listoftables
+******************************************************************************/
+{		
+/*	FILE *fp=NULL;
+	char *name; */
+	
+	diagnostics(4,"Entering CmdListOf");
+	
+/* this it probably the wrong way to implement \tableofcontents ! */
+
+/* print appropriate heading 
+	CmdVspace(VSPACE_BIG_SKIP);
+	CmdStartParagraph(TITLE_PAR);
+	fprintRTF("{");
+	if (g_document_type == FORMAT_BOOK || g_document_type == FORMAT_REPORT)
+		InsertStyle("chapter");
+	else
+		InsertStyle("section");
+	fprintRTF(" ");
+	
+	if (code == LIST_OF_FIGURES) {
+		ConvertBabelName("LISTFIGURENAME");
+	}
+	
+	if (code == LIST_OF_TABLES) {
+		name = g_lot_name;
+		ConvertBabelName("LISTTABLENAME");
+	}
+
+	if (code == TABLE_OF_CONTENTS) {
+		name = g_toc_name;
+		ConvertBabelName("CONTENTSNAME");
+	}
+
+	CmdEndParagraph(0);
+	fprintRTF("}");
+	CmdVspace(VSPACE_SMALL_SKIP);
+
+/* now set things up so that we start reading from the appropriate auxiliary file 
+	fp = my_fopen(name, "r");
+	if (fp == NULL) {
+		diagnostics(WARNING, "Missing latex .lot/.lof/.toc file.  Run LaTeX to create %s\n", name);
+		return;
+	} else 
+		fclose(fp);		/* testing for existence to give better error message 
+	
+	PushSource(name,NULL);	
+	
+*/
 }

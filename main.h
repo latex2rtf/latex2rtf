@@ -1,4 +1,4 @@
-/* $Id: main.h,v 1.64 2004/03/03 04:11:59 prahl Exp $ */
+/* $Id: main.h,v 1.65 2004/04/25 19:16:56 prahl Exp $ */
 
 #if defined(UNIX)
 #define ENVSEP ':'
@@ -57,6 +57,10 @@ void			diagnostics(int level, char *format,...);
 
 extern /* @dependent@ */ FILE *fRtf;	/* file pointer to RTF file */
 extern			char *g_aux_name;
+extern			char *g_toc_name;
+extern			char *g_lof_name;
+extern			char *g_lot_name;
+extern			char *g_fff_name;
 extern			char *g_bbl_name;
 extern			char *g_home_dir;
 extern			char *progname;			/* name of the executable file */

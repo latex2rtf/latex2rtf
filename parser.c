@@ -860,22 +860,25 @@ getDimension(void)
 		cThis=getTexChar();
 	}
 
-	if (cThis=='-' || cThis == '+')
-	{
+	if (cThis=='-' || cThis == '+') {
 		buffer[i++]=cThis;
 		skipSpaces();
 		cThis=getTexChar();
 	}
 	
 /* obtain number */
-	while (i<19 && (isdigit((int)cThis) || cThis=='.' || cThis == ',')){
-		if (cThis==',') cThis = '.';
-		buffer[i++] = cThis;
-		cThis = getTexChar();
+	if (cThis == '\\') 
+		buffer[i++]='1';
+	else {
+		while (i<19 && (isdigit((int)cThis) || cThis=='.' || cThis == ',')) {
+			if (cThis==',') cThis = '.';
+			buffer[i++] = cThis;
+			cThis = getTexChar();
+		}
 	}
 	ungetTexChar(cThis);
 	buffer[i]='\0';
-	diagnostics(4,"getDimension() number is <%s>", buffer);
+	diagnostics(4,"getDimension() raw number is <%s>", buffer);
 	
 	if (i==19 || sscanf(buffer, "%f", &num) != 1) {
 		diagnostics(WARNING, "Screwy number in TeX dimension");
@@ -888,6 +891,15 @@ getDimension(void)
 	skipSpaces();
 	buffer[0] = tolower((int) getTexChar());
 	
+/* skip "true" */
+	if (buffer[0]=='t') {
+		cThis=getTexChar();
+		cThis=getTexChar();
+		cThis=getTexChar();
+		skipSpaces();
+		buffer[0] = tolower((int) getTexChar());
+	}
+
 	if (buffer[0] != '\\') {
 		buffer[1] = tolower((int) getTexChar());
 		buffer[2] = '\0';

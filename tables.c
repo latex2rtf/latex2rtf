@@ -611,7 +611,6 @@ TabularMeasureCell(char *cell)
            than nothing.
  ******************************************************************************/
 {
-	char *t;
 	char *s;
 	int len;
 	
@@ -709,7 +708,7 @@ TabularMeasureRow(TabularT tabular, char *this_row, char *next_row, int height, 
 		if (cell !=NULL) {
 			int len;
 			len = TabularMeasureCell(cell);
-			diagnostics(1, "col=%d n=%d len=%d cell=<%s>",actCol,n,len,cell); 
+			diagnostics(6, "col=%d n=%d len=%d cell=<%s>",actCol,n,len,cell); 
 		}
 				
 		actCol+=n;
@@ -814,7 +813,7 @@ CmdTabular(int code)
 		row_start=table;
 		TabularGetRow(row_start,&this_row,&next_row_start,&this_height);		
 
-		/* scan entire table to get some estimate for column widths */
+		/* scan entire table to get estimates for column widths */
 		first_row = TRUE;
 		while (this_row) {
 			row_start=next_row_start;

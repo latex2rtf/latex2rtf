@@ -99,7 +99,10 @@ InsertStyle(char *command)
 	const char * rtf;
 	
 	rtf = SearchRtfCmd(command, STYLE_A);	
-	InsertBasicStyle(rtf,FALSE);
+	if (rtf==NULL)
+		diagnostics(WARNING,"Cannot find style <%s>", command);
+	else
+		InsertBasicStyle(rtf,FALSE);
 }
 
 
@@ -114,9 +117,9 @@ TryStyleConvert(char *command)
 	char *	RtfCommand;
 	char *	TexCommand;
 	char *	option[9];
-	char *	option_header[9];
+/*	char *	option_header[9];*/
 	char *  mandatory[9];
-	char *  mandatory_header[9];
+/*	char *  mandatory_header[9];*/
 	char *  rtf_piece[40];
 	char *  comma;
 	int 	optional;

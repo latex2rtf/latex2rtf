@@ -58,6 +58,8 @@ char 			*roman_item(int n, bool upper);
 
 static bool  g_paragraph_no_indent = FALSE;
 static bool  g_paragraph_inhibit_indent = FALSE;
+static bool  g_page_new = FALSE;
+static bool  g_column_new = FALSE;
 static int   g_vertical_space_to_add = 0;
 bool  g_processing_list_environment = FALSE;
 
@@ -105,6 +107,17 @@ CmdStartParagraph(int code)
 	diagnostics(5,"indent is           %d", g_left_margin_indent);
 	diagnostics(5,"right indent is     %d", g_right_margin_indent);
 	diagnostics(5,"paragraph indent is %d", getLength("parindent"));
+
+	if (g_page_new) {
+		fprintRTF("\\page ");	/* causes new page */
+		g_page_new=FALSE;
+		g_column_new=FALSE;
+	}
+	
+	if (g_column_new) {
+		fprintRTF("\\column ");	/* causes new page */
+		g_column_new=FALSE;
+	}
 
 	fprintRTF("\\q%c", alignment);
 	
@@ -733,7 +746,7 @@ parameter: code: type of section-recursion-level
 	switch (code) {
 	case SECT_PART:
 	case SECT_PART_STAR:
-		fprintRTF("\\page");
+		CmdNewPage(NewPage);
 		CmdStartParagraph(TITLE_PAR);
 		fprintRTF("{");
 		InsertStyle("part");
@@ -747,12 +760,13 @@ parameter: code: type of section-recursion-level
 		}
 		ConvertString(heading);
 		CmdEndParagraph(0);
-		fprintRTF("}\n\\page");
+		fprintRTF("}\n");
+		CmdNewPage(NewPage);
 		break;
 
 	case SECT_CHAPTER:
 	case SECT_CHAPTER_STAR:
-		fprintRTF("\\page");
+		CmdNewPage(NewPage);
 		CmdStartParagraph(TITLE_PAR);
 		fprintRTF("{");
 		InsertStyle("chapter");
@@ -1030,10 +1044,10 @@ CmdLength(int code)
 		s = getBraceParam();
 		if (strlen(s)<=1) {
 			free(s);
-			fprintf(stderr,"missing argument in \\newlength \\addtolength or \\setlength");
+			diagnostics(WARNING,"missing argument in \\newlength \\addtolength or \\setlength");
 			return;
 		}
-		s1 = s + 1; /* skip initial '//' */
+		s1 = s + 1; /* skip initial '\\' */
 		diagnostics(4,"Entering CmdLength(), <%s>", s1);
 		if (code == LENGTH_ADD || code == LENGTH_SET) {
 		
@@ -1041,14 +1055,19 @@ CmdLength(int code)
 			
 			if (cThis=='{') {
 				num = getDimension();
-				while ((cThis=getTexChar()) != '}'){}
+
+				diagnostics(3,"size is <%d> twips",num);
+				cThis=getTexChar();
+				
+				while (cThis && cThis != '}')
+					cThis=getTexChar();
 						
 				if (code == LENGTH_ADD)
 					setLength(s1, getLength(s1)+num);
 				else
 					setLength(s1, num);
 			} else 
-				fprintf(stderr,"bad parameter to \\addtolength or \\setlength");
+				diagnostics(WARNING,"bad parameter to \\addtolength or \\setlength");
 				
 		} else
 			setLength(s1,0);
@@ -1745,20 +1764,16 @@ CmdNewPage(int code)
 parameter: code: newpage or newcolumn-option
  globals: twocolumn: true if twocolumn-mode is set
  ******************************************************************************/
-{
-	CmdEndParagraph(0);
+{	
 	switch (code) {
 		case NewPage:
-			fprintRTF("\\page ");	/* causes new page */
+			g_page_new = TRUE;
 			break;
 			
 		case NewColumn:
-			if (twocolumn)
-				fprintRTF("\\column ");	/* new column */
-			else
-				fprintRTF("\\page ");	/* causes new page */
+			g_column_new = TRUE;
 			break;
-	}			/* switch */
+	}
 }
 
 void 
@@ -1812,7 +1827,7 @@ CmdAbstract(int code)
 	
 	if (code == ON) {
 		if (g_document_type == FORMAT_REPORT || titlepage) 
-			fprintRTF("\\page ");
+			CmdNewPage(NewPage);
 
 		CmdStartParagraph(FIRST_PAR);
 		fprintRTF("\\qc{\\b ");
@@ -1839,7 +1854,8 @@ CmdTitlepage(int code)
            add pagebreaks before and after this environment
  ******************************************************************************/
 {
-	switch (code) {
+	CmdNewPage(NewPage);
+	switch (code && 0) {
 		case ON:
 			fprintRTF("\n\\par\\pard \\page ");	/* new page */
 			fprintRTF("\n\\par\\q%c ", alignment);

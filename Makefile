@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.102 2004/03/03 04:11:59 prahl Exp $
+# $Id: Makefile,v 1.103 2004/04/25 19:16:37 prahl Exp $
 
 CC=gcc
 MKDIR=mkdir -p
@@ -79,29 +79,31 @@ SCRIPTS= scripts/version scripts/latex2png scripts/latex2png_1 scripts/latex2png
 	scripts/Makefile scripts/test1.tex scripts/test2.tex scripts/test3.tex \
 	scripts/test3a.tex scripts/test4.tex scripts/test1fig.eps
 
-TEST=   test/Makefile test/bracecheck \
-	test/accentchars.tex test/array.tex test/bib_simple.tex test/bib_simple.bib \
-	test/bib_apacite.tex test/bib_apalike.tex test/bib_apalike2.tex \
-	test/bib_natbib1.tex test/bib_natbib2.tex test/bib_natbib3.tex test/bib_apanat.tex \
+TEST=   test/Makefile test/bracecheck test/accentchars.tex test/array.tex  \
 	test/eqns.tex test/fonts.tex test/fontsize.tex test/frac.tex \
 	test/list.tex test/logo.tex test/misc1.tex test/misc2.tex \
 	test/oddchars.tex test/tabular.tex test/percent.tex test/essential.tex test/hndout.sty \
 	test/misc3.tex test/misc4.tex test/fancy.tex test/align.tex \
-	test/german.tex test/box.tex test/ttgfsr7.tex \
+	test/box.tex test/ttgfsr7.tex \
+	test/defs.tex test/excalibur.tex test/qualisex.tex test/include.tex \
+	test/include1.tex test/include2.tex test/include3.tex test/ch.tex test/spago1.tex \
+	test/theorem.tex test/picture.tex test/eqns-koi8.tex test/tabbing.tex \
+	test/chem.tex test/linux.tex test/color.tex test/subsup.tex \
+	test/babel_german.tex  test/babel_russian.tex test/babel_french.tex \
+	test/babel_frenchb.tex test/babel_czech.tex \
+	test/bib_apacite.tex    test/bib_apalike.tex test/bib_apalike2.tex \
+	test/bib_natbib1.tex    test/bib_natbib2.tex test/bib_natbib3.tex test/bib_apanat.tex \
+	test/bib_authordate.tex test/bib_simple.tex test/bib_simple.bib\
 	test/enc_applemac.tex test/enc_cp437.tex test/enc_cp865.tex test/enc_latin2.tex \
 	test/enc_latin5.tex test/enc_cp1250.tex test/enc_cp850.tex test/enc_decmulti.tex  \
 	test/enc_latin3.tex test/enc_latin9.tex test/enc_cp1252.tex test/enc_cp852.tex \
 	test/enc_latin1.tex test/enc_latin4.tex test/enc_next.tex  \
 	test/enc_cp1251.tex test/enc_cp855.tex  test/enc_cp866.tex  test/enc_koi8-r.tex \
 	test/enc_koi8-u.tex test/enc_maccyr.tex test/enc_macukr.tex \
-	test/defs.tex test/excalibur.tex test/qualisex.tex test/include.tex \
-	test/include1.tex test/include2.tex test/include3.tex test/ch.tex test/spago1.tex \
-	test/theorem.tex test/picture.tex test/russian.tex test/eqns-koi8.tex \
-	test/tabbing.tex test/figtest.tex test/figtest.eps test/figtestb.pdf test/chem.tex \
-	test/linux.tex test/figtest2.tex test/figtestc.ps test/figtestc.pdf test/figtestd.ps \
-	test/figtestd.pdf test/color.tex test/subsup.tex \
-	test/figtest3.tex test/head_book.tex test/head_report.tex test/head_article.tex \
-	test/bib_authordate.tex
+	test/fig_test.eps test/fig_testb.pdf test/fig_test.tex \
+	test/fig_test2.tex test/fig_testc.ps test/fig_testc.pdf test/fig_testd.ps \
+	test/fig_testd.pdf test/fig_test3.tex \
+	test/head_book.tex test/head_report.tex test/head_article.tex 
 
 OBJS=l2r_fonts.o direct.o encode.o commands.o stack.o funct1.o tables.o \
 	chars.o ignore.o cfg.o main.o util.o parser.o lengths.o counters.o \

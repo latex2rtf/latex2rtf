@@ -11,6 +11,7 @@
 #define LABEL_PAGEREF		7
 #define LABEL_HTMLADDNORMALREF 8
 #define LABEL_HTMLREF       9
+#define LABEL_EQREF			10
 
 #define BIBSTYLE_STANDARD   1
 #define BIBSTYLE_APALIKE    2
@@ -46,6 +47,10 @@
 #define CITE_AUTHOR_STAR   26
 #define CITE_YEAR_P        27
 
+#define LIST_OF_FIGURES		1
+#define LIST_OF_TABLES		2
+#define TABLE_OF_CONTENTS	3
+
 void    CmdFootNote(int code);
 void    CmdLabel(int code);
 void 	CmdNoCite(int code);
@@ -63,3 +68,7 @@ void	CmdBCAY(int code);
 void	CmdApaCite(int code);
 void    set_longnamesfirst(void);
 void	CmdCiteName(int code);
+void	CmdNumberLine(int code);
+void	CmdContentsLine(int code);
+void	CmdListOf(int code);
+

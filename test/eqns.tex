@@ -1,5 +1,14 @@
 \documentclass{article}
+\usepackage{amsmath}
 \begin{document}
+
+\section{testing equation references}
+\begin{equation}
+x=y
+\label{eqn1}
+\end{equation}
+The equation before this is equation \ref{eqn1}.  Alternatively
+one might use \eqref{eqn1}.
 
 \section{reported (non-) problems in 1.9.15}
 First commas in equations

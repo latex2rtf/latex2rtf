@@ -55,6 +55,10 @@ FILE		   *fRtf = NULL;			/* file pointer to RTF file */
 char		   *g_tex_name = NULL;
 char		   *g_rtf_name = NULL;
 char		   *g_aux_name = NULL;
+char		   *g_toc_name = NULL;
+char		   *g_lof_name = NULL;
+char		   *g_lot_name = NULL;
+char		   *g_fff_name = NULL;
 char		   *g_bbl_name = NULL;
 char		   *g_home_dir = NULL;
 
@@ -306,6 +310,18 @@ int main(int argc, char **argv)
 
 	if (g_bbl_name == NULL && basename != NULL)
 		g_bbl_name = strdup_together(basename, ".bbl");
+
+	if (g_toc_name == NULL && basename != NULL)
+		g_toc_name = strdup_together(basename, ".toc");
+
+	if (g_lof_name == NULL && basename != NULL)
+		g_lof_name = strdup_together(basename, ".lof");
+
+	if (g_lot_name == NULL && basename != NULL)
+		g_lot_name = strdup_together(basename, ".lot");
+
+	if (g_fff_name == NULL && basename != NULL)
+		g_fff_name = strdup_together(basename, ".fff");
 
 	if (basename) {
 		diagnostics(3, "latex filename is <%s>", g_tex_name);

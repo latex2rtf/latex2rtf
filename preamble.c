@@ -408,6 +408,7 @@ setDocumentOptions(char *optionlist)
 				 strcmp(option, "legalpaper" ) == 0) 
 			setPaperSize(option);
 		else if (strcmp(option, "german")  == 0 ||
+			     strcmp(option, "ngerman") == 0 || 
 			     strcmp(option, "spanish") == 0 || 
 			     strcmp(option, "english") == 0 || 
 			     strcmp(option, "russian") == 0 || 
