@@ -992,7 +992,9 @@ globals: changes Environment - array of active environments
  ****************************************************************************/
 {
     --iEnvCount;
-    if (All_Commands[iAllCommands-1] == Environments[iEnvCount]){
+    if (All_Commands[iAllCommands-1] == Environments[iEnvCount] && 
+       (!iEnvCount || Environments[iEnvCount-1] !=  Environments[iEnvCount]))
+    {
     	All_Commands[iAllCommands-1] = NULL;
     	iAllCommands--;
     }
