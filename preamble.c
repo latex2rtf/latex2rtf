@@ -619,7 +619,7 @@ CmdMakeTitle(int code)
 	
 	CmdEndParagraph(0);
 	alignment = JUSTIFIED;
-//	fprintRTF("\n\\par\n\\par\\pard\\q%c ", alignment);
+
 	if (g_preambleTitlepage)
 		fprintRTF("\\page ");
 
