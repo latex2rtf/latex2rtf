@@ -24,6 +24,7 @@ Authors:
 
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include "main.h"
