@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.17 2001/09/06 04:43:04 prahl Exp $ 
+/* $Id: funct1.c,v 1.18 2001/09/10 03:14:06 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -48,25 +48,25 @@ void            putRtfChar(char cThis);
 void 
 CmdBeginEnd(int code)
 /***************************************************************************
-   purpose: reads the parameter after the \begin or \end-command; ( see also getParam )
-	    after reading the parameter the CallParamFunc-function calls the
-	    handling-routine for that special environment
+ purpose: reads the parameter after the \begin or \end-command; ( see also getParam )
+	      after reading the parameter the CallParamFunc-function calls the
+	      handling-routine for that special environment
  parameter: code: CMD_BEGIN: start of environment
-		  CMD_END:   end of environment
+		          CMD_END:   end of environment
  ***************************************************************************/
 {
-	char           *cParam = getParam();
+	char           *s = getParam();
 	switch (code) {
 	case CMD_BEGIN:
-		(void) CallParamFunc(cParam, ON);
+		(void) CallParamFunc(s, ON);
 		break;
 	case CMD_END:
-		(void) CallParamFunc(cParam, OFF);
+		(void) CallParamFunc(s, OFF);
 		break;
 	default:
 		assert(0);
 	}
-	free(cParam);
+	free(s);
 }
 
 void 
@@ -100,33 +100,33 @@ Paragraph(int code)
 	case (PAR_CENTER | ON):
 		old_alignment_before_center = alignment;
 		alignment = CENTERED;
-		fprintf(fRtf, "\\pard \\q%c ", alignment);
+		fprintf(fRtf, "{\\pard\\q%c ", alignment);
 		break;
 	case (PAR_CENTER | OFF):
 		alignment = old_alignment_before_center;
-		fprintf(fRtf, "\\par \\pard \\q%c\n", alignment);
+		fprintf(fRtf, "\\par}\n\\pard \\q%c ", alignment);
 		bNewPar = TRUE;
 		break;
 
 	case (PAR_RIGHT | ON):
 		old_alignment_before_right = alignment;
 		alignment = RIGHT;
-		fprintf(fRtf, "\\pard \\q%c ", alignment);
+		fprintf(fRtf, "{\\pard\\q%c ", alignment);
 		break;
 	case (PAR_RIGHT | OFF):
 		alignment = old_alignment_before_right;
-		fprintf(fRtf, "\\par \\pard\\q%c\n", alignment);
+		fprintf(fRtf, "\\par}\n\\pard\\q%c ", alignment);
 		bNewPar = TRUE;
 		break;
 
 	case (PAR_LEFT | ON):
 		old_alignment_before_left = alignment;
 		alignment = LEFT;
-		fprintf(fRtf, "\\pard\\q%c\n", alignment);
+		fprintf(fRtf, "{\\pard\\q%c ", alignment);
 		break;
 	case (PAR_LEFT | OFF):
 		alignment = old_alignment_before_left;
-		fprintf(fRtf, "\\par \\pard\\q%c\n", alignment);
+		fprintf(fRtf, "\\par}\n\\pard\\q%c ", alignment);
 		bNewPar = TRUE;
 		break;
 	}
@@ -803,7 +803,7 @@ CmdVerbatim(int code)
 	if (code & ON) {
 		diagnostics(4, "Entering CmdVerbatim");
 		num = TexFontNumber("Typewriter");
-		fprintf(fRtf, "{\\f%d ", num);
+		fprintf(fRtf, "{\\plain\\f%d ", num);
 	
 		for (;;) {
 			cThis = getRawTexChar();

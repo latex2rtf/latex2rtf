@@ -1,4 +1,4 @@
-/*  $Id: commands.c,v 1.18 2001/09/09 19:41:40 prahl Exp $
+/*  $Id: commands.c,v 1.19 2001/09/10 03:14:06 prahl Exp $
 
     Defines subroutines to translate LaTeX commands to RTF
 */
@@ -245,7 +245,7 @@ static CommandArray PreambleCommands[] = {
 	{"documentclass", CmdDocumentStyle, 0},
 	{"documentstyle", CmdDocumentStyle, 0},
 	{"usepackage", CmdUsepackage, 0},
-/*	{"begin", CmdPreambleBeginEnd, CMD_BEGIN},*/
+	{"begin", CmdPreambleBeginEnd, CMD_BEGIN},
 	{"title", CmdTitle, TITLE_TITLE},
 	{"author", CmdTitle, TITLE_AUTHOR},
 	{"date", CmdTitle, TITLE_DATE},

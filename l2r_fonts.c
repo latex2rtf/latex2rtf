@@ -1,4 +1,4 @@
-/* $Id: l2r_fonts.c,v 1.13 2001/09/06 04:43:04 prahl Exp $
+/* $Id: l2r_fonts.c,v 1.14 2001/09/10 03:14:06 prahl Exp $
 
 	All changes to font size, font style, and font face are 
 	handled in this file.  Explicit changing of font characteristics
@@ -16,6 +16,7 @@
 #include "commands.h"
 #include "cfg.h"
 #include "parser.h"
+#include "stack.h"
 
 static char     sitiny[20] = "\\tiny";
 static char     siscriptsize[20] = "\\scriptsize";
@@ -136,7 +137,7 @@ CmdSetFontFamily(int code)
 		case F_FAMILY_SANSSERIF_1:
 		case F_FAMILY_TYPEWRITER_1:
 		case F_FAMILY_CALLIGRAPHIC_1:
-			fprintf(fRtf, "{\\f%d\\plain ", num);
+			fprintf(fRtf, "{\\f%d ", num);
 			FontSeries[iEnvCount] = F_SERIES_MEDIUM;
 			FontShape[iEnvCount] = F_SHAPE_UPRIGHT;
 			Convert();
@@ -159,7 +160,7 @@ CmdSetFontFamily(int code)
 		case F_FAMILY_SANSSERIF_3:
 		case F_FAMILY_TYPEWRITER_3:
 		case F_FAMILY_CALLIGRAPHIC_3:
-			fprintf(fRtf, "{\\f%d\\plain ", num);
+			fprintf(fRtf, "{\\plain\\f%d ", num);
 			FontSeries[iEnvCount] = F_SERIES_MEDIUM;
 			FontShape[iEnvCount] = F_SHAPE_UPRIGHT;
 			break;
@@ -174,8 +175,56 @@ CurrentFontFamily(void)
   purpose: returns the current font style being used
  ******************************************************************************/
 {
+	int i;
 	int             iEnvCount = CurrentEnvironmentCount();
-	return FontFamily[iEnvCount];
+	
+	for (i=iEnvCount; i>=0; i--)
+		diagnostics(3, "iEnvCount=%d Family=%d", i, FontFamily[i]);
+		
+	return FontFamily[iEnvCount-1];
+}
+
+int 
+CurrentFontNumber(void)
+/******************************************************************************
+  purpose: returns the current RTF number for the font family being used
+ ******************************************************************************/
+{
+	int             iEnvCount, Family, FontNumber;
+	
+	iEnvCount = CurrentEnvironmentCount();
+	Family = FontFamily[iEnvCount];
+	
+	switch (Family) {
+		case F_FAMILY_ROMAN:
+		case F_FAMILY_ROMAN_1:
+		case F_FAMILY_ROMAN_2:
+		case F_FAMILY_ROMAN_3:
+			FontNumber = TexFontNumber("Roman");
+			break;
+			
+		case F_FAMILY_SANSSERIF:
+		case F_FAMILY_SANSSERIF_1:
+		case F_FAMILY_SANSSERIF_2:
+		case F_FAMILY_SANSSERIF_3:
+			FontNumber = TexFontNumber("Sans Serif");
+			break;
+			
+		case F_FAMILY_TYPEWRITER:
+		case F_FAMILY_TYPEWRITER_1:
+		case F_FAMILY_TYPEWRITER_2:
+		case F_FAMILY_TYPEWRITER_3:
+			FontNumber = TexFontNumber("Typewriter");
+			break;
+			
+		case F_FAMILY_CALLIGRAPHIC:
+		case F_FAMILY_CALLIGRAPHIC_1:
+		case F_FAMILY_CALLIGRAPHIC_2:
+		case F_FAMILY_CALLIGRAPHIC_3:
+			FontNumber = TexFontNumber("Calligraphic");
+			break;
+	}
+	return FontNumber;
 }
 
 void 
@@ -187,11 +236,12 @@ CmdSetFontShape(int code)
      			F_SHAPE_ITALIC_2  for \textit{...}
  ****************************************************************************/
 {
-	int             iEnvCount, old_shape, temp;
+	int             iEnvCount, old_shape, temp, font;
 	
 	iEnvCount = CurrentEnvironmentCount();
 	old_shape = FontShape[iEnvCount];
-
+	font = CurrentFontNumber();
+	
 	temp = code;
 	if (code & ON) code &= ~(ON);
 	
@@ -207,25 +257,25 @@ CmdSetFontShape(int code)
 	diagnostics(4, "Entering CmdSetFontShape shape=%d",code);
 	
 	switch (code) {
-		case F_SHAPE_UPRIGHT:   fprintf(fRtf, "\\plain ");  break;
-		case F_SHAPE_UPRIGHT_1: fprintf(fRtf, "{\\plain ");  break;
+		case F_SHAPE_UPRIGHT:   fprintf(fRtf, "\\plain\\f%d ",font);  break;
+		case F_SHAPE_UPRIGHT_1: fprintf(fRtf, "{\\plain\\f%d ",font);  break;
 		case F_SHAPE_UPRIGHT_2: 
-		case F_SHAPE_UPRIGHT_3: fprintf(fRtf, "{\\plain ");  break;
+		case F_SHAPE_UPRIGHT_3: fprintf(fRtf, "{\\plain\\f%d ",font);  break;
 	
 		case F_SHAPE_ITALIC:    fprintf(fRtf, "\\i ");         break;
-		case F_SHAPE_ITALIC_1:  fprintf(fRtf, "{\\plain\\i ");  break;
+		case F_SHAPE_ITALIC_1:  fprintf(fRtf, "{\\plain\\f%d\\i ",font);  break;
 		case F_SHAPE_ITALIC_2:
-		case F_SHAPE_ITALIC_3:  fprintf(fRtf, "{\\i ");        break;
+		case F_SHAPE_ITALIC_3:  fprintf(fRtf, "{\\f%d\\i ",font);        break;
 	
 		case F_SHAPE_SLANTED:   fprintf(fRtf, "\\i ");         break;
-		case F_SHAPE_SLANTED_1: fprintf(fRtf, "{\\plain\\i ");  break;
+		case F_SHAPE_SLANTED_1: fprintf(fRtf, "{\\plain\\f%d\\i ",font);  break;
 		case F_SHAPE_SLANTED_2:
-		case F_SHAPE_SLANTED_3: fprintf(fRtf, "{\\i ");        break;
+		case F_SHAPE_SLANTED_3: fprintf(fRtf, "{\\f%d\\i ",font);        break;
 	
 		case F_SHAPE_CAPS:      fprintf(fRtf, "\\scaps ");         break;
-		case F_SHAPE_CAPS_1:    fprintf(fRtf, "{\\plain\\scaps ");  break;
+		case F_SHAPE_CAPS_1:    fprintf(fRtf, "{\\plain\\f%d\\scaps ",font);  break;
 		case F_SHAPE_CAPS_2:
-		case F_SHAPE_CAPS_3:    fprintf(fRtf, "{\\scaps ");        break;
+		case F_SHAPE_CAPS_3:    fprintf(fRtf, "{\\f%d\\scaps ",font);        break;
 	}
 
 	if (code == F_SHAPE_UPRIGHT_1 || code == F_SHAPE_ITALIC_1 || 
@@ -274,12 +324,13 @@ CmdSetFontSeries(int code)
 
  ****************************************************************************/
 {
-	int iEnvCount, old_series, temp;
+	int iEnvCount, old_series, temp, font;
 	
 	iEnvCount = CurrentEnvironmentCount();
 	old_series = FontSeries[iEnvCount];
 	FontSeries[iEnvCount] = code;
-		    
+	font = CurrentFontNumber();
+	
 	temp = code;
 	if (code & ON) code &= ~(ON);
 	
@@ -297,20 +348,23 @@ CmdSetFontSeries(int code)
 		 						
 		case F_SERIES_MEDIUM_1: 
 		case F_SERIES_MEDIUM_2:
-		case F_SERIES_MEDIUM_3: fprintf(fRtf, "{");   
+		case F_SERIES_MEDIUM_3: 
+								fprintf(fRtf, "{\\f%d ",font);   
 								CmdSetFontShape(F_SHAPE_UPRIGHT); 
 								break;
 	
 		case F_SERIES_BOLD:    	fprintf(fRtf, "\\b ");         
 								break;
 								
-		case F_SERIES_BOLD_1:  	fprintf(fRtf, "{");
+		case F_SERIES_BOLD_1:  	
+		                        fprintf(fRtf, "{\\f%d ",font);
 								CmdSetFontShape(F_SHAPE_UPRIGHT); 
 								fprintf(fRtf, "\\b ");  
 								break;
 								
 		case F_SERIES_BOLD_2:      
-		case F_SERIES_BOLD_3:   fprintf(fRtf, "{\\b ");        
+		case F_SERIES_BOLD_3:   
+		                        fprintf(fRtf, "{\\f%d\\b ",font);        
 								break;
 	}
 	
@@ -589,7 +643,7 @@ RestoreFont(void)
 	for (i=iEnvCount; i>=0; i--)
 		diagnostics(3," iEnv=%d Family=%d Size=%d Series=%d Shape=%d", i, FontFamily[i], FontSize[i], FontSeries[i], FontShape[i]);
 	diagnostics(3,"");
-	fprintf(fRtf, "\\f%d", CurrentFontFamily());          
+	fprintf(fRtf, "\\f%d", CurrentFontNumber());          
 	fprintf(fRtf, "\\fs%d", CurrentFontSize());          
 	ResetFontSeries();
 	ResetFontShape();

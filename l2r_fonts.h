@@ -1,4 +1,4 @@
-/* $Id: l2r_fonts.h,v 1.10 2001/08/22 05:50:23 prahl Exp $ */
+/* $Id: l2r_fonts.h,v 1.11 2001/09/10 03:14:06 prahl Exp $ */
 
 #define F_FAMILY_ROMAN          1
 #define F_FAMILY_ROMAN_1        2
@@ -56,6 +56,7 @@ void	InitializeDocumentFont(int size);
 
 void	CmdSetFontFamily(int code);
 int		CurrentFontFamily(void);
+int 	CurrentFontNumber(void);
 
 void	CmdSetFontShape(int code);
 int		CurrentFontShape(void);

@@ -1,4 +1,4 @@
-/* $Id: convert.c,v 1.2 2001/09/09 19:41:40 prahl Exp $ 
+/* $Id: convert.c,v 1.3 2001/09/10 03:14:06 prahl Exp $ 
 	purpose: routines to */
 
 #include <stdio.h>
@@ -153,7 +153,9 @@ globals: fTex, fRtf and all global flags for convert (see above)
 			break;
 
 		case ' ':
-			if ((cLast != ' ') && (cLast != '\n') ) { 
+			if (g_processing_preamble) 
+				break;
+			if ( (cLast != ' ') && (cLast != '\n') ) { 
 				if (!mbox)
 					/* if (bNewPar == FALSE) */
 					fprintf(fRtf, " ");
@@ -173,6 +175,8 @@ globals: fTex, fRtf and all global flags for convert (see above)
 			break;
 			
 		case '\n':
+			if (g_processing_preamble) 
+				break;
 			tabcounter = 0;
 
 			while ((cNext = getTexChar()) == ' ');	/* blank line with
@@ -610,5 +614,3 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 	diagnostics(WARNING, "Command \\%s not found - ignored", cCommand);
 	return FALSE;
 }
-
-

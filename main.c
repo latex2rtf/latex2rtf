@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.18 2001/09/09 19:41:40 prahl Exp $ */
+/* $Id: main.c,v 1.19 2001/09/10 03:14:06 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -230,7 +230,7 @@ globals: initializes in- and outputfile fTex, fRtf,
 	WriteRtfHeader();
 	
 	g_processing_preamble = FALSE;
-	PushEnvironment(DOCUMENT);
+/*	PushEnvironment(DOCUMENT);*/
 	diagnostics(4,"Entering Convert from main");
 	Convert();
 	diagnostics(4,"Exiting Convert from main");
@@ -574,4 +574,3 @@ getLinenumber(void)
 
 	return linenum;
 }
-

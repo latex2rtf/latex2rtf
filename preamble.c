@@ -1,4 +1,4 @@
-/* $Id: preamble.c,v 1.6 2001/09/09 19:41:40 prahl Exp $
+/* $Id: preamble.c,v 1.7 2001/09/10 03:14:06 prahl Exp $
 
 purpose : Handles LaTeX commands that should only occur in the preamble.
           These are gathered together because the entire preamble must be
@@ -146,6 +146,8 @@ setDocumentOptions(char *optionlist)
 			fprintf(stderr, "converted into RTF-Commands!\n");
 		} else if (strcmp(option, "hyperlatex") == 0) {
 			PushEnvironment(HYPERLATEX); 
+		} else if (strcmp(option, "fancyhdr") == 0) {
+			diagnostics(WARNING, "Only partial support for %s", option);
 		} else if (!TryVariableIgnore(option)) {
 			diagnostics(WARNING, "Unknown style option %s ignored", option);
 		}
@@ -287,7 +289,7 @@ CmdPreambleBeginEnd(int code)
 {
 	char           *cParam = getParam();
 	
-	if (!strcmp(cParam,"document"))
+	if (strcmp(cParam,"document"))
 		diagnostics(ERROR, "\\begin{%s} found before \\begin{document}.  Giving up.  Sorry", cParam);
 		
 	CallParamFunc(cParam, ON);
@@ -660,15 +662,17 @@ purpose: writes header info for the RTF file
 \rtf1 <charset> \deff? <fonttbl> <filetbl>? <colortbl>? <stylesheet>? <listtables>? <revtbl>?
  ****************************************************************************/
 {
+	int fn = TexFontNumber("Roman");
+
 	diagnostics(4, "Writing header for RTF file");
 
-	fprintf(fRtf, "{\\rtf1\\ansi\\fs%d\\deff0\\deflang1024\n", CurrentFontSize());
+	fprintf(fRtf, "{\\rtf1\\ansi\\fs%d\\deff%d\\deflang1024\n", CurrentFontSize(),fn);
 	WriteFontHeader();
 	WriteStyleHeader();
 	WriteInfo();
 	WritePageSize();
 	WriteHeadFoot();
-	fprintf(fRtf, "\\f%d\\ansi ", TexFontNumber("Roman"));
+/*	fprintf(fRtf, "\\f%d\\ansi ", TexFontNumber("Roman"));*/
 }
 
 
