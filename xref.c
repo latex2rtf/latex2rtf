@@ -61,12 +61,24 @@ static char g_last_year_cited[51];
 static int g_citation_longnamesfirst = 0;
 static int g_current_cite_item = 0;
 
-static char g_bibpunct_open = '(';
-static char g_bibpunct_close = ')';
-static char g_bibpunct_cite_sep = ',';
-static char g_bibpunct_author_date_sep = ',';
-static char g_bibpunct_numbers_sep = ',';
-static char g_bibpunct_postnote_sep[3] = ", ";
+static char *g_bibpunct_open = NULL;
+static char *g_bibpunct_close = NULL;
+static char *g_bibpunct_cite_sep = NULL;
+static char *g_bibpunct_author_date_sep = NULL;
+static char *g_bibpunct_numbers_sep = NULL;
+static char *g_bibpunct_postnote_sep = NULL;
+static bool g_bibpunct_touched = FALSE;
+
+void InitializeBibliography(void)
+{
+	g_bibpunct_open = strdup("(");
+	g_bibpunct_close = strdup(")");
+	g_bibpunct_cite_sep = strdup(",");
+	g_bibpunct_author_date_sep = strdup(",");
+	g_bibpunct_numbers_sep = strdup(",");
+    g_bibpunct_postnote_sep = strdup(", ");
+    g_bibpunct_touched = FALSE;
+}
 
 void set_longnamesfirst(void)
 {
@@ -615,25 +627,29 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first)
             if (strcmp(v, g_last_author_cited) == 0)
                 author_repeated = TRUE;
 
-            if (!first && !author_repeated)
-                fprintRTF("; ");    /* punctuation between * citations */
+            if (!first && !author_repeated) {
+            	ConvertString(g_bibpunct_cite_sep);
+                fprintRTF(" ");
+            }
 
             if (!author_repeated) { /* suppress repeated names */
                 ConvertString(v);
                 strcpy(g_last_author_cited, v);
                 strcpy(g_last_year_cited, year);
             }
-            fprintRTF(" (");
+            fprintRTF(" ");
+            ConvertString(g_bibpunct_open);
+            
             ConvertString(year);
             if (pre) {
-                fprintRTF(", ");
+             	ConvertString(g_bibpunct_postnote_sep);
                 ConvertString(pre);
             }
             if (post) {
-                fprintRTF(", ");
+             	ConvertString(g_bibpunct_postnote_sep);
                 ConvertString(post);
             }
-            fprintRTF(")");
+            ConvertString(g_bibpunct_close);
             break;
 
         case CITE_P:
@@ -658,18 +674,22 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first)
                  	fprintRTF(" ");
                  }
             }
-            if (!first && !author_repeated)
-                fprintRTF("; ");    /* punctuation between * citations */
+            if (!first && !author_repeated) {
+            	ConvertString(g_bibpunct_cite_sep);
+                fprintRTF(" ");
+            }
 
             if (!author_repeated) { /* suppress repeated names */
                 ConvertString(v);
                 strcpy(g_last_author_cited, v);
                 strcpy(g_last_year_cited, year);
-                fprintRTF(", ");
+             	ConvertString(g_bibpunct_author_date_sep);
+                fprintRTF(" ");
                 ConvertString(year);
             } else {
                 if (!year_repeated) {
-                    fprintRTF(", ");
+             		ConvertString(g_bibpunct_numbers_sep);
+                    fprintRTF(" ");
                     ConvertString(year);
                 } else {
                     char *s = strdup(year + 4);
@@ -681,12 +701,12 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first)
             }
 
             if (pre && post==NULL) {
-                fprintRTF(", ");
+             	ConvertString(g_bibpunct_postnote_sep);
                 ConvertString(pre);
                 fprintRTF(" ");
             }
             if (post && *post != '\0') {
-                fprintRTF(", ");
+             	ConvertString(g_bibpunct_postnote_sep);
                 ConvertString(post);
                 fprintRTF(" ");
             }
@@ -695,8 +715,10 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first)
         case CITE_AUTHOR:
         case CITE_AUTHOR_STAR:
             v = abbv;
-            if (!first)
-                fprintRTF("; ");    /* punctuation between * citations */
+            if (!first) {
+            	ConvertString(g_bibpunct_cite_sep);
+                fprintRTF(" ");
+            }
             if (CITE_AUTHOR == code && g_citation_longnamesfirst && !g_current_cite_seen)
                 v = full;
 
@@ -708,8 +730,10 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first)
 
         case CITE_YEAR:
         case CITE_YEAR_P:
-            if (!first)
-                fprintRTF("; ");    /* punctuation between * citations */
+            if (!first) {
+            	ConvertString(g_bibpunct_cite_sep);
+                fprintRTF(" ");
+            }
 
             if (CITE_YEAR != code && pre && !isEmptyName(post)
               && g_current_cite_item == 1) {
@@ -719,12 +743,12 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first)
             ConvertString(year);
 
             if (pre && isEmptyName(post)) {
-                fprintRTF(", ");
+             	ConvertString(g_bibpunct_postnote_sep);
                 ConvertString(pre);
                 fprintRTF(" ");
             }
             if (post && *post != '\0') {
-                fprintRTF(", ");
+             	ConvertString(g_bibpunct_postnote_sep);
                 ConvertString(post);
                 fprintRTF(" ");
             }
@@ -816,35 +840,31 @@ void CmdBibpunct(int code)
 	
 	s = getBracketParam();
 	if (s) {
-		g_bibpunct_postnote_sep[0]=s[0];
-		g_bibpunct_postnote_sep[1]=s[1];
-		g_bibpunct_postnote_sep[2]='\0';
-		free(s);
+		if (g_bibpunct_postnote_sep)
+			free(g_bibpunct_postnote_sep);
+		g_bibpunct_postnote_sep=getBraceParam();
 	}
 	
-	s=getBraceParam();
-	g_bibpunct_open = s[0];
-	free(s);
+	free(g_bibpunct_open);
+	g_bibpunct_open=getBraceParam();
 
-	s=getBraceParam();
-	g_bibpunct_close = s[0];
-	free(s);
+	free(g_bibpunct_close);
+	g_bibpunct_close=getBraceParam();
 
-	s=getBraceParam();
-	g_bibpunct_cite_sep = s[0];
-	free(s);
+	free(g_bibpunct_cite_sep);
+	g_bibpunct_cite_sep=getBraceParam();
 
     /* not implemented */
 	s=getBraceParam();
 	free(s);
 
-	s=getBraceParam();
-	g_bibpunct_author_date_sep = s[0];
-	free(s);
+	free(g_bibpunct_author_date_sep);
+	g_bibpunct_author_date_sep=getBraceParam();
 
-	s=getBraceParam();
-	g_bibpunct_numbers_sep = s[0];
-	free(s);
+	free(g_bibpunct_numbers_sep);
+	g_bibpunct_numbers_sep=getBraceParam();
+
+	g_bibpunct_touched = TRUE;
 }
 
 /******************************************************************************
@@ -864,8 +884,10 @@ void CmdCite(int code)
     g_last_year_cited[0] = '\0';
 
     if (g_document_bibstyle == BIBSTYLE_STANDARD) {
-		g_bibpunct_open = '[';
-	    g_bibpunct_close = ']';
+		free(g_bibpunct_open);
+		free(g_bibpunct_close);
+		g_bibpunct_open = strdup("[");
+	    g_bibpunct_close = strdup("]");
         option = getBracketParam();
     }
     if (g_document_bibstyle == BIBSTYLE_APALIKE) {
@@ -874,12 +896,7 @@ void CmdCite(int code)
     if (g_document_bibstyle == BIBSTYLE_AUTHORDATE) {
         option = getBracketParam();
     }
-    if (g_document_bibstyle == BIBSTYLE_NATBIB) {
-        pretext = getBracketParam();
-        option = getBracketParam();
-        if (code != CITE_P && code != CITE_P_STAR && code != CITE_ALP && code != CITE_ALP_STAR && code != CITE_YEAR_P)
-            g_current_cite_paren = FALSE;
-    }
+
     if (g_document_bibstyle == BIBSTYLE_APACITE) {
         pretext = getAngleParam();
         option = getBracketParam();
@@ -902,8 +919,10 @@ void CmdCite(int code)
         return;
     }
     /* output text before citation */
-    if (g_current_cite_paren)
-        fprintRTF("\n%c", g_bibpunct_open);
+    if (g_current_cite_paren) {
+        fprintRTF("\n"); 
+        ConvertString(g_bibpunct_open);
+    }
 
     if (pretext && g_document_bibstyle == BIBSTYLE_APACITE) {
         ConvertString(pretext);
@@ -925,13 +944,17 @@ void CmdCite(int code)
             
         if (g_document_bibstyle == BIBSTYLE_APALIKE) {  /* can't use Word refs for APALIKE or APACITE */
             t = s ? s : key;
-            if (!first_key)
-                fprintRTF("%c ", g_bibpunct_cite_sep); /* punctuation between * citations */
+            if (!first_key) {
+            	ConvertString(g_bibpunct_cite_sep);
+                fprintRTF(" ");
+            }
             ConvertString(t);
         }
         if (g_document_bibstyle == BIBSTYLE_AUTHORDATE) {
-            if (!first_key)
-                fprintRTF("%c ", g_bibpunct_cite_sep); /* punctuation between * citations */
+            if (!first_key) {
+            	ConvertString(g_bibpunct_cite_sep);
+                fprintRTF(" ");
+            }
             t = s ? s : key;
             if (code == CITE_SHORT)
                 g_suppress_name = TRUE;
@@ -940,29 +963,22 @@ void CmdCite(int code)
                 g_suppress_name = FALSE;
         }
         if (g_document_bibstyle == BIBSTYLE_APACITE) {
-            if (!first_key)
-                fprintRTF("%c ", g_bibpunct_cite_sep); /* punctuation between * citations */
+            if (!first_key) {
+            	ConvertString(g_bibpunct_cite_sep);
+                fprintRTF(" ");
+            }
             t = s ? s : key;
             g_current_cite_seen = citation_used(key);
             ConvertString(t);
-        }
-        if (g_document_bibstyle == BIBSTYLE_NATBIB) {
-            diagnostics(2, "natbib key=[%s] <%s> ", key, s);
-            if (s) {
-                g_current_cite_seen = citation_used(key);
-                ConvertNatbib(s, code, pretext, option, first_key);
-            } else {
-                if (!first_key)
-                    fprintRTF("%c ", g_bibpunct_cite_sep); /* punctuation between * citations */
-                ConvertString(key);
-            }
         }
         
         if (g_document_bibstyle == BIBSTYLE_STANDARD) {
             char *signet = strdup_nobadchars(key);
 
-            if (!first_key)
-                fprintRTF("%c ", g_bibpunct_cite_sep); /* punctuation between * citations */
+            if (!first_key) {
+            	ConvertString(g_bibpunct_cite_sep);
+                fprintRTF(" ");
+            }
             t = s ? s : signet; /* if .aux is missing or * incomplete use original * citation */
             if (g_fields_use_REF) {
                 fprintRTF("{\\field{\\*\\fldinst{\\lang1024 REF BIB_%s \\\\* MERGEFORMAT }}", signet);
@@ -988,8 +1004,11 @@ void CmdCite(int code)
         fprintRTF("%s", g_bibpunct_postnote_sep);
         ConvertString(option);
     }
-    if (g_current_cite_paren)
-        fprintRTF("\n%c", g_bibpunct_close);
+
+    if (g_current_cite_paren) {
+        fprintRTF("\n"); 
+        ConvertString(g_bibpunct_close);
+    }
 
     if (keys)
         free(keys);
@@ -1000,7 +1019,99 @@ void CmdCite(int code)
 }
 
 /******************************************************************************
-purpose: handles \cite for harvard.sty
+purpose: handles \citations for natbib package
+******************************************************************************/
+void CmdNatbibCite(int code)
+{
+    char *text, *str1;
+    char *keys, *key, *next_keys;
+    char *option = NULL;
+    char *pretext = NULL;
+    int first_key = TRUE;
+
+    /* Setup punctuation and read options before citation */
+    g_current_cite_paren = TRUE;
+    g_last_author_cited[0] = '\0';
+    g_last_year_cited[0] = '\0';
+
+	if (!g_bibpunct_touched) {
+		free(g_bibpunct_cite_sep);
+		g_bibpunct_cite_sep = strdup(";");
+	}
+	
+	pretext = getBracketParam();
+	option = getBracketParam();
+	if (code != CITE_P && code != CITE_P_STAR && code != CITE_ALP && code != CITE_ALP_STAR && code != CITE_YEAR_P)
+		g_current_cite_paren = FALSE;
+    
+    text = getBraceParam();
+    str1 = strdup_nocomments(text);
+    free(text);
+    text = str1;
+        
+    if (strlen(text) == 0) {
+        free(text);
+        if (pretext)
+            free(pretext);
+        if (option)
+            free(option);
+        return;
+    }
+    
+    /* output text before citation */
+    if (g_current_cite_paren) {
+        fprintRTF("\n"); 
+        ConvertString(g_bibpunct_open);
+    }
+
+    /* now start processing keys */
+    keys = strdup_noblanks(text);
+    free(text);
+    key = keys;
+    next_keys = popCommaName(key);
+
+    g_current_cite_item = 0;
+    while (key) {
+        char *s;
+
+        g_current_cite_item++;
+
+		s = ScanAux("bibcite", key, 0); /* look up bibliographic reference */
+            
+		diagnostics(2, "natbib key=[%s] <%s> ", key, s);
+		if (s) {
+			g_current_cite_seen = citation_used(key);
+			ConvertNatbib(s, code, pretext, option, first_key);
+		} else {
+            if (!first_key) {
+            	ConvertString(g_bibpunct_cite_sep);
+                fprintRTF(" ");
+            }
+			ConvertString(key);
+		}
+        
+        first_key = FALSE;
+        key = next_keys;
+        next_keys = popCommaName(key);  /* key modified to be a single key */
+        if (s)
+            free(s);
+    }
+
+    if (g_current_cite_paren) {
+        fprintRTF("\n"); 
+        ConvertString(g_bibpunct_close);
+    }
+
+    if (keys)
+        free(keys);
+    if (option)
+        free(option);
+    if (pretext)
+        free(pretext);
+}
+
+/******************************************************************************
+purpose: handles \citations for harvard.sty
 ******************************************************************************/
 void CmdHarvardCite(int code)
 {
@@ -1035,8 +1146,10 @@ void CmdHarvardCite(int code)
     }
     
     /* output text before citation */
-    if (g_current_cite_paren)
-        fprintRTF("\n%c", g_bibpunct_open);
+    if (g_current_cite_paren) {
+        fprintRTF("\n"); 
+        ConvertString(g_bibpunct_open);
+    }
 
     /* now start processing keys */
     keys = strdup_noblanks(text);
@@ -1054,7 +1167,10 @@ void CmdHarvardCite(int code)
             
 		diagnostics(2, "harvard key=[%s] <%s>", key, s);
 		
-		if (!first_key) fprintRTF("%c ", g_bibpunct_cite_sep); /* punctuation between citations */
+		if (!first_key) {
+			ConvertString(g_bibpunct_cite_sep);
+			fprintRTF(" ");
+		}
 
 		if (s) {
 			g_current_cite_seen = citation_used(key);
@@ -1075,8 +1191,10 @@ void CmdHarvardCite(int code)
         ConvertString(posttext);
     }
     
-    if (g_current_cite_paren)
-        fprintRTF("\n%c", g_bibpunct_close);
+    if (g_current_cite_paren) {
+        fprintRTF("\n"); 
+        ConvertString(g_bibpunct_close);
+    }
 
     if (keys)
         free(keys);

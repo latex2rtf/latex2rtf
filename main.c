@@ -152,7 +152,8 @@ int main(int argc, char **argv)
 
     InitializeStack();
     InitializeLatexLengths();
-
+	InitializeBibliography();
+	
     while ((c = my_getopt(argc, argv, "lhpvFSWZ:o:a:b:d:f:i:s:C:D:M:P:T:")) != EOF) {
         switch (c) {
             case 'a':
