@@ -373,7 +373,7 @@ CmdSlashSlash(int code)
 		return;
 	}
 
-	if (tabbing_on){
+	if (g_processing_tabbing){
 		PopBrace();
 		PushBrace();
 	}
@@ -1606,7 +1606,7 @@ CmdTitlepage(int code)
 	}
 }
 
-void
+void 
 CmdMinipage(int code)
 /******************************************************************************
   purpose: recognize and parse Minipage parameters

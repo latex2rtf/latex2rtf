@@ -588,7 +588,7 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 
 	case '-':
 		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
-		if (tabbing_on){
+		if (g_processing_tabbing){
 			(void) PopBrace();
 			PushBrace();
 		} else
@@ -597,7 +597,7 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 
 	case '+':
 		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
-		if (tabbing_on){
+		if (g_processing_tabbing){
 			(void) PopBrace();
 			PushBrace();
 		}
@@ -605,7 +605,7 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 		
 	case '<':
 		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
-		if (tabbing_on){
+		if (g_processing_tabbing){
 			(void) PopBrace();
 			PushBrace();
 		}
@@ -613,7 +613,7 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 
 	case '>':
 		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
-		if (tabbing_on){
+		if (g_processing_tabbing){
 			(void) PopBrace();
 			CmdTabjump();
 			PushBrace();
@@ -623,7 +623,7 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 		
 	case '`':
 		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
-		if (tabbing_on){
+		if (g_processing_tabbing){
 			(void) PopBrace();
 			PushBrace();
 		} else
@@ -632,7 +632,7 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 		
 	case '\'':
 		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
-		if (tabbing_on){
+		if (g_processing_tabbing){
 			(void) PopBrace();
 			PushBrace();
 			return TRUE;
@@ -642,7 +642,7 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 
 	case '=':
 		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
-		if (tabbing_on){
+		if (g_processing_tabbing){
 			(void) PopBrace();
 			CmdTabset();
 			PushBrace();

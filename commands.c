@@ -390,11 +390,6 @@ static CommandArray FigureCommands[] = {
 	{"", NULL, 0}
 };
 
-static CommandArray TabbingCommands[] = {
-	{"kill", CmdTabkill, 0},/* a line that ends with a \kill command produces no output */
-	{"", NULL, 0}
-};
-
 static CommandArray LetterCommands[] = {
 	{"opening", CmdOpening, 0},
 	{"closing", CmdClosing, 0},
@@ -517,7 +512,7 @@ static CommandArray params[] = {
 	{"flushright", CmdAlign, PAR_RIGHT},
 	{"flushleft", CmdAlign, PAR_LEFT},
 	{"document", Environment, DOCUMENT},
-	{"tabbing", CmdTabbing, TABBING},
+	{"tabbing", CmdTabular, TABBING},
 	{"figure", CmdFigure, FIGURE},
 	{"figure*", CmdFigure, FIGURE_1},
 	{"picture", CmdPicture, 0},
@@ -707,10 +702,6 @@ globals: changes Environment - array of active environments
 	case ENUMERATE:
 		Environments[iEnvCount] = EnumerateCommands;
 		diag = "enumerate";
-		break;
-	case TABBING:
-		Environments[iEnvCount] = TabbingCommands;
-		diag = "tabbing";
 		break;
 	case LETTER:
 		Environments[iEnvCount] = LetterCommands;

@@ -46,20 +46,24 @@ typedef struct TabularT {
 } TabularT;	
 
 int             tabcounter = 0;
-bool            tabbing_on = FALSE;
 bool            tabbing_return = FALSE;
 bool            tabbing_on_itself = FALSE;
 long          	pos_begin_kill;
+bool            g_processing_tabbing = FALSE;
 bool			g_processing_table = FALSE;
 
 int             colCount;			/* number of columns in a tabular environment */
 int             actCol;				/* actual column in the tabular environment */
 char           *colFmt = NULL;
 
-static int      tabstoparray[100];
-static int      number_of_tabstops = 0;
+void            CmdTabjump(void)
+{
+	fprintRTF("\\tab ");
+}
 
-static void     Convert_Tabbing_with_kill(void);
+void            CmdTabset(void)
+{
+}
 
 static char *
 ConvertFormatString(char *s)
@@ -110,235 +114,6 @@ ConvertFormatString(char *s)
 	diagnostics(4, "Exiting ConvertFormatString, output=<%s>",simple);
 	return simple;
 }
-
-void 
-CmdTabbing(int code)
-/******************************************************************************
-  purpose: pushes all tabbing-commands on a stack
-parameter: code : on/off at begin/end-environment
-  globals: tabbing_on: true if tabbing-mode is on (only in this environment)
-	   tabbing_return, tabbing_itself: true if environment ends
- ******************************************************************************/
-{
-	if (code & ON) {	/* on switch */
-		code &= ~(ON);	/* mask MSB */
-		diagnostics(4, "Entering CmdTabbing");
-		if (code == TABBING) {
-			tabbing_on = TRUE;
-			/* tabbing_on_itself = FALSE; */
-
-			fprintRTF("\\par\\line ");
-/*			pos_begin_kill= ftell(fRtf);*/
-			/* Test ConvertTabbing(); */
-		}
-	} else {		/* off switch */
-		/*
-		 * tabbing_return = TRUE; tabbing_on_itself = TRUE;
-		 */
-		tabbing_on = FALSE;
-
-		fprintRTF("\\par\\pard\\line\\q%c ", alignment);
-		diagnostics(4, "Exiting CmdTabbing");
-	}
-}
-
-void 
-CmdTabset()
-/******************************************************************************
- purpose: sets an tabstop
-globals:  tabcounter: specifies the tabstop-position
- ******************************************************************************/
-{
-	int             tabstop;
-	tabstop = (tabcounter / 6) * 567;
-	tabstoparray[number_of_tabstops] = tabstop;
-	number_of_tabstops++;
-	fprintRTF("\\tx%d ", tabstop);	/* Tab at tabstop/567
-						 * centimeters */
-}
-
-void 
-CmdTabjump()
-/******************************************************************************
- purpose: jumps to an tabstop
- ******************************************************************************/
-{
-	fprintRTF("\\tab ");
-}
-
-void 
-CmdTabkill( /* @unused@ */ int code)
-/******************************************************************************
- purpose: a line in the tabbing-Environment which ends with an kill-command won't be
-	 written to the rtf-FILE
-	 \kill does not work until tables.c gets rewritten
- ******************************************************************************/
-{
-	int             i;
-
-/*	fseek(fRtf, pos_begin_kill, SEEK_SET);*/
-
-	for (i = 0; i < number_of_tabstops; i++) {
-		fprintRTF("\\tx%d ", tabstoparray[i]);	/* Tab at tabstop/567 centimeters */
-	}
-
-	number_of_tabstops = 0;
-}
-
-void 
-ConvertTabbing(void)
-/******************************************************************************
- purpose: converts tabbing commands from LaTeX to Rtf
- ******************************************************************************/
-{
-	int             read_end = 1024;
-	char            cCommand[MAXCOMMANDLEN];
-	int             i;
-	long            j = 0;
-	char            cThis;
-	bool            getcommand;
-	bool            command_end_line_found;
-	bool            command_kill_found;
-
-	while (tabbing_on) {
-		command_end_line_found = FALSE;
-		command_kill_found = FALSE;
-
-		while (command_end_line_found) {
-			for (;;) {	/* do forever */
-				getcommand = FALSE;
-				cThis = getTexChar();
-				j++;
-
-				if (cThis == '\\') {
-					getcommand = TRUE;
-					strcpy(cCommand, "");
-
-					for (i = 0;; i++) {	/* get command from
-								 * input stream */
-						cThis = getTexChar();
-						j++;
-
-						if (i == 0) {	/* test for special
-								 * characters */
-							switch (cThis) {
-							case '\\':
-								command_end_line_found = TRUE;
-								break;
-							}	/* switch */
-						}	/* if */
-						if (!isalpha((unsigned char) cThis)) {
-							while (cThis == ' ') {	/* all spaces after
-										 * commands are ignored */
-								cThis = getTexChar();
-								j++;
-							}
-
-							ungetTexChar(cThis);	/* position of next
-										 * character after
-										 * command except space */
-							j--;
-							break;	/* for */
-						}
-						cCommand[i] = cThis;
-					}	/* for */
-
-					cCommand[i] = '\0';	/* mark end of string
-								 * with zero */
-				}	/* if \\ */
-				if ((getcommand) &&
-				    ((command_end_line_found) ||
-				     (strcmp(cCommand, "kill") == 0) ||
-				     (strcmp(cCommand, "end") == 0))) {
-					command_end_line_found = TRUE;
-					if (strcmp(cCommand, "kill") == 0)
-						command_kill_found = TRUE;
-					break;
-				}
-				if (j >= read_end) {
-					command_end_line_found = TRUE;
-					break;
-				}
-			}	/* for */
-		}		/* while command_end_line_found */
-
-		ungetTexChar(cThis);	/* re_read line  PROBABLY WRONG! */
-		if (command_kill_found)
-			Convert_Tabbing_with_kill();
-		else
-		{
-			diagnostics(4, "Entering Convert() from within tabbing");
-			Convert();
-			diagnostics(4, "Exiting Convert() from within tabbing");
-		}
-	}			/* while Tabbing_ON */
-
-	tabbing_on = FALSE;
-}				/* ConvertTabbing */
-
-
-void 
-Convert_Tabbing_with_kill(void)
-/******************************************************************************
- purpose: routine which converts the tabbing-kill-option from LaTex to Rtf
- globals: tabcounter:
- ******************************************************************************/
-{
-	int             i = 0;
-	bool            command_kill_found = FALSE;
-	char            cThis;
-	char            cCommand[MAXCOMMANDLEN];
-
-	tabcounter = 0;
-
-	while (command_kill_found) {
-		cThis = getTexChar();
-
-		strcpy(cCommand, "");
-
-		if (cThis == '\\') {
-
-			for (i = 0; ; i++) {	/* get command from input stream */
-				cThis = getTexChar();
-
-				if (i == 0) {	/* test for special characters */
-					switch (cThis) {
-					case '=':
-						CmdTabset();
-						break;
-					default:
-						if (!isalpha((unsigned char) cThis))
-							diagnostics(ERROR, "Wrong command in tabbing environment");
-					}
-				}
-				if (!isalpha((unsigned char) cThis)) {
-					cThis = getNonSpace();
-					while (cThis == ' ')	/* all spaces after
-								 * commands are ignored */
-						cThis = getTexChar();
-
-					ungetTexChar(cThis);	/* position of next
-								 * character after
-								 * command except space */
-					break;	/* for */
-				}
-				cCommand[i] = cThis;
-			}	/* for */
-
-			cCommand[i] = '\0';	/* mark end of string with
-						 * zero */
-		}
-		 /* if \\ */ 
-		else
-			tabcounter++;
-
-		if (strcmp(cCommand, "kill") == 0) {
-			command_kill_found = TRUE;
-			tabcounter = 0;
-			break;
-		}
-	}			/* while command_kill_found */
-}				/* Convert_Tabbing_with_kill */
 
 static int
 TabularColumnPosition(int n)
@@ -420,18 +195,20 @@ TabularPreamble(char *text, char *width, char *pos, char *cols)
 }
 
 static void
-TabularGetRow(char *table, char **row, char **next_row, int *height)
+TabularGetRow(char *table, char **row, char **next_row, int *height, int tabbing)
 /******************************************************************************
  purpose:  scan and duplicate the next row from the table and any height changes
  			e.g.   the & cell & is & here \\[2pt]
  			       but & then & it & died \\
  			will return "the & cell & is & here" and height should be 40 (twips)
+ if tabbing then \kill will end a line
  ******************************************************************************/
 {
 	char *s,*dimension,*dim_start;
 	int slash=0;
 	int row_chars=0;
 	int dim_chars=0;
+	bool slashslash=FALSE;
 	
 	s=table;
 	*row=NULL;
@@ -439,21 +216,31 @@ TabularGetRow(char *table, char **row, char **next_row, int *height)
 	*height=0;
 	
 	if (!s) return;
-	
-/* find \\ */
-	while (*s != '\0' && !(*s == '\\' && slash)) {
+
+	/* the end of a row is caused by one of three things
+	   1) the buffer ends
+       2) two slashes in a row are found
+       3) \kill is encountered                            */
+	while (!(*s == '\0') &&
+		   !(*s == '\\' && slash) &&
+		   !(tabbing && (row_chars>6) && strncmp(s-6,"\\kill",5) == 0 && !isalpha((int) *s))
+		  ) {
 		slash = (*s == '\\') ? 1 : 0;
 		row_chars++;
 		s++;
 	}
 
-	if (row_chars) row_chars--;	
+	if (*s == '\\' && slash) {
+		row_chars--;
+		slashslash=TRUE;
+	}
+	
 	*row = (char *)malloc((row_chars+1)*sizeof(char));
 	strncpy(*row, table, row_chars);
 	(*row)[row_chars]='\0';
-	
+
 	diagnostics(4,"row =<%s>",*row);
-	if (*s=='\0') return;
+	if (!slashslash) return;
 	
 /* move after \\ */
 	s++;
@@ -817,6 +604,16 @@ TabularWriteRow(TabularT tabular, char *this_row, char *next_row, int height, in
 	TabularEndRow();
 }
 
+static void
+TabbingWriteRow(TabularT tabular, char *this_row, char *next_row, int height, int first_row)
+{
+	if (this_row==NULL || strlen(this_row)==0) return;
+	
+	diagnostics(4, "TabbingWriteRow height=%d twpi, row <%s>",height, this_row); 
+	if (strstr(this_row,"\\kill")) return;
+	ConvertString(this_row);
+}
+
 void 
 CmdTabular(int code)
 /******************************************************************************
@@ -828,19 +625,28 @@ CmdTabular(int code)
 	int             true_code,this_height, next_height, first_row;
 	char           *cols,*pos,*end,*width,*this_row, *next_row, *next_row_start, *row_start;
 	char   		   *table=NULL;
+	bool			tabbing;
 	TabularT        tabular;
 
 	if (!(code & ON)) {
 		diagnostics(4, "Exiting CmdTabular");
 		g_processing_tabular = FALSE;
-		free(colFmt);
+		g_processing_tabbing = FALSE;
+		if (colFmt) free(colFmt);
 		colFmt=NULL;
 		return;
 	}
 
 	width = NULL;
+	pos=NULL;
+	cols=NULL;
+	tabbing=FALSE;
 	true_code = code & ~(ON);
 	switch (true_code) {
+		case TABBING: 
+			end = strdup("\\end{tabbing}");
+			tabbing = TRUE;
+			break;
 		case TABULAR: 
 			end = strdup("\\end{tabular}");
 			break;
@@ -857,23 +663,32 @@ CmdTabular(int code)
 			break;
 	}
 
-	pos = getBracketParam();
-	cols = getBraceParam();		
-	
-	diagnostics(3, "Entering CmdTabular() options [%s], format {%s}",pos, cols); 
+	if (tabbing){
+		table = getTexUntil(end,FALSE);
+		diagnostics(3, "Entering CmdTabular() with tabbing"); 
+	} else {
+		pos = getBracketParam();
+		cols = getBraceParam();		
+		table = getTexUntil(end,FALSE);
+		diagnostics(3, "Entering CmdTabular() options [%s], format {%s}",pos, cols); 
+		tabular=TabularPreamble(table,width,pos,cols);
+	}
 
-	table = getTexUntil(end,FALSE);
 	diagnostics(2, "table_table_table_table_table\n%stable_table_table_table_table",table);
-
-	tabular=TabularPreamble(table,width,pos,cols);
 	
 	row_start=table;
-	TabularGetRow(row_start,&this_row,&next_row_start,&this_height);
+	TabularGetRow(row_start,&this_row,&next_row_start,&this_height,tabbing);
 	first_row = TRUE;
 	while (this_row) {
 		row_start=next_row_start;
-		TabularGetRow(row_start,&next_row,&next_row_start,&next_height);
-		TabularWriteRow(tabular, this_row, next_row, this_height, first_row);
+		TabularGetRow(row_start,&next_row,&next_row_start,&next_height,tabbing);
+		if (tabbing) {
+			diagnostics(1,"this row=<%s>",this_row);
+			diagnostics(1,"next row=<%s>",next_row);
+			TabbingWriteRow(tabular, this_row, next_row, this_height, first_row);
+		}
+		else
+			TabularWriteRow(tabular, this_row, next_row, this_height, first_row);
 		free(this_row);
 		this_row = next_row;
 		this_height = next_height;
@@ -882,15 +697,17 @@ CmdTabular(int code)
 	
 	ConvertString(end);
 
-	if (pos) free(pos);
+	if (pos  ) free(pos);
 	if (width) free(width);
-	free(cols);
+	if (cols ) free(cols);
 	free(table);
 	free(end);
-	free(tabular.cline);
-	free(tabular.align);
-	free(tabular.vert);
-	free(tabular.width);
+	if (!tabbing) {
+		free(tabular.cline);
+		free(tabular.align);
+		free(tabular.vert);
+		free(tabular.width);
+	}
 }
 
 void 

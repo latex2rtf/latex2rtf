@@ -1,6 +1,6 @@
-# $Id: Makefile,v 1.56 2002/05/02 14:47:20 prahl Exp $
+# $Id: Makefile,v 1.57 2002/08/05 04:05:59 prahl Exp $
 
-CC=cc
+CC=gcc
 MKDIR=mkdir -p
 LIBS=-lMallocDebug -force_flat_namespace
 #LIBS=
@@ -13,7 +13,7 @@ CFLAGS:=-DUNIX
 #CFLAGS:=$(CFLAGS) -DHAS_NO_GETOPT
 
 #Comment out if you don't want compiler warnings
-CFLAGS:=$(CFLAGS) -g -Wall -ansi -pedantic
+CFLAGS:=$(CFLAGS) -g -Wall -ansi
 
 #Base directory
 PREFIX=/usr/local

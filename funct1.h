@@ -1,10 +1,28 @@
-/* $Id: funct1.h,v 1.32 2002/04/13 18:20:35 prahl Exp $ */
+/* funct1.h
+
+Copyright (C) 2002 The Free Software Foundation
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+This file is available from http://sourceforge.net/projects/latex2rtf/
+*/
 
 #define THANKS 2
 
 #define CMD_BEGIN 1
 #define CMD_END 2
-void            CmdBeginEnd(int code);
 
 #define PAR_CENTER     1
 #define PAR_RIGHT      2
@@ -16,7 +34,7 @@ void            CmdBeginEnd(int code);
 #define INDENT_INHIBIT 2
 #define INDENT_USUAL   3
 
-#define VERBATIM_1	 1
+#define VERBATIM_1   1
 #define VERBATIM_2   2
 #define VERBATIM_3   3
 
@@ -24,17 +42,19 @@ void            CmdBeginEnd(int code);
 #define VERB_STAR    2
 #define VERB_URL     3
 
+void            CmdBeginEnd(int code);
 void            CmdStartParagraph(int code);
 void            CmdEndParagraph(int code);
 void            CmdIndent(int code);
-void			CmdVspace(int code);
-void			CmdSlashSlash(int code);
+void            CmdVspace(int code);
+void            CmdSlashSlash(int code);
 
 #define DEF_NEW    1
 #define DEF_RENEW  2
 #define DEF_DEF    3
-void  			CmdNewDef(int code);
-void			CmdNewEnvironment(int code);
+
+void            CmdNewDef(int code);
+void            CmdNewEnvironment(int code);
 
 void            CmdAlign(int code);
 void            CmdToday(int code);
@@ -98,13 +118,7 @@ void            GermanPrint(int code);
 void            CmdIgnoreLet(int code);
 void            CmdIgnoreDef(int code);
 void            CmdItem(int code);
-void			CmdMinipage(int code);
-
-/* LEG030598 Start */
-#define RIGHT_SIDE 347
-#define BOTH_SIDES  348
-#define LEFT_SIDE  349
-/* LEG030598 End */
+void            CmdMinipage(int code);
 
 #define FIGURE 1
 #define FIGURE_1 5
@@ -133,19 +147,12 @@ void			CmdMinipage(int code);
 #define NewColumn 2
 
 void            CmdIgnoreEnviron(int code);
-
 void            CmdFigure(int code);
-
 void            Cmd_OptParam_Without_braces(int code);
-
 void            CmdColumn(int code);
-
 void            CmdNewPage(int code);
-
 void            GetInputParam(char *, int);
-
 void            CmdBottom(int code);
-
 void            CmdAbstract(int code);
 void            CmdTitlepage(int code);
 void            CmdHyphenation(int code);
@@ -153,11 +160,11 @@ void            CmdFigure(int code);
 void            CmdAnnotation(int code);
 void            CmdLink(int code);
 void            GetRequiredParam(char *string, int size);
-void 			CmdQuad(int kk);
-void			CmdColsep(int code);
-void		 	CmdSpace(float kk);
-void 			CmdVerbosityLevel(int code);
-void			CmdInclude(int code);
-void 			CmdNonBreakSpace(int code);
-char 			*FormatUnitNumber(char *name);
-void			CmdNewTheorem(int code);
+void            CmdQuad(int kk);
+void            CmdColsep(int code);
+void            CmdSpace(float kk);
+void            CmdVerbosityLevel(int code);
+void            CmdInclude(int code);
+void            CmdNonBreakSpace(int code);
+char            *FormatUnitNumber(char *name);
+void            CmdNewTheorem(int code);

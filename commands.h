@@ -1,11 +1,10 @@
-/* $Id: commands.h,v 1.16 2002/04/27 03:55:39 prahl Exp $ */
+/* $Id: commands.h,v 1.17 2002/08/05 04:05:59 prahl Exp $ */
 
 #define PREAMBLE 1
 #define DOCUMENT 2
 #define ITEMIZE 3
 #define ENUMERATE 4
 #define DESCRIPTION 5
-#define TABBING 6
 #define LETTER 8
 #define IGN_ENV_CMD 9
 #define HYPERLATEX 10

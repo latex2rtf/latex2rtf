@@ -1,4 +1,4 @@
-/* $Id: main.h,v 1.48 2002/04/27 16:05:42 prahl Exp $ */
+/* $Id: main.h,v 1.49 2002/08/05 04:06:00 prahl Exp $ */
 #ifndef __MAIN_H
 #define __MAIN_H
 
@@ -87,7 +87,6 @@ extern char     alignment;
 extern char 	*colFmt;
 extern long   	pos_begin_kill;
 extern int      tabcounter;
-extern bool     tabbing_on;
 extern int      colCount;
 extern int      actCol;
 extern int 		g_equation_column;
@@ -99,6 +98,7 @@ extern bool     g_processing_equation;
 extern bool     g_processing_preamble;
 extern bool     g_processing_figure;
 extern bool 	g_processing_table;
+extern bool     g_processing_tabbing;
 extern bool     g_processing_tabular;
 extern bool     g_processing_eqnarray;
 extern int		g_processing_arrays;

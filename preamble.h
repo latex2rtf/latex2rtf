@@ -40,6 +40,10 @@
 #define CHEAD 5
 #define RHEAD 6
 
+#define RIGHT_SIDE 347
+#define BOTH_SIDES 348
+#define LEFT_SIDE  349
+
 void CmdDocumentStyle(int code);
 void CmdUsepackage(int code);
 void CmdTitle(int code);
