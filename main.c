@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.59 2002/03/14 06:42:21 prahl Exp $ */
+/* $Id: main.c,v 1.60 2002/03/14 07:21:38 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -180,9 +180,6 @@ int main(int argc, char **argv)
 		}
 	}
 
-	if (g_tmp_path==NULL)
-		g_tmp_path = strdup("/tmp/");
-		
  	argc -= optind;
     argv += optind;
 	
@@ -578,8 +575,32 @@ purpose: output filter to track of brace depth and font settings
 
 char *
 getTmpPath(void)
+/****************************************************************************
+purpose: return the directory to store temporary files
+ ****************************************************************************/
 {
-	return strdup(g_tmp_path);
+	char * t, *u;
+	
+	/* first use any temporary directory specified as an option */
+	if (g_tmp_path)
+		t= strdup(g_tmp_path);
+
+	/* next try the environment variable TMPDIR */
+	else if ((u = getenv("TMPDIR"))!=NULL)
+		t= strdup(u);
+	
+	/* finally just return "/tmp/" */
+	else 
+		t = strdup("/tmp/");
+		
+	/* append a final '/' if missing */
+	if (*(t+strlen(t)-1)!='/') {
+		u = strdup_together(t,"/");
+		free(t);
+		return u;
+	}
+	
+	return t;
 }
 
 
