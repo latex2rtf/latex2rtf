@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.72 2002/11/25 00:46:32 prahl Exp $
+# $Id: Makefile,v 1.73 2002/11/25 16:05:48 prahl Exp $
 
 CC=gcc
 MKDIR=mkdir -p
@@ -45,7 +45,7 @@ SRCS=commands.c chars.c direct.c encode.c l2r_fonts.c funct1.c tables.c ignore.c
 HDRS=commands.h chars.h direct.h encode.h l2r_fonts.h funct1.h tables.h ignore.h \
     main.h stack.h cfg.h util.h parser.h lengths.h counters.h letterformat.h \
     preamble.h equation.h convert.h xref.h definitions.h graphics.h encode_tables.h \
-    version.h
+    version.h mygetopt.h
 
 CFGS=cfg/fonts.cfg cfg/direct.cfg cfg/ignore.cfg \
     cfg/afrikaans.cfg cfg/bahasa.cfg cfg/basque.cfg cfg/brazil.cfg cfg/breton.cfg \
@@ -195,7 +195,7 @@ ignore.o : main.h direct.h l2r_fonts.h cfg.h ignore.h funct1.h commands.h \
   parser.h convert.h 
 main.o : main.h convert.h commands.h chars.h l2r_fonts.h stack.h direct.h \
   ignore.h version.h funct1.h cfg.h encode.h util.h parser.h lengths.h \
-  counters.h preamble.h xref.h 
+  counters.h preamble.h xref.h mygetopt.h
 stack.o : main.h stack.h 
 cfg.o : main.h convert.h funct1.h cfg.h util.h 
 util.o : main.h util.h parser.h 
@@ -214,7 +214,7 @@ convert.o : main.h convert.h commands.h chars.h funct1.h l2r_fonts.h \
   parser.h lengths.h counters.h preamble.h 
 xref.o : main.h util.h convert.h funct1.h commands.h cfg.h xref.h parser.h \
   preamble.h lengths.h l2r_fonts.h 
-mygetopt.o : 
+mygetopt.o : mygetopt.h
 definitions.o : main.h convert.h definitions.h parser.h funct1.h util.h \
   cfg.h counters.h 
 graphics.o : main.h graphics.h parser.h util.h 
