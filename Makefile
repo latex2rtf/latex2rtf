@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.43 2002/03/18 06:31:13 prahl Exp $
+# $Id: Makefile,v 1.44 2002/03/19 05:36:08 prahl Exp $
 
 CC=gcc
 LIBS=
@@ -138,7 +138,13 @@ install: latex2rtf doc/latex2rtf.1 $(CFGS) scripts/latex2png
 	cp scripts/latex2png $(BIN_INSTALL)
 	cp doc/latex2rtf.1   $(MAN_INSTALL)
 	cp $(CFGS)           $(CFG_INSTALL)
-	@echo "Now set the environment variable RTFPATH to $(CFG_INSTALL)"
+	@echo "******************************************************************"
+	@echo "** latex2rtf has been compiled to search for its configuration"
+	@echo "** files in \"$(CFG_INSTALL)\" "
+	@echo "** If the configuration files are moved then set the environment"
+	@echo "** variable RTFPATH to this new location (or edit latex2rtf Makefile"
+	@echo "** and recompile. See the README file for more details."
+	@echo "******************************************************************"
 
 install_info: doc/latex2rtf.info
 	mkdir -p $(INFO_INSTALL)

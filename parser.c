@@ -1,4 +1,4 @@
-/*  $Id: parser.c,v 1.49 2002/03/18 06:31:13 prahl Exp $
+/*  $Id: parser.c,v 1.50 2002/03/19 05:36:08 prahl Exp $
 
    Contains declarations for a generic recursive parser for LaTeX code.
 */
@@ -1194,8 +1194,8 @@ getSection(char **body, char **header, char **label)
 			continue;
 		} 
 		
-		diagnostics(1, "possible end of section");
-		diagnostics(1, "label_depth = %d", label_depth);
+		diagnostics(5, "possible end of section");
+		diagnostics(5, "label_depth = %d", label_depth);
 		
 		if (label_depth > 0) 	/* still in a \begin{xxx} environment? */
 			continue;
