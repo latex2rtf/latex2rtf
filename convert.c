@@ -1,4 +1,4 @@
-/* $Id: convert.c,v 1.18 2001/10/22 04:33:03 prahl Exp $ 
+/* $Id: convert.c,v 1.19 2001/10/23 03:47:10 prahl Exp $ 
 	purpose: ConvertString(), Convert(), TranslateCommand() 
 	
 TeX has six modes according to the TeX Book:
@@ -247,7 +247,7 @@ globals: fTex, fRtf and all global flags for convert (see above)
 			cNext = getTexChar();
 			diagnostics(5,"Processing $, next char <%c>",cNext);
 
-			if (cNext == '$')
+			if (cNext == '$' && GetTexMode() == MODE_DISPLAYMATH)
 				CmdDisplayMath(EQN_DOLLAR_DOLLAR);
 			else {
 				ungetTexChar(cNext);
