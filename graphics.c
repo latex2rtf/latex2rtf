@@ -1,4 +1,4 @@
-/* $Id: graphics.c,v 1.11 2002/04/06 04:37:04 prahl Exp $ 
+/* $Id: graphics.c,v 1.12 2002/05/05 03:45:36 prahl Exp $ 
 This file contains routines that handle LaTeX graphics commands
 */
 
@@ -98,6 +98,26 @@ typedef struct _EnhancedMetaHeader
 	long			HeightDevMM;	/* Height of reference device in millimeters */
 } ENHANCEDMETAHEADER;
 
+typedef struct _EmrFormat
+{
+    unsigned long 	Signature;    	/* 0x46535045 for EPS, 0x464D4520 for EMF */
+    unsigned long 	Version;      	/* EPS version number or 0x00000001 for EMF */
+    unsigned long 	Data;         	/* Size of data in bytes */
+    unsigned long 	OffsetToData; 	/* Offset to data */
+} EMRFORMAT;
+
+typedef struct _GdiCommentMultiFormats
+{
+    unsigned long 	Identifier;		/* Comment ID (0x43494447) */
+    unsigned long 	Comment;		/* Multiformats ID (0x40000004) */
+    long  			BoundsLeft;		/* Left side of bounding rectangle */
+    long  			BoundsRight;	/* Right side of bounding rectangle */
+    long  			BoundsTop;		/* Top side of bounding rectangle */
+    long  			BoundsBottom;	/* Bottom side of bounding rectangle */
+    unsigned long 	NumFormats;		/* Number of formats in comment */
+    EMRFORMAT 		*Data;			/* Array of comment data */
+} GDICOMMENTMULTIFORMATS;
+
 static void
 my_unlink(char *filename)
 /******************************************************************************
@@ -108,7 +128,6 @@ my_unlink(char *filename)
 	unlink(filename);
 #endif
 }
-
 
 static FILE * 
 open_graphics_file(char * s)
