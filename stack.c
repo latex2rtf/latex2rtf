@@ -1,26 +1,25 @@
 /*
- * $Id: stack.c,v 1.11 2001/08/12 19:40:25 prahl Exp $
+ * $Id: stack.c,v 1.12 2001/08/12 19:48:12 prahl Exp $
  * History:
  * $Log: stack.c,v $
- * Revision 1.11  2001/08/12 19:40:25  prahl
- * 1.9g
- *         Added commands to read and set TeX lengths
- *         Added commands to read and set TeX counters
- *         Fixed bug in handling of \item[text]
- *         Eliminated comparison of fpos_t variables
- *         Revised getLinenumber ... this is not perfect
- *         Fixed bug in getTexChar() routine
- *         Clearly separate preamble from the document in hopes that
- *           one day more appropriate values for page size, margins,
- *           paragraph spacing etc, will be used in the RTF header
- *         I have added initial support for page sizes still needs testing
- *         added two more test files misc3.tex and misc4.tex
- *         misc4.tex produces a bad rtf file currently
- *         separated all letter commands into letterformat.c
- *         cleaned up warning calls throughout code
- *         added \neq \leq \geq \mid commands to direct.cfg
- *         collected and added commands to write RTF header in preamble.c
- *         broke isolatin1 and hyperlatex support, these will be fixed next version
+ * Revision 1.12  2001/08/12 19:48:12  prahl
+ * 1.9h
+ * 	Turned hyperlatex back on.  Still not tested
+ * 	Turned isolatin1 back on.  Still not tested.
+ * 	Eliminated use of \\ in code for comments
+ * 	Eliminated \* within comments
+ * 	Eliminated silly char comparison to EOF
+ * 	Revised README to eliminate DOS stuff
+ * 	Added support for \pagebreak
+ * 	Added support for \quad, \qquad, \, \; and \> (as spaces)
+ * 	Improved support for \r accent
+ * 	Made minor changes to accentchars.tex
+ * 	fixed bugs in \textit{s_$c$} and $\bf R$
+ * 	fixed longstanding bugs in stack cleaning
+ * 	fixed ' in math mode
+ * 	log-like functions now typeset in roman
+ * 	Added test cases to eqns.tex
+ * 	default compiler options empty until code is more portable
  *
  * Revision 1.5  1998/07/03 07:03:16  glehner
  * lclint cleaning
@@ -40,7 +39,7 @@
  */
 /***************************************************************************
      name : stack.c
-    autor : DORNER Fernando, GRANZER Andreas
+   author : DORNER Fernando, GRANZER Andreas
   purpose : this is an stack-model to handle braces and recursive calls
 	        created by environments, and open and closing-braces
  ******************************************************************************/
@@ -54,15 +53,29 @@
 
 static int      stack[STACKSIZE];
 static int      top = 0;
+int      BraceLevel = 0;
+
+int             BasicPush(int lev, int brack);
+int             BasicPop(int *lev, int *brack);
+int             getStackRecursionLevel(void);
+
+void
+InitializeStack(void)
+/******************************************************************************
+  purpose: pushes 0,1 and 1,1 on the stack to start things out
+ ******************************************************************************/
+{
+	BraceLevel=0;
+	RecursionLevel = 1;
+	PushLevels();
+	BraceLevel=1;
+}
 
 int 
-Push(int lev, int brack)
+BasicPush(int lev, int brack)
 /******************************************************************************
-  purpose: pushes the parameter lev and brack on the stack
-parameter: lev...level
-	   brack...brackets
-  globals: progname
- return: top of stack
+  purpose: pushes the parameters lev and brack on the stack
+   return: top of stack
  ******************************************************************************/
 {
 	diagnostics(5,"pushing rec=%d and bra=%d on  stack",lev,brack);
@@ -71,24 +84,17 @@ parameter: lev...level
 	++top;
 	stack[top] = brack;
 
-	if (top >= STACKSIZE) {
-		fprintf(stderr, "\n%s: ERROR: too deep nesting -> internal stack-overflow", progname);
-		fprintf(stderr, "\nprogram aborted\n");
-		exit(EXIT_FAILURE);
-	}
+	if (top >= STACKSIZE) 
+		diagnostics(ERROR, "Nesting too deep.  latex2rtf bug, if file TeXs properly");
+
 	return top;
 }
 
 int 
-Pop(int *lev, int *brack)
+BasicPop(int *lev, int *brack)
 /******************************************************************************
-  purpose: pops the parameter lev and brack from the stack
-parameter: lev...level
-	   brack...brackets
-  globals: progname
-           latexname
-           linenumber
- return: top of stack
+  purpose: pops the parameters lev and brack from the stack
+  return: top of stack
  ******************************************************************************/
 {
 	*brack = stack[top];
@@ -96,39 +102,51 @@ parameter: lev...level
 	*lev = stack[top];
 	--top;
 
-
-	if (top < 0) {
-		fprintf(stderr, "\n%s: ERROR: error in LaTeX-File: %s  ", progname, latexname);
-		fprintf(stderr, "line:%ld", getLinenumber());
-		fprintf(stderr, "\n-> internal stack-underflow");
-		fprintf(stderr, "\nprogram aborted\n");
-		exit(EXIT_FAILURE);
-	}
+	if (top < 0) 
+		diagnostics(ERROR, "Nesting problem.  latex2rtf bug, if file TeXs properly");
 
 	diagnostics(5,"popped rec=%d and bra=%d off stack",*lev,*brack);
 	return top;
 }
 
+void 
+PushLevels(void)
+/******************************************************************************
+  purpose: wrapper to hide BraceLevel from rest of program ******************************************************************************/
+{
+	(void) BasicPush(RecursionLevel, BraceLevel);
+}
+
+int 
+PopLevels(void)
+/******************************************************************************
+  purpose: wrapper to hide BraceLevel from rest of program ******************************************************************************/
+{
+	int level;
+	(void) BasicPop(&level, &BraceLevel);
+	return level;
+}
+
 int
 getStackRecursionLevel(void)
 /******************************************************************************
-  purpose: returns the recursion level for the current BracketLevel
+  purpose: returns the recursion level for the current BraceLevel
  ******************************************************************************/
 {
 int             PopLevel, PopBrack, PPopLevel, PPopBrack, size;
 
-		PPopLevel = RecursLevel;
-		PPopBrack = BracketLevel;
-		size = Pop(&PopLevel, &PopBrack);
-		while ((size = Pop(&PopLevel, &PopBrack)) >= 0) {
-			if (PopBrack < BracketLevel) {
+		PPopLevel = RecursionLevel;
+		PPopBrack = BraceLevel;
+		size = BasicPop(&PopLevel, &PopBrack);
+		while ((size = BasicPop(&PopLevel, &PopBrack)) >= 0) {
+			if (PopBrack < BraceLevel) {
 				break;
 			}
 			PPopLevel = PopLevel;
 			PPopBrack = PopBrack;
 		}	/* while */
-		(void) Push(PopLevel, PopBrack);	/* push back */
-		(void) Push(PPopLevel, BracketLevel);
+		(void) BasicPush(PopLevel, PopBrack);	/* push back */
+		(void) BasicPush(PPopLevel, BraceLevel);
 		return PPopLevel;
 }
 
@@ -139,52 +157,88 @@ CleanStack(void)
  ******************************************************************************/
 {
 int             PopLevel = 0, PopBrack, PPopLevel, PPopBrack, size;
-
+	diagnostics(5, "Cleaning Stack");
 	for (;;) {
-		if ((size = Pop(&PPopLevel, &PPopBrack)) <= 0) {
-			(void) Push(PPopLevel, PPopBrack);
+		if ((size = BasicPop(&PPopLevel, &PPopBrack)) <= 0) {
+			(void) BasicPush(PPopLevel, PPopBrack);
 			break;
 		}
-		if ((size = Pop(&PopLevel, &PopBrack)) <= 0) {
-			(void) Push(PopLevel, PopBrack);
-			break;
-		}
+		
+		(void) BasicPop(&PopLevel, &PopBrack);
+
 		if ((PPopLevel == PopLevel) && (PPopBrack == PopBrack)) {
-			(void) Push(PopLevel, PopBrack);
+			(void) BasicPush(PopLevel, PopBrack);
 		} else {
-			(void) Push(PopLevel, PopBrack);
-			(void) Push(PPopLevel, PPopBrack);
+			(void) BasicPush(PopLevel, PopBrack);
+			(void) BasicPush(PPopLevel, PPopBrack);
 			break;
 		}
 	}
+	diagnostics(5, "Done Cleaning Stack");
 }
 
+void 
+PushBrace(void)
+/******************************************************************************
+  purpose: sets up the stack so that a closing brace will cause all commands
+           enclosed by the braces to be completed
+ ******************************************************************************/
+{
+	diagnostics(5,"Pushing Brace Level");
+	BasicPush(RecursionLevel,BraceLevel);
+	++BraceLevel;
+}
 
-/* The use of stack 
+int 
+PopBrace(void)
+/******************************************************************************
+  purpose: to return the recursion level of the matching open brace
+ ******************************************************************************/
+{
+int             PopLevel, PopBrack, PPopLevel, size;
 
-The stack keeps track of the RecursLevel and BracketLevel for each command.
+	diagnostics(5,"Popping Brace Level");
+			
+	BraceLevel--;
+	PPopLevel = RecursionLevel;
+	
+	while ((size = BasicPop(&PopLevel, &PopBrack)) >= 0  && PopBrack >= BraceLevel) 		
+		PPopLevel = PopLevel;
+	
+	(void) BasicPush(PopLevel, PopBrack);	/* push back */
+	(void) BasicPush(PPopLevel, BraceLevel);
 
-Each stack element consists of two integers RecursLevel and BracketLevel. 
+	return PPopLevel;
+}
 
-   RecursLevel is the number of recursive calls of Convert()
-   BracketLevel is the number of open curly braces. 
+/* 
+The stack keeps track of the RecursionLevel and BraceLevel for each command.
+
+   RecursionLevel is the number of recursive calls to Convert()
+   BraceLevel     is the number of open braces '{'
    
-The value on top of stack represents the current value of the these two
-global variables (RecursLevel and BracketLevel).
+The top of stack has the current values of RecursionLevel and BraceLevel.
 
-Before every command and before an opening curly brace the current settings are
-written to the stack.  On appearance of a closing curly brace the
-corresponding RecursLevel is found by searching the stack. 
+The initial value of RecusionLevel is 1 
+The initial value of BraceLevel is 0
+
+Before each command and before each opening brace the current values
+of RecursionLevel and BraceLevel are pushed on the stack.  
+
+Each closing brace triggers a search of the stack to find
+the RecursionLevel for the matching open brace.
 
 It is the lowest
-RecursLevel with the same BracketLevel as now (after subtract of the 1
-closing brace found). The initial value RecLev 1, BracketLev 0 remains
-always on the stack. The begin document command Pushes 1,1
+RecursionLevel with the same BraceLevel as now (after subtract of the 1
+closing brace found). The initial values for the RecursionLevel and
+BraceLevel (1,0) always remain on the stack.  
+
+The begin document command Pushes 1,1
 
 For example:
 
 { Text {\em Text} Text }
-1      2 3	4      5
+1      2 3	    4      5
 
 1 Push 12
 2 Push 13
@@ -196,7 +250,7 @@ For example:
 
 \mbox{\em Text}
 1    2 3      4
-1 Push 11  RecursLevel+1
+1 Push 11  RecursionLevel+1
 2 Push 22
 3 Push 32
 4 Bracket 2->1 Pop 32 Pop 22 Pop 11 -found-

@@ -75,4 +75,26 @@ z & = & w + x \nonumber\\
 z & = & w + x  
 \end{eqnarray*}
 
+\section{Testing math environment closing}
+
+For a while, getting \texttt{latex2rtf} to contain all the math elements
+to the enclosing was a major headache.  It is working for now.  Here are
+a few test cases.
+
+Case 1 \textit{s$_c+1$} or {\it s$_c$}
+
+Case 2 $a+\bf R$ roman \verb#\# type
+
+Case 3 \(a+\bf R\) roman type
+
+Case 4 \[a+\bf R\] roman type
+
+Case 5 \begin{math}a+\bf R\end{math} roman type
+
+Case 6 \begin{equation}a+ \bf R\end{equation} roman type
+
+Case 7 \begin{eqnarray}a+ \bf R\end{eqnarray} roman type
+
+Case 8 $$a+ \bf R$$ roman type
+
 \end{document}

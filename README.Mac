@@ -5,12 +5,10 @@ LaTeX2RTF
 	
 This is a Classic PPC Mac port of the 1.8a version of latex2rtf.
 There is no reason that a 68K port is impossible, I just accidently
-deleted the 68K project from the Codewarrior project. 
+deleted the 68K project from my Codewarrior project. 
 
-If you want a MacOS X port, the drop read the main README for 
-unix installation and compile your own.  I adapted the Makefile
-so that it works for me (at least under 10.0.3).  Disregard the
-remainer of this file, since it does not apply to the unix port.
+The standard unix distribution compiles and works fine under MacOS X
+Disregard the remainer of this file, since it doesn't apply to the unix port.
 
 I fixed many minor bugs, improved handling of tabular environments, 
 added code to significantly improve handling displayed equations,

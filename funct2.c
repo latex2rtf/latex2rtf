@@ -1,26 +1,25 @@
 /*
- * $Id: funct2.c,v 1.11 2001/08/12 19:40:25 prahl Exp $
+ * $Id: funct2.c,v 1.12 2001/08/12 19:48:12 prahl Exp $
  * History:
  * $Log: funct2.c,v $
- * Revision 1.11  2001/08/12 19:40:25  prahl
- * 1.9g
- *         Added commands to read and set TeX lengths
- *         Added commands to read and set TeX counters
- *         Fixed bug in handling of \item[text]
- *         Eliminated comparison of fpos_t variables
- *         Revised getLinenumber ... this is not perfect
- *         Fixed bug in getTexChar() routine
- *         Clearly separate preamble from the document in hopes that
- *           one day more appropriate values for page size, margins,
- *           paragraph spacing etc, will be used in the RTF header
- *         I have added initial support for page sizes still needs testing
- *         added two more test files misc3.tex and misc4.tex
- *         misc4.tex produces a bad rtf file currently
- *         separated all letter commands into letterformat.c
- *         cleaned up warning calls throughout code
- *         added \neq \leq \geq \mid commands to direct.cfg
- *         collected and added commands to write RTF header in preamble.c
- *         broke isolatin1 and hyperlatex support, these will be fixed next version
+ * Revision 1.12  2001/08/12 19:48:12  prahl
+ * 1.9h
+ * 	Turned hyperlatex back on.  Still not tested
+ * 	Turned isolatin1 back on.  Still not tested.
+ * 	Eliminated use of \\ in code for comments
+ * 	Eliminated \* within comments
+ * 	Eliminated silly char comparison to EOF
+ * 	Revised README to eliminate DOS stuff
+ * 	Added support for \pagebreak
+ * 	Added support for \quad, \qquad, \, \; and \> (as spaces)
+ * 	Improved support for \r accent
+ * 	Made minor changes to accentchars.tex
+ * 	fixed bugs in \textit{s_$c$} and $\bf R$
+ * 	fixed longstanding bugs in stack cleaning
+ * 	fixed ' in math mode
+ * 	log-like functions now typeset in roman
+ * 	Added test cases to eqns.tex
+ * 	default compiler options empty until code is more portable
  *
  * Revision 1.10  1998/11/05 13:21:49  glehner
  * *** empty log message ***
@@ -96,6 +95,26 @@ FILE           *OpenBblFile(void);
 void            MakeBiblio(FILE * fBbl);
 
 
+void CmdQuad(int kk)
+/******************************************************************************
+ purpose: inserts kk quad spaces (D. Taupin)
+ ******************************************************************************/
+{
+	int z;	
+	fprintf(fRtf,"{\\emspace ");
+	for (z=0; z<kk; z++) fprintf(fRtf," ");
+	fprintf(fRtf,"}");
+}
+
+void CmdSpace(float kk)
+/******************************************************************************
+ purpose: inserts a space of width kk*space 
+ ******************************************************************************/
+{
+	int size = CurrentFontSize()*kk;
+	fprintf(fRtf,"{\\fs%d  }", size);
+}	
+
 void 
 CmdTabbing(int code)
 /******************************************************************************
@@ -113,7 +132,7 @@ parameter: code : on/off at begin/end-environment
 			/* tabbing_on_itself = FALSE; */
 
 			PushEnvironment(code);
-			ConvertString("{");
+			PushBrace();
 			fprintf(fRtf, "\\par\\line ");
 			if (fgetpos(fRtf, &pos_begin_kill) != 0)
 				diagnostics(ERROR, "Failed fgetpos; funct2.c (Tabbing): errno %d", errno);
@@ -124,7 +143,7 @@ parameter: code : on/off at begin/end-environment
 		 * tabbing_return = TRUE; tabbing_on_itself = TRUE;
 		 */
 		tabbing_on = FALSE;
-		ConvertString("}");
+		(void) PopBrace();
 		PopEnvironment();
 
 		fprintf(fRtf, "\\par\\pard\\line\\q%c ", alignment);
@@ -280,7 +299,7 @@ CmdLink(int code)
 	diagnostics(4, "  Converted first parameter");
 
 	getBracketParam(optparam, 255);
-	/**//* LEG190498 now should come processing of the optional parameter */
+	/* LEG190498 now should come processing of the optional parameter */
 	diagnostics(4, "  Converted optional parameter");
 
 	param2 = getParam();
@@ -677,88 +696,6 @@ CmdTitlepage(int code)
 }
 
 void 
-CmdFormula2(int code)
-/******************************************************************************
- purpose: creates a displayed equation
-          \begin{equation} gets a right justified equation number
-          \begin{displaymath} gets no equation number
-          \[ gets no equation number
-          $$ gets no equation number
-
- ******************************************************************************/
-{
-	if ((code & ON) || ((code == FORM_DOLLAR) && !g_processing_equation)) {	/* on switch */
-		code &= ~(ON);	/* mask MSB */
-		g_processing_equation = TRUE;
-		g_suppress_equation_number = FALSE;
-		
-/* Formulas need to close all Convert() operations when they end 
-   This will work for \begin{equation} but not $$ since the BracketLevel
-   and environments don't get pushed properly.  Sending a '{' will do this
-*/
-		ConvertString("{");
-		fprintf(fRtf, "\n\\par\n\\par\\pard");
-		switch (code) {
-		case FORM_DOLLAR:	/* $$ or displaymath */
-		case EQUATION_1:	/* equation* */
-			g_show_equation_number = FALSE;
-			fprintf(fRtf, "\\tqc\\tx4320\n");
-			diagnostics(4,"Entering CmdFormula2 -- displaymath");
-			break;
-
-		case EQUATION:	/* equation */
-			g_show_equation_number = TRUE;
-			fprintf(fRtf, "\\tqc\\tx4320\\tqr\\tx8640\n");
-			diagnostics(4,"Entering CmdFormula2 -- equation");
-			break;
-
-		case EQNARRAY_1:	/* eqnarray* */
-			g_show_equation_number = FALSE;
-			g_processing_eqnarray = TRUE;
-			g_processing_tabular = TRUE;
-			actCol = 1;
-			diagnostics(4,"Entering CmdFormula2 -- eqnarray* ");
-			fprintf(fRtf, "\\tqr\\tx2880\\tqc\\tx3240\\tql\\tx3600\n");
-			break;
-
-		case EQNARRAY:	/* eqnarray */
-			g_show_equation_number = TRUE;
-			g_processing_eqnarray = TRUE;
-			g_processing_tabular = TRUE;
-			actCol = 1;
-		    diagnostics(4,"Entering CmdFormula2 --- eqnarray ");
-			fprintf(fRtf, "\\tqr\\tx2880\\tqc\\tx3240\\tql\\tx3600\\tqr\\tx8640\n");
-			break;
-
-		default:;
-		}
-		fprintf(fRtf, "\\tab {\\i ");
-				
-		
-	} else {		/* off switch */
-		diagnostics(4,"Exiting CmdFormula2");
-		code &= ~(OFF);	/* mask MSB */
-		g_processing_equation = FALSE;
-		fprintf(fRtf, "}");
-		
-/* close the equation environment properly */
-		ConvertString("}");
-
-		if (g_show_equation_number && !g_suppress_equation_number) {
-			incrementCounter("equation");
-			fprintf(fRtf, "\\tab (%d)", getCounter("equation"));
-		}
-		fprintf(fRtf, "\n\\par\n\\par");
-
-		if (code == EQNARRAY || code == EQNARRAY_1) {
-			g_processing_tabular = FALSE;
-			g_processing_eqnarray = FALSE;
-		}
-	}
-}
-
-/******************************************************************************/
-void 
 CmdMultiCol( /* @unused@ */ int code)
 /******************************************************************************
  purpose: converts the LaTex-Multicolumn to a similar Rtf-style
@@ -837,7 +774,6 @@ parameter: unused
 }
 
 
-/******************************************************************************/
 void 
 CmdTabular(int code)
 /******************************************************************************
@@ -984,7 +920,6 @@ CmdColsep(int code)
 	}
 }
 
-/******************************************************************************/
 void 
 CmdTable(int code)
 /******************************************************************************
@@ -1095,94 +1030,6 @@ CmdGraphics(int code)
 }
 
 void 
-CmdRoot(int code)
-/******************************************************************************
- purpose: converts \sqrt{x} or \root[\alpha]{x+y}
-******************************************************************************/
-{
-	char           *root;
-	char           power[50];
-
-	getBracketParam(power, 49);
-	root = getParam();
-	fprintf(fRtf, "{\\field{\\*\\fldinst  EQ \\\\R(");
-	if (strlen(power)>0)
-		ConvertString(power);
-	fprintf(fRtf,"%c", FORMULASEP);
-	ConvertString(root);
-	fprintf(fRtf, ")}{\\fldrslt }}");
-	free(root);
-}
-
-void 
-CmdFraction(int code)
-/******************************************************************************
- purpose: converts \frac{x}{y} (following Taupin's implementation in ltx2rtf)
-******************************************************************************/
-{
-	char           *denominator, *numerator;
-
-	numerator = getParam();
-	denominator = getParam();
-
-	fprintf(fRtf, "{\\field{\\*\\fldinst  EQ \\\\F(");
-	ConvertString(numerator);
-	fprintf(fRtf, "%c", FORMULASEP);
-	ConvertString(denominator);
-	fprintf(fRtf, ")}{\\fldrslt }}");
-
-	free(numerator);
-	free(denominator);
-}
-
-void 
-CmdIntegral(int code)
-/******************************************************************************
- purpose: converts integral symbol + the "exponent" and "subscript" fields
-parameter: type of operand
- ******************************************************************************/
-{
-	char           *upper_limit = NULL;
-	char           *lower_limit = NULL;
-	char            cThis;
-
-	/* is there an exponent/subscript ? */
-	cThis = getNonBlank();
-
-	if (cThis == '_')
-		lower_limit = getMathParam();
-	else if (cThis == '^')
-		upper_limit = getMathParam();
-	else
-		ungetTexChar(cThis);
-
-	if (upper_limit || lower_limit) {
-		cThis = getNonBlank();
-		if (cThis == '_')
-			lower_limit = getMathParam();
-		else if (cThis == '^')
-			upper_limit = getMathParam();
-		else
-			ungetTexChar(cThis);
-	}
-
-	fprintf(fRtf, "{\\field{\\*\\fldinst  EQ \\\\I(");
-	if (lower_limit)
-		ConvertString(lower_limit);
-	fprintf(fRtf, "%c", FORMULASEP);
-	if (upper_limit)
-		ConvertString(upper_limit);
-	fprintf(fRtf, "%c)}{\\fldrslt }}", FORMULASEP);
-
-	if (lower_limit)
-		free(lower_limit);
-	if (upper_limit)
-		free(upper_limit);
-}
-
-/******************************************************************************/
-/* LEG190498 */
-void 
 CmdCite(int code)
 /******************************************************************************
  purpose: opens existing aux-file and reads the citing-number
@@ -1229,13 +1076,13 @@ parameter: if FALSE (0) work as normal
 	fprintf(fRtf, "]");
 }
 
+FILE           *
+OpenBblFile(void)
 /***********************************************************************
  * purpose: opens either the "input".bbl file, or the .bbl file named by
  *          the -b command line option.
  * globals: BblName,
  **********************************************************************/
-FILE           *
-OpenBblFile(void)
 {
 	static FILE    *fBbl = NULL;
 

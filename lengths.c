@@ -5,6 +5,7 @@ By convention all the values stored should be twips  20 twips = 1 pt
 Scott Prahl, June 2001
 */
 
+#include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include "main.h"

@@ -2,13 +2,14 @@ latex2rtf is a translator program that translates LaTeX text into the
 RTF format used by several textprocessors, including Microsoft Word
 and Word for Windows.  
 
-It was written by Fernando Dorner and Andreas
-Granzer in a one-semester course in our department.  It was later
-updated in another one-semester course by Friedrich Polzer and Gerhard
-Trisko.  Ralf Schlatterbeck <ralf@zoo.priv.at> maintained and extended
-it until 1998.  The current maintainer is Georg Lehner
-<jorge_lehner@gmx.net>.  For the Copyright of the Program see the
-file Copyright.
+latex2rtf began as a program written by Fernando Dorner and Andreas Granzer 
+in a one-semester course.  This program was later updated in another 
+one-semester course by Friedrich Polzer and Gerhard Trisko.  Ralf Schlatterbeck 
+<ralf@zoo.priv.at> maintained and extended it until 1998.  The current maintainer 
+is Georg Lehner <jorge_lehner@gmx.net>.  Many changes were submitted by Scott
+Prahl <prahl@ece.ogi.edu> during 2001.  
+
+For the Copyright of the Program see the file Copyright.
 
 The documentation of the program is found in the doc/ directory in the
 file latex2rtf.info in the GNU info format.  For your convenience find
@@ -42,6 +43,8 @@ guidelines when reporting a bug in the program to the homepage
 at Sourceforge
               http://sourceforge.net/projects/latex2rtf/
 
+* Try the most recent version of the program, this is especially 
+  important when the code is getting updated frequently.
 * Give the version of the program
   - For the executable you get the version by specifying the -V option
     to latex2rtf
@@ -51,99 +54,12 @@ at Sourceforge
   trying to install latex2rtf. Be sure to check the file Makefile for
   settings that may be specific to your machine, especially for some
   versions of SunOS there may be settings which are needed to compile
-  successfully. Do this BEFORE writing to me.
-* For problems with the DOS version, report installation problems to the
-  mainainer of the DOS port, Vladimir Menkov, vmenkov@cs.indiana.edu
+  successfully. Do this BEFORE submitting the bug reports.
 * If the program produces wrong output or does not work for you, include
-  a SHORT latex file along with a description of the problem. DO NOT
-  send me large latex or rtf files, I simply do not have the time to
-  wade through large files to search for a bug! If necessary (i.e., the
-  program produces wrong or invalid RTF), send the rtf file that is
-  produced along with the latex input file.
-* Be patient with me. I am maintaining the program in my free time. I
-  did not write most of the code. Often I do not have the time to
-  answer to your question. I will, however, try to fix reported bugs
+  a SHORT latex file along with a description of the problem. It is 
+  imperative that you spend time isolating the problem into a small
+  latex file.  This shows that you actually care enough about the 
+  problem to spend some of your time trying to help isolate the bug.
+* Be patient.  We maintain the program in our free time and we did
+  not write most of the code.  We will try to fix reported bugs
   in upcoming releases.
-
---
-Georg Lehner
-email: glehner@unanleon.edu.ni ++505 311 3156/++505 311 5154
-
-=========================================================================
-The MSDOS version described in the following is available from 
-ftp://ftp.cs.indiana.edu/pub/vmenkov/latex2rtf
-By the time of this release, the version there may not be the latest
-one.
-=========================================================================
-
-        Latex2rtf adaptation for MS DOS
-        ===============================
-
-Option A: to install a pre-compiled program on an MS DOS system:
----------------------------------------------------------------
-
-1. Download ltx2rt_e.zip and unpack it.
-
-2. Put the executable (latex2rt.exe) to the directory where you 
-   plan to run in, or to a directory that's listed in your PATH
-   environment variable.
-
-3. Put the configuration files (*.cfg) to the directory where you 
-   plan to run latex2rtf, or to a directory that's listed in your
-   RTFPATH environment variable. (Use MS DOS set command to set it).
-
-4. Read user's guide in latex2rt.txt, or at least run
-        latex2rt -?
-   to see the list of options and argument order.
-
-
-Option B: To compile the program for MS DOS system:
----------------------------------------------------
-
-1. Either
-   a. Uncompress and untar the tar file and download the files
-       to your PC, 
-   or
-   b. Download and unpack the archive file "lat2rt_s.zip".
-
-2. Edit the file "makefile.dos", as follows:
-
-a. LIBDIR should indicate the directory where you plan to keep
-   configuration files. (latex2rtf uses several *.cfg files. If you
-   store them in "C:\latex2rt", set LIBDIR="c:\\\\latex2rt" (note
-   quotes and 4 slashes); if you plan to always copy the cfg files to
-   the directory where you are running latex2rtf, set LIBDIR=".".)
-
-b. BININSTALL should be the name of the directory where you want to put
-   the executable file, e.g.
-        BININSTALL=c:\exe
-
-c. If your C compiler and librarian have names other than tcc and tlib,
-   replace the names where appropriate.
-
-3. Run
-        make -f makefile.dos
-
-  You need Borland C compiler and librarian (e.g. tcc and tlib)
-  to do the compilation.
-
-4. Read user's guide in latex2rt.txt
-
-5. Before using latex2rtf on a computer, make sure that you have copied
-   the configuration files (*.cfg) to the directory specified in LIBDIR.
-   Alternatively, you can set the MS DOS environment variable RTFPATH
-   to point to the directory where the *.cfg files are, e.g.
-   set RGFPATH=c:\lib\latex2rt
-
-Note: The version of MS DOS I am using (6.20) allows using `/'
-  in file names instead of `\\'. If your version does not allow
-  this, you will have to replace the two occurence of `/' in
-  "main.c" with `\\'.
-
-
---
-Vladimir Menkov                              (MS DOS adaptation only)
-Lindley Hall 215                             email: vmenkov@cs.indiana.edu
-Indiana University                           Phone: 1-(812)-857-9331
-Blooomington, IN 47405
-USA

@@ -1,26 +1,25 @@
 /*
- * $Id: parser.c,v 1.8 2001/08/12 19:40:25 prahl Exp $
+ * $Id: parser.c,v 1.9 2001/08/12 19:48:12 prahl Exp $
  * History:
  * $Log: parser.c,v $
- * Revision 1.8  2001/08/12 19:40:25  prahl
- * 1.9g
- *         Added commands to read and set TeX lengths
- *         Added commands to read and set TeX counters
- *         Fixed bug in handling of \item[text]
- *         Eliminated comparison of fpos_t variables
- *         Revised getLinenumber ... this is not perfect
- *         Fixed bug in getTexChar() routine
- *         Clearly separate preamble from the document in hopes that
- *           one day more appropriate values for page size, margins,
- *           paragraph spacing etc, will be used in the RTF header
- *         I have added initial support for page sizes still needs testing
- *         added two more test files misc3.tex and misc4.tex
- *         misc4.tex produces a bad rtf file currently
- *         separated all letter commands into letterformat.c
- *         cleaned up warning calls throughout code
- *         added \neq \leq \geq \mid commands to direct.cfg
- *         collected and added commands to write RTF header in preamble.c
- *         broke isolatin1 and hyperlatex support, these will be fixed next version
+ * Revision 1.9  2001/08/12 19:48:12  prahl
+ * 1.9h
+ * 	Turned hyperlatex back on.  Still not tested
+ * 	Turned isolatin1 back on.  Still not tested.
+ * 	Eliminated use of \\ in code for comments
+ * 	Eliminated \* within comments
+ * 	Eliminated silly char comparison to EOF
+ * 	Revised README to eliminate DOS stuff
+ * 	Added support for \pagebreak
+ * 	Added support for \quad, \qquad, \, \; and \> (as spaces)
+ * 	Improved support for \r accent
+ * 	Made minor changes to accentchars.tex
+ * 	fixed bugs in \textit{s_$c$} and $\bf R$
+ * 	fixed longstanding bugs in stack cleaning
+ * 	fixed ' in math mode
+ * 	log-like functions now typeset in roman
+ * 	Added test cases to eqns.tex
+ * 	default compiler options empty until code is more portable
  *
  * Revision 1.2  1998/10/27 04:51:38  glehner
  * Changed function prototype of parseBrace & parseBracket to
@@ -33,13 +32,13 @@
  * LEG 070798 adapted Frank Barnes contribution to r2l coding conventions
  *
 
-/* Contains declarations for a generic recursive parser the  LaTex2RTF code.                                                       */
-/* */
-/* Revision history                                                         */
-/* ================                                                         */
-/* 26th June 1998 - Created initial version - fb                            */
-/* 24th May  2001 - Now includes getParam, getbracketparam, getbraceparam    */
-/****************************************************************************/
+ * Contains declarations for a generic recursive parser the  LaTex2RTF code.
+ 
+ * Revision history
+ * ================ 
+ * 26th June 1998 - Created initial version - fb 
+ * 24th May  2001 - Now includes getParam, getbracketparam, getbraceparam
+ ****************************************************************************/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -75,10 +74,10 @@ static void     parseBracket();	/* parse an open/close bracket sequence         
 char 
 getRawTexChar()
 /***************************************************************************
- Description: get the next character from the input stream with minimal
+ purpose:     get the next character from the input stream with minimal
               filtering  (CRLF or CR or LF ->  \n) and '\t' -> ' '
 			  it also keeps track of the line number
-              should only be used for \verb and \verbatim and getTexChar()
+              should only be used by \verb and \verbatim and getTexChar()
 ****************************************************************************/
 {
 	int             thechar;
@@ -112,14 +111,13 @@ getRawTexChar()
 #undef CR
 #undef LF
 
-/***************************************************************************
- function: getTexChar()
- Description: get the next character from the input stream
-              This should be the usual place to access the LaTeX file
-			  It should handle % properly
-****************************************************************************/
 char 
 getTexChar()
+/***************************************************************************
+ purpose:     get the next character from the input stream
+              This should be the usual place to access the LaTeX file
+			  It filters the input stream so that % is handled properly
+****************************************************************************/
 {
 	char            cThis;
 	char            cSave = lastChar;
@@ -139,7 +137,8 @@ ungetTexChar(char c)
 purpose: rewind the filepointer in the LaTeX-file by one
  ****************************************************************************/
 {
-	ungetc(c, fTex);
+	if (c != '\0') 
+		ungetc(c, fTex);
 
 	if (c == '\n')
 		linenumber--;
@@ -204,7 +203,7 @@ void
 parseBrace()
 /****************************************************************************
   Description: Skip text to balancing close brace                          
-/****************************************************************************/
+ ****************************************************************************/
 {
 	while (getTexChar() != '}') {
 		switch (currentChar) {
@@ -227,7 +226,7 @@ void
 parseBracket()
 /****************************************************************************
   Description: Skip text to balancing close bracket
-/****************************************************************************/
+ ****************************************************************************/
 {
 	while (getTexChar() != ']') {
 		switch (currentChar) {
@@ -432,45 +431,39 @@ getParam(void)
 	      for instance: \begin{environment}
 		    return: -> string = "environment"
    parameter: string: pointer to string, which returns the parameter
-     globals: BracketLevel: counts open braces
-              fTex	  : Tex-file-pointer
      returns: success: string
 	      miss : string = ""
  **************************************************************************/
 {
 	char            cThis, buffer[4094];
-	int             PopLevel, PopBrack, bracket, size;
+	int             closeBracesNeeded, size;
+
+	size = 0;
 
 	if ((cThis = getTexChar()) != '{') {
 		buffer[0] = cThis;
-		buffer[1] = '\0';
-		return strdup(buffer);
-	}
-	++BracketLevel;
-	(void) Push(RecursLevel, BracketLevel);
-
-	size = 0;
-	bracket = 1;
-	while (bracket > 0 && size < 4093) {
-		buffer[size] = getTexChar();
-
-		if (buffer[size] == '}') {
-			bracket--;
-			if (bracket == 0) {
-				--BracketLevel;
-				(void) Pop(&PopLevel, &PopBrack);
-				break;
-			}
-		}
-		if (buffer[size] == '{')
-			bracket++;
-
 		size++;
+	} else {
+		
+		closeBracesNeeded = 1;
+		while (closeBracesNeeded > 0 && size < 4094) {
+			buffer[size] = getTexChar();
+	
+			if (buffer[size] == '}')
+				closeBracesNeeded--;
+			
+			if (buffer[size] == '{')
+				closeBracesNeeded++;
+	
+			size++;
+		}
+		
+	size--;   /* overwrite final '}' with '\0' */
 	}
-
+	
 	buffer[size] = '\0';
 	if (size == 4093)
-		error(" Misplaced brace in command.  Scanned 4093 chars looking for end\n");
+		error(" Misplaced brace.  Scanned 4093 chars looking for close brace\n");
 
 	diagnostics(5, "getParam result <%s>", buffer);
 
@@ -528,6 +521,7 @@ getMathParam(void)
 {
 	char            buffer[2];
 
+	diagnostics(5,"entering getMathParam");
 	buffer[0] = getTexChar();
 
 	if (buffer[0] == '{') {

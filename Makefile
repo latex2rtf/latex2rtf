@@ -1,105 +1,12 @@
-# Scott Prahl
-# Added new file dependencies
-# now use $(MAKE) instead of make
-# added test target
-# incorporated test directory into make process
-# $Id: Makefile,v 1.9 2001/08/12 19:40:25 prahl Exp $
-# History:
-# $Log: Makefile,v $
-# Revision 1.9  2001/08/12 19:40:25  prahl
-# 1.9g
-#         Added commands to read and set TeX lengths
-#         Added commands to read and set TeX counters
-#         Fixed bug in handling of \item[text]
-#         Eliminated comparison of fpos_t variables
-#         Revised getLinenumber ... this is not perfect
-#         Fixed bug in getTexChar() routine
-#         Clearly separate preamble from the document in hopes that
-#           one day more appropriate values for page size, margins,
-#           paragraph spacing etc, will be used in the RTF header
-#         I have added initial support for page sizes still needs testing
-#         added two more test files misc3.tex and misc4.tex
-#         misc4.tex produces a bad rtf file currently
-#         separated all letter commands into letterformat.c
-#         cleaned up warning calls throughout code
-#         added \neq \leq \geq \mid commands to direct.cfg
-#         collected and added commands to write RTF header in preamble.c
-#         broke isolatin1 and hyperlatex support, these will be fixed next version
-#
-# Revision 1.21  1998/07/03 06:49:36  glehner
-# updated dependencies of multiple .o files
-# Substantial Changes in Documentation
-# doc/ directory holds texinfo manual, added GNU GPL
-# created cfg/directory for support files
-# Added CangeLog to SOURCES
-#
-# Revision 1.20  1998/06/08 19:14:01  ralf
-# Corrected clean target.
-#
-# Revision 1.19  1998/06/08 17:58:30  ralf
-# removed second version in SOURCEFILES.
-#
-# Revision 1.18  1998/06/08 17:57:37  ralf
-# Added TODO, credits and version.
-#
-# Revision 1.17  1997/02/15 21:17:42  ralf
-# Created default for environment separator.
-#
-# Revision 1.16  1997/02/15 21:10:02  ralf
-# Added environment separator to XCFLAGS used in cfg.c
-#
-# Revision 1.15  1997/02/15 20:33:25  ralf
-# Added debian rules and corrected some targets.
-#
-# Revision 1.14  1995/05/24  16:10:45  ralf
-# Added rules for additional files for DOS port
-#
-# Revision 1.13  1995/05/24  12:00:43  ralf
-# Corrected dependencies, added LIBS for configuring system libraries
-#
-# Revision 1.12  1995/03/23  17:19:27  ralf
-# Changed installation default to not automatically remove .cfg files
-#
-# Revision 1.11  1995/03/23  16:20:27  ralf
-# changed the LIBDIR default
-#
-# Revision 1.10  1995/03/23  15:58:08  ralf
-# Reworked version by Friedrich Polzer and Gerhard Trisko
-#
-# Revision 1.9  1994/07/13  09:27:31  ralf
-# Corrected fpos/SEEK_SET bug for SunOs 4.3.1 reported by Ulrich Schmid
-# <schmid@dkrz.d400.de>
-#
-# Revision 1.8  1994/06/21  08:13:57  ralf
-# Added CFLAGS
-#
-# Revision 1.7  1994/06/17  15:13:44  ralf
-# Added README and Copyright
-#
-# Revision 1.6  1994/06/17  14:35:46  ralf
-# Added Makefile to SOURCES
-#
-# Revision 1.5  1994/06/17  14:32:29  ralf
-# Added latex2rtf.tar.gz to clean list.
-#
-# Revision 1.4  1994/06/17  14:29:42  ralf
-# Added version.h to dependecy list of main.o and to SOURCES
-# Added dist target
-#
-# Revision 1.3  1994/06/17  14:19:41  ralf
-# Corrected various bugs, for example interactive read of arguments
-#
-# Revision 1.2  1994/06/17  12:11:57  ralf
-# Added intall target and rcs rules.
-#
-# Revision 1.1  1994/06/17  11:30:33  ralf
-# Initial revision
-#
+# The original make file was by Ralf Schlatterbeck
+# and enhanced by Georg Lehner
 # The Debian-specific parts of this Makefile are created by 
 # Erick Branderhorst. Parts are written by Ian Jackson and Ian Murdock.
-# TODO: add target "changes". 
+# Recent changes by Scott Prahl
+
 CC=gcc    # C-Compiler 
-CFLAGS=-g -Wall -ansi -pedantic $(XCFLAGS) # Use -O here if you want it optimized
+#CFLAGS=-g -Wall -ansi -pedantic $(XCFLAGS)
+CFLAGS=$(XCFLAGS) # Use -O here if you want it optimized
 COPY=cp
 INSTALL=install
 DIR_MODE=755
@@ -185,7 +92,6 @@ MANINSTALL=$(prefix)/man/man1
 
 XCFLAGS=
 #XCFLAGS=-DENVSEP="';'"
-#XCFLAGS=-DPATHSEP="'\'"
 #XCFLAGS=-DSEMICOLONSEP
 #XCFLAGS=-DHAS_NO_FPOS
 #XCFLAGS=-DHAS_NO_GETOPT
@@ -201,7 +107,7 @@ SOURCES=commands.c commands.h chars.c chars.h direct.c direct.h encode.c encode.
     l2r_fonts.h funct1.c funct1.h funct2.c funct2.h ignore.c ignore.h main.c \
     main.h stack.c stack.h version.h cfg.c cfg.h util.c util.h parser.c parser.h \
     lengths.c lengths.h counters.c counters.h letterformat.c letterformat.h \
-    preamble.c preamble.h \
+    preamble.c preamble.h equation.c equation.h \
     Makefile README README.DOS README.Mac Copyright\
     mygetopt.c optind.c version \
     debian.README debian.control debian.rules ChangeLog l2r.bat
@@ -216,6 +122,9 @@ TEST=   test/Makefile \
 	test/list.tex test/logo.tex test/misc1.tex test/misc2.tex \
 	test/oddchars.tex test/tabular.tex test/percent.tex test/essential.tex test/hndout.sty \
 	test/misc3.tex test/misc4.tex
+OBJS=l2r_fonts.o direct.o encode.o commands.o stack.o funct1.o funct2.o \
+	chars.o ignore.o cfg.o main.o util.o parser.o mygetopt.o lengths.o counters.o \
+	preamble.o letterformat.o equation.o
 
 ARCH="`dpkg --print-architecture`"
 
@@ -225,13 +134,8 @@ VERSION="`./version`"
 all build stamp-build: checkdir latex2rtf
 	touch stamp-build
 
-latex2rtf: l2r_fonts.o direct.o encode.o commands.o stack.o funct1.o funct2.o \
-	chars.o ignore.o cfg.o main.o util.o parser.o mygetopt.o lengths.o counters.o \
-	preamble.o letterformat.o
-	$(CC) $(CFLAGS) l2r_fonts.o chars.o direct.o encode.o commands.o stack.o \
-	funct1.o funct2.o cfg.o main.o ignore.o util.o parser.o lengths.o mygetopt.o counters.o \
-	preamble.o letterformat.o \
-	$(LIBS) -o latex2rtf
+latex2rtf: $(OBJS)
+	$(CC) $(CFLAGS) $(OBJS)	$(LIBS) -o latex2rtf
 
 l2r_fonts.o: l2r_fonts.c main.h l2r_fonts.h cfg.h
 	$(CC) $(CFLAGS) -c l2r_fonts.c -o l2r_fonts.o
@@ -283,8 +187,7 @@ test: latex2rtf
 	cd test && $(MAKE) -k
 
 clean: checkdir
-	rm -f stack.o main.o chars.o funct1.o funct2.o ignore.o commands.o mygetopt.o\
-	    encode.o direct.o l2r_fonts.o cfg.o util.o parser.o core latex2rtf.tar.gz \
+	rm -f $(OBJS) core latex2rtf.tar.gz \
 	    *~ ./#* stamp-build latex2rtf-$(VERSION).tar.gz __tmp__ \
 	    *.deb
 	rm -rf latex2rtf latex2rtf-$(VERSION)

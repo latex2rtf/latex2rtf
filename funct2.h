@@ -1,26 +1,25 @@
 /*
- * $Id: funct2.h,v 1.11 2001/08/12 19:40:25 prahl Exp $
+ * $Id: funct2.h,v 1.12 2001/08/12 19:48:12 prahl Exp $
  * History:
  * $Log: funct2.h,v $
- * Revision 1.11  2001/08/12 19:40:25  prahl
- * 1.9g
- *         Added commands to read and set TeX lengths
- *         Added commands to read and set TeX counters
- *         Fixed bug in handling of \item[text]
- *         Eliminated comparison of fpos_t variables
- *         Revised getLinenumber ... this is not perfect
- *         Fixed bug in getTexChar() routine
- *         Clearly separate preamble from the document in hopes that
- *           one day more appropriate values for page size, margins,
- *           paragraph spacing etc, will be used in the RTF header
- *         I have added initial support for page sizes still needs testing
- *         added two more test files misc3.tex and misc4.tex
- *         misc4.tex produces a bad rtf file currently
- *         separated all letter commands into letterformat.c
- *         cleaned up warning calls throughout code
- *         added \neq \leq \geq \mid commands to direct.cfg
- *         collected and added commands to write RTF header in preamble.c
- *         broke isolatin1 and hyperlatex support, these will be fixed next version
+ * Revision 1.12  2001/08/12 19:48:12  prahl
+ * 1.9h
+ * 	Turned hyperlatex back on.  Still not tested
+ * 	Turned isolatin1 back on.  Still not tested.
+ * 	Eliminated use of \\ in code for comments
+ * 	Eliminated \* within comments
+ * 	Eliminated silly char comparison to EOF
+ * 	Revised README to eliminate DOS stuff
+ * 	Added support for \pagebreak
+ * 	Added support for \quad, \qquad, \, \; and \> (as spaces)
+ * 	Improved support for \r accent
+ * 	Made minor changes to accentchars.tex
+ * 	fixed bugs in \textit{s_$c$} and $\bf R$
+ * 	fixed longstanding bugs in stack cleaning
+ * 	fixed ' in math mode
+ * 	log-like functions now typeset in roman
+ * 	Added test cases to eqns.tex
+ * 	default compiler options empty until code is more portable
  *
  * Revision 1.5  1998/10/28 06:08:06  glehner
  * Changed ON Flag to 0x4000 for not to use MSB of int on some cc
@@ -74,7 +73,6 @@
 #define TABULAR_1 2
 #define TABULAR_2 3
 
-/*--------------------------------function prototypes----------------------*/
 void            CmdTabset(void);
 
 void            CmdTabjump(void);
@@ -112,8 +110,6 @@ void            CmdTitlepage(int code);
 
 void            CmdHyphenation(int code);
 
-void            CmdFormula2(int code);
-
 void            CmdAddress(int code);
 
 void            CmdSignature(int code);
@@ -138,10 +134,6 @@ void            CmdNoCite(int code);
 
 void            CmdCite(int code);
 
-void            CmdFraction(int code);
-void            CmdRoot(int code);
-void            CmdIntegral(int code);
-
 void 
 WriteRefList(void)
 /* @globals input, bCite @ */
@@ -156,3 +148,8 @@ void            CmdConvertBiblio( /* @unused@ */ int code);
 
 void            CmdGraphics(int code);
 void            GetRequiredParam(char *string, int size);
+
+
+void CmdQuad(int kk);
+void CmdSpace(float kk);
+

@@ -1,26 +1,25 @@
 /*
- * $Id: commands.c,v 1.11 2001/08/12 19:40:25 prahl Exp $
+ * $Id: commands.c,v 1.12 2001/08/12 19:48:12 prahl Exp $
  * History:
  * $Log: commands.c,v $
- * Revision 1.11  2001/08/12 19:40:25  prahl
- * 1.9g
- *         Added commands to read and set TeX lengths
- *         Added commands to read and set TeX counters
- *         Fixed bug in handling of \item[text]
- *         Eliminated comparison of fpos_t variables
- *         Revised getLinenumber ... this is not perfect
- *         Fixed bug in getTexChar() routine
- *         Clearly separate preamble from the document in hopes that
- *           one day more appropriate values for page size, margins,
- *           paragraph spacing etc, will be used in the RTF header
- *         I have added initial support for page sizes still needs testing
- *         added two more test files misc3.tex and misc4.tex
- *         misc4.tex produces a bad rtf file currently
- *         separated all letter commands into letterformat.c
- *         cleaned up warning calls throughout code
- *         added \neq \leq \geq \mid commands to direct.cfg
- *         collected and added commands to write RTF header in preamble.c
- *         broke isolatin1 and hyperlatex support, these will be fixed next version
+ * Revision 1.12  2001/08/12 19:48:12  prahl
+ * 1.9h
+ * 	Turned hyperlatex back on.  Still not tested
+ * 	Turned isolatin1 back on.  Still not tested.
+ * 	Eliminated use of \\ in code for comments
+ * 	Eliminated \* within comments
+ * 	Eliminated silly char comparison to EOF
+ * 	Revised README to eliminate DOS stuff
+ * 	Added support for \pagebreak
+ * 	Added support for \quad, \qquad, \, \; and \> (as spaces)
+ * 	Improved support for \r accent
+ * 	Made minor changes to accentchars.tex
+ * 	fixed bugs in \textit{s_$c$} and $\bf R$
+ * 	fixed longstanding bugs in stack cleaning
+ * 	fixed ' in math mode
+ * 	log-like functions now typeset in roman
+ * 	Added test cases to eqns.tex
+ * 	default compiler options empty until code is more portable
  *
  * Revision 1.7  1998/10/28 06:30:53  glehner
  * changed thebibliography from CmdIgnore... to CmdConvertBiblio.
@@ -63,6 +62,7 @@
 #include "preamble.h"
 #include "funct1.h"
 #include "funct2.h"
+#include "equation.h"
 #include "letterformat.h"
 #include "commands.h"
 #include "parser.h"
@@ -97,7 +97,7 @@ static CommandArray commands[] = {
 	{"rm", CmdSetFont, F_ROMAN_1},
 	{"textrm", CmdSetFont, F_ROMAN_2},
 	{"rmfamily", CmdSetFont, F_ROMAN},
-	{"mathrm", CmdSetFont, F_ROMAN},
+	{"mathrm", CmdSetFont, F_ROMAN_2},
 	{"sf", CmdSetFont, F_SANSSERIF_1},
 	{"textsf", CmdSetFont, F_SANSSERIF_2},
 	{"sffamily", CmdSetFont, F_SANSSERIF},
@@ -186,6 +186,7 @@ static CommandArray commands[] = {
 	{"clearpage", CmdNewPage, NewPage},
 	{"cleardoublepage", CmdNewPage, NewPage},
 	{"newpage", CmdNewPage, NewColumn},
+	{"pagebreak", CmdNewPage, NewPage},
 	{"mbox", CmdBox, 0},
 	{"hbox", CmdBox, 0},
 	{"vbox", CmdBox, 0},
@@ -215,7 +216,8 @@ static CommandArray commands[] = {
 	{"newsavebox", CmdIgnoreParameter, No_Opt_One_NormParam},
 	{"usebox", CmdIgnoreParameter, No_Opt_One_NormParam},
 	{"fbox", CmdIgnoreParameter, No_Opt_One_NormParam},
-	{"hspace", CmdIgnoreParameter, No_Opt_One_NormParam},
+	{"quad", CmdQuad, 1},
+	{"qquad", CmdQuad, 2},
 	{"hspace*", CmdIgnoreParameter, No_Opt_One_NormParam},
 	{"vspace", CmdIgnoreParameter, No_Opt_One_NormParam},
 	{"vspace*", CmdIgnoreParameter, No_Opt_One_NormParam},
@@ -472,7 +474,7 @@ globals: command-functions have side effects or recursive calls
 	for (j = iEnvCount - 1; j >= 0; j--, i = 0) {
 		while (strcmp(Environments[j][i].cpCommand, "") != 0) {
 
-//			diagnostics(5,"CallCommandFunc Trying %s",Environments[j][i].cpCommand);
+/*			diagnostics(5,"CallCommandFunc Trying %s",Environments[j][i].cpCommand); */
 			
 			if (strcmp(Environments[j][i].cpCommand, cCommand) == 0) {
 				if (Environments[j][i].func == NULL)
@@ -512,8 +514,7 @@ globals: command-functions have side effects or recursive calls
 		++i;
 	}
 
-	/* unknown environment must be ignored !!! */
-	/* ======================================== */
+	/* unknown environment must be ignored */
 	if (AddParam == ON) {
 		sprintf(unknown_environment, "%s%s%s", "end{", cCommand, "}");
 		/* Ignore_Environment(unknown_environment); */

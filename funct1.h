@@ -1,26 +1,25 @@
 /*
- * $Id: funct1.h,v 1.11 2001/08/12 19:40:25 prahl Exp $
+ * $Id: funct1.h,v 1.12 2001/08/12 19:48:12 prahl Exp $
  * History:
  * $Log: funct1.h,v $
- * Revision 1.11  2001/08/12 19:40:25  prahl
- * 1.9g
- *         Added commands to read and set TeX lengths
- *         Added commands to read and set TeX counters
- *         Fixed bug in handling of \item[text]
- *         Eliminated comparison of fpos_t variables
- *         Revised getLinenumber ... this is not perfect
- *         Fixed bug in getTexChar() routine
- *         Clearly separate preamble from the document in hopes that
- *           one day more appropriate values for page size, margins,
- *           paragraph spacing etc, will be used in the RTF header
- *         I have added initial support for page sizes still needs testing
- *         added two more test files misc3.tex and misc4.tex
- *         misc4.tex produces a bad rtf file currently
- *         separated all letter commands into letterformat.c
- *         cleaned up warning calls throughout code
- *         added \neq \leq \geq \mid commands to direct.cfg
- *         collected and added commands to write RTF header in preamble.c
- *         broke isolatin1 and hyperlatex support, these will be fixed next version
+ * Revision 1.12  2001/08/12 19:48:12  prahl
+ * 1.9h
+ * 	Turned hyperlatex back on.  Still not tested
+ * 	Turned isolatin1 back on.  Still not tested.
+ * 	Eliminated use of \\ in code for comments
+ * 	Eliminated \* within comments
+ * 	Eliminated silly char comparison to EOF
+ * 	Revised README to eliminate DOS stuff
+ * 	Added support for \pagebreak
+ * 	Added support for \quad, \qquad, \, \; and \> (as spaces)
+ * 	Improved support for \r accent
+ * 	Made minor changes to accentchars.tex
+ * 	fixed bugs in \textit{s_$c$} and $\bf R$
+ * 	fixed longstanding bugs in stack cleaning
+ * 	fixed ' in math mode
+ * 	log-like functions now typeset in roman
+ * 	Added test cases to eqns.tex
+ * 	default compiler options empty until code is more portable
  *
  * Revision 1.5  1998/11/04 13:39:40  glehner
  * Changed ON-Flag to 0x4000 for little int compilers.
@@ -78,20 +77,6 @@ void            Environment(int code);
 void            CmdSection(int code);
 
 void            CmdFootNote(int code);
-
-#define FORM_DOLLAR    2	/* ('$')  */
-#define FORM_RND_OPEN  3	/* ('/(') */
-#define FORM_ECK_OPEN  4	/* ('/[') */
-#define FORM_RND_CLOSE 5	/* ('/)') */
-#define FORM_ECK_CLOSE 6	/* ('/]') */
-#define FORM_NO_NUMBER 7	/* \nonumber */
-#define EQNARRAY       8	/* eqnarray environment */
-#define EQNARRAY_1     9	/* eqnarray* environment */
-#define EQUATION      10	/* equation environment */
-#define EQUATION_1    11	/* equation* environment */
-#define FORM_MATH     12	/* math environment */
-
-void            CmdFormula(int code);
 
 #define QUOTE 1
 #define QUOTATION 2

@@ -29,7 +29,9 @@ static bool   g_preambleTwoside  = FALSE;
 static bool   g_preambleTwocolumn= FALSE;
 static bool   g_preambleTitlepage= FALSE;
 static bool   g_preambleLandscape= TRUE;
+
 extern bool   pagestyledefined;
+extern enum   TexCharSetKind TexCharSet;
 
 static char * g_preambleTitle    = NULL;
 static char * g_preambleAuthor   = NULL;
@@ -120,21 +122,19 @@ setDocumentOptions(char *optionlist)
 			     strcmp(option, "english") == 0 || 
 				 strcmp(option, "french")  == 0) 
 			setPackageBabel(option);
-		else if (strcmp(option, "twoside") == 0) {
+		else if (strcmp(option, "twoside") == 0) 
 			g_preambleTwoside = TRUE;
-//			fprintf(fRtf, "\\facingp");
-		} else if (strcmp(option, "twocolumn") == 0) {
-//			fprintf(fRtf, "\\cols2\\colsx709 ");	/* two columns -- space between columns 709 */
+		else if (strcmp(option, "twocolumn") == 0) 
 			g_preambleTwocolumn = TRUE;
-		} else if (strcmp(option, "titlepage") == 0) {
+		else if (strcmp(option, "titlepage") == 0) {
 			g_preambleTitlepage = TRUE;
 		} else if (strcmp(option, "isolatin1") == 0) {
-//			TexCharSet = ISO_8859_1;
+			TexCharSet = ISO_8859_1;
 			fprintf(stderr, "\nisolatin1 style option encountered.");
 			fprintf(stderr, "\nLatin-1 (= ISO 8859-1) special characters will be ");
 			fprintf(stderr, "converted into RTF-Commands!\n");
 		} else if (strcmp(option, "hyperlatex") == 0) {
-//			PushEnvironment(HYPERLATEX);
+			PushEnvironment(HYPERLATEX); 
 		} else if (!TryVariableIgnore(option, fTex)) {
 			diagnostics(WARNING, "Unknown style option %s ignored", option);
 		}
@@ -526,7 +526,9 @@ WritePageSize(void)
 		fprintf(fRtf,"\\facingp");
 	if (g_preambleLandscape)
 		fprintf(fRtf,"\\landscape");
-		
+	if (g_preambleTwocolumn)
+		fprintf(fRtf, "\\cols2\\colsx709");	 /* two columns -- space between columns 709 */
+
 	n = getLength("hoffset") + 72*20 + getLength("marginparsep");
 	fprintf(fRtf, "\\margl%d", n);
 	n = getLength("pagewidth") - (n + getLength("textwidth"));

@@ -1,5 +1,23 @@
 Changes to latex2rtf by Scott Prahl
 
+1.9h 
+	Turned hyperlatex back on.  Still not tested
+	Turned isolatin1 back on.  Still not tested.
+	Eliminated use of \\ in code for comments 
+	Eliminated \* within comments
+	Eliminated silly char comparison to EOF
+	Revised README to eliminate DOS stuff
+	Added support for \pagebreak
+	Added support for \quad, \qquad, \, \; and \> (as spaces)
+	Improved support for \r accent
+	Made minor changes to accentchars.tex
+	fixed bugs in \textit{s_$c$} and $\bf R$
+	fixed longstanding bugs in stack cleaning
+	fixed ' in math mode
+	log-like functions now typeset in roman
+	Added test cases to eqns.tex
+	default compiler options empty until code is more portable
+	
 1.9g
 	Added commands to read and set TeX lengths
 	Added commands to read and set TeX counters
