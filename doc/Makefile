@@ -1,7 +1,7 @@
-# $Id: Makefile,v 1.7 2002/11/28 17:29:34 prahl Exp $
+# $Id: Makefile,v 1.8 2002/11/28 18:08:05 prahl Exp $
 
-all:	latex2rtf.html latex2rtf.info latex2rtf.pdf latex2rtf.txt almostclean \
-		latex2png.hlp latex2rtf.hlp
+all:	latex2rtf.html latex2rtf.info latex2rtf.pdf latex2rtf.txt \
+		latex2png.hlp latex2rtf.hlp almostclean
 
 latex2rtf.html:	latex2rtf.texi
 	makeinfo --html --no-split latex2rtf
@@ -16,10 +16,10 @@ latex2rtf.pdf : latex2rtf.texi
 	texi2dvi --pdf latex2rtf.texi
 
 latex2png.hlp: latex2png.1
-	nroff -man <latex2png.1 > latex2png.hlp
+	nroff -man <latex2png.1 | perl -pe 's/.\x08//g' > latex2png.hlp
 	
 latex2rtf.hlp: latex2rtf.1
-	nroff -man <latex2rtf.1 > latex2rtf.hlp
+	nroff -man <latex2rtf.1 | perl -pe 's/.\x08//g' > latex2rtf.hlp
 	
 almostclean:
 	rm -f *.aux *.toc *.fn *.fns *.ky *.log *.pg *.tp *.vr *.vrs \
