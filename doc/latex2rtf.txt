@@ -500,9 +500,8 @@ syntax is:
 
     `-M16'
           insert Word comment field that contains the original equation
-          text
-     These switches can be added together to get the desired
-     conversion.  Handy examples are
+          text     These switches can be added together to get the
+     desired conversion.  Handy examples are
     `-M3'
           convert both inline and displayed equations to RTF (default)
 
@@ -550,7 +549,6 @@ syntax is:
      add the specified number of extra `}' to the end of the RTF file.
      This is useful for files that are not cleanly converted by
      LaTeX2RTF .
-
 
    With no arguments other than switches starting with a "-", LaTeX2RTF
 acts as a filter, i.e., it reads from `stdin' and writes to `stdout'.
