@@ -13,7 +13,7 @@ RTF=accentchars.rtf array.rtf eqns.rtf fonts.rtf fontsize.rtf \
 	babel_german.rtf babel_russian.rtf babel_czech.rtf babel_french.rtf \
 	babel_spanish.rtf babel_frenchb.rtf \
 	bib_simple.rtf bib_apalike.rtf bib_apalike2.rtf bib_natbib1.rtf bib_natbib2.rtf \
-	bib_natbib3.rtf \
+	bib_natbib3.rtf bib_harvard.rtf \
 	enc_applemac.rtf enc_cp437.rtf enc_cp865.rtf    enc_latin2.rtf enc_latin5.rtf \
 	enc_cp1250.rtf   enc_cp850.rtf enc_decmulti.rtf enc_latin3.rtf enc_latin9.rtf\
 	enc_cp1252.rtf   enc_cp852.rtf enc_latin1.rtf   enc_latin4.rtf enc_next.rtf\
@@ -23,7 +23,7 @@ RTF=accentchars.rtf array.rtf eqns.rtf fonts.rtf fontsize.rtf \
 	spago1.rtf theorem.rtf picture.rtf tabbing.rtf \
 	fig_test.rtf fig_test2.rtf fig_size.rtf \
 	chem.rtf subsup.rtf linux.rtf color.rtf \
-	head_book.rtf head_article.rtf head_report.rtf endnote.rtf
+	head_book.rtf head_article.rtf head_report.rtf endnote.rtf 
 
 RTFX=bib_apacite.rtf bib_apanat.rtf bib_authordate.rtf fig_test3.rtf
 
@@ -77,6 +77,11 @@ bib_apanat.rtf: bib_apanat.tex
 	$(LATEX) bib_apanat > latex.log
 	$(LATEX) bib_apanat > latex.log
 	$(LATEX2RTF) $(OPTIONS) bib_apanat
+
+bib_harvard.rtf: bib_harvard.tex
+	$(LATEX) bib_harvard > latex.log
+	$(LATEX) bib_harvard > latex.log
+	$(LATEX2RTF) $(OPTIONS) bib_harvard
 
 bib_authordate.rtf: bib_authordate.tex
 	$(LATEX) bib_authordate > latex.log

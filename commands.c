@@ -753,10 +753,11 @@ static CommandArray harvardCommands[] = {
     {"citeaffixed", CmdCite, CITE_AFFIXED},
     {"citeyear", CmdCite, CITE_YEAR},
     {"citeyear*", CmdCite, CITE_YEAR_STAR},
+    {"citename", CmdCite, CITE_NAME},
     {"harvarditem", CmdHarvard, CITE_HARVARD_ITEM},
+    {"harvardand", CmdHarvard, CITE_HARVARD_AND},
     {"harvardyearleft", CmdHarvard, CITE_HARVARD_YEAR_LEFT},
     {"harvardyearright", CmdHarvard, CITE_HARVARD_YEAR_RIGHT},
-    {"citename", CmdCite, CITE_NAME},
     {"", NULL, 0}
 };
 

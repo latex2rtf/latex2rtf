@@ -57,6 +57,7 @@
 #define CITE_HARVARD_YEAR_LEFT  33
 #define CITE_HARVARD_YEAR_RIGHT 34
 #define CITE_NAME               35
+#define CITE_HARVARD_AND        36
 
 #define LIST_OF_FIGURES		1
 #define LIST_OF_TABLES		2

@@ -708,7 +708,15 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
         case '^':
             if (mode == MODE_VERTICAL)
                 SetTexMode(MODE_HORIZONTAL);
-            CmdHatChar(0);
+            
+            cThis = getTexChar();
+            if (cThis=='^') {		/* replace \^^M with space */
+            	cThis = getTexChar();
+            	fprintRTF(" ");
+            } else {
+            	ungetTexChar(cThis);
+				CmdHatChar(0);
+            }
             return;
         case '.':
             if (mode == MODE_VERTICAL)

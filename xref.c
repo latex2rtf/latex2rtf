@@ -1246,9 +1246,11 @@ purpose: handles \harvarditem{a}{b}{c} \harvardyearleft \harvardyearright
 ******************************************************************************/
 void CmdHarvard(int code)
 {
-    char *s;
+    char *s=NULL;
 
 	if (code == CITE_HARVARD_ITEM) {
+		s = getBracketParam();
+		if (s) free(s);
 		s = getBraceParam();
 		free(s);
 		s = getBraceParam();
@@ -1262,6 +1264,9 @@ void CmdHarvard(int code)
 
 	if (code == CITE_HARVARD_YEAR_RIGHT) 
 		fprintRTF(")");
+		
+	if (code == CITE_HARVARD_AND)
+		fprintRTF("&");
 }
 
 /******************************************************************************
