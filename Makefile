@@ -109,8 +109,8 @@ DOCS= README README.DOS README.Mac Copyright ChangeLog\
 	doc/latex2rtf.texi doc/latex2rtf.html doc/latex2rtf.pdf doc/latex2rtf.txt \
 	doc/latex2rtf.info doc/credits doc/copying.txt doc/Makefile
 
-SCRIPTS= scripts/version scripts/tex2png_1 scripts/tex2png_2 \
-         scripts/tex2png_3 scripts/tex2png_4 scripts/l2r.bat scripts/cvs2cl
+SCRIPTS= scripts/version scripts/latex2png_1 scripts/latex2png_2 \
+         scripts/latex2png_3 scripts/latex2png_4 scripts/l2r.bat scripts/cvs2cl
 
 TEST=   test/Makefile test/bracecheck \
 	test/accentchars.tex test/array.tex test/cite.tex test/cite.bib \

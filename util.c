@@ -1,5 +1,5 @@
 /*
- * $Id: util.c,v 1.18 2001/11/23 21:43:48 prahl Exp $ 
+ * $Id: util.c,v 1.19 2002/03/11 04:41:40 prahl Exp $ 
  */
 #include <stdlib.h>
 #include <string.h>
@@ -45,6 +45,7 @@ strdup_noblanks(char *s)
 ******************************************************************************/
 {
 char *p, *dup;
+	if (s==NULL) return NULL;
 	while (*s == ' ' || *s == '\n') s++;	/* skip to non blank */
 	dup = malloc(strlen(s) + 1);
 	p = dup;
@@ -77,6 +78,29 @@ purpose: duplicate text with only a..z A..Z 0..9 and _
 	}
 
 	return dup;
+}
+
+char * 
+strdup_noendblanks(char * s)
+/******************************************************************************
+ purpose:  duplicates a string without spaces or newlines at front or end
+******************************************************************************/
+{
+char *p, *t;
+
+	if (s==NULL) return NULL;
+	t=s;
+	while (*t == ' ' || *t == '\n') t++;	/* skip to non blank */
+	
+	p = s + strlen(s) - 1;
+	while (p >= t && (*p == ' ' || *p == '\n')) p--;	/* skip to non blank */
+
+	if (p < s)
+		return strdup("");
+	
+	p++;
+	*p='\0';
+	return strdup(s);
 }
 
 char *

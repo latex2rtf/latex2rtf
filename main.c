@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.54 2002/03/08 06:46:59 prahl Exp $ */
+/* $Id: main.c,v 1.55 2002/03/11 04:41:40 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -70,10 +70,11 @@ char		   *g_tmp_path = NULL;
 char           *g_preamble = NULL;
 char     		g_field_separator = ',';
 
-bool 			g_equation_rtf = TRUE;
-bool			g_equation_inline_bitmap = FALSE;
+bool			g_equation_display_rtf    = TRUE;
+bool			g_equation_inline_rtf     = TRUE;
+bool			g_equation_inline_bitmap  = FALSE;
 bool			g_equation_display_bitmap = FALSE;
-bool			g_equation_comment = FALSE;
+bool			g_equation_comment        = FALSE;
 
 int             indent = 0;
 char            alignment = JUSTIFIED;	/* default for justified: */
@@ -135,11 +136,13 @@ int main(int argc, char **argv)
 		case 'M':
 			sscanf(optarg, "%d", &x);
 			diagnostics(WARNING, "Math option = %s x=%d",optarg,x);
-			g_equation_rtf            = x & 1;
-			g_equation_display_bitmap = x & 2;
-			g_equation_inline_bitmap  = x & 4;
-			g_equation_comment        = x & 8;
-			diagnostics(WARNING, "Math option g_equation_rtf           = %d",g_equation_rtf);
+			g_equation_display_rtf    = (x & 1) ? TRUE : FALSE;
+			g_equation_inline_rtf     = (x & 2) ? TRUE : FALSE;
+			g_equation_display_bitmap = (x & 4) ? TRUE : FALSE;
+			g_equation_inline_bitmap  = (x & 8) ? TRUE : FALSE;
+			g_equation_comment        = (x & 16)? TRUE : FALSE;
+			diagnostics(WARNING, "Math option g_equation_display_rtf   = %d",g_equation_display_rtf);
+			diagnostics(WARNING, "Math option g_equation_inline_rtf    = %d",g_equation_inline_rtf);
 			diagnostics(WARNING, "Math option g_equation_display_bitmap= %d",g_equation_display_bitmap);
 			diagnostics(WARNING, "Math option g_equation_inline_bitmap = %d",g_equation_inline_bitmap);
 			diagnostics(WARNING, "Math option g_equation_comment       = %d",g_equation_comment);

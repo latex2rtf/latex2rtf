@@ -197,7 +197,7 @@ SaveEquationAsFile(char *pre, char *eq, char *post)
 	fullname = strdup_together(tmp_dir, name);	
 	texname = strdup_together(fullname,".tex");
 
-	diagnostics(1, "SaveEquationAsFile =%s", texname);
+	diagnostics(4, "SaveEquationAsFile =%s", texname);
 	
 	f = fopen(texname,"w");
 	while (eq && (*eq == '\n' || *eq == ' ')) eq++;  /* skip whitespace */
@@ -232,7 +232,7 @@ WriteEquationAsBitmap(char *pre, char *eq, char *post)
 	char *png, *pdf, *name, *cmd;
 	int resolution = 288; /*points per inch */
 	
-	diagnostics(1, "Entering WriteEquationAsBitmap");
+	diagnostics(4, "Entering WriteEquationAsBitmap");
 
 /* filename mangling */
 	name = SaveEquationAsFile(pre,eq,post);
@@ -244,7 +244,7 @@ WriteEquationAsBitmap(char *pre, char *eq, char *post)
 /* create shell commands to convert equations */
 	cmd = (char *) malloc(strlen(name)+18);
 	sprintf(cmd, "latex2png -d %d %s", resolution, name);	
-	diagnostics(1, "cmd = <%s>", cmd);
+	diagnostics(1, "EQN to bitmap cmd = <%s>", cmd);
 
 	if (system(cmd) == 0)
 		PutPngFile(png,(72.0/resolution));
@@ -526,30 +526,47 @@ ConvertOverToFrac(char ** equation)
  purpose   : Convert {A \over B} to \frac{A}{B} 
  ******************************************************************************/
 {
-	char *eq, *mid, *first, *last, *s;
+	char cNext, *eq, *mid, *first, *last, *s, *p, *t;
 	eq = *equation;
-	diagnostics(5,"ConvertOverToFrac before <%s>",eq);
-	while ((mid = strstr(eq,"\\over")) != NULL && !isalpha(*(mid+6))) {
+	p = eq;
+	diagnostics(4,"ConvertOverToFrac before <%s>",p);
+	while ((mid = strstr(p,"\\over")) != NULL) {
+		diagnostics(1,"Matched at <%s>",mid);
+		cNext = *(mid+5);
+		diagnostics(1,"Next char is <%c>",cNext);
+	 	if (!(('A'<= cNext && cNext <= 'Z') || ('a'<= cNext && cNext <= 'z'))) {
+			first = scanback(eq, mid);
+			diagnostics(6, "first = <%s>", first);
+			last  = scanahead(mid);
+			diagnostics(6, "last = <%s>", last);
+	
+			strncpy(mid,"  }{ ",5);
+			diagnostics(6, "mid = <%s>", mid);
+			s = (char *) malloc(strlen(eq)+7);
+			t = s;
 
-		first = scanback(eq, mid);
-		diagnostics(5, "first = <%s>", first);
-		last  = scanahead(mid);
-		diagnostics(5, "last = <%s>", last);
+			strncpy(t, eq, first-eq);			/* everything up to {A\over B} */
+			t += first-eq;
 
-		strncpy(mid,"  }{ ",5);
-		diagnostics(5, "mid = <%s>", mid);
-		s = (char *) malloc(strlen(eq)+7);
-		strncpy(s, eq, first-eq);
-		strncpy(s + (long) (first - eq), "\\frac", 5);
-		strncpy(s + (long) (first - eq + 5), first, last-first);
-/*		strncpy(s + (long) (last  - eq + 5), "}", 1);*/
-		strcpy(s + (long) (last  - eq + 5), last );
-		free(eq);
-		eq = s;
-	diagnostics(5,"ConvertOverToFrac inter <%s>",eq);
+			strncpy(t, "\\frac", 5);			/* insert new \frac */
+			t += 5;
+			if (*first!='{') {*t='{'; t++;}		/* add { if missing */
+			
+			strncpy(t, first, last-first);		/* copy A}{B */
+			t += last-first;
+			
+			if (*last!='}') {*t='}'; t++;}		/* add } if missing */
+
+			strcpy(t, last);					/* everything after {A\over B} */
+			free(eq);
+			eq = s;
+			p = eq;
+		} else
+			p = mid+5;
+		diagnostics(6,"ConvertOverToFrac current <%s>",eq);
 	}
 	*equation = eq;
-	diagnostics(5,"ConvertOverToFrac after <%s>",eq);
+	diagnostics(4,"ConvertOverToFrac after <%s>",eq);
 }
 
 void 
@@ -587,13 +604,18 @@ CmdEquation(int code)
 	
 	diagnostics(4, "Entering CmdEquation --------%x\n<%s>\n<%s>\n<%s>",code,pre,eq,post);
 
-	inline_equation = (code == EQN_MATH) || (code == EQN_DOLLAR) || (code == EQN_RND_OPEN);
+	inline_equation = (true_code == EQN_MATH) || (true_code == EQN_DOLLAR) || (true_code == EQN_RND_OPEN);
 	
 	number=getCounter("equation");
 	
 	if (g_equation_comment)
 		WriteEquationAsComment(pre,eq,post);
 	
+	diagnostics(4,"inline=%d  inline_bitmap=%d",inline_equation,g_equation_inline_bitmap);
+	diagnostics(4,"inline=%d display_bitmap=%d",inline_equation,g_equation_display_bitmap);
+	diagnostics(4,"inline=%d  inline_rtf   =%d",inline_equation,g_equation_inline_rtf);
+	diagnostics(4,"inline=%d display_rtf   =%d",inline_equation,g_equation_display_rtf);
+
 	if ((inline_equation && g_equation_inline_bitmap)  || 
 		(!inline_equation && g_equation_display_bitmap) ) {
 			PrepareRtfEquation(true_code,FALSE);
@@ -601,7 +623,8 @@ CmdEquation(int code)
 			FinishRtfEquation(true_code,FALSE);
 	}
 
-	if (g_equation_rtf) {
+	if ((inline_equation && g_equation_inline_rtf)  || 
+		(!inline_equation && g_equation_display_rtf) ) {
 		setCounter("equation",number);
 		WriteEquationAsRTF(true_code,&eq);	
 	}
@@ -822,23 +845,27 @@ CmdFraction(int code)
  purpose: converts \frac{x}{y} (following Taupin's implementation in ltx2rtf)
 ******************************************************************************/
 {
-	char           *denominator, *numerator;
+	char           *denominator, *numerator, *nptr, *dptr;
 
 	numerator = getBraceParam();
+	nptr = strdup_noendblanks(numerator);
 	skipSpaces();
 	denominator = getBraceParam();
-
-	diagnostics(4,"CmdFraction -- numerator   = <%s>", numerator);
-	diagnostics(4,"CmdFraction -- denominator = <%s>", denominator);
-
-	fprintRTF(" \\\\F(");
-	ConvertString(numerator);
-	fprintRTF("%c", g_field_separator);
-	ConvertString(denominator);
-	fprintRTF(")");
+	dptr = strdup_noendblanks(denominator);
 
 	free(numerator);
 	free(denominator);
+	diagnostics(4,"CmdFraction -- numerator   = <%s>", nptr);
+	diagnostics(4,"CmdFraction -- denominator = <%s>", dptr);
+
+	fprintRTF(" \\\\F(");
+	ConvertString(nptr);
+	fprintRTF("%c", g_field_separator);
+	ConvertString(dptr);
+	fprintRTF(")");
+
+	free(nptr);
+	free(dptr);
 }
 
 void 

@@ -117,7 +117,10 @@ expandmacro(char *macro, int params)
 		if (next_piece) {
 			*next_piece = '\0';
 			next_piece++;
-			param = *next_piece - '1';
+			if (*next_piece=='#')
+				param = 101;				/* just a flag for below */
+			else
+				param = *next_piece - '1';
 			next_piece++;
 		} else
 			param = -1;
@@ -126,7 +129,11 @@ expandmacro(char *macro, int params)
 		strcpy(expanded,macro_piece);
 		expanded += strlen(macro_piece);
 		if (param > -1) {
-			if (param<params) {
+			if (param==101) {
+				diagnostics(3, "expandmacro ## = #");
+				strcpy(expanded,"#");
+				expanded ++;
+			} else if (param<params) {
 				diagnostics(3, "expandmacro arg =<%s>", args[param]);
 				strcpy(expanded,args[param]);
 				expanded += strlen(args[param]);

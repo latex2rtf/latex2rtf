@@ -1,4 +1,4 @@
-/* $Id: main.h,v 1.37 2002/03/08 06:46:59 prahl Exp $ */
+/* $Id: main.h,v 1.38 2002/03/11 04:41:40 prahl Exp $ */
 #ifndef __MAIN_H
 #define __MAIN_H
 
@@ -116,7 +116,8 @@ extern char		*g_config_path;
 extern char     g_field_separator;
 extern char    *g_preamble;
 
-extern bool 	g_equation_rtf;
+extern bool		g_equation_inline_rtf;
+extern bool		g_equation_display_rtf;
 extern bool		g_equation_inline_bitmap;
 extern bool		g_equation_display_bitmap;
 extern bool		g_equation_comment;
