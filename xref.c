@@ -483,6 +483,14 @@ getAngleParam(void)
 	return text;
 }
 
+static int isEmptyName(char *s)
+{
+	if (s==NULL) return 1;
+	if (s[0]=='\0') return 1;
+	if (s[0]=='{' && s[1]=='}') return 1;
+	return 0;
+} 
+
 static void ConvertNatbib(char *s, int code, char *pre, char *post)
 {
 	char *n, *year, *abbv, *full, *v;
@@ -494,29 +502,33 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post)
 	PopSource();
 	diagnostics(5,"natbib <%s> <%s> <%s> <%s>",n,year,abbv,full);
 	switch (code) {
+		case CITE_CITE:
 		case CITE_T:
 		case CITE_T_STAR:
 			v=abbv;
 			if (CITE_T==code && g_citation_longnamesfirst && !g_current_cite_seen)
-				v = full;
+				if (!isEmptyName(full)) v = full;
 			if (CITE_T_STAR==code)
-				v = full;
+				if (!isEmptyName(full)) v = full;
+			if (CITE_CITE==code && g_citation_longnamesfirst)
+				if (!isEmptyName(full)) v = full;
+
 			ConvertString(v);
 
-			fprintRTF(" [");
+			fprintRTF(" (");
 			if (pre){ ConvertString(pre); fprintRTF(" "); }
 			ConvertString(year);
 			if (post) { fprintRTF(", "); ConvertString(post); }
-			fprintRTF("]");
+			fprintRTF(")");
 			break;
 			
 		case CITE_P:
 		case CITE_P_STAR:
 			v=abbv;
 			if (CITE_P==code && g_citation_longnamesfirst && !g_current_cite_seen)
-				v = full;
+				if (!isEmptyName(full)) v = full;
 			if (CITE_P_STAR==code)
-				v = full;
+				if (!isEmptyName(full)) v = full;
 
 			if (strcmp(v,g_last_author_cited)!=0) {  /*suppress repeated names */
 				ConvertString(v);
@@ -578,8 +590,8 @@ purpose: handles \cite
 	if (g_document_bibstyle == BIBSTYLE_NATBIB){
 		pretext = getBracketParam();
 		option  = getBracketParam();
-		strcpy(punct,"[],");
-		if (code!=CITE_P   && code!=CITE_P_STAR   && 
+		strcpy(punct,"();");
+		if (code!=CITE_P   && code!=CITE_P_STAR   &&
 		    code!=CITE_ALP && code!=CITE_ALP_STAR && code!=CITE_YEAR_P)
 			g_current_cite_paren=FALSE;
 	}
@@ -633,7 +645,7 @@ purpose: handles \cite
 		} 
 
 		if (g_document_bibstyle == BIBSTYLE_NATBIB) {
-			diagnostics(5,"natbib key=[%s] <%s>",key, s);
+			diagnostics(2,"natbib key=[%s] <%s>",key, s);
 			if (s) {
 				g_current_cite_seen=citation_used(key);
 				ConvertNatbib(s,code,pretext,option);
