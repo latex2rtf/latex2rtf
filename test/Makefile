@@ -9,7 +9,7 @@ all:	accentchars.rtf array.rtf cite.rtf eqns.rtf fonts.rtf fontsize.rtf \
 		enc_applemac.rtf enc_cp437.rtf enc_cp865.rtf    enc_latin2.rtf enc_latin5.rtf \
 		enc_cp1250.rtf   enc_cp850.rtf enc_decmulti.rtf enc_latin3.rtf enc_latin9.rtf\
 		enc_cp1252.rtf   enc_cp852.rtf enc_latin1.rtf   enc_latin4.rtf enc_next.rtf\
-		Linux.rtf
+		Linux.rtf defs.rtf
 
 LATEX= latex
 BIBTEX= bibtex
@@ -44,6 +44,6 @@ Linux.rtf: Linux.tex
 check:
 	./bracecheck
 clean:
-	rm -f *.dvi *.rtf *.aux *.blg *.bbl *.log *.pdf *.toc *.lot
+	rm -f *.dvi *.rtf *.aux *.blg *.bbl *.log *.pdf *.toc *.lot *.idx *.ilg *.ind
 
 .PHONY: clean all

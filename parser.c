@@ -1,4 +1,4 @@
-/*  $Id: parser.c,v 1.33 2001/11/11 18:57:06 prahl Exp $
+/*  $Id: parser.c,v 1.34 2001/11/12 06:08:14 prahl Exp $
 
    Contains declarations for a generic recursive parser for LaTeX code.
 */
@@ -784,7 +784,7 @@ getDimension(void)
 		
 }
 
-#define SECTION_BUFFER_SIZE 512
+#define SECTION_BUFFER_SIZE 2048
 static char* section_buffer = NULL;
 static long section_buffer_size = SECTION_BUFFER_SIZE;
 
@@ -799,7 +799,7 @@ static void increase_buffer_size(void)
 	section_buffer_size *=2;
 	free(section_buffer);
 	section_buffer = new_section_buffer;
-	diagnostics(1, "Expanded buffer size is now %ld", section_buffer_size);
+	diagnostics(4, "Expanded buffer size is now %ld", section_buffer_size);
 }
 
 void

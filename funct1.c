@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.45 2001/11/11 06:17:36 prahl Exp $ 
+/* $Id: funct1.c,v 1.46 2001/11/12 06:08:14 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -140,8 +140,27 @@ CmdVspace(int code)
 void
 CmdNewDef(int code)
 {
-	char * name, *def, *params;
-	int param;
+	char * name, *def, cThis;
+	char * params=NULL;
+	int param=0;
+	
+	if (code == DEF_DEF){
+
+		name = getSimpleCommand();
+		if (name == NULL) {
+			diagnostics(WARNING,"Definition does not start with '\\' skipping");
+			return;
+		}
+		
+		/* handle simple parameters (discard delimiters) e.g., #1#2#3*/
+		while ( (cThis=getTexChar()) && cThis != '{' ){
+			if (isdigit(cThis)) param++;
+		}		
+		ungetTexChar('{');
+		
+		def = getBraceParam();
+		newDefinition(name+1,def,param);		
+	}
 	
 	if (code == DEF_NEW || code == DEF_RENEW) {
 		name = getBraceParam();
@@ -155,17 +174,18 @@ CmdNewDef(int code)
 				diagnostics(ERROR, "non-numeric number of parameters in newcommand");
 		}
 		
-		diagnostics(3,"CmdNewDef name=<%s> param=%d def=<%s>", name,param,def);
 
 		if (code == DEF_NEW)
 			newDefinition(name+1,def,param);
 		else
 			renewDefinition(name+1,def,param);
 		
-		free(name);
-		free(def);
-		if (params) free(params);
 	}
+
+	diagnostics(3,"CmdNewDef name=<%s> param=%d def=<%s>", name,param,def);
+	free(name);
+	free(def);
+	if (params) free(params);
 }
 
 void

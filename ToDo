@@ -1,15 +1,15 @@
 Bugs:
- 	Fix line numbering
-	Remove 32k limit for section sizes
-	Added \section* support to parsing sections
-	Add support for secnumdepth
-	Add final scanning routine for section labels
+ 	Fix line numbering better
 	Improve spacing before and after \section etc.
 	Improve font sizes in \section etc.
-	Add support for using the local cfg directory
-	Add support for \def now that \newcommand is working
+	Possible malloc problem in .cfg
+	Input/Include files is buggy
 
 Features:
+	Add support for using the local cfg directory
+	Add support for secnumdepth
+	Add final scanning routine for section labels
+
 	Add support for \usepackage{fullpage}
 	Add support for \usepackage{doublespace}
 	Add support for \includegraphics

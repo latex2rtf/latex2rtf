@@ -1,4 +1,4 @@
-/*  $Id: commands.c,v 1.36 2001/11/05 05:28:57 prahl Exp $
+/*  $Id: commands.c,v 1.37 2001/11/12 06:08:14 prahl Exp $
  
     Defines subroutines to translate LaTeX commands to RTF
 */
@@ -292,7 +292,7 @@ static CommandArray PreambleCommands[] = {
     {"lhead", CmdHeadFoot, LHEAD},
     {"thepage", CmdThePage, 0},
 	{"hyphenation", CmdHyphenation, 0},
-	{"def", CmdIgnoreDef, 0},
+	{"def", CmdNewDef, DEF_DEF},
 	{"newcommand", CmdNewDef, DEF_NEW},
 	{"renewcommand", CmdNewDef, DEF_RENEW},
 	{"newenvironment", CmdNewEnvironment, DEF_NEW},
