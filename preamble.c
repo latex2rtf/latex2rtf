@@ -1,4 +1,4 @@
-/* $Id: preamble.c,v 1.33 2002/04/24 14:31:16 prahl Exp $
+/* $Id: preamble.c,v 1.34 2002/04/27 03:55:39 prahl Exp $
 
 purpose : Handles LaTeX commands that should only occur in the preamble.
           These are gathered together because the entire preamble must be
@@ -64,7 +64,7 @@ setPackageBabel(char * option)
 	if (strcmp(option, "russian") == 0)
 	{
 		RussianMode = TRUE;
-	/*	PushEnvironment(RUSSIAN_MODE); */
+		PushEnvironment(RUSSIAN_MODE);
 		ReadLanguage("russian");
 	}
 }
@@ -342,6 +342,7 @@ setDocumentOptions(char *optionlist)
 		else if (strcmp(option, "german")  == 0 ||
 			     strcmp(option, "spanish") == 0 || 
 			     strcmp(option, "english") == 0 || 
+			     strcmp(option, "russian") == 0 || 
 				 strcmp(option, "french")  == 0) 
 			setPackageBabel(option);
 		else if (strcmp(option, "twoside") == 0) 

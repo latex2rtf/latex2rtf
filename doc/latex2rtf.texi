@@ -516,8 +516,9 @@ important when non-ansi characters are included in the @latex{} document. Typica
 is done in a @latexe{} file by using @code{\usepackage[codepage]@{inputenc@}} This command
 is not needed if the above command is already in the @latexe{} file.  You may select any
 of the following code pages: ansinew, applemac, cp437, cp437de, cp850, cp852, cp865,
-decmulti, cp1250, cp1252, latin1, latin2, latin3, latin4, latin5, latin9, and next.  The
-default behavior is to use ansinew (code page 1252).
+decmulti, cp1250, cp1252, latin1, latin2, latin3, latin4, latin5, latin9, next.  The
+default behavior is to use ansinew (code page 1252).  Cyrillic support includes
+conversion of koi8-r, koi8-u, cp1251, cp855, cp866, maccyr, and macukr encodings.
 
 @item -D dots_per_inch
 used to specify the number of dots per inch for equations converted to bitmaps.  
@@ -639,7 +640,13 @@ the old 2.09 version of @code{\documentstyle[options]@{format#@}} and the newer
 
 It is not necesary to specify the @option{-C} option if you use @code{\usepackage@{isolatin1@}}
 or @code{\documentstyle[isolatin1]@{...@}}. @ltor{} automagically detects these
-packages/style options and switches to processing of ISO-Latin1 codes.
+packages/style options and switches to processing of ISO-Latin1 codes.  The following
+encodings are supported: ansinew, applemac, cp437, cp437de, cp850, cp852, cp865,
+decmulti, cp1250, cp1252, latin1, latin2, latin3, latin4, latin5, latin9, next,
+koi8-r, koi8-u, cp1251, cp855, cp866, maccyr, and macukr.  The encoding used in
+RTF files is cp1252.  If cyrillic fonts are present, then these are represented
+in the RTF file using cp1251 (Windows Cyrillic).
+
 
 @node Language Support, Cross References, Input Encoding, Features
 @section Language Support

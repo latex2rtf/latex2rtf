@@ -1,4 +1,4 @@
-/*  $Id: commands.c,v 1.53 2002/04/21 22:49:59 prahl Exp $
+/*  $Id: commands.c,v 1.54 2002/04/27 03:55:39 prahl Exp $
  
     Defines subroutines to translate LaTeX commands to RTF
 */
@@ -413,6 +413,77 @@ static CommandArray FrenchModeCommands[] = {
 };
 
 /********************************************************************/
+/* commands for Russian Mode */
+/********************************************************************/
+static CommandArray RussianModeCommands[] = {
+	{ "CYRA" , CmdCyrillicChar , 0xC0 },
+	{ "CYRB" , CmdCyrillicChar , 0xC1},
+	{ "CYRV" , CmdCyrillicChar , 0xC2},
+	{ "CYRG" , CmdCyrillicChar , 0xC3},
+	{ "CYRD" , CmdCyrillicChar , 0xC4},
+	{ "CYRE" , CmdCyrillicChar , 0xC5},
+	{ "CYRZH" , CmdCyrillicChar , 0xC6},
+	{ "CYRZ" , CmdCyrillicChar , 0xC7},
+	{ "CYRI" , CmdCyrillicChar , 0xC8},
+	{ "CYRISHRT" , CmdCyrillicChar , 0xC9},
+	{ "CYRK" , CmdCyrillicChar , 0xCA},
+	{ "CYRL" , CmdCyrillicChar , 0xCB},
+	{ "CYRM" , CmdCyrillicChar , 0xCC},
+	{ "CYRN" , CmdCyrillicChar , 0xCD},
+	{ "CYRO" , CmdCyrillicChar , 0xCE},
+	{ "CYRP" , CmdCyrillicChar , 0xCF},
+	{ "CYRR" , CmdCyrillicChar , 0xD0},	
+	{ "CYRS" , CmdCyrillicChar , 0xD1},
+	{ "CYRT" , CmdCyrillicChar , 0xD2},
+	{ "CYRU" , CmdCyrillicChar , 0xD3},
+	{ "CYRF" , CmdCyrillicChar , 0xD4},
+	{ "CYRH" , CmdCyrillicChar , 0xD5},
+	{ "CYRC" , CmdCyrillicChar , 0xD6},
+	{ "CYRCH" , CmdCyrillicChar , 0xD7},
+	{ "CYRSH" , CmdCyrillicChar , 0xD8},
+	{ "CYRCHSH" , CmdCyrillicChar , 0xD9},
+	{ "CYRHRDSN" , CmdCyrillicChar , 0xDA},
+	{ "CYRERY" , CmdCyrillicChar , 0xDB},
+	{ "CYRSFTSN" , CmdCyrillicChar , 0xDC},
+	{ "CYREREV" , CmdCyrillicChar , 0xDD},
+	{ "CYRYU" , CmdCyrillicChar , 0xDE},
+	{ "CYRYA" , CmdCyrillicChar , 0xDF},
+	{ "cyra" , CmdCyrillicChar , 0xE0 },
+	{ "cyrb" , CmdCyrillicChar , 0xE1},
+	{ "cyrv" , CmdCyrillicChar , 0xE2},
+	{ "cyrg" , CmdCyrillicChar , 0xE3},
+	{ "cyrd" , CmdCyrillicChar , 0xE4},
+	{ "cyre" , CmdCyrillicChar , 0xE5},
+	{ "cyrzh" , CmdCyrillicChar , 0xE6},
+	{ "cyrz" , CmdCyrillicChar , 0xE7},
+	{ "cyri" , CmdCyrillicChar , 0xE8},
+	{ "cyrishrt" , CmdCyrillicChar , 0xE9},
+	{ "cyrk" , CmdCyrillicChar , 0xEA},
+	{ "cyrl" , CmdCyrillicChar , 0xEB},
+	{ "cyrm" , CmdCyrillicChar , 0xEC},
+	{ "cyrn" , CmdCyrillicChar , 0xED},
+	{ "cyro" , CmdCyrillicChar , 0xEE},
+	{ "cyrp" , CmdCyrillicChar , 0xEF},
+	{ "cyrr" , CmdCyrillicChar , 0xF0},	
+	{ "cyrs" , CmdCyrillicChar , 0xF1},
+	{ "cyrt" , CmdCyrillicChar , 0xF2},
+	{ "cyru" , CmdCyrillicChar , 0xF3},
+	{ "cyrf" , CmdCyrillicChar , 0xF4},
+	{ "cyrh" , CmdCyrillicChar , 0xF5},
+	{ "cyrc" , CmdCyrillicChar , 0xF6},
+	{ "cyrch" , CmdCyrillicChar , 0xF7},
+	{ "cyrsh" , CmdCyrillicChar , 0xF8},
+	{ "cyrchsh" , CmdCyrillicChar , 0xF9},
+	{ "cyrhrdsn" , CmdCyrillicChar , 0xFA},
+	{ "cyrery" , CmdCyrillicChar , 0xFB},
+	{ "cyrsftsn" , CmdCyrillicChar , 0xFC},
+	{ "cyrerev" , CmdCyrillicChar , 0xFD},
+	{ "cyryu" , CmdCyrillicChar , 0xFE},
+	{ "cyrya" , CmdCyrillicChar , 0xFF},
+	{ "", NULL, 0 }
+};
+
+/********************************************************************/
 /* commands for begin-end environments */
 /* only strings used in the form \begin{text} or \end{text} */
 /********************************************************************/
@@ -632,6 +703,10 @@ globals: changes Environment - array of active environments
 		Environments[iEnvCount] = FrenchModeCommands;
 		diag = "french";
 		break;
+	case RUSSIAN_MODE:
+		Environments[iEnvCount] = RussianModeCommands;
+		diag = "french";
+ 		break;
 	case FIGURE_ENV:
 		Environments[iEnvCount] = FigureCommands;
 		diag = "figure";

@@ -1,4 +1,4 @@
-/* $Id: chars.c,v 1.22 2002/02/18 05:54:03 prahl Exp $
+/* $Id: chars.c,v 1.23 2002/04/27 03:55:39 prahl Exp $
 
    purpose : handles special characters and logos
 */
@@ -891,4 +891,12 @@ CmdFrenchAbbrev(int code)
   }
   
   fprintRTF("}");
+}
+
+void CmdCyrillicChar(int code)
+/******************************************************************************
+ * purpose : insert cyrillic character into RTF stream
+ * ******************************************************************************/
+{
+	fprintRTF("\\\'%.2X", code);
 }

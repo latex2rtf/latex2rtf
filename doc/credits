@@ -1,3 +1,7 @@
+* Cyrillic support 
+	Vasily I. Pupkin
+* Font fixes for latex test files
+	Peter Dyballa
 * Many bug fixes, patches and suggestions
 	Spago
 * suggestion for -W option
