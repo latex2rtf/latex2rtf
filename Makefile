@@ -1,25 +1,25 @@
-# $Id: Makefile,v 1.70 2002/11/23 16:52:09 prahl Exp $
+# $Id: Makefile,v 1.71 2002/11/23 19:02:14 prahl Exp $
 
 CC=gcc
 MKDIR=mkdir -p
 
 CFLAGS:=-DUNIX
-#CFLAGS:=-DMSDOS
-#CFLAGS:=-DMACINTOSH
-#CFLAGS:=-DOS2
+#CFLAGS:=-DMSDOS         #Windows/DOS
+#CFLAGS:=-DMACINTOSH     #MacOS 8/9
+#CFLAGS:=-DOS2           #OS/2
 
 #Uncomment next two lines for windows machines
-#EXESFX=.exe
+#EXE_SUFFIX=.exe
 #PREFIX_DRIVE=c:
 
 #Uncomment next line when using rsx compiler, target win32
-#CFLAGS:=-Zwin32  
+#CFLAGS:=$(CFLAGS) -Zwin32  
 
 #Base directory
 PREFIX=$(PREFIX_DRIVE)/usr/local
 
 #Name of executable binary
-BINARY_NAME=latex2rtf$(EXESFX)
+BINARY_NAME=latex2rtf$(EXE_SUFFIX)
 
 # Location of binary, man, info, and support files
 BIN_INSTALL=$(PREFIX)/bin
