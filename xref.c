@@ -54,7 +54,8 @@ static int g_last_citation=0;
 static int g_current_cite_type = 0;
 static int g_current_cite_seen = 0;
 static int g_current_cite_paren = 0;
-static char g_last_author_cited[101];
+static char g_last_author_cited[201];
+static char g_last_year_cited[51];
 static int g_citation_longnamesfirst = 0;
 static int 	g_current_cite_item=0;
 
@@ -514,7 +515,7 @@ static int isEmptyName(char *s)
 static void ConvertNatbib(char *s, int code, char *pre, char *post, int first)
 {
 	char *n, *year, *abbv, *full, *v;
-	int repeated;
+	int author_repeated, year_repeated;
 	PushSource(NULL,s);
 	n=getBraceParam();
 	year=getBraceParam();
@@ -522,7 +523,8 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first)
 	full=getBraceParam();
 	PopSource();
 	diagnostics(6,"natbib [%s] <%s> <%s> <%s> <%s>",pre,n,year,abbv,full);
-	repeated=FALSE;
+	author_repeated=FALSE;
+	year_repeated=FALSE;
 	switch (code) {
 		case CITE_CITE:
 		case CITE_T:
@@ -536,13 +538,14 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first)
 				if (!isEmptyName(full)) v = full;
 
 			if (strcmp(v,g_last_author_cited)==0) 
-				repeated=TRUE;
+				author_repeated=TRUE;
 				
-			if (!first && !repeated) fprintRTF("; ");	/* punctuation between citations */
+			if (!first && !author_repeated) fprintRTF("; ");	/* punctuation between citations */
 			
-			if (!repeated) {  /*suppress repeated names */
+			if (!author_repeated) {  /*suppress repeated names */
 				ConvertString(v);
 				strcpy(g_last_author_cited,v);
+				strcpy(g_last_year_cited,year);
 			}
 
 			fprintRTF(" (");
@@ -563,16 +566,30 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first)
 			if (pre && g_current_cite_item==1){ ConvertString(pre); fprintRTF(" "); }
 
 			if (strcmp(v,g_last_author_cited)==0) 
-				repeated=TRUE;
+				author_repeated=TRUE;
 				
-			if (!first && !repeated) fprintRTF("; ");	/* punctuation between citations */
+			if (strncmp(year,g_last_year_cited,4)==0) /* over simplistic test ... */
+				year_repeated=TRUE;
+
+			if (!first && !author_repeated) fprintRTF("; ");	/* punctuation between citations */
 			
-			if (!repeated) {  /*suppress repeated names */
+			if (!author_repeated) {  /*suppress repeated names */
 				ConvertString(v);
 				strcpy(g_last_author_cited,v);
+				strcpy(g_last_year_cited,year);
+				fprintRTF(", ");
+				ConvertString(year);
+			} else {
+				if (!year_repeated) {
+					fprintRTF(", ");
+					ConvertString(year);
+				} else {
+					char *s = strdup(year+4);
+					fprintRTF(",");
+					ConvertString(s);
+					free(s);
+				}
 			}
-			fprintRTF(", ");
-			ConvertString(year);
 			if (post && *post !='\0') {
 				fprintRTF(", ");
 				ConvertString(post);
@@ -620,7 +637,8 @@ purpose: handles \cite
 	
 	/* Setup punctuation and read options before citation */
 	g_current_cite_paren=TRUE;
-	*g_last_author_cited='\0';
+	g_last_author_cited[0] = '\0';
+	g_last_year_cited[0]   = '\0';
 	
 	if (g_document_bibstyle == BIBSTYLE_STANDARD){
 		option  = getBracketParam();
@@ -814,6 +832,7 @@ CmdBCAY(int code)
 			if (strcmp(v,g_last_author_cited)!=0) {  /*suppress repeated names */
 				ConvertString(v);
 				strcpy(g_last_author_cited,v);
+				strcpy(g_last_year_cited,year);
 	
 				if (g_current_cite_type==CITE_CITE_A) 
 					fprintRTF(" (");
