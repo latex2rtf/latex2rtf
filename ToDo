@@ -1,13 +1,11 @@
 Bugs:
  	Improve spacing before and after \section etc.
 	Improve font sizes in \section etc.
-	Add support for input encoding as a command line option
 	Add support for using the local cfg directory
 	Add support for \def now that \newcommand is working
 	Cross referencing is all messed up
 
 Features:
-	Add RTF support for \label, \ref, \pageref ...
 	Add support for \usepackage{fullpage}
 	Add support for \usepackage{doublespace}
 	Add support for \includegraphics

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.32 2001/10/23 04:24:57 prahl Exp $ */
+/* $Id: main.c,v 1.33 2001/10/23 14:35:34 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -60,6 +60,7 @@ int             g_enumerate_depth = 0;
 bool            g_suppress_equation_number = FALSE;
 bool            g_aux_file_missing = FALSE;	/* assume that it exists */
 
+bool			g_safety_braces = TRUE;
 bool            g_processing_equation = FALSE;
 bool            g_document_type = FORMAT_ARTICLE;
 bool            g_processing_tabular = FALSE;
@@ -77,6 +78,7 @@ static void     OpenRtfFile(char *filename, FILE ** f);
 static void     CloseRtf(FILE ** f);
 static void     ConvertLatexPreamble(void);
 static void     InitializeLatexLengths(void);
+static void		printhelp(void);
 
 void           *GetCommandFunc(char *cCommand);
 
@@ -99,36 +101,42 @@ globals: initializes in- and outputfile fRtf,
 
 	progname = argv[0];
 	optind = 1;
-	while ((c = getopt(argc, argv, "Vo:a:b:v:i:C:")) != EOF) {
+	while ((c = getopt(argc, argv, "hvVZo:a:b:d:l:C:")) != EOF) {
 		switch (c) {
-		case 'V':
-			printf("%s: %s\n", progname, Version);
-			return (0);
 		case 'a':
 			AuxName = optarg;
 			break;
 		case 'b':
 			BblName = optarg;
 			break;
+		case 'd':
+			g_verbosity_level = *optarg - '0';
+			if (g_verbosity_level < 0 || g_verbosity_level > 7) {
+				printhelp();
+				diagnostics(ERROR, "debug level must be 0--6");
+			}
+			break;
+		case 'h':
+			printhelp();
+			return(1);
+		case 'l':
+			setPackageBabel(optarg);
+			break;
 		case 'o':
 			output = optarg;
 			break;
-		case 'i':
-			setPackageBabel(optarg);
-			break;
 		case 'v':
-			{
-				char           *endptr;
-				g_verbosity_level = (int) strtol(optarg, &endptr, 10);
-				if (g_verbosity_level < 0)
-					diagnostics(ERROR, "g_verbosity_level should be a positive integer 0--6");
-				if ((*endptr != '\0') || (endptr == optarg))
-					diagnostics(ERROR, "argument to -v option malformed: %s",
-						    optarg);
-			}
-			break;
+			fprintf(stderr, "%s: %s\n", progname, Version);
+			return (0);
 		case 'C':
 			setPackageInputenc(optarg);
+			break;
+		case 'V':
+			fprintf(stderr, "%s: %s\n", progname, Version);
+			fprintf(stderr, "RTFPATH = '%s'\n", getenv("RTFPATH"));
+			return (0);
+		case 'Z':
+			g_safety_braces = FALSE;
 			break;
 		default:
 			errflag = TRUE;
@@ -136,9 +144,7 @@ globals: initializes in- and outputfile fRtf,
 	}
 
 	if (argc > optind + 1 || errflag) {
-		fprintf(stderr, "%s: Usage: %s [-V] [-C inputenc] [-o outfile]"
-		" [-a auxfile] [-b bblfile] [-i languagefile] inputfile\n",
-			progname, progname);
+		printhelp();
 		return (1);
 	}
 	
@@ -233,6 +239,25 @@ globals: initializes in- and outputfile fRtf,
 		return 1;
 }
 
+static void
+printhelp(void)
+{
+    	fprintf(stderr, "Usage:\n\t %s [options] input[.tex]\n", progname);
+		fprintf(stderr, "Options:\n");
+		fprintf(stderr, "\t -a auxfile    : use LaTeX auxfile rather than input.aux\n");
+		fprintf(stderr, "\t -b bblfile    : use BibTex bblfile rather than input.bbl)\n");
+		fprintf(stderr, "\t -d#           : debug level (# is 0-6)\n");
+		fprintf(stderr, "\t -h            : display this help\n");
+		fprintf(stderr, "\t -l language   : babel language (german, french)\n");
+		fprintf(stderr, "\t -o outputfile : RTF output other than input.rtf\n");
+		fprintf(stderr, "\t -v            : version information\n");
+		fprintf(stderr, "\t -C codepage   : input encoding (latin1, cp850, etc.)\n");
+		fprintf(stderr, "\t -V            : version information\n");
+		fprintf(stderr, "\t -Z            : do not add safety }}}}} at end of rtf file\n\n");
+		fprintf(stderr, "RTFPATH designates the directory for configuration files (*.cfg)\n");
+		fprintf(stderr, "\t RTFPATH = '%s'\n\n", getenv("RTFPATH"));
+}
+
 /***********************************************************************
  * not zero if major and minor are under the prefixed rtf-version to
  * generate (established by -rm.m option).  Purpose: check if you want
@@ -276,6 +301,7 @@ diagnostics(int level, char *format,...)
 		switch (level) {
 		case 0:
 			fprintf(errfile, "\nError! line=%d ", linenumber);
+			CloseRtf(&fRtf);
 			exit(0);
 			break;
 		case 1:
@@ -411,7 +437,9 @@ globals: progname;
  ****************************************************************************/
 {
 	CmdEndParagraph(0);
-	fprintf(*f, "}\n}}}}}");
+	fprintf(*f, "}\n");
+	if (g_safety_braces)
+		fprintf(*f, "}}}}}");
 	if (*f != stdout) {
 		if (fclose(*f) == EOF) {
 			diagnostics(WARNING, "Error closing RTF-File");

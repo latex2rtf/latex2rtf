@@ -13,27 +13,30 @@ all:	accentchars.rtf array.rtf cite.rtf eqns.rtf fonts.rtf fontsize.rtf \
 LATEX= latex
 BIBTEX= bibtex
 LATEX2RTF= ../latex2rtf
+OPTIONS  = -Z
 
 %.rtf:	%.tex
-	$(LATEX2RTF) $<
+	$(LATEX2RTF) $(OPTIONS) $<
 
 cite.rtf: cite.tex cite.bib
 	$(LATEX) cite > latex.log
 	$(BIBTEX) cite > bibtex.log
 	$(LATEX) cite > latex.log
 	$(LATEX) cite > latex.log
-	$(LATEX2RTF) cite
+	$(LATEX2RTF) $(OPTIONS) cite
 
 misc2.rtf: misc2.tex
 	$(LATEX) misc2 > latex.log
 	$(LATEX) misc2 > latex.log
-	$(LATEX2RTF) misc2
+	$(LATEX2RTF) $(OPTIONS) misc2
 
 german.rtf: german.tex
 	$(LATEX) german > latex.log
 	$(LATEX) german > latex.log
-	$(LATEX2RTF) german
+	$(LATEX2RTF) $(OPTIONS) german
 
+check:
+	./bracecheck
 clean:
 	rm -f *.dvi *.rtf *.aux *.blg *.bbl *.log *.pdf *.toc *.lot
 

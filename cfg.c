@@ -1,4 +1,4 @@
-/* $Id: cfg.c,v 1.17 2001/10/14 18:24:10 prahl Exp $
+/* $Id: cfg.c,v 1.18 2001/10/23 14:35:34 prahl Exp $
 
      purpose : Read config files and provide lookup routines
 
@@ -95,8 +95,7 @@ params:  name: config-file-name
 			if (s) {/* found */
 				pathlen = (size_t) (s - t);
 				s++;
-			} else {/* ENVSEP not found *//* could be last path
-				 * in string */
+			} else {/* ENVSEP not found---could be last path in string */
 				if (strlen(t) != 0)
 					pathlen = strlen(t);
 			}
