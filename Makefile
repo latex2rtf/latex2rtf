@@ -5,8 +5,9 @@
 # Recent changes by Scott Prahl
 
 CC=gcc    # C-Compiler 
-CFLAGS=-g -Wall -ansi -pedantic $(XCFLAGS)
+#CFLAGS=-g -Wall -ansi -pedantic $(XCFLAGS)
 #CFLAGS=$(XCFLAGS) # Use -O here if you want it optimized
+CFLAGS=
 COPY=cp
 INSTALL=install
 DIR_MODE=755
@@ -131,7 +132,8 @@ TEST=   test/Makefile \
 	test/list.tex test/logo.tex test/misc1.tex test/misc2.tex \
 	test/oddchars.tex test/tabular.tex test/percent.tex test/essential.tex test/hndout.sty \
 	test/misc3.tex test/misc4.tex test/fancy.tex test/align.tex \
-	test/german.tex
+	test/german.tex test/box.tex
+
 OBJS=l2r_fonts.o direct.o encode.o commands.o stack.o funct1.o tables.o \
 	chars.o ignore.o cfg.o main.o util.o parser.o mygetopt.o lengths.o counters.o \
 	preamble.o letterformat.o equation.o convert.o biblio.o

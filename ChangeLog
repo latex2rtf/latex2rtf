@@ -1,0 +1,320 @@
+2001-09-25 20:31  prahl
+
+	Rewrote paragraph handling
+	completely.  Far fewer bugs in indentation of paragraphs.  Support
+	for \indent and \noindent.  Infrastructure support to handle \vskip
+	and \vspace.  Added reasonable hanging indent for bibliographies. 
+	All test files now have matching opening and closing braces in the
+	created RTF files.  Fixed bugs for \chapter.  Eliminated a handful
+	of global variables.  Added five extra closing braces at the end of
+	RTF files so that mistranslated files will still open in Word.
+
+2001-09-18 22:06  prahl
+
+	Fixed brace bug in
+	equations.  Fixed tabbing in equations.  Fixed alignment of
+	equation numbers Typeset equation numbers in roman. Add bracecheck
+	utility --- all rtf files should have level zero
+
+2001-09-17 22:20  prahl
+
+	Fixed bug in IgnoreEnvironment Fixed bug in
+	IgnoreParameter Added feature! insert \verbositylevel{5} in a LaTeX
+	document and dynamically increase the verbosity of debugging
+	output.  Of course the 5 can be replaced by any number from 0 to 6
+
+2001-09-17 20:40  prahl
+
+	Default alignment
+	is once again justified Fixed bug with \mbox{} Fixed bug with
+	\footnote{} Added support for german language Some support for
+	french
+
+2001-09-16 09:33  prahl
+
+	Fixed bug in RTF output for papesize.  Added support
+	for b5paper, a5paper Enhanced support for all page sizes
+
+2001-09-15 22:11  prahl
+
+	Gave up and completely revised font
+	handling.  latex2rtf now uses an output filter to keep track of the
+	brace level and font changes in the RTF file.  This allows \emph to
+	be handled properly.  This will also allow digits to be typeset
+	upright in math mode, but this has not been implemented yet.
+
+2001-09-09 22:40  prahl
+
+	
+	Eliminated many mysterious spaces that crept into the RTF file
+	Added braces to localize the effects of environments There are
+	still problems with identifying the current font when environments
+	are closed.   This is probably insoluble give the current
+	constraints on the problem.  Added align.tex to test the center,
+	flushright, and flushleft environments
+
+2001-09-09 20:14  prahl
+
+	Fixed \sffamily and others Forced \plain in
+	verb environments Eliminated extra document environment
+
+2001-09-09 12:43  prahl
+
+	added fancy.tex to test
+	simple header commands
+
+2001-09-09 12:41  prahl
+
+	Added support for
+	\cfoot \lfoot \rfoot \chead \lhead \rhead
+
+2001-09-05 21:43  prahl
+
+	separated convert
+	routines into convert.c separated bibliographic routines into
+	biblio.c separated tabular and tabbing routines into tables.c
+	eliminated funct2 by merging routines with funct1 moved ignore
+	routines to ignore.c Improved support for \emph and \em Problems
+	still remain with test files misc3 and misc4
+
+2001-08-23 07:26  prahl
+
+	Just cleaning up the header for funct2.c.
+
+2001-08-22 22:35  prahl
+
+	Yet more changes to font
+	handling.  Added \upshape \textup and \begin{upshape} Added
+	\begin{Verbatim} as well as \Frac.  Tried to add \prod and \sum,
+	but these don't yet work.  Seems that there are problems with
+	processing frac.tex.  These will be worked on.
+
+2001-08-21 22:50  prahl
+
+	More improvements in handling of font
+	family, shape, series, and size.  LaTeX2RTF infrastructure now
+	mimicks the LaTeX view of fonts.  This check-in fixes problems with
+	fonts.tex and fontsize.tex.  It also adds support for \em, \emph,
+	and \begin{em}...\end{em}.  Support for the relatively unusual
+	\begin{itshape}...\end{itshape} and others is also included.
+	
+	Problems remain with misc3.tex and misc4.tex
+
+2001-08-19 18:12  prahl
+
+	Fixed subtle bug in
+	ConvertString().  This was the real cause of the last problem with
+	fonts.tex.  Basically, ConvertString() called Convert() only once,
+	however if the string contained any open/close brace pairs e.g.,
+	'the {\it italic} string' then everything after the closing brace
+	would be discarded.
+	
+	I also fixed a problem with discarding the first space sent to
+	Convert().
+	
+	The fix to ConvertString() and the initial space conversion require
+	some careful testing.
+
+2001-08-19 17:02  prahl
+
+	Fixed problem with
+	processing fonts.tex Added support for a variety French
+	abbreviations
+
+2001-08-12 16:39  prahl
+
+	Abbreviated comments at the beginning of
+	funct1.c
+
+2001-08-12 16:24  prahl
+
+	Added my ToDo list
+
+2001-08-12 15:56  prahl
+
+	Revised fonts.cfg, removed
+	Ferdsch, now set the default font correctly and begun the process
+	of eliminating the $Log: ChangeLog,v $
+	of eliminating the Revision 1.9  2001/09/26 05:34:05  prahl
+	of eliminating the Updated changelog.  Added box.tex as test file.  Updated ToDo
+	of eliminating the Updated version.h to 1.9i.  Modified Makefile to not use -Wall
+	of eliminating the This is the last check-in before 1.9i tarball is released.
+	of eliminating the comments in files.
+
+2001-08-12 14:15  prahl
+
+		   Removed last two // comments
+		Explicitly cast char to int in isalpha() and isdigit()
+		Began the process of supporting Babel better
+
+2001-08-12 12:48  prahl
+
+	1.9h    Turned
+	hyperlatex back on.  Still not tested	 Turned isolatin1 back on. 
+	Still not tested.    Eliminated use of \\ in code for comments	   
+	 Eliminated \40  prahl
+
+	1.9g        
+	Added commands to read and set TeX lengths	   Added commands
+	to read and set TeX counters	     Fixed bug in handling of
+	\item[text]	    Eliminated comparison of fpos_t variables	   
+	  Revised getLinenumber ... this is not perfect 	Fixed bug
+	in getTexChar() routine 	Clearly separate preamble from the
+	document in hopes that		 one day more appropriate values
+	for page size, margins, 	  paragraph spacing etc, will be
+	used in the RTF header	       I have added initial support for
+	page sizes still needs testing	       added two more test files
+	misc3.tex and misc4.tex 	misc4.tex produces a bad rtf file
+	currently	  separated all letter commands into letterformat.c
+		cleaned up warning calls throughout code	 added \neq
+	\leq \geq \mid commands to direct.cfg	      collected and added
+	commands to write RTF header in preamble.c	   broke isolatin1
+	and hyperlatex support, these will be fixed next version
+
+2001-08-12 12:32  prahl
+
+	1.9f	   Reformatted all source
+	files ---	     previous hodge-podge replaced by standard GNU
+	style	      Compiles cleanly using -Wall under gcc
+	
+		added better translation of \frac, \sqrt, and \int
+		forced all access to the LaTeX file to use getTexChar() or
+	ungetTexChar()
+		    allows better handling of %
+		    simplified and improved error checking
+		    eliminates the need for WriteTemp
+		    potentially allows elimination of getLineNumber()
+	
+		added new verbosity level -v5 for more detail
+		fixed bug with in handling documentclass options
+		consolidated package and documentclass options
+		fixed several memory leaks
+		enabled the use of the babel package *needs testing*
+		fixed bug in font used in header and footers
+		minuscule better support for french
+		Added testing file for % comment support
+		Enhanced frac.tex to include \sqrt and \int tests also
+		Fixed bugs associated with containing font changes in
+		    equations, tabbing, and quote environments
+		Added essential.tex to the testing suite --- pretty
+	comprehensive test.
+		Perhaps fix missing .bbl crashing bug
+		Fixed ?` and !`
+
+2001-08-12 12:00  prahl
+
+	1.9e	     Revised all the accented character
+	code using ideas borrowed from ltx2rtf. 	 Comparing ltx2rtf
+	and latex2rtf indicates that Taupin and Lehner tended to work on   
+	      different areas of the latex->rtf conversion process.  Adding
+		 accented characters is the first step in the merging
+	process.
+	
+		Added MacRoman font handling (primarily to get the breve
+	accent)
+		Now supports a wide variety of accented characters.
+		(compound characters only work under more recent versions
+	of word)
+		Reworked the code to change font sizes.
+		Added latex logo code from ltx2rtf
+		Extracted character code into separate file chars.c
+		Fixed bug with \sf reverting to roman
+		Added two new testing files fontsize.tex and
+	accentchars.tex
+
+2001-08-12 11:53  prahl
+
+	
+	1.9d	     Rewrote the \cite code.	      No crashes when .aux
+	missing.	  Inserts '?' for unknown citations	     Added
+	cite.tex and cite.bib to for testing \cite commands	    
+	hyperref not tested since I don't use it.	   A small hyperref
+	test file would be nice 	 Revised treatment of \oe and \OE
+	per Wilfried Hennings suggestions	   Added support for MT
+	Extra in direct.cfg and fonts.cfg so that	   more math
+	characters will be translated e.g., \ell (see oddchars.tex)	   
+	 added and improved font changing commands e.g., \texttt, \it
+
+2001-08-12 11:41  prahl
+
+	latex2rtf
+	1.9c
+	
+		Added support for \frac
+		Complete support for all characters in the symbol font now
+		Better support for unusual ansi characters (e.g., \dag and
+	\ddag)
+		Gave direct.cfg a spring cleaning
+		Added support for \~n and \~N
+		New file oddchars.tex for testing many of these
+	translations.
+		New file frac.tex to test \frac and \over
+		Removed a lot of annoying warning messages that weren't
+	very helpful
+
+2001-08-12 11:25  prahl
+
+	latex2rtf version 1.9c
+	
+		Added support for \frac
+		Complete support for all characters in the symbol font now
+		Better support for unusual ansi characters (e.g., \dag and
+	\ddag)
+		Gave direct.cfg a spring cleaning
+		Added support for \~n and \~N
+		New file oddchars.tex for testing many of these
+	translations.
+		New file frac.tex to test \frac and \over
+		Removed a lot of annoying warning messages that weren't
+	very helpful
+
+2001-08-12 10:50  prahl
+
+	latex2rtf
+	version 1.9b by Scott Prahl 1.9b     Improved enumerate environment
+	so that it may be nested and	     fixed labels in nested
+	enumerate environments	     Improved handling of description and
+	itemize environments	   Improved eqnarray environment   Improved
+	array environment      Improved \verb handling	       Improved
+	handling of \mbox and \hbox in math mode       Improved handling of
+	\begin{array} environment  Improved handling of some math
+	characters on the mac	 Fixed handling of \( \) and \begin{math}
+	\end{math} environments        Fixed bugs in equation numbering    
+	   Made extensive changes to character translation so that the RTF 
+		    documents work under Word 5.1 and Word 98 on the Mac
+	
+	1.9a	Fixed bug with 'p{width}' in tabular environment	   
+	    not fully implemented, but no longer creates bad RTF code
+	
+	1.9	Fixed numbering of equations	Improved/added support for
+	all types of equations	     Now includes PICT files in RTF  Fixed
+	\include to work (at least a single level of includes)
+	
+	1.8	Fixed problems with \\[1mm]	Fixed handling of tabular
+	environments  Fixed $x^\alpha$ and $x_\alpha$
+
+2001-08-12 10:29  prahl
+
+	latex2rtf version
+	1.8aa by Georg Lehner
+
+2001-08-12 08:56  prahl
+
+	latex2rtf version 1.5 by Ralf
+	Schlatterbeck
+
+2001-08-12 08:47  prahl
+
+	latex2rtf version 1.1 by Ralf
+	Schlatterbeck
+
+2001-08-12 08:32  prahl
+
+	
+	Initial revision
+
+2001-08-12 08:32  prahl
+
+	
+	Initial release of latex2rtf version 1.0 by Ralf Schlatterbeck
+

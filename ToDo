@@ -1,16 +1,11 @@
 Bugs:
-	Fix paragraph indentation.
 	Fix the breve and \u in accentchars.tex for non-Macintoshes
 	Fix \right. and \left.
-	Screwy extra space that goes missing after environments
-	Suppress empty column that sometimes appears in tabular environments
-	Suppress empty row when a final // is present
-	Typeset digits in math mode using roman font
-	Wierdness with strdup under SunOS with -Wall -ansi -pedantic
- 		
+ 	Improve spacing before and after \section et al.
+	Improve font sizes in \section et al.
+	
 Features:
 	Add full support for \usepackage[encoding]{inputenc}
-	Add more languages to \usepackage[language]{babel}
 	Add support for \usepackage{fontname}
 	Add support for \usepackage{fullpage}
 	Add support for \usepackage{doublespace}
@@ -20,7 +15,13 @@ Features:
 	Figure out style stuff in rtf header
 	add style support for quote environment
 	add style support for enumerate environment
-	
+ 	add back style support for \section, \subsection
+
+	revise the table code
+	Suppress empty column that sometimes appears in tabular environments
+	Suppress empty row when a final // is present
+
+	add support for \vspace, \vskip	
 	add support for \hline
 	
 	replace getBracketParam by something that allocates memory
