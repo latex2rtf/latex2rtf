@@ -343,14 +343,11 @@ PrepareRtfEquation(int code, int EQ_Needed)
 			break;
 	
 		case EQN_BRACKET_OPEN:
-			diagnostics(4,"PrepareRtfEquation -- \\[");
-			SetTexMode(MODE_DISPLAYMATH);
-			g_show_equation_number = TRUE;
-			fprintRTF("\\par\\par\n{\\pard\\tqc\\tx%d\\tqr\\tx%d\n\\tab ", b, width);
-			break;
-
 		case EQN_DISPLAYMATH:
-			diagnostics(4,"PrepareRtfEquation -- displaymath");
+			if (code==EQN_DISPLAYMATH)
+				diagnostics(4,"PrepareRtfEquation -- displaymath");
+			else
+				diagnostics(4,"PrepareRtfEquation -- \\[");
 			g_show_equation_number = FALSE;
 			fprintRTF("\\par\\par\n\\pard");
 			fprintRTF("\\tqc\\tx%d", b);
@@ -449,13 +446,11 @@ FinishRtfEquation(int code, int EQ_Needed)
 			break;
 	
 		case EQN_BRACKET_OPEN:
-			diagnostics(4,"FinishRtfEquation -- \\[");
-			SetTexMode(MODE_VERTICAL);
-			fprintRTF("\\par\\par\n}");
-			break;
-
 		case EQN_DISPLAYMATH:
-			diagnostics(4,"FinishRtfEquation -- displaymath");
+			if (code==EQN_DISPLAYMATH)
+				diagnostics(4,"FinishRtfEquation -- displaymath");
+			else
+				diagnostics(4,"FinishRtfEquation -- \\]");
 			CmdEndParagraph(0);
 			CmdIndent(INDENT_INHIBIT);
 			break;
