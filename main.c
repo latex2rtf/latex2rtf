@@ -1,18 +1,19 @@
 /*
- * $Id: main.c,v 1.7 2001/08/12 18:41:03 prahl Exp $
+ * $Id: main.c,v 1.8 2001/08/12 18:53:25 prahl Exp $
  * History:
  * $Log: main.c,v $
- * Revision 1.7  2001/08/12 18:41:03  prahl
- * latex2rtf 1.9c
- *
- * 	Added support for \frac
- * 	Complete support for all characters in the symbol font now
- * 	Better support for unusual ansi characters (e.g., \dag and \ddag)
- * 	Gave direct.cfg a spring cleaning
- * 	Added support for \~n and \~N
- * 	New file oddchars.tex for testing many of these translations.
- * 	New file frac.tex to test \frac and \over
- * 	Removed a lot of annoying warning messages that weren't very helpful
+ * Revision 1.8  2001/08/12 18:53:25  prahl
+ * 1.9d
+ *         Rewrote the \cite code.
+ *         No crashes when .aux missing.
+ *         Inserts '?' for unknown citations
+ *         Added cite.tex and cite.bib to for testing \cite commands
+ *         hyperref not tested since I don't use it.
+ *         A small hyperref test file would be nice
+ *         Revised treatment of \oe and \OE per Wilfried Hennings suggestions
+ *         Added support for MT Extra in direct.cfg and fonts.cfg so that
+ *         more math characters will be translated e.g., \ell (see oddchars.tex)
+ *         added and improved font changing commands e.g., \texttt, \it
  *
  * Revision 1.11  1998/10/28 06:10:25  glehner
  * Added "errno.h"
@@ -89,7 +90,10 @@
 #include "cfg.h"
 #include "encode.h"
 #include "util.h"
-/* #include "MainMain.h"    * call to DropUnix removed W.Hennings */
+
+#ifdef __MWERKS__
+#include "MainMain.h"
+#endif
 
 /****************************************************************************/
 
@@ -141,6 +145,7 @@ int g_equation_number = 0;
 bool g_show_equation_number = FALSE;
 int g_enumerate_depth = 0;
 bool g_suppress_equation_number = FALSE;
+bool g_aux_file_missing = FALSE; /* assume that it exists */
 /*SAP end fix*/
 
 /****************************************************************************/

@@ -1,18 +1,19 @@
 /*
- * $Id: commands.c,v 1.7 2001/08/12 18:41:03 prahl Exp $
+ * $Id: commands.c,v 1.8 2001/08/12 18:53:25 prahl Exp $
  * History:
  * $Log: commands.c,v $
- * Revision 1.7  2001/08/12 18:41:03  prahl
- * latex2rtf 1.9c
- *
- * 	Added support for \frac
- * 	Complete support for all characters in the symbol font now
- * 	Better support for unusual ansi characters (e.g., \dag and \ddag)
- * 	Gave direct.cfg a spring cleaning
- * 	Added support for \~n and \~N
- * 	New file oddchars.tex for testing many of these translations.
- * 	New file frac.tex to test \frac and \over
- * 	Removed a lot of annoying warning messages that weren't very helpful
+ * Revision 1.8  2001/08/12 18:53:25  prahl
+ * 1.9d
+ *         Rewrote the \cite code.
+ *         No crashes when .aux missing.
+ *         Inserts '?' for unknown citations
+ *         Added cite.tex and cite.bib to for testing \cite commands
+ *         hyperref not tested since I don't use it.
+ *         A small hyperref test file would be nice
+ *         Revised treatment of \oe and \OE per Wilfried Hennings suggestions
+ *         Added support for MT Extra in direct.cfg and fonts.cfg so that
+ *         more math characters will be translated e.g., \ell (see oddchars.tex)
+ *         added and improved font changing commands e.g., \texttt, \it
  *
  * Revision 1.7  1998/10/28 06:30:53  glehner
  * changed thebibliography from CmdIgnore... to CmdConvertBiblio.
@@ -77,29 +78,53 @@ static CommandArray commands[] = {
    { "end", CmdBeginEnd, CMD_END },
    { "today", CmdToday, 0 },
    { "footnote", CmdFootNote, FOOTN },
-   { "bf", CmdCharFormat, CMD_BOLD },
-   { "it", CmdCharFormat, CMD_ITALIC },
-   { "sc", CmdCharFormat, CMD_CAPS },
 /* ------------------------------------------ */
    { "centerline", Paragraph, PAR_CENTERLINE },
    { "c", CmdC, 0},
-/* ------------------------------------------ */
-   { "underline", CmdCharFormat, CMD_UNDERLINE },
-   { "textit", CmdCharFormat, CMD_ITALIC },
-   { "mathit", CmdCharFormat, CMD_ITALIC},
-   { "mathbf", CmdCharFormat, CMD_BOLD},
-   { "textbf", CmdCharFormat, CMD_BOLD },
-   { "textsc", CmdCharFormat, CMD_CAPS },
-   { "tiny", CmdFontSize, 10 },
-   { "scriptsize", CmdFontSize, 12 },
+/* ---------- FONT FAMILIES ------------------- */
+   { "rm",       CmdSetFont, F_ROMAN_1},
+   { "textrm",   CmdSetFont, F_ROMAN},
+   { "rmfamily", CmdSetFont, F_ROMAN},
+   { "mathrm",   CmdSetFont, F_ROMAN},
+   { "sf",       CmdSetFont, F_SANSSERIF_1},
+   { "textsf",   CmdSetFont, F_SANSSERIF},
+   { "sffamily", CmdSetFont, F_SANSSERIF},
+   { "mathsf",   CmdSetFont, F_SANSSERIF},
+   { "tt",       CmdSetFont, F_TYPEWRITER_1},
+   { "texttt",   CmdSetFont, F_TYPEWRITER},
+   { "ttfamily", CmdSetFont, F_TYPEWRITER},	
+   { "sl",       CmdSetFont, F_SLANTED_1},
+   { "textsl",   CmdSetFont, F_SLANTED},
+   { "slshape",  CmdSetFont, F_SLANTED},
+/* ---------- FONT SERIES ------------------- */
+   { "bf",       CmdCharFormat, CMD_BOLD },
+   { "textbf",   CmdCharFormat, CMD_BOLD },
+   { "mathbf",   CmdCharFormat, CMD_BOLD },
+   { "bfseries", CmdCharFormat, CMD_BOLD },
+   { "textmd",   CmdCharFormat, CMD_BOLD },      /* poor approximation */
+   { "mdseries", CmdCharFormat, CMD_BOLD },
+/* ---------- FONT SHAPE ------------------- */
+   { "it",       CmdCharFormat, CMD_ITALIC },
+   { "textit",   CmdCharFormat, CMD_ITALIC },
+   { "mathit",   CmdCharFormat, CMD_ITALIC },
+   { "itshape",  CmdCharFormat, CMD_ITALIC },
+   { "sc",       CmdCharFormat, CMD_CAPS },
+   { "textsc",   CmdCharFormat, CMD_CAPS },
+   { "scshape",  CmdCharFormat, CMD_CAPS },
+   { "underline",CmdCharFormat, CMD_UNDERLINE },
+/* ---------- FONT SIZE ------------------- */
+   { "tiny",         CmdFontSize, 10 },
+   { "scriptsize",   CmdFontSize, 12 },
    { "footnotesize", CmdFontSize, 14 },
-   { "small", CmdFontSize, 16 },
-   { "normalsize", CmdFontSize, 20 },
-   { "large", CmdFontSize, 25 },
-   { "Large", CmdFontSize, 30 },
-   { "LARGE", CmdFontSize, 40 },
-   { "huge", CmdFontSize, 50 },
-   { "Huge", CmdFontSize, 60 },
+   { "small",        CmdFontSize, 16 },
+   { "normalsize",   CmdFontSize, 20 },
+   { "large",        CmdFontSize, 25 },
+   { "Large",        CmdFontSize, 30 },
+   { "LARGE",        CmdFontSize, 40 },
+   { "huge",         CmdFontSize, 50 },
+   { "Huge",         CmdFontSize, 60 },
+   { "em", CmdEmphasize, 0},
+   { "emph", CmdEmphasize, 0},
    { "LaTeX", CmdLogo, CMD_LATEX },
    { "TeX", CmdLogo, CMD_TEX },
    { "SLiTeX", CmdLogo, CMD_SLITEX },
@@ -109,7 +134,6 @@ static CommandArray commands[] = {
    { "hat", CmdRApostrophChar, 0 },
    { "tilde", CmdTildeChar, 0 },
    { "ldots", CmdLdots, 0 },
-   { "em", CmdEmphasize, 0},
    { "maketitle", CmdTitle, TITLE_MAKE },
    { "section", CmdSection, SECT_NORM },
    { "section*", CmdSection, SECT_NORM },
@@ -131,11 +155,6 @@ static CommandArray commands[] = {
    { "hbox", CmdMbox, 0},
    { "frenchspacing", CmdIgnore, 0},
    { "nonfrenchspacing", CmdIgnore, 0},
-   { "rm", CmdSetFont, F_ROMAN},		     /* set font Roman */
-   { "sl", CmdSetFont, F_SLANTED},		     /* set font Slanted */
-   { "sf", CmdSetFont, F_SANSSERIF},		     /* set font Sans Serif */
-   { "tt", CmdSetFont, F_TYPEWRITER},		     /* set font Typewriter */
-   { "mathrm", CmdSetFont, F_ROMAN},		     /* set font Roman */
    { "include", CmdInclude, 0}, 		     /* include Latex file */
    { "input", CmdInclude, 0},			     /* include Latex file */
    { "verb", CmdVerb, 0},
@@ -242,7 +261,6 @@ static CommandArray commands[] = {
    { "newenvironment", CmdIgnoreParameter, 13 }, /* ditto */
    { "newtheorem", CmdIgnoreParameter, 12 }, /* one optional two required */
    { "newcounter", CmdIgnoreParameter, 11 }, /* one optional one required */
-   { "frac", CmdFraction,0},
    { "", NULL, 0 }
 };
 

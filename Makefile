@@ -1,17 +1,18 @@
-# $Id: Makefile,v 1.5 2001/08/12 18:25:13 prahl Exp $
+# $Id: Makefile,v 1.6 2001/08/12 18:53:25 prahl Exp $
 # History:
 # $Log: Makefile,v $
-# Revision 1.5  2001/08/12 18:25:13  prahl
-# latex2rtf version 1.9c
-#
-# 	Added support for \frac
-# 	Complete support for all characters in the symbol font now
-# 	Better support for unusual ansi characters (e.g., \dag and \ddag)
-# 	Gave direct.cfg a spring cleaning
-# 	Added support for \~n and \~N
-# 	New file oddchars.tex for testing many of these translations.
-# 	New file frac.tex to test \frac and \over
-# 	Removed a lot of annoying warning messages that weren't very helpful
+# Revision 1.6  2001/08/12 18:53:25  prahl
+# 1.9d
+#         Rewrote the \cite code.
+#         No crashes when .aux missing.
+#         Inserts '?' for unknown citations
+#         Added cite.tex and cite.bib to for testing \cite commands
+#         hyperref not tested since I don't use it.
+#         A small hyperref test file would be nice
+#         Revised treatment of \oe and \OE per Wilfried Hennings suggestions
+#         Added support for MT Extra in direct.cfg and fonts.cfg so that
+#         more math characters will be translated e.g., \ell (see oddchars.tex)
+#         added and improved font changing commands e.g., \texttt, \it
 #
 # Revision 1.21  1998/07/03 06:49:36  glehner
 # updated dependencies of multiple .o files

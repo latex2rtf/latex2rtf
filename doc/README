@@ -5,7 +5,7 @@ Granzer in a one-semester course in our department.  It was later
 updated in another one-semester course by Friedrich Polzer and Gerhard
 Trisko.  Ralf Schlatterbeck <ralf@zoo.priv.at> maintained and extended
 it until 1998.  The current maintainer is Georg Lehner
-<glehner@unanleon.edu.ni>.  For the Copyright of the Program see the
+<Jorge.Lehner@gmx.net>.  For the Copyright of the Program see the
 file Copyright.
 
 The documentation of the program is found in the doc/ directory in the
@@ -45,8 +45,6 @@ guidelines when reporting a bug in the program:
   settings that may be specific to your machine, especially for some
   versions of SunOS there may be settings which are needed to compile
   successfully. Do this BEFORE writing to me.
-* For problems with the DOS version, report installation problems to the
-  mainainer of the DOS port, Vladimir Menkov, vmenkov@cs.indiana.edu
 * If the program produces wrong output or does not work for you, include
   a SHORT latex file along with a description of the problem. DO NOT
   send me large latex or rtf files, I simply do not have the time to
@@ -60,7 +58,7 @@ guidelines when reporting a bug in the program:
 
 --
 Georg Lehner
-email: glehner@unanleon.edu.ni ++505 311 3156/++505 311 5154
+email: Jorge.Lehner@gmx.net ++505 311 3156/++505 311 5154
 
 =========================================================================
 The MSDOS version described in the following is available from 

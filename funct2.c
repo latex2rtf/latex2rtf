@@ -1,18 +1,19 @@
 /*
- * $Id: funct2.c,v 1.7 2001/08/12 18:41:03 prahl Exp $
+ * $Id: funct2.c,v 1.8 2001/08/12 18:53:25 prahl Exp $
  * History:
  * $Log: funct2.c,v $
- * Revision 1.7  2001/08/12 18:41:03  prahl
- * latex2rtf 1.9c
- *
- * 	Added support for \frac
- * 	Complete support for all characters in the symbol font now
- * 	Better support for unusual ansi characters (e.g., \dag and \ddag)
- * 	Gave direct.cfg a spring cleaning
- * 	Added support for \~n and \~N
- * 	New file oddchars.tex for testing many of these translations.
- * 	New file frac.tex to test \frac and \over
- * 	Removed a lot of annoying warning messages that weren't very helpful
+ * Revision 1.8  2001/08/12 18:53:25  prahl
+ * 1.9d
+ *         Rewrote the \cite code.
+ *         No crashes when .aux missing.
+ *         Inserts '?' for unknown citations
+ *         Added cite.tex and cite.bib to for testing \cite commands
+ *         hyperref not tested since I don't use it.
+ *         A small hyperref test file would be nice
+ *         Revised treatment of \oe and \OE per Wilfried Hennings suggestions
+ *         Added support for MT Extra in direct.cfg and fonts.cfg so that
+ *         more math characters will be translated e.g., \ell (see oddchars.tex)
+ *         added and improved font changing commands e.g., \texttt, \it
  *
  * Revision 1.10  1998/11/05 13:21:49  glehner
  * *** empty log message ***
@@ -73,6 +74,7 @@
 #include "main.h"
 #include "funct1.h"
 #include "commands.h"
+#include "funct1.h"
 #include "funct2.h"
 #include "stack.h"
 #include "cfg.h"
@@ -1582,133 +1584,38 @@ parameter: if FALSE (0) work as normal
 	   hyperref: NULL, or the last used reference by \link command.
  ******************************************************************************/
 {
-  static FILE* fAux = NULL;
-  char inchar[3];
-  char reference[255] = "";
-  char help[255] = "";
-  char AuxLine[1024];
-  char *str;
-  int i;
+  char reference[255];
+  char *str1, *str2;
 
-
-  i = 0; 
   fprintf (fRtf,"["); 
 
-  do
+  if(code == HYPERLATEX)
+  {
+     if (hyperref == NULL) 
+       {
+       fprintf(stderr,"ERROR: \\Cite called before \\link\n");
+       fprintf(fRtf, "?]");
+       return;
+       }
+     strcpy(reference,hyperref);
+  }
+  else
+    GetBraceParam(reference, 255);
+
+  str1 = reference;
+  while ( (str2 = strchr(str1, ',')) != NULL )
   { 
-    /*LEG190498 Start*/
-    if(code == HYPERLATEX) {
-      if (hyperref == NULL) {
-	fprintf(stderr,"\n%s: ERROR: \\Cite called before \\link"
-		" program terminated",
-		progname);
-	exit(EXIT_FAILURE);
-      }
-      reference[0] = '{';
-      str = strchr(hyperref, ',');
-      if (str != NULL)
-	str[0] = '0';
-      strcat(reference, hyperref);
-      strcat(reference, "}");
-
-      if (str != NULL) {
-	hyperref = str;
-      }
-      else {
-	inchar[0] = '}'; /* fake end of reference list */
-      }
-    }
-    else {
-    /*LEG190498 End*/
-      do /* get the next reference from comma separated list */
-	{
-	  if ( (fTexRead(&inchar,1,1,fTex) < 1))
-	    numerror(ERR_EOF_INPUT);
-	/*SAP270700  Don't put newline in reference*/
-	  if (inchar[0]!='\n')
-	/*SAP270700  */
-	  	reference[i++] = inchar[0];     
-	} /* { */ while ( (inchar[0] != '}') && (inchar[0] != ','));
-
-      /* for vi { */
-      reference[i-1] = '}';
-      reference[i] = '\0';
-    }
-
-
-	if ( strcmp(reference,"{}") == 0)
-	  break; 
-      
-	if (fAux == NULL)
-	  {
-	    if ((fAux = fopen(AuxName,"r")) == NULL)   /* open file */
-	      {
-		fprintf(stderr,"Error opening AUX-file: %s - ", AuxName);
-		error("no reference-list will be created.\n");
-
-		/*LEG210698 lclint - unreachable:  bCite = UNDEFINED;
-		return; */
-	      }
-	  } /* if */
-	
-	/*SAP270700  Always rewind .aux file*/
-	if (fseek (fAux, 0L, SEEK_SET) == -1)
-		error ("Error rewinding AUX-file\n");
-
-	strcpy (help, "\\bibcite\0");
-	strcat (help, reference);
-	strcpy (reference, help);
-	
-//	  fprintf(stderr, "Seeking '%s' in .aux file\n", reference);
-	do
-	  {
-	    if (fgets (AuxLine, 1024, fAux) == NULL)
-	      if (feof(fAux))
-		break;
-	      else
-		error ("Error reading AUX-File!\n");
-	    
-//	  fprintf(stderr, "Checking '%s'\n", AuxLine);
-	    if (strstr (AuxLine, reference) )
-	      {
-		
-	      i = strlen (reference) + 1;
-	      /* for vi { */
-	      while (AuxLine[i] != '}')
-		{
-		  fprintf (fRtf, "%c", AuxLine[i++]);
-		}
-	      /* for vi { */
-	      if (inchar[0] != '}')
-		fprintf (fRtf, ",");
-	      
-	      bCite = TRUE;
-	      if (fseek (fAux, 0L, SEEK_SET) == -1)
-		error ("Error rewinding AUX-file\n");
-	      break;
-	    }
-	  
-	} while (!feof(fAux));
-      if (feof(fAux))
-	{
-	/*SAP270700  More useful error message*/
-	  fprintf(stderr, "Citation for '%s' not found in .aux file\n", reference);
-	  fprintf(stderr, "Rerun BiBTeX/LaTeX first.\n");
-	/*SAP270700  end*/
-	  bCite = FALSE;
-	}
-      
-      /* for vi { */
-      if (inchar[0] != '}')
-	{
-	  i = 0;
-	  reference[i++] = '{'; /* for vi } */
-	}
-    } while /* for vi { */ (inchar[0] != '}');
-  
+        *str2 = '\0';                /* replace ',' with '\0' */
+        if (ScanAux("bibcite",str1,0)) bCite = TRUE;
+        fprintf(fRtf, ",");
+        str1 = str2 + 1;
+  }
+        
+  if (ScanAux("bibcite", str1, 0)) bCite = TRUE;
+    
   fprintf (fRtf,"]"); 
-  return;
 }
+
 /***********************************************************************
  * OpenBblFile
  * purpose: opens either the "input".bbl file, or the .bll file named by

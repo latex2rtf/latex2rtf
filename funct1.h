@@ -1,18 +1,19 @@
 /*
- * $Id: funct1.h,v 1.7 2001/08/12 18:41:03 prahl Exp $
+ * $Id: funct1.h,v 1.8 2001/08/12 18:53:25 prahl Exp $
  * History:
  * $Log: funct1.h,v $
- * Revision 1.7  2001/08/12 18:41:03  prahl
- * latex2rtf 1.9c
- *
- * 	Added support for \frac
- * 	Complete support for all characters in the symbol font now
- * 	Better support for unusual ansi characters (e.g., \dag and \ddag)
- * 	Gave direct.cfg a spring cleaning
- * 	Added support for \~n and \~N
- * 	New file oddchars.tex for testing many of these translations.
- * 	New file frac.tex to test \frac and \over
- * 	Removed a lot of annoying warning messages that weren't very helpful
+ * Revision 1.8  2001/08/12 18:53:25  prahl
+ * 1.9d
+ *         Rewrote the \cite code.
+ *         No crashes when .aux missing.
+ *         Inserts '?' for unknown citations
+ *         Added cite.tex and cite.bib to for testing \cite commands
+ *         hyperref not tested since I don't use it.
+ *         A small hyperref test file would be nice
+ *         Revised treatment of \oe and \OE per Wilfried Hennings suggestions
+ *         Added support for MT Extra in direct.cfg and fonts.cfg so that
+ *         more math characters will be translated e.g., \ell (see oddchars.tex)
+ *         added and improved font changing commands e.g., \texttt, \it
  *
  * Revision 1.5  1998/11/04 13:39:40  glehner
  * Changed ON-Flag to 0x4000 for little int compilers.
@@ -128,10 +129,15 @@ void CmdList(int code);
 
 void CmdMbox(int code);
 
-#define F_ROMAN 1
-#define F_SLANTED 2
-#define F_SANSSERIF 3
-#define F_TYPEWRITER 4
+#define F_ROMAN        1
+#define F_SLANTED      2
+#define F_SANSSERIF    3
+#define F_TYPEWRITER   4
+#define F_ROMAN_1      5
+#define F_SLANTED_1    6
+#define F_SANSSERIF_1  7
+#define F_TYPEWRITER_1 8
+
 void CmdSetFont(int code);
 
 void CmdInclude(int code);
@@ -182,3 +188,5 @@ void ConvertString(char *string);
 #define BOTH_SIDES  348
 #define LEFT_SIDE  349
 /*LEG030598 End*/
+
+int ScanAux(char *token, char* reference, int code);
