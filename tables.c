@@ -608,9 +608,12 @@ CmdTabular(int code)
  			\begin{array}[pos]{cols}            ... \end{array}
  ******************************************************************************/
 {
-	int             true_code,this_height, next_height, first_row;
-	char           *cols,*pos,*end,*width,*this_row, *next_row, *next_row_start, *row_start;
+	int             true_code,this_height, next_height, first_row, begins, ends;
+	char           *end,*begin,*this_row, *next_row, *next_row_start, *row_start;
 	char   		   *table=NULL;
+	char   		   *cols=NULL;
+	char   		   *pos=NULL;
+	char   		   *width=NULL;
 	TabularT        tabular;
 	
 	if (!(code & ON)) {
@@ -629,52 +632,94 @@ CmdTabular(int code)
 	switch (true_code) {
 		case TABULAR: 
 			end = strdup("\\end{tabular}");
+			begin = strdup("\\begin{tabular}");
 			break;
 		case TABULAR_STAR: 
 			end = strdup("\\end{tabular*}");
+			begin = strdup("\\begin{tabular*}");
 			width = getBraceParam();
 			break;
 		case TABULAR_LONG: 
 			end = strdup("\\end{longtable}");
+			begin = strdup("\\begin{longtable}");
 			break;
 		case TABULAR_LONG_STAR: 
 			end = strdup("\\end{longtable*}");
+			begin = strdup("\\begin{longtable*}");
 			width = getBraceParam();
 			break;
 	}
 
 	pos = getBracketParam();
-	cols = getBraceParam();		
+	cols = getBraceParam();
 	table = getTexUntil(end,FALSE);
-	diagnostics(3, "Entering CmdTabular() options [%s], format {%s}",pos, cols); 
-	tabular=TabularPreamble(table,width,pos,cols);
-	row_start=table;
-	TabularGetRow(row_start,&this_row,&next_row_start,&this_height);
-
-	diagnostics(2, "table_table_table_table_table\n%stable_table_table_table_table",table);
 	
-	first_row = TRUE;
-	while (this_row) {
-		row_start=next_row_start;
-		TabularGetRow(row_start,&next_row,&next_row_start,&next_height);
-		TabularWriteRow(tabular, this_row, next_row, this_height, first_row);
-		free(this_row);
-		this_row = next_row;
-		this_height = next_height;
-		first_row = FALSE;
+/* need to make sure that we don't have nested environments */
+	begins = strstr_count(table, begin);
+	ends   = strstr_count(table, end);
+
+	while (begins > ends) {
+		char *table2, *table3, *table4;
+
+		if (begins > ends) {
+			table2 = getTexUntil(end,FALSE);
+			table3 = strdup_together(table,end);
+			table4 = strdup_together(table3,table2);
+			free(table);
+			free(table2);
+			free(table3);
+			table=table4;
+		}
+		begins = strstr_count(table, begin);
+		ends   = strstr_count(table, end);
 	}
 	
-	ConvertString(end);
+	if (begins>0) {
+		char *p;
+		int num = TexFontNumber("Typewriter");
+		diagnostics(1, "Nest tabular/tabbing environments not allowed"); 
+		diagnostics(2, "table_table_table_table_table\n%stable_table_table_table_table",table);
+		fprintRTF("\\pard\\ql\\b0\\i0\\scaps0\\f%d ", num);
+		p=begin;
+		while (*p) putRtfChar(*p++);
+		p=table;
+		while (*p) putRtfChar(*p++);
+		p=end;
+		while (*p) putRtfChar(*p++);
 
-	if (pos  ) free(pos);
-	if (width) free(width);
-	if (cols ) free(cols);
+	} else {
+	
+		diagnostics(3, "Entering CmdTabular() options [%s], format {%s}",pos, cols); 
+		tabular=TabularPreamble(table,width,pos,cols);
+		row_start=table;
+		TabularGetRow(row_start,&this_row,&next_row_start,&this_height);
+	
+		diagnostics(2, "table_table_table_table_table\n%stable_table_table_table_table",table);
+		
+		first_row = TRUE;
+		while (this_row) {
+			row_start=next_row_start;
+			TabularGetRow(row_start,&next_row,&next_row_start,&next_height);
+			TabularWriteRow(tabular, this_row, next_row, this_height, first_row);
+			free(this_row);
+			this_row = next_row;
+			this_height = next_height;
+			first_row = FALSE;
+		}
+		
+		free(tabular.cline);
+		free(tabular.align);
+		free(tabular.vert);
+		free(tabular.width);
+		if (cols)  free(cols);
+		if (pos  ) free(pos);
+		if (width) free(width);
+	}
+
+	ConvertString(end);
 	free(table);
 	free(end);
-	free(tabular.cline);
-	free(tabular.align);
-	free(tabular.vert);
-	free(tabular.width);
+	free(begin);
 }
 
 static int

@@ -30,6 +30,33 @@ Authors:
 #include "util.h"
 #include "parser.h"
 
+int
+strstr_count(char *s, char *t)
+/******************************************************************************
+ purpose:  count the number of occurences of the string t in the string s
+******************************************************************************/
+{
+	int n=0;
+	size_t len;
+	char *p;
+	
+//	fprintf(stderr, "s=%0x %s\n", (int) s, s);
+//	fprintf(stderr, "t=%0x %s\n", (int) t, t);
+	if (t==NULL || s==NULL) return n;
+	
+	len = strlen(t);
+	p = strstr(s,t);
+//	fprintf(stderr, "p=%0x %s\n", (int) p, p);
+	while (p) {
+		n++;
+		p = strstr(p+len-1,t);  
+//		fprintf(stderr, "p=%0x %s\n", (int) p, p);
+	}
+	
+	return n;
+}
+
+
 char *  
 my_strndup(char *src, size_t n)
 /******************************************************************************
