@@ -109,7 +109,8 @@ DOCS= README README.DOS README.Mac Copyright ChangeLog\
 	doc/latex2rtf.texi doc/latex2rtf.html doc/latex2rtf.pdf doc/latex2rtf.txt \
 	doc/latex2rtf.info doc/credits doc/copying.txt doc/Makefile
 
-SCRIPTS= Makefile version tex2png_1 tex2png_2 tex2png_3 tex2png_4 l2r.bat
+SCRIPTS= scripts/version scripts/tex2png_1 scripts/tex2png_2 \
+         scripts/tex2png_3 scripts/tex2png_4 scripts/l2r.bat scripts/cvs2cl
 
 TEST=   test/Makefile test/bracecheck \
 	test/accentchars.tex test/array.tex test/cite.tex test/cite.bib \
@@ -134,7 +135,7 @@ OBJS=l2r_fonts.o direct.o encode.o commands.o stack.o funct1.o tables.o \
 ARCH="`dpkg --print-architecture`"
 
 # Some defines for versions
-VERSION="`./version`"
+VERSION="`scripts/version`"
 
 all build stamp-build: checkdir latex2rtf doc
 	touch stamp-build
@@ -152,7 +153,7 @@ test: latex2rtf
 	cd test && $(MAKE) 
 
 clean: checkdir
-	rm -f $(OBJS) core
+	rm -f $(OBJS) core stamp-build
 	rm -f latex2rtf latex2rtf-$(VERSION)
 
 realclean: checkdir
@@ -172,10 +173,12 @@ dist source: $(SRCS) $(SUPPORT) $(SCRIPTS) $(MANUALS) $(DOCS) $(TEST)
 	mkdir latex2rtf-$(VERSION)/cfg
 	mkdir latex2rtf-$(VERSION)/doc
 	mkdir latex2rtf-$(VERSION)/test
-	ln $(SRCS) $(MANUALS) $(SCRIPTS) latex2rtf-$(VERSION)
+	mkdir latex2rtf-$(VERSION)/scripts
+	ln $(SRCS) $(MANUALS) Makefile latex2rtf-$(VERSION)
 	ln $(SUPPORT) latex2rtf-$(VERSION)/cfg
 	ln $(DOCS) latex2rtf-$(VERSION)/doc
 	ln $(TEST) latex2rtf-$(VERSION)/test
+	ln $(SCRIPTS) latex2rtf-$(VERSION)/scripts
 	tar cvf - latex2rtf-$(VERSION) | \
 	    gzip -best > latex2rtf-$(VERSION).tar.gz
 	rm -rf latex2rtf-$(VERSION)
