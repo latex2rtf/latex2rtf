@@ -597,13 +597,53 @@ for your language by yourself.
 @node Cross References, Equations, Language Support, Features
 @section Cross References
 
-Cross references are broken currently.
-@ignore
-If RTF version 1.1 is chosen  \label, \ref, and \pageref commands from @latex{} are translated to
-hidden text in the RTF file.  (@xref{Missing and faulty command line options}.) This makes it possible to correctly edit the
-resulting file in the target word processor. If RTF version 1.4 (or higher) is
-chosen, crossreference updating is automated by the RTF reader.
-@end ignore
+Cross references include everything that you might expect and then some:
+bibliographic citations, equation references, table references, figure 
+references, and section references.  Equation, table and figure references
+are implemented by placing RTF bookmarks around the equation number (or table
+number or figure number).  
+
+Ideally, section references would have been done the same way, but the
+crux of the problem is that @latex{} allows you to tag a section with
+@code{\label} anywhere in the section.  To bookmark the section number,
+we need to know if any @code{\label} occurs in that section before the
+section is processed. A plausible alternative would be to insert a
+bookmark when @code{\label} is encountered with the proper number, and
+then cross-reference these bookmarks. Unfortunately, if the bookmarks
+are hidden, then the cross-reference is also hidden.  So the choice are
+@enumerate
+@item to insert a visible bookmark in the document at the place where the @code{\label}
+@item to use the cross-reference information available in the @file{.aux} file
+and lose all information
+@item to process the @latex{} file twice so that the section labels will be 
+known when the section header is processed
+@item to process each section, subsection, subsubsection as a unit.  This is
+what is done for the table and figure environments, but is 
+much more likely to break because it is less likely to encounter @code{\end@{table@}}
+in a table environment tha the sequence @code{\verb#\section#}.  Things would
+break  if that @code{\section} was used to start a new section.  
+@end enumerate
+Currently the first is implemented.  I think that this will change to the second.
+Ultimately, I may get the energy to write the function needed for the fourth.
+
+Page references work but are implemented as ``warm'' cross-references.  This
+means that Word does not automatically update the page references when the file
+is opened.  To update the page references you must select the entire document
+(in Word) and press @code{F9}.
+
+Bibliographic references currently require that a valid @file{.aux} file be
+present.  This is where @ltor{} obtains the reference numbers.  It would be
+nice if @ltor{} just automatically numbered the references when there was
+no @file{.aux} file, but @ltor{} does not do this yet.
+ 
+Footnotes are implemented and currently appear at the end of the document.
+
+Currently, @code{\index} commands are not supported.  
+
+The conversion of cross-references is not perfect because of the different
+mechanisms in the @latex{} and Word worlds.  In particular, if there are 
+multiple @code{\label} in a figure or table environment then only the first
+gets processed.  It is also easy to confuse the converter in eqnarray environments.
 
 @node Equations, Tables, Cross References, Features
 @section Equations
