@@ -1,4 +1,4 @@
-/*  $Id: parser.c,v 1.23 2001/10/13 20:31:53 prahl Exp $
+/*  $Id: parser.c,v 1.24 2001/10/14 18:24:10 prahl Exp $
 
    Contains declarations for a generic recursive parser for LaTeX code.
 */
@@ -16,13 +16,140 @@
 #include "l2r_fonts.h"
 #include "lengths.h"
 
-static char     g_parser_currentChar;	/* Global current character                 */
-static char     g_parser_lastChar;
-static char     g_parser_penultimateChar;
+typedef struct InputStackType
+{
+   char  *string;
+   FILE  *file;
+   char  *file_name;
+   long   file_line;
+} InputStackType;
 
-extern FILE    *fTex;
+#define PARSER_SOURCE_MAX 40
+static InputStackType   g_parser_stack[PARSER_SOURCE_MAX];
 
-static void     parseBracket();	/* parse an open/close bracket sequence              */
+static int              g_parser_depth = -1;
+static char            *g_parser_string = "stdin";
+static FILE            *g_parser_file   = stdin;
+static int 				g_parser_line   = 1;
+
+static long				g_parser_file_pos;
+static char            *g_parser_string_pos;
+
+static char             g_parser_currentChar;	/* Global current character */
+static char             g_parser_lastChar;
+static char             g_parser_penultimateChar;
+
+static void     parseBracket();
+
+
+int CurrentLineNumber(void) 
+{
+	return g_parser_line;
+}
+
+char *
+CurrentFileName(void)
+{
+	return g_parser_stack[g_parser_depth].file_name;
+}
+
+/*
+	The following two routines allow parsing of multiple files and strings
+*/
+
+int 
+PushSource(char * filename, char * string)
+{
+	char       s[50];
+	FILE *p    = NULL;
+	char *name = NULL;
+	int  line  = 1;
+	
+	/* save current values for linenumber and string */
+	if (g_parser_depth >=0) {
+		g_parser_stack[g_parser_depth].file_line = g_parser_line;
+		g_parser_stack[g_parser_depth].string    = g_parser_string;
+	}
+		
+	if (filename) {
+		name = strdup(filename);
+		p = fopen(filename, "rb");
+		if (!p) {
+           diagnostics(WARNING, "Cannot open <%s>\n", filename);
+           return 0;
+       }
+    } else {
+    	name = CurrentFileName();
+    	line = CurrentLineNumber();
+	}    	
+	
+	if (++g_parser_depth >= PARSER_SOURCE_MAX) {
+		diagnostics(ERROR, "To many BeginSource() calls");
+		return 0;
+	}
+
+	g_parser_stack[g_parser_depth].string      = string;
+	g_parser_stack[g_parser_depth].file        = p;
+	g_parser_stack[g_parser_depth].file_line   = line;
+	g_parser_stack[g_parser_depth].file_name   = name;
+	g_parser_file = p;
+	g_parser_string = string;
+	g_parser_line = line;
+
+	if (g_parser_file)
+		diagnostics(3, "Opening Source File %s", g_parser_stack[g_parser_depth].file_name);
+	else {
+		strncpy(s,g_parser_string,25);
+		diagnostics(3, "Opening Source string <%s>",s);
+	}
+
+	return 1;
+}
+
+int 
+StillSource(void)
+{
+	if (g_parser_file)
+		return (!feof(g_parser_file));
+	else
+		return (*g_parser_string != '\0');
+}
+
+void 
+PopSource(void)
+{
+	char       s[50];
+
+	if (g_parser_file)
+		diagnostics(3, "Closing Source File %s", g_parser_stack[g_parser_depth].file_name);
+	else {
+		strncpy(s,g_parser_string,25);
+		diagnostics(3, "Closing Source string <%s>",s);
+	}
+
+	if (g_parser_depth < 0) 
+		diagnostics(ERROR, "EndSource() calls exceed BeginSource() calls");
+
+	if (g_parser_file) {
+		fclose(g_parser_file);
+		free(g_parser_stack[g_parser_depth].file_name);
+	}
+		
+	g_parser_depth--;
+	
+	if (g_parser_depth >= 0) {
+		g_parser_string = g_parser_stack[g_parser_depth].string;
+		g_parser_file   = g_parser_stack[g_parser_depth].file;
+		g_parser_line   = g_parser_stack[g_parser_depth].file_line;
+	}
+
+	if (g_parser_file)
+		diagnostics(3, "Resuming Source File %s", g_parser_stack[g_parser_depth].file_name);
+	else {
+		strncpy(s,g_parser_string,25);
+		diagnostics(3, "Resuming Source string <%s>",s);
+	}
+}
 
 #define CR (char) 0x0d
 #define LF (char) 0x0a
@@ -38,27 +165,35 @@ getRawTexChar()
 {
 	int             thechar;
 
-	thechar = getc(fTex);
-	if (thechar == EOF)
-		if(!feof(fTex)) 
-			error("Unknown error reading latex file\n");
-		else
-			thechar = '\0';
-	else if (thechar == CR){                  /* convert CR, CRLF, or LF to \n */
-		thechar = getc(fTex);
-		if (thechar != LF && !feof(fTex))
-			ungetc(thechar, fTex);
-		thechar = '\n';
-	} else if (thechar == LF)
-		thechar = '\n';
-	else if (thechar == '\t')
-		thechar = ' ';
-
-	g_parser_currentChar = (char) thechar;
+	if (g_parser_file) {
+		thechar = getc(g_parser_file);
+		if (thechar == EOF)
+			if(!feof(g_parser_file)) 
+				error("Unknown error reading latex file\n");
+			else
+				thechar = '\0';
+		else if (thechar == CR){                  /* convert CR, CRLF, or LF to \n */
+			thechar = getc(g_parser_file);
+			if (thechar != LF && !feof(g_parser_file))
+				ungetc(thechar, g_parser_file);
+			thechar = '\n';
+		} else if (thechar == LF)
+			thechar = '\n';
+		else if (thechar == '\t')
+			thechar = ' ';
+			
+		g_parser_currentChar = (char) thechar;
 
 	if (g_parser_currentChar == '\n')
-		linenumber++;
-
+		g_parser_line++;
+		
+	} else {							/* no need to sanitize strings! */
+		if (g_parser_string && *g_parser_string) {
+			g_parser_currentChar = *g_parser_string;
+			g_parser_string++;
+		} else 
+			g_parser_currentChar = '\0';
+	}
 	g_parser_penultimateChar = g_parser_lastChar;
 	g_parser_lastChar = g_parser_currentChar;
 	return g_parser_currentChar;
@@ -66,6 +201,32 @@ getRawTexChar()
 
 #undef CR
 #undef LF
+
+void 
+ungetTexChar(char c)
+/****************************************************************************
+purpose: rewind the filepointer in the LaTeX-file by one
+ ****************************************************************************/
+{
+	if (c == '\0')
+		return;
+		
+	if (g_parser_file) {
+	
+		ungetc(c, g_parser_file);
+		if (c == '\n') g_parser_line--;
+		
+	} else {
+		g_parser_string--; 
+		if (g_parser_string && *g_parser_string) {
+			*g_parser_string = c;
+		}
+	}
+	
+	g_parser_currentChar = g_parser_lastChar;
+	g_parser_lastChar = g_parser_penultimateChar;
+	g_parser_penultimateChar = '\0';	/* no longer know what that it was */
+}
 
 char 
 getTexChar()
@@ -85,22 +246,6 @@ getTexChar()
 		g_parser_lastChar = cSave;
 	}
 	return cThis;
-}
-
-void 
-ungetTexChar(char c)
-/****************************************************************************
-purpose: rewind the filepointer in the LaTeX-file by one
- ****************************************************************************/
-{
-	if (c != '\0') 
-		ungetc(c, fTex);
-
-	if (c == '\n')
-		linenumber--;
-
-	g_parser_lastChar = g_parser_penultimateChar;
-	g_parser_penultimateChar = '\0';	/* no longer know what that it was */
 }
 
 void 
@@ -383,14 +528,22 @@ getBraceParam(void)
 	return text;
 }
 
-long ftellTex()
+static void 
+SaveFilePosition(void)
 {
-	return ftell(fTex);
+	if (g_parser_file)
+		g_parser_file_pos = ftell(g_parser_file);
+	else
+		g_parser_string_pos = g_parser_string;
 }
 
-void fseekTex(long pos)
+static void 
+RestoreFilePosition(int offset)
 {
-	fseek(fTex, pos, SEEK_SET);
+	if (g_parser_file)
+		fseek(g_parser_file, g_parser_file_pos+offset, SEEK_SET);
+	else
+		g_parser_string = g_parser_string_pos+offset;
 }
 
 char *
@@ -405,7 +558,6 @@ getTexUntil(char * target, int raw)
 	int             i   = 0;                /* size of string that has been read */
 	int             j   = 0;                /* number of found characters */
 	int             len = strlen(target);
-	long			start_of_target=0;
 	
 	diagnostics(4, "getTexUntil target = <%s>", target);
 	
@@ -415,13 +567,13 @@ getTexUntil(char * target, int raw)
 		
 		if (buffer[i] != target[j]) {
 			if (j > 0) {			        /* false start, put back what was found */
-				fseekTex(start_of_target);
+				RestoreFilePosition(0);
 				i-=j;
 				j=0;
 			}
 		} else {
 			if (j==0)
-				start_of_target = ftellTex();
+				SaveFilePosition();
 			j++;
 		}
 		i++;
@@ -434,7 +586,7 @@ getTexUntil(char * target, int raw)
 	
 	buffer[i-len] = '\0';
 
-	fseekTex(start_of_target-1);	/* move to start of target */
+	RestoreFilePosition(-1);	/* move to start of target */
 	
 	return strdup(buffer);
 }

@@ -87,11 +87,11 @@ CmdMath(int code)
 	
 		case EQN_DOLLAR:
 			if (GetTexMode() != MODE_MATH) {
-				diagnostics(4, "Exiting CmdMath() ... $");
+				diagnostics(4, "Entering CmdMath() ... $");
 				fprintRTF("{\\i ");
 				SetTexMode(MODE_MATH);
 			} else {
-				diagnostics(4, "Entering CmdMath() ... $");
+				diagnostics(4, "Exiting CmdMath() ... $");
 				fprintRTF("}");
 				SetTexMode(MODE_HORIZONTAL);
 			}

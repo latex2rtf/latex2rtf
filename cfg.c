@@ -1,4 +1,4 @@
-/* $Id: cfg.c,v 1.16 2001/10/12 05:45:07 prahl Exp $
+/* $Id: cfg.c,v 1.17 2001/10/14 18:24:10 prahl Exp $
 
      purpose : Read config files and provide lookup routines
 
@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
 #include <ctype.h>
 
 #include "main.h"
@@ -37,6 +38,13 @@ static ConfigInfoT configinfo[] =
 
 };
 #define CONFIG_SIZE (sizeof(configinfo) / sizeof(ConfigInfoT))
+#define BUFFER_INCREMENT 1024
+
+extern void     Fatal(const char *fmt,...);
+void            ParseError(const char *fmt,...);
+char           *ReadUptoMatch(FILE * infile, const char *scanchars);
+
+static char * g_cfg_filename;
 
 static int 
 cfg_compare(ConfigEntryT ** el1, ConfigEntryT ** el2)
@@ -228,8 +236,7 @@ ReadCfg(void)
 	FILE           *fp;
 
 	for (i = 0; i < CONFIG_SIZE; i++) {
-		linenumber = 1;
-		currfile = configinfo[i].filename;
+		g_cfg_filename = configinfo[i].filename;
 		fp = open_cfg(configinfo[i].filename);
 		configinfo[i].config_info_size
 			= read_cfg(fp
@@ -373,3 +380,86 @@ ConvertBabelName(char *name)
 	if (s != NULL)
 		ConvertString(s);
 }
+
+/* @exits@ */
+void 
+ParseError(const char *fmt,...)
+{
+	va_list         ap;
+
+	fprintf(stderr, "%s: %s: ", progname, g_cfg_filename);
+	va_start(ap, fmt);
+	(void) vfprintf(stderr, fmt, ap);
+	va_end(ap);
+	fprintf(stderr, "\n");
+	exit(EXIT_FAILURE);
+}
+
+void 
+Fatal(const char *fmt,...)
+{
+	va_list         ap;
+
+	fprintf(stderr, "%s: Fatal error: ", progname);
+	va_start(ap, fmt);
+	(void) vfprintf(stderr, fmt, ap);
+	va_end(ap);
+	fprintf(stderr, "\n");
+	exit(EXIT_FAILURE);
+}
+
+static char *buffer;
+static size_t   bufsize = 0;
+
+#define CR (char) 0x0d
+#define LF (char) 0x0a
+
+/*
+ * This function assumes there are no '\0' characters in the input.
+ * if there are any, they are ignored.
+ */
+char           *
+ReadUptoMatch(FILE * infile, /* @observer@ */ const char *scanchars)
+{
+	size_t          bufindex = 0;
+	int             c;
+
+	if (feof(infile) != 0) {
+		return NULL;
+	}
+	if (buffer == NULL) {
+		if ((buffer = malloc(BUFFER_INCREMENT)) == NULL) {
+			Fatal("Cannot allocate memory for input buffer\n");
+		}
+		bufsize = BUFFER_INCREMENT;
+	}
+	while ((c = getc(infile)) != EOF ) {
+	
+		if (c == CR || c == LF)
+			c = '\n';
+		
+		if (strchr(scanchars, c))
+			break;
+			
+		if (c == (int) '\0') {
+			continue;
+		}
+/*		if (c == (int) '\n') {
+			linenumber++;
+		}
+*/		buffer[bufindex++] = (char) c;
+		if (bufindex >= bufsize) {
+			if ((buffer = realloc(buffer, bufsize += BUFFER_INCREMENT)) == NULL) {
+				Fatal("Cannot allocate memory for input buffer\n");
+			}
+		}
+	}
+	buffer[bufindex] = '\0';
+	if (c != EOF) {
+		ungetc(c, infile);	/* LEG210698*** lclint, GNU libc
+					 * doesn't say what's the return
+					 * value */
+	}
+	return buffer;
+}
+

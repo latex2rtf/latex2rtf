@@ -4,10 +4,13 @@
  * 
  * 26th June 1998 - Created initial version - fb                            LEG
  * 070798 adapted Frank Barnes contribution to r2l coding conventions SAP
- * Added several more routines
  */
 
-#define POSSTACKSIZE   256	/* Size of stack to save positions              */
+int 			CurrentLineNumber(void);
+char 		   *CurrentFileName(void);
+int 			PushSource(char * filename, char * string);
+int				StillSource(void);
+void 			PopSource(void);
 
 char            getRawTexChar(void);
 char            getTexChar(void);

@@ -1,4 +1,4 @@
-/* $Id: convert.c,v 1.12 2001/10/13 19:19:10 prahl Exp $ 
+/* $Id: convert.c,v 1.13 2001/10/14 18:24:10 prahl Exp $ 
 	purpose: ConvertString(), Convert(), TranslateCommand() 
 	
 TeX has six modes according to the TeX Book:
@@ -81,46 +81,21 @@ void
 ConvertString(char *string)
 /******************************************************************************
      purpose : converts string in TeX-format to Rtf-format
-   parameter : string to be converted
-     globals : linenumber, fTex
  ******************************************************************************/
 {
-	FILE           *fp, *LatexFile;
-	long            oldlinenumber;
-	int             test;
 	char            temp[51];
 	
-	if ((fp = tmpfile()) == NULL) {
-		fprintf(stderr, "%s: Fatal Error: cannot create temporary file\n", progname);
-		exit(EXIT_FAILURE);
-	}
-	
-	test = fwrite(string, strlen(string), 1, fp);
-	if (test != 1)
-		diagnostics(WARNING,
-			    "(ConvertString): "
-			    "Could not write `%s' to tempfile %s, "
-			    "fwrite returns %d, should be 1",
-			    string, "tmpfile()", test);
-	if (fseek(fp, 0L, SEEK_SET) != 0)
-		diagnostics(ERROR, "Could not position to 0 in tempfile (ConvertString)");
-
-	LatexFile = fTex;
-	fTex = fp;
-	diagnostics(5, "changing fTex file pointer in ConvertString");
-	oldlinenumber = linenumber;
-
 	strncpy(temp,string,50);
-	diagnostics(5, "Entering Convert() from StringConvert() <%s>",temp);
-	while (!feof(fTex))
-		Convert();
-	diagnostics(5, "Exiting Convert() from StringConvert()");
 
-	fTex = LatexFile;
-	diagnostics(5, "resetting fTex file pointer in ConvertString");
-	linenumber = oldlinenumber;
-	if (fclose(fp) != 0)
-		diagnostics(ERROR, "Could not close tempfile, (ConvertString).");
+	if (PushSource(NULL, string)) {
+		diagnostics(3, "Entering Convert() from StringConvert() <%s>",temp);
+
+		while (StillSource())
+			Convert();
+			
+		PopSource();
+		diagnostics(3, "Exiting Convert() from StringConvert()");
+	}
 }
 
 void 

@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.32 2001/10/13 20:04:56 prahl Exp $ 
+/* $Id: funct1.c,v 1.33 2001/10/14 18:24:10 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -32,6 +32,7 @@ static void     CmdLabel1_4(int code, char *text);
 static void     CmdLabelOld(int code, char *text);
 void            CmdPagestyle( /* @unused@ */ int code);
 void            CmdHeader(int code);
+char 			*roman_item(int n);
 
 static bool  g_paragraph_no_indent = FALSE;
 static bool  g_paragraph_inhibit_indent = FALSE;
@@ -46,10 +47,10 @@ CmdStartParagraph(int code)
 {
 	int parindent;
 	
-	diagnostics(4,"CmdStartParagraph mode = %d", GetTexMode());
-	diagnostics(4,"Noindent is %d", (int) g_paragraph_no_indent);
-	diagnostics(4,"Inhibit  is %d", (int) g_paragraph_inhibit_indent);
-	diagnostics(4,"parindent  is %d", getLength("parindent"));
+	diagnostics(5,"CmdStartParagraph mode = %d", GetTexMode());
+	diagnostics(5,"Noindent is %d", (int) g_paragraph_no_indent);
+	diagnostics(5,"Inhibit  is %d", (int) g_paragraph_inhibit_indent);
+	diagnostics(5,"parindent  is %d", getLength("parindent"));
 
 	fprintRTF("\\q%c\\li%d ", alignment, indent);
 	if (indent!=0)
@@ -77,7 +78,7 @@ CmdEndParagraph(int code)
 {
 	int mode = GetTexMode();
 
-	diagnostics(4,"CmdEndParagraph mode = %d", GetTexMode());
+	diagnostics(5,"CmdEndParagraph mode = %d", GetTexMode());
 	if (mode != MODE_VERTICAL) {
 		fprintRTF("\\par\n");
 		SetTexMode(MODE_VERTICAL);
@@ -151,7 +152,7 @@ CmdIndent(int code)
            INDENT_USUAL has CmdStartParagraph() uses the value of \parindent
  ******************************************************************************/
 {
-	diagnostics(4,"CmdIndent mode = %d", GetTexMode());
+	diagnostics(5,"CmdIndent mode = %d", GetTexMode());
 	if (code == INDENT_NONE)
 		g_paragraph_no_indent = TRUE;
 	
@@ -162,8 +163,8 @@ CmdIndent(int code)
 		g_paragraph_no_indent = FALSE;
 		g_paragraph_inhibit_indent = FALSE;
 	}
-	diagnostics(4,"Noindent is %d", (int) g_paragraph_no_indent);
-	diagnostics(4,"Inhibit  is %d", (int) g_paragraph_inhibit_indent);
+	diagnostics(5,"Noindent is %d", (int) g_paragraph_no_indent);
+	diagnostics(5,"Inhibit  is %d", (int) g_paragraph_inhibit_indent);
 }
 
 void 
@@ -781,22 +782,16 @@ CmdBox(int code)
 void
 CmdInclude(int code)
 /******************************************************************************
- purpose: reads an extern-LaTeX-File from the into the actual document and converts it to
-	  an similar Rtf-style
+ purpose: handles the LaTeX command \include(file)
+ 		  still need to convert path separators
+ 		  need to handle \includeonly somehow...
  globals: GermanMode: is set if germanstyles are included
-          fTex
-          progname
  ******************************************************************************/
 {
 	char            *fname;
-	FILE *fp;
-	FILE *LatexFile;
-	char           *olatexname;
-	long            oldlinenumber;
-
-	strcpy(fname, "");
 
 	fname = getBraceParam();
+	
 	if (strstr(fname, "german.sty") != NULL) {
 		GermanMode = TRUE;
 		PushEnvironment(GERMAN_MODE);
@@ -807,20 +802,17 @@ CmdInclude(int code)
 		PushEnvironment(FRENCH_MODE);
 		return;
 	}
-	assert(fname != NULL);
 
 	if (strcmp(fname, "") == 0) {
 		diagnostics(WARNING, "Empty or invalid filename in \\include{filename}");
 		return;
 	}
-	/* extension .tex is appended automatically */
+	
+	/* extension .tex is appended automatically if missing*/
 	if (strchr(fname, '.') == NULL)
 		strcat(fname, ".tex");
 
-/* 
-   this is needed in classic MacOS because of the weird way that directories
-   are handled under DropUnix
-*/
+/* Classic MacOS because of how DropUnix handles directories */
 #ifdef __MWERKS__
 	{
 	char            fullpath[1024];
@@ -837,38 +829,13 @@ CmdInclude(int code)
 	}
 #endif
 
-	if (g_processing_include) {
-		diagnostics(WARNING, "Cannot process nested \\include{%s}", latexname);
-		return;
+	if (PushSource(fname, NULL)) {
+		diagnostics(4, "Entering Convert() from CmdInclude");
+		Convert();
+		diagnostics(4, "Exiting Convert() from CmdInclude");
+		PopSource();
 	}
-	g_processing_include = TRUE;
 
-	if ((fp = (fopen(fname, "rb"))) == NULL) {
-		diagnostics(WARNING, "Cannot open \\include file: %s", latexname);
-		return;
-	}
-	fprintf(stderr, "\nProcessing include file: %s\n", latexname);
-
-	LatexFile = fTex;	/* Save current file pointer */
-	diagnostics(5, "changing fTex file pointer in CmdInclude");
-	fTex = fp;
-	oldlinenumber = linenumber;
-	linenumber = 1;
-	olatexname = latexname;
-	latexname = fname;
-
-	diagnostics(4, "Entering Convert() from CmdInclude");
-	Convert();
-	diagnostics(4, "Exiting Convert() from CmdInclude");
-
-	if (fclose(fp) != 0)
-		diagnostics(ERROR, "Could not close include file.");
-
-	diagnostics(5, "resetting fTex file pointer in CmdInclude");
-	fTex = LatexFile;
-	latexname = olatexname;
-	linenumber = oldlinenumber;
-	g_processing_include = FALSE;
 	free(fname);
 }
 
@@ -1672,4 +1639,50 @@ CmdVerbosityLevel(int code)
 	g_verbosity_level = atoi(s);
 	free(s);
 
+}
+
+
+/* convert integer to roman number --- only works up correctly up to 39 */
+
+char * 
+roman_item(int n)
+{
+	char            s[50];
+	int             i = 0;
+
+	while (n >= 10) {
+		n -= 10;
+		s[i] = 'x';
+		i++;
+	}
+
+	if (n == 9) {
+		s[i] = 'i';
+		i++;
+		s[i] = 'x';
+		i++;
+		s[i] = '\0';
+		return strdup(s);
+	}
+	if (n >= 5) {
+		n -= 5;
+		s[i] = 'v';
+		i++;
+	}
+	if (n == 4) {
+		s[i] = 'i';
+		i++;
+		s[i] = 'v';
+		i++;
+		s[i] = '\0';
+		return strdup(s);
+	}
+	while (n >= 1) {
+		n -= 1;
+		s[i] = 'i';
+		i++;
+	}
+
+	s[i] = '\0';
+	return strdup(s);
 }

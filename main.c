@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.27 2001/10/12 05:45:07 prahl Exp $ */
+/* $Id: main.c,v 1.28 2001/10/14 18:24:10 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -24,9 +24,6 @@
 #include "preamble.h"
 #include "biblio.h"
 
-long           linenumber = 1;	        /* lines in the LaTex-document */
-char           *currfile;	            /* current file name */
-FILE           *fTex = (FILE *) NULL;	/* file pointer to Latex file */
 FILE           *fRtf = (FILE *) NULL;	/* file pointer to RTF file */
 char           *input = NULL;
 static char    *output = NULL;
@@ -34,10 +31,8 @@ char           *AuxName = NULL;
 char           *BblName = NULL;
 
 char           *progname;	            /* name of the executable file */
-char           *latexname = "stdin";	/* name of LaTex-File */
 bool            GermanMode = FALSE;	    /* support germanstyle */
 
-char            g_language[20] = "english";	/* before \begin{document} "g_language".cfg is read in */
 char            g_encoding[20] = "cp1252";
 bool            twoside = FALSE;
 int      		g_verbosity_level = WARNING;
@@ -58,7 +53,6 @@ bool            pagestyledefined = FALSE;	/* flag, set to true by
 
 bool            g_processing_preamble = TRUE;	/* flag set until \begin{document} */
 bool            g_processing_figure = FALSE;	/* flag, set for figures and not tables */
-bool            g_processing_include = FALSE;	/* flag set when include file is being processed */
 bool            g_processing_eqnarray = FALSE;	/* flag set when in an eqnarry */
 
 bool            g_show_equation_number = FALSE;
@@ -80,15 +74,13 @@ bool            titlepage = FALSE;
 bool            tabbing_on = FALSE;
 bool            tabbing_return = FALSE;
 bool            tabbing_on_itself = FALSE;
-long          pos_begin_kill;
+long          	pos_begin_kill;
 
 int             colCount;			/* number of columns in a tabular environment */
 int             actCol;				/* actual column in the tabular environment */
 char           *colFmt = NULL;
 
-static void     OpenTexFile(const char *filename ,FILE ** f);
 static void     OpenRtfFile(char *filename, FILE ** f);
-static void     CloseTex(FILE ** f);
 static void     CloseRtf(FILE ** f);
 static void     ConvertLatexPreamble(void);
 static void     InitializeLatexLengths(void);
@@ -102,7 +94,7 @@ extern int getopt(int ac, char *const av[], const char *optstring);
 /****************************************************************************
 purpose: checks parameter and starts convert routine
 params:  command line arguments argc, argv
-globals: initializes in- and outputfile fTex, fRtf,
+globals: initializes in- and outputfile fRtf,
  ****************************************************************************/
 	int
 	                main(int argc, char **argv)
@@ -110,7 +102,6 @@ globals: initializes in- and outputfile fTex, fRtf,
 	int             c;
 	bool            errflag = FALSE;
 
-	fTex = stdin;		/* default input/output */
 	fRtf = stdout;
 
 	progname = argv[0];
@@ -177,7 +168,6 @@ globals: initializes in- and outputfile fTex, fRtf,
 		else
 			input = argv[optind];
 
-		latexname = input;
 		diagnostics(3, "latex filename is %s\n", input);
 
 		/* create the .rtf filename */
@@ -227,30 +217,29 @@ globals: initializes in- and outputfile fTex, fRtf,
 	}
 
 	ReadCfg();
-	OpenTexFile(input, &fTex);
-	OpenRtfFile(output, &fRtf);
-
+	if (PushSource(input, NULL)) {
+		OpenRtfFile(output, &fRtf);
+		
+		InitializeStack();
+		InitializeLatexLengths();
+		InitializeDocumentFont(TexFontNumber("Roman"), 20, F_SHAPE_UPRIGHT, F_SERIES_MEDIUM);
 	
-	InitializeStack();
-	InitializeLatexLengths();
-	InitializeDocumentFont(TexFontNumber("Roman"), 20, F_SHAPE_UPRIGHT, F_SERIES_MEDIUM);
-
-	PushEnvironment(PREAMBLE);
-	SetTexMode(MODE_VERTICAL);
-    ConvertLatexPreamble(); 
-	WriteRtfHeader();
+		PushEnvironment(PREAMBLE);
+		SetTexMode(MODE_VERTICAL);
+		ConvertLatexPreamble(); 
+		WriteRtfHeader();
+		
+		g_processing_preamble = FALSE;
+		diagnostics(4,"Entering Convert from main");
+		Convert();
+		diagnostics(4,"Exiting Convert from main");
 	
-	ReadLanguage(g_language);
-
-	g_processing_preamble = FALSE;
-	diagnostics(4,"Entering Convert from main");
-	Convert();
-	diagnostics(4,"Exiting Convert from main");
-
-	CloseTex(&fTex);
-	CloseRtf(&fRtf);
-	printf("\n");
-	return (0);
+		PopSource();
+		CloseRtf(&fRtf);
+		printf("\n");
+		return 0;
+	} else
+		return 1;
 }
 
 /***********************************************************************
@@ -272,8 +261,7 @@ purpose: writes error message
 globals: reads progname;
  ****************************************************************************/
 {
-	fprintf(stderr, "\nERROR at line %ld: %s", linenumber, text);
-	fprintf(stderr, "\nprogram aborted\n");
+	fprintf(stderr, "\nERROR: %s\n", text);
 	exit(EXIT_FAILURE);
 }
 
@@ -282,28 +270,27 @@ numerror(int num)
 /****************************************************************************
 purpose: writes error message identified by number - for messages on many
 	 places in code. Calls function error.
-globals: progname; latexname; linenumber;
  ****************************************************************************/
 {
 
 	char            text[1024];
+	int linenumber = CurrentLineNumber();
+	char *latexname = CurrentFileName();
 
 	switch (num) {
 	case ERR_EOF_INPUT:
-		if (g_processing_include)
-			return;	/* SAP - HACK end of file ok in include files */
-		sprintf(text, "%s%s%s%ld%s", "unexpected end of input file in: ", latexname, " at linenumber: ", linenumber, "\n");
+		sprintf(text, "%s%s%s%d%s", "unexpected end of input file in: ", latexname, " at linenumber: ", linenumber, "\n");
 		error(text);
 		/* @notreached@ */
 		break;
 	case ERR_WRONG_COMMAND:
-		sprintf(text, "%s%s%s%ld%s", "unexpected command or character in: ", latexname, " at linenumber: ", linenumber, "\n");
+		sprintf(text, "%s%s%s%d%s", "unexpected command or character in: ", latexname, " at linenumber: ", linenumber, "\n");
 		error(text);
 		/* @notreached@ */
 		break;
 
 	case ERR_NOT_IN_DOCUMENT:
-		sprintf(text, "\nNot in document %s at line %ld.  Missing \\begin{document}?\n", latexname, linenumber);
+		sprintf(text, "\nNot in document %s at line %d.  Missing \\begin{document}?\n", latexname, linenumber);
 		error(text);
 		/* @notreached@ */
 		break;
@@ -312,7 +299,7 @@ globals: progname; latexname; linenumber;
 		/* @notreached@ */
 		break;
 	case ERR_WRONG_COMMAND_IN_TABBING:
-		sprintf(text, "%s%s%s%ld%s", "wrong command in Tabbing-kill-command-line in: ", latexname, " at linenumber: ", linenumber, "\n");
+		sprintf(text, "%s%s%s%d%s", "wrong command in Tabbing-kill-command-line in: ", latexname, " at linenumber: ", linenumber, "\n");
 		error(text);
 		/* @notreached@ */
 		break;
@@ -335,33 +322,41 @@ diagnostics(int level, char *format,...)
 {
 	va_list        apf;
 	FILE           *errfile;
-	int            i;
+	int            i,linenumber, iEnvCount;
+	char          *input;
 	
 	if (logfile != NULL)
 		errfile = logfile;
 	else
 		errfile = stderr;
 
-
 	va_start(apf, format);
 
 	if (level <= g_verbosity_level) {
-		int iEnvCount=CurrentEnvironmentCount();
+
+		linenumber = CurrentLineNumber();
+		input      = CurrentFileName();
+		iEnvCount  = CurrentEnvironmentCount();
+		
 		switch (level) {
 		case 0:
-			fprintf(errfile, "\nError! line=%ld ", linenumber);
+			fprintf(errfile, "\nError! line=%d ", linenumber);
 			break;
 		case 1:
-			fprintf(errfile, "\nWarning line=%ld ", linenumber);
+			fprintf(errfile, "\nWarning line=%d ", linenumber);
 			break;
+		case 2:
+		case 3:
 		case 4:
 		case 5:
-		    fprintf(errfile, "\n%s %4ld bra=%d rec=%d env=%d ", input, linenumber, BraceLevel, RecursionLevel, iEnvCount);
+		case 6:
+		    fprintf(errfile, "\n%s %4d bra=%d rec=%d env=%d ", input, linenumber, \
+		    BraceLevel, RecursionLevel, iEnvCount);
 			for (i=0; i<RecursionLevel; i++)
 				fprintf(errfile, " ");
 			break;
 		default:
-			fprintf(errfile, "\nline=%ld ", linenumber);
+			fprintf(errfile, "\nline=%d ", linenumber);
 			break;
 		}
 		vfprintf(errfile, format, apf);
@@ -467,40 +462,6 @@ params: filename - name of outputfile, possibly NULL for already open file
 		}
 	}
 }
-
-
-void 
-OpenTexFile(const char *filename, FILE ** f)
-/****************************************************************************
-purpose: opens input file.
-params: filename - name of inputfile, possibly NULL
-	f - pointer to filepointer to store file ID
- ****************************************************************************/
-{
-	if (filename != NULL) {
-		if ((*f = fopen(filename, "r")) == NULL) {	/* open file */
-			fprintf(stderr, "Error opening LaTeX file %s\n", filename);
-			exit(EXIT_FAILURE);
-		}
-	}
-
-	diagnostics(4,"Opened LaTeX file %s, (%p)",filename, *f);
-
-}
-
-void 
-CloseTex(FILE ** f)
-/****************************************************************************
-purpose: closes input file.
-params: f - pointer to filepointer to invalidate
- ****************************************************************************/
-{
-	if (*f != stdin  && *f != NULL)
-		fclose(*f);
-	*f = NULL;
-	diagnostics(4,"Closed LaTeX file");
-}
-
 
 void
 CloseRtf(FILE ** f)

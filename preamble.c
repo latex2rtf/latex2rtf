@@ -1,4 +1,4 @@
-/* $Id: preamble.c,v 1.20 2001/10/13 20:04:56 prahl Exp $
+/* $Id: preamble.c,v 1.21 2001/10/14 18:24:10 prahl Exp $
 
 purpose : Handles LaTeX commands that should only occur in the preamble.
           These are gathered together because the entire preamble must be
@@ -55,13 +55,13 @@ setPackageBabel(char * option)
 	    strcmp(option, "ngerman") == 0 ) {
 			GermanMode = TRUE;
 			PushEnvironment(GERMAN_MODE);
-			strcpy(g_language, "german");
+			ReadLanguage("german");
 	}
 	
 	if (strcmp(option, "french") == 0)
 	{
 		PushEnvironment(FRENCH_MODE);
-		strcpy(g_language, "french");
+		ReadLanguage("french");
 	}
 		
 }

@@ -1,4 +1,4 @@
-/* $Id: biblio.c,v 1.8 2001/10/13 20:31:53 prahl Exp $ 
+/* $Id: biblio.c,v 1.9 2001/10/14 18:24:10 prahl Exp $ 
  
 This file contains routines to handle bibliographic and cite commands
 */
@@ -63,22 +63,13 @@ parameter: if FALSE (0) work as normal
 void 
 CmdBibliography(int code)
 {
-	FILE * fBbl, *fSave;
-	
-	fBbl = fopen(BblName, "r");
-	
-	if (!fBbl) 
-		diagnostics(WARNING, "Cannot open bibliography file.  Create %s using BibTeX", BblName);
-	
-	else {
+	if (PushSource(BblName, NULL)) {
 		diagnostics(4, "CmdBibliography ... begin Convert()");
-		fSave = fTex;
-		fTex = fBbl;
 		Convert();
-		fTex = fSave;
-		fclose(fBbl);
 		diagnostics(4, "CmdBibliography ... done Convert()");
-	}
+		PopSource();
+	} else
+		diagnostics(WARNING, "Cannot open bibliography file.  Create %s using BibTeX", BblName);
 }
 
 void 

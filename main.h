@@ -1,4 +1,4 @@
-/* $Id: main.h,v 1.22 2001/10/12 05:45:07 prahl Exp $ */
+/* $Id: main.h,v 1.23 2001/10/14 18:24:10 prahl Exp $ */
 
 #undef HAS_NO_GETOPT
 
@@ -46,7 +46,6 @@ void            IgnoreTo(char cEnd);
  /* @exits@ */ void numerror(int num);
  /* @exits@ */ void error(char *text);
  /* @dependent@ */ FILE *open_cfg(const char *);
-long            getLinenumber(void);
 void            diagnostics(int level, char *format,...);
 /* level values */
 
@@ -79,47 +78,39 @@ enum TexCharSetKind {
 #define PATHMAX 255
 
 /********************************* global variables *************************/
-extern long     linenumber;	/* lines in the LaTex-document */
-extern				/* @null@ */
- /* @observer@ */ char *currfile;	/* current file name */
-extern /* @dependent@ */ FILE *fTex;	/* file pointer to Latex file */
 extern /* @dependent@ */ FILE *fRtf;	/* file pointer to RTF file */
-extern				/* @null@ */
- /* @observer@ */ char *input;
-extern				/* @null@ */
- /* @only@ */ char *AuxName;	/* LEG220698*** lclint error? */
-extern				/* @null@ */
- /* @only@ */ char *BblName;
-extern /* @observer@ */ char *progname;	/* name of the executable file */
-extern /* @only@ */ char *latexname;	/* name of LaTex-File */
-extern char     alignment;	/* default for justified: */
-extern long   pos_begin_kill;
+extern			char *AuxName;
+extern			char *BblName;
+extern 			char *progname;			/* name of the executable file */
+
 extern bool     GermanMode;
-extern				/* @only@ */
- /* @null@ */ char *colFmt;
-/* @null@ */
 extern char    *hyperref;
 extern bool     pagenumbering;
 extern int      headings;
 
-/* Global flags of Convert routine */
+extern int      g_verbosity_level;
 extern int      RecursionLevel;
 extern int      indent;
+extern char     alignment;
+
+/* table/tabbing variables */
+extern char 	*colFmt;
+extern long   	pos_begin_kill;
 extern int      tabcounter;
 extern bool     tabbing_on;
 extern bool     g_processing_tabular;
 extern int      colCount;
 extern int      actCol;
 extern int      tabcounter;
+extern bool     tabbing_on_itself;	/* LEG220698*** lclint - really used? */
+extern bool     tabbing_return;	/* LEG220698*** lclint - really used? */
+
+
 extern bool     twocolumn;
 extern bool     titlepage;
 extern bool     g_processing_equation;
-extern long     linenumber;
-extern bool     tabbing_on_itself;	/* LEG220698*** lclint - really used? */
-extern bool     tabbing_return;	/* LEG220698*** lclint - really used? */
 extern bool     g_processing_preamble;
 extern bool     g_processing_figure;
-extern bool     g_processing_include;	
 extern bool     g_processing_eqnarray;
 extern int      g_equation_number;
 extern bool     g_show_equation_number;
@@ -127,9 +118,7 @@ extern int      g_enumerate_depth;
 extern bool     g_suppress_equation_number;
 extern bool     g_aux_file_missing;
 extern int    	g_document_type;
-extern char     g_language[20];
 extern char     g_encoding[20];
-extern int      g_verbosity_level;
 
 void fprintRTF(char *format, ...);
 void putRtfChar(char cThis);
