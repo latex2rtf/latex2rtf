@@ -417,20 +417,10 @@ getTexChar()
 	char            cThis;
 	char            cSave = g_parser_lastChar;
 	char            cSave2 = g_parser_penultimateChar;
-	int				i;
 	
 	cThis = getRawTexChar();
 	while (cThis == '%' && even(g_parser_backslashes)) {
-	
-  		/* look for %latex2rtf comment */
-  		for (i = 0; i < strlen(InterpretCommentString); i++) {
-    		cThis=getRawTexChar();
-   			if (cThis=='\n') break;
-   			if (cThis!=InterpretCommentString[i]) {
-				skipToEOL();
-				break;
-			}
-		}
+		skipToEOL();
 		g_parser_penultimateChar = cSave2;
 		g_parser_lastChar = cSave;
 		cThis = getRawTexChar();
@@ -1030,6 +1020,7 @@ getSection(char **body, char **header, char **label)
 	int bs_count = 0;
 	size_t index = 0;
 	int label_depth = 0;
+	int n_target = strlen(InterpretCommentString);
 	
 	if (section_buffer == NULL) {
 		section_buffer = malloc(section_buffer_size+1);
@@ -1068,11 +1059,25 @@ getSection(char **body, char **header, char **label)
 
 		/* slurp TeX comments */
 		if (*(section_buffer+delta) == '%' && even(bs_count)) {	
+			char * comment = section_buffer+delta+1;
+			int    n = 0;
+			
 			delta++;
+
 			while ((cNext=getRawTexChar()) != '\n') {
 				if (delta+2 >= section_buffer_size) increase_buffer_size();
 				*(section_buffer+delta) = cNext;
 				delta++;
+				n++;
+				
+				if (n == n_target) {  /* handle %latex2rtf: */
+					if (strncmp(InterpretCommentString, comment, n_target) ==0) {
+						delta -= n_target+1;       /* remove '%latex2rtf:' */
+						cNext = getRawTexChar();
+						break;
+					}
+				}
+				
 			}
 			*(section_buffer+delta) = cNext;
 		}

@@ -1,4 +1,4 @@
-/* $Id: cfg.h,v 1.15 2003/01/06 01:26:06 prahl Exp $*/
+/* $Id: cfg.h,v 1.16 2003/09/28 20:27:17 prahl Exp $*/
 
 #define DIRECT_A	0
 #define FONT_A		1
@@ -31,3 +31,4 @@ char   		   *SearchRtfCmd (const char *theCommand, int WhichArray);
 ConfigEntryT  **CfgStartIterate (int WhichCfg);
 ConfigEntryT  **CfgNext (int WhichCfg, ConfigEntryT **last);
 
+void *			open_cfg(const char *name, int quit_on_error);

@@ -108,8 +108,8 @@ try_path(const char *path, const char *file)
 	return fp;
 }
 
-static FILE *
-open_cfg(const char *name)
+void *
+open_cfg(const char *name, int quit_on_error)
 /****************************************************************************
 purpose: open config by trying multiple paths
  ****************************************************************************/
@@ -117,6 +117,8 @@ purpose: open config by trying multiple paths
 	char           *env_path,*p,*p1;
 	char		   *lib_path;
 	FILE           *fp;
+
+	diagnostics(3,"Open file in cfg directories <%s>",name);
 
 /* try path specified on the line */
 	fp=try_path(g_config_path, name);
@@ -156,6 +158,7 @@ purpose: open config by trying multiple paths
 	}
 
 /* failed ... give some feedback */
+	if (quit_on_error) {
 	diagnostics(WARNING, "Cannot open the latex2rtf .cfg files");
 	diagnostics(WARNING, "Locate the directory containing the .cfg files and");
 	diagnostics(WARNING, "   (1) define the environment variable RTFPATH, *or*");
@@ -163,7 +166,8 @@ purpose: open config by trying multiple paths
 	diagnostics(WARNING, "   (3) recompile latex2rtf with CFGDIR defined properly");
 	diagnostics(WARNING, "Current RTFPATH: %s", getenv("RTFPATH"));
 	diagnostics(WARNING, "Current  CFGDIR: %s", CFGDIR);
-	diagnostics(ERROR,   " Giving up.  Have a nice day.");
+	diagnostics(ERROR,   " Giving up.  Please don't hate me.");
+	}
 	return NULL;
 }
 
@@ -256,7 +260,7 @@ ReadCfg(void)
 
 	for (i = 0; i < CONFIG_SIZE; i++) {
 		g_cfg_filename = configinfo[i].filename;
-		fp = open_cfg(configinfo[i].filename);
+		fp = (FILE *) open_cfg(configinfo[i].filename, TRUE);
 		configinfo[i].config_info_size
 			= read_cfg(fp
 				   ,&(configinfo[i].config_info)
@@ -375,7 +379,7 @@ ReadLanguage(char *lang)
 	strcpy(langfn, lang);
 	strcat(langfn, ".cfg");
 
-	fp = open_cfg(langfn);
+	fp = (FILE *) open_cfg(langfn, TRUE);
 	free(langfn);
 
 	configinfo[LANGUAGE_A].config_info_size

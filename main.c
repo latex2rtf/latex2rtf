@@ -789,21 +789,24 @@ purpose: duplicate string --- exists to ease porting
 FILE *
 my_fopen(char *path, char *mode)
 /****************************************************************************
-purpose: opens "g_home_dir/path"
+purpose: opens "g_home_dir/path"  and 
  ****************************************************************************/
 {
 	char *name;
 	FILE *p;
 
-	diagnostics(4,"Opening <%s>, mode=[%s]",path,mode);
+	diagnostics(3,"Opening <%s>, mode=[%s]",path,mode);
 	
 	if (g_home_dir==NULL)
 		name = strdup(path);
 	else
 		name = strdup_together(g_home_dir, path);
 
-	diagnostics(4,"Opening <%s>",name);
+	diagnostics(3,"Opening <%s>",name);
 	p = fopen(name, mode);
+
+	if (p==NULL  && strstr(path,".tex") ) 
+		p = (FILE *) open_cfg(path, FALSE);
 
 	if (p==NULL) {
 	   diagnostics(WARNING, "Cannot open <%s>", name);
