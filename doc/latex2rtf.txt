@@ -1,23 +1,19 @@
-START-INFO-DIR-ENTRY
-* latex2rtf: (latex2rtf).           Convert LaTeX to RTF.
-END-INFO-DIR-ENTRY
+This file documents LaTeX2RTF , a converter that translates LaTeX  to
+RTF.
 
-   This file documents LaTeX2RTF , a converter that translates LaTeX
-to RTF.
-
-   Copyright 1998-2002 Georg Lehner, updates by Wilfried Hennings and
-Scott Prahl
+   Copyright 1998-2002 Georg Lehner, updates Copyright 1999-2003 by
+Wilfried Hennings and Scott Prahl, with contributions by Mikhail
+Polianski.
 
    Permission is granted to make and distribute verbatim copies of this
 manual provided the copyright notice and this permission notice are
 preserved on all copies.
 
-   Permission is granted to copy and distribute modified versions of
-this manual under the conditions for verbatim copying, provided also
-that the sections entitled "Copying" and "GNU General Public License"
-are included exactly as in the original, and provided that the entire
-resulting derived work is distributed under the terms of a permission
-notice identical to this one.
+   versions of this manual under the conditions for verbatim copying,
+provided also that the sections entitled "Copying" and "GNU General
+Public License" are included exactly as in the original, and provided
+that the entire resulting derived work is distributed under the terms of
+a permission notice identical to this one.
 
    Permission is granted to copy and distribute translations of this
 manual into another language, under the above conditions for modified
@@ -102,7 +98,7 @@ Obtaining LaTeX2RTF
 ===================
 
    LaTeX2RTF  is available for many Unix Platforms, for the Macintosh,
-and for MS-DOS, including all versions of MS Windows 95.
+and for MS-DOS, including all versions of MS Windows.
 
    The latest version of LaTeX2RTF  is available at SourceForge
 (http://sourceforge.net/projects/latex2rtf/) and -- with some delay --
@@ -114,9 +110,13 @@ requires Cygnus-Cygwin32 (http://sources.redhat.com/cygwin/). As the
 MS-DOS version (1.8aa and up) will also run under all MS windows
 versions, the Win32 version has been discontinued.
 
+   The MS-DOS version starting from 1.9.14a has an optional Win32 GUI
+interface (LaTeX2RTF Shell).
+
    There are a couple of people working on the LaTeX2RTF , coordinated
-by Wilfried Hennings <W.Hennings@fz-juelich.de>. Contact the mailing
-list for the latest news.
+by Wilfried Hennings <W.Hennings@fz-juelich.de>.  See the SourceForge
+(http://sourceforge.net/projects/latex2rtf/) project pages for the
+latest news.
 
 UNIX
 ====
@@ -186,6 +186,9 @@ or Windows. Instead, get the DOS port as file `latex2rtf-x.xx_dos.zip'
    The DOS distribution contains a precompiled executable which should
 run under plain DOS and also under any MS Windows system.
 
+   The MS-DOS version starting from 1.9.14a has an optional Win32 GUI
+interface (LaTeX2RTF Shell), *Note Win32 systems::.
+
    To install latex2rtf, extract all files from the zip archive to
 `C:\l2r' or to another folder (i.e. directory) of your choice,
 preserving the folder structure (winzip: check "use folder names").
@@ -196,6 +199,8 @@ the folder names (as in e.g. "Program Files"), then you need to enclose
 both the file-ID and the cfg path in double quotes, e.g.
 `"C:\Program Files\l2r\latex2rt" -P "C:\Program Files\l2r\cfg" %1 %2
 ...'
+or use the DOS filename equivalent instead, e.g.
+`C:\Progra~1\l2r\latex2rt -P C:\Progra~1\l2r\cfg %1 %2 ...'
 
    If you install LaTeX2RTF  under WinNT, Win2000 or WinXP and you want
 other users to be able to use LaTeX2RTF , you must assign the files and
@@ -220,7 +225,7 @@ prompt (with no arguments).
 
         * Save the file to its original location.
 
-   * WinNT, WinXP
+   * WinNT, Win2000, WinXP
         * Right-click "My Computer" (German: "Arbeitsplatz"), then
           select "Properties";
 
@@ -250,9 +255,11 @@ parameter separator in the EQ fields, see chapter *Note Equations::.
    If your LaTeX  document refers to external graphic files, e.g. eps,
 or you want to use the option to convert equations to bitmaps (-M# where
 # is greater than 3), you must have TeX, ImageMagick and Ghostscript
-installed.  This works only on win32 systems (win95, win98, winNT4,
-win2000, winXP) because ImageMagick is available only for win32, not
-for pure DOS.
+installed.  These programs are freely available for download at
+`http://www.miktex.org/', `http://www.imagemagick.org' and
+`http://www.ghostscript.com'.  This works only on win32 systems (Win95,
+Win98, WinME, WinNT4, Win2000, WinXP) because ImageMagick is available
+only for win32, not for pure DOS.
 
    Either the folders where TeX, ImageMagick and Ghostscript are
 installed must be in your search path, or you must edit the file
@@ -275,6 +282,46 @@ now named `latex2pn.bat' and the executable program `latex2rt.exe'.
 The other fix is now hardcoded in latex2rt.exe, making sure the DOS
 environment space in which latex2pn.bat is executed is large enough to
 store the needed variables.
+
+Win32 systems
+=============
+
+   The DOS distribution contains a graphical interface program which
+should run under win32 systems (Win9x, WinME, WinNT, Win2000, WinXP).
+
+   To install latex2rtf on a win32 system, extract all files from the
+zip archive to `C:\l2r' or to another folder (i.e. directory) of your
+choice, preserving the folder structure (winzip: check "use folder
+names").  If you extracted them to another folder (e.g. `C:\Program
+Files\l2r'), edit the file `L2R.BAT' and change the folder `C:\l2r' to
+where you put them.  If there is a blank in any of the folder names (as
+in e.g. "Program Files"), then you need to enclose both the file-ID and
+the cfg path in double quotes, e.g.
+`"C:\Program Files\l2r\latex2rt" -P "C:\Program Files\l2r\cfg" %1 %2
+...'
+or use the DOS filename equivalent instead, e.g.
+`C:\Progra~1\l2r\latex2rt -P C:\Progra~1\l2r\cfg %1 %2 ...'
+
+   If you install LaTeX2RTF  under WinNT, Win2000 or WinXP and you want
+other users to be able to use LaTeX2RTF , you must assign the files and
+folders appropriate user permissions (at least read & execute).  If you
+don't know about user permissions, put LaTeX2RTF  into `C:\Program
+Files\l2r' or what else the standard folder for installing applications
+is named (e.g. in the German version it is `C:\Programme\l2r').
+
+   To start the program execute `l2rshell.exe'
+
+   If your LaTeX  document refers to external graphic files, e.g. eps,
+or you want to use the option to convert equations to bitmaps, you must
+have LaTeX, ImageMagick and Ghostscript installed. These programs are
+freely available for download at `http://www.miktex.org/',
+`http://www.imagemagick.org' and `http://www.ghostscript.com'
+
+   Paths to LaTeX, ImageMagick and Ghostscript executables has to be
+specified in the "Environment" tab of the LaTeX2RTF Shell program. Path
+to the `l2r.bat' is optional, it is used if `l2rshell.exe' and
+`l2r.bat' are located in different directories (this option will be
+suppressed in the next versions of LaTeX2RTF Shell).
 
 Macintosh
 =========
@@ -436,38 +483,35 @@ syntax is:
      compatibility.
 
 `-M#'
-     where # selects the type of equation conversion.  Use 	
-
-
+     where # selects the type of equation conversion.  Use
     `-M1'
-          	convert displayed equations to RTF
+          convert displayed equations to RTF
 
     `-M2'
-          	convert inline equations to RTF
+          convert inline equations to RTF
 
     `-M4'
-          	convert displayed equations to bitmap
+          convert displayed equations to bitmap
 
     `-M8'
-          	convert inline equations to bitmap
+          convert inline equations to bitmap
 
     `-M16'
-          	insert Word comment field that the original equation text
+          insert Word comment field that contains the original equation
+          text
      These switches can be added together to get the desired
-     conversion.  Handy examples are 	
-
-
+     conversion.  Handy examples are
     `-M3'
-          	convert both inline and displayed equations to RTF (default)
+          convert both inline and displayed equations to RTF (default)
 
     `-M6'
-          	convert inline equations to RTF and displayed equations to
+          convert inline equations to RTF and displayed equations to
           bitmaps
 
     `-M12'
-          	convert both inline and displayed equations to bitmaps 	Bitmap
-     conversion requires that you have installed a working latex2png
-     script.  Producing bitmaps is slow.
+          convert both inline and displayed equations to bitmaps
+     Bitmap conversion requires that you have installed a working
+     latex2png script.  Producing bitmaps is slow.
 
 `-o outputfile'
      Unless an `outputfile' is specified with the `-o' option, the
@@ -504,6 +548,7 @@ syntax is:
      add the specified number of extra `}' to the end of the RTF file.
      This is useful for files that are not cleanly converted by
      LaTeX2RTF .
+
 
    With no arguments other than switches starting with a "-", LaTeX2RTF
 acts as a filter, i.e., it reads from `stdin' and writes to `stdout'.
@@ -950,7 +995,7 @@ Unimplemented Features
      `\documentstyle'
 
    * Need to finish code page support.  Some characters that need to be
-      constructed using RTF `\field' commands are not implemented.
+          constructed using RTF `\field' commands are not implemented.
 
    * Add the code to produce the corresponding chapter, section,
      and page numbering with headings and myheadings pagestyles.

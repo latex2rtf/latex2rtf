@@ -1,6 +1,6 @@
 \def\LaTeX{L\kern-.36em\raise.3ex\hbox{\sc a}\kern-.15em\TeX}
 \def\LaTeXe{\LaTeX\kern.15em 2$_\varepsilon$}
-\input texinfo	
+\input texinfo  
 @c -*-texinfo-*-
 @c %**start of header
 @setfilename latex2rtf.info
@@ -35,16 +35,12 @@ LaTeX2RTF
 @end iftex
 @end macro
 
-@dircategory TeX
-@direntry
-* latex2rtf: (latex2rtf).           Convert LaTeX to RTF.
-@end direntry
-
 @ifinfo
 This file documents @ltor{}, a converter that translates @latex{} to RTF.
 
-Copyright 1998-2002 Georg Lehner, updates by Wilfried Hennings and
-Scott Prahl
+Copyright 1998-2002 Georg Lehner, 
+updates Copyright 1999-2003 by Wilfried Hennings and Scott Prahl, 
+with contributions by Mikhail Polianski.
 
 Permission is granted to make and distribute verbatim copies of this
 manual provided the copyright notice and this permission notice are
@@ -55,9 +51,7 @@ the results, provided the printed document carries a copying permission
 notice identical to this one except for the removal of this paragraph
 (this paragraph not being relevant to the printed manual).
 
-@end ignore 
-
-Permission is granted to copy and distribute modified
+@end ignore Permission is granted to copy and distribute modified
 versions of this manual under the conditions for verbatim copying,
 provided also that the sections entitled ``Copying'' and ``GNU General
 Public License'' are included exactly as in the original, and provided
@@ -78,11 +72,12 @@ A converter from @latex{} to RTF
 
 Edition 0.6
 @author Georg Lehner,
-updated by Wilfried Hennings and Scott Prahl
+updated by Wilfried Hennings and Scott Prahl,
+with contributions by Mikhail Polianski
 
 @page
 @vskip 0pt plus 1 filll
-Copyright @copyright{} 1998-2002 Georg Lehner, Wilfried Hennings, Scott Prahl
+Copyright @copyright{} 1998-2003 Georg Lehner, Wilfried Hennings, Scott Prahl
 
 Permission is granted to make and distribute verbatim copies of this
 manual provided the copyright notice and this permission notice are
@@ -184,6 +179,7 @@ newsgroups, etc. @uref{http://www.primate.wisc.edu/}
 * Obtaining LaTeX2RTF ::
 * UNIX ::
 * DOS or Windows ::
+* Win32 systems ::
 * Macintosh ::
 * Problems Compiling ::
 * Problems with make check ::
@@ -202,7 +198,7 @@ can find @acronym{HTML} and @acronym{PDF} versions of the manual there as well.
 @section Obtaining LaTeX2RTF
 
 @ltor{} is available for many Unix Platforms, for the Macintosh, and for MS-DOS, including
-all versions of MS Windows 95.
+all versions of MS Windows.
 
 The latest version of @ltor{} is available at 
 @uref{http://sourceforge.net/projects/latex2rtf/,SourceForge} and --- with some delay --- on
@@ -213,9 +209,12 @@ an i386 processor or better. The Win32 Version requires
 @uref{http://sources.redhat.com/cygwin/,Cygnus-Cygwin32}. As the MS-DOS version (1.8aa and
 up) will also run under all MS windows versions, the Win32 version has been discontinued.
 
+The MS-DOS version starting from 1.9.14a has an optional Win32 GUI interface (LaTeX2RTF Shell).
+
 There are a couple of people working on the @ltor{}, coordinated by
-@email{W.Hennings@@fz-juelich.de, Wilfried Hennings}. Contact the mailing list for the
-latest news.
+@email{W.Hennings@@fz-juelich.de, Wilfried Hennings}. 
+See the @uref{http://sourceforge.net/projects/latex2rtf/,SourceForge} 
+project pages for the latest news.
 
 @node UNIX, DOS or Windows, Obtaining LaTeX2RTF, Installation
 @section UNIX
@@ -275,7 +274,7 @@ is only necessary if you move the directory containing the @file{.cfg} files.
 Just define @env{RTFPATH} to be the path to the new location.
 
 
-@node DOS or Windows, Macintosh, UNIX, Installation
+@node DOS or Windows, Win32 systems, UNIX, Installation
 @section DOS or Windows
 
 The @acronym{UNIX} and Mac distributions do not contain an executable for DOS 
@@ -286,6 +285,9 @@ or Windows. Instead, get the DOS port as file @file{latex2rtf-x.xx_dos.zip}
 The DOS distribution contains a precompiled executable which should run 
 under plain DOS and also under any MS Windows system.
 
+The MS-DOS version starting from 1.9.14a has an optional Win32 GUI interface 
+(LaTeX2RTF Shell), @xref{Win32 systems}.
+
 To install latex2rtf, extract all files from the zip archive to @file{C:\l2r}
 or to another folder (i.e. directory) of your choice,
 preserving the folder structure (winzip: check "use folder names").@*
@@ -295,7 +297,9 @@ and change the folder @file{C:\l2r} to where you put them.
 If there is a blank in any of the folder names
 (as in e.g. "Program Files"), then you need to enclose both
 the file-ID and the cfg path in double quotes, e.g. @*
-@file{"C:\Program Files\l2r\latex2rt" -P "C:\Program Files\l2r\cfg" %1 %2 ...}
+@file{"C:\Program Files\l2r\latex2rt" -P "C:\Program Files\l2r\cfg" %1 %2 ...}@*
+or use the DOS filename equivalent instead, e.g. @*
+@file{C:\Progra~1\l2r\latex2rt -P C:\Progra~1\l2r\cfg %1 %2 ...}
 
 If you install @ltor{} under WinNT, Win2000 or WinXP and 
 you want other users to be able to use @ltor{}, you must assign the
@@ -327,7 +331,7 @@ At the end of that file, add the line @*
 Save the file to its original location.
 @end itemize
 @item
-WinNT, WinXP
+WinNT, Win2000, WinXP
 @itemize
 @item
 Right-click "My Computer" (German: "Arbeitsplatz"), then select "Properties";
@@ -357,9 +361,10 @@ as parameter separator in the EQ fields, see chapter @ref{Equations}.
 
 If your @latex{} document refers to external graphic files, e.g. eps, 
 or you want to use the option to convert equations to bitmaps (-M# where
-# is greater than 3),
-you must have TeX, ImageMagick and Ghostscript installed.
-This works only on win32 systems (win95, win98, winNT4, win2000, winXP)
+# is greater than 3), you must have TeX, ImageMagick and Ghostscript installed. 
+These programs are freely available for download at @uref{http://www.miktex.org/}, 
+@uref{http://www.imagemagick.org} and @uref{http://www.ghostscript.com}.
+This works only on win32 systems (Win95, Win98, WinME, WinNT4, Win2000, WinXP)
 because ImageMagick is available only for win32, not for pure DOS.
 
 Either the folders where TeX, ImageMagick and Ghostscript are installed
@@ -384,7 +389,47 @@ space in which latex2pn.bat is executed is large enough to store the needed
 variables.
 
 
-@node Macintosh, Problems Compiling, DOS or Windows, Installation
+@node Win32 systems, Macintosh, DOS or Windows, Installation
+@section Win32 systems
+
+The DOS distribution contains a graphical interface program which should run 
+under win32 systems (Win9x, WinME, WinNT, Win2000, WinXP).
+
+To install latex2rtf on a win32 system, extract all files from the zip archive to @file{C:\l2r}
+or to another folder (i.e. directory) of your choice,
+preserving the folder structure (winzip: check "use folder names"). 
+If you extracted them to another folder (e.g. @file{C:\Program Files\l2r}),
+edit the file @file{L2R.BAT} and change the folder @file{C:\l2r} to where you put them.
+If there is a blank in any of the folder names
+(as in e.g. "Program Files"), then you need to enclose both
+the file-ID and the cfg path in double quotes, e.g. @*
+@file{"C:\Program Files\l2r\latex2rt" -P "C:\Program Files\l2r\cfg" %1 %2 ...}@*
+or use the DOS filename equivalent instead, e.g. @*
+@file{C:\Progra~1\l2r\latex2rt -P C:\Progra~1\l2r\cfg %1 %2 ...}
+
+If you install @ltor{} under WinNT, Win2000 or WinXP and 
+you want other users to be able to use @ltor{}, you must assign the
+files and folders appropriate user permissions (at least read & execute).
+If you don't know about user permissions, put @ltor{} into
+@file{C:\Program Files\l2r} or what else the standard folder 
+for installing applications is named (e.g. in the German version it 
+is @file{C:\Programme\l2r}). 
+
+To start the program execute @file{l2rshell.exe}
+
+If your @latex{} document refers to external graphic files, e.g. eps, 
+or you want to use the option to convert equations to bitmaps,
+you must have LaTeX, ImageMagick and Ghostscript installed. These programs are 
+freely available for download at @uref{http://www.miktex.org/}, 
+@uref{http://www.imagemagick.org} and @uref{http://www.ghostscript.com}
+
+Paths to LaTeX, ImageMagick and Ghostscript executables has to be specified in the 
+"Environment" tab of the LaTeX2RTF Shell program. Path to the @file{l2r.bat} is optional, 
+it is used if @file{l2rshell.exe} and @file{l2r.bat} are located in different directories 
+(this option will be suppressed in the next versions of LaTeX2RTF Shell).
+
+
+@node Macintosh, Problems Compiling, Win32 systems, Installation
 @section Macintosh
 
 If you want a MacOS X version, make sure that you have installed the developer tools CD
@@ -541,27 +586,27 @@ backwards compatibility.
 
 @item -M#
 where # selects the type of equation conversion.  Use
-	@table @code
-	@item -M1	
-	convert displayed equations to RTF
-	@item -M2	
-	convert inline equations to RTF
-	@item -M4	
-	convert displayed equations to bitmap
-	@item -M8	
-	convert inline equations to bitmap
-	@item -M16	
-	insert Word comment field that the original equation text
-	@end table
+    @table @code
+    @item -M1   
+    convert displayed equations to RTF
+    @item -M2   
+    convert inline equations to RTF
+    @item -M4   
+    convert displayed equations to bitmap
+    @item -M8   
+    convert inline equations to bitmap
+    @item -M16  
+    insert Word comment field that contains the original equation text
+    @end table
 These switches can be added together to get the desired conversion.  Handy examples are
-	@table @code
-	@item -M3	
-	convert both inline and displayed equations to RTF (default)
-	@item -M6	
-	convert inline equations to RTF and displayed equations to bitmaps
-	@item -M12	
-	convert both inline and displayed equations to bitmaps
-	@end table
+    @table @code
+    @item -M3   
+    convert both inline and displayed equations to RTF (default)
+    @item -M6   
+    convert inline equations to RTF and displayed equations to bitmaps
+    @item -M12  
+    convert both inline and displayed equations to bitmaps
+    @end table
 Bitmap conversion requires that you have installed a working latex2png script.
 Producing bitmaps is slow.
 
@@ -1069,7 +1114,7 @@ available in the original sources and documentation.
 @itemize @bullet
 @item @ltor{} ignores some of the optional parameters of @code{\documentstyle} 
 @item Need to finish code page support.  Some characters that need to be
-	  constructed using RTF @code{\field} commands are not implemented.
+      constructed using RTF @code{\field} commands are not implemented.
 @item Add the code to produce the corresponding chapter, section,
       and page numbering with headings and myheadings pagestyles. Implement
       @code{\markboth} and @code{\markright}.
@@ -1190,5 +1235,3 @@ Georg's todo list
 
 @contents
 @bye
-
-
