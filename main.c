@@ -101,7 +101,7 @@ bool			g_equation_comment		  = FALSE;
 
 double			g_png_equation_scale=1.22; 
 double			g_png_figure_scale=1.35;
-
+bool			g_latex_figures = FALSE;
 
 int				indent = 0;
 char			alignment = JUSTIFIED;	/* default for justified: */
@@ -133,7 +133,7 @@ int main(int argc, char **argv)
 	SetEndianness();
 	progname = argv[0];
 	optind = 1;
-	while ((c = getopt(argc, argv, "lhvSWZ:o:a:b:d:i:s:C:D:M:P:T:")) != EOF) {
+	while ((c = getopt(argc, argv, "lhvFSWZ:o:a:b:d:i:s:C:D:M:P:T:")) != EOF) {
 		switch (c) {
 		case 'a':
 			g_aux_name = optarg;
@@ -167,6 +167,9 @@ int main(int argc, char **argv)
 			sscanf(optarg, "%d", &g_dots_per_inch);
 			if (g_dots_per_inch < 25 || g_dots_per_inch >600)
 				fprintf(stderr, "Dots per inch must be between 25 and 600 dpi\n");
+			break;
+		case 'F':
+			g_latex_figures = TRUE;
 			break;
 		case 'M':
 			sscanf(optarg, "%d", &x);

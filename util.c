@@ -158,3 +158,45 @@ ExtractLabelTag(char *text)
 }
 
 
+char *
+ExtractAndRemoveTag(char *tag, char *text)
+/******************************************************************************
+  purpose: remove 'tag{contents}' from text and return contents
+           note that tag should typically be "\\caption"
+ ******************************************************************************/
+{
+	char *s, *contents, *start, *end;
+
+	s = text;
+	diagnostics(1, "target tag = <%s>", tag);
+	diagnostics(1, "original text = <%s>", text);
+
+	while (s) {					/* find start of caption */
+		start = strstr(s,tag);
+		if (!start) return NULL;
+		s = start+strlen(tag);
+		if (*s == ' ' || *s == '{') break;
+	}
+	    
+	PushSource(NULL,s);
+	contents = getBraceParam();
+	PopSource();
+	
+    if (!contents) return NULL;
+    
+    end = strstr(s,contents)+strlen(contents)+1; /* end just after '}' */
+
+	free(contents);
+	contents = my_strndup(start,end-start);
+	
+    do *start++=*end++; while (*end);			/* erase "tag{contents}" */
+	*start='\0';
+	
+/*	end = text+strlen(text) -1;
+	while (end>text && (*end==' ' || *end=='\n')) {*end='\0'; *end--;}
+*/
+	diagnostics(1, "final contents = <%s>", contents);
+	diagnostics(1, "final text = <%s>", text);
+
+	return contents;
+}

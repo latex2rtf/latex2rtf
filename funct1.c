@@ -44,6 +44,7 @@ Authors:
 #include "definitions.h"
 #include "preamble.h"
 #include "xref.h"
+#include "equation.h"
 
 extern bool     twocolumn;	/* true if twocolumn-mode is enabled */
 extern int      indent;		/* includes the left margin e.g. for itemize-commands */
@@ -1409,7 +1410,20 @@ CmdFigure(int code)
 		if (loc) free(loc);
 		figure_contents = getTexUntil(endfigure, TRUE);
 		g_figure_label = ExtractLabelTag(figure_contents);
-		ConvertString(figure_contents);	
+		if (g_latex_figures) {
+			char *caption, *label;
+			caption=ExtractAndRemoveTag("\\caption",figure_contents);
+			label=ExtractAndRemoveTag("\\label",figure_contents);
+			CmdEndParagraph(0);
+			CmdVspace(1);
+			CmdIndent(INDENT_NONE);
+			CmdStartParagraph(0);
+			WriteLatexAsBitmap("\\begin{figure}",figure_contents,"\\end{figure}");
+			ConvertString(caption);
+			if (label) free(label);
+			if (caption) free(caption);
+		} else 
+			ConvertString(figure_contents);	
 		ConvertString(endfigure);	
 		free(figure_contents);		
 	} else {

@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.64 2002/11/05 15:17:04 prahl Exp $
+# $Id: Makefile,v 1.65 2002/11/07 02:06:56 prahl Exp $
 
 CC=gcc
 MKDIR=mkdir -p
@@ -34,7 +34,8 @@ CFG_INSTALL=$(PREFIX)/share/latex2rtf/cfg
 
 # Nothing to change below this line
 
-CFLAGS:=$(CFLAGS) -g -Wall -fsigned-char
+#CFLAGS:=$(CFLAGS) -g -Wall -fsigned-char
+CFLAGS:=$(CFLAGS) -g -Wall
 
 VERSION="`scripts/version`"
 
@@ -83,7 +84,7 @@ TEST=   test/Makefile test/bracecheck \
 	test/defs.tex test/proffois.tex test/excalibur.tex test/qualisex.tex test/include.tex \
 	test/include1.tex test/include2.tex test/include3.tex test/ch.tex test/spago1.tex \
 	test/theorem.tex test/picture.tex test/russian.tex test/eqns-koi8.tex \
-	test/tabbing.tex
+	test/tabbing.tex test/figtest.tex test/figtest.eps
 
 OBJS=l2r_fonts.o direct.o encode.o commands.o stack.o funct1.o tables.o \
 	chars.o ignore.o cfg.o main.o util.o parser.o lengths.o counters.o \

@@ -38,6 +38,7 @@ Authors:
 #include "commands.h"
 #include "convert.h"
 #include "equation.h"
+#include "funct1.h"
 
 #define POINTS_PER_M 2834.65
 
@@ -858,7 +859,7 @@ PutGifFile(char *s)
 }
 
 void
-PutLatexFile(char *s)
+PutLatexFile(char *s, double scale, char *options)
 /******************************************************************************
  purpose   : Convert LaTeX to Bitmap and insert in RTF file
  ******************************************************************************/
@@ -887,11 +888,11 @@ PutLatexFile(char *s)
 		else
 			sprintf(cmd, "latex2png -d %d -H \"%s\" %s", resolution, g_home_dir, s);	
 
-		err = system(cmd);
 		diagnostics(1, "cmd = <%s>", cmd);
+		err = system(cmd);
 		if (err==0){
 			GetPngSize(png, &width, &height);
-			diagnostics(4, "png size width=%d height =%d", width, height);
+			diagnostics(1, "png size width=%d height =%d", width, height);
 		}
 		
 		if(width>max || height>max){  
@@ -902,7 +903,7 @@ PutLatexFile(char *s)
 	} while (!err && resolution>10 && ( (width>max) || (height>max)) );
 	
 	if (err==0)
-		PutPngFile(png, g_png_equation_scale*72.0/resolution, TRUE);
+		PutPngFile(png, scale*72.0/resolution, TRUE);
 	
 	free(png);
 	free(cmd);
@@ -921,20 +922,49 @@ angle=angle,
 scale=factor,
 clip=true/false,
 draft=true/false.
+
+code=0 => includegraphics
+code=1 => epsffile
+code=2 => epsfbox
+code=3 => \BoxedSPSF
+code=4 => psfig
 */
 {
 	char           *options;
 	char           *filename;
 
-	/* could be \includegraphics*[0,0][5,5]{file.pict} */
-
-	options = getBracketParam();
-	if (options) free(options);
-
-	options = getBracketParam();
-	if (options) free(options);
+	if (code==0) { /* could be \includegraphics*[0,0][5,5]{file.pict} */
+		options = getBracketParam();
+		if (options) free(options);
+	
+		options = getBracketParam();
+		if (options) free(options);
+	}
+	
+	if (code==2) { /* \epsfbox[0 0 30 50]{filename.ps} */
+		options = getBracketParam();
+		if (options) free(options);
+	}
+	
 	
 	filename = getBraceParam();
+	
+	if (code==3) {		/* \BoxedEPSF{filename [scaled nnn]} */
+		char *s= strchr(filename,' ');
+		if (s) *s='\0';
+	}
+		
+	if (code==4) {		/* \psfig{figure=filename,height=hhh,width=www} */
+		char *s, *t;
+		s = strstr(filename,"figure=");
+		if (!s) return;
+		s += strlen("figure=");
+		t = strchr(s,',');
+		if (t) *t='\0';
+		t = strdup(s);
+		free(filename);
+		filename = t;
+	}
 	
 	if (strstr(filename, ".pict") || strstr(filename, ".PICT"))
 		PutPictFile(filename, FALSE);
@@ -989,4 +1019,32 @@ CmdPicture(int code)
 		free(post);
 		free(picture);
 	}
+}
+
+void 
+CmdMusic(int code)
+/******************************************************************************
+  purpose: Process \begin{music} ... \end{music} environment
+ ******************************************************************************/
+{
+	char *contents;
+	char endmusic[] = "\\end{music}";
+
+	if (!(code & ON)) {
+		diagnostics(4, "exiting CmdMusic");
+		return;
+	}
+
+	diagnostics(4, "entering CmdMusic");
+	contents = getTexUntil(endmusic, TRUE);
+	CmdEndParagraph(0);
+	CmdVspace(1);
+	CmdIndent(INDENT_NONE);
+	CmdStartParagraph(0);
+	WriteLatexAsBitmap("\\begin{music}",contents,endmusic);
+	ConvertString(endmusic);	
+	CmdEndParagraph(0);
+	CmdVspace(1);
+	CmdIndent(INDENT_INHIBIT);
+	free(contents);		
 }

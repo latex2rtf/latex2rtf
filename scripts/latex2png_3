@@ -56,36 +56,6 @@ cd $dir
 rm -f $name.png
 rm -f $name.dvi
 
-latex  --interaction batchmode $1 > /dev/null
-
-if [ ! -e "$name.dvi" ] ; then
- 	error "ERROR: latex failed to create $name.dvi from $name.tex"
-	exit 1
-fi
-
-dvips -E -o $name.eps $name.dvi >& /dev/null
-
-if [ ! -e "$name.eps" ] ; then
- 	error "ERROR: dvips failed to create $name.eps from $name.dvi"
-	exit 1
-fi
-
-convert -crop 0x0 -density ${opt_d}x${opt_d} $name.eps $name.png
-
-if [ ! -e "$name.png" ] ; then
- 	error "ERROR: ImageMagick convert failed to create $name.png from $name.eps"
-	exit 1
-fi
-
-if [ $opt_k -eq 0 ] ; then
-	rm -f $name.dvi
-	rm -f $name.aux
-	rm -f $name.log
-	rm -f $name.eps
-fi
-
-exit 0
-
 latex  --interaction batchmode $name > /dev/null
 
 if [ ! -e "$name.dvi" ] ; then

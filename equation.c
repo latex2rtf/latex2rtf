@@ -214,14 +214,18 @@ WriteEquationAsComment(char *pre, char *eq, char *post)
 }
 
 static char *
-SaveEquationAsFile(char *pre, char *eq, char *post)
+SaveEquationAsFile(char *pre, char *eq_with_spaces, char *post)
 {	
 	FILE * f;
 	char name[15];
-	char *tmp_dir, *fullname, *texname;
+	char *tmp_dir, *fullname, *texname, *eq;
 	static int file_number = 0;
 	
-	/* create needed file names */
+	if (!pre || !eq_with_spaces || !post) return NULL;
+	
+	eq = strdup_noendblanks(eq_with_spaces);
+
+/* create needed file names */
 	file_number++;
 	tmp_dir = getTmpPath();
 	sprintf(name, "l2r_%04d", file_number);
@@ -240,7 +244,7 @@ SaveEquationAsFile(char *pre, char *eq, char *post)
 		if (strstr(pre, "equation"))
 			fprintf(f, "$$%s$$", eq);
 		else
-			fprintf(f, "%s%s%s", pre, eq, post);
+			fprintf(f, "%s\n%s\n%s", pre, eq, post);
 		fprintf(f, "\n\\end{document}");
 		fclose(f);
 	} else {
@@ -248,6 +252,7 @@ SaveEquationAsFile(char *pre, char *eq, char *post)
 		fullname = NULL;
 	}
 	
+	free(eq);
 	free(tmp_dir);
 	free(texname);
 	return(fullname);
@@ -261,9 +266,16 @@ WriteLatexAsBitmap(char *pre, char *eq, char *post)
  ******************************************************************************/
 {
 	char *p, *name;
+	double scale;
 	
 	diagnostics(4, "Entering WriteEquationAsBitmap");
 
+	if (eq == NULL) return;
+		
+	scale = g_png_equation_scale;
+	if (strstr(pre,"music") || strstr(pre,"figure") || strstr(pre,"picture"))
+		scale = g_png_figure_scale;
+		
 /* suppress bitmap equation numbers in eqnarrays with zero or one \label{}'s*/
 	if (strcmp(pre,"\\begin{eqnarray}")==0){
 		p = strstr(eq, "\\label");
@@ -276,7 +288,7 @@ WriteLatexAsBitmap(char *pre, char *eq, char *post)
 	} else
 		name = SaveEquationAsFile(pre,eq,post);
 	
-	PutLatexFile(name);
+	PutLatexFile(name,scale,"");
 }
 
 static void 

@@ -201,6 +201,10 @@ static CommandArray commands[] = {
 	{"onecolumn", CmdColumn, One_Column},
 	{"twocolumn", CmdColumn, Two_Column},
 	{"includegraphics", CmdGraphics, 0},
+	{"epsffile", CmdGraphics, 1},
+	{"epsfbox", CmdGraphics, 2},
+	{"BoxedEPSF", CmdGraphics, 3},
+	{"psfig", CmdGraphics, 4},
 	{"includegraphics*", CmdGraphics, 0},
 	{"moveleft", CmdLength, 0},
 	{"moveright", CmdLength, 0},
@@ -517,6 +521,7 @@ static CommandArray params[] = {
 	{"figure*", CmdFigure, FIGURE_1},
 	{"picture", CmdPicture, 0},
 	{"minipage", CmdMinipage, 0},
+	{"music", CmdMusic, 0},
 
 	{"quote", CmdQuote, QUOTE},
 	{"quotation", CmdQuote, QUOTATION},

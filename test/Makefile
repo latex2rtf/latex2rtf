@@ -12,7 +12,7 @@ all:	accentchars.rtf array.rtf cite.rtf eqns.rtf fonts.rtf fontsize.rtf \
 	enc_cp1251.rtf   enc_cp855.rtf enc_cp866.rtf    enc_koi8-r.rtf enc_koi8-u.rtf \
 	enc_maccyr.rtf enc_macukr.rtf eqns-koi8.rtf \
 	defs.rtf qualisex.rtf ttgfsr7.rtf excalibur.rtf include.rtf ch.rtf\
-	spago1.rtf theorem.rtf picture.rtf tabbing.rtf
+	spago1.rtf theorem.rtf picture.rtf tabbing.rtf figtest.rtf
 
 LATEX= latex
 BIBTEX= bibtex
@@ -48,6 +48,12 @@ ttgfsr7.rtf: ttgfsr7.tex
 	$(LATEX) ttgfsr7 > latex.log
 	$(LATEX) ttgfsr7 > latex.log
 	$(LATEX2RTF) $(OPTIONS) ttgfsr7
+
+figtest.rtf: figtest.tex figtest.eps
+	$(LATEX) figtest > latex.log
+	$(LATEX) figtest > latex.log
+	echo "only works if latex2png is installed"
+	$(LATEX2RTF) $(OPTIONS) -F figtest
 
 check:
 	./bracecheck

@@ -1,3 +1,238 @@
+2002-11-05 07:17  prahl
+
+ Removed -ansi and added -fsigned-char to CFLAGS
+	Add need explict cast in parser.c to avoid warning
+	Explicitly set tabbing and tabular in those environments
+	latex russian.tex before testing
+	
+2002-10-15 00:17  whennings
+
+ In Makefile
+	option "-ansi" deactivated
+	option "-fsigned-char" added, needed on IBM SP/2 (AIX)
+	
+2002-10-07 07:55  prahl
+
+ Added examples to help message.  Added tabbing.tex to tarball
+	
+2002-09-30 02:18  whennings
+
+ Updated documentation:
+	In Makefile, default compiler being "gcc".
+	On IBM AIX, use "gmake" instead of "make".
+	DOS/Windows: Using 4NT.exe probably causes problem.
+	
+2002-09-29 21:16  prahl
+
+ Slight reorganization of texinfo.
+	Changes to -v and -h commands in preparation for using help2man to automate
+	creation of man pages.
+	
+2002-09-24 18:34  prahl
+
+ rename strndup to mystrndup to avoid function found on some systems
+	
+2002-09-24 17:22  prahl
+
+ Fix typo in Makefile
+	
+2002-09-24 06:59  prahl
+
+ Another test case for tabbing.tex
+	
+2002-09-24 06:54  prahl
+
+ Another round of patches for tabbing.  Works now, but column widths still
+	need work.  Added tabbing.tex to files used for testing.
+	
+2002-09-23 07:34  prahl
+
+ Another set of code changes to support tabbing.  Still not fully functional.
+	
+2002-09-22 14:53  prahl
+
+ Fix to use \fcharset255 with codepage 852
+	
+2002-09-22 14:48  prahl
+
+ Added support of -se and -sf switches to scale equations and figures.  Patch
+	by Bohumir Horeni.  Also change to xref, improved bitmap sizing in graphics.c
+	and added \bmod operator to direct.cfg.
+	
+2002-09-21 17:47  prahl
+
+ Add HAS_DOS_SEP for OS2 support.  By Bohumir Horeni
+	
+2002-09-21 16:56  prahl
+
+ added raw1253 (greek) and raw437 (ibm pc) to codepage support
+	
+2002-09-21 16:26  prahl
+
+ Added raw, raw852, and raw1250 as options for -C
+	base on suggestion and patch by Bohumir Horeni
+	
+2002-09-21 11:20  prahl
+
+ Makefile improvements for OS2 and win32 by Bohumir Horeni
+	More work on the tabbing environment.  Still needs work.
+	
+2002-09-21 08:13  prahl
+
+ Bugfixes from Bohumir Horeni
+	
+2002-09-10 02:34  whennings
+
+ Added to documentation that calling latex2png.bat
+	may not work under DOS/Win when using command processor
+	other than command.com
+	
+2002-09-02 04:36  whennings
+
+ latex2png.bat changed to avoid unnecessary error messages
+	like "Bad command or file name"
+	caused by "del %fn%.dvi" and "del %fn%.png" commands:
+	"IF EXIST %fn%.dvi " added.
+	
+2002-08-04 21:05  prahl
+
+ First round of corrections for tabbing environment
+	
+2002-07-27 15:04  prahl
+
+ Added better support for \lim, \liminf, and \limsup when subscript is present
+	Patch based on suggestions by ninov
+	
+2002-07-25 03:00  whennings
+
+ added to documentation recommendation to use gcc and gmake in case of problems
+	
+2002-07-25 02:09  whennings
+
+ added "#include <stdio.h>" to solve compile error on IBM AIX
+	
+2002-07-23 09:08  whennings
+
+ added to documentation how to install under WinNT and XP
+	
+2002-06-23 08:06  prahl
+
+ Assign copyright to The Free Software Foundation
+	
+2002-06-23 08:00  prahl
+
+ Add GNU copyright to all source files
+	
+2002-06-22 17:10  prahl
+
+ Support for \cline in tabular environment
+	
+2002-05-07 22:07  prahl
+
+ Enhancements to file inclusion.
+	wmf inclusion tested and working
+	eps_to_pict tested and working but not as hoped
+	
+2002-05-05 23:02  prahl
+
+ Skeleton for eps_to_wmf function added.
+	
+2002-05-05 15:40  prahl
+
+ Untested routine to convert eps files to pict format
+	
+2002-05-05 12:37  prahl
+
+ Fixed bugs in EMF file handling
+	
+2002-05-05 11:11  prahl
+
+ Added support for including wmf and emf files.
+	
+2002-05-04 20:45  prahl
+
+ Added structs for embedding EPS files in EMF to graphics.c
+	
+2002-05-04 11:41  prahl
+
+ A few more changes for cyrillic support
+	
+2002-05-04 11:12  prahl
+
+ Remove debugging messages
+	Remove some unneeded warnings
+	
+2002-05-04 10:52  prahl
+
+ Tabular support for horiz and vert rules
+	More test cases in test/tabular.tex
+	
+2002-05-02 22:39  prahl
+
+ Yet more fixes for \multicolumn
+	Improved tabular.tex as a test file
+	
+2002-05-02 07:47  prahl
+
+ Added strndup
+	Fixed bug in strdup_noendblanks
+	Improved handling of \multicolumn
+	
+2002-04-28 11:45  prahl
+
+ Changes to allow cp1252 (latin1) and cp1251 (cyrillic) to coexist.
+	
+2002-04-27 15:53  prahl
+
+ Leak fixes.
+	
+2002-04-27 09:05  prahl
+
+ Fix for $1\over2$ trashing memory
+	
+2002-04-26 20:55  prahl
+
+ Mihail Baikov's fixes for cyrillic support
+	
+2002-04-24 07:31  prahl
+
+ First pass at support for cyrillic fonts.  These don't quite work yet.
+	
+2002-04-21 15:49  prahl
+
+ More tabular fixes.
+	Weird malloc problem under OSX
+	Added man file for latex2png
+	More robust code for user environment expansions
+	
+2002-04-13 12:59  prahl
+
+ Small fixes for tabular environment
+	
+2002-04-13 11:38  prahl
+
+ Fixes for letter format
+	
+2002-04-13 11:20  prahl
+
+ Fix bug opening file in another directory
+	Begin cleaning up table translation code
+	Change PushSource to return 0 when successful
+	Change memcpy to memmove for safety
+	
+2002-04-05 20:37  prahl
+
+ Eliminate more warnings
+	Fix bugs when using my_getopt
+	Create my_fopen to gather path mangling in one place
+	
+2002-04-03 19:11  prahl
+
+ Remove diagnostic label warning
+	support \dfrac (mostly)
+	Eliminate spurious make problem #define in main.h
+	Fix warnings for gcc 2.95.2 on solaris
+	
 2002-04-03 07:44  prahl
 
  By default use our own strdup.  Simplifies porting.
@@ -839,7 +1074,7 @@
 2001-09-26 07:02  prahl
 
  Patch by Chris Lawrence to fix off-by-one error in cfg.c
-	This fixes bug when CFGDIR does not end with a '/'
+	This fixes bug when LIBDIR does not end with a '/'
 	
 2001-09-25 22:34  prahl
 
@@ -978,17 +1213,12 @@
 
  Revised fonts.cfg, removed Ferdsch, now set the default font correctly
 	and begun the process of eliminating the $Log: ChangeLog,v $
-	and begun the process of eliminating the Revision 1.16  2002/04/21 22:49:59  prahl
-	and begun the process of eliminating the More tabular fixes.
-	and begun the process of eliminating the Weird malloc problem under OSX
-	and begun the process of eliminating the Added man file for latex2png
-	and begun the process of eliminating the More robust code for user environment expansions
-	and begun the process of eliminating the
-	and begun the process of eliminating the Revision 1.15  2002/04/04 03:11:24  prahl
-	and begun the process of eliminating the Remove diagnostic label warning
-	and begun the process of eliminating the support \dfrac (mostly)
-	and begun the process of eliminating the Eliminate spurious make problem #define in main.h
-	and begun the process of eliminating the Fix warnings for gcc 2.95.2 on solaris
+	and begun the process of eliminating the Revision 1.17  2002/11/07 02:06:56  prahl
+	and begun the process of eliminating the Support for processing figures using latex and including the result as a
+	and begun the process of eliminating the png in the RTF file.  This is the new (undocumented) option -F.  This
+	and begun the process of eliminating the check-in also adds support for processing \begin{music}...\end{music}
+	and begun the process of eliminating the in the same way.  I also see that some of the partially enhanced latex2png
+	and begun the process of eliminating the files have also made their way into this check-in as well.
 	and begun the process of eliminating the comments in files.
 	
 2001-08-12 14:15  prahl

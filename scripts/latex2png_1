@@ -9,7 +9,11 @@ latex2png -- convert latex file to PNG image
 
 USAGE: latex2png [-d density] [-h] [-k] [-H home dir] latex_file
 
-OPTIONS: -d density (where density is in pixels per inch)
+OPTIONS: 
+         -c             color images
+         -d density 	(where density is in pixels per inch)
+         -g             gray images
+         -i             inline equations with leading dot
          -h         	this help text
          -k         	keep intermediate files (for debugging)
          -H /home/dir	directory to be included in search path
@@ -20,11 +24,18 @@ HELP
     exit 0
 }
 
+LATEX=latex
 opt_d=144
+opt_i=0
 opt_k=0
 home_dir="."
+device="pngmono"
+mult="0.9"
 while [ -n "$1" ]; do
 case $1 in
+    -g) device="pnggray" ; shift 1;;
+    -c) device="png16m" ; shift 1;;
+    -i) opt_i=1 ; shift 1;;
     -h) help;shift 1;;
     -k) opt_k=1;shift 1;; # variable opt_f is set
     -d) opt_d=$2;shift 2;; # -d takes an argument -> shift by 2
@@ -54,7 +65,7 @@ cd $start_dir
 cd $dir
 rm -f $name.png
 rm -f $name.dvi
-latex  --interaction batchmode $1 > /dev/null
+$LATEX  --interaction batchmode $1 > /dev/null
 
 if [ ! -e "$name.dvi" ] ; then
  	error "ERROR: latex failed to create $name.dvi from $name.tex"
