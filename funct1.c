@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.59 2002/02/24 20:28:07 prahl Exp $ 
+/* $Id: funct1.c,v 1.60 2002/02/27 04:32:05 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -1103,16 +1103,14 @@ CmdBox(int code)
 	int mode = GetTexMode();
 	
 	diagnostics(4, "Entering CmdBox()");
-	if (mode == MODE_MATH || mode == MODE_DISPLAYMATH)
-		fprintRTF("{\\i0 ");	/* brace level without math italics */
+	if (g_processing_fields) g_processing_fields++;	/* hack to stop fields within fields */
 	
 	SetTexMode(MODE_RESTRICTED_HORIZONTAL);
 	diagnostics(4, "Entering Convert() from CmdBox");
 	Convert();
 	diagnostics(4, "Exiting Convert() from CmdBox");
 	
-	if (mode == MODE_MATH || mode == MODE_DISPLAYMATH)
-		fprintRTF("}");	/* brace level without math italics */
+	if (g_processing_fields) g_processing_fields--;	
 
 	SetTexMode(mode);
 	diagnostics(4, "Exited CmdBox()");

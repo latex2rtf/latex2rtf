@@ -27,6 +27,46 @@ CmdNonumber(int code)
 		g_suppress_equation_number = TRUE;
 }
 
+static char *
+SlurpDollarEquation(void)
+/******************************************************************************
+ purpose   : reads an equation delimited by $...$
+ 			 this routine is needed to handle $ x \mbox{if $x$} $ 
+ ******************************************************************************/
+{
+int brace=0;
+int slash=0;
+int i;
+char *s, *t, *u;
+
+	s = malloc(1024*sizeof(char));
+	t = s;
+	
+	for (i=0; i<1024; i++) {
+		*t = getTexChar();
+		if (*t == '\\') 
+			slash++;
+		else if (*t == '{' && (slash % 2) == 0 &&
+			!(i>5 && strncmp(t-5,"\\left{", 6)==0) &&
+			!(i>6 && strncmp(t-6,"\\right{", 7)==0))
+				brace++;
+		else if (*t == '}' && (slash % 2) == 0 &&
+			!(i>5 && !strncmp(t-5,"\\left}", 6)) &&
+			!(i>6 && !strncmp(t-6,"\\right}", 7)))
+				brace--;
+		else if (*t == '$' && (slash % 2) == 0 && brace == 0) {
+			break;
+		} else
+			slash = 0;
+		t++;
+	}
+	*t = '\0';
+	
+	u = strdup(s);	/* return much smaller string */
+	free(s);		/* release the big string */
+	return u;
+}
+
 void
 SlurpEquation(int code, char **pre, char **eq, char **post)
 {
@@ -45,7 +85,7 @@ SlurpEquation(int code, char **pre, char **eq, char **post)
 			diagnostics(4, "SlurpEquation() ... $");
 			*pre  = strdup("$");
 			*post = strdup("$");
-			*eq = getDelimitedText('$','$', 0);
+			*eq = SlurpDollarEquation();
 			break;
 	
 		case EQN_RND_OPEN:
@@ -118,7 +158,7 @@ EquationNeedsFields(char *eq)
 	if (strstr(eq,"\\iint")) return 1;
 	if (strstr(eq,"\\iiint")) return 1;
 	if (strstr(eq,"\\prod")) return 1;
-	if (strstr(eq,"\\array")) return 1;
+	if (strstr(eq,"\\begin{array}")) return 1;
 	if (strstr(eq,"\\left")) return 1;
 	if (strstr(eq,"\\right")) return 1;
 	if (strstr(eq,"\\root")) return 1;
@@ -307,7 +347,7 @@ PrepareRtfEquation(int code, int EQ_Needed)
 			break;
 		}
 
-	if (EQ_Needed) {
+	if (EQ_Needed && g_processing_fields==0) {
 		fprintRTF("{\\field{\\*\\fldinst{ EQ ");
 		g_processing_fields++;	
 	}
@@ -317,7 +357,7 @@ PrepareRtfEquation(int code, int EQ_Needed)
 void 
 FinishRtfEquation(int code, int EQ_Needed)
 {
-	if (EQ_Needed) {
+	if (EQ_Needed && g_processing_fields==1) {
 		fprintRTF("}}{\\fldrslt }}");
 		g_processing_fields--;	
 	}
@@ -753,16 +793,12 @@ CmdRoot(int code)
 
 	power = getBracketParam();
 	root = getBraceParam();
-/*	g_processing_fields++;*/
-/*	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\R(");*/
 	fprintRTF(" \\\\R(");
 	if (power && strlen(power)>0)
 		ConvertString(power);
 	fprintRTF("%c", g_field_separator);
 	ConvertString(root);
-/*	fprintRTF(")}{\\fldrslt }}");*/
 	fprintRTF(")");
-/*	g_processing_fields--;*/
 	
 	if (power) free(power);
 	free(root);
@@ -783,15 +819,11 @@ CmdFraction(int code)
 	diagnostics(4,"CmdFraction -- numerator   = <%s>", numerator);
 	diagnostics(4,"CmdFraction -- denominator = <%s>", denominator);
 
-/*	g_processing_fields++; */
-/*	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\F(");*/
 	fprintRTF(" \\\\F(");
 	ConvertString(numerator);
 	fprintRTF("%c", g_field_separator);
 	ConvertString(denominator);
-/*	fprintRTF(")}{\\fldrslt }}");*/
 	fprintRTF(")");
-/*	g_processing_fields--; */
 
 	free(numerator);
 	free(denominator);
@@ -828,8 +860,6 @@ parameter: type of operand
 			ungetTexChar(cThis);
 	}
 
-/*	g_processing_fields++; */
-/*	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\I");*/
 	fprintRTF(" \\\\I");
 	  switch(code)
 	  {
@@ -846,9 +876,7 @@ parameter: type of operand
 	fprintRTF("%c", g_field_separator);
 	if (upper_limit)
 		ConvertString(upper_limit);
-/*	fprintRTF("%c )}{\\fldrslt }}", g_field_separator);*/
 	fprintRTF("%c )", g_field_separator);
-/*	g_processing_fields--; */
 
 	if (lower_limit)
 		free(lower_limit);
@@ -915,9 +943,7 @@ CmdLeftRight(int code)
 
 		if (delim == '.')
 			diagnostics(WARNING, "\\left. not supported");
-/*		g_processing_fields++;*/
 		
-/*		fprintRTF("{\\field{\\*\\fldinst{EQ \\\\b ");*/
 		fprintRTF(" \\\\b ");
 		if (delim == '(' || delim == '.')
 			fprintRTF("(");
@@ -927,8 +953,6 @@ CmdLeftRight(int code)
 			fprintRTF("\\\\bc\\\\%c (", delim);
 
 	} else {
-/*		g_processing_fields--;*/
-/*		fprintRTF(")}}{\\fldrslt{0}}}");*/
 		fprintRTF(")");
 		if (delim == '.')
 			diagnostics(WARNING, "\\right. not supported");
