@@ -1,9 +1,9 @@
 /*
- * $Id: commands.h,v 1.6 2001/08/12 18:25:13 prahl Exp $
+ * $Id: commands.h,v 1.7 2001/08/12 18:41:03 prahl Exp $
  * History:
  * $Log: commands.h,v $
- * Revision 1.6  2001/08/12 18:25:13  prahl
- * latex2rtf version 1.9c
+ * Revision 1.7  2001/08/12 18:41:03  prahl
+ * latex2rtf 1.9c
  *
  * 	Added support for \frac
  * 	Complete support for all characters in the symbol font now

@@ -1,9 +1,9 @@
 /*
- * $Id: version.h,v 1.6 2001/08/12 18:25:13 prahl Exp $
+ * $Id: version.h,v 1.7 2001/08/12 18:41:03 prahl Exp $
  * History:
  * $Log: version.h,v $
- * Revision 1.6  2001/08/12 18:25:13  prahl
- * latex2rtf version 1.9c
+ * Revision 1.7  2001/08/12 18:41:03  prahl
+ * latex2rtf 1.9c
  *
  * 	Added support for \frac
  * 	Complete support for all characters in the symbol font now
@@ -76,5 +76,5 @@
  * Initial revision
  *
  */
-char *Version = "$Revision: 1.6 $ $Date: 2001/08/12 18:25:13 $";
+char *Version = "$Revision: 1.7 $ $Date: 2001/08/12 18:41:03 $";
 
