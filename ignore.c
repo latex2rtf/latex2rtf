@@ -86,6 +86,8 @@ returns : TRUE if variable was ignored correctly, otherwise FALSE
 		{}
 	else if (strcmp(RtfCommand, "PARAMETER") == 0)
 		CmdIgnoreParameter(No_Opt_One_NormParam);
+    else if (strcmp(RtfCommand, "TWOPARAMETER") == 0)
+         CmdIgnoreParameter(No_Opt_Two_NormParam);
 /*	else if (strcmp(RtfCommand, "LINE") == 0) skipToEOL(); */
 	else if (strcmp(RtfCommand, "ENVIRONMENT") == 0) {
 		char           *str;
