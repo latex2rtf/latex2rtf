@@ -1,4 +1,4 @@
-/*  $Id: commands.c,v 1.47 2002/02/25 02:13:45 prahl Exp $
+/*  $Id: commands.c,v 1.48 2002/03/02 20:16:28 prahl Exp $
  
     Defines subroutines to translate LaTeX commands to RTF
 */
@@ -21,6 +21,7 @@
 #include "ignore.h"
 #include "lengths.h"
 #include "definitions.h"
+#include "graphics.h"
 
 typedef struct commandtag {
 	char           *cpCommand;			/* LaTeX command name without \ */

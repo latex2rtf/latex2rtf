@@ -20,11 +20,8 @@ Bugs:
 	essential.tex
 		error while processing
 		
-	ttgfsr7.tex
-		step four in appendix has bad equation processing
-		
 	excalibur.tex
-		word disregards \* MERGEFORMAT in same section
+		word disregards \* MERGEFORMAT in some sections
 		
 Features:
 	support \hsize

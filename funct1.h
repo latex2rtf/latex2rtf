@@ -1,4 +1,4 @@
-/* $Id: funct1.h,v 1.30 2002/02/24 19:48:19 prahl Exp $ */
+/* $Id: funct1.h,v 1.31 2002/03/02 20:16:28 prahl Exp $ */
 
 #define THANKS 2
 
@@ -153,7 +153,6 @@ void            CmdFigure(int code);
 void            CmdMultiCol(int code);
 void            CmdAnnotation(int code);
 void            CmdLink(int code);
-void            CmdGraphics(int code);
 void            GetRequiredParam(char *string, int size);
 void 			CmdQuad(int kk);
 void			CmdColsep(int code);

@@ -1,0 +1,1 @@
+void            CmdGraphics(int code);
