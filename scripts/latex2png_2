@@ -30,7 +30,8 @@ PNMTOPNG="pnmtopng"
 PPMTOPGM="ppmtopgm"
 PGMTOPBM="pgmtopbm"
 TEXINPSEP=":"
-VERSION="1.1"
+GREP="grep"
+VERSION="1.2"
 
 help()
 {
@@ -95,7 +96,7 @@ if [ -z "$1" ] ; then
 fi
 
 # is it an eps file?
-if [ `echo $1 | grep -c eps$` -eq 1 ] ; then
+if [ `echo $1 | ${GREP} -c eps$` -eq 1 ] ; then
 	ext="eps"
 fi
 
@@ -119,7 +120,7 @@ rm -f $name.png
 
 if [ $ext = "tex" ] ; then
 
-	inline=`grep -c INLINE_DOT_ON_BASELINE $name.$ext`
+	inline=`${GREP} -c INLINE_DOT_ON_BASELINE $name.$ext`
 
 	$LATEX $name > /dev/null
 	
