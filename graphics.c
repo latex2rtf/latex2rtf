@@ -189,16 +189,47 @@ strdup_new_extension(char *s, char *old_ext, char *new_ext)
 }
 
 static char *
-strdup_tmp_path(char *s)
+strdup_absolute_path(char *s)
+/******************************************************************************
+     purpose : return a string containing an absolute path
+ ******************************************************************************/
 {
-	char *tmp, *new_name;
+	char 	c = PATHSEP;
+	char *abs_path=NULL;
+	
+	if (s) {
+		if (*s==c || g_home_dir==NULL)
+			abs_path = strdup(s);
+		else 
+			abs_path = strdup_together(g_home_dir, s);
+	}
+	
+	return abs_path;
+}
+
+
+static char *
+strdup_tmp_path(char *s)
+/******************************************************************************
+     purpose : create a tmp file name using only the end of the filename
+ ******************************************************************************/
+{
+	char *tmp, *p, *fullname, c;
 	
 	if (s==NULL) return NULL;
-	
+
 	tmp = getTmpPath();
-	new_name = strdup_together(tmp,s);
+	
+	c = PATHSEP;
+	p=strrchr(s,c);
+	
+	if (!p)
+		fullname = strdup_together(tmp,s);
+	else
+		fullname = strdup_together(tmp,p+1);
+
 	free(tmp);
-	return new_name;
+	return fullname;
 }
 
 
@@ -339,7 +370,7 @@ eps_to_png(char *eps)
      purpose : create a png file from an EPS file and return file name
  ******************************************************************************/
 {
-	char *cmd, *s1, *p, *png, *tmp;
+	char *cmd, *s1, *p, *png;
 	size_t cmd_len;
 	diagnostics(1, "filename = <%s>", eps);
 
@@ -351,15 +382,14 @@ eps_to_png(char *eps)
 	}
 
 	strcpy(p,".png");
-	tmp = getTmpPath();
-	png = strdup_together(tmp,s1);
+	png = strdup_tmp_path(s1);
 	cmd_len=strlen(eps)+strlen(png)+10;
 	cmd = (char *) malloc(cmd_len);
 	snprintf(cmd, cmd_len, "convert %s %s", eps, png);	
+	diagnostics(2, "system command to conver to png = <%s>", cmd);
 	system(cmd);	
 	
 	free(cmd);
-	free(tmp);
 	free(s1);
 	return png;
 }
@@ -371,7 +401,7 @@ eps_to_emf(char *eps)
  ******************************************************************************/
 {
 	FILE *fp;
-	char *cmd, *s1, *p, *emf, *tmp;
+	char *cmd, *s1, *p, *emf;
 	size_t cmd_len;
 	
 	char ans[50];
@@ -386,8 +416,7 @@ eps_to_emf(char *eps)
 	}
 
 	strcpy(p,".wmf");
-	tmp = getTmpPath();
-	emf = strdup_together(tmp,s1);
+	emf = strdup_tmp_path(s1);
 	
 	/* Determine bounding box for EPS file */
 	cmd_len = strlen(eps)+strlen("identify -format \"%w %h\" ")+1;
@@ -407,7 +436,6 @@ eps_to_emf(char *eps)
 	
 	/* write EMRFORMAT containing EPS */
 
-	free(tmp);
 	free(s1);
 	fclose(fp);
 	return emf;
@@ -1085,7 +1113,7 @@ code=4 => psfig
 */
 {
 	char           *options,*options2;
-	char           *filename;
+	char           *filename,*fullpathname;
 	double			scale=1.0;
 	double			baseline=0.0;
 	double 			x;
@@ -1140,38 +1168,41 @@ code=4 => psfig
 	
 	SetTexMode(MODE_HORIZONTAL);
 
+	fullpathname=strdup_absolute_path(filename);
+
 	if (strstr(filename, ".pict") || strstr(filename, ".PICT"))
-		PutPictFile(filename, scale, baseline, FALSE);
+		PutPictFile(fullpathname, scale, baseline, TRUE);
 		
 	else if (strstr(filename, ".png")  || strstr(filename, ".PNG"))
-		PutPngFile(filename, scale, baseline, FALSE);
+		PutPngFile(fullpathname, scale, baseline, TRUE);
 
 	else if (strstr(filename, ".gif")  || strstr(filename, ".GIF"))
-		PutGifFile(filename, scale, baseline, FALSE);
+		PutGifFile(fullpathname, scale, baseline, TRUE);
 
 	else if (strstr(filename, ".emf")  || strstr(filename, ".EMF"))
-		PutEmfFile(filename, scale, baseline, FALSE);
+		PutEmfFile(fullpathname, scale, baseline, TRUE);
 
 	else if (strstr(filename, ".wmf")  || strstr(filename, ".WMF"))
-		PutWmfFile(filename, scale, baseline, FALSE);
+		PutWmfFile(fullpathname, scale, baseline, TRUE);
 
 	else if (strstr(filename, ".eps")  || strstr(filename, ".EPS"))
-		PutEpsFile(filename, scale, baseline, FALSE);
+		PutEpsFile(fullpathname, scale, baseline, TRUE);
 
 	else if (strstr(filename, ".ps")  || strstr(filename, ".PS"))
-		PutEpsFile(filename, scale, baseline, FALSE);
+		PutEpsFile(fullpathname, scale, baseline, TRUE);
 
 	else if (strstr(filename, ".tiff")  || strstr(filename, ".TIFF"))
-		PutTiffFile(filename, scale, baseline, FALSE);
+		PutTiffFile(fullpathname, scale, baseline, TRUE);
 
 	else if (strstr(filename, ".jpg")  || strstr(filename, ".JPG") ||
 		strstr(filename, ".jpeg") || strstr(filename, ".JPEG"))
-		PutJpegFile(filename, scale, baseline, FALSE);
+		PutJpegFile(fullpathname, scale, baseline, TRUE);
 
 	else 
 		diagnostics(WARNING, "Conversion of '%s' not supported", filename);
 	
 	free(filename);
+	free(fullpathname);
 }
 
 void 

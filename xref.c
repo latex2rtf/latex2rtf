@@ -402,25 +402,24 @@ purpose: handles \label \ref \pageref \cite
 			fprintRTF("\n%c", punct[0]);
 			str = strdup_noblanks(text);
 			str1 = str;
-			do {
+			do {			/* for each name in citation list */
+				char *t;
 				comma = strchr(str1, ',');
-				if (comma) *comma = '\0';	/* replace ',' with '\0' */
-				s = ScanAux("bibcite", str1, 0);
-				signet = strdup_nobadchars(str1);
+				if (comma) *comma = '\0';					/* replace ',' with '\0' */
+				s = ScanAux("bibcite", str1, 0);			/* look up bibliographic reference */
+				signet = strdup_nobadchars(str1);			
+				t = s ? s : signet;							/* if .aux is missing or incomplete use original citation */
 
-				if (g_document_bibstyle == BIBSTYLE_STANDARD) {
+				if (g_document_bibstyle == BIBSTYLE_APALIKE) {  /* can't use references for APALIKE */
+					ConvertString(t);
+				} else {
 					fprintRTF("{\\field{\\*\\fldinst{\\lang1024 REF BIB_%s \\\\* MERGEFORMAT }}",signet);
 					fprintRTF("{\\fldrslt{");
-				}
-				
-				if (s)
-					ConvertString(s);
-				else
-					ConvertString(signet);
-					
-				if (g_document_bibstyle == BIBSTYLE_STANDARD)
+					ConvertString(t);
 					fprintRTF("}}}");
-				if (comma) fprintRTF("%c ",punct[2]);
+				}
+					
+				if (comma) fprintRTF("%c ",punct[2]);		/* punctuation between citations */
 				str1 = comma + 1;
 				if (s) free(s);
 				free(signet);
@@ -431,7 +430,7 @@ purpose: handles \label \ref \pageref \cite
 				ConvertString(option);
 			}
 			
-			fprintRTF("%c",punct[1]);
+			fprintRTF("%c",punct[1]);						/* close bracket or paren */
 			free(str);
 			break;
 		
