@@ -36,6 +36,7 @@ Authors:
 #include "lengths.h"
 #include "l2r_fonts.h"
 #include "style.h"
+#include "definitions.h"
 
 char * g_figure_label = NULL;
 char * g_table_label = NULL;
@@ -228,6 +229,7 @@ void
 CmdThebibliography(int code)
 {
 	int amount = 450;
+	int i;
 	
 	if (code & ON) {
 		char * s = getBraceParam();   /*throw away widest_label */
@@ -238,10 +240,17 @@ CmdThebibliography(int code)
 		CmdStartParagraph(TITLE_PAR);
 
 		fprintRTF("{\\plain\\b\\fs32 ");
-		if (g_document_type == FORMAT_ARTICLE)
-			ConvertBabelName("REFNAME");
-		else
-			ConvertBabelName("BIBNAME");
+		i=existsDefinition("refname");			/* see if refname has been redefined */
+		if (i>-1) {			
+			char *str = expandDefinition(i);
+			ConvertString(str);
+			free(str);
+		} else {
+			if (g_document_type == FORMAT_ARTICLE)
+				ConvertBabelName("REFNAME");
+			else
+				ConvertBabelName("BIBNAME");
+		}
 		fprintRTF("}");
 		CmdEndParagraph(0);
 		CmdVspace(VSPACE_SMALL_SKIP);
