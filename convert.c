@@ -1,4 +1,4 @@
-/* $Id: convert.c,v 1.29 2002/04/13 18:20:35 prahl Exp $ 
+/* $Id: convert.c,v 1.30 2002/04/13 19:59:27 prahl Exp $ 
 	
 TeX has six modes:
 	
@@ -290,9 +290,8 @@ globals: fTex, fRtf and all global flags for convert (see above)
 			}
 			
 			if (g_processing_tabular) {	/* in tabular */
-				fprintRTF(" \\cell \\pard \\intbl ");
-				fprintRTF("\\q%c ", colFmt[actCol]);
 				actCol++;
+				fprintRTF("\\cell\\pard\\intbl\\q%c ", colFmt[actCol]);
 				break;
 			}
 			fprintRTF("&");

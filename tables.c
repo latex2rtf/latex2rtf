@@ -1,4 +1,4 @@
-/* $Id: tables.c,v 1.15 2002/04/13 18:20:35 prahl Exp $
+/* $Id: tables.c,v 1.16 2002/04/13 19:59:27 prahl Exp $
 
    Translation of tabbing and tabular environments
 */
@@ -354,13 +354,14 @@ CmdTabular(int code)
 			fprintRTF("\\tqc\\tx1000\\tx2000\\tx3000\\tx4000\\tx5000\\tx6000\\tx7000\n\\tab");
 			return;
 		}
-		fprintRTF("\\par\\trowd\\trqc\\trrh0");
+		fprintRTF("\\par\n\\trowd\\trrh0");
 
 		for (i = 0; i < colCount; i++) {
-			fprintRTF("\\cellx%d ", colWidth * (i+1));
+			fprintRTF("\\cellx%d", colWidth * (i+1));
 		}
 		fprintRTF("\n\\pard\\intbl\\q%c ", colFmt[actCol]);
-		
+	
+		CmdIndent(INDENT_NONE);
 	} else {
 		diagnostics(4, "Exiting CmdTabular");
 		g_processing_tabular = FALSE;
