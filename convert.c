@@ -402,7 +402,7 @@ globals: fTex, fRtf and all global flags for convert (see above)
 
 		case '<':
 			if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
-			if (GetTexMode() == MODE_HORIZONTAL && FrenchMode ){
+			if (GetTexMode() == MODE_HORIZONTAL){
 				cNext = getTexChar();
 				if (cNext == '<')
 					fprintRTF("\\'ab");
@@ -417,7 +417,7 @@ globals: fTex, fRtf and all global flags for convert (see above)
 
 		case '>':
 			if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
-			if (GetTexMode() == MODE_HORIZONTAL && FrenchMode ){
+			if (GetTexMode() == MODE_HORIZONTAL){
 				cNext = getTexChar();
 				if (cNext == '>')
 					fprintRTF("\\'bb");
