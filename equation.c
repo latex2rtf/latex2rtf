@@ -830,6 +830,8 @@ parameter: type of operand
 	fprintRTF(" \\\\I");
 	  switch(code)
 	  {
+		case 4 : fprintRTF("\\\\in( %c %c )\\\\I", g_field_separator, g_field_separator); /*\iiint --- fall through*/
+		case 3 : fprintRTF("\\\\in( %c %c )\\\\I", g_field_separator, g_field_separator); /* \iint --- fall through*/
 		case 0 : fprintRTF("\\\\in("); break;	
 		case 1 : fprintRTF("\\\\su("); break;
 		case 2 : fprintRTF("\\\\pr("); break;
