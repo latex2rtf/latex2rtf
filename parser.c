@@ -419,7 +419,7 @@ getTexChar()
 	char            cSave2 = g_parser_penultimateChar;
 
 	cThis = getRawTexChar();
-	while (cThis == '%' && g_parser_backslashes % 2 == 0) {
+	while (cThis == '%' && even(g_parser_backslashes)) {
 		skipToEOL();
 		g_parser_penultimateChar = cSave2;
 		g_parser_lastChar = cSave;
@@ -1042,11 +1042,11 @@ getSection(char **body, char **header, char **label)
 		}
 		
 		if (cNext == '\0')
-			diagnostics(5,"char=000 \\0");
+			diagnostics(5,"char=000 '\\0' (backslash count=%d)",bs_count);
 		else if (cNext =='\n')
-			diagnostics(5,"char=012 \\n");
+			diagnostics(5,"char=012 '\\n' (backslash count=%d)",bs_count);
 		else
-			diagnostics(5,"char=%03d %c", (int) cNext, cNext);
+			diagnostics(5,"char=%03d '%c' (backslash count=%d)", (int) cNext, cNext, bs_count);
 				
 		/* add character to buffer */
 		*(section_buffer+delta) = cNext;
@@ -1054,7 +1054,7 @@ getSection(char **body, char **header, char **label)
 		if (*(section_buffer+delta) == '\0') break;
 
 		/* slurp TeX comments */
-		if (*(section_buffer+delta) == '%' && bs_count % 2 == 0) {	
+		if (*(section_buffer+delta) == '%' && even(bs_count)) {	
 			delta++;
 			while ((cNext=getRawTexChar()) != '\n') {
 				if (delta+2 >= section_buffer_size) increase_buffer_size();
@@ -1067,7 +1067,7 @@ getSection(char **body, char **header, char **label)
 		/* begin search if backslash found */
 		if (*(section_buffer+delta) == '\\') {
 			bs_count++;
-			if (bs_count % 2) {		/* avoid "\\section" and "\\\\section" */
+			if (odd(bs_count)) {		/* avoid "\\section" and "\\\\section" */
 				for(i=0; i<ncommands; i++) match[i]=TRUE;
 				index = 1;
 				continue;

@@ -1,4 +1,4 @@
-/* util.c - handy strings routines
+/* util.c - handy routines
 
 Copyright (C) 1995-2002 The Free Software Foundation
 
@@ -29,6 +29,24 @@ Authors:
 #include "main.h"
 #include "util.h"
 #include "parser.h"
+
+int
+odd(int n)
+/******************************************************************************
+ purpose:  returns true if n is odd
+******************************************************************************/
+{
+	return (n&1);
+}
+
+int
+even(int n)
+/******************************************************************************
+ purpose:  returns true if n is even
+******************************************************************************/
+{
+	return (!(n&1));
+}
 
 int
 strstr_count(char *s, char *t)

@@ -45,6 +45,16 @@ Authors:
 
 int g_equation_column = 1;
 
+int script_shift(void)
+{
+	return CurrentFontSize() / 3.0;
+}
+
+int script_size(void)
+{
+	return CurrentFontSize() / 1.2;
+}
+
 void
 CmdNonumber(int code)
 /******************************************************************************
@@ -74,15 +84,15 @@ char *s, *t, *u;
 		*t = getTexChar();
 		if (*t == '\\') 
 			slash++;
-		else if (*t == '{' && (slash % 2) == 0 &&
+		else if (*t == '{' && even(slash) &&
 			!(i>5 && strncmp(t-5,"\\left{", 6)==0) &&
 			!(i>6 && strncmp(t-6,"\\right{", 7)==0))
 				brace++;
-		else if (*t == '}' && (slash % 2) == 0 &&
+		else if (*t == '}' && even(slash) &&
 			!(i>5 && !strncmp(t-5,"\\left}", 6)) &&
 			!(i>6 && !strncmp(t-6,"\\right}", 7)))
 				brace--;
-		else if (*t == '$' && (slash % 2) == 0 && brace == 0) {
+		else if (*t == '$' && even(slash) && brace == 0) {
 			break;
 		} else
 			slash = 0;
@@ -179,7 +189,7 @@ EquationNeedsFields(char *eq)
 /******************************************************************************
  purpose   : Determine if equation needs EQ field for RTF conversion
  ******************************************************************************/
-{
+{	
 	if (strstr(eq,"\\frac")) return 1;
 	if (strstr(eq,"\\sum")) return 1;
 	if (strstr(eq,"\\int")) return 1;
@@ -396,7 +406,7 @@ PrepareRtfEquation(int code, int EQ_Needed)
 			break;
 		}
 
-	if (EQ_Needed && g_processing_fields==0) {
+	if (!g_document_nofields && EQ_Needed && g_processing_fields==0) {
 		fprintRTF("{\\field{\\*\\fldinst{ EQ ");
 		g_processing_fields++;	
 	}
@@ -406,7 +416,7 @@ PrepareRtfEquation(int code, int EQ_Needed)
 static void 
 FinishRtfEquation(int code, int EQ_Needed)
 {	
-	if (EQ_Needed && g_processing_fields==1) {
+	if (!g_document_nofields && EQ_Needed && g_processing_fields==1) {
 		fprintRTF("}}{\\fldrslt }}");
 		g_processing_fields--;	
 	}
@@ -540,7 +550,7 @@ scanahead(char *s)
 	
 	while (braces && t && *t != '\0') {
 
-		if (slashes % 2 == 0) {
+		if (even(slashes)) {
 			if (*t=='}' &&
 		    	!(s+5 <= t && !strncmp(t-5,"\\left",5)) &&	/* avoid \left} */
 		    	!(s+6 <= t && !strncmp(t-6,"\\right",6))	/* avoid \right} */
@@ -706,26 +716,40 @@ CmdRoot(int code)
  purpose: converts \sqrt{x} or \root[\alpha]{x+y}
 ******************************************************************************/
 {
-	char           *root;
-	char           *power;
+	char           *root=NULL;
+	char           *power=NULL;
+	int				symfont;
 
 	power = getBracketParam();
 	root = getBraceParam();
-	fprintRTF(" \\\\R(");
-	if (power && strlen(power)>0)
-		ConvertString(power);
-	fprintRTF("%c", g_field_separator);
-	ConvertString(root);
-	fprintRTF(")");
+	
+	if (!g_document_nofields){
+		fprintRTF(" \\\\R(");
+		if (power && strlen(power)>0)
+			ConvertString(power);
+		fprintRTF("%c", g_field_separator);
+		ConvertString(root);
+		fprintRTF(")");
+	} else {
+		if (power && strlen(power)>0) {
+			fprintRTF("{\\up%d\\fs%d ",script_shift(),script_size());
+			ConvertString(power);
+			fprintRTF("}");
+		}
+		symfont = RtfFontNumber("Symbol");
+		fprintRTF("{\\f%d\\'d6}(",symfont);
+		ConvertString(root);
+		fprintRTF(")");
+	}
 	
 	if (power) free(power);
-	free(root);
+	if (root)  free(root);
 }
 
 void 
 CmdFraction(int code)
 /******************************************************************************
- purpose: converts \frac{x}{y} (following Taupin's implementation in ltx2rtf)
+ purpose: converts \frac{x}{y}
 ******************************************************************************/
 {
 	char           *denominator, *numerator, *nptr, *dptr;
@@ -741,11 +765,19 @@ CmdFraction(int code)
 	diagnostics(4,"CmdFraction -- numerator   = <%s>", nptr);
 	diagnostics(4,"CmdFraction -- denominator = <%s>", dptr);
 
-	fprintRTF(" \\\\F(");
-	ConvertString(nptr);
-	fprintRTF("%c", g_field_separator);
-	ConvertString(dptr);
-	fprintRTF(")");
+	if (!g_document_nofields){
+		fprintRTF(" \\\\F(");
+		ConvertString(nptr);
+		fprintRTF("%c", g_field_separator);
+		ConvertString(dptr);
+		fprintRTF(")");
+	} else {
+		fprintRTF(" ");
+		ConvertString(nptr);
+		fprintRTF("/");
+		ConvertString(dptr);
+		fprintRTF(" ");	
+	}
 
 	free(nptr);
 	free(dptr);
@@ -823,15 +855,26 @@ parameter: 0=\lim, 1=\limsup, 2=\liminf
 	else
 		s=strdup("lim inf");
 
-    if (lower_limit) 
-    	fprintRTF("\\\\a\\\\ac(");
-
-    fprintRTF("%s",s);
-
-    if (lower_limit) {
-		fprintRTF("%c",g_field_separator);
-        ConvertString(lower_limit);
-    	fprintRTF(")");
+	if (!g_document_nofields){
+		if (lower_limit) 
+			fprintRTF("\\\\a\\\\ac(");
+	
+		fprintRTF("%s",s);
+	
+		if (lower_limit) {
+			fprintRTF("%c",g_field_separator);
+			ConvertString(lower_limit);
+			fprintRTF(")");
+		}
+    
+    } else {
+		fprintRTF("%s ",s);
+		if (lower_limit) {
+			fprintRTF("{\\dn%d\\fs%d ",script_shift(),script_size());
+			ConvertString(lower_limit);
+			fprintRTF("}");
+		}
+    
     }
     
     free(s);
@@ -840,19 +883,19 @@ parameter: 0=\lim, 1=\limsup, 2=\liminf
 void 
 CmdIntegral(int code)
 /******************************************************************************
- purpose: converts integral symbol + the "exponent" and "subscript" fields
+ purpose: converts integral symbol and the "exponent" and "subscript" fields
 parameter: type of operand
  ******************************************************************************/
 {
 	char           *upper_limit = NULL;
 	char           *lower_limit = NULL;
 	char            cThis;
-	char		   *command;
-
+	
 	/* is there an exponent/subscript ? */
 	cThis = getNonBlank();
 
 	if (cThis=='\\') {			/* accept \nolimits and \limits */
+		char *command;
 		ungetTexChar(cThis);
 		command=getSimpleCommand();	
 		if (!(strstr(command,"\\limits")==0) && !(strstr(command,"\\nolimits")==0))
@@ -879,53 +922,72 @@ parameter: type of operand
 			ungetTexChar(cThis);
 	}
 
-	fprintRTF(" \\\\I");
-	  switch(code)
-	  {
-		case 4 : fprintRTF("\\\\in( %c %c )\\\\I", g_field_separator, g_field_separator); /*\iiint --- fall through*/
-		case 3 : fprintRTF("\\\\in( %c %c )\\\\I", g_field_separator, g_field_separator); /* \iint --- fall through*/
-		case 0 : fprintRTF("\\\\in("); break;	
-		case 1 : fprintRTF("\\\\su("); break;
-		case 2 : fprintRTF("\\\\pr("); break;
-		default: diagnostics(ERROR, "Illegal code to CmdIntegral");
-	  }
+	if (!g_document_nofields){
+	
+		fprintRTF(" \\\\I");
+			switch(code) {
+			case 4 : fprintRTF("\\\\in( %c %c )\\\\I", g_field_separator, g_field_separator); /*\iiint --- fall through*/
+			case 3 : fprintRTF("\\\\in( %c %c )\\\\I", g_field_separator, g_field_separator); /* \iint --- fall through*/
+			case 0 : fprintRTF("\\\\in("); break;	
+			case 1 : fprintRTF("\\\\su("); break;
+			case 2 : fprintRTF("\\\\pr("); break;
+			default: diagnostics(ERROR, "Illegal code to CmdIntegral");
+		  }
+	
+		if (lower_limit)
+			ConvertString(lower_limit);
+		fprintRTF("%c", g_field_separator);
+		if (upper_limit)
+			ConvertString(upper_limit);
+		fprintRTF("%c )", g_field_separator);
 
-	if (lower_limit)
-		ConvertString(lower_limit);
-	fprintRTF("%c", g_field_separator);
-	if (upper_limit)
-		ConvertString(upper_limit);
-	fprintRTF("%c )", g_field_separator);
-
-	if (lower_limit)
-		free(lower_limit);
-	if (upper_limit)
-		free(upper_limit);
+	} else {
+	
+		int symfont = RtfFontNumber("Symbol");
+		switch(code) {
+			case 4 : fprintRTF("{\\f%d\\'f2}",symfont); /*\iiint --- fall through*/
+			case 3 : fprintRTF("{\\f%d\\'f2}",symfont); /* \iint --- fall through*/
+			case 0 : fprintRTF("{\\f%d\\'f2}",symfont); break;	
+			case 1 : fprintRTF("{\\f%d\\'e5}",symfont); break;
+			case 2 : fprintRTF("{\\f%d\\'d5}",symfont); break;
+			default: diagnostics(ERROR, "Illegal code to CmdIntegral");
+		}
+	
+		if (lower_limit) {
+			fprintRTF("{\\dn%d\\fs%d ",script_shift(),script_size());
+			ConvertString(lower_limit);
+			fprintRTF("}");
+		}
+		if (upper_limit){
+			fprintRTF("{\\up%d\\fs%d ",script_shift(),script_size());
+			ConvertString(upper_limit);
+			fprintRTF("}");
+		}
+	}
+	
+	if (lower_limit) free(lower_limit);
+	if (upper_limit) free(upper_limit);
 }
 
 void
 SubSupWorker (bool big)
 /******************************************************************************
- purpose:  Stack a superscript and a subscript together
+ purpose   : Stack a superscript and a subscript together  
  ******************************************************************************/
 {
+	int vertical_shift;
 	char cThis;
 	char *upper_limit = NULL;
 	char *lower_limit = NULL;
-	int   size, vertical_shift, script_size;
-	
-	size            = CurrentFontSize ();
-	script_size     = (int) (size / 1.2);
-	vertical_shift  = (big) ? (int) (size / 1.4) : (int) (size / 4);
 
 	for (;;) {
 		cThis = getNonBlank ();
 		if (cThis == '_') {
-			if (lower_limit) diagnostics (ERROR, "Double subscript");
+			if (lower_limit) diagnostics (WARNING, "Double subscript");
 			lower_limit = getBraceParam ();
 		}
 		else if (cThis == '^') {
-			if (upper_limit) diagnostics (ERROR, "Double superscript");
+			if (upper_limit) diagnostics (WARNING, "Double superscript");
 			upper_limit = getBraceParam ();
 		} else {
 			ungetTexChar (cThis);
@@ -933,8 +995,13 @@ SubSupWorker (bool big)
 		}
 	}
 	
+	if (big)
+		vertical_shift = CurrentFontSize () / 1.4;
+	else
+		vertical_shift = CurrentFontSize () / 4;
+		
 	if (upper_limit && lower_limit) {
-		fprintRTF ("\\\\s\\\\up({\\fs%d ", script_size);
+		fprintRTF ("\\\\s\\\\up({\\fs%d ", script_size());
 		ConvertString (upper_limit);
 		if (big)
 			fprintRTF ("%c %c", g_field_separator, g_field_separator);
@@ -944,18 +1011,18 @@ SubSupWorker (bool big)
 		fprintRTF ("})");
 
 	} else if (lower_limit) {
-		fprintRTF ("\\\\s\\\\do%d({\\fs%d ", vertical_shift, script_size);
+		fprintRTF ("\\\\s\\\\do%d({\\fs%d ", vertical_shift, script_size());
 		ConvertString (lower_limit);
 		fprintRTF ("})");
 		
 	} else if (upper_limit) {
-		fprintRTF ("\\\\s\\\\up%d({\\fs%d ", vertical_shift, script_size);
+		fprintRTF ("\\\\s\\\\up%d({\\fs%d ", vertical_shift, script_size());
 		ConvertString (upper_limit);
 		fprintRTF ("})");
 	}
 
-	if (lower_limit) free (lower_limit);
-	if (upper_limit) free (upper_limit);
+	if (lower_limit) free(lower_limit);
+	if (upper_limit) free(upper_limit);
 }
 
 void
@@ -965,20 +1032,15 @@ CmdSuperscript(int code)
  ******************************************************************************/
 {
 	char           *s = NULL;
-	int   size, vertical_shift, script_size;
-	
-	if (g_processing_fields){	/* to handle math environments */
-		ungetTexChar('^');		/* kludge to signal SubSupWorker */
+
+	if (!g_document_nofields){
+		ungetTexChar('^');
 		SubSupWorker(FALSE);
 		return;
 	}
 
-	s = getBraceParam();		/* for \textsuperscript */
-	if (s) {
-		size           = CurrentFontSize();
-		script_size    = (int) (size / 1.2);
-		vertical_shift = (int) (size / 4.0);
-		fprintRTF("{\\up%d\\fs%d ",vertical_shift,script_size);
+	if ((s = getBraceParam())) {
+		fprintRTF("{\\up%d\\fs%d ",script_shift(),script_size());
 		ConvertString(s);
 		fprintRTF("}");
 		free(s);
@@ -988,24 +1050,19 @@ CmdSuperscript(int code)
 void
 CmdSubscript(int code)
 /******************************************************************************
- purpose   : Handles subscripts _\alpha, _a, _{a}
+ purpose   : Handles superscripts ^\alpha, ^a, ^{a}
  ******************************************************************************/
 {
 	char           *s = NULL;
-	int   size, vertical_shift, script_size;
 
-	if (g_processing_fields){  /* to handle math environments */
-		ungetTexChar('_');     /* kludge to signal SubSupWorker */
-		SubSupWorker(FALSE);
+	if (!g_document_nofields){
+		ungetTexChar('_');
+		SubSupWorker (FALSE);
 		return;
 	}
 
-	s = getBraceParam();      /* for \textsubscript */
-	if (s) {
-		size           = CurrentFontSize();
-		script_size    = (int) (size / 1.2);
-		vertical_shift = (int) (size / 4.0);
-		fprintRTF("{\\dn%d\\fs%d ",vertical_shift,script_size);
+	if ((s = getBraceParam())) {
+		fprintRTF("{\\dn%d\\fs%d ",script_shift(),script_size());
 		ConvertString(s);
 		fprintRTF("}");
 		free(s);
@@ -1037,42 +1094,53 @@ CmdLeftRight(int code)
 
 	diagnostics(4, "CmdLeftRight() ... \\left <%c> \\right <%c>", ldelim, rdelim);
 
-	fprintRTF(" \\\\b ");
-	if (ldelim == '(' && rdelim == ')'){
-		fprintRTF("(");
-		goto finish;
-	}
-
-	if (ldelim == '{' && rdelim == '}'){
-		fprintRTF("\\\\bc\\\\\\{ (");
-		goto finish;
-	}
-
-	if (ldelim == '[' && rdelim == ']'){
-		fprintRTF("\\\\bc\\\\[ (");
-		goto finish;
-	}
-
-	if (ldelim == '{' || ldelim == '}'){
-		fprintRTF("\\\\lc\\\\\\%c",ldelim);
-	} else {
-		if (ldelim != '.') fprintRTF("\\\\lc\\\\%c", ldelim);
-	}
-
-	if (rdelim == '{' || rdelim == '}'){
-		fprintRTF("\\\\rc\\\\\\%c (",ldelim);
-		
-	}else{
-		if (rdelim != '.') 
-			fprintRTF("\\\\rc\\\\%c (", ldelim);
-		else 
+	if (!g_document_nofields) {
+	
+		fprintRTF(" \\\\b ");
+		if (ldelim == '(' && rdelim == ')'){
 			fprintRTF("(");
+			goto finish;
+		}
+	
+		if (ldelim == '{' && rdelim == '}'){
+			fprintRTF("\\\\bc\\\\\\{ (");
+			goto finish;
+		}
+	
+		if (ldelim == '[' && rdelim == ']'){
+			fprintRTF("\\\\bc\\\\[ (");
+			goto finish;
+		}
+	
+		if (ldelim == '{' || ldelim == '}'){
+			fprintRTF("\\\\lc\\\\\\%c",ldelim);
+		} else {
+			if (ldelim != '.') fprintRTF("\\\\lc\\\\%c", ldelim);
+		}
+	
+		if (rdelim == '{' || rdelim == '}'){
+			fprintRTF("\\\\rc\\\\\\%c (",ldelim);
+			
+		}else{
+			if (rdelim != '.') 
+				fprintRTF("\\\\rc\\\\%c (", ldelim);
+			else 
+				fprintRTF("(");
+		}
+		
+	finish:
+		ConvertString(contents);
+		fprintRTF(")");
+		SubSupWorker(TRUE);		/* move super or subscripts a lot */
+
+	} else {   /*!g_document_nofields */
+	
+		putRtfChar(ldelim);
+		ConvertString(contents);
+		putRtfChar(rdelim);
 	}
 	
-finish:
-	ConvertString(contents);
-	fprintRTF(")");
-	SubSupWorker(TRUE);
+	
 }
 
 void
@@ -1130,16 +1198,26 @@ CmdStackrel(int code)
 char * numer, *denom;
 int size;
 		
-	size = (int) (CurrentFontSize()/1.2);
+	size = CurrentFontSize()/1.2;
 	numer = getBraceParam();
 	denom = getBraceParam();
 	diagnostics(4, "CmdStackrel() ... \\stackrel{%s}{%s}", numer,denom);
 	
-	fprintRTF(" \\\\a ({\\fs%d ",size);
-	ConvertString(numer);
-	fprintRTF("}%c", g_field_separator);
-	ConvertString(denom);
-	fprintRTF(") ");
+	if (!g_document_nofields) {
+		fprintRTF(" \\\\a ({\\fs%d ",size);
+		ConvertString(numer);
+		fprintRTF("}%c", g_field_separator);
+		ConvertString(denom);
+		fprintRTF(") ");
+	
+	} else {
+		diagnostics(WARNING,"sorry stackrel requires fields");
+		fprintRTF("{");
+		ConvertString(numer);
+		fprintRTF(" ");
+		ConvertString(denom);
+		fprintRTF("}");
+	}
 	
 	free(numer);
 	free(denom);

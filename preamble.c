@@ -793,7 +793,7 @@ WriteFontHeader(void)
 	char                *font_type, *font_name;
 	int					 charset;
 
-	fprintRTF("{\\fonttbl\n");
+	fprintRTF("{\\fonttbl");
 
 	config_handle = CfgStartIterate(FONT_A);
 	i=3;
@@ -809,7 +809,7 @@ WriteFontHeader(void)
 		if (strncmp(font_type, "Cyrillic", 8)==0)	
 			charset = 204;
 					
-		fprintRTF(" {\\f%d\\fnil\\fcharset%d %s;}\n",i, charset, font_name);
+		fprintRTF("{\\f%d\\fnil\\fcharset%d %s;}\n",i, charset, font_name);
 
 		i++;
 	}
@@ -1040,7 +1040,8 @@ purpose: writes header info for the RTF file
 
 	diagnostics(4, "Writing header for RTF file");
 
-	fprintRTF("{\\rtf1\\ansi\\fs%d\\deff%d\\deflang1024\n", size, family);
+/*	fprintRTF("{\\rtf1\\ansi\\fs%d\\deff%d\\deflang1024\n", size, family); */
+	fprintRTF("{\\rtf1\\ansi\\deff%d\\deflang1024\n", family);
 	WriteFontHeader();
 	WriteColorTable();
 	WriteStyleHeader();

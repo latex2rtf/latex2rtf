@@ -332,14 +332,14 @@ eps_to_pict(char *s)
 	
 	/*copy eps graphic (write an even number of bytes) */
 	handle_size = eps_size;   
-	if (eps_size % 2) handle_size ++;	
+	if (odd(eps_size)) handle_size ++;	
 	
 	PicComment(PostScriptHandle,handle_size,fp_pict_eps);
 	for (ii=0; ii<eps_size; ii++) {
 		if(fread(&byte,1,1,fp_eps)!=1) goto Exit;
 		if(fwrite(&byte,1,1,fp_pict_eps)!=1) goto Exit;
 	}
-	if (eps_size % 2) {
+	if (odd(eps_size)) {
 		byte = ' ';
 		if(fwrite(&byte,1,1,fp_pict_eps) !=1) goto Exit;
 	}		
