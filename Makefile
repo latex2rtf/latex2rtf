@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.60 2002/09/22 21:48:30 prahl Exp $
+# $Id: Makefile,v 1.61 2002/09/25 00:22:04 prahl Exp $
 
 CC=gcc
 MKDIR=mkdir -p
@@ -12,7 +12,7 @@ CFLAGS:=-DUNIX
 #Uncomment next three lines for os2/emx or win32/rsx
 #EXESFX=.exe
 #PREFIX_DRIVE=c:
-#CFLAGS:=-DUSE_DOS_SEP
+#CFLAGS:=-DHAS_DOS_SEP
 #Uncomment next line when using rsx compiler, target win32
 #CFLAGS:=-Zwin32  
 

@@ -3,7 +3,8 @@ Fit & Finish:
 	Improve spacing before and after \section etc.
 	Improve font sizes in \section etc.
 	Reset footnote numbering at each new chapter
-
+	Improve alignment of inline equations
+	
 Potential Features:
 
 	New diagnostic level to replace Warning for expected stuff
@@ -16,7 +17,7 @@ Potential Features:
 	
 	Add default page numbering
 	
-        Add support for \usepackage{endfloat}
+    Add support for \usepackage{endfloat}
 	Add support for \usepackage{fullpage}
 	Add support for \usepackage{doublespace}
 	Add support for \mark commands
