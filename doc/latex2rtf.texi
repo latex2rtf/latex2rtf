@@ -361,7 +361,7 @@ Save the file to its original location.
 WinNT, WinXP
 @itemize
 @item
-Right-click "My Computer" (D: "Arbeitsplatz"), then select "Properties";
+Right-click "My Computer" (German: "Arbeitsplatz"), then select "Properties";
 @item
 NT: Click the "Environment" tab;@*
 XP: Click the "Extended" tab, then the "Environment variables" button;
@@ -387,7 +387,7 @@ as parameter separator in the EQ fields, see chapter @ref{Equations}.
 If you want to use the option to convert equations to bitmaps (-M 12),
 you must have TeX, ImageMagick and Ghostscript installed.
 This works only on win32 systems (win95, win98, winNT4, win2000, winXP)
-because ImageMagick is available only for win32, not for pure DOS.
+because ImageMagick is available only for win32, not for pure DOS.@*
 
 @itemize
 @item
@@ -420,6 +420,13 @@ rem Set path to Ghostscript's gswin32c.exe here (NOT ending with \)
 rem     if it isn't in your search path:
 SET GSDIR=C:\gs\gs7.04\bin
 @end example
+
+@ltor{} first writes a temporary .tex file to disk which consists of only 
+the equation to be converted. It then sends the call for latex2png.bat to
+the operating system. One user had problems that this didn't work although
+manually calling latex2png.bat from the command prompt worked.@*
+I guess the problem was caused by using 4NT.exe as command processor instead
+of the (default) command.com, but he not (yet) confirmed this.
 
 
 @node Macintosh, Problems Compiling, DOS or Windows, Installing LaTeX2RTF
