@@ -814,7 +814,10 @@ parameter: code: type of section-recursion-level
                 InsertBookmark(g_section_label, unit_label);
                 free(unit_label);
             }
-            fprintRTF("\\par\\par\n");
+            CmdEndParagraph(0);
+            fprintRTF("}{");
+            CmdVspace(VSPACE_BIG_SKIP);
+            CmdStartParagraph(TITLE_PAR);
             ConvertString(heading);
             CmdEndParagraph(0);
             fprintRTF("}");

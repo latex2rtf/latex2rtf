@@ -9,7 +9,7 @@ Fit & Finish:
 
 Potential Features:
 
-	add \tableofcontents, \listoftables, \listoffigures
+	add \listoftables, \listoffigures
 	add estimates for column sizes to tables
 	
 	Expand -f support to array
@@ -23,19 +23,15 @@ Potential Features:
 	add support for \symbol{\'134}
 	finish special cases for \char 'xxx
 	
-	Add default page numbering
-	
 	Add support for \usepackage{fullpage}
 	Add support for \usepackage{doublespace}
 	Add support for \usepackage{geometry}
 	Add support for \usepackage{endfloat}
-	Add support for \mark commands
 	
 	Add autonumbering of equations using fields
 	
-	Style stuff in rtf header
-		add style support for quote environment
-		add style support for enumerate environment
+	add style support for quote environment
+	add style support for enumerate environment
         add style support for superscript natbib entries
 
 	support \hsize
