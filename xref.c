@@ -563,13 +563,16 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first)
 			if (CITE_P_STAR==code)
 				if (!isEmptyName(full)) v = full;
 
-			if (pre && g_current_cite_item==1){ ConvertString(pre); fprintRTF(" "); }
-
 			if (strcmp(v,g_last_author_cited)==0) 
 				author_repeated=TRUE;
 				
 			if (strncmp(year,g_last_year_cited,4)==0) /* over simplistic test ... */
 				year_repeated=TRUE;
+
+			if (pre && !isEmptyName(post) && g_current_cite_item==1){ 
+				ConvertString(pre); 
+				fprintRTF(" "); 
+			}
 
 			if (!first && !author_repeated) fprintRTF("; ");	/* punctuation between citations */
 			
@@ -590,6 +593,13 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first)
 					free(s);
 				}
 			}
+
+			if (pre && isEmptyName(post)){ 
+				fprintRTF(", ");
+				ConvertString(pre);
+				fprintRTF(" ");
+			}
+
 			if (post && *post !='\0') {
 				fprintRTF(", ");
 				ConvertString(post);
@@ -612,9 +622,25 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first)
 		case CITE_YEAR:
 		case CITE_YEAR_P:
 			if (!first) fprintRTF("; ");	/* punctuation between citations */
-			if (pre){ ConvertString(pre); fprintRTF(" "); }
+
+			if (CITE_YEAR != code && pre && !isEmptyName(post) && g_current_cite_item==1){ 
+				ConvertString(pre); 
+				fprintRTF(" "); 
+			}
+
 			ConvertString(year);
-			if (post) { fprintRTF(", "); ConvertString(post); }
+
+			if (pre && isEmptyName(post)){ 
+				fprintRTF(", ");
+				ConvertString(pre);
+				fprintRTF(" ");
+			}
+
+			if (post && *post !='\0') {
+				fprintRTF(", ");
+				ConvertString(post);
+				fprintRTF(" ");
+			}
 			break;
 	}
 	free(n);
