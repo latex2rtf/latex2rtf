@@ -78,15 +78,17 @@ bib_apanat.rtf: bib_apanat.tex
 	$(LATEX) bib_apanat > latex.log
 	$(LATEX2RTF) $(OPTIONS) bib_apanat
 
-bib_harvard.rtf: bib_harvard.tex
-	$(LATEX) bib_harvard > latex.log
-	$(LATEX) bib_harvard > latex.log
-	$(LATEX2RTF) $(OPTIONS) bib_harvard
-
 bib_authordate.rtf: bib_authordate.tex
 	$(LATEX) bib_authordate > latex.log
 	$(LATEX) bib_authordate > latex.log
 	$(LATEX2RTF) $(OPTIONS) bib_authordate
+
+bib_harvard.rtf: bib_harvard.tex bib_harvard.bib
+	$(LATEX) bib_harvard > latex.log
+	$(BIBTEX) bib_harvard > bibtex.log
+	$(LATEX) bib_harvard > latex.log
+	$(LATEX) bib_harvard > latex.log
+	$(LATEX2RTF) $(OPTIONS) bib_harvard
 
 bibentry_plain.rtf: bibentry_plain.tex bibentry_plain.bib
 	$(LATEX) bibentry_plain > latex.log
