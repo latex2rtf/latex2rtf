@@ -391,7 +391,7 @@ print_usage(void)
 	fprintf(stdout, "  -h               display help\n");
 	fprintf(stdout, "  -i language      idiom or language (e.g., german, french)\n");
 	fprintf(stdout, "  -l               use latin1 encoding (default)\n");
-	fprintf(stdout, "  -M #              math equation handling\n");
+	fprintf(stdout, "  -M#               math equation handling\n");
 	fprintf(stdout, "       -M1          displayed equations to RTF\n");
 	fprintf(stdout, "       -M2          inline equations to RTF\n");
 	fprintf(stdout, "       -M3          inline and displayed equations to RTF (default)\n");
@@ -410,7 +410,7 @@ print_usage(void)
 	fprintf(stdout, "  -v               version information\n");
 	fprintf(stdout, "  -V               version information\n");
 	fprintf(stdout, "  -W               include warnings in RTF\n");
-	fprintf(stdout, "  -Z #             add # of '}'s at end of rtf file (# is 0-9)\n\n");
+	fprintf(stdout, "  -Z#              add # of '}'s at end of rtf file (# is 0-9)\n\n");
 	fprintf(stdout, "Examples:\n");
 	fprintf(stdout, "  latex2rtf foo              convert foo.tex to foo.rtf\n");
 	fprintf(stdout, "  latex2rtf <foo >foo.RTF    convert foo to foo.RTF\n");

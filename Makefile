@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.85 2003/05/31 19:13:17 prahl Exp $
+# $Id: Makefile,v 1.86 2003/06/07 16:06:19 prahl Exp $
 
 CC=gcc
 MKDIR=mkdir -p
@@ -122,7 +122,7 @@ depend: $(SRCS)
 	$(CC) -MM $(SRCS) >makefile.depend
 	@echo "***** Append makefile.depend to Makefile manually ******"
 
-dist: checkdir latex2rtf doc $(SRCS) $(HDRS) $(CFGS) $(README) Makefile $(SCRIPTS) $(DOCS) $(TEST)
+dist: checkdir uptodate latex2rtf doc $(SRCS) $(HDRS) $(CFGS) $(README) Makefile $(SCRIPTS) $(DOCS) $(TEST)
 	$(MKDIR) latex2rtf-$(VERSION)
 	$(MKDIR) latex2rtf-$(VERSION)/cfg
 	$(MKDIR) latex2rtf-$(VERSION)/doc
@@ -139,6 +139,10 @@ dist: checkdir latex2rtf doc $(SRCS) $(HDRS) $(CFGS) $(README) Makefile $(SCRIPT
 	tar cvf - latex2rtf-$(VERSION) | \
 	    gzip -best > latex2rtf-$(VERSION).tar.gz
 	rm -rf latex2rtf-$(VERSION)
+
+uptodate:
+	perl -pi.bak -e '$$date=scalar localtime; s/\(.*/($$date)";/' version.h
+	rm version.h.bak
 
 doc: doc/latex2rtf.texi doc/Makefile
 	cd doc && $(MAKE) -k
@@ -183,7 +187,7 @@ realclean: checkdir clean
 splint: 
 	splint -weak $(SRCS) $(HDRS)
 	
-.PHONY: all check checkdir clean depend dist doc install install_info realclean latex2rtf splint
+.PHONY: all check checkdir clean depend dist doc install install_info realclean latex2rtf uptodate splint
 
 # created using "make depend"
 commands.o : cfg.h main.h convert.h chars.h l2r_fonts.h preamble.h funct1.h \
