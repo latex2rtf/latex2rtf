@@ -681,7 +681,7 @@ TabbingColumnPosition(int n, int total)
  purpose:  return position of nth column 
  ******************************************************************************/
 {
-	int colWidth = getLength("textwidth")/colCount;
+	int colWidth = getLength("textwidth")/total;
 	return colWidth * (n+1);
 }
 
@@ -787,13 +787,14 @@ TabbingWriteRow(char *this_row, int n, char *align)
 		BeginCell(align[i]);
 		cell=TabbingNextCell(start,&end);
 		if (cell) {
-			diagnostics(1,"cell=<%s>",cell);
+			diagnostics(4,"cell=<%s>",cell);
 			ConvertString(cell);
 			free(cell);
 		}
 		EndCell();
 		start=end;
 	}
+	fprintRTF("\\row\n");
 }
 
 static void
@@ -916,9 +917,16 @@ CmdTabbing(int code)
 	TabbingGetRow(row_start, &this_row, &next_row_start);
 
 	diagnostics(2, "tabbing_tabbing_tabbing\n%s\ntabbing_tabbing_tabbing",table);
+
+	if (GetTexMode() != MODE_HORIZONTAL){
+		CmdIndent(INDENT_NONE);
+		CmdStartParagraph(0);
+	}
 	
-	while (this_row) {
-		diagnostics(1,"row=<%s>",this_row);
+	fprintRTF("\\par\n");
+	
+	while (this_row && strlen(this_row)>0) {
+		diagnostics(4,"row=<%s>",this_row);
 		
 		TabbingGetColumnAlignments(this_row, align, &n, &next_left);
 		diagnostics(4,"this row n=%d <%s> left_tab=%d",n,align,g_tabbing_left_position);

@@ -1,0 +1,52 @@
+\documentclass{article}
+\begin{document}
+
+Testing the tabbing environment
+
+\begin{table}
+\begin{center}
+\begin{tabbing}
+Cheddar cheese \= Recommended \= \$2.00 \kill
+Green Ham \> Recommended \> \$2.00      \\
+Eggs \> 1 a week \> \$1.50              \\
+Cheddar cheese \> Hmmm \> \$0.80        \\
+Yak cheese \> Avoid \> \$0.05
+\end{tabbing}
+\caption{Simplest test case for tabbing environment, should be
+three aligned columns}
+\end{center}
+\end{table}
+
+\begin{table}
+\begin{center}
+\begin{tabbing}
+Entry in position 1,1 \= Entry 1,2 \= Entry 1,3\\
+Entry in position 2,1 \> Entry 2,2 \> Entry 2,3\\
+Entry 3,1 \= Entry 3,2 \> Entry 3,3            \\
+Entry 4,1 \> Entry 4,2 \> Entry 4,3
+\end{tabbing}
+\caption{Simplest test case for tabbing environment, should be
+three aligned columns}
+\end{center}
+\end{table}
+
+\begin{table}
+\begin{center}
+\begin{tabbing}
+Armadillo: \=							\kill
+Gnat:      \> swatted by: \= men \+\+   \\
+                             cows       \\
+                      and \' gnus   \-  \\
+              not very filling    \-    \\
+Armadillo: \> not edible                \\
+\pushtabs
+(note also the: \= aardvark             \\
+                \> albatross \` eton)   \\
+\poptabs
+Gnu:            \> eaten by  \>    gnats
+\end{tabbing}
+\caption{Simplest test case for tabbing environment, should be
+three aligned columns}
+\end{center}
+\end{table}
+\end{document}
