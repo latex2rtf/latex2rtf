@@ -1,5 +1,10 @@
 Fit & Finish:
 	
+	last line tabular in one column mode
+	extra spaces around \hline in tabular
+	parser bug wrt %
+	graphic sizing bugs
+	
 	Improve spacing before and after \section etc.
 	Improve font sizes in \section etc.
 	Reset footnote numbering at each new chapter

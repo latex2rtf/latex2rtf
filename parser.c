@@ -1057,15 +1057,18 @@ getSection(char **body, char **header, char **label)
 		
 		if (*(section_buffer+delta) == '\0') break;
 
-		/* slurp TeX comments */
+		/* slurp TeX comments but discard InterpretCommentString */
 		if (*(section_buffer+delta) == '%' && even(bs_count)) {	
 			char * comment = section_buffer+delta+1;
 			int    n = 0;
 			
 			delta++;
 
-			while ((cNext=getRawTexChar()) != '\n') {
+			for (;;) {
+				cNext=getRawTexChar();
+				if (cNext == '\n' || cNext == '\0') break;
 				if (delta+2 >= section_buffer_size) increase_buffer_size();
+				
 				*(section_buffer+delta) = cNext;
 				delta++;
 				n++;
@@ -1077,9 +1080,9 @@ getSection(char **body, char **header, char **label)
 						break;
 					}
 				}
-				
 			}
-			*(section_buffer+delta) = cNext;
+			*(section_buffer+delta) = cNext;	/* add '\n' to section */
+			if ( cNext == '\0') break;
 		}
 
 		/* begin search if backslash found */
