@@ -54,7 +54,47 @@ CmdSubscript(int code)
 }
 
 void
+CmdLeftRight(int code)
+/******************************************************************************
+ purpose   : Handles \left \right
+ 			 to properly handle \left. or \right. would require prescanning the
+ 			 entire equation.  
+ ******************************************************************************/
+{ 
+	char delim;
+
+	delim = getTexChar();
+	if (delim == '\\')			/* might be \{ or \} */
+		delim = getTexChar();
+	
+	if (code == 0) {
+		diagnostics(4, "CmdLeftRight() ... \\left <%c>", delim);
+
+		g_processing_fields++;
+		
+		fprintRTF("{\\field{\\*\\fldinst{EQ \\\\b ");
+		if (delim == '(' || delim == '.')
+			fprintRTF("(");
+		else if (delim == '{')
+			fprintRTF("\\\\bc\\\\\\{ (");
+		else 
+			fprintRTF("\\\\bc\\\\%c (", delim);
+
+	} else {
+		g_processing_fields--;
+		fprintRTF(")}}{\\fldrslt{0}}}");
+		diagnostics(4, "CmdLeftRight() ... \\right <%c>", delim);
+	}
+
+	if (delim == '.')
+		diagnostics(WARNING, "\\right. and \\left. not supported");
+}
+
+void
 CmdArray(int code)
+/******************************************************************************
+ purpose   : Handles \begin{array}[c]{ccc} ... \end{array}
+ ******************************************************************************/
 {
 char * v_align, * col_align, *s;
 int n=0;
@@ -108,7 +148,6 @@ CmdMath(int code)
 		case EQN_MATH:
 			if (code & ON) {
 				diagnostics(4, "CmdMath() ... \\begin{math}");
-				fprintRTF("\\i ");
 				SetTexMode(MODE_MATH);
 			} else {
 				diagnostics(4, "CmdMath() ... \\end{math}");
@@ -119,7 +158,7 @@ CmdMath(int code)
 		case EQN_DOLLAR:
 			if (GetTexMode() != MODE_MATH) {
 				diagnostics(4, "Entering CmdMath() ... $");
-				fprintRTF("{\\i ");
+				fprintRTF("{");
 				SetTexMode(MODE_MATH);
 			} else {
 				diagnostics(4, "Exiting CmdMath() ... $");
@@ -130,7 +169,7 @@ CmdMath(int code)
 	
 		case EQN_RND_OPEN:	/* \( */
 			diagnostics(4, "CmdMath() ... \\(");
-			fprintRTF("{\\i ");
+			fprintRTF("{");
 			SetTexMode(MODE_MATH);
 			break;
 	
@@ -164,7 +203,7 @@ CmdDisplayMath(int code)
 			CmdEndParagraph(0);
 			SetTexMode(MODE_DISPLAYMATH);
 			g_show_equation_number = FALSE;
-			fprintRTF("{\\pard\\i\\tqc\\tx%d\\tab ", mid);
+			fprintRTF("{\\pard\\tqc\\tx%d\\tab ", mid);
 		} else {
 			diagnostics(4,"Exiting CmdDisplayMath -- $$");
 			CmdEndParagraph(0);
@@ -178,7 +217,7 @@ CmdDisplayMath(int code)
 		diagnostics(4,"Entering CmdDisplayMath -- \\[");
 		SetTexMode(MODE_DISPLAYMATH);
 		g_show_equation_number = TRUE;
-		fprintRTF("\\par\\par\n{\\pard\\i\\tqc\\tx%d\\tqr\\tx%d\n\\tab ", mid, width);
+		fprintRTF("\\par\\par\n{\\pard\\tqc\\tx%d\\tqr\\tx%d\n\\tab ", mid, width);
 		return;
 	}
 
@@ -196,7 +235,7 @@ CmdDisplayMath(int code)
 		a = 0.25 *width;
 		b = 0.3 * width;
 		c = 0.35 * width;
-		fprintRTF("\\par\\par\n\\pard\\i");
+		fprintRTF("\\par\\par\n\\pard");
 		switch (true_code) {
 		case EQN_DISPLAYMATH:
 			diagnostics(4,"Entering CmdDisplayMath -- displaymath");

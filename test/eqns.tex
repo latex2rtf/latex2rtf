@@ -1,31 +1,6 @@
 \documentclass{article}
 \begin{document}
 
-Needs a number
-\begin{equation}\label{ab3}
-\,\varphi\,=\,\left|\,
-\begin{array}{c}
-\psi_1 \\
-\psi_2
-\end{array}\,\right|\,; \quad {\rm and} \quad
-\,\chi\,=\,\left|\,
-\begin{array}{c}
-\psi_3 \\
-\psi_4
-\end{array}\,\right|\,; \quad {\rm or} \quad
-\,\eta\,=\,\left|\,
-\begin{array}{c}
-\tilde{\psi}_1 \\
-\tilde{\psi}_2
-\end{array}\,\right|\,; \quad {\rm and} \quad
-\,\lambda\,=\,\left|\,
-\begin{array}{c}
-\tilde{\psi}_3 \\
-\tilde{\psi}_4
-\end{array}\,\right|\,;
-\end{equation}
-more text
-
 \section{Inline equations}
 
 First begin with simple \verb#$# delimited equation such as
@@ -100,26 +75,92 @@ z & = & w + x \nonumber\\
 z & = & w + x  
 \end{eqnarray*}
 
+\section{Equation numbering test}
+This equation needs a number 
+\begin{equation}\label{ab3}
+\,\varphi\,=\,\left|\,
+\begin{array}{c}
+\psi_1 \\
+\psi_2
+\end{array}\,\right|\,; \quad {\rm and} \quad
+\,\chi\,=\,\left|\,
+\begin{array}{c}
+\psi_3 \\
+\psi_4
+\end{array}\,\right|\,; \quad {\rm or} \quad
+\,\eta\,=\,\left|\,
+\begin{array}{c}
+\tilde{\psi}_1 \\
+\tilde{\psi}_2
+\end{array}\,\right|\,; \quad {\rm and} \quad
+\,\lambda\,=\,\left|\,
+\begin{array}{c}
+\tilde{\psi}_3 \\
+\tilde{\psi}_4
+\end{array}\,\right|\,;
+\end{equation}
+more text following
+
 \section{Testing math environment closing}
 
 For a while, getting \texttt{latex2rtf} to contain all the math elements
 to the enclosing was a major headache.  It is working for now.  Here are
 a few test cases.
 
-Case 1 \textit{s$_c+1$} or {\it s$_c$}
+Case 1 Here a math environment is found within an italic environment
+\textit{s$_c+1$} or {\it s$_c$}
 
-Case 2 $a+\bf R$ roman \verb#$# type
+Case 2 The odd construction \verb#$a+\bf R$# follows $a+\bf R$ which
+should make ``a'' italic and ``R'' bold
 
-Case 3 \(a+\bf R\) roman type
+Case 3 Same as above but using \verb#\(# to enter a math environment
+\(a+\bf R\) roman type follows
 
-Case 4 \[a+\bf R\] roman type
+Case 4 Same as above but using \verb#\[# to enter a math environment \[a+\bf R\] 
+roman type follows
 
-Case 5 \begin{math}a+\bf R\end{math} roman type
+Case 5 Same as above but using \verb#\begin{math}# to enter a math environment
+\begin{math}a+\bf R\end{math} roman type follows
 
-Case 6 \begin{equation}a+ \bf R\end{equation} roman type
+Case 6 Same as above but using \verb#\begin{equation}# to enter a math environment
+\begin{equation}a+ \bf R\end{equation} roman type follows
 
-Case 7 \begin{eqnarray}a+ \bf R\end{eqnarray} roman type
+Case 7 Same as above but using \verb#\begin{eqnarray}# to enter a math environment
+\begin{eqnarray}a+ \bf R\end{eqnarray} roman type follows
 
-Case 8 $$a+ \bf R$$ roman type
+Case 8 Same as above but using \verb#$$# to enter a math environment
+$$a+ \bf R$$ roman type follows
+
+
+\section{Large Delimiters}
+
+\subsection{Determinant}
+
+$$
+\det A = \left| \begin{array}{cccc}
+a_{11} & a_{12} & \cdots & a_{1n}\\
+a_{21} & a_{22} & \cdots & a_{2n}\\
+\vdots & \vdots & \ddots & \vdots\\
+a_{m1} & a_{m2} & \cdots & a_{mn}
+\end{array} \right|
+$$
+
+\subsection{Mixed Delimiters}
+
+w = \[ \left| 4 x^3 + \left( x + \frac{42}{1+x^4} \right) \right|.\] 
+
+
+\subsection{Submatrices}
+
+A = \left[ \begin{array}{cccc}
+\left|\begin{array}{cc}
+b_{11}&b_{12}\\
+b_{21}&b_{22}
+\end{array}\right|
+ & a_{12} & \cdots & a_{1n}\\
+a_{21} & a_{22} & \cdots & a_{2n}\\
+\vdots & \vdots & \ddots & \vdots\\
+a_{m1} & a_{m2} & \cdots & a_{mn}
+\end{array} \right]
 
 \end{document}

@@ -1,4 +1,4 @@
-/* $Id: convert.c,v 1.15 2001/10/17 04:43:47 prahl Exp $ 
+/* $Id: convert.c,v 1.16 2001/10/19 03:58:56 prahl Exp $ 
 	purpose: ConvertString(), Convert(), TranslateCommand() 
 	
 TeX has six modes according to the TeX Book:
@@ -389,13 +389,17 @@ globals: fTex, fRtf and all global flags for convert (see above)
 			break;
 
 		default:
-			if (mode != MODE_MATH && mode != MODE_DISPLAYMATH)
+			if (mode == MODE_MATH || mode == MODE_DISPLAYMATH) {
+				if (('a' <= cThis && cThis <= 'z') || ('A' <= cThis && cThis <= 'Z'))
+					fprintRTF("{\\i %c}", cThis);	
+				else
+					fprintRTF("%c", cThis);	
+
+			} else {
+			
 				SetTexMode(MODE_HORIZONTAL);
-				
-			if ((int) cThis < 0)
-				WriteEightBitChar(cThis);
-			else
 				fprintRTF("%c", cThis);
+			}
 			break;
 		}
 
