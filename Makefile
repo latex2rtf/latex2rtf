@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.57 2002/08/05 04:05:59 prahl Exp $
+# $Id: Makefile,v 1.58 2002/09/21 18:20:33 prahl Exp $
 
 CC=gcc
 MKDIR=mkdir -p
@@ -9,6 +9,13 @@ CFLAGS:=-DUNIX
 #CFLAGS:=-DMSDOS
 #CFLAGS:=-DMACINTOSH
 
+#Uncomment next three lines for os2/emx or win32/rsx
+#EXESFX=.exe
+#PREFIX_DRIVE=c:
+#CFLAGS:=-DUSE_DOS_SEP
+#Uncomment next line when using rsx compiler, target win32
+#CFLAGS:=-Zwin32  
+
 #Uncomment if getopt() is not available
 #CFLAGS:=$(CFLAGS) -DHAS_NO_GETOPT
 
@@ -16,7 +23,10 @@ CFLAGS:=-DUNIX
 CFLAGS:=$(CFLAGS) -g -Wall -ansi
 
 #Base directory
-PREFIX=/usr/local
+PREFIX=$(PREFIX_DRIVE)/usr/local
+
+#Name of executable binary
+BINARY_NAME=latex2rtf$(EXESFX)
 
 # Location of binary, man, info, and support files
 BIN_INSTALL=$(PREFIX)/bin
@@ -84,7 +94,7 @@ all : checkdir latex2rtf
 	touch stamp-build
 
 latex2rtf: $(OBJS) $(HDRS)
-	$(CC) $(CFLAGS) $(OBJS)	$(LIBS) -o latex2rtf
+	$(CC) $(CFLAGS) $(OBJS)	$(LIBS) -o $(BINARY_NAME)
 
 cfg.o: Makefile
 	$(CC) $(CFLAGS) -DCFGDIR=\"$(CFG_INSTALL)\" -c cfg.c -o cfg.o
@@ -95,7 +105,7 @@ check test: latex2rtf
 checkdir: $(README) $(SRCS) $(HDRS) $(CFGS) $(SCRIPTS) $(TEST) doc/latex2rtf.texi
 
 clean: checkdir
-	rm -f $(OBJS) core latex2rtf
+	rm -f $(OBJS) core $(BINARY_NAME)
 
 depend: $(SRCS)
 	$(CC) -MM $(SRCS) >makefile.depend
@@ -126,7 +136,7 @@ install: latex2rtf doc/latex2rtf.1 $(CFGS) scripts/latex2png
 	$(MKDIR) $(BIN_INSTALL)
 	$(MKDIR) $(MAN_INSTALL)
 	$(MKDIR) $(CFG_INSTALL)
-	cp latex2rtf          $(BIN_INSTALL)
+	cp $(BINARY_NAME)     $(BIN_INSTALL)
 	cp scripts/latex2png  $(BIN_INSTALL)
 	cp doc/latex2rtf.1    $(MAN_INSTALL)
 	cp doc/latex2png.1    $(MAN_INSTALL)
@@ -135,12 +145,14 @@ install: latex2rtf doc/latex2rtf.1 $(CFGS) scripts/latex2png
 	cp doc/latex2rtf.pdf  $(SUPPORT_INSTALL)
 	cp doc/latex2rtf.txt  $(SUPPORT_INSTALL)
 	@echo "******************************************************************"
-	@echo "*** latex2rtf successfully installed"
+	@echo "*** latex2rtf successfully installed as \"$(BINARY_NAME)\""
+	@echo "*** in directory \"$(BIN_INSTALL)\""
 	@echo "***"
 	@echo "*** \"make install-info\" will install TeXInfo files "
 	@echo "***"
 	@echo "*** latex2rtf was compiled to search for its configuration files in"
 	@echo "***           \"$(CFG_INSTALL)\" "
+	@echo "***"
 	@echo "*** If the configuration files are moved then either"
 	@echo "***   1) set the environment variable RTFPATH to this new location, or"
 	@echo "***   2) use the command line option -P /path/to/cfg, or"
@@ -157,7 +169,7 @@ realclean: checkdir clean
 	cd doc && $(MAKE) clean
 	cd test && $(MAKE) clean
 
-.PHONY: all check checkdir clean depend dist doc install install_info realclean
+.PHONY: all check checkdir clean depend dist doc install install_info realclean latex2rtf
 
 # created using "make depend"
 commands.o : cfg.h main.h convert.h chars.h l2r_fonts.h preamble.h funct1.h \

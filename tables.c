@@ -41,9 +41,13 @@ typedef struct TabularT {
 	int *vert;		/* vert[0] is the number of |'s before first column
 	                   vert[1] is the number of |'s after first column
 	                   vert[n] is the number of |'s after last column */
-	int *width;	/* width[1] is the width of the first column      */	
-	int *cline;  /* cline[1] is true when line should be draws across column 1 */
+	int *width;		/* width[1] is the width of the first column      */	
+	int *cline;  	/* cline[1] is true when line should be draws across column 1 */
 } TabularT;	
+
+int				g_tabbing_left_position = 0;
+int				g_tabbing_current_position = 0;
+int				*g_tabbing_locations = NULL;
 
 int             tabcounter = 0;
 bool            tabbing_return = FALSE;
@@ -195,13 +199,12 @@ TabularPreamble(char *text, char *width, char *pos, char *cols)
 }
 
 static void
-TabularGetRow(char *table, char **row, char **next_row, int *height, int tabbing)
+TabularGetRow(char *table, char **row, char **next_row, int *height)
 /******************************************************************************
- purpose:  scan and duplicate the next row from the table and any height changes
+ purpose:  scan and duplicate the next row from a tabular environment and any height changes
  			e.g.   the & cell & is & here \\[2pt]
  			       but & then & it & died \\
  			will return "the & cell & is & here" and height should be 40 (twips)
- if tabbing then \kill will end a line
  ******************************************************************************/
 {
 	char *s,*dimension,*dim_start;
@@ -217,14 +220,7 @@ TabularGetRow(char *table, char **row, char **next_row, int *height, int tabbing
 	
 	if (!s) return;
 
-	/* the end of a row is caused by one of three things
-	   1) the buffer ends
-       2) two slashes in a row are found
-       3) \kill is encountered                            */
-	while (!(*s == '\0') &&
-		   !(*s == '\\' && slash) &&
-		   !(tabbing && (row_chars>6) && strncmp(s-6,"\\kill",5) == 0 && !isalpha((int) *s))
-		  ) {
+	while (!(*s == '\0') && !(*s == '\\' && slash) ) {
 		slash = (*s == '\\') ? 1 : 0;
 		row_chars++;
 		s++;
@@ -475,7 +471,6 @@ TabularBeginRow(TabularT tabular, char *this_row, char *next_row, int first_row)
            line may have an hlines above it.  Drawing hlines below depends on the
            next line containing an hline (i.e., after \\ that ends the row)
            
-           
  ******************************************************************************/
 {
 	int i,n,column,rvert,lvert;
@@ -604,16 +599,6 @@ TabularWriteRow(TabularT tabular, char *this_row, char *next_row, int height, in
 	TabularEndRow();
 }
 
-static void
-TabbingWriteRow(TabularT tabular, char *this_row, char *next_row, int height, int first_row)
-{
-	if (this_row==NULL || strlen(this_row)==0) return;
-	
-	diagnostics(4, "TabbingWriteRow height=%d twpi, row <%s>",height, this_row); 
-	if (strstr(this_row,"\\kill")) return;
-	ConvertString(this_row);
-}
-
 void 
 CmdTabular(int code)
 /******************************************************************************
@@ -625,13 +610,11 @@ CmdTabular(int code)
 	int             true_code,this_height, next_height, first_row;
 	char           *cols,*pos,*end,*width,*this_row, *next_row, *next_row_start, *row_start;
 	char   		   *table=NULL;
-	bool			tabbing;
 	TabularT        tabular;
-
+	
 	if (!(code & ON)) {
 		diagnostics(4, "Exiting CmdTabular");
 		g_processing_tabular = FALSE;
-		g_processing_tabbing = FALSE;
 		if (colFmt) free(colFmt);
 		colFmt=NULL;
 		return;
@@ -640,13 +623,8 @@ CmdTabular(int code)
 	width = NULL;
 	pos=NULL;
 	cols=NULL;
-	tabbing=FALSE;
 	true_code = code & ~(ON);
 	switch (true_code) {
-		case TABBING: 
-			end = strdup("\\end{tabbing}");
-			tabbing = TRUE;
-			break;
 		case TABULAR: 
 			end = strdup("\\end{tabular}");
 			break;
@@ -663,32 +641,21 @@ CmdTabular(int code)
 			break;
 	}
 
-	if (tabbing){
-		table = getTexUntil(end,FALSE);
-		diagnostics(3, "Entering CmdTabular() with tabbing"); 
-	} else {
-		pos = getBracketParam();
-		cols = getBraceParam();		
-		table = getTexUntil(end,FALSE);
-		diagnostics(3, "Entering CmdTabular() options [%s], format {%s}",pos, cols); 
-		tabular=TabularPreamble(table,width,pos,cols);
-	}
+	pos = getBracketParam();
+	cols = getBraceParam();		
+	table = getTexUntil(end,FALSE);
+	diagnostics(3, "Entering CmdTabular() options [%s], format {%s}",pos, cols); 
+	tabular=TabularPreamble(table,width,pos,cols);
+	row_start=table;
+	TabularGetRow(row_start,&this_row,&next_row_start,&this_height);
 
 	diagnostics(2, "table_table_table_table_table\n%stable_table_table_table_table",table);
 	
-	row_start=table;
-	TabularGetRow(row_start,&this_row,&next_row_start,&this_height,tabbing);
 	first_row = TRUE;
 	while (this_row) {
 		row_start=next_row_start;
-		TabularGetRow(row_start,&next_row,&next_row_start,&next_height,tabbing);
-		if (tabbing) {
-			diagnostics(1,"this row=<%s>",this_row);
-			diagnostics(1,"next row=<%s>",next_row);
-			TabbingWriteRow(tabular, this_row, next_row, this_height, first_row);
-		}
-		else
-			TabularWriteRow(tabular, this_row, next_row, this_height, first_row);
+		TabularGetRow(row_start,&next_row,&next_row_start,&next_height);
+		TabularWriteRow(tabular, this_row, next_row, this_height, first_row);
 		free(this_row);
 		this_row = next_row;
 		this_height = next_height;
@@ -702,12 +669,162 @@ CmdTabular(int code)
 	if (cols ) free(cols);
 	free(table);
 	free(end);
-	if (!tabbing) {
-		free(tabular.cline);
-		free(tabular.align);
-		free(tabular.vert);
-		free(tabular.width);
+	free(tabular.cline);
+	free(tabular.align);
+	free(tabular.vert);
+	free(tabular.width);
+}
+
+static void
+TabbingWriteRow(char *this_row, char *next_row, int height, int first_row)
+{
+	if (this_row==NULL || strlen(this_row)==0) return;
+	
+	diagnostics(4, "TabbingWriteRow height=%d twpi, row <%s>",height, this_row); 
+	if (strstr(this_row,"\\kill")) return;
+	ConvertString(this_row);
+}
+
+static void
+TabbingGetRow(char *table, char **row, char **next_row, int *height)
+/******************************************************************************
+ purpose:  scan and duplicate the next row from the tabbing environment
+  ******************************************************************************/
+{
+	char *s;
+	int row_chars=0;
+	bool slash = FALSE;
+	
+	s=table;
+	*row=NULL;
+	*next_row=NULL;
+	*height=0;
+	
+	if (!s) return;
+
+	/* the end of a row is caused by one of three things
+	   1) the buffer ends
+       2) the line ends \\
+       3) \kill is encountered */
+	while (!(*s == '\0') &&
+		   !(*s == '\\' && slash) &&
+		   !((row_chars>6) && strncmp(s-6,"\\kill",5) == 0 && !isalpha((int) *s))
+		  ) {
+		row_chars++;
+		s++;
+        slash = (*s == '\\') ? 1 : 0;
 	}
+	
+	*row = (char *)malloc((row_chars+1)*sizeof(char));
+	strncpy(*row, table, row_chars);
+	(*row)[row_chars]='\0';
+
+	diagnostics(4,"row =<%s>",*row);
+}
+
+/*
+static void
+TabbingSetStops(char *row)
+{
+	char *arow, *next_left;
+	int i,len,num_cols;
+	
+	arow = strdup_noendblanks(row);
+	len = strlen(arow)-1;				//no commands begin with last character
+	
+	*next_left = g_tabbing_left_position;
+	
+	for (i=0; i<len-1; i++) {
+		if (arow[i] != '\\') 
+			continue;
+		
+		i++;
+		switch (arow[i]) {
+		
+			case '=' :	num_cols++;
+						cols[num_cols]='l';
+						pos[num_cols] = i;
+						break;
+						
+			case '<' :	num_cols++;
+						cols[num_cols]='l';
+						break;
+						
+			case '>' :	num_cols++;
+						cols[num_cols]='r';
+						break;
+						
+			case '\'' :	set_tab;
+						break;
+						
+			case '`' :	set_tab;
+						break;
+						
+			case '+' :	(*next_left)++;
+						break;
+					
+			case '-' :	(*next_left)--;
+						break;
+						
+			default:
+						break;
+		}
+	}
+	
+}
+*/
+
+void 
+CmdTabbing(int code)
+/******************************************************************************
+ purpose: 	\begin{tabbing} ... \end{tabbing}
+ ******************************************************************************/
+{
+	int             this_height, next_height, first_row;
+	char           *cols,*pos,*end,*width,*this_row, *next_row, *next_row_start, *row_start;
+	char   		   *table=NULL;
+	
+	if (!(code & ON)) {
+		diagnostics(4, "Exiting CmdTabbing");
+		g_processing_tabbing = FALSE;
+		if (colFmt) free(colFmt);
+		colFmt=NULL;
+		return;
+	}
+
+	width = NULL;
+	pos=NULL;
+	cols=NULL;
+
+	end = strdup("\\end{tabbing}");
+	table = getTexUntil(end,FALSE);
+	diagnostics(3, "Entering CmdTabbing()"); 
+	row_start=table;
+	TabbingGetRow(row_start,&this_row,&next_row_start,&this_height);
+
+	diagnostics(2, "tabbing_tabbing_tabbing\n%s\ntabbing_tabbing_tabbing",table);
+	
+	first_row = TRUE;
+	while (this_row) {
+		row_start=next_row_start;
+		TabbingGetRow(row_start,&next_row,&next_row_start,&next_height);
+		diagnostics(1,"this row=<%s>",this_row);
+		diagnostics(1,"next row=<%s>",next_row);
+		TabbingWriteRow(this_row, next_row, this_height, first_row);
+
+		free(this_row);
+		this_row = next_row;
+		this_height = next_height;
+		first_row = FALSE;
+	}
+	
+	ConvertString(end);
+
+	if (pos  ) free(pos);
+	if (width) free(width);
+	if (cols ) free(cols);
+	free(table);
+	free(end);
 }
 
 void 
