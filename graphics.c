@@ -285,7 +285,7 @@ eps_to_pict(char *s)
 	cmd_len = strlen(eps)+strlen(pict_bitmap)+strlen("convert -crop 0x0  ")+1;
 	cmd = (char *) malloc(cmd_len);
 	snprintf(cmd, cmd_len, "convert -crop 0x0 %s %s", eps, pict_bitmap);	
-	diagnostics(1,"<%s> ",cmd);
+	diagnostics(2, "system graphics command = [%s]", cmd);
 	err = system(cmd);
 	free(cmd);
 	
@@ -367,7 +367,7 @@ Exit:
 static char *
 eps_to_png(char *eps)
 /******************************************************************************
-     purpose : create a png file from an EPS file and return file name
+     purpose : create a png file from an EPS or PS file and return file name
  ******************************************************************************/
 {
 	char *cmd, *s1, *p, *png;
@@ -375,8 +375,9 @@ eps_to_png(char *eps)
 	diagnostics(1, "filename = <%s>", eps);
 
 	s1 = strdup(eps);
-	if ((p=strstr(s1,".eps")) == NULL && (p=strstr(s1,".EPS")) == NULL) {
-		diagnostics(1, "<%s> is not an EPS file", eps);
+	if ((p=strstr(s1,".eps")) == NULL && (p=strstr(s1,".EPS")) == NULL &&
+	    (p=strstr(s1,".ps" )) == NULL && (p=strstr(s1,".PS" )) == NULL) {
+		diagnostics(1, "<%s> is not an EPS or PS file", eps);
 		free(s1);
 		return NULL;
 	}
@@ -386,7 +387,7 @@ eps_to_png(char *eps)
 	cmd_len=strlen(eps)+strlen(png)+10;
 	cmd = (char *) malloc(cmd_len);
 	snprintf(cmd, cmd_len, "convert %s %s", eps, png);	
-	diagnostics(2, "system command to conver to png = <%s>", cmd);
+	diagnostics(2, "system graphics command = [%s]", cmd);
 	system(cmd);	
 	
 	free(cmd);
@@ -416,7 +417,7 @@ pdf_to_png(char *pdf)
 	cmd_len=strlen(pdf)+strlen(png)+10;
 	cmd = (char *) malloc(cmd_len);
 	snprintf(cmd, cmd_len, "convert %s %s", pdf, png);	
-	diagnostics(2, "system command to conver to png = <%s>", cmd);
+	diagnostics(2, "system graphics command = [%s]", cmd);
 	system(cmd);	
 	
 	free(cmd);
@@ -942,6 +943,7 @@ PutTiffFile(char *s, double scale, double baseline, int full_path)
 	cmd_len = strlen(tiff)+strlen(tmp_png)+10;
 	cmd = (char *) malloc(cmd_len);
 	snprintf(cmd, cmd_len, "convert %s %s", tiff, tmp_png);	
+	diagnostics(2, "system graphics command = [%s]", cmd);
 	system(cmd);
 	
 	PutPngFile(tmp_png, scale, baseline, TRUE);
@@ -975,6 +977,7 @@ PutGifFile(char *s, double scale, double baseline, int full_path)
 	cmd_len = strlen(gif)+strlen(tmp_png)+10;
 	cmd = (char *) malloc(cmd_len);
 	snprintf(cmd, cmd_len, "convert %s %s", gif, tmp_png);	
+	diagnostics(2, "system graphics command = [%s]", cmd);
 	system(cmd);
 	
 	PutPngFile(tmp_png, scale, baseline, TRUE);
@@ -1114,7 +1117,7 @@ PutLatexFile(char *s, double scale, char *pre)
 		else
 			snprintf(cmd, cmd_len, "%s -d %d -H \"%s\" %s", l2p, resolution, g_home_dir, s);	
 
-		diagnostics(1, "cmd = <%s>", cmd);
+		diagnostics(2, "system graphics command = [%s]", cmd);
 		err=system(cmd);
 		if (err) break;
 

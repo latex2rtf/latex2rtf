@@ -82,7 +82,7 @@ ttgfsr7.rtf: ttgfsr7.tex
 	$(LATEX) ttgfsr7 > latex.log
 	$(LATEX2RTF) $(OPTIONS) ttgfsr7
 
-figtest.rtf: figtest.tex figtest.eps
+figtest.rtf: figtest.tex figtest.eps figtestc.ps
 	$(LATEX) figtest > latex.log
 	$(LATEX) figtest > latex.log
 	$(LATEX2RTF) $(OPTIONS) -F figtest
