@@ -1,4 +1,4 @@
-/*  $Id: parser.c,v 1.54 2002/04/06 04:37:04 prahl Exp $
+/*  $Id: parser.c,v 1.55 2002/04/13 18:20:35 prahl Exp $
 
    Contains declarations for a generic recursive parser for LaTeX code.
 */
@@ -152,7 +152,8 @@ PushSource(char * filename, char * string)
 	
 	/* if not then try to open a file */	
 	} else if (filename) {
-		p=my_fopen(name, "rb");
+		p=my_fopen(filename, "rb");
+		if (p==NULL) return 1;
 		g_parser_include_level++;
 		g_parser_line=1;
        
@@ -163,7 +164,7 @@ PushSource(char * filename, char * string)
 	
 	if (++g_parser_depth >= PARSER_SOURCE_MAX) {
 		diagnostics(ERROR, "To many BeginSource() calls");
-		return 0;
+		return 1;
 	}
 
 	g_parser_stack[g_parser_depth].string      = string;
@@ -196,7 +197,7 @@ PushSource(char * filename, char * string)
 			}
 		}
 	}
-	return 1;
+	return 0;
 }
 
 int 
@@ -859,7 +860,7 @@ static void increase_buffer_size(void)
 	new_section_buffer = malloc(2*section_buffer_size+1);
 	if (new_section_buffer == NULL)
 		diagnostics(ERROR, "Could not allocate enough memory to process file. Sorry.");
-	memcpy(new_section_buffer, section_buffer, section_buffer_size);
+	memmove(new_section_buffer, section_buffer, section_buffer_size);
 	section_buffer_size *=2;
 	free(section_buffer);
 	section_buffer = new_section_buffer;
@@ -1021,7 +1022,7 @@ getSection(char **body, char **header, char **label)
 					
 					delta -= index+1;  		/* remove \macroname */
 					str = expandDefinition(i);
-					PushSource(NULL,str);   /* memory leak :-( */
+					PushSource(NULL,str);   /* memory leak :-( and ignore failure*/
 					index = 0;
 	    			diagnostics(4,"getSection() expanded macro string is <%s>", str);
 					continue;
@@ -1099,7 +1100,7 @@ getSection(char **body, char **header, char **label)
 					s = s2;
 				}
 					
-				PushSource(s, NULL);
+				PushSource(s, NULL);  /* ignore return value */
 			}
 			delta -=  (i==input_item) ? 6 : 8;  /* remove \input or \include */
 			free(s);

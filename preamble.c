@@ -1,10 +1,8 @@
-/* $Id: preamble.c,v 1.30 2002/03/31 17:13:11 prahl Exp $
+/* $Id: preamble.c,v 1.31 2002/04/13 18:20:35 prahl Exp $
 
 purpose : Handles LaTeX commands that should only occur in the preamble.
           These are gathered together because the entire preamble must be
 		  parsed before the RTF header can be written.
-		  
-		  When \begin{document} is encountered, then the RTF header is created.
 */
 
 #include <stdlib.h>
@@ -22,8 +20,6 @@ purpose : Handles LaTeX commands that should only occur in the preamble.
 #include "ignore.h"
 #include "commands.h"
 #include "counters.h"
-
-extern bool   pagestyledefined;
 
 static bool   g_preambleTwoside  = FALSE;
 static bool   g_preambleTwocolumn= FALSE;
@@ -573,7 +569,6 @@ CmdPagestyle( /* @unused@ */ int code)
 
  globals : headings  set to TRUE if the pagenumber is to go into the header
            pagenumbering set to TRUE if pagenumbering is to occur- default
-	   pagestyledefined, flag, set to true
 
 Produces latex-like headers and footers.
 Needs to be terminated for:
@@ -583,7 +578,6 @@ Needs to be terminated for:
 {
 	static char    *style = "";
 
-	pagestyledefined = TRUE;
 	style = getBraceParam();
 	if (strcmp(style, "empty") == 0) {
 		if (pagenumbering) {

@@ -1,4 +1,4 @@
-/* $Id: main.h,v 1.44 2002/04/06 04:37:04 prahl Exp $ */
+/* $Id: main.h,v 1.45 2002/04/13 18:20:35 prahl Exp $ */
 #ifndef __MAIN_H
 #define __MAIN_H
 
@@ -70,7 +70,6 @@ extern 			char *progname;			/* name of the executable file */
 
 extern bool     GermanMode;
 extern bool     FrenchMode;
-extern char    *hyperref;
 extern bool     pagenumbering;
 extern int      headings;
 
@@ -79,12 +78,11 @@ extern int      RecursionLevel;
 extern int      indent;
 extern char     alignment;
 
-/* table/tabbing variables */
+/* table  & tabbing variables */
 extern char 	*colFmt;
 extern long   	pos_begin_kill;
 extern int      tabcounter;
 extern bool     tabbing_on;
-extern bool     g_processing_tabular;
 extern int      colCount;
 extern int      actCol;
 extern int 		g_equation_column;
@@ -96,6 +94,7 @@ extern bool     g_processing_equation;
 extern bool     g_processing_preamble;
 extern bool     g_processing_figure;
 extern bool 	g_processing_table;
+extern bool     g_processing_tabular;
 extern bool     g_processing_eqnarray;
 extern int		g_processing_arrays;
 extern int 		g_processing_fields;

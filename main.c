@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.68 2002/04/06 04:37:04 prahl Exp $ */
+/* $Id: main.c,v 1.69 2002/04/13 18:20:35 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -42,18 +42,15 @@ int      		g_verbosity_level = WARNING;
 bool			g_little_endian = FALSE;  /* set properly in main() */
 int				g_dots_per_inch = 300;
 
-/* Holds the last referenced "link" value, used by \Ref and \Pageref */
-char           *hyperref = NULL;
 bool            pagenumbering = TRUE;	/* by default use plain style */
 int             headings = FALSE;
-bool            pagestyledefined = FALSE;	/* flag, set to true by
-						 * pagestylecommand triggers
-						 * PlainPagestyle in
-						 * \begin{document} */
 
 bool            g_processing_preamble = TRUE;	/* flag set until \begin{document} */
 bool            g_processing_figure = FALSE;	/* flag, set for figures and not tables */
 bool            g_processing_eqnarray = FALSE;	/* flag set when in an eqnarry */
+bool            g_processing_tabular = FALSE;
+int				g_processing_arrays = 0;
+int 			g_processing_fields = 0;
 
 bool            g_show_equation_number = FALSE;
 int             g_enumerate_depth = 0;
@@ -63,9 +60,6 @@ bool            g_aux_file_missing = FALSE;	/* assume that it exists */
 int				g_safety_braces = 0;
 bool            g_processing_equation = FALSE;
 bool            g_document_type = FORMAT_ARTICLE;
-bool            g_processing_tabular = FALSE;
-int				g_processing_arrays = 0;
-int 			g_processing_fields = 0;
 bool			g_RTF_warnings = FALSE;
 char           *g_config_path = NULL;
 char		   *g_tmp_path = NULL;
@@ -234,7 +228,8 @@ int main(int argc, char **argv)
 	}
 	
 	ReadCfg();
-	if (PushSource(g_tex_name, NULL)) {
+
+	if (PushSource(g_tex_name, NULL)==0) {
 		OpenRtfFile(g_rtf_name, &fRtf);
 		
 		InitializeStack();
@@ -247,8 +242,10 @@ int main(int argc, char **argv)
 		CloseRtf(&fRtf);
 		printf("\n");
 		return 0;
-	} else
+	} else {
+		printf("\n");	
 		return 1;
+	}
 }
 
 static void 	
@@ -652,16 +649,21 @@ my_fopen(char *path, char *mode)
 {
 	char *name;
 	FILE *p;
+
+	diagnostics(4,"Opening <%s>, mode=[%s]",path,mode);
 	
 	if (g_home_dir==NULL)
 		name = strdup(path);
 	else
 		name = strdup_together(g_home_dir, path);
 
+	diagnostics(4,"Opening <%s>",name);
 	p = fopen(name, mode);
 
-	if (!p)
+	if (p==NULL) {
 	   diagnostics(WARNING, "Cannot open <%s>", name);
+	   fflush(NULL);
+	 }
 	   
 	free(name);
 	return p;

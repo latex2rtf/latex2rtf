@@ -1,4 +1,4 @@
-/* $Id: tables.c,v 1.14 2002/03/31 17:13:11 prahl Exp $
+/* $Id: tables.c,v 1.15 2002/04/13 18:20:35 prahl Exp $
 
    Translation of tabbing and tabular environments
 */
@@ -6,7 +6,6 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
-#include <errno.h>
 #include "main.h"
 #include "convert.h"
 #include "l2r_fonts.h"
@@ -18,12 +17,7 @@
 #include "parser.h"
 #include "counters.h"
 #include "util.h"
-
-#define ERR_EOF_INPUT 1
-#define ERR_WRONG_COMMAND 2
-#define ERR_Param 3
-#define ERR_WRONG_COMMAND_IN_TABBING 4
-#define ERR_NOT_IN_DOCUMENT 5
+#include "lengths.h"
 
 int             tabcounter = 0;
 bool            tabbing_on = FALSE;
@@ -41,37 +35,54 @@ static int      number_of_tabstops = 0;
 
 static void     Convert_Tabbing_with_kill(void);
 
-static void 
-numerror(int num)
-/****************************************************************************
-purpose: writes error message identified by number - for messages on many
-	 places in code. Calls function error.
- ****************************************************************************/
+static char *
+ConvertFormatString(char *s)
+/******************************************************************************
+ purpose: convert latex formatting to something simpler
+ ******************************************************************************/
 {
+	int braces,i;
+	char *simple;
+	
+	simple = strdup(s);  /* largest possible */
+	diagnostics(1, "Entering ConvertFormatString, input=<%s>",s);
+	
+	i=0;
+	while (*s) {
 
-	int linenumber = CurrentLineNumber();
-	char *latexname = CurrentFileName();
-
-	switch (num) {
-	case ERR_EOF_INPUT:
-		diagnostics(ERROR, "%s%s%s%d%s", "unexpected end of input file in: ", latexname, " at linenumber: ", linenumber, "\n");
-		break;
-	case ERR_WRONG_COMMAND:
-		diagnostics(ERROR, "%s%s%s%d%s", "unexpected command or character in: ", latexname, " at linenumber: ", linenumber, "\n");
-		break;
-	case ERR_NOT_IN_DOCUMENT:
-		diagnostics(ERROR, "\nNot in document %s at line %d.  Missing \\begin{document}?\n", latexname, linenumber);
-		break;
-	case ERR_Param:
-		diagnostics(ERROR,"wrong number of parameters\n");
-		break;
-	case ERR_WRONG_COMMAND_IN_TABBING:
-		diagnostics(ERROR, "%s%s%s%d%s", "wrong command in Tabbing-kill-command-line in: ", latexname, " at linenumber: ", linenumber, "\n");
-		break;
-	default:
-		diagnostics(ERROR,"internal error");
-		break;
+		switch (*s) {
+			case 'c':
+			case 'r':
+			case 'l':
+				simple[i++] = *s;
+				break;
+			case '{':		/* skip to balancing brace */
+				braces=1;
+				s++;
+				while (*s && (braces>1 || *s!='}')) {
+					if (*s=='{') braces++;
+					if (*s=='}') braces--;
+					s++;
+				}
+				break;
+			case 'p':
+				diagnostics(WARNING, " 'p{width}' not fully supported");
+				simple[i++] = 'l';
+				break;
+			case '*':
+				diagnostics(WARNING, " '*{num}{cols}' not supported.\n");
+				break;
+			case '@':
+				diagnostics(WARNING, " '@{text}' not supported.\n");
+				break;
+			default:
+				break;
+		}
+	s++;
 	}
+	simple[i]='\0';
+	diagnostics(1, "Exiting ConvertFormatString, output=<%s>",simple);
+	return simple;
 }
 
 void 
@@ -261,22 +272,21 @@ Convert_Tabbing_with_kill(void)
 
 		if (cThis == '\\') {
 
-			for (i = 0;; i++) {	/* get command from input
-						 * stream */
+			for (i = 0; ; i++) {	/* get command from input stream */
 				cThis = getTexChar();
 
-				if (i == 0) {	/* test for special
-						 * characters */
+				if (i == 0) {	/* test for special characters */
 					switch (cThis) {
 					case '=':
 						CmdTabset();
 						break;
 					default:
 						if (!isalpha((unsigned char) cThis))
-							numerror(ERR_WRONG_COMMAND_IN_TABBING);
-					}	/* switch */
-				}	/* if */
+							diagnostics(ERROR, "Wrong command in tabbing environment");
+					}
+				}
 				if (!isalpha((unsigned char) cThis)) {
+					cThis = getNonSpace();
 					while (cThis == ' ')	/* all spaces after
 								 * commands are ignored */
 						cThis = getTexChar();
@@ -307,107 +317,52 @@ Convert_Tabbing_with_kill(void)
 void 
 CmdTabular(int code)
 /******************************************************************************
- purpose: converts the LaTex-Tabular to a similar Rtf-style
-          the size of the table should be adjusted by hand
-parameter: type of array-environment
- globals: fTex: Tex-file-pointer
-          fRtf: Rtf-file-pointer
-          g_processing_tabular: TRUE if EnvironmenTabular is converted
+ purpose: 	\begin{tabular}[pos]{cols}          ... \end{tabular}
+ 			\begin{tabular*}{width}[pos]{cols}  ... \end{tabular*}
+ 			\begin{array}[pos]{cols}            ... \end{array}
+
           colFmt: contains alignment of the columns in the tabular
           colCount: number of columns in tabular is set
           actCol: actual treated column
-
-   Does not handle \begin{tabular*}{width}[h]{ccc}
-   but it does do \begin{tabular*}[h]{ccc}
-              and \begin{tabular*}{ccc}
-
  ******************************************************************************/
 {
-	char           *dummy;
-	int             i, n;
-	static bool     bWarningDisplayed = FALSE;
-	int             openBracesInParam = 1;
-	char           *colParams;
+	int             true_code,i,colWidth;
+	char           *cols,*pos;
 
-
-	if (code & ON) {	/* on switch */
-		code &= ~(ON);	/* mask MSB */
+	true_code = code & ~(ON);
+	if (code & ON) {
 
 		if (g_processing_tabular)
 			diagnostics(ERROR, "Nested tabular and array environments not supported! Giving up! \n");
 		g_processing_tabular = TRUE;
 
-		dummy = getBracketParam();	/* throw it away */
-		if (dummy) {
-			diagnostics(5, "Discarding bracket string in tabular [%s]\n",dummy); 
-			free(dummy);
-		}
-		colParams = getBraceParam();	/* colParams should now the column instructions */
+		pos = getBracketParam();
+		cols = getBraceParam();		
 
-		diagnostics(4, "Entering CmdTabular() with options {%s}\n",colParams); 
+		diagnostics(4, "Entering CmdTabular() options [%s], format {%s}\n",pos, cols); 
 
-		if (!bWarningDisplayed) {
-/*			diagnostics(WARNING, "Tabular or array environment: May need resizing");*/
-			bWarningDisplayed = TRUE;
-		}
-		assert(colFmt == NULL);
-		colFmt = (char *) malloc(sizeof(char) * 20);
-		if (colFmt == NULL)
-			diagnostics(ERROR, " malloc error -> out of memory!\n");
-		n = 0;
-		colFmt[n++] = ' ';	/* colFmt[0] unused */
-		i = 0;
-		while (colParams[i]) {
-			/* fprintf(stderr,"char='%c'\n",colParams[i]); */
-			switch (colParams[i++]) {
-			case 'c':
-				colFmt[n++] = 'c';
-				break;
-			case 'r':
-				colFmt[n++] = 'r';
-				break;
-			case 'l':
-				colFmt[n++] = 'l';
-				break;
-			case '{':
-				openBracesInParam++;
-				break;
-			case '}':
-				openBracesInParam--;
-				break;
-			case 'p':
-				diagnostics(WARNING, " 'p{width}' not fully supported");
-				colFmt[n++] = 'l';
-				break;
-			case '*':
-				diagnostics(WARNING, " '*{num}{cols}' not supported.\n");
-				break;
-			case '@':
-				diagnostics(WARNING, " '@{text}' not supported.\n");
-				break;
-			default:
-				break;
-			}
-		}
+		if (pos) free(pos);
 
-		free(colParams);
-		colFmt[n] = '\0';
-		colCount = n - 1;
-		actCol = 1;
+		colFmt = ConvertFormatString(cols);
+		free(cols);
+		colCount = strlen(colFmt);
+		actCol = 0;
+		colWidth = getLength("textwidth")/colCount;
 
-		if (code == TABULAR_2) {
+		if (true_code == TABULAR_2) {
 			fprintRTF("\n\\par\\pard");
 			fprintRTF("\\tqc\\tx1000\\tx2000\\tx3000\\tx4000\\tx5000\\tx6000\\tx7000\n\\tab");
 			return;
 		}
 		fprintRTF("\\par\\trowd\\trqc\\trrh0");
-		for (i = 1; i <= colCount; i++) {
-			fprintRTF("\\cellx%d ", (7236 / colCount) * i);	/* 7236 twips in A4 page */
+
+		for (i = 0; i < colCount; i++) {
+			fprintRTF("\\cellx%d ", colWidth * (i+1));
 		}
-		fprintRTF("\n\\pard\\intbl\\q%c ", colFmt[1]);
-	} else {		/* off switch */
+		fprintRTF("\n\\pard\\intbl\\q%c ", colFmt[actCol]);
+		
+	} else {
 		diagnostics(4, "Exiting CmdTabular");
-		code &= ~(OFF);	/* mask MSB */
 		g_processing_tabular = FALSE;
 
 		assert(colFmt != NULL);
@@ -420,8 +375,7 @@ parameter: type of array-environment
 		for (; actCol < colCount; actCol++) {
 			fprintRTF("\\cell\\pard\\intbl ");
 		}
-		fprintRTF("\\cell\\pard\\intbl\\row\n");
-		fprintRTF("\n\\pard\\par\\pard\\q%c\n", alignment);
+		fprintRTF("\\row\\pard\\par\\pard\\q%c\n", alignment);
 
 	}
 }
@@ -460,78 +414,50 @@ parameter: type of array-environment
 }
 
 void 
-CmdMultiCol( /* @unused@ */ int code)
+CmdMultiCol(int code)
 /******************************************************************************
- purpose: converts the LaTex-Multicolumn to a similar Rtf-style
-	  this converting is only partially
-	  so the user has to convert some part of the Table-environment by hand
+ purpose: handles \multicolumn{n}{format}{content}
  ******************************************************************************/
 {
-	char            inchar[10];
-	char            numColStr[100];
 	long            numCol, i, toBeInserted;
-	char            colFmtChar = 'u';
-	char           *eptr;	/* for srtol   */
-	static bool     bWarningDisplayed = FALSE;
+	char            *num, *format, *content, *colFormat;
 
-	if (!bWarningDisplayed) {
-		diagnostics(WARNING, "Multicolumn: Cells must be merged by hand!");
-		bWarningDisplayed = TRUE;
-	}
-	i = 0;
-	do {
-		inchar[0] = getTexChar();
-		if (isdigit((unsigned char) inchar[0]))
-			numColStr[i++] = inchar[0];
-	}
-	while (inchar[0] != '}');
-	numColStr[i] = '\0';
-	numCol = strtol(numColStr, &eptr, 10);
-	if (eptr == numColStr)
-		diagnostics(ERROR, " multicolumn: argument num invalid\n");
+	num     = getBraceParam();
+	format  = getBraceParam();
+	content = getBraceParam();
+	
+	diagnostics(1,"CmdMultiCol cols=%s format=<%s> content=<%s>",num,format,content);
+	numCol = atoi(num);
+	free(num);
+	
+	colFormat=ConvertFormatString(format);
+	free(format);
 
-
-	do {
-		inchar[0] = getTexChar();
-		switch (inchar[0]) {
-		case 'c':
+	diagnostics(1,"CmdMultiCol cols=%d format=<%s> content=<%s>",numCol,colFormat,content);
+	
+	switch (colFormat[0]) {
 		case 'r':
-		case 'l':
-			if (colFmtChar == 'u')
-				colFmtChar = inchar[0];
+			toBeInserted = numCol;
+			break;
+		case 'c':
+			toBeInserted = (numCol + 1) / 2;
 			break;
 		default:
+			toBeInserted = 1;
 			break;
-		}
-	}
-	while (inchar[0] != '}');
-	if (colFmtChar == 'u')
-		colFmtChar = 'l';
-
-	switch (colFmtChar) {
-	case 'r':
-		toBeInserted = numCol;
-		break;
-	case 'c':
-		toBeInserted = (numCol + 1) / 2;
-		break;
-	default:
-		toBeInserted = 1;
-		break;
 	}
 
-	for (i = 1; i < toBeInserted; i++, actCol++) {
+	for (i = 1; i < toBeInserted; i++, actCol++) 
 		fprintRTF(" \\cell \\pard \\intbl ");
-	}
-	fprintRTF("\\q%c ", colFmtChar);
+	
+	fprintRTF("\\q%c ", colFormat[0]);
 
 	diagnostics(4, "Entering Convert() from CmdMultiCol()");
-	Convert();
+	ConvertString(content);
+	free(content);
 	diagnostics(4, "Exiting Convert() from CmdMultiCol()");
 
-	for (i = toBeInserted; (i < numCol) && (actCol < colCount); i++, actCol++) {
+	for (i = toBeInserted; (i < numCol) && (actCol < colCount); i++, actCol++) 
 		fprintRTF(" \\cell \\pard \\intbl ");
-	}
-
 
 }

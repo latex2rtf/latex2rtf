@@ -1,4 +1,4 @@
-/* $Id: convert.c,v 1.28 2002/04/04 03:11:24 prahl Exp $ 
+/* $Id: convert.c,v 1.29 2002/04/13 18:20:35 prahl Exp $ 
 	
 TeX has six modes:
 	
@@ -87,7 +87,7 @@ ConvertString(char *string)
 	
 	strncpy(temp,string,50);
 
-	if (PushSource(NULL, string)) {
+	if (PushSource(NULL, string)==0) {
 		diagnostics(4, "Entering Convert() from StringConvert() <%s>",temp);
 
 		while (StillSource())
@@ -112,7 +112,7 @@ ConvertAllttString(char *s)
 	if (s==NULL) return;
 	diagnostics(4, "Entering Convert() from StringAllttConvert()");
 
-	if (PushSource(NULL, s)) {
+	if (PushSource(NULL, s)==0) {
 
 		while (StillSource()) {
 

@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.68 2002/04/06 04:37:03 prahl Exp $ 
+/* $Id: funct1.c,v 1.69 2002/04/13 18:20:35 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -348,8 +348,8 @@ CmdSlashSlash(int code)
 		for (; actCol < colCount; actCol++) {
 			fprintRTF("\\cell\\pard\\intbl");
 		}
-		actCol = 1;
-		fprintRTF("\\cell\\pard\\intbl\\row\n\\pard\\intbl\\q%c ", colFmt[1]);
+		actCol = 0;
+		fprintRTF("\\row\n\\pard\\intbl\\q%c ", colFmt[actCol]);
 		return;
 	}
 
@@ -1433,64 +1433,24 @@ CmdIgnoreEnviron(int code)
 	}
 }
 
-/******************************************************************************
-CmdLink:
-
-  purpose: hyperlatex support. function, which translates the first parameter
-           to the rtf-file and ignores the second, the proposed optional
-	   parameter is also (still) ignored.
-  parameter: not (yet?) used.
-
-  The second parameter should be remembered for the \Cite (\Ref \Pageref)
-  command.
-  globals: hyperref, set to second Parameter
-
-The first parameter of a \link{anchor}[ltx]{label} is converted to the
-rtf-output. Label is stored to hyperref for later use, the optional
-parameter is ignored.
-[ltx] should be processed as Otfried recommends it, to use for
-exclusive latex output.e.g:
-
-	\link{readhere}[~\Ref]{explaining:chapter}.
-
-Since {explaining:chapter} is yet read by latex and hyperlatex when
-[...] is evaluated it produces the correct reference. We are only
-strolling from left to right through the text and can't remember what
-we will see in the future.
-
- ******************************************************************************/
 void
 CmdLink(int code)
+/******************************************************************************
+  purpose: hyperlatex support for \link{anchor}[ltx]{label}
+******************************************************************************/
 {
-	char           *param2;
-	char           *optparam;
+	char           *anchor,*latex,*label;
 
 	diagnostics(4, "Entering hyperlatex \\link command");
-	Convert();		/* convert routine is called again for
-				 * evaluating the contents of the first
-				 * parameter */
-	diagnostics(4, "  Converted first parameter");
-
-	optparam = getBracketParam();
-	UpdateLineNumber(optparam);
-	if (optparam) free(optparam);
+	anchor = getBraceParam();
+	latex = getBracketParam();
+	label = getBraceParam();
 	
-	/* LEG190498 now should come processing of the optional parameter */
-	diagnostics(4, "  Converted optional parameter");
-
-	param2 = getBraceParam();
-	diagnostics(4, "  Converted second parameter");
-
-	if (hyperref != NULL)
-		free(hyperref);
-
-	hyperref = (char *) malloc((strlen(param2) + 1));
-	if (hyperref == NULL)
-		diagnostics(ERROR, " malloc error -> out of memory!\n");
-
-	strcpy(hyperref, param2);
-	free(param2);
-	/* LEG210698*** better? hyperref = param2 */
+	/* Do something with these */
+	
+	if (latex) free(latex);
+	free(anchor);
+	free(label);
 }
 
 void 
@@ -1661,7 +1621,7 @@ CmdColsep(int code)
 	if (GetTexMode() == MODE_DISPLAYMATH) {	/* in an eqnarray or array environment */
 		fprintRTF("\\tab ");
 	} else {
-		fprintRTF(" \\cell \\pard \\intbl ");
+		fprintRTF("\\cell\\pard\\intbl ");
 		if (colFmt == NULL)
 			diagnostics(WARNING, "Fatal, Fatal! CmdColsep called whith colFmt == NULL.");
 		else
@@ -1763,7 +1723,7 @@ CmdInclude(int code)
 		s = t;
 	}
 
-	if (PushSource(s,NULL))
-		diagnostics(1, "Including file <%s>",t);
+	if (PushSource(s,NULL)==0)
+		diagnostics(WARNING, "Including file <%s>",t);
 	free(s);
 }
