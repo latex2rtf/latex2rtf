@@ -141,7 +141,7 @@ CmdThebibliography(int code)
 		CmdEndParagraph(0);
 		CmdIndent(INDENT_NONE);
 		fprintRTF("{");
-		CmdStartParagraph(0);
+		CmdStartParagraph(FIRST_PAR);
 		fprintRTF("\\fs28\\b ");
 		if (g_document_type == FORMAT_ARTICLE)
 			ConvertBabelName("REFNAME");
@@ -155,7 +155,7 @@ CmdThebibliography(int code)
 		indent += amount;
 	} else {
 		CmdEndParagraph(0);
-		CmdVspace(1);
+		CmdVspace(VSPACE_SMALL_SKIP);
 		PopEnvironment();
 	}
 
@@ -169,7 +169,7 @@ CmdBibitem(int code)
 	
 	CmdEndParagraph(0);
 	CmdIndent(INDENT_USUAL);
-	CmdStartParagraph(0);
+	CmdStartParagraph(FIRST_PAR);
 	
 	label = getBracketParam();
 	key = getBraceParam();

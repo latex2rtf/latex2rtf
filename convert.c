@@ -87,7 +87,7 @@ void SetTexMode(int mode)
 
 	if (g_TeX_mode == MODE_VERTICAL && mode == MODE_HORIZONTAL) {
 		g_TeX_mode = mode;  /* prevent recursion */
-		CmdStartParagraph(0);
+		CmdStartParagraph(ANY_PAR);
 	}
 	
 	g_TeX_mode = mode;
@@ -185,8 +185,8 @@ globals: fTex, fRtf and all global flags for convert (see above)
 	char            cThis = '\n';
 	char            cLast = '\0';
 	char            cNext;
-	int				mode, count;
-
+	int				mode, count,pending_new_paragraph;
+	
 	diagnostics(3, "Entering Convert ret = %d", ret);
 	RecursionLevel++;
 	PushLevels();
@@ -199,6 +199,8 @@ globals: fTex, fRtf and all global flags for convert (see above)
 			diagnostics(5, "Current character is '%c' mode = %d ret = %d level = %d", cThis, GetTexMode(), ret, RecursionLevel);
 
 		mode = GetTexMode();
+		
+		pending_new_paragraph--;
 		
 		switch (cThis) {
 
@@ -219,11 +221,11 @@ globals: fTex, fRtf and all global flags for convert (see above)
 			
 			
 		case '{':
+			if (mode==MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
+				
 			CleanStack();
 			PushBrace();
 			fprintRTF("{");
-			/*Convert();
-			CleanStack();   These two commands cause problems.*/
 			break;
 			
 		case '}':
@@ -264,6 +266,7 @@ globals: fTex, fRtf and all global flags for convert (see above)
 				cNext = getNonSpace(); 
 				
 				if (cNext == '\n') {			/* new paragraph ... skip all ' ' and '\n' */
+					pending_new_paragraph=2;
 					CmdEndParagraph(0);
 					cNext = getNonBlank();  	
 					ungetTexChar(cNext);

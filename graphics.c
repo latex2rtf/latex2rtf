@@ -1167,13 +1167,13 @@ CmdMusic(int code)
 	diagnostics(4, "entering CmdMusic");
 	contents = getTexUntil(endmusic, TRUE);
 	CmdEndParagraph(0);
-	CmdVspace(1);
+	CmdVspace(VSPACE_SMALL_SKIP);
 	CmdIndent(INDENT_NONE);
-	CmdStartParagraph(0);
+	CmdStartParagraph(FIRST_PAR);
 	WriteLatexAsBitmap("\\begin{music}",contents,endmusic);
 	ConvertString(endmusic);	
 	CmdEndParagraph(0);
-	CmdVspace(1);
+	CmdVspace(VSPACE_SMALL_SKIP);
 	CmdIndent(INDENT_INHIBIT);
 	free(contents);		
 }

@@ -56,6 +56,7 @@ char 			*roman_item(int n);
 
 static bool  g_paragraph_no_indent = FALSE;
 static bool  g_paragraph_inhibit_indent = FALSE;
+static bool  g_processing_list_environment = FALSE;
 
 void
 CmdStartParagraph(int code)
@@ -82,14 +83,19 @@ CmdStartParagraph(int code)
 	if (indent_right!=0)
 		fprintRTF("\\ri%d ", indent_right);
 
-	if (g_paragraph_no_indent || g_paragraph_inhibit_indent) 
-		parindent = 0;
+	if (code!=FIRST_PAR || !FrenchMode) {
+		if (g_paragraph_no_indent || g_paragraph_inhibit_indent) 
+			parindent = 0;
+	}
 	
 	fprintRTF("\\fi%d ", parindent);
 	
 	SetTexMode(-MODE_HORIZONTAL);  /* negative value avoids calling CmdStartParagraph! */
-	g_paragraph_no_indent = FALSE;
-	g_paragraph_inhibit_indent = FALSE;
+
+	if (!g_processing_list_environment){
+		g_paragraph_no_indent = FALSE;
+		g_paragraph_inhibit_indent = FALSE;
+	}
 }
 
 void
@@ -105,6 +111,7 @@ CmdEndParagraph(int code)
 		fprintRTF("\\par\n");
 		SetTexMode(MODE_VERTICAL);
 	}
+	
 	g_paragraph_inhibit_indent = FALSE;
 }
 
@@ -124,25 +131,25 @@ CmdVspace(int code)
 	int mode = GetTexMode();
 	
 	switch (code) {
-		case -1 :
+		case VSPACE_VSPACE :
 			vspace = getDimension();
 			break;
 			
-		case 0 :
+		case VSPACE_VSKIP :
 			while ((c = getTexChar()) && c != '{'){}
 			vspace = getDimension();
 			parseBrace();
 			break;
 			
-		case 1:
+		case VSPACE_SMALL_SKIP:
 			vspace = getLength("smallskipamount");
 			break;
 			
-		case 2:
+		case VSPACE_MEDIUM_SKIP:
 			vspace = getLength("medskipamount");
 			break;
 	
-		case 3:
+		case VSPACE_BIG_SKIP:
 			vspace = getLength("bigskipamount");
 			break;
 	}
@@ -428,9 +435,9 @@ CmdBeginEnd(int code)
 			option = getBracketParam();
 			str = expandTheorem(i,option);
 			CmdEndParagraph(0);
-			CmdVspace(1);
+			CmdVspace(VSPACE_SMALL_SKIP);
 			CmdIndent(INDENT_NONE);
-			CmdStartParagraph(0);
+			CmdStartParagraph(FIRST_PAR);
 			fprintRTF("{\\b %s} {\\i ", str);
 			PushBrace();
 			if (option) free(option);
@@ -439,7 +446,7 @@ CmdBeginEnd(int code)
 			PopBrace();
 			fprintRTF("}");
 			CmdEndParagraph(0);
-			CmdVspace(1);
+			CmdVspace(VSPACE_SMALL_SKIP);
 			CmdIndent(INDENT_INHIBIT);
 		}
 		free(s);
@@ -659,7 +666,7 @@ parameter: code: type of section-recursion-level
 
 	CmdEndParagraph(0);
 	CmdIndent(INDENT_NONE);
-	CmdStartParagraph(0);
+	CmdStartParagraph(FIRST_PAR);
 	
 	switch (code) {
 	case SECT_PART:
@@ -703,7 +710,7 @@ parameter: code: type of section-recursion-level
 
 	case SECT_NORM:
 	case SECT_NORM_STAR:
-		CmdVspace(3);
+		CmdVspace(VSPACE_BIG_SKIP);
 		fprintRTF("{\\plain\\b ");
 		if(code == SECT_NORM && getCounter("secnumdepth")>=0) {		
 			incrementCounter("section");
@@ -721,12 +728,12 @@ parameter: code: type of section-recursion-level
 		ConvertString(heading);
 		CmdEndParagraph(0);
 		fprintRTF("}");
-		CmdVspace(1);
+		CmdVspace(VSPACE_SMALL_SKIP);
 		break;
 
 	case SECT_SUB:
 	case SECT_SUB_STAR:
-		CmdVspace(2);
+		CmdVspace(VSPACE_MEDIUM_SKIP);
 		fprintRTF("{\\plain\\b\\fs24 ");
 		if (code == SECT_SUB && getCounter("secnumdepth")>=1) {
 			incrementCounter("subsection");
@@ -742,12 +749,12 @@ parameter: code: type of section-recursion-level
 		ConvertString(heading);
 		CmdEndParagraph(0);
 		fprintRTF("}");
-		CmdVspace(1);
+		CmdVspace(VSPACE_SMALL_SKIP);
 		break;
 
 	case SECT_SUBSUB:
 	case SECT_SUBSUB_STAR:
-		CmdVspace(2);
+		CmdVspace(VSPACE_MEDIUM_SKIP);
 		fprintRTF("{\\plain\\b\\fs24 ");
 		if (code == SECT_SUBSUB && getCounter("secnumdepth")>=2) {
 			incrementCounter("subsubsection");
@@ -762,12 +769,12 @@ parameter: code: type of section-recursion-level
 		ConvertString(heading);
 		CmdEndParagraph(0);
 		fprintRTF("}");
-		CmdVspace(1);
+		CmdVspace(VSPACE_SMALL_SKIP);
 		break;
 
 	case SECT_SUBSUBSUB:
 	case SECT_SUBSUBSUB_STAR:
-		CmdVspace(2);
+		CmdVspace(VSPACE_MEDIUM_SKIP);
 		fprintRTF("{\\plain\\b ");
 		if (code == SECT_SUBSUBSUB && getCounter("secnumdepth")>=3) {
 			incrementCounter("paragraph");
@@ -784,7 +791,7 @@ parameter: code: type of section-recursion-level
 
 	case SECT_SUBSUBSUBSUB:
 	case SECT_SUBSUBSUBSUB_STAR:
-		CmdVspace(2);
+		CmdVspace(VSPACE_MEDIUM_SKIP);
 		fprintRTF("{\\plain\\b ");
 		if (code == SECT_SUBSUBSUBSUB && getCounter("secnumdepth")>=4) {
 			incrementCounter("subparagraph");
@@ -837,7 +844,7 @@ CmdCaption(int code)
 
 	CmdEndParagraph(0);
 	CmdIndent(INDENT_NONE);
-	CmdStartParagraph(0);
+	CmdStartParagraph(FIRST_PAR);
 	fprintRTF("{");
 
 	if (g_processing_figure) {
@@ -988,7 +995,8 @@ CmdQuote(int code)
 		case (QUOTE | ON):
 		diagnostics(4,"Entering CmdQuote");
 		indent += 512;
-		CmdIndent(INDENT_NONE);
+		CmdIndent(INDENT_USUAL);
+		CmdStartParagraph(FIRST_PAR);
 		break;
 		
 	case (QUOTATION | OFF):
@@ -1008,7 +1016,7 @@ CmdList(int code)
 {
 	int amount = 300;
 	CmdEndParagraph(0);
-
+	
 	switch (code) {
 		case (ITEMIZE | ON):
 		PushEnvironment(ITEMIZE);
@@ -1016,7 +1024,6 @@ CmdList(int code)
 		indent += 2*amount;
 		CmdIndent(INDENT_USUAL);
 		break;
-		
 
 	case (ENUMERATE | ON):
 		PushEnvironment(ENUMERATE);
@@ -1026,12 +1033,11 @@ CmdList(int code)
 		indent += 2*amount;
 		CmdIndent(INDENT_USUAL);
 		break;
-		
 
 	case (DESCRIPTION | ON):
 		PushEnvironment(DESCRIPTION);
 		setLength("parindent", -amount);
-		indent += 2*amount;
+		indent += amount;
 		CmdIndent(INDENT_USUAL);
 		break;
 		
@@ -1039,7 +1045,9 @@ CmdList(int code)
 	case (ITEMIZE | OFF):
 	case (DESCRIPTION | OFF):
 		PopEnvironment();
+		CmdIndent(INDENT_USUAL);  /* need to reset INDENT_NONE from CmdItem */
 		CmdIndent(INDENT_INHIBIT);
+		g_processing_list_environment=FALSE;
 		break;
 	}
 }
@@ -1063,17 +1071,22 @@ CmdItem(int code)
 /*	PushLevels();*/
 	diagnostics(4, "Entering CmdItem depth=%d item=%d",g_enumerate_depth,item_number[g_enumerate_depth]);
 
+	g_processing_list_environment=TRUE;
 	CmdEndParagraph(0);
 	CmdIndent(INDENT_USUAL);
-	CmdStartParagraph(0);
+	CmdStartParagraph(FIRST_PAR);
 	
 	itemlabel = getBracketParam();
 	if (itemlabel) {	/* \item[label] */
-		fprintRTF("{\\b ");	
+		fprintRTF("{");	
+		if (code == DESCRIPTION)
+			fprintRTF("\\b ");
 		diagnostics(5,"Entering ConvertString from CmdItem");
 		ConvertString(itemlabel);
 		diagnostics(5,"Exiting ConvertString from CmdItem");
-		fprintRTF("}\\tab ");
+		fprintRTF("}");
+		if (code != DESCRIPTION)
+			fprintRTF("\\tab ");
 	}
 	
 	switch (code) {
@@ -1108,7 +1121,7 @@ CmdItem(int code)
 		break;
 
 	case DESCRIPTION:
-		if (!itemlabel) fprintRTF("\\tab ");	/* indent */
+		fprintRTF(" ");
 		break;
 	}
 	
@@ -1207,7 +1220,7 @@ CmdVerbatim(int code)
 		diagnostics(4, "Entering CmdVerbatim");
 		CmdEndParagraph(0);
 		CmdIndent(INDENT_NONE);
-		CmdStartParagraph(0);
+		CmdStartParagraph(FIRST_PAR);
 		num = TexFontNumber("Typewriter");
 		fprintRTF("\\pard\\ql\\b0\\i0\\scaps0\\f%d ", num);
 		
@@ -1262,7 +1275,7 @@ CmdVerse(int code)
 		previous_parindent = getLength("parindent");
 		indent = 1134;
 		setLength("parindent", -567);
-		CmdStartParagraph(0);
+		CmdStartParagraph(FIRST_PAR);
 		fprintRTF("\\ri1134\\keep ");
 		break;
 	case OFF:
@@ -1428,9 +1441,9 @@ CmdFigure(int code)
 			caption=ExtractAndRemoveTag("\\caption",figure_contents);
 			label=ExtractAndRemoveTag("\\label",figure_contents);
 			CmdEndParagraph(0);
-			CmdVspace(1);
+			CmdVspace(VSPACE_SMALL_SKIP);
 			CmdIndent(INDENT_NONE);
-			CmdStartParagraph(0);
+			CmdStartParagraph(FIRST_PAR);
 			WriteLatexAsBitmap("\\begin{figure}",figure_contents,"\\end{figure}");
 			ConvertString(caption);
 			if (label) free(label);
@@ -1614,7 +1627,7 @@ CmdAbstract(int code)
 		if (g_document_type == FORMAT_REPORT || titlepage) 
 			fprintRTF("\\page ");
 
-		CmdStartParagraph(0);
+		CmdStartParagraph(FIRST_PAR);
 		fprintRTF("\\qc{\\b ");
 		ConvertBabelName("ABSTRACTNAME");
 		fprintRTF("}");
@@ -1630,7 +1643,7 @@ CmdAbstract(int code)
 		indent -= 1024;
 		indent_right -=1024;
 		alignment = oldalignment;
-		CmdVspace(2);				/* put \medskip after abstract */
+		CmdVspace(VSPACE_MEDIUM_SKIP);				/* put \medskip after abstract */
 	}
 }
 

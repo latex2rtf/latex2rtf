@@ -210,7 +210,7 @@ TabularPreamble(char *text, char *width, char *pos, char *cols)
 
 	if (GetTexMode() != MODE_HORIZONTAL){
 		CmdIndent(INDENT_NONE);
-		CmdStartParagraph(0);
+		CmdStartParagraph(FIRST_PAR);
 	}
 	
 	fprintRTF("\\par\n");
@@ -923,7 +923,7 @@ CmdTabbing(int code)
 
 	if (GetTexMode() != MODE_HORIZONTAL){
 		CmdIndent(INDENT_NONE);
-		CmdStartParagraph(0);
+		CmdStartParagraph(FIRST_PAR);
 	}
 	
 	fprintRTF("\\par\n");

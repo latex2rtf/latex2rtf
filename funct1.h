@@ -30,6 +30,9 @@ This file is available from http://sourceforge.net/projects/latex2rtf/
 #define PAR_CENTERLINE 4
 #define PAR_VCENTER    5
 
+#define FIRST_PAR      1
+#define ANY_PAR        2
+
 #define INDENT_NONE    1
 #define INDENT_INHIBIT 2
 #define INDENT_USUAL   3
@@ -41,6 +44,12 @@ This file is available from http://sourceforge.net/projects/latex2rtf/
 #define VERB_VERB    1
 #define VERB_STAR    2
 #define VERB_URL     3
+
+#define VSPACE_VSPACE     -1
+#define VSPACE_VSKIP       0
+#define VSPACE_SMALL_SKIP  1
+#define VSPACE_MEDIUM_SKIP 2
+#define VSPACE_BIG_SKIP    3
 
 void            CmdBeginEnd(int code);
 void            CmdStartParagraph(int code);
