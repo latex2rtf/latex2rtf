@@ -7,6 +7,8 @@
 use strict;
 
 my $level;
+my $bad=0;
+my $good = 0;
 my @files = glob("*.rtf");
 
 for (@files) {
@@ -24,5 +26,8 @@ for (@files) {
 #		print "braces becomes $level after line $.\n" if ($level<=0 && $before!=$level);
 	}
 	close IN;
+	if ($level != -3) {$bad++} else {$good++}
 	print "brace level = $level for $file\n" if $level != -3;
 }
+
+print "Braces are ok in $good/", $good+$bad, " files\n";

@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include "main.h"
 #include "convert.h"
 #include "commands.h"
@@ -476,7 +477,7 @@ ConvertOverToFrac(char ** equation)
 	char *eq, *mid, *first, *last, *s;
 	eq = *equation;
 	diagnostics(5,"ConvertOverToFrac before <%s>",eq);
-	while ((mid = strstr(eq,"\\over")) != NULL) {
+	while ((mid = strstr(eq,"\\over")) != NULL && !isalpha(*(mid+6))) {
 
 		first = scanback(eq, mid);
 		diagnostics(5, "first = <%s>", first);
