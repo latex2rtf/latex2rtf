@@ -411,6 +411,8 @@ static CommandArray PreambleCommands[] = {
     {"cline", CmdHline, 1},
     {"ifx", CmdIf, 0},
     {"theendnotes", CmdTheEndNotes, 0},
+    {"euro", CmdEuro, 0},
+    {"EUR", CmdEuro, 1},
     {"", NULL, 0}
 };                              /* end of list */
 

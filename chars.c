@@ -640,6 +640,17 @@ void CmdDotlessChar(int code)
         fprintRTF("j");
 }
 
+/******************************************************************************
+ purpose: converts \euro{amount} and \EUR{amount}
+ ******************************************************************************/
+void CmdEuro(int code)
+{
+	char *s=getBraceParam();
+    fprintRTF("\\'80");
+	ConvertString(s);
+	free(s);
+}
+
 void CmdChar(int code)
 {
     char cThis;

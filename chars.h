@@ -7,32 +7,33 @@
 #define CMD_AMSLATEX 7
 #define CMD_LYX 8
 
-void            CmdCedillaChar(int code);
-void            CmdUmlauteChar(int code);
-void            CmdLApostrophChar(int code);
-void            CmdRApostrophChar(int code);
-void            CmdTildeChar(int code);
-void            CmdSymbolChar(int code);
-void            CmdUnderdotChar(int code);
-void            CmdHacekChar(int code);
-void            CmdOaccentChar(int code);
-void            CmdHatChar(int code);
-void            CmdMacronChar(int code);
-void            CmdVecChar(int code);
-void            CmdBreveChar(int code);
-void            CmdDotChar(int code);
-void            CmdUnderbarChar(int code);
-void            CmdDotlessChar(int code);
-void            CmdChar(int code);
+void CmdCedillaChar(int code);
+void CmdUmlauteChar(int code);
+void CmdLApostrophChar(int code);
+void CmdRApostrophChar(int code);
+void CmdTildeChar(int code);
+void CmdSymbolChar(int code);
+void CmdUnderdotChar(int code);
+void CmdHacekChar(int code);
+void CmdOaccentChar(int code);
+void CmdHatChar(int code);
+void CmdMacronChar(int code);
+void CmdVecChar(int code);
+void CmdBreveChar(int code);
+void CmdDotChar(int code);
+void CmdUnderbarChar(int code);
+void CmdDotlessChar(int code);
+void CmdChar(int code);
 
-void            CmdLogo(int code);
+void CmdLogo(int code);
 
-void 			CmdFrenchAbbrev(int code);
-void			CmdCzechAbbrev(int code);
-void            CmdCyrillicChar(int code);
-void            CmdLatin1Char(int code);
-void            CmdLatin2Char(int code);
-void 			CmdCyrillicStrChar(char *s);
+void CmdFrenchAbbrev(int code);
+void CmdCzechAbbrev(int code);
+void CmdCyrillicChar(int code);
+void CmdLatin1Char(int code);
+void CmdLatin2Char(int code);
+void CmdCyrillicStrChar(char *s);
+void CmdEuro(int code);
 
 #define IERF 1
 #define IEREF 2
