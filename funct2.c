@@ -1,19 +1,22 @@
 /*
- * $Id: funct2.c,v 1.8 2001/08/12 18:53:25 prahl Exp $
+ * $Id: funct2.c,v 1.9 2001/08/12 19:00:04 prahl Exp $
  * History:
  * $Log: funct2.c,v $
- * Revision 1.8  2001/08/12 18:53:25  prahl
- * 1.9d
- *         Rewrote the \cite code.
- *         No crashes when .aux missing.
- *         Inserts '?' for unknown citations
- *         Added cite.tex and cite.bib to for testing \cite commands
- *         hyperref not tested since I don't use it.
- *         A small hyperref test file would be nice
- *         Revised treatment of \oe and \OE per Wilfried Hennings suggestions
- *         Added support for MT Extra in direct.cfg and fonts.cfg so that
- *         more math characters will be translated e.g., \ell (see oddchars.tex)
- *         added and improved font changing commands e.g., \texttt, \it
+ * Revision 1.9  2001/08/12 19:00:04  prahl
+ * 1.9e
+ *         Revised all the accented character code using ideas borrowed from ltx2rtf.
+ *         Comparing ltx2rtf and latex2rtf indicates that Taupin and Lehner tended to work on
+ *         different areas of the latex->rtf conversion process.  Adding
+ *         accented characters is the first step in the merging process.
+ *
+ *         Added MacRoman font handling (primarily to get the breve accent)
+ *         Now supports a wide variety of accented characters.
+ *         (compound characters only work under more recent versions of word)
+ *         Reworked the code to change font sizes.
+ *         Added latex logo code from ltx2rtf
+ *         Extracted character code into separate file chars.c
+ *         Fixed bug with \sf reverting to roman
+ *         Added two new testing files fontsize.tex and accentchars.tex
  *
  * Revision 1.10  1998/11/05 13:21:49  glehner
  * *** empty log message ***
@@ -72,7 +75,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include "main.h"
-#include "funct1.h"
+#include "l2r_fonts.h"
 #include "commands.h"
 #include "funct1.h"
 #include "funct2.h"
@@ -494,109 +497,6 @@ parameter: searchstring : includes the string to search for
     numerror(ERR_EOF_INPUT);
 }
 
-/******************************************************************************/
-bool GetBracketParam(char *string, int size)
-/******************************************************************************
-  purpose: function to get an optional parameter
-parameter: string: returnvalue of optional parameter
-	   size: max. size of returnvalue
-	   returns true if a brackets are found
-	   allows us to figure out if \item[] is found for example 
- ******************************************************************************/
-{
-char c;
-int i=0;
-int bracketlevel=0;
-
-  *string = '\0';
-
-  while (fTexRead(&c,1,1,fTex) == 1)  /* skip initial spaces */
-  {
-  	if ((c != ' ') && (c != '\n')) break;
-  }
-
-  if ( c != '[' )		/* does not start with a brace, abort */
-  {
-    rewind_one();
-    return FALSE;
-  }
-
-  while (fTexRead(&c,1,1,fTex) == 1)
-  {
-    
-    if ((c == ']') && (bracketlevel == 0)) break;
-  		 
-    if (c == '%')
-    {
-       IgnoreTo('\n');
-       continue;
-    }
-    
-    if (c == '[') bracketlevel++;
-
-  	if (c == ']') bracketlevel--;
-    
-    if (i < size-1)				/* throw away excess */
-      string[i++] = c;
-  }
-  string[i] = '\0';
-  return TRUE;
-/* fprintf(stderr, "\nthe bracketed string is %s\n", string); */
-}
-
-/******************************************************************************/
-void GetBraceParam(char *string, int size)
-/******************************************************************************
-  purpose: function to get a parameter between {}
-parameter: string: returnvalue of optional parameter
-	   size: max. size of returnvalue
-
-If it a {} expression does not follow, then return an empty expression
-with fTex pointing to the first non-space character
-
- ******************************************************************************/
-{
-char c;
-int i=0;
-int bracelevel=0;
-bool read_one = FALSE;
-
-  *string = '\0';
-
-  while (fTexRead(&c,1,1,fTex) == 1)  /* skip initial spaces */
-  {
-  	read_one = TRUE;
-  	if ((c != ' ') && (c != '\n')) break;
-  }
-
-  if ( c != '{' )		/* does not start with a brace, abort */
-  {
-    if (read_one) rewind_one();
-    return;
-  }
-
-  while (fTexRead(&c,1,1,fTex) == 1)
-  {
-    
-    if ((c == '}') && (bracelevel == 0)) break;
-  		 
-    if (c == '%')
-{
-       IgnoreTo('\n');
-       continue;
-    }
-    
-    if (c == '{') bracelevel++;
-
-  	if (c == '}') bracelevel--;
-    
-    if (i < size-1)				/* throw away excess */
-      string[i++] = c;
-  }
-  string[i] = '\0';
-
-/* fprintf(stderr, "\nthe braced string is %s\n", string); */
-}
 
 /******************************************************************************/
 void CmdIgnoreEnvironment(int code)
@@ -974,7 +874,7 @@ CmdAbstract(int code)
 	    fprintf(fRtf,"\\pard\\qj ");  /* blocked */
 	    fprintf (fRtf,
 		     "{\\b\\fs%d %s}\\par ",
-		     fontsize, TranslateName("ABSTRACT"));
+		     CurrentFontSize(), TranslateName("ABSTRACT"));
 	    }
 	 else
 	    {
@@ -982,7 +882,7 @@ CmdAbstract(int code)
 	    fprintf(fRtf,"\\pard\\qj ");   /* blocked */
 	    fprintf (fRtf,
 		     "{\\b\\fs%d %s}\\par ",
-		     fontsize, TranslateName("ABSTRACT"));
+		     CurrentFontSize(), TranslateName("ABSTRACT"));
 	    }
 	  oldalignment = alignment;
 	  alignment = JUSTIFIED;
@@ -1334,7 +1234,6 @@ parameter: type of array-environment
 {
   char dummy[51];
   int i, n;
-  char inchar[2];
   static bool bWarningDisplayed = FALSE;
   int openBracesInParam = 1;
 
@@ -1515,7 +1414,7 @@ void CmdGraphics(int code)
 {
 	char options[255];
 	char fullpath[1023], filename[255];
-	char *dp, c;
+	char *dp;
 	int cc,i;
 	short top,left,bottom,right;
 	FILE *fp;

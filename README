@@ -1,11 +1,13 @@
 latex2rtf is a translator program that translates LaTeX text into the
 RTF format used by several textprocessors, including Microsoft Word
-and Word for Windows.  It was written by Fernando Dorner and Andreas
+and Word for Windows.  
+
+It was written by Fernando Dorner and Andreas
 Granzer in a one-semester course in our department.  It was later
 updated in another one-semester course by Friedrich Polzer and Gerhard
 Trisko.  Ralf Schlatterbeck <ralf@zoo.priv.at> maintained and extended
 it until 1998.  The current maintainer is Georg Lehner
-<glehner@unanleon.edu.ni>.  For the Copyright of the Program see the
+<jorge_lehner@gmx.net>.  For the Copyright of the Program see the
 file Copyright.
 
 The documentation of the program is found in the doc/ directory in the
@@ -31,11 +33,16 @@ To install (on a UNIX system)
   (If you have problems with mkdir or other problems as above, use the
   make-target "simple_cfg_install")
 - Try the program and report any errors to the address below.
+- Define the environment variable RTFPATH this is typically /usr/local/lib/latex2rtf
+- Run make test to test your installation
 
 Reporting bugs:
 Please give the following information and observe the following
-guidelines when reporting a bug in the program:
-* Tell me the version of the program
+guidelines when reporting a bug in the program to the homepage
+at Sourceforge
+              http://sourceforge.net/projects/latex2rtf/
+
+* Give the version of the program
   - For the executable you get the version by specifying the -V option
     to latex2rtf
   - For the sources the version is the version number of the file

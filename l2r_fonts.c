@@ -1,19 +1,22 @@
 /*
- * $Id: l2r_fonts.c,v 1.4 2001/08/12 18:53:25 prahl Exp $
+ * $Id: l2r_fonts.c,v 1.5 2001/08/12 19:00:04 prahl Exp $
  * History:
  * $Log: l2r_fonts.c,v $
- * Revision 1.4  2001/08/12 18:53:25  prahl
- * 1.9d
- *         Rewrote the \cite code.
- *         No crashes when .aux missing.
- *         Inserts '?' for unknown citations
- *         Added cite.tex and cite.bib to for testing \cite commands
- *         hyperref not tested since I don't use it.
- *         A small hyperref test file would be nice
- *         Revised treatment of \oe and \OE per Wilfried Hennings suggestions
- *         Added support for MT Extra in direct.cfg and fonts.cfg so that
- *         more math characters will be translated e.g., \ell (see oddchars.tex)
- *         added and improved font changing commands e.g., \texttt, \it
+ * Revision 1.5  2001/08/12 19:00:04  prahl
+ * 1.9e
+ *         Revised all the accented character code using ideas borrowed from ltx2rtf.
+ *         Comparing ltx2rtf and latex2rtf indicates that Taupin and Lehner tended to work on
+ *         different areas of the latex->rtf conversion process.  Adding
+ *         accented characters is the first step in the merging process.
+ *
+ *         Added MacRoman font handling (primarily to get the breve accent)
+ *         Now supports a wide variety of accented characters.
+ *         (compound characters only work under more recent versions of word)
+ *         Reworked the code to change font sizes.
+ *         Added latex logo code from ltx2rtf
+ *         Extracted character code into separate file chars.c
+ *         Fixed bug with \sf reverting to roman
+ *         Added two new testing files fontsize.tex and accentchars.tex
  *
  * Revision 1.6  1998/10/28 06:27:56  glehner
  * Removed <malloc.h>
@@ -50,13 +53,39 @@
 #include <string.h>
 #include "main.h"
 #include "l2r_fonts.h"
+#include "commands.h"
 #include "cfg.h" 
 /******************************************************************************/
 void error(char *);
 
+char PointSize[10] = "10pt";
+char normalsize[20] = "\\normalsize";
+int document_font_size = 22;
+
+static int curr_fontsize[MAXENVIRONS] = {24};
+static char *LatexSize[MAXENVIRONS] = {normalsize};
+  static char sitiny[20] = "\\tiny";
+  static char siscriptsize[20] = "\\scriptsize";
+  static char sifootnotesize[20] = "\\footnotesize";
+  static char sismall[20] = "\\small";
+  static char sinormalsize[20] = "\\normalsize";
+  static char silarge[20] = "\\large";
+  static char siLarge[20] = "\\Large";
+  static char siLARGE[20] = "\\LARGE";
+  static char sihuge[20] = "\\huge";
+  static char siHuge[20] = "\\Huge";
+  static char siHUGE[20] = "\\HUGE";
+
 /************************************* extern variables *********************/
-extern int fontsize;
 extern size_t DefFont;
+extern enum TexCharSetKind TexCharSet;
+extern int curr_fontbold[MAXENVIRONS];
+extern int curr_fontital[MAXENVIRONS];
+extern int curr_fontscap[MAXENVIRONS];
+extern int curr_fontnumb[MAXENVIRONS];
+extern char *LatexSize[MAXENVIRONS];
+extern char PointSize[10];
+
 
 /******************************************************************************/
 
@@ -71,8 +100,14 @@ void WriteFontHeader(FILE* fRtf)
 /****************************************************************************
  *   purpose: writes fontnumbers and styles for headers into Rtf-File 
  * parameter: fRtf: File-Pointer to Rtf-File
- *   globals: fontsize
+ *   globals: 
  *            DefFont (default font number)
+ *   note;
+ 
+ \fcharset0:    ANSI coding
+ \fcharset1:    MAC coding
+ \fcharset2:    PC coding (implies CodePage 437)
+ \fcharset3:    PCA coding (implies CodePage 850) 
  ****************************************************************************/
 {
     size_t num = 0;
@@ -83,6 +118,13 @@ void WriteFontHeader(FILE* fRtf)
     config_handle = CfgStartIterate (FONT_A);
     while ((config_handle = CfgNext (FONT_A, config_handle)) != NULL)
     {
+	if (strstr((*config_handle)->TexCommand,"MacRoman"))
+		fprintf( fRtf
+		       , "{\\f%u\\fnil\\fcharset1 %s;}"
+		       , (unsigned int)num
+		       , (*config_handle)->RtfCommand
+		       );
+	else
 	if (strstr((*config_handle)->RtfCommand,"Symbol"))
 		fprintf( fRtf
 		       , "{\\f%u\\fnil\\fcharset2 %s;}"
@@ -99,7 +141,7 @@ void WriteFontHeader(FILE* fRtf)
     }
 
     fprintf(fRtf,"}\\f%u\n", (unsigned int)(DefFont = GetFontNumber("Roman")));
-    fprintf(fRtf,"{\\stylesheet{\\fs%d\\lang1031\\snext0 Normal;}",fontsize);
+    fprintf(fRtf,"{\\stylesheet{\\fs%d\\lang1031\\snext0 Normal;}",CurrentFontSize());
     fprintf( fRtf,"{%s%u%s \\sbasedon0\\snext0 heading 1;}\n"
 	   , HEADER11,(unsigned int)DefFont,HEADER12);
     fprintf( fRtf,"{%s%u%s \\sbasedon0\\snext0 heading 2;}\n"
@@ -148,4 +190,150 @@ parameter: Fname: fontname in LaTex
  ****************************************************************************/
 {
     return SearchRtfIndex (Fname, FONT_A);
+}
+
+void CmdSetFontStyle(int code)
+/****************************************************************************
+     purpose : sets the font to bold, italic, underlined...
+   parameter : code includes the character-format-style
+     globals : fRtf: Rtf-File-Pointer
+ ****************************************************************************/
+{
+  if (tabbing_on || 1)
+    {
+     if (code == CMD_BOLD_1 || code == CMD_ITALIC_1 || code == CMD_CAPS_1)
+     	fprintf(fRtf, "{\\plain");
+     else
+        fprintf(fRtf,"{");
+
+     switch(code)
+     {
+       case CMD_BOLD_1:
+       case CMD_BOLD:      fprintf(fRtf,"\\b ");
+		                   break;
+		                   
+       case CMD_ITALIC_1:
+       case CMD_ITALIC:    fprintf(fRtf,"\\i ");
+			               break;
+			               
+       case CMD_CAPS_1:
+       case CMD_CAPS:      fprintf(fRtf,"\\scaps ");
+		                   break;
+		                   
+       case CMD_UNDERLINE: fprintf(fRtf,"\\ul ");
+			               break;
+			               
+       case CMD_CENTERED:  fprintf(fRtf,"\\qc ");
+                           break;
+     }
+        
+     Convert();
+     fprintf(fRtf,"}");
+   }
+}
+
+void CmdSetFontSize(int code)
+/******************************************************************************
+ purpose : sets the fontsize to the point-size given by the LaTex-\fs_size-command
+ globals : fontsize : includes the actual fontsize in the document 
+           heavily modified from D Taupin who would probably not approve
+           and certainly should not be blamed.
+ ******************************************************************************/
+{ int iEnvCount;
+  int scaled_code = code;
+  iEnvCount = CurrentEnvironmentCount();
+  
+	LatexSize[iEnvCount] = sitiny;
+	if (code >= 10) LatexSize[iEnvCount] = sitiny;
+	if (code >= 14) LatexSize[iEnvCount] = siscriptsize;
+	if (code >= 16) LatexSize[iEnvCount] = sifootnotesize;
+	if (code >= 18) LatexSize[iEnvCount] = sismall;
+    if (code >= 20) LatexSize[iEnvCount] = sinormalsize;
+	if (code >= 24) LatexSize[iEnvCount] = silarge;
+	if (code >= 28) LatexSize[iEnvCount] = siLarge;
+	if (code >= 34) LatexSize[iEnvCount] = siLARGE;
+	if (code >= 40) LatexSize[iEnvCount] = sihuge;
+	if (code >= 50) LatexSize[iEnvCount] = siHuge;
+	if (code >= 60) LatexSize[iEnvCount] = siHUGE;
+
+  scaled_code = (code*document_font_size)/20;
+  fprintf(fRtf,"{\\fs%d ",scaled_code);
+  curr_fontsize[iEnvCount] = scaled_code;
+  sprintf(PointSize,"%dpt",code/2);
+
+  Convert();
+  fprintf(fRtf,"} ");
+
+/* We need to continue processing to account for a case like
+             {\Large Some text {\normalsize normal} yet more text}
+   otherwise 'yet more text' will not get processed correctly */
+  Convert();
+}
+
+/******************************************************************************/
+void CmdSetFont(int code)
+/******************************************************************************
+  purpose: sets an font for the actual character-style
+parameter: code: includes the font-type
+  globals: fRtf
+ ******************************************************************************/
+{
+  size_t num;
+
+  switch(code)
+  {
+    case F_ROMAN_1:
+    case F_ROMAN:         num = GetTexFontNumber("Roman");
+		                  break;
+    case F_SLANTED_1:
+    case F_SLANTED:       num = GetTexFontNumber("Slanted");
+		                  break;
+    case F_SANSSERIF_1:
+    case F_SANSSERIF:     num = GetTexFontNumber("Sans Serif");
+		                  break;
+    case F_TYPEWRITER_1:
+    case F_TYPEWRITER:    num = GetTexFontNumber("Typewriter");
+		                  break;
+    default: num = 0;
+  }
+  if (code == F_ROMAN_1 || code == F_SANSSERIF_1 || code == F_TYPEWRITER_1 || code == F_SLANTED_1)
+  	fprintf(fRtf, "{\\plain");
+  else
+    fprintf(fRtf, "{");
+    
+  fprintf(fRtf,"\\f%u ", (unsigned int)num);
+  Convert();
+  fprintf(fRtf,"} ");
+
+  Convert();
+}
+
+int CurrentFontSize(void)
+/******************************************************************************
+  purpose: returns the current font size being used
+ ******************************************************************************/
+{
+  int iEnvCount = CurrentEnvironmentCount();
+  return (curr_fontsize[iEnvCount]);
+}
+
+void SetDocumentFontSize(int code)
+/******************************************************************************
+  purpose: sets the default size for the document
+ ******************************************************************************/
+{
+  int iEnvCount = CurrentEnvironmentCount();
+  document_font_size = code;
+  curr_fontsize[iEnvCount] = code;
+  LatexSize[iEnvCount] = sinormalsize;
+}
+
+void BasicSetFontSize(int code)
+/******************************************************************************
+  purpose: sets the default size for the document
+ ******************************************************************************/
+{
+  int iEnvCount = CurrentEnvironmentCount();
+  curr_fontsize[iEnvCount] = code;
+  LatexSize[iEnvCount] = sinormalsize;
 }

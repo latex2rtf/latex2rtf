@@ -1,19 +1,22 @@
 /*
- * $Id: util.h,v 1.5 2001/08/12 18:53:25 prahl Exp $
+ * $Id: util.h,v 1.6 2001/08/12 19:00:04 prahl Exp $
  * History:
  * $Log: util.h,v $
- * Revision 1.5  2001/08/12 18:53:25  prahl
- * 1.9d
- *         Rewrote the \cite code.
- *         No crashes when .aux missing.
- *         Inserts '?' for unknown citations
- *         Added cite.tex and cite.bib to for testing \cite commands
- *         hyperref not tested since I don't use it.
- *         A small hyperref test file would be nice
- *         Revised treatment of \oe and \OE per Wilfried Hennings suggestions
- *         Added support for MT Extra in direct.cfg and fonts.cfg so that
- *         more math characters will be translated e.g., \ell (see oddchars.tex)
- *         added and improved font changing commands e.g., \texttt, \it
+ * Revision 1.6  2001/08/12 19:00:04  prahl
+ * 1.9e
+ *         Revised all the accented character code using ideas borrowed from ltx2rtf.
+ *         Comparing ltx2rtf and latex2rtf indicates that Taupin and Lehner tended to work on
+ *         different areas of the latex->rtf conversion process.  Adding
+ *         accented characters is the first step in the merging process.
+ *
+ *         Added MacRoman font handling (primarily to get the breve accent)
+ *         Now supports a wide variety of accented characters.
+ *         (compound characters only work under more recent versions of word)
+ *         Reworked the code to change font sizes.
+ *         Added latex logo code from ltx2rtf
+ *         Extracted character code into separate file chars.c
+ *         Fixed bug with \sf reverting to roman
+ *         Added two new testing files fontsize.tex and accentchars.tex
  *
  * Revision 1.2  1998/07/03 07:03:16  glehner
  * lclint cleaning
@@ -33,5 +36,4 @@ extern void  Fatal         (/*@observer@*/ const char *fmt, ...);
 /*@exits@*/
 void  ParseError    (/*@observer@*/ const char *fmt, ...);
 
-void rewind_one(void);
 void roman_item(int n, char * s);

@@ -1,19 +1,22 @@
 /*
- * $Id: commands.c,v 1.8 2001/08/12 18:53:25 prahl Exp $
+ * $Id: commands.c,v 1.9 2001/08/12 19:00:04 prahl Exp $
  * History:
  * $Log: commands.c,v $
- * Revision 1.8  2001/08/12 18:53:25  prahl
- * 1.9d
- *         Rewrote the \cite code.
- *         No crashes when .aux missing.
- *         Inserts '?' for unknown citations
- *         Added cite.tex and cite.bib to for testing \cite commands
- *         hyperref not tested since I don't use it.
- *         A small hyperref test file would be nice
- *         Revised treatment of \oe and \OE per Wilfried Hennings suggestions
- *         Added support for MT Extra in direct.cfg and fonts.cfg so that
- *         more math characters will be translated e.g., \ell (see oddchars.tex)
- *         added and improved font changing commands e.g., \texttt, \it
+ * Revision 1.9  2001/08/12 19:00:04  prahl
+ * 1.9e
+ *         Revised all the accented character code using ideas borrowed from ltx2rtf.
+ *         Comparing ltx2rtf and latex2rtf indicates that Taupin and Lehner tended to work on
+ *         different areas of the latex->rtf conversion process.  Adding
+ *         accented characters is the first step in the merging process.
+ *
+ *         Added MacRoman font handling (primarily to get the breve accent)
+ *         Now supports a wide variety of accented characters.
+ *         (compound characters only work under more recent versions of word)
+ *         Reworked the code to change font sizes.
+ *         Added latex logo code from ltx2rtf
+ *         Extracted character code into separate file chars.c
+ *         Fixed bug with \sf reverting to roman
+ *         Added two new testing files fontsize.tex and accentchars.tex
  *
  * Revision 1.7  1998/10/28 06:30:53  glehner
  * changed thebibliography from CmdIgnore... to CmdConvertBiblio.
@@ -52,9 +55,11 @@
 #include <string.h>
 #include "cfg.h"
 #include "main.h"
+#include "chars.h"
+#include "l2r_fonts.h"
 #include "funct1.h"
-#include "commands.h"
 #include "funct2.h"
+#include "commands.h"
 #include "parser.h"
 /****************************************************************************/
 void error(char *);
@@ -67,8 +72,13 @@ typedef struct commandtag {
 /****************************************************************************/
 
 /***************** file-global variables ************************************/
-static CommandArray *Environments[100]; /* list of active environments */
 static int iEnvCount = 0;               /* number of active environments */
+static CommandArray *Environments[100]; /* list of active environments */
+
+extern int curr_fontbold[MAXENVIRONS];
+extern int curr_fontital[MAXENVIRONS];
+extern int curr_fontscap[MAXENVIRONS];
+extern int curr_fontnumb[MAXENVIRONS];
 
 /********************************************************************/
 /* commands for environment document */
@@ -80,7 +90,6 @@ static CommandArray commands[] = {
    { "footnote", CmdFootNote, FOOTN },
 /* ------------------------------------------ */
    { "centerline", Paragraph, PAR_CENTERLINE },
-   { "c", CmdC, 0},
 /* ---------- FONT FAMILIES ------------------- */
    { "rm",       CmdSetFont, F_ROMAN_1},
    { "textrm",   CmdSetFont, F_ROMAN},
@@ -97,42 +106,59 @@ static CommandArray commands[] = {
    { "textsl",   CmdSetFont, F_SLANTED},
    { "slshape",  CmdSetFont, F_SLANTED},
 /* ---------- FONT SERIES ------------------- */
-   { "bf",       CmdCharFormat, CMD_BOLD },
-   { "textbf",   CmdCharFormat, CMD_BOLD },
-   { "mathbf",   CmdCharFormat, CMD_BOLD },
-   { "bfseries", CmdCharFormat, CMD_BOLD },
-   { "textmd",   CmdCharFormat, CMD_BOLD },      /* poor approximation */
-   { "mdseries", CmdCharFormat, CMD_BOLD },
+   { "bf",       CmdSetFontStyle, CMD_BOLD_1 },
+   { "textbf",   CmdSetFontStyle, CMD_BOLD },
+   { "mathbf",   CmdSetFontStyle, CMD_BOLD },
+   { "bfseries", CmdSetFontStyle, CMD_BOLD },
+   { "textmd",   CmdSetFontStyle, CMD_BOLD },      /* poor approximation */
+   { "mdseries", CmdSetFontStyle, CMD_BOLD },
 /* ---------- FONT SHAPE ------------------- */
-   { "it",       CmdCharFormat, CMD_ITALIC },
-   { "textit",   CmdCharFormat, CMD_ITALIC },
-   { "mathit",   CmdCharFormat, CMD_ITALIC },
-   { "itshape",  CmdCharFormat, CMD_ITALIC },
-   { "sc",       CmdCharFormat, CMD_CAPS },
-   { "textsc",   CmdCharFormat, CMD_CAPS },
-   { "scshape",  CmdCharFormat, CMD_CAPS },
-   { "underline",CmdCharFormat, CMD_UNDERLINE },
+   { "it",       CmdSetFontStyle, CMD_ITALIC_1 },
+   { "textit",   CmdSetFontStyle, CMD_ITALIC },
+   { "mathit",   CmdSetFontStyle, CMD_ITALIC },
+   { "itshape",  CmdSetFontStyle, CMD_ITALIC },
+   { "sc",       CmdSetFontStyle, CMD_CAPS_1 },
+   { "textsc",   CmdSetFontStyle, CMD_CAPS },
+   { "scshape",  CmdSetFontStyle, CMD_CAPS },
+   { "underline",CmdSetFontStyle, CMD_UNDERLINE },
 /* ---------- FONT SIZE ------------------- */
-   { "tiny",         CmdFontSize, 10 },
-   { "scriptsize",   CmdFontSize, 12 },
-   { "footnotesize", CmdFontSize, 14 },
-   { "small",        CmdFontSize, 16 },
-   { "normalsize",   CmdFontSize, 20 },
-   { "large",        CmdFontSize, 25 },
-   { "Large",        CmdFontSize, 30 },
-   { "LARGE",        CmdFontSize, 40 },
-   { "huge",         CmdFontSize, 50 },
-   { "Huge",         CmdFontSize, 60 },
+   { "tiny",         CmdSetFontSize, 10 },
+   { "scriptsize",   CmdSetFontSize, 14 },
+   { "footnotesize", CmdSetFontSize, 16 },
+   { "small",        CmdSetFontSize, 18 },
+   { "normalsize",   CmdSetFontSize, 20 },
+   { "large",        CmdSetFontSize, 24 },
+   { "Large",        CmdSetFontSize, 28 },
+   { "LARGE",        CmdSetFontSize, 34 },
+   { "huge",         CmdSetFontSize, 40 },
+   { "Huge",         CmdSetFontSize, 50 },
    { "em", CmdEmphasize, 0},
    { "emph", CmdEmphasize, 0},
+/* ---------- LOGOS ------------------- */
    { "LaTeX", CmdLogo, CMD_LATEX },
+   { "LaTeXe", CmdLogo, CMD_LATEXE },
    { "TeX", CmdLogo, CMD_TEX },
    { "SLiTeX", CmdLogo, CMD_SLITEX },
    { "BibTeX", CmdLogo, CMD_BIBTEX },
-   { "acute", CmdLApostrophChar, 0 },
-   { "grave", CmdRApostrophChar, 0 },
-   { "hat", CmdRApostrophChar, 0 },
+/* ---------- SPECIAL CHARACTERS ------------------- */
+   { "hat", CmdHatChar, 0 },
+   { "check", CmdHacekChar, 0},
+   { "breve", CmdBreveChar, 0},
+   { "acute", CmdRApostrophChar, 0 },
+   { "grave", CmdLApostrophChar, 0 },
    { "tilde", CmdTildeChar, 0 },
+   { "bar", CmdMacronChar, 0},
+   { "vec", CmdVecChar, 0},
+   { "dot", CmdDotChar, 0},
+   { "ddot", CmdUmlauteChar, 0},
+   { "u", CmdBreveChar, 0},
+   { "d", CmdUnderdotChar, 0 },
+   { "v", CmdHacekChar, 0 },
+   { "r", CmdOaccentChar, 0 },
+   { "b", CmdUnderbarChar, 0 },
+   { "c", CmdCedillaChar, 0},
+   { "hat", CmdHatChar, 0},
+  
    { "ldots", CmdLdots, 0 },
    { "maketitle", CmdTitle, TITLE_MAKE },
    { "section", CmdSection, SECT_NORM },
@@ -261,6 +287,7 @@ static CommandArray commands[] = {
    { "newenvironment", CmdIgnoreParameter, 13 }, /* ditto */
    { "newtheorem", CmdIgnoreParameter, 12 }, /* one optional two required */
    { "newcounter", CmdIgnoreParameter, 11 }, /* one optional one required */
+   { "frac", CmdFraction, 0},
    { "", NULL, 0 }
 };
 
@@ -495,6 +522,12 @@ globals: command-functions have side effects or recursive calls
   return FALSE;
 }
 
+int CurrentEnvironmentCount(void)
+/****************************************************************************
+purpose: to eliminate the iEnvCount global variable ****************************************************************************/
+{
+    return iEnvCount;
+}
 
 /****************************************************************************/
 void PushEnvironment(int code)
@@ -506,8 +539,10 @@ globals: changes Environment - array of active environments
 		 iEnvCount   - counter of active environments
  ****************************************************************************/
 {
+  int previous_font_size;
   char *diag = "";
-
+  
+  previous_font_size = CurrentFontSize();
   switch(code)
     {
     case HEADER: Environments[iEnvCount++]=HeaderCommands;
@@ -537,8 +572,7 @@ globals: changes Environment - array of active environments
     case GERMANMODE : Environments[iEnvCount++]=GermanModeCommands;
       diag = "?german?";
       break;
-      /*LEG160698 Maybe we should push "nothing" 
-	but I think it doesn't harm*/
+      /*LEG160698 Maybe we should push "nothing" but I think it doesn't harm*/
     case IGN_ENV_CMD: Environments[iEnvCount++]=commands;
       diag = "*latex2rtf ignored*";
       break;
@@ -549,6 +583,12 @@ globals: changes Environment - array of active environments
     default: error("assertion failed at function PushEnvironment");
     }
   
+  curr_fontnumb[iEnvCount] = curr_fontnumb[iEnvCount-1];
+  curr_fontbold[iEnvCount] = curr_fontbold[iEnvCount-1];
+  curr_fontital[iEnvCount] = curr_fontital[iEnvCount-1];
+  curr_fontscap[iEnvCount] = curr_fontscap[iEnvCount-1];
+  BasicSetFontSize(previous_font_size);
+
   diagnostics(4, "Entering %s environment, Depth: %d.", diag, iEnvCount);
   
 }

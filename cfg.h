@@ -1,19 +1,22 @@
 /*
- * $Id: cfg.h,v 1.6 2001/08/12 18:53:25 prahl Exp $
+ * $Id: cfg.h,v 1.7 2001/08/12 19:00:04 prahl Exp $
  * History:
  * $Log: cfg.h,v $
- * Revision 1.6  2001/08/12 18:53:25  prahl
- * 1.9d
- *         Rewrote the \cite code.
- *         No crashes when .aux missing.
- *         Inserts '?' for unknown citations
- *         Added cite.tex and cite.bib to for testing \cite commands
- *         hyperref not tested since I don't use it.
- *         A small hyperref test file would be nice
- *         Revised treatment of \oe and \OE per Wilfried Hennings suggestions
- *         Added support for MT Extra in direct.cfg and fonts.cfg so that
- *         more math characters will be translated e.g., \ell (see oddchars.tex)
- *         added and improved font changing commands e.g., \texttt, \it
+ * Revision 1.7  2001/08/12 19:00:04  prahl
+ * 1.9e
+ *         Revised all the accented character code using ideas borrowed from ltx2rtf.
+ *         Comparing ltx2rtf and latex2rtf indicates that Taupin and Lehner tended to work on
+ *         different areas of the latex->rtf conversion process.  Adding
+ *         accented characters is the first step in the merging process.
+ *
+ *         Added MacRoman font handling (primarily to get the breve accent)
+ *         Now supports a wide variety of accented characters.
+ *         (compound characters only work under more recent versions of word)
+ *         Reworked the code to change font sizes.
+ *         Added latex logo code from ltx2rtf
+ *         Extracted character code into separate file chars.c
+ *         Fixed bug with \sf reverting to roman
+ *         Added two new testing files fontsize.tex and accentchars.tex
  *
  * Revision 1.5  1998/11/12 15:15:42  glehner
  * Cleaned up includes, moved from .h file to .c
@@ -86,9 +89,31 @@ extern void ReadLg(char *lang);
 /*@null@*/ 
 extern const char *TranslateName(char *name);
 
+#ifndef LIBDIR
 #define LIBDIR ""
+#endif
+
 #ifndef TRUE
 #define TRUE 1
 #define FALSE 0
 #endif
+
+/* Default to ':' for environment separator and something unlikely for classic MacOS */
+#ifndef ENVSEP
+  #ifdef __MWERKS__
+    #define ENVSEP '^'
+  #else
+    #define ENVSEP ':'
+  #endif
+#endif
+
+/* Defaults to '/' , use ':' for classic MacOS */
+#ifndef PATHSEP
+  #ifdef __MWERKS__
+    #define PATHSEP ':'
+  #else
+    #define PATHSEP '/'
+  #endif
+#endif
+
 #endif /* ndefined __CFG_H */

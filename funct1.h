@@ -1,19 +1,22 @@
 /*
- * $Id: funct1.h,v 1.8 2001/08/12 18:53:25 prahl Exp $
+ * $Id: funct1.h,v 1.9 2001/08/12 19:00:04 prahl Exp $
  * History:
  * $Log: funct1.h,v $
- * Revision 1.8  2001/08/12 18:53:25  prahl
- * 1.9d
- *         Rewrote the \cite code.
- *         No crashes when .aux missing.
- *         Inserts '?' for unknown citations
- *         Added cite.tex and cite.bib to for testing \cite commands
- *         hyperref not tested since I don't use it.
- *         A small hyperref test file would be nice
- *         Revised treatment of \oe and \OE per Wilfried Hennings suggestions
- *         Added support for MT Extra in direct.cfg and fonts.cfg so that
- *         more math characters will be translated e.g., \ell (see oddchars.tex)
- *         added and improved font changing commands e.g., \texttt, \it
+ * Revision 1.9  2001/08/12 19:00:04  prahl
+ * 1.9e
+ *         Revised all the accented character code using ideas borrowed from ltx2rtf.
+ *         Comparing ltx2rtf and latex2rtf indicates that Taupin and Lehner tended to work on
+ *         different areas of the latex->rtf conversion process.  Adding
+ *         accented characters is the first step in the merging process.
+ *
+ *         Added MacRoman font handling (primarily to get the breve accent)
+ *         Now supports a wide variety of accented characters.
+ *         (compound characters only work under more recent versions of word)
+ *         Reworked the code to change font sizes.
+ *         Added latex logo code from ltx2rtf
+ *         Extracted character code into separate file chars.c
+ *         Fixed bug with \sf reverting to roman
+ *         Added two new testing files fontsize.tex and accentchars.tex
  *
  * Revision 1.5  1998/11/04 13:39:40  glehner
  * Changed ON-Flag to 0x4000 for little int compilers.
@@ -36,14 +39,6 @@
 
 #define AST_FORM 100
 
-#define CMD_BOLD 1
-#define CMD_ITALIC 2
-#define CMD_UNDERLINE 3
-#define CMD_CAPS 4
-/* ----------------------------------- */
-#define CMD_CENTERED 5
-/* ----------------------------------- */
-void CmdCharFormat(int);
 
 #define EMPHASIZE 1
 void Format(int code);
@@ -59,27 +54,10 @@ void CmdBeginEnd(int code);
 #define PAR_RIGHT 2
 #define PAR_LEFT 3
 #define PAR_CENTERLINE 4
-#define ON 0x4000
-#define OFF 0x0000
 void Paragraph(int code);
 
 void CmdToday(int code);
 
-void CmdFontSize(int code);
-
-void CmdC(int code);
-void CmdUmlaute(void);
-void CmdLApostrophChar(int code);
-void CmdRApostrophChar(int code);
-void CmdSpitzeChar();
-void CmdTildeChar(int code);
-void CmdSymbolChar( int code);
-
-#define CMD_TEX 1
-#define CMD_LATEX 2
-#define CMD_SLITEX 3
-#define CMD_BIBTEX 4
-void CmdLogo(int code);
 
 void CmdIgnore(int code);
 void CmdLdots(int code);
@@ -129,17 +107,6 @@ void CmdList(int code);
 
 void CmdMbox(int code);
 
-#define F_ROMAN        1
-#define F_SLANTED      2
-#define F_SANSSERIF    3
-#define F_TYPEWRITER   4
-#define F_ROMAN_1      5
-#define F_SLANTED_1    6
-#define F_SANSSERIF_1  7
-#define F_TYPEWRITER_1 8
-
-void CmdSetFont(int code);
-
 void CmdInclude(int code);
 
 void CmdVerb(int code);
@@ -150,8 +117,6 @@ void CmdVerse(int code);
 
 void TranslateGerman(void);
 void CmdPrintRtf(int code);
-
-/*@only@*/ char *GetParam();
 
 void GermanPrint(int code);
 #define GP_CK 1

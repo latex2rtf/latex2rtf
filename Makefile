@@ -1,18 +1,26 @@
-# $Id: Makefile,v 1.6 2001/08/12 18:53:25 prahl Exp $
+# Scott Prahl
+# Added new file dependencies
+# now use $(MAKE) instead of make
+# added test target
+# incorporated test directory into make process
+# $Id: Makefile,v 1.7 2001/08/12 19:00:04 prahl Exp $
 # History:
 # $Log: Makefile,v $
-# Revision 1.6  2001/08/12 18:53:25  prahl
-# 1.9d
-#         Rewrote the \cite code.
-#         No crashes when .aux missing.
-#         Inserts '?' for unknown citations
-#         Added cite.tex and cite.bib to for testing \cite commands
-#         hyperref not tested since I don't use it.
-#         A small hyperref test file would be nice
-#         Revised treatment of \oe and \OE per Wilfried Hennings suggestions
-#         Added support for MT Extra in direct.cfg and fonts.cfg so that
-#         more math characters will be translated e.g., \ell (see oddchars.tex)
-#         added and improved font changing commands e.g., \texttt, \it
+# Revision 1.7  2001/08/12 19:00:04  prahl
+# 1.9e
+#         Revised all the accented character code using ideas borrowed from ltx2rtf.
+#         Comparing ltx2rtf and latex2rtf indicates that Taupin and Lehner tended to work on
+#         different areas of the latex->rtf conversion process.  Adding
+#         accented characters is the first step in the merging process.
+#
+#         Added MacRoman font handling (primarily to get the breve accent)
+#         Now supports a wide variety of accented characters.
+#         (compound characters only work under more recent versions of word)
+#         Reworked the code to change font sizes.
+#         Added latex logo code from ltx2rtf
+#         Extracted character code into separate file chars.c
+#         Fixed bug with \sf reverting to roman
+#         Added two new testing files fontsize.tex and accentchars.tex
 #
 # Revision 1.21  1998/07/03 06:49:36  glehner
 # updated dependencies of multiple .o files
@@ -86,7 +94,7 @@
 # The Debian-specific parts of this Makefile are created by 
 # Erick Branderhorst. Parts are written by Ian Jackson and Ian Murdock.
 # TODO: add target "changes". 
-CC=gcc    # C-Compiler 
+CC=cc    # C-Compiler 
 CFLAGS=-g $(XCFLAGS) # Use -O here if you want it optimized
 COPY=cp
 INSTALL=install
@@ -96,13 +104,13 @@ DAT_MODE=644
 DIR_USER=root
 BIN_USER=root
 DAT_USER=root
-DIR_GROUP=root
-BIN_GROUP=root
-DAT_GROUP=root
+DIR_GROUP=wheel
+BIN_GROUP=wheel
+DAT_GROUP=wheel
 # If you have the program install, use the following definitions
 INST_DIR=$(INSTALL) -g $(DIR_GROUP) -o $(DIR_USER) -d -m $(BIN_MODE)
 INST_BIN=$(INSTALL) -g $(BIN_GROUP) -o $(BIN_USER) -m $(DIR_MODE)
-INST_DAT=$(INSTALL) -g $(DAT_GROUP) -o $(DAT_USER) -m $(DAT_MODE)
+INST_DAT=$(INSTALL) -c -g $(DAT_GROUP) -o $(DAT_USER) -m $(DAT_MODE)
 CHOWN_DIR=true
 CHOWN_BIN=true
 CHOWN_DAT=true
@@ -171,18 +179,21 @@ XCFLAGS=
 LIBS=
 
 # Nothing to change below this line
-SOURCES=commands.c commands.h direct.c direct.h encode.c encode.h l2r_fonts.c \
+SOURCES=commands.c commands.h chars.c chars.h direct.c direct.h encode.c encode.h l2r_fonts.c \
     l2r_fonts.h funct1.c funct1.h funct2.c funct2.h ignore.c ignore.h main.c \
-    main.h stack.c stack.h version.h cfg.c cfg.h Makefile README README.DOS\
+    main.h stack.c stack.h version.h cfg.c cfg.h Makefile README README.DOS README.Mac\
     Copyright mygetopt.c optind.c version debian.README \
-    debian.control debian.rules util.c util.h  ChangeLog parser.c parser.h
+    debian.control debian.rules util.c util.h  ChangeLog parser.c parser.h l2r.bat
 SUPPORT=cfg/direct.cfg cfg/fonts.cfg cfg/ignore.cfg \
-    cfg/english.cfg cfg/german.cfg cfg/spanish.cfg \
-    l2r.bat l2r.exe
+    cfg/english.cfg cfg/german.cfg cfg/spanish.cfg cfg/french.cfg
 MANUALS=latex2rtf.1
 MSDOS=l2r.bat l2r.exe
-DOCS=doc/latex2rtf.info doc/l2r.html doc/l2r.pdf doc/l2r.txt\
-     doc/TODO doc/credits doc/copying.txt doc/Makefile
+DOCS= doc/l2r.html doc/credits doc/copying.txt doc/Makefile
+TEST=   test/Makefile \
+	test/accentchars.tex test/array.tex test/cite.tex test/cite.bib \
+	test/eqns.tex test/fonts.tex test/fontsize.tex test/frac.tex \
+	test/list.tex test/logo.tex test/misc1.tex test/misc2.tex \
+	test/oddchars.tex test/tabular.tex
 
 ARCH="`dpkg --print-architecture`"
 
@@ -193,8 +204,8 @@ all build stamp-build: checkdir latex2rtf
 	touch stamp-build
 
 latex2rtf: l2r_fonts.o direct.o encode.o commands.o stack.o funct1.o funct2.o \
-	ignore.o cfg.o main.o util.o parser.o mygetopt.o
-	$(CC) $(CFLAGS) l2r_fonts.o direct.o encode.o commands.o stack.o \
+	chars.o ignore.o cfg.o main.o util.o parser.o mygetopt.o
+	$(CC) $(CFLAGS) l2r_fonts.o chars.o direct.o encode.o commands.o stack.o \
 	funct1.o funct2.o cfg.o main.o ignore.o util.o parser.o mygetopt.o \
 	$(LIBS) -o latex2rtf
 
@@ -242,47 +253,53 @@ change.log: ChangeLog
 	cp ChangeLog change.log
 
 doc:	checkdir change.log
-	cd doc ; make -k
+	cd doc && $(MAKE) -k
+
+test: latex2rtf
+	cd test && $(MAKE) -k
 
 clean: checkdir
-	rm -f stack.o main.o funct1.o funct2.o ignore.o commands.o mygetopt.o\
-	    encode.o direct.o l2r_fonts.o cfg.o util.o core latex2rtf.tar.gz \
+	rm -f stack.o main.o chars.o funct1.o funct2.o ignore.o commands.o mygetopt.o\
+	    encode.o direct.o l2r_fonts.o cfg.o util.o parser.o core latex2rtf.tar.gz \
 	    *~ ./#* stamp-build latex2rtf-$(VERSION).tar.gz __tmp__ \
 	    *.deb
 	rm -rf latex2rtf latex2rtf-$(VERSION)
 	rm -rf debian-tmp
-	cd doc ; make almostclean
+	cd doc && $(MAKE) almostclean
+	cd test && $(MAKE) clean
 
-$(SOURCES) $(SUPPORT) $(MANUALS):
-	cp $@
+#$(SOURCES) $(SUPPORT) $(MANUALS):
+#	co $@
 
-checkout checkdir: $(SOURCES) $(SUPPORT) $(MANUALS)
+checkout checkdir: $(SOURCES) $(SUPPORT) $(MANUALS) $(TEST)
 
-dist source: $(SOURCES) $(SUPPORT) $(MANUALS) $(DOCS) $(MSDOS) clean
+dist source: $(SOURCES) $(SUPPORT) $(MANUALS) $(DOCS) $(TEST) clean
 	mkdir latex2rtf-$(VERSION)
 	mkdir latex2rtf-$(VERSION)/cfg
 	mkdir latex2rtf-$(VERSION)/doc
-	ln $(SOURCES) $(MANUALS) $(MSDOS) latex2rtf-$(VERSION)
+	mkdir latex2rtf-$(VERSION)/test
+	ln $(SOURCES) $(MANUALS) latex2rtf-$(VERSION)
 	ln $(SUPPORT) latex2rtf-$(VERSION)/cfg
 	ln $(DOCS) latex2rtf-$(VERSION)/doc
+	ln $(TEST) latex2rtf-$(VERSION)/test
 	tar cvf - latex2rtf-$(VERSION) | \
 	    gzip -best > latex2rtf-$(VERSION).tar.gz
 	rm -rf latex2rtf-$(VERSION)
 
-install_and_delete_old_cfg: $(SUPPORT)
+# deleted rm -f $$i/$$j; \ from just after for statement and changed name
+install_cfg: $(SUPPORT)
 	IFS=: ; for i in $(LIBINSTALL) ; do \
 	    $(INST_DIR) $$i; \
 	    $(CHOWN_DIR) $$i; \
 	    $(CHMOD_DIR) $$i; \
 	    for j in $(SUPPORT) ; do \
-		rm -f $$i/$$j; \
 		$(INST_DAT) $$j $$i; \
 		$(CHOWN_DAT) $$i/$$j; \
 		$(CHMOD_DAT) $$i/$$j; \
 	    done ;\
 	done
 
-complex_install: latex2rtf install.man
+complex_install: latex2rtf install.man install_cfg
 	IFS=: ; for i in $(BININSTALL) ; do \
 	    $(INST_DIR) $$i; \
 	    $(CHOWN_DIR) $$i; \
@@ -292,13 +309,13 @@ complex_install: latex2rtf install.man
 	    $(CHMOD_BIN) $$i/latex2rtf; \
 	done
 
+# do not delete rtf2latex.1 since we don't have the original source files
 install.man: $(MANUALS)
 	IFS=: ; for i in $(MANINSTALL) ; do \
 	    $(INST_DIR) $$i; \
 	    $(CHOWN_DIR) $$i; \
 	    $(CHMOD_DIR) $$i; \
 	    for j in $(MANUALS) ; do \
-		rm -f $$i/$$j; \
 		$(INST_DAT) $$j $$i; \
 		$(CHOWN_DAT) $$i/$$j; \
 		$(CHMOD_DAT) $$i/$$j; \
@@ -321,7 +338,7 @@ install: complex_install
 
 .PHONY: install complex_install simple_install simple_cfg_install \
 	install.man complex_install install_and_delete_old_cfg dist \
-	all clean checkout build checkdir diff checkroot binary source
+	all clean checkout build checkdir diff checkroot binary source test
 
 # Debian-specific targets:
 

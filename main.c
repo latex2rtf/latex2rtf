@@ -1,19 +1,22 @@
 /*
- * $Id: main.c,v 1.8 2001/08/12 18:53:25 prahl Exp $
+ * $Id: main.c,v 1.9 2001/08/12 19:00:04 prahl Exp $
  * History:
  * $Log: main.c,v $
- * Revision 1.8  2001/08/12 18:53:25  prahl
- * 1.9d
- *         Rewrote the \cite code.
- *         No crashes when .aux missing.
- *         Inserts '?' for unknown citations
- *         Added cite.tex and cite.bib to for testing \cite commands
- *         hyperref not tested since I don't use it.
- *         A small hyperref test file would be nice
- *         Revised treatment of \oe and \OE per Wilfried Hennings suggestions
- *         Added support for MT Extra in direct.cfg and fonts.cfg so that
- *         more math characters will be translated e.g., \ell (see oddchars.tex)
- *         added and improved font changing commands e.g., \texttt, \it
+ * Revision 1.9  2001/08/12 19:00:04  prahl
+ * 1.9e
+ *         Revised all the accented character code using ideas borrowed from ltx2rtf.
+ *         Comparing ltx2rtf and latex2rtf indicates that Taupin and Lehner tended to work on
+ *         different areas of the latex->rtf conversion process.  Adding
+ *         accented characters is the first step in the merging process.
+ *
+ *         Added MacRoman font handling (primarily to get the breve accent)
+ *         Now supports a wide variety of accented characters.
+ *         (compound characters only work under more recent versions of word)
+ *         Reworked the code to change font sizes.
+ *         Added latex logo code from ltx2rtf
+ *         Extracted character code into separate file chars.c
+ *         Fixed bug with \sf reverting to roman
+ *         Added two new testing files fontsize.tex and accentchars.tex
  *
  * Revision 1.11  1998/10/28 06:10:25  glehner
  * Added "errno.h"
@@ -80,6 +83,7 @@
 #include <errno.h>
 #include "main.h"
 #include "commands.h"
+#include "chars.h"
 #include "funct1.h"
 #include "l2r_fonts.h"
 #include "stack.h"
@@ -90,6 +94,7 @@
 #include "cfg.h"
 #include "encode.h"
 #include "util.h"
+#include "parser.h"
 
 #ifdef __MWERKS__
 #include "MainMain.h"
@@ -146,6 +151,10 @@ bool g_show_equation_number = FALSE;
 int g_enumerate_depth = 0;
 bool g_suppress_equation_number = FALSE;
 bool g_aux_file_missing = FALSE; /* assume that it exists */
+int curr_fontbold[MAXENVIRONS] = {0};
+int curr_fontital[MAXENVIRONS] = {0};
+int curr_fontscap[MAXENVIRONS] = {0};
+int curr_fontnumb[MAXENVIRONS] = {0};
 /*SAP end fix*/
 
 /****************************************************************************/
@@ -178,7 +187,6 @@ extern int getopt(int ac, char *const av[], const char *optstring)
 	 /*@modifies optind, optarg@*/
 	 ;
 
-
 /****************************************************************************
 purpose: checks parameter and starts convert routine
 params:  command line arguments argc, argv
@@ -193,6 +201,7 @@ main(int argc, char **argv)
   fTex = stdin; /* default input/output */
   fRtf = stdout;
   
+  SetDocumentFontSize(20);
   PushEnvironment(HEADER);
   PushEnvironment(DOCUMENT);
   progname=argv[0];
@@ -236,7 +245,8 @@ main(int argc, char **argv)
 	default:
 	  errflag = TRUE;
 	}
-    }
+    }  
+        
   if(argc > optind + 1 || errflag)
   {
     fprintf(stderr,"%s: Usage: %s [-V] [-l] [-o outfile]"
@@ -246,12 +256,31 @@ main(int argc, char **argv)
     fprintf(stderr,"\t converted into RTF-Commands!\n");
     return(1);
   }
+  
   if(argc == optind + 1)
   {
     char *s, *newrtf;
-    input = argv[optind];
-    latexname = input;
+    
+/* if filename does not end in .tex then append .tex */
+	if ((s=strrchr(argv[optind], PATHSEP))==NULL)
+           s = argv[optind];
+        
+        if((s = strrchr(s, '.')) == NULL)
+        {
+	    if((input = malloc(strlen(argv[optind]) + 4)) == NULL)
+	        error(" malloc error -> out of memory!\n");
+  	   strcpy(input,argv[optind]);
+	   strcat(input, ".tex");
+        }
+	else if (strcmp(s, ".tex"))
+	   error("latex files should end with .tex");
+        else
+           input = argv[optind];
 
+       latexname = input;
+//       fprintf(stderr,"latex filename is %s\n",input);
+        
+/* create the .rtf filename */
 	if((newrtf = malloc(strlen(input) + 5)) == NULL)
 	    error(" malloc error -> out of memory!\n");
   	strcpy(newrtf,input);
@@ -259,7 +288,8 @@ main(int argc, char **argv)
 	   strcat(newrtf, ".rtf");
 	else
 	   strcpy (s, ".rtf");
-  	freopen(newrtf, "w", stdout);
+        output = newrtf;
+//        fprintf(stderr,"rtf filename is %s\n", output);
   }
   
   if (AuxName == NULL)
@@ -287,6 +317,7 @@ main(int argc, char **argv)
   PrepareTex(input,&fTex);
   WriteTemp(fTex);         /* Normalize eol of inputfile */
   PrepareRtf(output,&fRtf);
+
   (void)Push(1,0);
   Convert();
   /* if citations were produced, now the reference-list will be created */
@@ -315,7 +346,6 @@ bool NoNewLine = FALSE;
 static int ConvertFlag;
 bool bInDocument = FALSE;
 int tabcounter = 0;
-int fontsize = 20;
 bool twocolumn = FALSE;
 bool titlepage = FALSE;
 bool article = TRUE;
@@ -740,7 +770,7 @@ purpose: writes error message
 globals: reads progname;
  ****************************************************************************/
 {
-  fprintf(stderr,"\nERROR at line %ld: %s",text,getLinenumber());
+  fprintf(stderr,"\nERROR at line %ld: %s", getLinenumber(), text);
   fprintf(stderr,"\nprogram aborted\n");
   exit(EXIT_FAILURE);
 }
@@ -839,7 +869,7 @@ diagnostics(int level, char *format, ...)
 
   if((level <= verbosity) && (level > 1))
     {
-      fprintf(errfile, "\n%s:%d: ", latexname, getLinenumber());
+      fprintf(errfile, "\n%s:%ld: ", latexname, getLinenumber());
       switch(level)
 	{
 	case 0: 
@@ -870,7 +900,6 @@ void PrepareRtf(char *filename, FILE **f)
 purpose: creates output file and writes RTF-header.
 params: filename - name of outputfile, possibly NULL for already open file
 	f - pointer to filepointer to store file ID
-globals: fontsize;
  ****************************************************************************/
 {
   if(filename != NULL)
@@ -881,16 +910,18 @@ globals: fontsize;
                                                    --V.Menkov
        */
 
-      if ((*f = fopen(filename,"w")) == NULL)	 /* open file */
+       if ((*f = fopen(filename,"w")) == NULL)	 /* open file */
       {
-	error("Error opening RTF-file");
+        fprintf(stderr, "Error opening RTF file %s\n", filename);
+        exit(EXIT_FAILURE);
       }
   }
+  
   /* write header */
 #ifdef DEFAULT_MAC_ENCODING
-  fprintf(*f,"{\\rtf1\\mac\\fs%d\\deff0\\deflang1024\n",fontsize);
+  fprintf(*f,"{\\rtf1\\mac\\fs%d\\deff0\\deflang1024\n",CurrentFontSize());
 #else
-  fprintf(*f,"{\\rtf1\\PC\\fs%d\\deff0\\deflang1024\n",fontsize);
+  fprintf(*f,"{\\rtf1\\PC\\fs%d\\deff0\\deflang1024\n",CurrentFontSize());
 #endif
   fprintf(*f,"{\\info{\\version1}}\\widowctrl\\ftnbj\\sectd\\linex0\\endnhere");
   fprintf(*f,"\\qj \n");
@@ -910,7 +941,8 @@ params: filename - name of inputfile, possibly NULL
   {
       if ((*f = fopen(filename,"r")) == NULL)	/* open file */
       {
-	error("Error opening LATEX-file");
+        fprintf(stderr, "Error opening LaTeX file %s\n", filename);
+        exit(EXIT_FAILURE);
       }
   }
 }
@@ -928,7 +960,6 @@ void
 WriteTemp(FILE *f)
 {
   FILE *tout;
-  int cnt = 0;
   char cThis;
 
   tout = tmpfile();
@@ -1009,7 +1040,7 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 {
   char cCommand[MAXCOMMANDLEN];
   int i;
-  char cThis, cNext;
+  char cThis;
   char option_string[100];
   
   for (i = 0; ;i++)   /* get command from input stream */
@@ -1114,12 +1145,16 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 		  break;
 	case '~': CmdTildeChar(0);
 		  return TRUE;
-	case '^': CmdSpitzeChar();
+	case '^': CmdHatChar(0);
 		  return TRUE;
-	case '\"':CmdUmlaute();
+	case '.': CmdDotChar(0);
+		  return TRUE;
+	case '\"':CmdUmlauteChar(0);
 		  return TRUE;
 	case '`': if (!tabbing_on)
 		    CmdLApostrophChar(0);
+		  return TRUE;
+	case '=': if (tabbing_on) CmdTabset(); else CmdMacronChar(0);
 		  return TRUE;
 	case '\'':if (!tabbing_on)
 		     CmdRApostrophChar(0);  /* char ' =?= \' */
@@ -1139,8 +1174,6 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 	case '@': CmdIgnore(0);  /* \@ produces an "end of sentence" space */
 		  return TRUE;
 	case '>': CmdTabjump();
-		  return TRUE;
-	case '=': CmdTabset();
 		  return TRUE;
 	case '3': fprintf(fRtf, "{\\ansi\\'df}");   /* german symbol 'á' */
 		  return TRUE;
@@ -1242,7 +1275,7 @@ purpose: get number of actual line (do not use global linenumber, because
          printing an error-message + program abort
 params:  none
  ****************************************************************************/
-int 
+long 
 getLinenumber (void)
 {
   char buffer[1024];
