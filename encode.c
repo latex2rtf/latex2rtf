@@ -1840,11 +1840,23 @@ void WriteEightBitChar(char cThis)
 		cp852_enc(index);
 	else if (strcmp(g_charset_encoding_name, "cp865") == 0)
 		cp865_enc(index);
+	else if (strcmp(g_charset_encoding_name, "437") == 0)
+		cp437_enc(index);
+	else if (strcmp(g_charset_encoding_name, "850") == 0)
+		cp850_enc(index);
+	else if (strcmp(g_charset_encoding_name, "852") == 0)
+		cp852_enc(index);
+	else if (strcmp(g_charset_encoding_name, "865") == 0)
+		cp865_enc(index);
 	else if (strcmp(g_charset_encoding_name, "decmulti") == 0)
 		decmulti_enc(index);
 	else if (strcmp(g_charset_encoding_name, "cp1250") == 0)
 		cp1250_enc(index);
 	else if (strcmp(g_charset_encoding_name, "cp1252") == 0)
+		cp1252_enc(index);
+	else if (strcmp(g_charset_encoding_name, "1250") == 0)
+		cp1250_enc(index);
+	else if (strcmp(g_charset_encoding_name, "1252") == 0)
 		cp1252_enc(index);
 	else if (strcmp(g_charset_encoding_name, "latin1") == 0)
 		latin1_enc(index);
@@ -1865,6 +1877,12 @@ void WriteEightBitChar(char cThis)
 	else if (strcmp(g_charset_encoding_name, "cp855") == 0 ) 
 		cp855_enc(index);
 	else if (strcmp(g_charset_encoding_name, "cp866") == 0 ) 
+		cp866_enc(index);
+	else if (strcmp(g_charset_encoding_name, "1251") == 0 ) 
+		cp1251_enc(index);
+	else if (strcmp(g_charset_encoding_name, "855") == 0 ) 
+		cp855_enc(index);
+	else if (strcmp(g_charset_encoding_name, "866") == 0 ) 
 		cp866_enc(index);
 	else if (strcmp(g_charset_encoding_name, "koi8-r") == 0 ) 
 		koi8r_enc(index);

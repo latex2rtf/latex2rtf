@@ -112,6 +112,15 @@ setPackageInputenc(char * option)
 	         strcmp(option, "cp1250") == 0   ||
 	         strcmp(option, "cp1251") == 0   ||
 	         strcmp(option, "cp1252") == 0   ||
+	         strcmp(option, "437") == 0    ||
+	         strcmp(option, "437de") == 0  ||
+	         strcmp(option, "850") == 0    ||
+	         strcmp(option, "852") == 0    ||
+	         strcmp(option, "855") == 0    ||
+	         strcmp(option, "866") == 0    ||
+	         strcmp(option, "1250") == 0   ||
+	         strcmp(option, "1251") == 0   ||
+	         strcmp(option, "1252") == 0   ||
 	         strcmp(option, "maccyr") == 0   ||
 	         strcmp(option, "macukr") == 0   ||
 	         strcmp(option, "koi8-r") == 0   ||
