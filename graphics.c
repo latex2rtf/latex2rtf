@@ -1,4 +1,4 @@
-/* $Id: graphics.c,v 1.5 2002/03/11 05:28:37 prahl Exp $ 
+/* $Id: graphics.c,v 1.6 2002/03/14 06:42:21 prahl Exp $ 
 This file contains routines that handle LaTeX graphics commands
 */
 
@@ -14,18 +14,10 @@ This file contains routines that handle LaTeX graphics commands
 #include "convert.h"
 #include "equation.h"
 
-/* macros to extract big-endian short and long ints: */
-/*
-#define SH(p) (((unsigned short)((p)[1])) | ((unsigned short)((p)[0]) << 8))
-#define LG(p) (((unsigned long)(SH((p)+2))) | ((unsigned long)(SH(p)) << 16))
-#define SH(p) ((unsigned short)(unsigned char)((p)[1]) | ((unsigned short)(unsigned char)((p)[0]) << 8))
-#define LG(p) ((unsigned long)(SH((p)+2)) | ((unsigned long)(SH(p)) << 16))
-#define SH(p) ((unsigned short)(unsigned char)((p)[0]) | ((unsigned short)(unsigned char)((p)[1]) << 8))
-#define LG(p) ((unsigned long)(SH((p))) | ((unsigned long)(SH((p)+2)) << 16))
-*/
-#define SH(p) (((unsigned short)((p)[0])) | ((unsigned short)((p)[1]) << 8))
-#define LG(p) (((unsigned long)(SH((p)))) | ((unsigned long)(SH((p)+2)) << 16))
-
+/* Little endian macros to convert to and from host format to network byte ordering */
+#define LETONS(A) ((((A) & 0xFF00) >> 8) | (((A) & 0x00FF) << 8))
+#define LETONL(A) ((((A) & 0xFF000000) >> 24) | (((A) & 0x00FF0000) >>  8) | \
+                  (((A) & 0x0000FF00) <<  8) | (((A) & 0x000000FF) << 24) )
 /*
 Version 1.6 RTF files can include pictures as follows
 
@@ -179,6 +171,13 @@ int width, height;
 	width  = right - left;
 	height = bottom - top;
 	
+	if (g_little_endian) {
+		top    = LETONS(top);
+		bottom = LETONS(bottom);
+		left   = LETONS(left);
+		right  = LETONS(right);
+	}
+
 	diagnostics(1,"top = %d, bottom = %d", top, bottom);
 	diagnostics(1,"left = %d, right = %d", left, right);
 	diagnostics(1,"width = %d, height = %d", width, height);
@@ -223,8 +222,14 @@ int iscale;
 		fclose(fp);
 		return;
 	}
-	diagnostics(1,"width = %ld, height = %ld", width, height);
 
+	if (g_little_endian) {
+		width  = LETONL(width);
+		height = LETONL(height);
+	}
+
+	diagnostics(1,"width = %ld, height = %ld", width, height);
+	
 	fprintRTF("\n{\\pict\\pngblip\\picw%ld\\pich%ld", width, height);
 	if (scale != 1.0) {
 		iscale = (int) (scale * 100);
@@ -274,6 +279,12 @@ unsigned short width, height;
 
 	width = buffer[1];
 	height = buffer[0];
+
+	if (g_little_endian) {
+		width  = LETONS(width);
+		height = LETONS(height);
+	}
+
 	diagnostics(1,"width = %d, height = %d", width, height);
 
 	fprintRTF("\n{\\pict\\jpegblip\\picw%d\\pich%d\n", width, height);

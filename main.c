@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.58 2002/03/12 06:42:19 prahl Exp $ */
+/* $Id: main.c,v 1.59 2002/03/14 06:42:21 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -25,7 +25,7 @@
 #include "preamble.h"
 #include "xref.h"
 
-FILE           *fRtf = NULL;	/* file pointer to RTF file */
+FILE           *fRtf = NULL;			/* file pointer to RTF file */
 char           *TexName = NULL;
 static char    *RtfName = NULL;
 char           *AuxName = NULL;
@@ -38,7 +38,7 @@ bool            FrenchMode = FALSE;	    /* support frenchstyle */
 char            g_encoding[20] = "cp1252";
 bool            twoside = FALSE;
 int      		g_verbosity_level = WARNING;
-static FILE    *logfile = NULL;
+bool			g_little_endian = FALSE;  /* set properly in main() */
 
 /* Holds the last referenced "link" value, used by \Ref and \Pageref */
 char           *hyperref = NULL;
@@ -87,10 +87,10 @@ static void     OpenRtfFile(char *filename, FILE ** f);
 static void     CloseRtf(FILE ** f);
 static void     ConvertLatexPreamble(void);
 static void     InitializeLatexLengths(void);
-static void		usage(void);
 
-void           *GetCommandFunc(char *cCommand);
+static void 	SetEndianness(void);
 static void 	ConvertWholeDocument(void);
+static void		usage(void);
 
 extern char *optarg;
 extern int   optind;
@@ -100,7 +100,8 @@ int main(int argc, char **argv)
 {
 	int             c,x;
 	char           *basename = NULL;
-
+		
+	SetEndianness();
 	progname = argv[0];
 	optind = 1;
 	while ((c = getopt(argc, argv, "lhvSVWZ:o:a:b:d:i:C:M:P:T:")) != EOF) {
@@ -243,6 +244,20 @@ int main(int argc, char **argv)
 		return 1;
 }
 
+static void 	
+SetEndianness(void) 
+/*
+purpose : Figure out endianness of machine.  Needed for graphics support
+*/
+{
+	unsigned int 	endian_test = 0xaabbccdd;
+	unsigned char   endian_test_char = *(unsigned char *)&endian_test;
+
+	if (endian_test_char == 0xdd)
+		g_little_endian = TRUE;
+}	
+
+
 static void
 ConvertWholeDocument(void)
 {
@@ -321,20 +336,15 @@ usage(void)
 void
 diagnostics(int level, char *format,...)
 /*
-purpose : Writes the message to errfile depending on debugging level
+purpose : Writes the message to stderr depending on debugging level
 */
 {
 	char           buffer[512], *buff_ptr;
 	va_list        apf;
-	FILE           *errfile;
 	int            i,linenumber, iEnvCount;
 	char          *input;
 	
 	buff_ptr = buffer;
-	if (logfile != NULL)
-		errfile = logfile;
-	else
-		errfile = stderr;
 
 	va_start(apf, format);
 
@@ -346,10 +356,10 @@ purpose : Writes the message to errfile depending on debugging level
 		
 		switch (level) {
 		case 0:
-			fprintf(errfile, "\nError! line=%d ", linenumber);
+			fprintf(stderr, "\nError! line=%d ", linenumber);
 			break;
 		case 1:
-			fprintf(errfile, "\nWarning line=%d ", linenumber);
+			fprintf(stderr, "\nWarning line=%d ", linenumber);
 			if (g_RTF_warnings) {
 				vsprintf(buffer, format, apf);
 				fprintRTF("{\\plain\\cf2 [latex2rtf:");
@@ -362,26 +372,26 @@ purpose : Writes the message to errfile depending on debugging level
 		case 4:
 		case 5:
 		case 6:
-		    fprintf(errfile, "\n%s %4d rec=%d ", input, linenumber, RecursionLevel);
+		    fprintf(stderr, "\n%s %4d rec=%d ", input, linenumber, RecursionLevel);
 			for (i=0; i<BraceLevel; i++)
-				fprintf(errfile, "{");
+				fprintf(stderr, "{");
 			for (i=8; i>BraceLevel; i--)
-				fprintf(errfile, " ");
+				fprintf(stderr, " ");
 			
 			for (i=0; i<RecursionLevel; i++)
-				fprintf(errfile, "  ");
+				fprintf(stderr, "  ");
 			break;
 		default:
-			fprintf(errfile, "\nline=%d ", linenumber);
+			fprintf(stderr, "\nline=%d ", linenumber);
 			break;
 		}
-		vfprintf(errfile, format, apf);
+		vfprintf(stderr, format, apf);
 	}
 	va_end(apf);
 
 	if (level == 0) {
-		fprintf(errfile, "\n");
-		fflush(errfile);
+		fprintf(stderr, "\n");
+		fflush(stderr);
 		if (fRtf) {
 			fflush(fRtf);
 			CloseRtf(&fRtf);

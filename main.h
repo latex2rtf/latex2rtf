@@ -1,4 +1,4 @@
-/* $Id: main.h,v 1.38 2002/03/11 04:41:40 prahl Exp $ */
+/* $Id: main.h,v 1.39 2002/03/14 06:42:21 prahl Exp $ */
 #ifndef __MAIN_H
 #define __MAIN_H
 
@@ -121,7 +121,7 @@ extern bool		g_equation_display_rtf;
 extern bool		g_equation_inline_bitmap;
 extern bool		g_equation_display_bitmap;
 extern bool		g_equation_comment;
-
+extern bool		g_little_endian;
 
 void fprintRTF(char *format, ...);
 void putRtfChar(char cThis);

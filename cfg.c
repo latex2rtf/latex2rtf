@@ -1,4 +1,4 @@
-/* $Id: cfg.c,v 1.21 2002/03/12 06:42:19 prahl Exp $
+/* $Id: cfg.c,v 1.22 2002/03/14 06:42:21 prahl Exp $
 
      purpose : Read config files and provide lookup routines
 
@@ -138,7 +138,7 @@ purpose: open config by trying multiple paths
 	diagnostics(WARNING, "Cannot open the latex2rtf .cfg files");
 	diagnostics(WARNING, "Locate the directory containing the .cfg files and");
 	diagnostics(WARNING, "   (1) define the environment variable RTFPATH, *or*");
-	diagnostics(WARNING, "   (2) use command line path option \"-L /path/to/cfg/file\", *or*");
+	diagnostics(WARNING, "   (2) use command line path option \"-P /path/to/cfg/file\", *or*");
 	diagnostics(WARNING, "   (3) recompile latex2rtf with LIBDIR defined properly");
 	diagnostics(WARNING, "Current RTFPATH: %s", getenv("RTFPATH"));
 	diagnostics(WARNING, "Current  LIBDIR: %s", LIBDIR);
