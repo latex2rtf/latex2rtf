@@ -217,11 +217,11 @@ WriteEquationAsComment(char *pre, char *eq, char *post)
  purpose   : Writes equation to RTF file as text of COMMENT field
  ******************************************************************************/
 {
-	fprintRTF("{\\field{\\*\\fldinst{ COMMENTS \"\" ");
+	fprintRTF("{\\field{\\*\\fldinst{ COMMENTS \" ");
  	while (*pre)  putRtfChar(*pre++);
 	while (*eq)   putRtfChar(*eq++);
 	while (*post) putRtfChar(*post++);
-	fprintRTF("}{ }}{\\fldrslt }}");
+	fprintRTF("\" }{ }}{\\fldrslt }}");
 }
 
 static char *
