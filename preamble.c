@@ -1,4 +1,4 @@
-/* $Id: preamble.c,v 1.23 2001/10/27 06:13:58 prahl Exp $
+/* $Id: preamble.c,v 1.24 2001/10/27 14:02:09 prahl Exp $
 
 purpose : Handles LaTeX commands that should only occur in the preamble.
           These are gathered together because the entire preamble must be
@@ -856,6 +856,20 @@ void CmdHeadFoot(int code)
 }
 
 static void
+WriteColorTable(void)
+/****************************************************************************
+     <colortbl>          '{' \colortbl <colordef>+ '}'
+     <colordef>          \red ? & \green ? & \blue ? ';'
+ ***************************************************************************/
+{
+	fprintRTF("{\\colortbl");
+	fprintRTF("\\red255\\green0\\blue0;");
+	fprintRTF("\\red0\\green255\\blue0;");
+	fprintRTF("\\red0\\green0\\blue255;");
+	fprintRTF("}\n");
+}
+
+static void
 WriteInfo(void)
 /****************************************************************************
   \title          The title of the document
@@ -887,6 +901,7 @@ purpose: writes header info for the RTF file
 
 	fprintRTF("{\\rtf1\\ansi\\fs%d\\deff%d\\deflang1024\n", size, family);
 	WriteFontHeader();
+	WriteColorTable();
 	WriteStyleHeader();
 	WriteInfo();
 	WriteHeadFoot();

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.34 2001/10/25 14:41:51 prahl Exp $ */
+/* $Id: main.c,v 1.35 2001/10/27 14:02:09 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -66,6 +66,7 @@ bool            g_document_type = FORMAT_ARTICLE;
 bool            g_processing_tabular = FALSE;
 int				g_processing_arrays = 0;
 int 			g_processing_fields = 0;
+bool			g_RTF_warnings = FALSE;
 
 int             indent = 0;
 char            alignment = JUSTIFIED;	/* default for justified: */
@@ -102,7 +103,7 @@ globals: initializes in- and outputfile fRtf,
 
 	progname = argv[0];
 	optind = 1;
-	while ((c = getopt(argc, argv, "hvVZo:a:b:d:l:C:")) != EOF) {
+	while ((c = getopt(argc, argv, "lhvVWZo:a:b:d:i:o:")) != EOF) {
 		switch (c) {
 		case 'a':
 			AuxName = optarg;
@@ -120,8 +121,11 @@ globals: initializes in- and outputfile fRtf,
 		case 'h':
 			printhelp();
 			return(1);
-		case 'l':
+		case 'i':
 			setPackageBabel(optarg);
+			break;
+		case 'l':
+			setPackageBabel("latin1");
 			break;
 		case 'o':
 			output = optarg;
@@ -136,6 +140,9 @@ globals: initializes in- and outputfile fRtf,
 			fprintf(stderr, "%s: %s\n", progname, Version);
 			fprintf(stderr, "RTFPATH = '%s'\n", getenv("RTFPATH"));
 			return (0);
+		case 'W':
+			g_RTF_warnings = TRUE;
+			break;
 		case 'Z':
 			g_safety_braces = FALSE;
 			break;
@@ -249,11 +256,13 @@ printhelp(void)
 		fprintf(stderr, "\t -b bblfile    : use BibTex bblfile rather than input.bbl)\n");
 		fprintf(stderr, "\t -d#           : debug level (# is 0-6)\n");
 		fprintf(stderr, "\t -h            : display this help\n");
-		fprintf(stderr, "\t -l language   : babel language (german, french)\n");
+		fprintf(stderr, "\t -i language   : babel idiom (german, french)\n");
+		fprintf(stderr, "\t -l            : use latin1 encoding (default)\n");
 		fprintf(stderr, "\t -o outputfile : RTF output other than input.rtf\n");
 		fprintf(stderr, "\t -v            : version information\n");
 		fprintf(stderr, "\t -C codepage   : input encoding (latin1, cp850, etc.)\n");
 		fprintf(stderr, "\t -V            : version information\n");
+		fprintf(stderr, "\t -W            : include warnings in RTF\n");
 		fprintf(stderr, "\t -Z            : do not add safety }}}}} at end of rtf file\n\n");
 		fprintf(stderr, "RTFPATH designates the directory for configuration files (*.cfg)\n");
 		fprintf(stderr, "\t RTFPATH = '%s'\n\n", getenv("RTFPATH"));
@@ -271,21 +280,19 @@ rtf_restrict(int major, int minor)
 	return ((major <= rtf_major) && (minor <= rtf_minor));
 }
 
-/*
- * Writes the given warning message in format, ... if global g_verbosity_level is
- * higher or equal then level.  If ??? option is given, i.e. logfile is not
- * null, everything is logged to the logfile -vn Flag (g_verbosity_level)	0 ...
- * only errors = -q 1 ... (default) Translation Warnings 2 ... conditions on
- * output e.g. (rtf1.5 options) 3 ... complete logging of what's going on.
- */
 void
 diagnostics(int level, char *format,...)
+/*
+purpose : Writes the message to errfile depending on debugging level
+*/
 {
+	char           buffer[512], *buff_ptr;
 	va_list        apf;
 	FILE           *errfile;
 	int            i,linenumber, iEnvCount;
 	char          *input;
 	
+	buff_ptr = buffer;
 	if (logfile != NULL)
 		errfile = logfile;
 	else
@@ -307,6 +314,12 @@ diagnostics(int level, char *format,...)
 			break;
 		case 1:
 			fprintf(errfile, "\nWarning line=%d ", linenumber);
+			if (g_RTF_warnings) {
+				vsprintf(buffer, format, apf);
+				fprintRTF("{\\plain\\cf2 [latex2rtf:");
+				while (*buff_ptr){putRtfChar(*buff_ptr);buff_ptr++;}
+				fprintRTF("]}");
+			}
 			break;
 		case 2:
 		case 3:
