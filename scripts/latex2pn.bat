@@ -50,12 +50,12 @@ grep -c INLINE_DOT_ON_BASELINE %fn%.tex
 IF ERRORLEVEL 1 set inline=0
 
 set TEXINPUTS=%th%
-latex  --interaction batchmode %fn%
+latex -quiet --interaction batchmode %fn%
 set TEXINPUTS=
 
 IF NOT EXIST %fn%.dvi GOTO ERR2
 
-dvips -o %fn%.eps %fn%.dvi
+dvips -q -o %fn%.eps %fn%.dvi
 
 :NOTEX
 IF NOT EXIST %fn%.eps GOTO ERR3
