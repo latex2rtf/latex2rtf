@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.55 2002/03/11 04:41:40 prahl Exp $ */
+/* $Id: main.c,v 1.56 2002/03/11 15:45:07 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -299,6 +299,13 @@ usage(void)
 		fprintf(stderr, "\t -v               : version information\n");
 		fprintf(stderr, "\t -C codepage      : input encoding (latin1, cp850, etc.)\n");
 		fprintf(stderr, "\t -M#              : math equation handling\n");
+		fprintf(stderr, "\t      -M1         :  displayed equations to RTF\n");
+		fprintf(stderr, "\t      -M2         :  inline and displayed equations to RTF (default)\n");
+		fprintf(stderr, "\t      -M4         :  displayed equations to bitmap\n");
+		fprintf(stderr, "\t      -M6         :  inline equations to RTF and displayed equations to bitmaps\n");
+		fprintf(stderr, "\t      -M8         :  inline equations to bitmap\n");
+		fprintf(stderr, "\t      -M12        :  inline and displayed equations to bitmaps\n");
+		fprintf(stderr, "\t      -M16        :  insert Word comment field that the original equation text\n");
 		fprintf(stderr, "\t -P /path/to/cfg  : directory containing .cfg files\n");
 		fprintf(stderr, "\t -V               : version information\n");
 		fprintf(stderr, "\t -S               : use ';' to separate args in RTF fields\n");

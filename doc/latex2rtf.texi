@@ -473,7 +473,33 @@ of the following code pages: ansinew, applemac, cp437, cp437de, cp850, cp852, cp
 decmulti, cp1250, cp1252, latin1, latin2, latin3, latin4, latin5, latin9, and next.  The
 default behavior is to use ansinew (code page 1252).
 
-@item -L /path/to/cfg
+@item -M#
+where # selects the type of equation conversion.  Use
+	@table @code
+	@item -M1	
+	convert displayed equations to RTF
+	@item -M2	
+	convert inline equations to RTF
+	@item -M4	
+	convert displayed equations to bitmap
+	@item -M8	
+	convert inline equations to bitmap
+	@item -M16	
+	insert Word comment field that the original equation text
+	@end table
+These switches can be added together to get the desired conversion.  Handy examples are
+	@table @code
+	@item -M3	
+	convert both inline and displayed equations to RTF (default)
+	@item -M6	
+	convert inline equations to RTF and displayed equations to bitmaps
+	@item -M12	
+	convert both inline and displayed equations to bitmaps
+	@end table
+Bitmap conversion requires that you have installed a working latex2png script.
+Producing bitmaps is slow.
+
+@item -P /path/to/cfg
 used to specify the directory that contains the @code{.cfg} files
 
 @item -S
@@ -584,33 +610,9 @@ for your language by yourself.
 
 Cross references include everything that you might expect and then some:
 bibliographic citations, equation references, table references, figure 
-references, and section references.  Equation, table and figure references
+references, and section references.  Section, equation, table and figure references
 are implemented by placing RTF bookmarks around the equation number (or table
 number or figure number).  
-
-Ideally, section references would have been done the same way, but the
-crux of the problem is that @latex{} allows you to tag a section with
-@code{\label} anywhere in the section.  To bookmark the section number,
-we need to know if any @code{\label} occurs in that section before the
-section is processed. A plausible alternative would be to insert a
-bookmark when @code{\label} is encountered with the proper number, and
-then cross-reference these bookmarks. Unfortunately, if the bookmarks
-are hidden, then the cross-reference is also hidden.  So this did not
-work.
-
-So the choices were 
-@enumerate
-@item to insert a visible bookmark in the document at the place where the @code{\label}
-@item to use the cross-reference information available in the @file{.aux} file
-and lose the link.  This is not too bad when the section numbering is not automatic.
-@item to process the @latex{} file twice so that the section labels will be 
-known when the section header is processed.  This is hard and breaks using 
-@ltor{} as pipe.
-@item to process each section, subsection, subsubsection as a unit.  
-@end enumerate
-I opted for the last because this allows @ltor{} to bookmark the number in
-the section header avoids the drawbacks of the other options.  This was harder
-to code, and possibly makes things a bit more fragile.  
 
 Page references work but are implemented as ``warm'' cross-references.  This
 means that Word does not automatically update the page references when the file
@@ -658,21 +660,7 @@ control panel - country settings - numbers - list separator]. By default, latex2
 the comma as separator. If latex2rtf is compiled with the compile switch  -DSEMICOLONSEP ,
 the semicolon is inserted as parameter delimiter. 
 
-It would be nice to have four separate levels of equation translation
-@enumerate 
-@item The first level would just do a simple text translation without
-any special formatting
-@item The second level (which is what is currently implemented) would be
-to translate equations using fields.  These are not readily editable and
-Word does not do a good job converting these to equation objects
-@item  The third level would be to fully convert the @latex{} equations
-to Word equation objects.  The API for this has been published, but 
-is difficult because OLE encoding needs to be written.
-@item Finally, the fourth translation would be to convert the equations
-to images and embed these images in the RTF file.  This is what @code{ltx2rtf}
-does and the results are not bad.
-@end enumerate
-
+There are four separate levels of equation translation based on the -M switch.
 
 @node Tables, Graphics, Equations, Features
 @section Tables
@@ -682,10 +670,10 @@ The table code is currently barely working.  It needs to be rewritten.
 @node Graphics, Pagestyles, Tables, Features
 @section Graphics
 
-One day I will get around to encorporating all graphics formats into the
-RTF file.  This will probably be done using @code{imagemagick} to do
-the actual translation to formats that are supported by Word and then
-embedding the supported format in RTF.
+There is now rudimentary support for @code{\includegraphics}.  Three file types
+will be inserted into the RTF file without needing conversion: .pict, .jpeg, and
+.png files.  EPS files are converted to PNG using @code{convert} from the ImageMagick 
+package.  
 
 @node Pagestyles, Hyperlatex, Graphics, Features
 @section Pagestyles
@@ -703,7 +691,7 @@ Note that these features require RTF Version 1.4.
 @node Hyperlatex, , Pagestyles, Features
 @section Hyperlatex
 
-Hyperlatex support is largely broken at the moment.
+Hyperlatex support is largely broken at the moment, but continues to improve.
 
 Otfried Schwarzkopf has created the ``Hyperlatex Markup Language'' which is a
 ``little package that allows you to use @latex{} to prepare documents in HTML.''
@@ -948,7 +936,7 @@ at times.  @xref{Known Bugs}.
 @item @ltor{} ignores some of the optional parameters of @code{\documentstyle} 
 @item Need to finish code page support.  Typically characters that need to be
 	  constructed using RTF @code{\field} commands are not implemented.
-@item Add the code to produce the corresponding chapter, section informations
+@item Add the code to produce the corresponding chapter, section,
       and page numbering with headings and myheadings pagestyles. Implement
       @code{\markboth} and @code{\markright}.
 @item To support @code{\tableofcontents} there would be two approaches: Transfer
@@ -957,13 +945,12 @@ at times.  @xref{Known Bugs}.
       then construct the sectioning information using these labels. Needs two
       passes on @latex{} input.
 @item Include the GNU gettext package to internationalize @ltor{}'s Messages.
-@item Switch over to GNU getopt() and long options.
 @end itemize
 
 @node Missing and faulty command line options, Known Bugs, Unimplemented Features, LaTeX2RTF under Development
 @section Missing and faulty command line options 
 
-In this section you find comments about missing and buggy command line options.
+Missing or buggy command line options.
 
 @table @option
 @item -V
@@ -988,10 +975,12 @@ version greater than major,minor. Actually this is done at compile time.
 There are some Warning messages if ``newer'' RTF Code is generated, but it
 is not consistent at all.
 
+@item --long_names
+It would be useful to implement the GNU long option names, e.g.: `--debug',
+`--output_file', `--quiet', etc.  This could be done by switching to the GNU
+getopt package.
 @end table
 
-It would be useful to implement the GNU long option names, e.g.: `--debug',
-`--output_file', `--quiet', etc.
 
 @node Known Bugs, Reporting Bugs, Missing and faulty command line options, LaTeX2RTF under Development
 @section Known Bugs 
@@ -1041,11 +1030,8 @@ question. I will, however, try to fix reported bugs in upcoming releases.
 
 Scott's ToDo list
 @itemize @bullet
-@item  Improve @code{\input}
 @item  Add support for pagestyle
 @item  Add better graphic/graphicx support
-@item  Convert equations to MathType OLE objects
-@item  Create bitmaps of equations 
 @end itemize
 
 Georg's todo list
@@ -1062,9 +1048,6 @@ Georg's todo list
 
 The following comes from Ralf: 
 @itemize @bullet  
-@item Redesign the input routines to not use lseek so that @ltor{} can read from pipes. 
-@item Change the Makefile to use default rules for generating .o files. 
-@item Also use generic rules in some other places (clean target) 
 @item For ignored commands the number of arguments to ignore should also be given 
 @item Environment definition produced with @code{\newtheorem} should be supported 
 @item  Change how the current version is
