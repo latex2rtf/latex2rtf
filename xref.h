@@ -61,3 +61,4 @@ void	CmdCite(int code);
 void	CmdBCAY(int code);
 void	CmdApaCite(int code);
 void    set_longnamesfirst(void);
+void	CmdCiteName(int code);

@@ -320,6 +320,9 @@ static CommandArray commands[] = {
 	{"abstract", CmdAbstract, 1},
 	{"endinput", CmdEndInput, 0},
 	{"textcolor", CmdTextColor, 0},
+	{"citename", CmdCiteName, 0},
+	{"shortcite", CmdCiteName, 0},
+
 	{"", NULL, 0}
 };
 

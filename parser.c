@@ -1253,7 +1253,7 @@ getSection(char **body, char **header, char **label)
 
 			} else {
 			
-				if (strstr(s, ".tex") == NULL) {
+				if (strstr(s, ".ltx") == NULL && strstr(s, ".tex") == NULL) {
 					/* extension .tex is appended automatically if missing*/
 					s2 = strdup_together(s, ".tex");
 					free(s);

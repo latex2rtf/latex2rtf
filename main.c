@@ -283,11 +283,19 @@ int main(int argc, char **argv)
 			*(s+1) = '\0';						/* g_home_dir = /tmp/		 */
 		}
 
-		t = strstr(basename, ".tex");			/* remove .tex if present	 */
-		if (t != NULL) 
+		t = strstr(basename, ".ltx");			/* remove .ltx if present	 */
+		if (t != NULL) {
 			*t = '\0';
-		
-		g_tex_name = strdup_together(basename, ".tex");
+			g_tex_name = strdup_together(basename, ".ltx");
+
+		} else {
+
+			t = strstr(basename, ".tex");			/* remove .tex if present	 */
+			if (t != NULL) 
+				*t = '\0';
+			
+			g_tex_name = strdup_together(basename, ".tex");
+		}
 		
 		if (g_rtf_name==NULL)
 			g_rtf_name = strdup_together(basename, ".rtf");

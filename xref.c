@@ -878,3 +878,21 @@ purpose: handles apacite stuff
 		default: ;
 	}
 }
+
+void
+CmdCiteName(int code)
+/******************************************************************************
+purpose: handles \citename from authordate bib style
+******************************************************************************/
+{		
+	char *s;
+	
+	diagnostics(4,"Entering CmdCitename", s);
+
+	s = getBraceParam();
+	
+	ConvertString(s);
+	
+	free(s);
+	
+}
