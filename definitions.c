@@ -110,37 +110,37 @@ static char *expandmacro(char *macro, char *opt_param, int params)
 
 /**************************************************************************
      purpose: retrieves and expands a defined macro 
+              care is taken to avoid buffer overruns
 **************************************************************************/
 {
     int i = 0, param;
     char *args[9], *dmacro, *macro_piece, *next_piece, *expanded, *buffer=NULL, *cs;
-    int max_len = 0;
+    int buff_size = 512;   /* extra slop for macro expansion */
 
     if (params <= 0)
         return strdup(macro);
 
     if (opt_param) {
-        args[i++] = getBracketParam();
+        args[0] = getBracketParam();
         if (!args[0])
             args[0] = strdup(opt_param);
-        max_len += strlen(args[i-1]);
+        buff_size += strlen(args[0]);
+        i = 1;
     }
 
     for (; i < params; i++) {
         args[i] = getBraceParam();
-        max_len += strlen(args[i]);
+        buff_size += strlen(args[i]);
         diagnostics(3, "argument #%d <%s>", i + 1, args[i]);
     }
 
     dmacro = strdup(macro);
     macro_piece = dmacro;
-	max_len += strlen(macro_piece);
+	buff_size += strlen(macro_piece);
 
-	diagnostics(3, "max_len in expandmacro = %d\n", max_len);
-	if(max_len > 0) {
-		buffer = (char*)malloc(sizeof(char) * max_len);
-		memset(buffer,'\0',max_len);
-	}
+	diagnostics(3, "buff_size in expandmacro = %d\n", buff_size);
+	if(buff_size > 0)
+		buffer = (char*) calloc(sizeof(char) * buff_size, sizeof(char));
  	
 	expanded = buffer;
 
@@ -173,12 +173,20 @@ static char *expandmacro(char *macro, char *opt_param, int params)
         if (param > -1) {
             if (param == 101) {
                 diagnostics(3, "expandmacro ## = #");
-                strcpy(expanded, "#");
-                expanded++;
+                if (expanded+1<buffer+buff_size) {
+                	strcpy(expanded, "#");
+                	expanded++;
+                } else 
+                    diagnostics(WARNING, "insufficient buffer to expand macro <%s>", macro);
+
             } else if (param < params) {
                 diagnostics(3, "expandmacro arg =<%s>", args[param]);
-                strcpy(expanded, args[param]);
-                expanded += strlen(args[param]);
+                if (expanded+strlen(args[param]) <buffer+buff_size) {
+                    strcpy(expanded, args[param]);
+                    expanded += strlen(args[param]);
+                } else 
+                    diagnostics(WARNING, "insufficient buffer to expand macro <%s>", macro);
+
             } else
                 diagnostics(WARNING, "confusing definition in macro=<%s>", macro);
         }
@@ -186,8 +194,8 @@ static char *expandmacro(char *macro, char *opt_param, int params)
         macro_piece = next_piece;
     }
 
-
-/*	ConvertString(buffer);*/
+    expanded = strdup(buffer);
+    
     for (i = 0; i < params; i++) {
         if (args[i])
             free(args[i]);
@@ -199,8 +207,9 @@ static char *expandmacro(char *macro, char *opt_param, int params)
     if (buffer)
     	free(buffer);
 
-    diagnostics(3, "expandmacro expanded=<%s>", buffer);
-    return strdup(buffer);
+    diagnostics(3, "expandmacro expanded=<%s>", expanded);
+    
+    return expanded;
 }
 
 int maybeDefinition(char *s, size_t n)

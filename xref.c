@@ -970,6 +970,94 @@ void CmdCite(int code)
 }
 
 /******************************************************************************
+purpose: handles \cite for harvard.sty
+******************************************************************************/
+void CmdHarvardCite(int code)
+{
+    char punct[4] = "[],";
+    char *text, *str1;
+    char *keys, *key, *next_keys;
+    char *option = NULL;
+    char *pretext = NULL;
+    int first_key = TRUE;
+
+    /* Setup punctuation and read options before citation */
+    g_current_cite_paren = TRUE;
+    g_last_author_cited[0] = '\0';
+    g_last_year_cited[0] = '\0';
+	strcpy(punct, "(),");
+	if (code == CITE_AS_NOUN || code == CITE_YEAR_STAR || 
+		code == CITE_NAME || code == CITE_POSSESSIVE)
+		g_current_cite_paren = FALSE;
+
+	/* read citation entry */
+	option = getBracketParam();    
+    text = getBraceParam();
+    if (code == CITE_AFFIXED) 
+    	pretext = getBraceParam();
+    str1 = strdup_nocomments(text);
+    free(text);
+    text = str1;
+        
+    if (strlen(text) == 0) {
+        free(text);
+        if (pretext) free(pretext);
+        if (option)  free(option);
+        return;
+    }
+    
+    /* output text before citation */
+    if (g_current_cite_paren)
+        fprintRTF("\n%c", punct[0]);
+
+    /* now start processing keys */
+    keys = strdup_noblanks(text);
+    free(text);
+    key = keys;
+    next_keys = popCommaName(key);
+
+    g_current_cite_item = 0;
+    while (key) {
+        char *s;
+
+        g_current_cite_item++;
+
+        s = ScanAux("harvardcite", key, 2); /* look up bibliographic reference */
+            
+		diagnostics(2, "harvard key=[%s] <%s>", key, s);
+		
+		if (!first_key) fprintRTF("%c ", punct[2]); /* punctuation between citations */
+
+		if (s) {
+			g_current_cite_seen = citation_used(key);
+			ConvertHarvard(s, code, pretext, NULL, first_key);
+		} else 
+			ConvertString(key);
+        
+        first_key = FALSE;
+        key = next_keys;
+        next_keys = popCommaName(key);  /* key modified to be a single key */
+        if (s)
+            free(s);
+    }
+
+    /* final text after citation */
+    if (option) {
+        fprintRTF(", ");
+        ConvertString(option);
+    }
+    if (g_current_cite_paren)
+        fprintRTF("\n%c", punct[1]);
+
+    if (keys)
+        free(keys);
+    if (option)
+        free(option);
+    if (pretext)
+        free(pretext);
+}
+
+/******************************************************************************
 purpose: handles \htmladdnormallink{text}{link}
 ******************************************************************************/
 void CmdHtml(int code)
