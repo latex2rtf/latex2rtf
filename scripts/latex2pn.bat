@@ -1,5 +1,5 @@
 @echo off
-rem echo latex2pn.bat (%1 %2 %3 %4 %5 %6 %7 %8 %9) 
+rem echo latex2pn.bat (%1 %2 %3 %4 %5 %6 %7 %8 %9)
 rem This version uses latex and dvips
 rem              with convert (Part of ImageMagick)
 
@@ -46,7 +46,7 @@ IF EXIST %fn%.dvi del %fn%.dvi
 IF EXIST %fn%.png del %fn%.png
 
 set inline=1
-grep -c INLINE_DOT_ON_BASELINE %fn%.tex
+grep -q -c INLINE_DOT_ON_BASELINE %fn%.tex >NUL
 IF ERRORLEVEL 1 set inline=0
 
 set TEXINPUTS=%th%
