@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.57 2002/02/19 05:43:04 prahl Exp $ 
+/* $Id: funct1.c,v 1.58 2002/02/24 19:48:19 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -224,6 +224,28 @@ CmdNewEnvironment(int code)
 	if (params) free(params);
 	
 }
+
+void
+CmdNewTheorem(int code)
+{
+	char * name, *caption, *numbered_like, *within;
+	
+	name = getBraceParam();
+	numbered_like = getBracketParam();
+	caption = getBraceParam();
+	within = getBracketParam();
+	
+	diagnostics(3,"CmdNewTheorem name=<%s>", name);
+	diagnostics(3,"CmdNewTheorem caption=<%s>", caption);
+	diagnostics(3,"CmdNewTheorem like=<%s>", numbered_like);
+	newTheorem(name,caption,numbered_like,within);
+	
+	free(name);
+	free(caption);
+	if (numbered_like) free(numbered_like);
+	if (within) free(within);
+}
+
 void
 CmdIndent(int code)
 /******************************************************************************
@@ -343,29 +365,56 @@ CmdBeginEnd(int code)
  ***************************************************************************/
 {
 	int i;
-	char * str;
+	char * str,*option;
 	char           *s = getBraceParam();
+
+	if (code==CMD_BEGIN) 
+		diagnostics(5, "\\begin{%s}", s);
+	else 
+		diagnostics(5, "\\end{%s}", s);
 
 	i=existsEnvironment(s);
 	if (i>-1) {
-	
 		str = expandEnvironment(i,code);
 		ConvertString(str);
 		free(str);
-
-	} else {
+		free(s);
+		return;
+	} else
+		diagnostics(5,"failed to match environment");
 	
-		switch (code) {
-		case CMD_BEGIN:
-			diagnostics(4, "\\begin{%s}", s);
-			(void) CallParamFunc(s, ON);
-			break;
-		case CMD_END:
-			diagnostics(4, "\\end{%s}", s);
-			(void) CallParamFunc(s, OFF);
+	i=existsTheorem(s);
+	if (i>-1) {
+		if (code == CMD_BEGIN) {
+			option = getBracketParam();
+			str = expandTheorem(i,option);
+			CmdEndParagraph(0);
+			CmdVspace(1);
+			CmdIndent(INDENT_NONE);
+			CmdStartParagraph(0);
+			fprintRTF("{\\b %s} {\\i ", str);
+			PushBrace();
+			if (option) free(option);
+			free(str);
+		} else {
+			PopBrace();
+			fprintRTF("}");
+			CmdEndParagraph(0);
+			CmdVspace(1);
 			CmdIndent(INDENT_INHIBIT);
-			break;
 		}
+		return;
+	} else
+		diagnostics(5,"failed to match theorem");
+
+
+	if (code==CMD_BEGIN) {
+		diagnostics(4, "\\begin{%s}", s);
+		(void) CallParamFunc(s, ON);
+	} else {
+		diagnostics(4, "\\end{%s}", s);
+		(void) CallParamFunc(s, OFF);
+		CmdIndent(INDENT_INHIBIT);
 	}
 	free(s);
 }
@@ -485,6 +534,69 @@ parameter: code includes the type of the environment
 	}
 }
 
+char *
+FormatUnitNumber(char *name)
+/******************************************************************************
+  purpose: returns the x.x.x number for the specified sectional unit.
+ ******************************************************************************/
+{
+	char			label[20];
+
+	label[0]='\0';
+	if (strcmp(name,"part")==0 || strcmp(name,"chapter")==0)
+			sprintf(label, "%d", getCounter(name));
+
+	else if (strcmp(name,"section")==0) {
+		if (g_document_type == FORMAT_ARTICLE)
+			sprintf(label, "%d.", getCounter("section"));
+		else
+			sprintf(label, "%d.%d", getCounter("chapter"),getCounter("section"));
+	}
+	
+	else if (strcmp(name,"subsection")==0) {
+		if (g_document_type == FORMAT_ARTICLE)
+			sprintf(label, "%d.%d", getCounter("section"),
+					getCounter("subsection"));
+		else
+			sprintf(label, "%d.%d.%d", getCounter("chapter"),
+					getCounter("section"), getCounter("subsection"));
+	}
+	
+	else if (strcmp(name,"subsubsection")==0) {
+		if (g_document_type == FORMAT_ARTICLE)
+			sprintf(label, "%d.%d.%d", getCounter("section"), 
+					getCounter("subsection"), getCounter("subsubsection"));
+		else
+			sprintf(label, "%d.%d.%d.%d", getCounter("chapter"), 
+					getCounter("section"), getCounter("subsection"), getCounter("subsubsection"));
+	}
+	
+	else if (strcmp(name,"paragraph")==0) {
+		if (g_document_type == FORMAT_ARTICLE)
+			sprintf(label, "%d.%d.%d.%d", getCounter("section"), 
+					getCounter("subsection"), getCounter("subsubsection"),
+					getCounter("paragraph"));
+		else
+			sprintf(label, "%d.%d.%d.%d.%d", getCounter("chapter"), 
+					getCounter("section"), getCounter("subsection"), 
+					getCounter("subsubsection"),getCounter("paragraph"));
+	}
+	
+	else if (strcmp(name,"subparagraph")==0) {
+		if (g_document_type == FORMAT_ARTICLE)
+			sprintf(label, "%d.%d.%d.%d.%d", getCounter("section"), 
+					getCounter("subsection"),  getCounter("subsubsection"),
+					getCounter("paragraph"),   getCounter("subparagraph"));
+		else
+			sprintf(label, "%d.%d.%d.%d.%d.%d", getCounter("chapter"), 
+					getCounter("section"),        getCounter("subsection"), 
+					getCounter("subsubsection"),  getCounter("paragraph"),
+					getCounter("subparagraph"));
+	}
+
+	return strdup(label);
+}
+
 void 
 CmdSection(int code)
 /******************************************************************************
@@ -494,10 +606,8 @@ parameter: code: type of section-recursion-level
 {
 	char            *toc_entry;
 	char            *heading;
-	char			section_label[20];
-/*	char			c;
-	int				DefFont = DefaultFontFamily();
-*/	
+	char			*unit_label;
+
 	toc_entry = getBracketParam();
 	heading = getBraceParam();
 	
@@ -519,8 +629,9 @@ parameter: code: type of section-recursion-level
 		ConvertBabelName("PARTNAME");
 		if (code == SECT_PART) {
 			incrementCounter("part");
-			sprintf(section_label, "%d", getCounter("part"));
-			fprintRTF("%s\\par ", section_label);
+			unit_label = FormatUnitNumber("part");
+			fprintRTF("%s\\par ", unit_label);
+			free(unit_label);
 		}
 		ConvertString(heading);
 		CmdEndParagraph(0);
@@ -538,13 +649,15 @@ parameter: code: type of section-recursion-level
 			setCounter("subsubsection",0);
 			setCounter("paragraph",0);
 			setCounter("subparagraph",0);
-			sprintf(section_label, "%d", getCounter("chapter"));
+			resetTheoremCounter("chapter");
+			unit_label = FormatUnitNumber("chapter");
 			fprintRTF(" ");
 			if (g_section_label) fprintRTF("{\\v{\\*\\bkmkstart LBL_%s}",g_section_label);
-			fprintRTF("%s", section_label);
+			fprintRTF("%s", unit_label);
 			if (g_section_label) fprintRTF("{\\*\\bkmkend LBL_%s}}",g_section_label);
 			if (g_section_label) fprintRTF("{\\v{\\*\\bkmkstart PR_%s}",g_section_label);
 			if (g_section_label) fprintRTF("{\\*\\bkmkend PR_%s}}",g_section_label);
+			free(unit_label);
 		}
 		fprintRTF("\\par\\par}{\\fi0\\plain\\b\\fs40\\kerning28 ");
 		ConvertString(heading);
@@ -562,19 +675,16 @@ parameter: code: type of section-recursion-level
 			setCounter("subsubsection",0);
 			setCounter("paragraph",0);
 			setCounter("subparagraph",0);
-			if (g_document_type == FORMAT_ARTICLE) {
-				fprintRTF("\\fs32 ");
-				sprintf(section_label, "%d.", getCounter("section"));
-			} else {
-				fprintRTF("\\fs32 ");
-				sprintf(section_label, "%d.%d", getCounter("chapter"),getCounter("section"));
-			}
+			resetTheoremCounter("section");
+			unit_label = FormatUnitNumber("section");
+			fprintRTF("\\fs32 ");
 			if (g_section_label) fprintRTF("{\\v{\\*\\bkmkstart LBL_%s}",g_section_label);
-			fprintRTF("%s", section_label);
+			fprintRTF("%s", unit_label);
 			if (g_section_label) fprintRTF("{\\*\\bkmkend LBL_%s}}",g_section_label);
 			if (g_section_label) fprintRTF("{\\v{\\*\\bkmkstart PR_%s}",g_section_label);
 			if (g_section_label) fprintRTF("{\\*\\bkmkend PR_%s}}",g_section_label);
 			fprintRTF("  ");
+			free(unit_label);
 		}
 		ConvertString(heading);
 		CmdEndParagraph(0);
@@ -591,18 +701,15 @@ parameter: code: type of section-recursion-level
 			setCounter("subsubsection",0);
 			setCounter("paragraph",0);
 			setCounter("subparagraph",0);
-			if (g_document_type == FORMAT_ARTICLE)
-				sprintf(section_label, "%d.%d", getCounter("section"),
-				        getCounter("subsection"));
-			else
-				sprintf(section_label, "%d.%d.%d", getCounter("chapter"),
-				        getCounter("section"), getCounter("subsection"));
+			resetTheoremCounter("subsection");
+			unit_label = FormatUnitNumber("subsection");
 			if (g_section_label) fprintRTF("{\\v{\\*\\bkmkstart LBL_%s}",g_section_label);
-			fprintRTF("%s", section_label);
+			fprintRTF("%s", unit_label);
 			if (g_section_label) fprintRTF("{\\*\\bkmkend LBL_%s}}",g_section_label);
 			if (g_section_label) fprintRTF("{\\v{\\*\\bkmkstart PR_%s}",g_section_label);
 			if (g_section_label) fprintRTF("{\\*\\bkmkend PR_%s}}",g_section_label);
 			fprintRTF("  ");
+			free(unit_label);
 		}
 		ConvertString(heading);
 		CmdEndParagraph(0);
@@ -618,19 +725,16 @@ parameter: code: type of section-recursion-level
 			incrementCounter("subsubsection");
 			setCounter("paragraph",0);
 			setCounter("subparagraph",0);
-			if (g_document_type == FORMAT_ARTICLE)
-				sprintf(section_label, "%d.%d.%d", getCounter("section"), 
-						getCounter("subsection"), getCounter("subsubsection"));
-			else
-				sprintf(section_label, "%d.%d.%d.%d", getCounter("chapter"), 
-				        getCounter("section"), getCounter("subsection"), getCounter("subsubsection"));
-
+			resetTheoremCounter("subsubsection");
+			unit_label = FormatUnitNumber("subsubsection");
+			fprintRTF("%s", unit_label);
 			if (g_section_label) fprintRTF("{{\\*\\bkmkstart LBL_%s}",g_section_label);
-			fprintRTF("%s", section_label);
+			fprintRTF("%s", unit_label);
 			if (g_section_label) fprintRTF("{\\*\\bkmkend LBL_%s}}",g_section_label);
 			if (g_section_label) fprintRTF("{{\\*\\bkmkstart PR_%s}",g_section_label);
 			if (g_section_label) fprintRTF("{\\*\\bkmkend PR_%s}}",g_section_label);
 			fprintRTF("  ");
+			free(unit_label);
 		}
 		ConvertString(heading);
 		CmdEndParagraph(0);
@@ -644,21 +748,16 @@ parameter: code: type of section-recursion-level
 		fprintRTF("{\\plain\\b ");
 		if (code == SECT_SUBSUBSUB && getCounter("secnumdepth")>=3) {
 			incrementCounter("paragraph");
+			resetTheoremCounter("paragraph");
+			unit_label = FormatUnitNumber("paragraph");
 			setCounter("subparagraph",0);
-			if (g_document_type == FORMAT_ARTICLE)
-				sprintf(section_label, "%d.%d.%d.%d", getCounter("section"), 
-						getCounter("subsection"), getCounter("subsubsection"),
-						getCounter("paragraph"));
-			else
-				sprintf(section_label, "%d.%d.%d.%d.%d", getCounter("chapter"), 
-				        getCounter("section"), getCounter("subsection"), 
-				        getCounter("subsubsection"),getCounter("paragraph"));
 			if (g_section_label) fprintRTF("{{\\*\\bkmkstart LBL_%s}",g_section_label);
-			fprintRTF("%s", section_label);
+			fprintRTF("%s", unit_label);
 			if (g_section_label) fprintRTF("{\\*\\bkmkend LBL_%s}}",g_section_label);
 			if (g_section_label) fprintRTF("{{\\*\\bkmkstart PR_%s}",g_section_label);
 			if (g_section_label) fprintRTF("{\\*\\bkmkend PR_%s}}",g_section_label);
 			fprintRTF("  ");
+			free(unit_label);
 		}
 		ConvertString(heading);
 		fprintRTF("}  ");
@@ -670,21 +769,15 @@ parameter: code: type of section-recursion-level
 		fprintRTF("{\\plain\\b ");
 		if (code == SECT_SUBSUBSUBSUB && getCounter("secnumdepth")>=4) {
 			incrementCounter("subparagraph");
-			if (g_document_type == FORMAT_ARTICLE)
-				sprintf(section_label, "%d.%d.%d.%d.%d", getCounter("section"), 
-						getCounter("subsection"),  getCounter("subsubsection"),
-						getCounter("paragraph"),   getCounter("subparagraph"));
-			else
-				sprintf(section_label, "%d.%d.%d.%d.%d.%d", getCounter("chapter"), 
-				        getCounter("section"),        getCounter("subsection"), 
-				        getCounter("subsubsection"),  getCounter("paragraph"),
-				        getCounter("subparagraph"));
+			resetTheoremCounter("subparagraph");
+			unit_label = FormatUnitNumber("subparagraph");
 			if (g_section_label) fprintRTF("{{\\*\\bkmkstart LBL_%s}",g_section_label);
-			fprintRTF("%s", section_label);
+			fprintRTF("%s", unit_label);
 			if (g_section_label) fprintRTF("{\\*\\bkmkend LBL_%s}}",g_section_label);
 			if (g_section_label) fprintRTF("{{\\*\\bkmkstart PR_%s}",g_section_label);
 			if (g_section_label) fprintRTF("{\\*\\bkmkend PR_%s}}",g_section_label);
 			fprintRTF("  ");
+			free(unit_label);
 		}
 		break;
 		ConvertString(heading);

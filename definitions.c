@@ -13,8 +13,12 @@ Scott Prahl, October 2001
 #include "funct1.h"
 #include "util.h"
 #include "cfg.h"
+#include "counters.h"
+#include "funct1.h"
 
 #define MAX_DEFINITIONS 200
+#define MAX_ENVIRONMENTS 20
+#define MAX_THEOREMS 20
 
 struct {
 	char * name;
@@ -27,10 +31,18 @@ struct {
 	char * begdef;
 	char * enddef;
 	int  params;
-} NewEnvironments[MAX_DEFINITIONS];
+} NewEnvironments[MAX_ENVIRONMENTS];
+
+struct {
+	char * name;
+	char * numbered_like;
+	char * caption;
+	char * within;
+} NewTheorems[MAX_THEOREMS];
 
 static int iDefinitionCount = 0;
 static int iNewEnvironmentCount = 0;
+static int iNewTheoremCount = 0;
 
 int 
 strequal(char *a, char *b)
@@ -46,8 +58,7 @@ strequal(char *a, char *b)
 		return 1;
 }
 
-static void
-printDefinitions(void)
+/* static void printDefinitions(void)
 {
 int i=0;
 	fprintf(stderr, "\n");
@@ -58,6 +69,19 @@ int i=0;
 		i++;
 	}
 }
+
+static void printTheorems(void)
+{
+int i=0;
+	fprintf(stderr, "\n");
+	for (i=0; i< iNewTheoremCount; i++) {
+		fprintf(stderr, "[%d] name   =<%s>\n",i, NewTheorems[i].name);
+		fprintf(stderr, "    caption    =<%s>\n", NewTheorems[i].caption);
+		fprintf(stderr, "    like =<%s>\n", NewTheorems[i].numbered_like);
+		fprintf(stderr, "    within    =<%s>\n", NewTheorems[i].within);
+	}
+}
+*/
 
 static char *
 expandmacro(char *macro, int params)
@@ -271,7 +295,7 @@ newEnvironment(char *name, char *begdef, char *enddef, int params)
               name should not begin with a '\' 
 **************************************************************************/
 {
-	if (iNewEnvironmentCount==MAX_DEFINITIONS){
+	if (iNewEnvironmentCount==MAX_ENVIRONMENTS){
 		diagnostics(WARNING,"Too many newenvironments, ignoring %s", name);
 		return;
 	}
@@ -334,3 +358,100 @@ expandEnvironment(int thedef, int code)
 		return expandmacro(NewEnvironments[thedef].enddef, 0);
 	}
 }
+
+void
+newTheorem(char *name, char *caption, char *numbered_like, char *within)
+/**************************************************************************
+     purpose: allocates and initializes a \newtheorem 
+**************************************************************************/
+{
+	if (iNewTheoremCount==MAX_THEOREMS){
+		diagnostics(WARNING,"Too many \\newtheorems, ignoring %s", name);
+		return;
+	}
+	
+	NewTheorems[iNewTheoremCount].name=strdup(name); 
+	
+	NewTheorems[iNewTheoremCount].caption=strdup(caption); 
+
+	if (numbered_like)
+		NewTheorems[iNewTheoremCount].numbered_like=strdup(numbered_like);
+	else 
+		NewTheorems[iNewTheoremCount].numbered_like=strdup(name);
+
+	if (within)
+		NewTheorems[iNewTheoremCount].within=strdup(within);
+	else 
+		NewTheorems[iNewTheoremCount].within=NULL;
+		
+	setCounter(NewTheorems[iNewTheoremCount].numbered_like,0);
+
+	iNewTheoremCount++;
+}
+
+int
+existsTheorem(char * s)
+/**************************************************************************
+     purpose: checks to see if a user created environment exists
+     returns: the array index of the \newtheorem
+**************************************************************************/
+{
+	int i=0;
+	
+	while(i < iNewTheoremCount && !strequal(s,NewTheorems[i].name)) {
+		diagnostics(6, "seeking=<%s>, i=%d, current=<%s>", s,i,NewTheorems[i].name);
+		i++;
+	}
+
+	if (i==iNewTheoremCount) 
+		return -1;
+	else
+		return i;
+}
+
+char *
+expandTheorem(int i, char *option)
+/**************************************************************************
+     purpose: retrieves and expands a \newtheorem into a string
+**************************************************************************/
+{	
+	char s[128], *num;
+	int ithm;
+	
+	if (i<0 || i>=iNewTheoremCount)
+		return strdup("");
+	
+	incrementCounter(NewTheorems[i].numbered_like);
+	ithm = getCounter(NewTheorems[i].numbered_like);
+	
+	if (NewTheorems[i].within) {
+		num = FormatUnitNumber(NewTheorems[i].within);
+		if (option)
+			sprintf(s,"%s %s.%d (%s)", NewTheorems[i].caption, num, ithm, option);
+		else
+			sprintf(s,"%s %s.%d", NewTheorems[i].caption, num, ithm);
+		free(num);
+	} else {
+		if (option)
+			sprintf(s,"%s %d (%s)", NewTheorems[i].caption, ithm, option);
+		else
+			sprintf(s,"%s %d", NewTheorems[i].caption, ithm);
+	}
+			
+	return strdup(s);
+}
+
+void
+resetTheoremCounter(char *unit)
+/**************************************************************************
+     purpose: resets theorem counters based on unit
+**************************************************************************/
+{	
+	int i;
+	
+	for (i=0; i<iNewTheoremCount; i++) {
+		if (strequal(unit,NewTheorems[i].within))
+			setCounter(NewTheorems[i].numbered_like, 0);
+	}
+}
+

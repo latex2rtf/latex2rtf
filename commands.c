@@ -1,4 +1,4 @@
-/*  $Id: commands.c,v 1.43 2002/02/19 05:43:04 prahl Exp $
+/*  $Id: commands.c,v 1.44 2002/02/24 19:48:19 prahl Exp $
  
     Defines subroutines to translate LaTeX commands to RTF
 */
@@ -301,7 +301,7 @@ static CommandArray PreambleCommands[] = {
 	{"renewcommand", CmdNewDef, DEF_RENEW},
 	{"newenvironment", CmdNewEnvironment, DEF_NEW},
 	{"renewenvironment", CmdNewEnvironment, DEF_RENEW},
-	{"newtheorem", CmdIgnoreParameter, One_Opt_Two_NormParam},
+	{"newtheorem", CmdNewTheorem, 0},
 	{"renewtheorem", CmdIgnoreParameter, One_Opt_Two_NormParam},
 	{"pagestyle", CmdIgnoreParameter, No_Opt_One_NormParam},
 	{"thispagestyle", CmdIgnoreParameter, No_Opt_One_NormParam},

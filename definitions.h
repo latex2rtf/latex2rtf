@@ -9,4 +9,7 @@ void	newEnvironment(char *name, char *begdef, char *enddef, int params);
 void	renewEnvironment(char *name, char *begdef, char *enddef, int params);
 char *	expandEnvironment(int thedef, int starting);
 
-
+void	newTheorem(char *name, char *caption, char *numbered_like, char *within);
+int		existsTheorem(char * s);
+char 	*expandTheorem(int i, char *option);
+void	resetTheoremCounter(char *unit);
