@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.44 2002/03/19 05:36:08 prahl Exp $
+# $Id: Makefile,v 1.45 2002/03/19 15:23:17 prahl Exp $
 
 CC=gcc
 LIBS=
@@ -63,7 +63,7 @@ DOCS= doc/latex2rtf.1 doc/latex2rtf.texi doc/latex2rtf.pdf doc/latex2rtf.txt \
 
 README= README README.DOS README.Mac Copyright ChangeLog 
 
-SCRIPTS= scripts/version scripts/latex2png_1 scripts/latex2png_2 \
+SCRIPTS= scripts/version scripts/latex2png scripts/latex2png_1 scripts/latex2png_2 \
          scripts/latex2png_3 scripts/latex2png_4 scripts/l2r.bat
 
 TEST=   test/Makefile test/bracecheck \
