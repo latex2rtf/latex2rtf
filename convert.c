@@ -404,9 +404,19 @@ globals: fTex, fRtf and all global flags for convert (see above)
 			if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
 			if (GetTexMode() == MODE_HORIZONTAL){
 				cNext = getTexChar();
-				if (cNext == '<')
-					fprintRTF("\\'ab");
-				else {
+				if (cNext == '<') {
+					if (FrenchMode) {			/* not quite right */
+						skipSpaces();
+						cNext = getTexChar();
+						if (cNext == '~') 
+							skipSpaces();
+						else
+							ungetTexChar(cNext);
+						fprintRTF("\\'ab\\~");
+					
+					} else
+						fprintRTF("\\'ab");
+				} else {
 					ungetTexChar(cNext);
 					fprintRTF("<");
 				}
@@ -458,7 +468,10 @@ globals: fTex, fRtf and all global flags for convert (see above)
 				fprintRTF(":");	
 			else {
 				SetTexMode(MODE_HORIZONTAL);
-				fprintRTF(": ");
+				if (FrenchMode) 
+					fprintRTF("\\~:");
+  				else
+					fprintRTF(":");
 			}
 			break;	
 
@@ -471,7 +484,7 @@ globals: fTex, fRtf and all global flags for convert (see above)
 	
 				/* try to simulate double spaces after sentences */
 				cNext = getTexChar();
-				if (cNext == ' ' && (isalpha((int)cLast) && !isupper((int) cLast)))
+				if (0 && cNext == ' ' && (isalpha((int)cLast) && !isupper((int) cLast)))
 					fprintRTF(" ");
 				ungetTexChar(cNext);
 			}
@@ -510,7 +523,10 @@ globals: fTex, fRtf and all global flags for convert (see above)
 			if (g_field_separator == ';' && g_processing_fields)
 				fprintRTF("\\\\;");
 			else
-				fprintRTF(";");
+				if (FrenchMode) 
+					fprintRTF("\\~;");
+  				else
+					fprintRTF(";");
 		break;
 
 		case ',':
