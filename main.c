@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.37 2001/11/04 19:20:44 prahl Exp $ */
+/* $Id: main.c,v 1.38 2001/11/11 06:17:36 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -264,7 +264,7 @@ char * text, *sec_head, *sec_head2;
 		while(sec_head) {
 			getSection(&text,&sec_head2);
 		diagnostics(2,"\n========this section head==========\n%s",sec_head);
-		diagnostics(2,"\n==============body=================\n%s",text);
+		diagnostics(2,"\n==============body=================\n%s\n=========end  body=================",text);
 		diagnostics(2,"\n========next section head==========\n%s",sec_head2);
 /*			g_section_label = getSectionLabel(text); */
 			ConvertString(sec_head);

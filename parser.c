@@ -1,4 +1,4 @@
-/*  $Id: parser.c,v 1.31 2001/11/10 16:03:29 prahl Exp $
+/*  $Id: parser.c,v 1.32 2001/11/11 06:17:36 prahl Exp $
 
    Contains declarations for a generic recursive parser for LaTeX code.
 */
@@ -38,6 +38,7 @@ static char            *g_parser_string_pos;
 static char             g_parser_currentChar;	/* Global current character */
 static char             g_parser_lastChar;
 static char             g_parser_penultimateChar;
+static int				g_parser_backslashes;
 
 static void     parseBracket();
 
@@ -226,6 +227,8 @@ purpose: rewind the filepointer in the LaTeX-file by one
 	g_parser_currentChar = g_parser_lastChar;
 	g_parser_lastChar = g_parser_penultimateChar;
 	g_parser_penultimateChar = '\0';	/* no longer know what that it was */
+	g_parser_backslashes = 0;
+	diagnostics(6,"ungetTexChar=<%c> backslashes=%d",c,g_parser_backslashes);
 }
 
 char 
@@ -240,11 +243,21 @@ getTexChar()
 	char            cSave = g_parser_lastChar;
 	char            cSave2 = g_parser_penultimateChar;
 
-	while ((cThis = getRawTexChar()) && cThis == '%' && cSave != '\\') {
+	cThis = getRawTexChar();
+	diagnostics(6,"before getTexChar=<%c> backslashes=%d",cThis,g_parser_backslashes);
+	while (cThis == '%' && g_parser_backslashes % 2 == 0) {
 		skipToEOL();
 		g_parser_penultimateChar = cSave2;
 		g_parser_lastChar = cSave;
+		cThis = getRawTexChar();
+		diagnostics(6,"(after %%) getTexChar=<%c> backslashes=%d",cThis,g_parser_backslashes);
 	}
+	
+	if (cThis == '\\') 
+		g_parser_backslashes++;
+	else
+		g_parser_backslashes=0;
+	diagnostics(6,"after getTexChar=<%c> backslashes=%d",cThis,g_parser_backslashes);
 	return cThis;
 }
 
@@ -256,7 +269,7 @@ purpose: ignores anything from inputfile until the end of line.
  ****************************************************************************/
 {
 	char            cThis;
-	while ((cThis=getRawTexChar()) != '\n');
+	while ((cThis=getRawTexChar()) && cThis != '\n');
 }
 
 char 
@@ -533,9 +546,10 @@ getBraceParam(void)
 static void 
 SaveFilePosition(void)
 {
-	if (g_parser_file)
+	if (g_parser_file) {
+		diagnostics(3, "Saving current file pos %ld",ftell(g_parser_file));
 		g_parser_file_pos = ftell(g_parser_file);
-	else {
+	} else {
 		diagnostics(3, "Saving current string pos %ld char='%c'",g_parser_string, *g_parser_string);
 		g_parser_string_pos = g_parser_string;
 	}
@@ -544,9 +558,11 @@ SaveFilePosition(void)
 static void 
 RestoreFilePosition(int offset)
 {
-	if (g_parser_file)
+	if (g_parser_file) {
+		diagnostics(3, "Restoring before pos %ld",ftell(g_parser_file));
 		fseek(g_parser_file, g_parser_file_pos+offset, SEEK_SET);
-	else {
+		diagnostics(3, "Restoring after  pos %ld",ftell(g_parser_file));
+	} else {
 		diagnostics(3, "Restoring before pos %ld char='%c'",g_parser_string, *g_parser_string);
 		g_parser_string = g_parser_string_pos+offset;
 		diagnostics(3, "Restoring after  pos %ld char='%c'",g_parser_string, *g_parser_string);
@@ -560,16 +576,21 @@ getTexUntil(char * target, int raw)
      returns: NULL if not found
  **************************************************************************/
 {
-	char            buffer[4096];
+	char            *s, buffer[4096];
 	int             i   = 0;                /* size of string that has been read */
 	int             j   = 0;                /* number of found characters */
+	bool			end_of_file_reached = FALSE;
 	int             len = strlen(target);
-	
-	diagnostics(3, "getTexUntil target = <%s>", target);
+	diagnostics(3, "getTexUntil target = <%s> raw_search = %d ", target, raw);
 	
 	while (j < len && i < 4095) {
 	
 		buffer[i] = (raw) ? getRawTexChar() : getTexChar();
+		
+		if (!buffer[i]) {
+			end_of_file_reached = TRUE;
+			break;
+		}
 		
 		if (buffer[i] != target[j]) {
 			if (j > 0) {			        /* false start, put back what was found */
@@ -588,11 +609,14 @@ getTexUntil(char * target, int raw)
 	if (i == 4096) 
 		diagnostics(ERROR, "Could not find <%s> in 4096 characters", target);
 	
-	buffer[i-len] = '\0';
-
-	RestoreFilePosition(-1);	/* move to start of target */
+	if (!end_of_file_reached) {
+		buffer[i-len] = '\0';
+		RestoreFilePosition(-1);	/* move to start of target */
+	}
 	
-	return strdup(buffer);
+	s = strdup(buffer);
+	diagnostics(6,"strdup result = %s",s);
+	return s;
 }
 
 int 
@@ -686,7 +710,23 @@ getDimension(void)
 		
 }
 
-#define BUFFER_SIZE 32000
+#define SECTION_BUFFER_SIZE 512
+static char* section_buffer = NULL;
+static long section_buffer_size = SECTION_BUFFER_SIZE;
+
+static void increase_buffer_size(void)
+{
+	char * new_section_buffer;
+	
+	new_section_buffer = malloc(2*section_buffer_size+1);
+	if (new_section_buffer == NULL)
+		diagnostics(ERROR, "Could not allocate enough memory to process file. Sorry.");
+	memcpy(new_section_buffer, section_buffer, section_buffer_size);
+	section_buffer_size *=2;
+	free(section_buffer);
+	section_buffer = new_section_buffer;
+	diagnostics(1, "Expanded buffer size is now %ld", section_buffer_size);
+}
 
 void
 getSection(char **body, char **header)
@@ -694,43 +734,60 @@ getSection(char **body, char **header)
 	purpose: obtain next chunk of latex file that has the same label
 	
 	along the way, beware of \verb and \begin{verbatim} ... \end{verbatim}
+	                               and \begin{figure}   ... \end{figure}
 	this will make linenumbers less useful.  Aargh.
 */
 
 {
 	int possible_match, found;
-	char cNext, *p, *s, buffer[BUFFER_SIZE],*text,*next_header;
+	char cNext, *s,*text,*next_header;
 	int i;
-	int  match[9];
-	char * command[9] = {"\\verb", "\\begin{verbatim}", "\\url", "\\begin{figure}",
+	long delta;
+	int  match[12];
+	char * command[12] = {"\\verb", "\\begin{verbatim}", "\\url", "\\begin{figure}",
 	                     "\\section", "\\subsection", "\\subsubsection", 
+	                     "\\section*", "\\subsection*", "\\subsubsection*", 
 	                     "\\chapter", "\\part"};
-	int ncommands = 9;
+	int ncommands = 12;
 	const int verb = 0;
 	const int verbatim = 1;
 	const int url = 2;
 	const int figure = 3;
-	const int section = 4;
-	const int subsection = 5;
-	const int subsubsection = 6;
 	int bs_count = 0;
 	int index = 0;
-	char * bufend = buffer + BUFFER_SIZE;
-
+	
+	if (section_buffer == NULL) {
+		section_buffer = malloc(section_buffer_size+1);
+		if (section_buffer == NULL)
+			diagnostics(ERROR, "Could not allocate enough memory to process file. Sorry.");
+	}
+	
 	text = NULL;			
 	next_header = NULL;  /* typically becomes \subsection{Cows eat grass}  */
 	*body=NULL;
 	*header=NULL;
 	
-	for (p = buffer; p < bufend; p++) {
+	for (delta=0;;delta++) {
+	
+		if (delta+2 >= section_buffer_size) increase_buffer_size();
 		
-		*p = getTexChar();
-		diagnostics(6,"char=%d %c",(int)*p,*p);
+		*(section_buffer+delta) = getRawTexChar();
+		diagnostics(6,"char=%d %c",(int)*(section_buffer+delta),*(section_buffer+delta));
 		
-		if (*p == '\0') break;
+		if (*(section_buffer+delta) == '\0') break;
 
-		if (*p == '\\') {				/* begin search if backslash found */
-			bs_count ++;
+		if (*(section_buffer+delta) == '%' && bs_count % 2) {	/* slurp TeX comments */
+			delta++;
+			while ((cNext=getRawTexChar()) != '\n') {
+				if (delta+2 >= section_buffer_size) increase_buffer_size();
+				*(section_buffer+delta) = cNext;
+				delta++;
+			}
+			*(section_buffer+delta) = cNext;
+		}
+
+		if (*(section_buffer+delta) == '\\') {				/* begin search if backslash found */
+			bs_count++;
 			if (bs_count % 2) {		/* avoid "\\section" and "\\\\section" */
 				for(i=0; i<ncommands; i++) match[i]=TRUE;
 				index = 1;
@@ -741,40 +798,39 @@ getSection(char **body, char **header)
 		
 		if (index == 0) continue;
 			
-		possible_match = FALSE;
-		found = FALSE;
-		
-		for (i=0; i<ncommands; i++) {	/* check each command for match */
+		possible_match = FALSE;	
+		for (i=0; i<ncommands; i++) {	/* test each command for match */
 			if (!match[i]) continue;
 				
-			if (*p!=command[i][index]) {
+			if (*(section_buffer+delta)!=command[i][index]) {
 				match[i] = FALSE;
-/*				diagnostics(5,"index = %d, char = %c, failed to match %s, size=%d", \
+/*				diagnostics(2,"index = %d, char = %c, failed to match %s, size=%d", \
 				index,*p,command[i],strlen(command[i]));
 */				continue;
 			}
 			possible_match = TRUE;
-			if (index == strlen(command[i])-1) {
+		}
+
+		found = FALSE;
+		for (i=0; i<ncommands; i++) {	/* discover any exact matches */
+			if (!match[i]) continue;
+			if (index+1 == strlen(command[i])) {
 				found = TRUE;
 				break;
 			}
 		}
 		
 		if (found) {				/* make sure the next char is the right sort */
-			diagnostics(5,"matched %s", command[i]);
-			cNext = getTexChar();
+			diagnostics(5, "matched %s", command[i]);
+			cNext = getRawTexChar();
 			ungetTexChar(cNext);
 
-			if (cNext == '*' && (i==section || i==subsection || i==subsubsection)) {
-				p++;
-				*p = cNext;
-				cNext = getTexChar();
-				cNext = getTexChar();
-				ungetTexChar(cNext);
-			}
-				
-			if (!(cNext == ' ' || cNext == '{' || (i==verb) || (i==url) || (i==verbatim && !isalpha(cNext)))) {
-				possible_match = FALSE;
+			if (!(  (cNext == ' ') || (cNext == '{') || 
+			        (i == verb)    || (i == url)     || 
+			        (i==verbatim && !isalpha(cNext))    )) {
+				found = FALSE;
+				match[i] = FALSE;
+				diagnostics(5, "oops! did not match %s", command[i]);
 			}
 		}
 		
@@ -788,26 +844,30 @@ getSection(char **body, char **header)
 			
 		if (i==verb || i==url) {				/* slurp \verb#text# */
 			if (i==url && cNext=='{') cNext = '}';
-			p++;
-			*p++= getTexChar();
-			while ((*p=getRawTexChar()) != '\0' && *p != cNext && p <bufend) p++;
+			delta++;
+			*(section_buffer+delta)= getRawTexChar();
+			delta++;
+			while ((*(section_buffer+delta)=getRawTexChar()) != '\0' && *(section_buffer+delta) != cNext) {
+				delta++;
+				if (delta>=section_buffer_size) increase_buffer_size();
+			}
 			index = 0;				/* keep looking */
 			continue;
 		}
 
 		if (i==verbatim || i==figure) {			/* slurp \begin{verbatim} ... \end{verbatim} */
-			p++;
+			delta++;
 			if (i==verbatim)
 				s=getTexUntil("\\end{verbatim}",TRUE);
 			else if (i==figure)
 				s=getTexUntil("\\end{figure}",TRUE);
 
-			if (p+strlen(s)  >=bufend)
-				diagnostics(ERROR, "out of buffer memory in getSection");
-			strcpy(p,s);
-			p += strlen(s);
+			while (delta+strlen(s)+1 >= section_buffer_size)
+				increase_buffer_size();
+
+			strcpy(section_buffer+delta,s);
+			delta += strlen(s)-1;
 			free(s);
-			p--;
 			index = 0;				/* keep looking */
 			continue;
 		} 
@@ -820,11 +880,11 @@ getSection(char **body, char **header)
 		strcpy(next_header+strlen(command[i])+1,s);
 		strcpy(next_header+strlen(command[i])+1+strlen(s),"}");
 		free(s);
-		p= p - strlen(command[i])+1;
-		*p='\0';
+		delta -= strlen(command[i])-1;
+		*(section_buffer+delta)='\0';
 		break;
 	}
-	text = strdup(buffer);
+	text = strdup(section_buffer);
 	*body = text;
 	*header = next_header;
 }

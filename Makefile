@@ -8,6 +8,10 @@ CC=gcc
 COPY=cp
 INSTALL=install
 
+# Additional system libraries if needed
+# LIBS=libdebug_malloc.a
+LIBS=
+
 CFLAGS:=-DUNIX
 #CFLAGS:=-DMSDOS
 #CFLAGS:=-DMACINTOSH
@@ -21,7 +25,24 @@ CFLAGS:=-DUNIX
 #Uncomment if getopt() is not available
 #CFLAGS:=$(CFLAGS) -DHAS_NO_GETOPT
 
+#Comment out if you don't want warnings
 CFLAGS:=$(CFLAGS) -g -Wall -ansi -pedantic
+
+#Base directory
+PREFIX=/usr/local
+
+# Location of .cfg files needed by executable
+LIBDIR=$(PREFIX)/lib/latex2rtf
+
+# Location of executable
+BININSTALL=$(PREFIX)/bin
+
+# Location of man files
+MANINSTALL=$(PREFIX)/man/man1
+
+# Multiple .cfg locations.  Usually just $(LIBDIR), but handy for mirrored images
+#LIBINSTALL=/quasi/local/lib/latex2rtf:/oberon/local/lib/latex2rtf
+LIBINSTALL=$(LIBDIR)
 
 DIR_MODE=755
 BIN_MODE=755
@@ -59,29 +80,6 @@ CHMOD_DAT=true
 #
 # Note: If install doesn't work for you, use simple_install instead.
 #
-# Where support files are searched for by the executable
-# prefix defaults to /usr/local, but may be set on the command line
-prefix=/usr/local
-LIBDIR=$(prefix)/lib/latex2rtf
-# You can give several Directories separated by ':' for the following
-# install targets
-#
-# Where supportfiles are installed should normally be the same as LIBDIR
-# If you specify SEVERAL directories here, the files will get installed
-# into EVERY directory. This is rather useful if you have mirrored images
-# that you want to update, but is normally not necessary for a normal
-# installation.
-#LIBINSTALL=/quasi/local/lib/latex2rtf:/oberon/local/lib/latex2rtf
-LIBINSTALL=$(LIBDIR)
-# Where Binaries are installed
-#BININSTALL=/quasi/local/bin:/oberon/local/bin
-BININSTALL=$(prefix)/bin
-MANINSTALL=$(prefix)/man/man1
-
-# Sometimes additional system libraries are needed, they can be defined
-# here
-# LIBS=libdebug_malloc.a
-LIBS=
 
 # Nothing to change below this line
 SOURCES=commands.c commands.h chars.c chars.h direct.c direct.h encode.c encode.h l2r_fonts.c \
@@ -105,8 +103,12 @@ SUPPORT=cfg/fonts.cfg     cfg/direct.cfg   cfg/ignore.cfg \
     cfg/turkish.cfg cfg/usorbian.cfg cfg/welsh.cfg 
 
 MANUALS=latex2rtf.1
+
 MSDOS=l2r.bat l2r.exe
-DOCS= doc/l2r.html doc/credits doc/copying.txt doc/Makefile
+
+DOCS= doc/latex2rtf.texi doc/latex2rtf.html doc/latex2rtf.pdf doc/latex2rtf.txt \
+	  doc/latex2rtf.info doc/credits doc/copying.txt doc/Makefile
+
 TEST=   test/Makefile \
 	test/accentchars.tex test/array.tex test/cite.tex test/cite.bib \
 	test/eqns.tex test/fonts.tex test/fontsize.tex test/frac.tex \
@@ -117,7 +119,7 @@ TEST=   test/Makefile \
 	test/enc_applemac.tex test/enc_cp437.tex test/enc_cp865.tex test/enc_latin2.tex \
 	test/enc_latin5.tex test/enc_cp1250.tex test/enc_cp850.tex test/enc_decmulti.tex  \
 	test/enc_latin3.tex test/enc_latin9.tex test/enc_cp1252.tex test/enc_cp852.tex \
-	test/enc_latin1.tex test/enc_latin4.tex test/enc_next.tex
+	test/enc_latin1.tex test/enc_latin4.tex test/enc_next.tex test/Linux.tex
 
 OBJS=l2r_fonts.o direct.o encode.o commands.o stack.o funct1.o tables.o \
 	chars.o ignore.o cfg.o main.o util.o parser.o mygetopt.o lengths.o counters.o \
@@ -128,7 +130,7 @@ ARCH="`dpkg --print-architecture`"
 # Some defines for versions
 VERSION="`./version`"
 
-all build stamp-build: checkdir latex2rtf
+all build stamp-build: checkdir latex2rtf doc
 	touch stamp-build
 
 latex2rtf: $(OBJS)
@@ -137,7 +139,7 @@ latex2rtf: $(OBJS)
 cfg.o: cfg.c cfg.h util.h
 	$(CC) $(CFLAGS) -DLIBDIR=\"$(LIBDIR)\" -c cfg.c -o cfg.o
 
-doc:	checkdir change.log
+doc:	checkdir doc/latex2rtf.texi
 	cd doc && $(MAKE) -k
 
 test: latex2rtf
@@ -149,7 +151,7 @@ clean: checkdir
 	    *.deb
 	rm -rf latex2rtf latex2rtf-$(VERSION)
 	rm -rf debian-tmp
-	cd doc && $(MAKE) almostclean
+	cd doc && $(MAKE) clean
 	cd test && $(MAKE) clean
 
 checkout checkdir: $(SOURCES) $(SUPPORT) $(MANUALS) $(TEST)

@@ -1,14 +1,19 @@
 \documentclass{article}
 \begin{document}
+\section{Some simple comments}
 Here % this should not show up
 is a comment embedded in text.
 Sometimes one just uses
 % yet another comment
 a comment to hide stuff.
 
-{\it It is important % to hide }
-in some instances}
+{\it This will work % to hide }
+if the \% is correctly ignored}
 
-Other times we wish to know the \% chance of failure.
+Testing \verb#\%# after this: \% chance of failure.
+
+Testing \verb#\\%# after this: \\% chance of failure.
+
+Testing \verb#\\\%# after this: \\\% chance of failure.
 
 \end{document}

@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.44 2001/11/04 20:39:11 prahl Exp $ 
+/* $Id: funct1.c,v 1.45 2001/11/11 06:17:36 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -1084,15 +1084,17 @@ CmdVerbatim(int code)
 			verbatim_text = getTexUntil("\\end{verbatim}", 1);
 
 		vptr = verbatim_text;
-		
+				
 		if (true_code == VERBATIM_3)   /* alltt environment */
 
 			ConvertAllttString(verbatim_text);
 
 		else {
 		
-			while (*vptr) 
+			while (*vptr) {
+				diagnostics(5, "Verbatim character <%c>", *vptr);
 				putRtfChar(*vptr++);
+			}
 		}
 		
 		free(verbatim_text);
