@@ -1115,6 +1115,7 @@ CmdItem(int code)
 	if (itemlabel) free(itemlabel);
 	thechar=getNonBlank();
 	ungetTexChar(thechar);
+	CmdIndent(INDENT_NONE);
 }
 
 void 
