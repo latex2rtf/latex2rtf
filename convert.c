@@ -1,4 +1,4 @@
-/* $Id: convert.c,v 1.25 2002/02/17 05:12:59 prahl Exp $ 
+/* $Id: convert.c,v 1.26 2002/02/19 05:43:04 prahl Exp $ 
 	purpose: ConvertString(), Convert(), TranslateCommand() 
 	
 TeX has six modes according to the TeX Book:
@@ -84,6 +84,8 @@ ConvertString(char *string)
 {
 	char            temp[51];
 	
+	if (string==NULL) return;
+	
 	strncpy(temp,string,50);
 
 	if (PushSource(NULL, string)) {
@@ -107,6 +109,8 @@ ConvertAllttString(char *s)
 ******************************************************************************/
 {	
 	char cThis;
+
+	if (s==NULL) return;
 	diagnostics(4, "Entering Convert() from StringAllttConvert()");
 
 	if (PushSource(NULL, s)) {

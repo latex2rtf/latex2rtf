@@ -1,4 +1,4 @@
-/* $Id: xref.c,v 1.13 2002/02/18 21:00:55 prahl Exp $ 
+/* $Id: xref.c,v 1.14 2002/02/19 05:43:04 prahl Exp $ 
  
 This file contains routines to handle cross references :
 	\label{key}, \ref{key},   \pageref{key}, \bibitem{key},
@@ -128,20 +128,19 @@ CmdBibitem(int code)
 	
 	label = getBracketParam();
 	if (label) {
-		fprintRTF("[%s]", label);
+		fprintRTF("[");
+		ConvertString(label);
+		fprintRTF("]");
 		free(label);
 	}
 	
 	key = getBraceParam();
 	signet = strdup_nobadchars(key);
 	s=ScanAux("bibcite", key, 0);
-	
+	diagnostics(4,"CmdBibitem <%s>",s);
 	fprintRTF("[");
 	fprintRTF("{\\*\\bkmkstart BIB_%s}",signet);
-			if (s)
-				ConvertString(s);
-			else
-				fprintRTF("");
+	ConvertString(s);
 	fprintRTF("{\\*\\bkmkend BIB_%s}",signet);
 	fprintRTF("]");
 
@@ -238,7 +237,7 @@ purpose: handles \label \ref \pageref \cite
 		case LABEL_REF:
 			signet = strdup_nobadchars(text);
 			s = ScanAux("newlabel", text, 1);
-			fprintRTF("{\\field{\\*\\fldinst{\\lang1024 REF LBL_%s \\\\* MERGEFORMAT}}",signet);
+			fprintRTF("{\\field{\\*\\fldinst{\\lang1024 REF LBL_%s \\\\* MERGEFORMAT }}",signet);
 			fprintRTF("{\\fldrslt{");
 			if (s)
 				ConvertString(s);
@@ -250,9 +249,9 @@ purpose: handles \label \ref \pageref \cite
 			if (s) free(s);
 			break;
 		
-/* {\field{\*\fldinst{\lang1024 REF LBL_section31 \\* MERGEFORMAT}}{\fldrslt{?}}} */
+/* {\field{\*\fldinst{\lang1024 REF LBL_section31 \\* MERGEFORMAT }}{\fldrslt{?}}} */
 		case LABEL_CITE:
-			fprintRTF("[");
+			fprintRTF("\n[");
 			str = strdup_noblanks(text);
 			str1 = str;
 			do {
@@ -260,9 +259,9 @@ purpose: handles \label \ref \pageref \cite
 				if (comma) *comma = '\0';	/* replace ',' with '\0' */
 				s = ScanAux("bibcite", str1, 0);
 				signet = strdup_nobadchars(str1);
-				fprintRTF("{\\field{\\*\\fldinst{\\lang1024 REF BIB_%s \\\\* MERGEFORMAT}}",signet);
+				fprintRTF("{\\field{\\*\\fldinst{\\lang1024 REF BIB_%s \\\\* MERGEFORMAT }}",signet);
 				fprintRTF("{\\fldrslt{");
-				if (s)
+				if (s && 0)
 					ConvertString(s);
 				else
 					fprintRTF("?");
@@ -284,7 +283,7 @@ purpose: handles \label \ref \pageref \cite
 		case LABEL_HYPERPAGEREF:
 		case LABEL_PAGEREF:
 			signet = strdup_nobadchars(text);
-			fprintRTF("{\\field{\\*\\fldinst{\\lang1024 PAGEREF PR_%s \\\\* MERGEFORMAT}}",signet);
+			fprintRTF("{\\field{\\*\\fldinst{\\lang1024 PAGEREF PR_%s \\\\* MERGEFORMAT }}",signet);
 			fprintRTF("{\\fldrslt{}}}",signet);
 			free(signet);
 			break;
@@ -299,8 +298,8 @@ ScanAux(char *token, char * reference, int code)
 /*************************************************************************
 purpose: obtains a reference from .aux file
 
-code=0 means \\token{reference}{number}       -> "number"
-code=1 means \\token{reference}{{sect}{line}} -> "sect"
+code=0 means \token{reference}{number}       -> "number"
+code=1 means \token{reference}{{sect}{line}} -> "sect"
  ************************************************************************/
 {
 	static FILE    *fAux = NULL;
@@ -327,38 +326,13 @@ code=1 means \\token{reference}{{sect}{line}} -> "sect"
 
 		s = strstr(AuxLine, target);
 		if (s) {
-			s += strlen(target);
+		
+			s += strlen(target);		/* move to \token{reference}{ */			
+			if (code==1) s++;			/* move to \token{reference}{{ */
 
-			s = strchr(s, '{');			/* move to \\token{reference}{ */
-			if (!s) return NULL;
-			s++;
-			
-			if (code==1) {				/* move to \\token{reference}{{ */
-				s = strchr(s, '{');
-				if (!s) return NULL;
-				s++;		
-			}
-
-			t = s;						/* skip matched braces */
+			t = s;					
 			braces = 1;
-			while ( braces >= 1) {
-				t++;
-				if (*t == '{') braces++;
-				if (*t == '}') braces--;
-				if (*t == '\0') return NULL;
-			}
-			
-			if (code == 0) {			/* return result */
-				*t = '\0';
-				return strdup(s);
-			}
-			
-			s = strchr(s, '{');			/* case when code == 1 */
-			if (!s) return NULL;
-			s++;		
-			t = s;						/* skip matched braces */
-			braces = 1;
-			while ( braces >= 1) {
+			while ( braces >= 1) {		/* skip matched braces */
 				t++;
 				if (*t == '{') braces++;
 				if (*t == '}') braces--;
@@ -366,8 +340,36 @@ code=1 means \\token{reference}{{sect}{line}} -> "sect"
 			}
 			
 			*t = '\0';
-			return strdup(s);
+			return strdup(s+1);
 		}
 	}
 	return NULL;
+}
+
+void
+CmdHtml(int code)
+/******************************************************************************
+purpose: handles \htmladdnormallink{text}{link}
+******************************************************************************/
+{
+	char * text, *ref, *s;
+	
+	if (code == LABEL_HTMLADDNORMALREF) {
+		text = getBraceParam();
+		ref = getBraceParam();
+
+		while ((s = strstr(text,"\\~{}")) != NULL) {
+			*s = '~';
+			strcpy(s+1,s+4);
+		}
+		while ((s = strstr(ref,"\\~{}")) != NULL) {
+			*s = '~';
+			strcpy(s+1,s+4);
+		}
+			
+		fprintRTF("{\\field{\\*\\fldinst{ HYPERLINK \"%s\" }{{}}}",ref);
+		fprintRTF("{\\fldrslt{\\ul %s}}}", text);
+		free(text);
+		free(ref);
+	}
 }

@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.56 2002/02/18 21:14:15 prahl Exp $ 
+/* $Id: funct1.c,v 1.57 2002/02/19 05:43:04 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -1716,6 +1716,11 @@ roman_item(int n)
 
 	s[i] = '\0';
 	return strdup(s);
+}
+
+void CmdNonBreakSpace(int code)
+{
+	fprintRTF("\\~");
 }
 
 void

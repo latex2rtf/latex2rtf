@@ -9,6 +9,7 @@
 #define LABEL_CITE			5
 #define LABEL_HYPERPAGEREF	6
 #define LABEL_PAGEREF		7
+#define LABEL_HTMLADDNORMALREF 8
 
 void    CmdFootNote(int code);
 void    CmdLabel(int code);
@@ -19,3 +20,4 @@ void 	CmdBibitem(int code);
 void 	CmdNewblock(int code);
 void	CmdIndex(int code);
 void	CmdPrintIndex(int code);
+void 	CmdHtml(int code);

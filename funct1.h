@@ -1,4 +1,4 @@
-/* $Id: funct1.h,v 1.28 2002/02/18 21:00:55 prahl Exp $ */
+/* $Id: funct1.h,v 1.29 2002/02/19 05:43:04 prahl Exp $ */
 
 #define THANKS 2
 
@@ -160,3 +160,4 @@ void			CmdColsep(int code);
 void		 	CmdSpace(float kk);
 void 			CmdVerbosityLevel(int code);
 void			CmdInclude(int code);
+void 			CmdNonBreakSpace(int code);

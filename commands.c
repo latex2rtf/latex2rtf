@@ -1,4 +1,4 @@
-/*  $Id: commands.c,v 1.42 2002/02/18 21:00:55 prahl Exp $
+/*  $Id: commands.c,v 1.43 2002/02/19 05:43:04 prahl Exp $
  
     Defines subroutines to translate LaTeX commands to RTF
 */
@@ -264,6 +264,8 @@ static CommandArray commands[] = {
     {"right", CmdLeftRight, 1},
 	{"nonumber",CmdNonumber, EQN_NO_NUMBER},
 	{"char",CmdChar,0},
+	{"htmladdnormallink",CmdHtml,LABEL_HTMLADDNORMALREF},
+	{"nobreakspace", CmdNonBreakSpace, 0},
 	{"", NULL, 0}
 };
 
@@ -327,6 +329,8 @@ static CommandArray PreambleCommands[] = {
 	{"footnotetext", CmdFootNote, FOOTNOTE_TEXT},
 	{"include", CmdInclude, 0},
 	{"input", CmdInclude, 0},
+	{"htmladdnormallink",CmdHtml, LABEL_HTMLADDNORMALREF},
+	{"nobreakspace", CmdNonBreakSpace, 0},
 	{"", NULL, 0}
 };				/* end of list */
 
