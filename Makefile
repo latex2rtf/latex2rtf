@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.80 2003/01/06 01:26:06 prahl Exp $
+# $Id: Makefile,v 1.81 2003/03/22 22:16:47 prahl Exp $
 
 CC=gcc
 MKDIR=mkdir -p
@@ -109,6 +109,7 @@ main.o: Makefile main.c
 check test: latex2rtf
 	cd scripts && $(MAKE)
 	cd test && $(MAKE) 
+	cd test && $(MAKE) check
 
 checkdir: $(README) $(SRCS) $(HDRS) $(CFGS) $(SCRIPTS) $(TEST) doc/latex2rtf.texi
 
@@ -119,7 +120,7 @@ depend: $(SRCS)
 	$(CC) -MM $(SRCS) >makefile.depend
 	@echo "***** Append makefile.depend to Makefile manually ******"
 
-dist: $(SRCS) $(HDRS) $(CFGS) $(README) Makefile $(SCRIPTS) $(DOCS) $(TEST)
+dist: checkdir latex2rtf doc $(SRCS) $(HDRS) $(CFGS) $(README) Makefile $(SCRIPTS) $(DOCS) $(TEST)
 	$(MKDIR) latex2rtf-$(VERSION)
 	$(MKDIR) latex2rtf-$(VERSION)/cfg
 	$(MKDIR) latex2rtf-$(VERSION)/doc
