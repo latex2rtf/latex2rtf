@@ -10,42 +10,52 @@ To install latex2rtf, extract all files from the zip archive to C:\l2r
  or to another folder (i.e. directory) of your choice,
  preserving the folder structure (winzip: check "use folder names")
 If you extracted them to another folder,
- edit the files L2R.BAT and L2RSEM.BAT and change the pathes 
+ edit the files L2R.BAT, L2RSEM.BAT and L2RPREP.BAT and change the pathes 
  to LATEX2RT.EXE and to the cfg files to the folder where you put them.
 
 The file L2R.BAT or L2RSEM.BAT 
-will call the DJGPP generated version LATEX2RT.EXE.
+will call the DJGPP generated executable LATEX2RT.EXE.
 
 Make sure that the folder containing the files 
- L2R.BAT, L2RSEM.BAT and LATEX2PNG.BAT
+ L2R.BAT, L2RSEM.BAT, L2RPREP.BAT and LATEX2PN.BAT
  is in your search path
  (e.g. adding to your autoexcec.bat: "PATH=...;...;C:\l2r")
+ or call L2RPREP.BAT once before starting conversions.
 
 If you want to use the option to convert equations to bitmaps (-M 12),
 you must have TeX, ImageMagick and Ghostscript installed.
 This works only on win32 systems (win95, win98, winNT4, win2000, winXP)
 because ImageMagick is available only for win32, not for pure DOS.
-Of TeX, you need a complete installation.
-Of ImageMagick, get the version for Win2000, it will also work under win95 and win98.
-   You only need convert.exe.
-Of Ghostscript, you only need gswin32c.exe and gsdll32.dll.
+Get the ImageMagick version for Win2000, it will also work under win95 and win98.
 Either the folders where TeX, ImageMagick and Ghostscript are installed
-must be in your search path, or you must edit the file LATEX2PNG.BAT 
-and specify the folders where TeX, ImageMagick and Ghostscript are installed
+must be in your search path, or you must edit the file L2RPREP.BAT 
+and specify the folders where TeX, ImageMagick and Ghostscript are installed 
 in the SET commands, e.g.
 ...
-rem Set path to latex here (ending with \) 
-rem     if it isn't in your search path:
-SET TEXDIR=C:\texmf\miktex\bin\
+rem set folder containing latex2rt.exe and netpbm executables here:
+set l2rpath=C:\l2r
 
-rem Set path to ImageMagick's convert here (ending with \) 
-rem     if it isn't in your search path:
-SET MAGICKDIR=C:\ImageMagick\
+rem set folder containing Ghostscript executables here:
+%l2rpath%\which gswin32c>nul
+if errorlevel 1 SET PATH=C:\Progra~1\gs\gs8.00\bin;C:\Progra~1\gs\gs8.00\lib;%PATH%
 
-rem Set path to Ghostscript's gswin32c.exe here (NOT ending with \) 
-rem     if it isn't in your search path:
-SET GSDIR=C:\Aladdin\gs6.01\bin
+rem set folder containing ImageMagick executables here:
+%l2rpath%\which identify>nul
+if errorlevel 1 SET PATH=C:\Progra~1\ImageM~1;%PATH%
 
+rem set folder containing LaTeX and dvips executables here:
+%l2rpath%\which latex>nul
+if errorlevel 1 SET PATH=C:\TEXMF\MIKTEX\BIN;%PATH%
+
+%l2rpath%\which latex2rt>nul
+if errorlevel 1 SET PATH=%l2rpath%;%PATH%
+
+
+Preparing the conversion:
+------------------------
+If the folders where TeX, ImageMagick and Ghostscript are installed
+are not your search path, call L2RPREP.BAT once after opening the command prompt 
+and before starting conversions.
 
 Starting the conversion:
 ------------------------
