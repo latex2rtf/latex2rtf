@@ -156,6 +156,30 @@ static int citation_used(char *citation)
     return 0;
 }
 
+#define CR (char) 0x0d
+#define LF (char) 0x0a
+
+static char my_getc(FILE *f)
+{
+	int c;
+	
+	if (!f) return '\0';
+	c = getc(f);
+	if (c==EOF) return '\0';
+		
+	if (c==CR) {
+		c = getc(f);
+		if (c == LF) return '\n';
+		ungetc(c,f);
+		return '\n';
+	} if (c==LF)
+		return '\n';
+	else if (c=='\t')
+		return ' ';
+	
+	return (char) c;
+}
+
 /*************************************************************************
 purpose: obtains a reference from .aux file
     code==0 means \token{reference}{number}       -> "number"
@@ -222,7 +246,8 @@ static char *ScanAux(char *token, char *reference, int code)
 /*************************************************************************
 purpose: obtains a \bibentry{reference} from the .bbl file
          this consists of all lines after \bibentry{reference} until two
-         newlines in a row are found.
+         newlines in a row are found.  
+         Finally, remove a '.' if at the end 
  ************************************************************************/
 static char *ScanBbl(char *reference)
 {
@@ -248,7 +273,7 @@ static char *ScanBbl(char *reference)
     while (fgets(buffer, 4095, f_bbl) != NULL) {
         t = strstr(buffer, "\\bibitem");
         if (t) {
-        	s = strstr(buffer, reference);
+        	s = strstr(buffer+8, reference);
         	if (s) break;
         }
     }
@@ -258,18 +283,19 @@ static char *ScanBbl(char *reference)
 	/* scan bbl file until we encounter \n\n */
 	s = buffer;
 	last_c = '\0';
-	*s = getc(f_bbl);
+	*s = my_getc(f_bbl);
 	while ( !feof(f_bbl) && !(last_c == '\n' && *s == '\n') && i< 4095) {
 		last_c = *s;
 		s++;
-		*s = getc(f_bbl);
+		*s = my_getc(f_bbl);
 		i++;
 	}
+		
+	/* strip trailing . and any spaces at the end */
+	while (*s==' ' || *s == '\n') s--;
+	if (*s == '.') s--;
 	
-	if (last_c == '\n' && *s == '\n')
-		s--;
-	else
-		s++;
+	s++;
 	*s = '\0';
 	
 	return strdup(buffer);

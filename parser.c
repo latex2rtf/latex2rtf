@@ -378,9 +378,24 @@ char getRawTexChar()
 
         g_parser_currentChar = (char) thechar;
 
-    } else {                    /* no need to sanitize strings! */
+    } else {
+
         if (g_parser_string && *g_parser_string) {
-            g_parser_currentChar = *g_parser_string;
+			thechar = *g_parser_string;
+
+			/* convert CR, CRLF, or LF to \n */			
+			if (thechar == CR) {   
+				g_parser_string++;
+				thechar = *g_parser_string;
+				if (thechar != LF)
+					g_parser_string--;
+				thechar = '\n';
+			} else if (thechar == LF)
+				thechar = '\n';
+			else if (thechar == '\t')
+            	thechar = ' ';
+            	
+            g_parser_currentChar = thechar;
             g_parser_string++;
         } else
             g_parser_currentChar = '\0';
