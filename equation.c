@@ -912,7 +912,12 @@ SubSupWorker (bool big)
 	char cThis;
 	char *upper_limit = NULL;
 	char *lower_limit = NULL;
+	int   size, vertical_shift, script_size;
 	
+	size            = CurrentFontSize ();
+	script_size     = (int) (size / 1.2);
+	vertical_shift  = (big) ? (int) (size / 1.4) : (int) (size / 4);
+
 	for (;;) {
 		cThis = getNonBlank ();
 		if (cThis == '_') {
@@ -929,10 +934,7 @@ SubSupWorker (bool big)
 	}
 	
 	if (upper_limit && lower_limit) {
-		int size, newsize;
-		size = CurrentFontSize ();
-		newsize = (int) (size / 1.2);
-		fprintRTF ("\\\\s\\\\up({\\fs%d ", newsize);
+		fprintRTF ("\\\\s\\\\up({\\fs%d ", script_size);
 		ConvertString (upper_limit);
 		if (big)
 			fprintRTF ("%c %c", g_field_separator, g_field_separator);
@@ -940,35 +942,20 @@ SubSupWorker (bool big)
 			fprintRTF ("%c", g_field_separator);
 		ConvertString (lower_limit);
 		fprintRTF ("})");
-		free (lower_limit);
-		free (upper_limit);
 
 	} else if (lower_limit) {
-		int size, newsize, upsize;
-		size = CurrentFontSize ();
-		newsize = (int) (size / 1.2);
-		if (big)
-			upsize = (int) (size / 1.4);
-		else
-			upsize = (int) (size / 4);
-		fprintRTF ("\\\\s\\\\do%d({\\fs%d ", upsize, newsize);
+		fprintRTF ("\\\\s\\\\do%d({\\fs%d ", vertical_shift, script_size);
 		ConvertString (lower_limit);
 		fprintRTF ("})");
-		free (lower_limit);
 		
 	} else if (upper_limit) {
-		int size, newsize, upsize;
-		size = CurrentFontSize ();
-		newsize = (int) (size / 1.2);
-		if (big)
-			upsize = (int) (size / 1.4);
-		else
-			upsize = (int) (size / 4);
-		fprintRTF ("\\\\s\\\\up%d({\\fs%d ", upsize, newsize);
+		fprintRTF ("\\\\s\\\\up%d({\\fs%d ", vertical_shift, script_size);
 		ConvertString (upper_limit);
 		fprintRTF ("})");
-		free (upper_limit);
 	}
+
+	if (lower_limit) free (lower_limit);
+	if (upper_limit) free (upper_limit);
 }
 
 void
@@ -978,25 +965,20 @@ CmdSuperscript(int code)
  ******************************************************************************/
 {
 	char           *s = NULL;
-	int  size, newsize, upsize;
-
-	if (g_processing_fields){
-		ungetTexChar('^');
+	int   size, vertical_shift, script_size;
+	
+	if (g_processing_fields){	/* to handle math environments */
+		ungetTexChar('^');		/* kludge to signal SubSupWorker */
 		SubSupWorker(FALSE);
 		return;
 	}
 
-	if (g_processing_fields){
-		ungetTexChar('_');
-		SubSupWorker (FALSE);
-		return;
-	}
-
-	if ((s = getBraceParam())) {
-		size = CurrentFontSize();
-		newsize = (int) (size / 1.2);
-		upsize = (int) (size / 3.0);
-		fprintRTF("{\\up%d\\fs%d ",upsize,newsize);
+	s = getBraceParam();		/* for \textsuperscript */
+	if (s) {
+		size           = CurrentFontSize();
+		script_size    = (int) (size / 1.2);
+		vertical_shift = (int) (size / 4.0);
+		fprintRTF("{\\up%d\\fs%d ",vertical_shift,script_size);
 		ConvertString(s);
 		fprintRTF("}");
 		free(s);
@@ -1006,17 +988,24 @@ CmdSuperscript(int code)
 void
 CmdSubscript(int code)
 /******************************************************************************
- purpose   : Handles superscripts ^\alpha, ^a, ^{a}
+ purpose   : Handles subscripts _\alpha, _a, _{a}
  ******************************************************************************/
 {
 	char           *s = NULL;
-	int  size, newsize, upsize;
+	int   size, vertical_shift, script_size;
 
-	if ((s = getBraceParam())) {
-		size = CurrentFontSize();
-		newsize = (int) (size / 1.2);
-		upsize = (int) (size / 3.0);
-		fprintRTF("{\\dn%d\\fs%d ",upsize,newsize);
+	if (g_processing_fields){  /* to handle math environments */
+		ungetTexChar('_');     /* kludge to signal SubSupWorker */
+		SubSupWorker(FALSE);
+		return;
+	}
+
+	s = getBraceParam();      /* for \textsubscript */
+	if (s) {
+		size           = CurrentFontSize();
+		script_size    = (int) (size / 1.2);
+		vertical_shift = (int) (size / 4.0);
+		fprintRTF("{\\dn%d\\fs%d ",vertical_shift,script_size);
 		ConvertString(s);
 		fprintRTF("}");
 		free(s);

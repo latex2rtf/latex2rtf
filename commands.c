@@ -230,6 +230,7 @@ static CommandArray commands[] = {
 	{"quad", CmdQuad, 1},
 	{"qquad", CmdQuad, 2},
 	{"textsuperscript", CmdSuperscript, 0},
+	{"textsubscript", CmdSubscript, 0},
 	{"hspace", CmdIgnoreParameter, No_Opt_One_NormParam},
 	{"hspace*", CmdIgnoreParameter, No_Opt_One_NormParam},
 	{"vspace", CmdVspace, 0},
