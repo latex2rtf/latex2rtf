@@ -1,6 +1,6 @@
 /* chars.c - Handle special TeX characters and logos
 
-Copyright (C) 2002 Scott Prahl
+Copyright (C) 2002 The Free Software Foundation
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

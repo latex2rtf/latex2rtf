@@ -1,6 +1,6 @@
 /* tables.c - Translation of tabbing and tabular environments
 
-Copyright (C) 2002 Scott Prahl
+Copyright (C) 2002 The Free Software Foundation
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

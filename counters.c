@@ -1,6 +1,6 @@
 /* counters.c - Routines to access TeX variables that contain TeX counters
 
-Copyright (C) 2001-2002 Scott Prahl
+Copyright (C) 2001-2002 The Free Software Foundation
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
