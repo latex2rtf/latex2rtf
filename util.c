@@ -1,5 +1,5 @@
 /*
- * $Id: util.c,v 1.22 2002/05/02 14:47:20 prahl Exp $ 
+ * $Id: util.c,v 1.23 2002/05/08 05:07:29 prahl Exp $ 
  */
 #include <stdlib.h>
 #include <string.h>
@@ -31,6 +31,14 @@ strdup_together(char *s, char *t)
 {
 	char * both;
 	
+	if (s==NULL) {
+		if (t==NULL) return NULL;
+		return strdup(t);
+	}
+	
+	if (t==NULL)
+		return strdup(s);
+		
 	both = malloc(strlen(s) + strlen(t) + 1);
 	if (both == NULL)
 		diagnostics(ERROR, "Could not allocate memory for both strings.");
