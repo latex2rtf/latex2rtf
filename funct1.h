@@ -1,4 +1,4 @@
-/* $Id: funct1.h,v 1.23 2001/10/17 04:43:47 prahl Exp $ */
+/* $Id: funct1.h,v 1.24 2001/10/20 21:17:12 prahl Exp $ */
 
 #define AST_FORM 100
 #define EMPHASIZE 1
@@ -23,6 +23,11 @@ void            CmdBeginEnd(int code);
 
 #define VERBATIM_1	 1
 #define VERBATIM_2   2
+#define VERBATIM_3   3
+
+#define VERB_VERB    1
+#define VERB_STAR    2
+#define VERB_URL     3
 
 void            CmdStartParagraph(int code);
 void            CmdEndParagraph(int code);
@@ -90,9 +95,12 @@ void            CmdItem(int code);
 /* LEG030598 End */
 
 #define FIGURE 1
-#define PICTURE 2
-#define MINIPAGE 3
 #define FIGURE_1 5
+
+#define IGNORE_HTMLONLY  1
+#define IGNORE_PICTURE   2
+#define IGNORE_MINIPAGE  3
+#define IGNORE_RAWHTML   4
 
 #define No_Opt_One_NormParam 01
 #define No_Opt_Two_NormParam 02
@@ -117,7 +125,7 @@ void            CmdItem(int code);
 #define TABLE_1 3
 
 
-void            CmdIgnoreFigure(int code);
+void            CmdIgnoreEnviron(int code);
 
 void            CmdFigure(int code);
 

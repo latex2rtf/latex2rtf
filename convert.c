@@ -1,4 +1,4 @@
-/* $Id: convert.c,v 1.16 2001/10/19 03:58:56 prahl Exp $ 
+/* $Id: convert.c,v 1.17 2001/10/20 21:17:12 prahl Exp $ 
 	purpose: ConvertString(), Convert(), TranslateCommand() 
 	
 TeX has six modes according to the TeX Book:
@@ -95,6 +95,47 @@ ConvertString(char *string)
 		PopSource();
 		diagnostics(3, "Exiting Convert() from StringConvert()");
 	}
+}
+
+void 
+ConvertAllttString(char *s)
+/******************************************************************************
+     purpose : converts string in TeX-format to Rtf-format
+			   according to the alltt environment, which is like
+			   verbatim environment except that \, {, and } have
+			   their usual meanings
+******************************************************************************/
+{	
+	diagnostics(4, "Entering Convert() from StringAllttConvert()");
+
+	while (*s) {
+	
+		switch (*s) {
+		
+			case '\\':
+				PushLevels();	
+				TranslateCommand();
+				CleanStack();
+				break;
+				
+			case '{':
+				PushBrace();
+				fprintRTF("{");
+				break;
+			
+			case '}':			
+				ret = RecursionLevel - PopBrace();
+				fprintRTF("}");
+				break;
+			
+			default:
+				putRtfChar(*s);
+				break;
+		}
+		s++;
+	}
+
+	diagnostics(4, "Exiting Convert() from StringAllttConvert()");
 }
 
 void 
@@ -348,28 +389,6 @@ globals: fTex, fRtf and all global flags for convert (see above)
 				if (cNext == ' ' && (isalpha(cLast) && !isupper(cLast)))
 					fprintRTF(" ");
 				ungetTexChar(cNext);
-			}
-			break;
-
-		case '0':
-		case '1':
-		case '2':
-		case '3':
-		case '4':
-		case '5':
-		case '6':
-		case '7':
-		case '8':
-		case '9':
-		case '(':
-		case ')':
-		case '[':
-		case ']':
-			if (mode == MODE_MATH || mode == MODE_DISPLAYMATH)
-				fprintRTF("{\\i0 %c}", cThis);	
-			else {
-				SetTexMode(MODE_HORIZONTAL);
-				fprintRTF("%c", cThis);
 			}
 			break;
 			

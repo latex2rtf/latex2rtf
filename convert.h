@@ -9,5 +9,6 @@ void SetTexMode(int mode);
 int  GetTexMode(void);
 
 void ConvertString(char *string);
+void ConvertAllttString(char *s);
 void Convert();
 

@@ -1,4 +1,4 @@
-/*  $Id: commands.c,v 1.32 2001/10/19 03:58:56 prahl Exp $
+/*  $Id: commands.c,v 1.33 2001/10/20 21:17:12 prahl Exp $
  
     Defines subroutines to translate LaTeX commands to RTF
 */
@@ -164,8 +164,9 @@ static CommandArray commands[] = {
 	{"nonfrenchspacing", CmdIgnore, 0},
 	{"include", CmdInclude, 0},	/* include Latex file */
 	{"input", CmdInclude, 0},	/* include Latex file */
-	{"verb", CmdVerb, 0},
-	{"verb*", CmdVerb, AST_FORM},
+	{"verb", CmdVerb, VERB_VERB},
+	{"verb*", CmdVerb, VERB_STAR},
+	{"url", CmdVerb, VERB_URL},
 	{"onecolumn", CmdColumn, One_Column},
 	{"twocolumn", CmdColumn, Two_Column},
 	{"includegraphics", CmdGraphics, 0},
@@ -394,8 +395,8 @@ static CommandArray params[] = {
 	{"tabbing", CmdTabbing, TABBING},
 	{"figure", CmdFigure, FIGURE},
 	{"figure*", CmdFigure, FIGURE_1},
-	{"picture", CmdIgnoreFigure, PICTURE},
-	{"minipage", CmdIgnoreFigure, MINIPAGE},
+	{"picture", CmdIgnoreEnviron, IGNORE_PICTURE},
+	{"minipage", CmdIgnoreEnviron, IGNORE_MINIPAGE},
 
 	{"quote", CmdQuote, QUOTE},
 	{"quotation", CmdQuote, QUOTATION},
@@ -404,7 +405,6 @@ static CommandArray params[] = {
 	{"itemize", CmdList, ITEMIZE},
 	{"description", CmdList, DESCRIPTION},
 	{"verbatim", CmdVerbatim, VERBATIM_1},
-	{"Verbatim", CmdVerbatim, VERBATIM_2},
 	{"verse", CmdVerse, 0},
 	{"tabular", CmdTabular, TABULAR},
 	{"tabular*", CmdTabular, TABULAR_1},
@@ -442,6 +442,11 @@ static CommandArray params[] = {
 	{"sf", CmdFontFamily, F_FAMILY_ROMAN_4},
 	{"tt", CmdFontFamily, F_FAMILY_SANSSERIF_4},
 	{"rm", CmdFontFamily, F_FAMILY_TYPEWRITER_4},
+	{"Verbatim", CmdVerbatim, VERBATIM_2},
+	{"alltt", CmdVerbatim, VERBATIM_3},
+	{"latexonly", CmdIgnore, 0},
+	{"htmlonly",CmdIgnoreEnviron,IGNORE_HTMLONLY},
+	{"rawhtml",CmdIgnoreEnviron,IGNORE_RAWHTML},
 	{"", NULL, 0}
 };				/* end of list */
 

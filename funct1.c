@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.35 2001/10/17 04:43:47 prahl Exp $ 
+/* $Id: funct1.c,v 1.36 2001/10/20 21:17:12 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -336,10 +336,9 @@ CmdToday( /* @unused@ */ int code)
 
 
 void 
-CmdIgnore( /* @unused@ */ int code)
+CmdIgnore(int code)
 /******************************************************************************
- purpose: LaTeX-commands which can't be converted in Rtf-commands are overread
-	  as such
+ purpose: allows handling of constructs that do not require changes to RTF
  ******************************************************************************/
 {
 }
@@ -870,22 +869,45 @@ void
 CmdVerb(int code)
 /******************************************************************************
  purpose: converts the LaTeX-verb-environment to a similar Rtf-style
+ 		  \url probably does not handle line feeds properly
  ******************************************************************************/
 {
-	char            cThis;
-	char            markingchar = '\177';
+	char            cThis, *text, *s;
+	char            markingchar;
 	int             num;
-
-	while ((cThis = getRawTexChar())) {
-		if ((cThis != ' ') && (cThis != '*') && !isalpha((int)cThis)) {
-			markingchar = cThis;
-			break;
-		}
-	}
 
 	SetTexMode(MODE_HORIZONTAL);
 	num = TexFontNumber("Typewriter");
 	fprintRTF("{\\b0\\i0\\scaps0\\f%d ", num);
+
+	if (code == VERB_URL) {	
+		cThis = getNonSpace();
+		if (cThis == '{') {				/* \url{http://} */
+			ungetTexChar(cThis);
+			text = getBraceParam();
+			s = text;
+			while (*s) {
+				putRtfChar(*s);
+				s++;
+			}
+			fprintRTF("}");
+			free(text);
+			return;
+		} else 
+			markingchar = cThis;		/* \url|http://| */
+
+	} 
+	
+	if (code == VERB_STAR || code == VERB_VERB) {	
+	
+		while ((cThis = getRawTexChar())) {
+			if ((cThis != ' ') && (cThis != '*') && !isalpha((int)cThis)) {
+				markingchar = cThis;
+				break;
+			}
+		}
+	}
+
 
 	while ((cThis = getRawTexChar()) && cThis != markingchar) 
 		putRtfChar(cThis);
@@ -916,13 +938,24 @@ CmdVerbatim(int code)
 		
 		if (true_code == VERBATIM_2) 
 			verbatim_text = getTexUntil("\\end{Verbatim}", 1);
+			
+		else if (true_code == VERBATIM_3) 
+			verbatim_text = getTexUntil("\\end{alltt}", 1);
+			
 		else
 			verbatim_text = getTexUntil("\\end{verbatim}", 1);
 
 		vptr = verbatim_text;
 		
-		while (*vptr) 
-			putRtfChar(*vptr++);
+		if (true_code == VERBATIM_3)   /* alltt environment */
+
+			ConvertAllttString(verbatim_text);
+
+		else {
+		
+			while (*vptr) 
+				putRtfChar(*vptr++);
+		}
 		
 		free(verbatim_text);
 
@@ -1102,22 +1135,34 @@ CmdFigure(int code)
 }
 
 void 
-CmdIgnoreFigure(int code)
+CmdIgnoreEnviron(int code)
 /******************************************************************************
-  purpose: function to ignore Picture and Minipage Environment
+  purpose: function to ignore \begin{environ} ... \end{environ}
  ******************************************************************************/
 {
+	char *s = NULL;
+	
 	if (code & ON) {
 	
 		switch (code & ~(ON)) {
-			case PICTURE:
-					getTexUntil("\\end{picture}",0);
+			case IGNORE_PICTURE:
+					s= getTexUntil("\\end{picture}",0);
 					break;
 			
-			case MINIPAGE:
-					getTexUntil("\\end{minipage}",0);
+			case IGNORE_MINIPAGE:
+					s=getTexUntil("\\end{minipage}",0);
+					break;
+
+			case IGNORE_HTMLONLY:
+					s=getTexUntil("\\end{htmlonly}",0);
+					break;
+
+			case IGNORE_RAWHTML:
+					s=getTexUntil("\\end{rawhtml}",0);
 					break;
 		}
+
+		if (s) free(s);
 	}
 }
 

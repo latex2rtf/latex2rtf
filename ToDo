@@ -1,10 +1,8 @@
 Bugs:
-	Fix \right. and \left.
  	Improve spacing before and after \section etc.
 	Improve font sizes in \section etc.
 	
 Features:
-	Add Field support for simple math arrays
 	Add RTF support for \label, \ref, \pageref ...
 	Add support for \usepackage{fullpage}
 	Add support for \usepackage{doublespace}
