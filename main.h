@@ -1,4 +1,4 @@
-/* $Id: main.h,v 1.39 2002/03/14 06:42:21 prahl Exp $ */
+/* $Id: main.h,v 1.40 2002/03/19 16:17:36 prahl Exp $ */
 #ifndef __MAIN_H
 #define __MAIN_H
 
@@ -30,12 +30,6 @@
 
 #ifdef HAS_NO_GETOPT
 #define getopt my_getopt
-#endif
-
-#ifdef SEMICOLONSEP
-#define FORMULASEP ';'
-#else
-#define FORMULASEP ','
 #endif
 
 #ifndef SEEK_SET

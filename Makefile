@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.45 2002/03/19 15:23:17 prahl Exp $
+# $Id: Makefile,v 1.46 2002/03/19 16:17:36 prahl Exp $
 
 CC=gcc
 LIBS=
@@ -6,9 +6,6 @@ LIBS=
 CFLAGS:=-DUNIX
 #CFLAGS:=-DMSDOS
 #CFLAGS:=-DMACINTOSH
-
-#Uncomment if your version of MS Word uses ',' as a decimal point 
-#CFLAGS:=$(CFLAGS) -DSEMICOLONSEP
 
 #Uncomment if strdup() is not defined in string.h
 #CFLAGS:=$(CFLAGS) -DHAS_NO_STRDUP

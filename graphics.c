@@ -1,11 +1,13 @@
-/* $Id: graphics.c,v 1.7 2002/03/16 05:12:47 prahl Exp $ 
+/* $Id: graphics.c,v 1.8 2002/03/19 16:17:36 prahl Exp $ 
 This file contains routines that handle LaTeX graphics commands
 */
 
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#ifdef UNIX
 #include <unistd.h>
+#endif
 #include "main.h"
 #include "graphics.h"
 #include "parser.h"
@@ -94,6 +96,17 @@ typedef struct _EnhancedMetaHeader
 	long			WidthDevMM;		/* Width of reference device in millimeters */
 	long			HeightDevMM;	/* Height of reference device in millimeters */
 } ENHANCEDMETAHEADER;
+
+static void
+my_unlink(char *filename)
+/******************************************************************************
+     purpose : portable routine to delete filename
+ ******************************************************************************/
+{
+#ifdef UNIX
+	unlink(filename);
+#endif
+}
 
 
 static FILE * 
@@ -348,7 +361,7 @@ PutEpsFile(char *s)
 	system(cmd);
 	
 	PutPngFile(png,1.0);
-	unlink(png);
+	my_unlink(png);
 	
 	free(png);
 	free(cmd);
@@ -375,7 +388,7 @@ PutTiffFile(char *s)
 	system(cmd);
 	
 	PutPngFile(png,1.0);
-	unlink(png);
+	my_unlink(png);
 	
 	free(png);
 	free(cmd);
@@ -402,8 +415,8 @@ PutGifFile(char *s)
 	system(cmd);
 	
 	PutPngFile(png,1.0);
-	unlink(png);
-	
+	my_unlink(png);
+
 	free(png);
 	free(cmd);
 	free(s1);
