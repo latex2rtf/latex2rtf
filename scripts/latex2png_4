@@ -1,0 +1,58 @@
+#!/bin/sh
+# Part of latex2rtf by Scott Prahl
+#
+# This version uses convert that comes with ImageMagick
+#
+help()
+{
+    cat <<HELP
+latex2png -- convert latex file to PNG image
+
+USAGE: latex2png [-d density] [-h] [-k] latex_file
+
+OPTIONS: -d density in pixels per inch
+         -h help text
+         -k keep intermediate files
+
+EXAMPLE: latex2png -d 144 eqn
+
+HELP
+    exit 0
+}
+
+opt_d=144
+opt_k=0
+while [ -n "$1" ]; do
+case $1 in
+    -h) help;shift 1;;
+    -k) opt_k=1;shift 1;; # variable opt_f is set
+    -d) opt_d=$2;shift 2;; # -d takes an argument -> shift by 2
+    --) break;;
+    -*) echo "error: no such option $1. -h for help";exit 1;;
+    *)  break;;
+esac
+done
+
+# input check:
+if [ -z "$1" ] ; then
+ error "ERROR: you must specify a file, use -h for help"
+ exit 1
+fi
+
+#process 'latex2png file.tex' and 'latex2png file' equivalently
+name=`basename "$1" ".tex"`
+dir=`dirname "$1"`
+
+(
+#need to search the current working directory for \input or \include
+TEXINPUTS=`pwd`":"
+cd $dir
+pdflatex --interaction batchmode $name > /dev/null
+convert -crop 0x0 -density ${opt_d}x${opt_d} $name.pdf $name.png
+if [ $opt_k -eq 0 ] ; then
+	rm -f $name.aux
+	rm -f $name.log
+	rm -f $name.pdf
+fi
+exit 0
+)
