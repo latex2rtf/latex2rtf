@@ -1,4 +1,4 @@
-/* $Id: chars.c,v 1.15 2001/10/27 06:13:58 prahl Exp $
+/* $Id: chars.c,v 1.16 2001/10/27 14:19:31 prahl Exp $
 
    purpose : handles special characters and logos
 */
@@ -464,11 +464,11 @@ CmdUnderdotChar(int code)
 	if (cParam == NULL)
 		return;
 
-	dnsize = (0.2 * CurrentFontSize()) + 0.45;
+	dnsize = (0.4 * CurrentFontSize()) + 0.45;
 
 	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(");
 	ConvertString(cParam);
-	fprintRTF("%c\\\\S\\\\dn%d(\\'2e))}", FORMULASEP, dnsize);
+	fprintRTF("%c\\\\S(\\dn%d\\'2e))}", FORMULASEP, dnsize);
 	fprintRTF("{\\fldrslt }}");
 
 	free(cParam);

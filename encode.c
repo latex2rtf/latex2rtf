@@ -1,4 +1,4 @@
-/* $Id: encode.c,v 1.7 2001/10/27 06:13:58 prahl Exp $ 
+/* $Id: encode.c,v 1.8 2001/10/27 14:19:31 prahl Exp $ 
    Translate high bit characters into RTF assuming that
    the default codepage is ansi (1252)
    
@@ -53,10 +53,18 @@ static void put_macron_char(char c)
 
 static void put_tilde_char(char c)
 {
-		int num = RtfFontNumber("MT Extra");
-		fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(%c",c);
-		fprintRTF("%c\\\\S(\\f%d\\'25))}", FORMULASEP, num);
-		fprintRTF("{\\fldrslt }}");
+	int num = RtfFontNumber("MT Extra");
+	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(%c",c);
+	fprintRTF("%c\\\\S(\\f%d\\'25))}", FORMULASEP, num);
+	fprintRTF("{\\fldrslt }}");
+}
+
+static void put_dot_char(char c)
+{
+	int num = RtfFontNumber("MT Extra");
+	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(%c",c);
+	fprintRTF("%c\\\\S(\\f%d\\'26))}", FORMULASEP, num);
+	fprintRTF("{\\fldrslt }}");
 }
 
 static void applemac_enc(int index)
@@ -95,11 +103,11 @@ char *s;
 		return;
 	}
 	if (index + 128 == 0xFA) { /* U+729 DOT ABOVE */ 
-/*		fprintRTF("TRANSLATION");*/
+		put_dot_char(' ');
 		return;
 	}
 	if (index + 128 == 0xFB) { /* U+730 RING ABOVE */ 
-/*		fprintRTF("TRANSLATION");*/
+		put_ring_char(' ');
 		return;
 	}
 	if (index + 128 == 0xFD) { /* U+733 DOUBLE ACUTE ACCENT */ 
@@ -235,7 +243,7 @@ char *s;
 		return;
 	}
 	if (index + 128 == 0xFA) { /* U+729 DOT ABOVE */ 
-/*		fprintRTF("TRANSLATION");*/
+		put_dot_char(' ');
 		return;
 	}
 	if (index + 128 == 0xFE) { /* U+9632 BLACK SQUARE */ 
@@ -387,11 +395,11 @@ char *s;
 		return;
 	}
 	if (index + 128 == 0xBD) { /* U+379 LATIN CAPITAL LETTER Z WITH DOT ABOVE */ 
-/*		fprintRTF("TRANSLATION");*/
+		put_dot_char('Z');
 		return;
 	}
 	if (index + 128 == 0xBE) { /* U+380 LATIN SMALL LETTER Z WITH DOT ABOVE */ 
-/*		fprintRTF("TRANSLATION");*/
+		put_dot_char('z');
 		return;
 	}
 	if (index + 128 == 0xC6) { /* U+258 LATIN CAPITAL LETTER A WITH BREVE */ 
@@ -492,7 +500,7 @@ char *s;
 		return;
 	}
 	if (index + 128 == 0xFA) { /* U+729 DOT ABOVE */ 
-/*		fprintRTF("TRANSLATION");*/
+		put_dot_char(' ');
 		return;
 	}
 	if (index + 128 == 0xFB) { /* U+369 LATIN SMALL LETTER U WITH DOUBLE ACUTE */ 
@@ -681,7 +689,7 @@ char *s;
 		return;
 	}
 	if (index + 128 == 0xAF) { /* U+379 LATIN CAPITAL LETTER Z WITH DOT ABOVE */ 
-/*		fprintRTF("TRANSLATION");*/
+		put_dot_char('Z');
 		return;
 	}
 	if (index + 128 == 0xB2) { /* U+731 OGONEK */ 
@@ -713,7 +721,7 @@ char *s;
 		return;
 	}
 	if (index + 128 == 0xBF) { /* U+380 LATIN SMALL LETTER Z WITH DOT ABOVE */ 
-/*		fprintRTF("TRANSLATION");*/
+		put_dot_char('z');
 		return;
 	}
 	if (index + 128 == 0xC0) { /* U+340 LATIN CAPITAL LETTER R WITH ACUTE */ 
@@ -845,7 +853,7 @@ char *s;
 		return;
 	}
 	if (index + 128 == 0xFF) { /* U+729 DOT ABOVE */ 
-/*		fprintRTF("TRANSLATION");*/
+		put_dot_char(' ');
 		return;
 	}
 }
@@ -1042,7 +1050,7 @@ char *s;
 		return;
 	}
 	if (index + 128 == 0xAF) { /* U+379 LATIN CAPITAL LETTER Z WITH DOT ABOVE */ 
-/*		fprintRTF("TRANSLATION");*/
+		put_dot_char('Z');
 		return;
 	}
 	if (index + 128 == 0xB1) { /* U+261 LATIN SMALL LETTER A WITH OGONEK */ 
@@ -1090,7 +1098,7 @@ char *s;
 		return;
 	}
 	if (index + 128 == 0xBF) { /* U+380 LATIN SMALL LETTER Z WITH DOT ABOVE */ 
-/*		fprintRTF("TRANSLATION");*/
+		put_dot_char('z');
 		return;
 	}
 	if (index + 128 == 0xC0) { /* U+340 LATIN CAPITAL LETTER R WITH ACUTE */ 
@@ -1222,7 +1230,7 @@ char *s;
 		return;
 	}
 	if (index + 128 == 0xFF) { /* U+729 DOT ABOVE */ 
-/*		fprintRTF("TRANSLATION");*/
+		put_dot_char(' ');
 		return;
 	}
 }
@@ -1259,7 +1267,7 @@ char *s;
 		return;
 	}
 	if (index + 128 == 0xA9) { /* U+304 LATIN CAPITAL LETTER I WITH DOT ABOVE */ 
-/*		fprintRTF("TRANSLATION");*/
+		put_dot_char('I');
 		return;
 	}
 	if (index + 128 == 0xAA) { /* U+350 LATIN CAPITAL LETTER S WITH CEDILLA */ 
@@ -1279,7 +1287,7 @@ char *s;
 		return;
 	}
 	if (index + 128 == 0xAF) { /* U+379 LATIN CAPITAL LETTER Z WITH DOT ABOVE */ 
-/*		fprintRTF("TRANSLATION");*/
+		put_dot_char('Z');
 		return;
 	}
 	if (index + 128 == 0xB1) { /* U+295 LATIN SMALL LETTER H WITH STROKE */ 
@@ -1311,7 +1319,7 @@ char *s;
 		return;
 	}
 	if (index + 128 == 0xBF) { /* U+380 LATIN SMALL LETTER Z WITH DOT ABOVE */ 
-/*		fprintRTF("TRANSLATION");*/
+		put_dot_char('z');
 		return;
 	}
 	if (index + 128 == 0xC3) { /* U+65535 unknown */ 
@@ -1319,7 +1327,7 @@ char *s;
 		return;
 	}
 	if (index + 128 == 0xC5) { /* U+266 LATIN CAPITAL LETTER C WITH DOT ABOVE */ 
-/*		fprintRTF("TRANSLATION");*/
+		put_dot_char('C');
 		return;
 	}
 	if (index + 128 == 0xC6) { /* U+264 LATIN CAPITAL LETTER C WITH CIRCUMFLEX */ 
@@ -1331,7 +1339,7 @@ char *s;
 		return;
 	}
 	if (index + 128 == 0xD5) { /* U+288 LATIN CAPITAL LETTER G WITH DOT ABOVE */ 
-/*		fprintRTF("TRANSLATION");*/
+		put_dot_char('G');
 		return;
 	}
 	if (index + 128 == 0xD8) { /* U+284 LATIN CAPITAL LETTER G WITH CIRCUMFLEX */ 
@@ -1351,7 +1359,7 @@ char *s;
 		return;
 	}
 	if (index + 128 == 0xE5) { /* U+267 LATIN SMALL LETTER C WITH DOT ABOVE */ 
-/*		fprintRTF("TRANSLATION");*/
+		put_dot_char('c');
 		return;
 	}
 	if (index + 128 == 0xE6) { /* U+265 LATIN SMALL LETTER C WITH CIRCUMFLEX */ 
@@ -1363,7 +1371,7 @@ char *s;
 		return;
 	}
 	if (index + 128 == 0xF5) { /* U+289 LATIN SMALL LETTER G WITH DOT ABOVE */ 
-/*		fprintRTF("TRANSLATION");*/
+		put_dot_char('g');
 		return;
 	}
 	if (index + 128 == 0xF8) { /* U+285 LATIN SMALL LETTER G WITH CIRCUMFLEX */ 
@@ -1379,7 +1387,7 @@ char *s;
 		return;
 	}
 	if (index + 128 == 0xFF) { /* U+729 DOT ABOVE */ 
-/*		fprintRTF("TRANSLATION");*/
+		put_dot_char(' ');
 		return;
 	}
 }
@@ -1499,7 +1507,7 @@ char *s;
 		return;
 	}
 	if (index + 128 == 0xCC) { /* U+278 LATIN CAPITAL LETTER E WITH DOT ABOVE */ 
-/*		fprintRTF("TRANSLATION");*/
+		put_dot_char('E');
 		return;
 	}
 	if (index + 128 == 0xCF) { /* U+298 LATIN CAPITAL LETTER I WITH MACRON */ 
@@ -1551,7 +1559,7 @@ char *s;
 		return;
 	}
 	if (index + 128 == 0xEC) { /* U+279 LATIN SMALL LETTER E WITH DOT ABOVE */ 
-/*		fprintRTF("TRANSLATION");*/
+		put_dot_char('e');
 		return;
 	}
 	if (index + 128 == 0xEF) { /* U+299 LATIN SMALL LETTER I WITH MACRON */ 
@@ -1587,7 +1595,7 @@ char *s;
 		return;
 	}
 	if (index + 128 == 0xFF) { /* U+729 DOT ABOVE */ 
-/*		fprintRTF("TRANSLATION");*/
+		put_dot_char(' ');
 		return;
 	}
 }
@@ -1611,7 +1619,7 @@ char *s;
 		return;
 	}
 	if (index + 128 == 0xDD) { /* U+304 LATIN CAPITAL LETTER I WITH DOT ABOVE */ 
-/*		fprintRTF("TRANSLATION");*/
+		put_dot_char('I');
 		return;
 	}
 	if (index + 128 == 0xDE) { /* U+350 LATIN CAPITAL LETTER S WITH CEDILLA */ 
@@ -1623,7 +1631,7 @@ char *s;
 		return;
 	}
 	if (index + 128 == 0xEC) { /* U+279 LATIN SMALL LETTER E WITH DOT ABOVE */ 
-/*		fprintRTF("TRANSLATION");*/
+		put_dot_char('e');
 		return;
 	}
 	if (index + 128 == 0xEF) { /* U+299 LATIN SMALL LETTER I WITH MACRON */ 
@@ -1704,11 +1712,11 @@ char *s;
 		return;
 	}
 	if (index + 128 == 0xC7) { /* U+729 DOT ABOVE */ 
-/*		fprintRTF("TRANSLATION");*/
+		put_dot_char(' ');
 		return;
 	}
 	if (index + 128 == 0xCA) { /* U+730 RING ABOVE */ 
-/*		fprintRTF("TRANSLATION");*/
+		put_ring_char(' ');
 		return;
 	}
 	if (index + 128 == 0xCD) { /* U+733 DOUBLE ACUTE ACCENT */ 
