@@ -45,6 +45,7 @@ Authors:
 #include "preamble.h"
 #include "xref.h"
 #include "equation.h"
+#include "direct.h"
 
 extern bool     twocolumn;	/* true if twocolumn-mode is enabled */
 int				g_right_margin_indent;
@@ -52,7 +53,7 @@ int         	g_left_margin_indent;
 
 void            CmdPagestyle( /* @unused@ */ int code);
 void            CmdHeader(int code);
-char 			*roman_item(int n);
+char 			*roman_item(int n, bool upper);
 
 static bool  g_paragraph_no_indent = FALSE;
 static bool  g_paragraph_inhibit_indent = FALSE;
@@ -643,12 +644,19 @@ FormatUnitNumber(char *name)
 	char			label[20];
 
 	label[0]='\0';
-	if (strcmp(name,"part")==0 || strcmp(name,"chapter")==0)
-			snprintf(label, 20, "%d", getCounter(name));
+	if (strcmp(name,"part")==0) {
+		char *s = roman_item(getCounter(name),TRUE);
+		snprintf(label, 20, "%s", s);
+		free(s);
+	}
+
+	else if (strcmp(name,"chapter")==0) {
+		snprintf(label, 20, "%d", getCounter(name));
+	}
 
 	else if (strcmp(name,"section")==0) {
 		if (g_document_type == FORMAT_ARTICLE)
-			snprintf(label, 20, "%d.", getCounter("section"));
+			snprintf(label, 20, "%d", getCounter("section"));
 		else
 			snprintf(label, 20, "%d.%d", getCounter("chapter"),getCounter("section"));
 	}
@@ -724,12 +732,15 @@ parameter: code: type of section-recursion-level
 	case SECT_PART_STAR:
 		fprintRTF("\\page");
 		CmdStartParagraph(TITLE_PAR);
-		fprintRTF("{\\qc\\b\\fs40 ");
+		fprintRTF("{");
+		InsertStyle("part");
+		InsertStyle("c_part");
+		fprintRTF(" ");
 		ConvertBabelName("PARTNAME");
 		if (code == SECT_PART) {
 			incrementCounter("part");
 			unit_label = FormatUnitNumber("part");
-			fprintRTF("%s\\par ", unit_label);
+			fprintRTF(" %s\\par ", unit_label);
 			free(unit_label);
 		}
 		ConvertString(heading);
@@ -741,7 +752,10 @@ parameter: code: type of section-recursion-level
 	case SECT_CHAPTER_STAR:
 		fprintRTF("\\page");
 		CmdStartParagraph(TITLE_PAR);
-		fprintRTF("{\\plain\\b\\fs40\\kerning28 ");
+		fprintRTF("{");
+		InsertStyle("chapter");
+		InsertStyle("c_chapter");
+		fprintRTF(" ");
 		ConvertBabelName("CHAPTERNAME");
 		if (code == SECT_CHAPTER && getCounter("secnumdepth")>=-1) {
 			incrementCounter("chapter");
@@ -767,7 +781,10 @@ parameter: code: type of section-recursion-level
 	case SECT_NORM_STAR:
 		CmdVspace(VSPACE_BIG_SKIP);
 		CmdStartParagraph(TITLE_PAR);
-		fprintRTF("{\\plain\\b ");
+		fprintRTF("{");
+		InsertStyle("section");
+		InsertStyle("c_section");
+		fprintRTF(" ");
 		if(code == SECT_NORM && getCounter("secnumdepth")>=0) {		
 			incrementCounter("section");
 			setCounter("subsection",0);
@@ -776,7 +793,6 @@ parameter: code: type of section-recursion-level
 			setCounter("subparagraph",0);
 			resetTheoremCounter("section");
 			unit_label = FormatUnitNumber("section");
-			fprintRTF("\\fs32 ");
 			InsertBookmark(g_section_label, unit_label);
 			fprintRTF("  ");
 			free(unit_label);
@@ -791,7 +807,10 @@ parameter: code: type of section-recursion-level
 	case SECT_SUB_STAR:
 		CmdVspace(VSPACE_MEDIUM_SKIP);
 		CmdStartParagraph(TITLE_PAR);
-		fprintRTF("{\\plain\\b\\fs24 ");
+		fprintRTF("{");
+		InsertStyle("subsection");
+		InsertStyle("c_subsection");
+		fprintRTF(" ");
 		if (code == SECT_SUB && getCounter("secnumdepth")>=1) {
 			incrementCounter("subsection");
 			setCounter("subsubsection",0);
@@ -813,8 +832,12 @@ parameter: code: type of section-recursion-level
 	case SECT_SUBSUB_STAR:
 		CmdVspace(VSPACE_MEDIUM_SKIP);
 		CmdStartParagraph(TITLE_PAR);
-		fprintRTF("{\\plain\\b\\fs24 ");
-		if (code == SECT_SUBSUB && getCounter("secnumdepth")>=2) {
+		fprintRTF("{");
+		InsertStyle("subsubsection");
+		InsertStyle("c_subsubsection");
+		fprintRTF(" ");
+		if (code == SECT_SUBSUB && ( getCounter("secnumdepth")>2 ||
+		    (g_document_type == FORMAT_ARTICLE && getCounter("secnumdepth")==2))) {
 			incrementCounter("subsubsection");
 			setCounter("paragraph",0);
 			setCounter("subparagraph",0);
@@ -834,7 +857,10 @@ parameter: code: type of section-recursion-level
 	case SECT_SUBSUBSUB_STAR:
 		CmdVspace(VSPACE_MEDIUM_SKIP);
 		CmdStartParagraph(TITLE_PAR);
-		fprintRTF("{\\plain\\b ");
+		fprintRTF("{");
+		InsertStyle("paragraph");
+		InsertStyle("c_paragraph");
+		fprintRTF(" ");
 		if (code == SECT_SUBSUBSUB && getCounter("secnumdepth")>=3) {
 			incrementCounter("paragraph");
 			resetTheoremCounter("paragraph");
@@ -854,7 +880,10 @@ parameter: code: type of section-recursion-level
 	case SECT_SUBSUBSUBSUB_STAR:
 		CmdVspace(VSPACE_MEDIUM_SKIP);
 		CmdStartParagraph(TITLE_PAR);
-		fprintRTF("{\\plain\\b ");
+		fprintRTF("{");
+		InsertStyle("subparagraph");
+		InsertStyle("c_subparagraph");
+		fprintRTF(" ");
 		if (code == SECT_SUBSUBSUBSUB && getCounter("secnumdepth")>=4) {
 			incrementCounter("subparagraph");
 			resetTheoremCounter("subparagraph");
@@ -863,9 +892,9 @@ parameter: code: type of section-recursion-level
 			fprintRTF("  ");
 			free(unit_label);
 		}
-		break;
 		ConvertString(heading);
 		fprintRTF("}  ");
+		break;
 	}
 
 	if (heading) free(heading);
@@ -1197,7 +1226,7 @@ CmdItem(int code)
 			break;
 
 		case 3:
-			fprintRTF("%s.", roman_item(item_number[g_enumerate_depth]));
+			fprintRTF("%s.", roman_item(item_number[g_enumerate_depth],FALSE));
 			break;
 
 		case 4:
@@ -1885,41 +1914,41 @@ CmdVerbosityLevel(int code)
 /* convert integer to roman number --- only works up correctly up to 39 */
 
 char * 
-roman_item(int n)
+roman_item(int n, bool upper)
 {
 	char            s[50];
 	int             i = 0;
 
 	while (n >= 10) {
 		n -= 10;
-		s[i] = 'x';
+		s[i] = (upper) ? 'X' : 'x';
 		i++;
 	}
 
 	if (n == 9) {
-		s[i] = 'i';
+		s[i] = (upper) ? 'I' :  'i';
 		i++;
-		s[i] = 'x';
+		s[i] = (upper) ? 'X' : 'x';
 		i++;
 		s[i] = '\0';
 		return strdup(s);
 	}
 	if (n >= 5) {
 		n -= 5;
-		s[i] = 'v';
+		s[i] =  (upper) ? 'V' : 'v';
 		i++;
 	}
 	if (n == 4) {
-		s[i] = 'i';
+		s[i] =  (upper) ? 'I' : 'i';
 		i++;
-		s[i] = 'v';
+		s[i] =  (upper) ? 'V' : 'v';
 		i++;
 		s[i] = '\0';
 		return strdup(s);
 	}
 	while (n >= 1) {
 		n -= 1;
-		s[i] = 'i';
+		s[i] =  (upper) ? 'I' : 'i';
 		i++;
 	}
 

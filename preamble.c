@@ -843,15 +843,20 @@ WriteStyleHeader(void)
  ****************************************************************************/
 {
 	ConfigEntryT **style;
-		
+	const char *rtf;
+	
 	fprintRTF("{\\stylesheet\n{\\s0\\fs%d\\snext0 Normal;}\n", CurrentFontSize());
 	fprintRTF("{\\cs100 Default Paragraph Font;}\n");
 	
 	style = CfgStartIterate(STYLE_A);
 	while ((style = CfgNext(STYLE_A, style)) != NULL) {
-		diagnostics(WARNING,"style <%s>=<%s>", (*style)->TexCommand,(*style)->RtfCommand);
-		fprintRTF("{");
-		InsertBasicStyle((*style)->RtfCommand, TRUE);
+		rtf = (*style)->RtfCommand;
+		diagnostics(WARNING,"style <%s>=<%s>", (*style)->TexCommand,rtf);
+		if (rtf[1]=='c')
+			fprintRTF("{\\*");  /* make \cs definitions optional */
+		else
+			fprintRTF("{");
+		InsertBasicStyle(rtf, TRUE);
 		fprintRTF(" %s;}\n",(*style)->TexCommand);
 	}
 	fprintRTF("}\n");

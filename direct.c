@@ -135,10 +135,12 @@ void InsertBasicStyle(const char *rtf, bool include_header_info)
 			
 		rtf++;
 	}
+	
+	*header = ';';
 }
 
 void 
-InsertStyle(char *command, bool include_header_info)
+InsertStyle(char *command)
 {
 	const char * rtf;
 	
