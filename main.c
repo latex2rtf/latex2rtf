@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.41 2001/11/14 05:18:30 prahl Exp $ */
+/* $Id: main.c,v 1.42 2001/11/14 15:57:41 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -244,7 +244,7 @@ globals: initializes in- and outputfile fRtf,
 static void
 ConvertWholeDocument(void)
 {
-char * text, *sec_head, *sec_head2;
+char * text, *sec_head, *sec_head2, *label;
 
 		PushEnvironment(PREAMBLE);
 		SetTexMode(MODE_VERTICAL);
@@ -252,14 +252,17 @@ char * text, *sec_head, *sec_head2;
 		WriteRtfHeader();
 		
 		g_processing_preamble = FALSE;
-		getSection(&text,&sec_head);
+		getSection(&text,&sec_head,&label);
 		diagnostics(2,"*******************\ntext=%s",text);
 		diagnostics(2,"*******************\nsec_head=%s",sec_head);
+		diagnostics(2,"*******************\nlabel=%s",label);
 		ConvertString(text);
 		free(text);
+		if (label) free(label);
 		while(sec_head) {
-			getSection(&text,&sec_head2);
+			getSection(&text,&sec_head2,&label);
 		diagnostics(2,"\n========this section head==========\n%s",sec_head);
+		diagnostics(2,"*******************\nlabel=%s",label);
 		diagnostics(2,"\n==============body=================\n%s\n=========end  body=================",text);
 		diagnostics(2,"\n========next section head==========\n%s",sec_head2);
 /*			g_section_label = getSectionLabel(text); */
@@ -267,6 +270,7 @@ char * text, *sec_head, *sec_head2;
 			ConvertString(text);
 			free(text);
 			free(sec_head);
+			if (label) free(label);
 			sec_head = sec_head2;
 		}
 }

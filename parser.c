@@ -1,4 +1,4 @@
-/*  $Id: parser.c,v 1.34 2001/11/12 06:08:14 prahl Exp $
+/*  $Id: parser.c,v 1.35 2001/11/14 15:57:41 prahl Exp $
 
    Contains declarations for a generic recursive parser for LaTeX code.
 */
@@ -803,13 +803,12 @@ static void increase_buffer_size(void)
 }
 
 void
-getSection(char **body, char **header)
+getSection(char **body, char **header, char **label)
 /*
 	purpose: obtain next chunk of latex file that has the same label
 	
 	along the way, beware of \verb and \begin{verbatim} ... \end{verbatim}
 	                               and \begin{figure}   ... \end{figure}
-	this will make linenumbers less useful.  Aargh.
 */
 
 {
@@ -817,16 +816,19 @@ getSection(char **body, char **header)
 	char cNext, *s,*text,*next_header;
 	int i;
 	long delta;
-	int  match[12];
-	char * command[12] = {"\\verb", "\\begin{verbatim}", "\\url", "\\begin{figure}",
+	int  match[16];
+	char * command[16] = {"\\begin{verbatim}", "\\begin{figure}", "\\begin{equation}", 
+						  "\\begin{eqnarray}", "\\begin{table}",
 	                     "\\section", "\\subsection", "\\subsubsection", 
 	                     "\\section*", "\\subsection*", "\\subsubsection*", 
-	                     "\\chapter", "\\part"};
-	int ncommands = 12;
-	const int verb = 0;
-	const int verbatim = 1;
-	const int url = 2;
-	const int figure = 3;
+	                     "\\chapter", "\\part", "\\verb", "\\url", "\\label"};
+
+	char * ecommand[6] = {"\\end{verbatim}", "\\end{figure}", "\\end{equation}", 
+						  "\\end{eqnarray}", "\\end{table}"};
+	int ncommands = 16;
+	const int verb = 13;
+	const int url = 14;
+	const int label_item = 15;
 	int bs_count = 0;
 	int index = 0;
 	
@@ -840,6 +842,7 @@ getSection(char **body, char **header)
 	next_header = NULL;  /* typically becomes \subsection{Cows eat grass}  */
 	*body=NULL;
 	*header=NULL;
+	*label=NULL;
 	
 	SetScanAhead(TRUE);
 	for (delta=0;;delta++) {
@@ -901,8 +904,9 @@ getSection(char **body, char **header)
 			ungetTexChar(cNext);
 
 			if (!(  (cNext == ' ') || (cNext == '{') || 
-			        (i == verb)    || (i == url)     || 
-			        (i==verbatim && !isalpha(cNext))    )) {
+			        (i == verb)    || (i == url) || (i<5)
+/*			         || (i==verbatim && !isalpha(cNext)) */
+			        )) {
 				found = FALSE;
 				match[i] = FALSE;
 				diagnostics(5, "oops! did not match %s", command[i]);
@@ -930,12 +934,21 @@ getSection(char **body, char **header)
 			continue;
 		}
 
-		if (i==verbatim || i==figure) {			/* slurp \begin{verbatim} ... \end{verbatim} */
+		if (i==label_item) {
+			s = getBraceParam();
+			diagnostics(4,"\\label{%s}",s);
+			if (!(*label) && strlen(s)) 
+				*label = s;
+			else
+				free(s);
+			delta -= 6;
+			index = 0;				/* keep looking */
+			continue;
+		}
+		
+		if (i<5) {			/* slurp environment to avoid \labels within */
 			delta++;
-			if (i==verbatim)
-				s=getTexUntil("\\end{verbatim}",TRUE);
-			else if (i==figure)
-				s=getTexUntil("\\end{figure}",TRUE);
+			s=getTexUntil(ecommand[i],TRUE);
 
 			while (delta+strlen(s)+1 >= section_buffer_size)
 				increase_buffer_size();
