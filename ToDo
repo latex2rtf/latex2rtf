@@ -3,7 +3,10 @@ Fit & Finish:
 	Improve spacing before and after \section etc.
 	Improve font sizes in \section etc.
 	Reset footnote numbering at each new chapter
-		
+	add documentation for %latex2rtf
+	document -f switch
+	add help for -f switch
+	
 Potential Features:
 
 	support \raggedright

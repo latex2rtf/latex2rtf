@@ -960,7 +960,13 @@ void CmdHeadFoot(int code)
  adapted from code by Taupin in ltx2rtf
  ******************************************************************************/
 {
-  char *HeaderText = getBraceParam();
+  char *HeaderText = NULL;
+  char *AlternText = NULL;
+  
+  AlternText = getBracketParam();
+  if (AlternText) free(AlternText);
+  
+  HeaderText = getBraceParam();
   
   diagnostics(4,"CmdHeadFoot code=%d <%s>",code, HeaderText);
   switch(code)
