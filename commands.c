@@ -677,7 +677,7 @@ static CommandArray apaciteCommands[] = {
 	{ "BBA",    CmdApaCite, 35}, /* "&" in paren, "and" otherwise */
 	{ "AX",     CmdApaCite, 36}, /* index name */
 	{ "Bem",    CmdEmphasize, F_EMPHASIZE_2},	
-	{ "BCAY",   CmdApaCite, 100},
+	{ "BCAY",   CmdBCAY, 0},
 	{"fullcite", CmdCite, CITE_FULL},
 	{"shortcite", CmdCite, CITE_SHORT},
 	{"citeNP", CmdCite, CITE_CITE_NP},

@@ -3,11 +3,15 @@
 \begin{document}
 
 \begin{figure}
-\includegraphics{figtestc.ps}
+\includegraphics{graph.pdf}
+\caption{Grid with one-quarter inch squares}
 \end{figure}
 
-Figure tests \verb#\includegraphic{figtestc.ps}#.  This cannot be in
-\texttt{figtest.tex} because that file needs to be run through \LaTeX\
-so that the cross-references can be determined.  The problem with
-that is that \LaTeX\ does not handle \texttt{.ps} files.  
+\begin{figure}
+\includegraphics{graph.ps}
+\caption{Grid with one-quarter inch squares (multiplied by 200/216
+because the \texttt{.ps} file is that much smaller than the \texttt{.pdf}
+file).}
+\end{figure}
+
 \end{document}

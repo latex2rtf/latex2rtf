@@ -1046,45 +1046,44 @@ getSection(char **body, char **header, char **label)
 		}
 		
 		if (cNext == '\0')
-			diagnostics(5,"char=000 '\\0' (backslash count=%d)",bs_count);
+			diagnostics(5,"[%ld] xchar=000 '\\0' (backslash count=%d)",delta, bs_count);
 		else if (cNext =='\n')
-			diagnostics(5,"char=012 '\\n' (backslash count=%d)",bs_count);
+			diagnostics(5,"[%ld] xchar=012 '\\n' (backslash count=%d)",delta,bs_count);
 		else
-			diagnostics(5,"char=%03d '%c' (backslash count=%d)", (int) cNext, cNext, bs_count);
+			diagnostics(5,"[%ld] xchar=%03d '%c' (backslash count=%d)", delta, (int) cNext, cNext, bs_count);
 				
 		/* add character to buffer */
 		*(section_buffer+delta) = cNext;
 		
-		if (*(section_buffer+delta) == '\0') break;
+		if (cNext == '\0') break;
 
 		/* slurp TeX comments but discard InterpretCommentString */
-		if (*(section_buffer+delta) == '%' && even(bs_count)) {	
-			char * comment = section_buffer+delta+1;
-			int    n = 0;
-			
-			delta++;
+		if (cNext == '%' && even(bs_count)) {	
+			int    n=0;
 
-			for (;;) {
-				cNext=getRawTexChar();
-				if (cNext == '\n' || cNext == '\0') break;
-				if (delta+2 >= section_buffer_size) increase_buffer_size();
-				
-				*(section_buffer+delta) = cNext;
+			delta++;
+			*(section_buffer+delta) = cNext;
+			cNext=getRawTexChar();
+			
+			while (cNext != '\n' && cNext != '\0') {
+			
 				delta++;
 				n++;
-				
-				if (n == n_target) {  /* handle %latex2rtf: */
-					if (strncmp(InterpretCommentString, comment, n_target) ==0) {
-						delta -= n_target+1;       /* remove '%latex2rtf:' */
-						cNext = getRawTexChar();
-						break;
-					}
-				}
-			}
-			*(section_buffer+delta) = cNext;	/* add '\n' to section */
-			if ( cNext == '\0') break;
-		}
+				*(section_buffer+delta) = cNext;
 
+				if (delta+2 >= section_buffer_size) increase_buffer_size();
+				
+                /* handle %latex2rtf: */
+                if (n == n_target && strncmp(InterpretCommentString, section_buffer+delta-n+1, n_target) ==0)
+                	break;
+
+				cNext=getRawTexChar();
+			}
+			
+            delta -= n+2;       /* remove '% .... \n', or '% ... \0' or just '%latex2rtf:' */
+			continue;			/* go get the next character */
+		}
+		
 		/* begin search if backslash found */
 		if (*(section_buffer+delta) == '\\') {
 			bs_count++;

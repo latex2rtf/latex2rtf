@@ -876,15 +876,13 @@ PutPdfFile(char *s, double scale, double baseline, int full_path)
 	char *png;
 	diagnostics(2, "PutPdfFile filename = <%s>", s);
      
-	if (1) {
-		png = pdf_to_png(s);
-		if (png) {
-			PutPngFile(png, scale, baseline, TRUE);
-			my_unlink(png);
-			free(png);
-		}
-	}
-	
+	png = pdf_to_png(s);
+	scale *= 72.0 / g_dots_per_inch;
+	if (png) {
+		PutPngFile(png, scale, baseline, TRUE);
+		my_unlink(png);
+		free(png);
+	}	
 }
 
 static void
@@ -895,6 +893,7 @@ PutEpsFile(char *s, double scale, double baseline, int full_path)
      
 	if (1) {
 		png = eps_to_png(s);
+	    scale *= 72.0 / g_dots_per_inch;
 		if (png) {
 			PutPngFile(png, scale, baseline, TRUE);
 			my_unlink(png);

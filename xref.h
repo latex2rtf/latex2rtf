@@ -58,5 +58,6 @@ void	CmdPrintIndex(int code);
 void 	CmdHtml(int code);
 void	InsertBookmark(char *name, char *text);
 void	CmdCite(int code);
+void	CmdBCAY(int code);
 void	CmdApaCite(int code);
 void    set_longnamesfirst(void);

@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.92 2003/09/28 21:00:29 prahl Exp $
+# $Id: Makefile,v 1.93 2003/10/30 05:40:08 prahl Exp $
 
 CC=gcc
 MKDIR=mkdir -p
@@ -35,7 +35,7 @@ CFG_INSTALL=$(PREFIX)/share/latex2rtf/cfg
 CFLAGS:=$(CFLAGS) -g -Wall -fsigned-char
 
 LIBS=
-#LIBS=-lMallocDebug -force_flat_namespace
+LIBS=-lMallocDebug -force_flat_namespace
 
 VERSION="`scripts/version`"
 

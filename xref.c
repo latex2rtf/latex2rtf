@@ -92,8 +92,8 @@ code=1 means \token{reference}{{sect}{line}} -> "sect"
  ************************************************************************/
 {
 	static FILE    *fAux = NULL;
-	char            AuxLine[1024];
-	char            target[256];
+	char            AuxLine[2048];
+	char            target[512];
 	char           *s,*t;
 	int				braces;
 
@@ -101,7 +101,9 @@ code=1 means \token{reference}{{sect}{line}} -> "sect"
 		return NULL;
 	}
 
-	snprintf(target, 256, "\\%s{%s}", token, reference);
+	diagnostics(4,"seeking in .aux for <%s>",reference);
+	
+	snprintf(target, 512, "\\%s{%s}", token, reference);
 	
 	if (fAux == NULL && (fAux = my_fopen(g_aux_name, "r")) == NULL) {
 		diagnostics(WARNING, "No .aux file.  Run LaTeX to create %s\n", g_aux_name);
@@ -111,7 +113,7 @@ code=1 means \token{reference}{{sect}{line}} -> "sect"
 	
 	rewind(fAux);
 	
-	while (fgets(AuxLine, 1023, fAux) != NULL) {
+	while (fgets(AuxLine, 2047, fAux) != NULL) {
 
 		s = strstr(AuxLine, target);
 		if (s) {
@@ -129,6 +131,7 @@ code=1 means \token{reference}{{sect}{line}} -> "sect"
 			}
 			
 			*t = '\0';
+			diagnostics(4,"found <%s>",s+1);
 			return strdup(s+1);
 		}
 	}
@@ -741,84 +744,91 @@ purpose: handles \htmladdnormallink{text}{link}
 }
 
 void
+CmdBCAY(int code)
+{
+	char *s, *t, *v, *year;
+	
+	diagnostics(4,"Entering CmdBCAY", s);
+
+	s = getBraceParam();
+	t = getBraceParam();
+	year = getBraceParam();
+	v = g_current_cite_seen ? t : s;
+	
+	diagnostics(4,"s    = <%s>", s);
+	diagnostics(4,"t    = <%s>", t);
+	diagnostics(4,"year = <%s>", year);
+	diagnostics(4,"type = %d, seen = %d, item= %d",g_current_cite_type,g_current_cite_seen,g_current_cite_item);
+	
+	switch (g_current_cite_type){
+	
+		case CITE_CITE:
+		case CITE_CITE_NP:
+		case CITE_CITE_A:
+			if (strcmp(v,g_last_author_cited)!=0) {  /*suppress repeated names */
+				ConvertString(v);
+				strcpy(g_last_author_cited,v);
+	
+				if (g_current_cite_type==CITE_CITE_A) 
+					fprintRTF(" (");
+				else
+					fprintRTF(", ");
+			}
+	
+			ConvertString(year);
+			if (g_current_cite_type==CITE_CITE_A) 
+				fprintRTF(")");
+			break;
+			
+		case CITE_CITE_AUTHOR:
+			ConvertString(v);
+			break;
+	
+		case CITE_FULL:
+		case CITE_FULL_NP:
+		case CITE_FULL_A:
+			ConvertString(s);
+			if (g_current_cite_type==CITE_FULL_A) 
+				fprintRTF(" (");
+			else
+				fprintRTF(", ");
+	
+			ConvertString(year);
+			if (g_current_cite_type==CITE_FULL_A) 
+				fprintRTF(")");
+			break;
+			
+		case CITE_FULL_AUTHOR:
+			ConvertString(s);
+			break;
+	
+		case CITE_SHORT:
+		case CITE_SHORT_NP:
+		case CITE_SHORT_A:
+		case CITE_SHORT_AUTHOR:
+			ConvertString(t);
+			break;
+			
+		case CITE_YEAR:
+		case CITE_YEAR_NP:
+			ConvertString(year);
+			break;
+	
+	}
+	free(s);
+	free(t);
+	free(year);
+}
+
+void
 CmdApaCite(int code)
 /******************************************************************************
 purpose: handles apacite stuff
 ******************************************************************************/
-{	
-	char *s;
+{		
 	int n;
-	
-	if (code==100) { /* BCAY */
-		char *s, *t, *v, *year;
+	char *s;
 		
-		s = getBraceParam();
-		t = getBraceParam();
-		year = getBraceParam();
-		
-		switch (g_current_cite_type){
-		
-			case CITE_CITE:
-			case CITE_CITE_NP:
-			case CITE_CITE_A:
-				v = g_current_cite_seen ? t : s;
-				if (strcmp(v,g_last_author_cited)!=0) {  /*suppress repeated names */
-					ConvertString(v);
-					strcpy(g_last_author_cited,v);
-
-					if (g_current_cite_type==CITE_CITE_A) 
-						fprintRTF(" (");
-					else
-						fprintRTF(", ");
-				}
-	
-				ConvertString(year);
-				if (g_current_cite_type==CITE_CITE_A) 
-					fprintRTF(")");
-				break;
-				
-			case CITE_CITE_AUTHOR:
-				v = g_current_cite_seen ? t : s;
-				ConvertString(v);
-				break;
-
-			case CITE_FULL:
-			case CITE_FULL_NP:
-			case CITE_FULL_A:
-				ConvertString(s);
-				if (g_current_cite_type==CITE_FULL_A) 
-					fprintRTF(" (");
-				else
-					fprintRTF(", ");
-	
-				ConvertString(year);
-				if (g_current_cite_type==CITE_FULL_A) 
-					fprintRTF(")");
-				break;
-				
-			case CITE_FULL_AUTHOR:
-				ConvertString(s);
-				break;
-
-			case CITE_SHORT:
-			case CITE_SHORT_NP:
-			case CITE_SHORT_A:
-			case CITE_SHORT_AUTHOR:
-				ConvertString(t);
-				break;
-				
-			case CITE_YEAR:
-			case CITE_YEAR_NP:
-				ConvertString(year);
-				break;
-		
-		}
-		free(s);
-		free(t);
-		free(year);
-	return;
-	}
-	
 	switch (code) {
 		case 0: fprintRTF("("); break; /* BBOP */
 		case 1: fprintRTF("&"); break; /* BBAA */
@@ -862,7 +872,8 @@ purpose: handles apacite stuff
 		case 35: fprintRTF("%s", (g_current_cite_paren) ? "&" : "and");  /*BBA*/
 				 break;
 		case 36: s=getBraceParam();  /* \AX{entry} */
-				 free(s);
+				 diagnostics(4,"Ignoring \\AX{%s}",s);
+				 if (s) free(s);
 				 break;
 		default: ;
 	}
