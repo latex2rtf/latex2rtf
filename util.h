@@ -1,8 +1,4 @@
-/* $Id: util.h,v 1.16 2002/03/11 04:41:40 prahl Exp $ */
-
-#ifdef HAS_NO_STRDUP
-char           *strdup(const char *str);
-#endif
+/* $Id: util.h,v 1.17 2002/04/03 15:44:19 prahl Exp $ */
 
 char *  strdup_together(char *s, char *t);
 char *	strdup_noblanks(char *s);

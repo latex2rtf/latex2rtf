@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.49 2002/04/03 15:28:32 prahl Exp $
+# $Id: Makefile,v 1.50 2002/04/03 15:44:18 prahl Exp $
 
 CC=gcc
 MKDIR=mkdir -p
@@ -7,9 +7,6 @@ LIBS=
 CFLAGS:=-DUNIX
 #CFLAGS:=-DMSDOS
 #CFLAGS:=-DMACINTOSH
-
-#Uncomment if strdup() is not defined in string.h
-#CFLAGS:=$(CFLAGS) -DHAS_NO_STRDUP
 
 #Uncomment if getopt() is not available
 #CFLAGS:=$(CFLAGS) -DHAS_NO_GETOPT

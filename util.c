@@ -1,25 +1,11 @@
 /*
- * $Id: util.c,v 1.19 2002/03/11 04:41:40 prahl Exp $ 
+ * $Id: util.c,v 1.20 2002/04/03 15:44:19 prahl Exp $ 
  */
 #include <stdlib.h>
 #include <string.h>
 #include "main.h"
 #include "util.h"
 #include "parser.h"
-
-#ifdef HAS_NO_STRDUP
-char           *
-strdup(const char *str)
-{
-	char           *s;
-
-	if ((s = malloc(strlen(str) + 1)) == NULL) {
-		diagnostics(ERROR,"Cannot allocate memory for string\n");
-	}
-	strcpy(s, str);
-	return s;
-}
-#endif
 
 char *  
 strdup_together(char *s, char *t)

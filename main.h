@@ -1,4 +1,4 @@
-/* $Id: main.h,v 1.41 2002/03/31 17:13:11 prahl Exp $ */
+/* $Id: main.h,v 1.42 2002/04/03 15:44:19 prahl Exp $ */
 #ifndef __MAIN_H
 #define __MAIN_H
 
@@ -22,7 +22,6 @@
 
 #if defined(MACINTOSH) || defined(__MWERKS__)
 #define HAS_NO_GETOPT
-#define HAS_NO_STRDUP
 #define ENVSEP '^'
 #define PATHSEP ':'
 #include "MainMain.h"
@@ -30,6 +29,10 @@
 
 #ifdef HAS_NO_GETOPT
 #define getopt my_getopt
+#endif
+
+#ifdef !defined(HAS_STRDUP)
+#define strdup my_strdup
 #endif
 
 #ifndef SEEK_SET
@@ -122,5 +125,6 @@ extern bool		g_little_endian;
 void fprintRTF(char *format, ...);
 void putRtfChar(char cThis);
 char *getTmpPath(void);
+char *  my_strdup(const char *str);
 
 #endif				/* __MAIN_H */

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.66 2002/03/31 17:13:11 prahl Exp $ */
+/* $Id: main.c,v 1.67 2002/04/03 15:44:19 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -630,6 +630,21 @@ purpose: return the directory to store temporary files
 	
 	return t;
 #endif
+}
+
+char           *
+my_strdup(const char *str)
+/****************************************************************************
+purpose: duplicate string --- exists to ease porting
+ ****************************************************************************/
+{
+	char           *s;
+
+	if ((s = malloc(strlen(str) + 1)) == NULL) {
+		diagnostics(ERROR,"Cannot allocate memory for string\n");
+	}
+	strcpy(s, str);
+	return s;
 }
 
 
