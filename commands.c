@@ -299,6 +299,7 @@ static CommandArray commands[] = {
     {"bibliographystyle", CmdIgnoreParameter, No_Opt_One_NormParam},
     {"let", CmdIgnoreLet, 0},
     {"multicolumn", CmdMultiCol, 0},
+    {"ensuremath", CmdEnsuremath, 0},
     {"frac", CmdFraction, 0},
     {"dfrac", CmdFraction, 0},
     {"Frac", CmdFraction, 0},

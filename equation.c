@@ -348,6 +348,12 @@ static void PrepareRtfEquation(int code, int EQ_Needed)
             SetTexMode(MODE_MATH);
             break;
 
+        case EQN_ENSUREMATH:
+            diagnostics(4, "PrepareRtfEquation ... \ensuremath{}");
+            fprintRTF("{");
+            SetTexMode(MODE_MATH);
+            break;
+
         case EQN_RND_OPEN:
             diagnostics(4, "PrepareRtfEquation ... \\(");
             fprintRTF("{");
@@ -447,6 +453,12 @@ static void FinishRtfEquation(int code, int EQ_Needed)
 
         case EQN_DOLLAR:
             diagnostics(4, "FinishRtfEquation -- $");
+            fprintRTF("}");
+            SetTexMode(MODE_HORIZONTAL);
+            break;
+
+        case EQN_ENSUREMATH:
+            diagnostics(4, "FinishRtfEquation -- \ensuremath{}");
             fprintRTF("}");
             SetTexMode(MODE_HORIZONTAL);
             break;
@@ -675,19 +687,25 @@ void CmdEquation(int code)
  purpose   : Handle everything associated with equations
  ******************************************************************************/
 {
-    char *pre, *eq, *post;
+    char *pre=NULL, *eq, *post=NULL;
     int inline_equation, number, true_code;
 
     true_code = code & ~ON;
 
-    if (!(code & ON))
+    if (!(code & ON || code==EQN_ENSUREMATH))
         return;
 
-    SlurpEquation(code, &pre, &eq, &post);
+    if (code==EQN_ENSUREMATH)
+    	eq = getBraceParam();
+    else
+    	SlurpEquation(code, &pre, &eq, &post);
 
     diagnostics(4, "Entering CmdEquation --------%x\n<%s>\n<%s>\n<%s>", code, pre, eq, post);
 
-    inline_equation = (true_code == EQN_MATH) || (true_code == EQN_DOLLAR) || (true_code == EQN_RND_OPEN);
+    inline_equation = (true_code == EQN_MATH) || 
+                      (true_code == EQN_DOLLAR) || 
+                      (true_code == EQN_RND_OPEN) ||
+                      (true_code == EQN_ENSUREMATH);
 
     number = getCounter("equation");
 
@@ -744,6 +762,26 @@ void CmdEquation(int code)
     free(post);
 
 }
+
+/******************************************************************************
+ purpose   : Handle \ensuremath
+ ******************************************************************************/
+void CmdEnsuremath(int code)
+{
+	int mode = GetTexMode();
+
+    diagnostics(2, "Entering CmdEnsuremath");
+	if (mode == MODE_MATH || mode == MODE_DISPLAYMATH) {
+		char *eq = getBraceParam();
+        diagnostics(2, "already in math mode <%s>", eq);
+		ConvertString(eq);
+		free(eq);
+	} else {
+        diagnostics(2, "need to start new equation");
+		CmdEquation(EQN_ENSUREMATH);
+	}
+}
+
 
 void CmdRoot(int code)
 
