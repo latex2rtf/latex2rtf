@@ -166,9 +166,9 @@ int main(int argc, char **argv)
 			break;
 		case 'f':
 			sscanf(optarg, "%d", &x);
-			diagnostics(WARNING, "Field option = %s x=%d",optarg,x);
-			g_fields_use_EQ	  = (x & 1) ? FALSE : TRUE;
-			g_fields_use_REF  = (x & 2) ? FALSE : TRUE;
+			diagnostics(2, "Field option = %s x=%d",optarg,x);
+			g_fields_use_EQ	  = (x & 1) ? TRUE : FALSE;
+			g_fields_use_REF  = (x & 2) ? TRUE : FALSE;
 			break;
 		case 'i':
 			setPackageBabel(optarg);
@@ -408,12 +408,17 @@ print_usage(void)
 	fprintf(stdout, "  -b bblfile       use BibTex bblfile rather than input.bbl)\n");
 	fprintf(stdout, "  -C codepage      latex encoding charset (latin1, cp850, raw, etc.)\n");
 	fprintf(stdout, "  -d level         debugging output (level is 0-6)\n");
+	fprintf(stdout, "  -f#              field handling\n");
+	fprintf(stdout, "       -f0          do not use fields\n");
+	fprintf(stdout, "       -f1          use fields for equations but not \\ref{} & \\cite{}\n");
+	fprintf(stdout, "       -f2          use fields for \\cite{} & \\ref{}, but not equations\n");
+	fprintf(stdout, "       -f3          use fields when possible (default)\n");
 	fprintf(stdout, "  -F               use LaTeX to convert all figures to bitmaps\n");
 	fprintf(stdout, "  -D dpi           number of dots per inch for bitmaps\n");
 	fprintf(stdout, "  -h               display help\n");
 	fprintf(stdout, "  -i language      idiom or language (e.g., german, french)\n");
 	fprintf(stdout, "  -l               use latin1 encoding (default)\n");
-	fprintf(stdout, "  -M#               math equation handling\n");
+	fprintf(stdout, "  -M#              math equation handling\n");
 	fprintf(stdout, "       -M1          displayed equations to RTF\n");
 	fprintf(stdout, "       -M2          inline equations to RTF\n");
 	fprintf(stdout, "       -M3          inline and displayed equations to RTF (default)\n");
@@ -440,6 +445,7 @@ print_usage(void)
 	fprintf(stdout, "  latex2rtf -M12 foo                  replace equations with bitmaps\n");
 	fprintf(stdout, "  latex2rtf -i russian foo            assume russian tex conventions\n");
 	fprintf(stdout, "  latex2rtf -C raw foo                retain font encoding in rtf file\n");
+	fprintf(stdout, "  latex2rtf -f0 foo                   create foo.rtf without fields\n");
 	fprintf(stdout, "  latex2rtf -d4 foo                   lots of debugging information\n\n");
 	fprintf(stdout, "Report bugs to <latex2rtf-developers@lists.sourceforge.net>\n\n");
 	fprintf(stdout, "$RTFPATH designates the directory for configuration files (*.cfg)\n");

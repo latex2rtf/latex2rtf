@@ -70,7 +70,7 @@ approved by the Free Software Foundation.
 @subtitle 
 A converter from @latex{} to RTF
 
-Edition 0.6
+Edition 0.7
 @author Georg Lehner,
 updated by Wilfried Hennings and Scott Prahl,
 with contributions by Mikhail Polianski
@@ -102,7 +102,7 @@ approved by the Free Software Foundation.
 
 This file documents @ltor{}, a converter that translates @latex{} to RTF.
 
-@c This document applies to version 1.9.14 of @ltor{}.
+@c This document applies to version 1.9.15 of @ltor{}.
 @end ifnottex
 
 @menu
@@ -163,13 +163,11 @@ standardized than in RTF, only a small subset of commands has been implemented t
 Some of the capabilities of @ltor{} are restricted in scope or buggy. @xref{Known Bugs}.
 
 RTF is a moving target, because Microsoft does not stop inventing new extensions and
-features for it. So you cannot view newer RTF files with older word processors.  
-@ltor{} eventually will generate RTF output that is unreadable with your Program.  The syntax and
+features, consequently you cannot view newer RTF files with older word processors.  
+The syntax and
 semantics of RTF are somewhat artistic, i.e., you can generate a syntactically correct RTF
 file that cannot be displayed by some/most word processors.
-
-For more details on RTF look at the RTF-Tools by Paul DuBois, and the corresponding
-newsgroups, etc. @uref{http://www.primate.wisc.edu/}
+For more details on RTF the specification consult the links at @uref{http://latex2rtf.sf.net/}
 
 @node Installation, Using LaTeX2RTF, Introduction, Top
 @chapter Installation
@@ -246,6 +244,13 @@ is working by typing @code{make} in the @file{scripts/} directory.
 
 On IBM AIX, the IBM make utility does not support some of the commands
 used in Makefile. In this case use @code{gmake} (from GNU) instead.
+
+Sun has decided to support the XPG4 standard on Solaris by an
+alternative set of binaries.  So allow bitmap conversion of equations, two
+things are needed.  First, change the first line of latex2png to @code{#!/usr/xpg4/bin/sh}
+Second, define the XPG4_GREP environment variable accordingly,
+for bash-like shells @code{XPG4_GREP=/usr/xpg4/bin/grep; export XPG4_GREP} or
+for tsch-like shells @code{setenv XPG4_GREP /usr/xpg4/bin/grep}.
 
 @item @code{make install}
 
@@ -561,6 +566,25 @@ used to specify the number of dots per inch for equations converted to bitmaps.
 This value is also used when picture environments are converted to bitmaps as well
 as when EPS graphics are converted to png files.  The default value is 300 dots per
 inch.
+
+@item -f#
+where # selects which fields to use during conversion:
+    @table @code
+    @item -f0
+    do not use fields in RTF.  This is handy when primitive RTF 
+    editors are being used to view the RTF output.
+    @item -f1  
+	use fields for equations but not @code{\ref} and @code{\cite}.  
+    @item -f2 
+	use fields for @code{\ref} and @code{\cite} but not equations.  This
+	will be useful for versions of OpenOffice that import cross-references
+	properly (as of Sept 2003 in a soon-to-be released version) but do not properly
+	handle fields in equations.
+    @item -f3
+    use fields when possible.  This is the default and is most useful when
+    the RTF file is being exported to be used in Word.  This retains the most
+    information from the original @latex{} file.
+    @end table
 
 @item -F
 use LaTeX to create bitmaps for all figures.  This may help when figures are

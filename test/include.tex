@@ -1,4 +1,6 @@
 \documentclass{article}
+%\input{file}
+% \include{another}
 \begin{document}
 \section{This is the first section in file \texttt{include.tex}}
 \label{section01}
@@ -18,6 +20,8 @@ the file \texttt{include3} that is included by \texttt{include2}.
 
 \include{include1}
 \include{include2}
+
+% \include{include1} should not be included!
 
 \section{This is the second section in file \texttt{include.tex}}
 \label{section02}
