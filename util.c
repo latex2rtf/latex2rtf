@@ -1,11 +1,27 @@
 /*
- * $Id: util.c,v 1.21 2002/04/21 22:49:59 prahl Exp $ 
+ * $Id: util.c,v 1.22 2002/05/02 14:47:20 prahl Exp $ 
  */
 #include <stdlib.h>
 #include <string.h>
 #include "main.h"
 #include "util.h"
 #include "parser.h"
+
+char *  
+strndup(char *src, int n)
+/******************************************************************************
+ purpose:  returns a new string with n characters from s (with '\0' at the end)
+******************************************************************************/
+{
+	char *dst;
+	
+	dst = (char *) calloc(n+1,sizeof(char));
+	if (dst==NULL) return NULL;
+		
+	strncpy(dst,src,n);
+
+	return dst;
+}
 
 char *  
 strdup_together(char *s, char *t)
@@ -75,18 +91,16 @@ strdup_noendblanks(char * s)
 char *p, *t;
 
 	if (s==NULL) return NULL;
+	if (*s=='\0') return strdup("");
+	
 	t=s;
-	while (*t == ' ' || *t == '\n') t++;	/* skip to non blank */
+	while (*t == ' ' || *t == '\n') t++;	/* first non blank char*/
 	
-	p = s + strlen(s) - 1;
-	while (p >= t && (*p == ' ' || *p == '\n')) p--;	/* skip to non blank */
-
-	if (p < t)
-		return strdup("");
+	p = s + strlen(s) -1;
+	while (p >= t && (*p == ' ' || *p == '\n')) p--;	/* last non blank char */
 	
-	p++;
-	*p='\0';
-	return strdup(t);
+	if (t>p) return strdup("");
+	return strndup(t,p-t+1);
 }
 
 char *

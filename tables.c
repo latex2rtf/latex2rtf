@@ -1,4 +1,4 @@
-/* $Id: tables.c,v 1.19 2002/04/27 22:53:00 prahl Exp $
+/* $Id: tables.c,v 1.20 2002/05/02 14:47:20 prahl Exp $
 
    Translation of tabbing and tabular environments
 */
@@ -45,7 +45,7 @@ ConvertFormatString(char *s)
 	char *simple;
 	
 	simple = strdup(s);  /* largest possible */
-	diagnostics(1, "Entering ConvertFormatString, input=<%s>",s);
+	diagnostics(4, "Entering ConvertFormatString, input=<%s>",s);
 	
 	i=0;
 	while (*s) {
@@ -81,7 +81,7 @@ ConvertFormatString(char *s)
 	s++;
 	}
 	simple[i]='\0';
-	diagnostics(1, "Exiting ConvertFormatString, output=<%s>",simple);
+	diagnostics(4, "Exiting ConvertFormatString, output=<%s>",simple);
 	return simple;
 }
 
@@ -314,26 +314,32 @@ Convert_Tabbing_with_kill(void)
 	}			/* while command_kill_found */
 }				/* Convert_Tabbing_with_kill */
 
+static int
+TabularColumnPosition(int n)
+/******************************************************************************
+ purpose:  return position of nth column 
+ ******************************************************************************/
+{
+	int colWidth = getLength("textwidth")/colCount;
+	return colWidth * (n+1);
+}
+
 static void
 TabularPreamble(char *text, char *width, char *pos, char *cols)
-{
-	int i, colWidth;
-	
+/******************************************************************************
+ purpose:  calculate column widths 
+ ******************************************************************************/
+{	
 	colFmt = ConvertFormatString(cols);
 	colCount = strlen(colFmt);
 	actCol = 0;
-	colWidth = getLength("textwidth")/colCount;
 
 	if (GetTexMode() != MODE_HORIZONTAL){
 		CmdIndent(INDENT_NONE);
 		CmdStartParagraph(0);
 	}
 	
-	fprintRTF("\\par\n\\trowd\\trrh0");
-
-	for (i = 0; i < colCount; i++) {
-		fprintRTF("\\cellx%d", colWidth * (i+1));
-	}
+	fprintRTF("\\par\n");
 }
 
 static void
@@ -417,9 +423,12 @@ TabularGetRow(char *table, char **row, char **next_row, int *height)
 }
 
 static char *
-TabularNextAmpersand(char *s)
+TabularNextAmpersand(char *t)
 {
+	char *s;
 	int slash=0;
+	
+	s=t;
 	
 	while (s && *s != '\0' && *s != '&' && !(*s=='&' && slash)) {
 		slash = (*s == '\\') ? 1 : 0;
@@ -431,46 +440,116 @@ TabularNextAmpersand(char *s)
 static void
 TabularBeginCell(int column)
 {
-	fprintRTF("\n\\pard\\intbl\\q%c ", colFmt[column]);
+	fprintRTF("\\pard\\intbl\\q%c ", colFmt[column]);
 }
 
 static void
 TabularEndCell(int column)
 {
-	fprintRTF("\\cell ");
+	fprintRTF("\\cell\n");
+}
+
+static char *
+TabularNextCell(char *cell_start, char **cell_end)
+{	
+	char *end, *dup, *dup2;
+	
+	end = TabularNextAmpersand(cell_start);
+
+	if (*end=='&') {
+		dup = strndup(cell_start,end-cell_start);
+		*cell_end = end+1;
+	} else {
+		dup = strdup(cell_start);
+		*cell_end = NULL;
+	}		
+			
+	dup2 = strdup_noendblanks(dup);
+	free(dup);
+			
+	return dup2;
+}
+
+static void
+TabularBeginRow(char *arow)
+/******************************************************************************
+ purpose:  emit RTF to start one row of a table
+ ******************************************************************************/
+{
+	int i,n,column;
+	char *cell_start, *cell_end, *cell,*num,*format,*multi,*row;
+
+	row=arow;
+	fprintRTF("\\trowd");
+
+	cell_start = row;
+	column = 0;
+	while (cell_start && *cell_start != '\0') {  /*for each cell */
+
+		cell = TabularNextCell(cell_start, &cell_end);
+		
+		multi=strstr(cell,"\\multicolumn");
+		if (multi == NULL) {
+			fprintRTF("\\cellx%d", TabularColumnPosition(column));
+			column++;
+		} else {
+			PushSource(NULL,multi+strlen("\\multicolumn"));
+			num     = getBraceParam();
+			format  = getBraceParam();
+			PopSource();
+			n = atoi(num);
+			fprintRTF("\\clmgf\\cellx%d", TabularColumnPosition(column));
+			for (i=1; i<n; i++)
+				fprintRTF("\\clmrg\\cellx%d", TabularColumnPosition(column+i));
+			column+=n;
+			free(num);
+			free(format);
+		}	
+		
+		free(cell);
+		cell_start = cell_end;
+	}
+	fprintRTF("\n");
+}
+static void
+TabularEndRow(void)
+/******************************************************************************
+ purpose:  emit RTF to finish one row of a table
+ ******************************************************************************/
+{
+	fprintRTF("\\row\n");
 }
 
 static void
 TabularWriteRow(char *row, int height)
 {
-	int column=0;
-	char *cell_end, *cell, *cell_start;
+	char *cell, *cell_start, *cell_end;
+	
+	actCol=0;
+	if (row==NULL || strlen(row)==0) return;
 	
 	diagnostics(4, "TabularWriteRow height=%d twpi, row <%s>",height, row); 
 	
+	TabularBeginRow(row);
 	cell_start = row;
-	while (cell_start) {
-		cell_end = TabularNextAmpersand(cell_start);
-		if (*cell_end=='&')
-			*cell_end='\0'; 
-		else 
-			cell_end=NULL;
-		
-		cell = strdup_noendblanks(cell_start);
+	while (cell_start && *cell_start != '\0') {
 
-		TabularBeginCell(column);
-		fprintRTF("{");
-		diagnostics(4, "TabularWriteRow cell=<%s>",cell); 
-		ConvertString(cell);
-		fprintRTF("}");
-		TabularEndCell(column);
+		TabularBeginCell(actCol);
+		cell = TabularNextCell(cell_start, &cell_end);
+		if (cell !=NULL && *cell != '\0') {
+			diagnostics(4, "TabularWriteRow cell=<%s>",cell); 
+			fprintRTF("{");
+			ConvertString(cell);
+			fprintRTF("}");
+		}
+		if (cell != NULL) free(cell);
 		
-		column++;
-		cell_start = (cell_end) ? cell_end+1 : NULL;
-		free(cell);
+		actCol++;
+		cell_start = cell_end;
+		TabularEndCell(actCol);
 	}
 
-	fprintRTF("\\pard\\intbl\\row");
+	TabularEndRow();
 }
 
 void 
@@ -486,7 +565,7 @@ CmdTabular(int code)
 	char   		   *table=NULL;
 
 	if (!(code & ON)) {
-		diagnostics(1, "Exiting CmdTabular");
+		diagnostics(4, "Exiting CmdTabular");
 		g_processing_tabular = FALSE;
 		free(colFmt);
 		colFmt=NULL;
@@ -579,46 +658,37 @@ CmdMultiCol(int code)
  purpose: handles \multicolumn{n}{format}{content}
  ******************************************************************************/
 {
-	long            numCol, i, toBeInserted;
-	char            *num, *format, *content, *colFormat;
+	long            numCol, i;
+	char            *num, *format, *content, *colFormat, *noblank_content;
 
 	num     = getBraceParam();
 	format  = getBraceParam();
 	content = getBraceParam();
 	
+	noblank_content = strdup_noendblanks(content);
+	free(content);
+	content=noblank_content;
+
 	diagnostics(1,"CmdMultiCol cols=%s format=<%s> content=<%s>",num,format,content);
 	numCol = atoi(num);
 	free(num);
 	
 	colFormat=ConvertFormatString(format);
 	free(format);
-
-	diagnostics(1,"CmdMultiCol cols=%d format=<%s> content=<%s>",numCol,colFormat,content);
 	
-	switch (colFormat[0]) {
-		case 'r':
-			toBeInserted = numCol;
-			break;
-		case 'c':
-			toBeInserted = (numCol + 1) / 2;
-			break;
-		default:
-			toBeInserted = 1;
-			break;
-	}
-
-	for (i = 1; i < toBeInserted; i++, actCol++) 
-		fprintRTF("\\cell\\pard\\intbl");
-	
-	fprintRTF("\\q%c ", colFormat[0]);
+	fprintRTF("}{\\q%c ", colFormat[0]);
 
 	diagnostics(4, "Entering Convert() from CmdMultiCol()");
 	ConvertString(content);
-	free(content);
-	free(colFormat);
 	diagnostics(4, "Exiting Convert() from CmdMultiCol()");
 
-	for (i = toBeInserted; (i < numCol) && (actCol < colCount); i++, actCol++) 
-		fprintRTF("\\cell\\pard\\intbl ");
+	fprintRTF("}\\cell\n");
 
+	for (i = 2; i < numCol; i++)
+		fprintRTF("\\pard\\intbl\\cell\n");
+
+	fprintRTF("\\pard\\intbl{");
+	actCol+=numCol-1;  /*TabularWriteRow will automatically add one */
+	free(content);
+	free(colFormat);
 }
