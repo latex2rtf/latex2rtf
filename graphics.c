@@ -1,4 +1,4 @@
-/* $Id: graphics.c,v 1.14 2002/05/05 19:37:30 prahl Exp $ 
+/* $Id: graphics.c,v 1.15 2002/05/05 22:40:17 prahl Exp $ 
 This file contains routines that handle LaTeX graphics commands
 */
 
@@ -117,6 +117,109 @@ typedef struct _GdiCommentMultiFormats
     unsigned long 	NumFormats;		/* Number of formats in comment */
     EMRFORMAT 		*Data;			/* Array of comment data */
 } GDICOMMENTMULTIFORMATS;
+
+static
+void PicComment(FILE *fp, short label, short size)
+{
+	short tag = 0x00A1;
+	
+	if (g_little_endian) {
+		tag   = LETONS(tag);
+		label = LETONS(label);
+		size  = LETONS(size);
+	}
+	fwrite(&tag,  2,1,fp);
+	fwrite(&label,2,1,fp);
+	fwrite(&size, 2,1,fp);
+}
+
+static void
+eps_to_pict(char *s)
+/******************************************************************************
+     purpose : create a pict file from an EPS file
+               the pict file contains a bitmap version for viewing
+               and the original EPS for printing
+ ******************************************************************************/
+{
+	FILE *fp_eps, *fp_pict1, *fp_pict2;
+	char *cmd, *s1, *p, *pict1, *pict2, *tmp, buffer[41];
+	long ii,pict1_size;
+	unsigned char byte;
+	short eps_size;
+	short PostScriptBegin = 190;
+	short PostScriptEnd   = 191;
+	short PostScriptHandle= 192;
+
+	diagnostics(1, "filename = <%s>", s);
+
+	/* create filename for the pict file */
+	s1 = strdup(s);
+	if ((p=strstr(s1,".eps")) == NULL && (p=strstr(s1,".EPS")) == NULL) {
+		diagnostics(1, "<%s> is not an EPS file", s);
+		free(s1);
+		return;
+	}
+	strcpy(p,"a.pict");
+	tmp = getTmpPath();
+	pict1 = strdup_together(tmp,s1);
+	strcpy(p,"a.pict");
+	pict2 = strdup_together(tmp,s1);
+
+	/* create a bitmap version of the eps file */
+	cmd = (char *) malloc(strlen(s)+strlen(pict1)+strlen("convert  ")+1);
+	sprintf(cmd, "convert %s %s", s, pict1);	
+	system(cmd);
+
+	/* open the eps file and make sure that it is less than 32k */
+ 	fp_eps = fopen (s, "rb");
+	if (fp_eps==NULL) return;
+	fseek (fp_eps , 0 , SEEK_END);
+  	eps_size = ftell (fp_eps);
+  	if (eps_size > 32000) {fclose(fp_eps); return;}
+  	rewind (fp_eps);
+  
+	/*open bitmap pict file and get size */
+	fp_pict1 = fopen(pict1, "rb");
+	if (fp_pict1 == NULL) {fclose(fp_eps);return;}
+	fseek (fp_eps , 0 , SEEK_END);
+  	pict1_size = ftell (fp_pict1);
+  	rewind (fp_pict1);
+
+	/*open new pict file */
+	fp_pict2 = fopen(pict2, "w");
+	if (fp_pict2 == NULL) {fclose(fp_pict1); fclose(fp_eps);return;}
+
+	/*copy header */
+	fread(&buffer,1,40,fp_pict1);
+	fwrite(&buffer,1,40,fp_pict2);
+	
+	/* insert comment that allows embedding postscript */
+	PicComment(fp_pict2,PostScriptBegin,0);
+	
+	/*copy bitmap 40 bytes of header + 2 bytes at end */
+	for (ii=42; ii<pict1_size; ii++) {
+		fread(&byte,1,1,fp_pict1);
+		fwrite(&byte,1,1,fp_pict2);
+	}
+	fclose(fp_pict1);
+	
+	/*copy eps graphic */
+	PicComment(fp_pict2,PostScriptHandle,eps_size);
+	for (ii=0; ii<eps_size; ii++) {
+		fread(&byte,1,1,fp_eps);
+		fwrite(&byte,1,1,fp_pict2);
+	}
+	fclose(fp_eps);
+	
+	/*close file*/
+	PicComment(fp_pict2,PostScriptEnd,0);
+	byte = 0x00;
+	fwrite(&byte,1,1,fp_pict2);
+	byte = 0xFF;
+	fwrite(&byte,1,1,fp_pict2);
+	fclose(fp_pict2);
+	return;
+}
 
 static void
 my_unlink(char *filename)
