@@ -1,5 +1,3 @@
-/* $Id: cfg.h,v 1.17 2003/12/14 06:44:26 prahl Exp $*/
-
 #define DIRECT_A	0
 #define FONT_A		1
 #define IGNORE_A	2

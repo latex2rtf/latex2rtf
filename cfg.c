@@ -230,6 +230,7 @@ read_cfg(FILE * cfgfile, ConfigEntryT *** pointer_array, bool do_remove_backslas
 		}
 		
 		/* find start of definition */
+		line=strdup(line);
 		cmdend = strchr(line, ',');
 		if (cmdend == NULL) 
 			diagnostics(ERROR,"Bad config file, missing ',' between elements\nBad line is\"%s\"", line);

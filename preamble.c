@@ -38,6 +38,7 @@ Authors:
 #include "commands.h"
 #include "counters.h"
 #include "xref.h"
+#include "direct.h"
 
 static bool   g_preambleTwoside  = FALSE;
 static bool   g_preambleTwocolumn= FALSE;
@@ -841,20 +842,19 @@ WriteStyleHeader(void)
          \par}
  ****************************************************************************/
 {
-	int DefFont = DefaultFontFamily();
-	fprintRTF("{\\stylesheet{\\fs%d\\lang1024\\snext0 Normal;}\n", CurrentFontSize());
-	fprintRTF("{%s\\f%d%s \\sbasedon0\\snext0 heading 1;}\n", HEADER11, DefFont, HEADER12);
-	fprintRTF("{%s\\f%d%s \\sbasedon0\\snext0 heading 2;}\n", HEADER21, DefFont, HEADER22);
-	fprintRTF("{%s\\f%d%s \\sbasedon0\\snext0 heading 3;}\n", HEADER31, DefFont, HEADER32);
-	fprintRTF("{%s\\f%d%s \\sbasedon0\\snext0 heading 4;}\n", HEADER41, DefFont, HEADER42);
-	fprintRTF("%s", HEADER03);
-	fprintRTF("%s", HEADER04);
-	fprintRTF("%s\n", HEADER05);
+	ConfigEntryT **style;
+		
+	fprintRTF("{\\stylesheet\n{\\s0\\fs%d\\snext0 Normal;}\n", CurrentFontSize());
+	fprintRTF("{\\cs100 Default Paragraph Font;}\n");
 	
-	fprintRTF("%s\n", HEADER13);
-	fprintRTF("%s\n", HEADER23);
-	fprintRTF("%s\n", HEADER33);
-	fprintRTF("%s\n", HEADER43);
+	style = CfgStartIterate(STYLE_A);
+	while ((style = CfgNext(STYLE_A, style)) != NULL) {
+		diagnostics(WARNING,"style <%s>=<%s>", (*style)->TexCommand,(*style)->RtfCommand);
+		fprintRTF("{");
+		InsertBasicStyle((*style)->RtfCommand, TRUE);
+		fprintRTF(" %s;}\n",(*style)->TexCommand);
+	}
+	fprintRTF("}\n");
 }
 
 static void

@@ -46,6 +46,8 @@ void WriteFontName(const char **buffpoint)
 	int		fnumber;
 	const char    *buff;
 	
+	(*buffpoint)++; /* move past initial '*' */
+	
 	buff = *buffpoint;
 	if (**buffpoint == '*') {
 		fprintRTF("*");
@@ -90,12 +92,10 @@ TryDirectConvert(char *command)
 	buffpoint = RtfCommand;
 	diagnostics(4, "Directly converting %s to %s", TexCommand, RtfCommand);
 	while (buffpoint[0] != '\0') {
-		if (buffpoint[0] == '*') {
-			++buffpoint;
+		if (buffpoint[0] == '*') 
 			WriteFontName(&buffpoint);
-		} else {
+		else
 			fprintRTF("%c", *buffpoint);
-		}
 
 		++buffpoint;
 
@@ -104,8 +104,7 @@ TryDirectConvert(char *command)
 	return TRUE;
 }
 
-void 
-ApplyStyle(char *command, bool include_header_info)
+void InsertBasicStyle(const char *rtf, bool include_header_info)
 /******************************************************************************
   purpose: uses data from style.cfg to try and insert RTF commands
            that correspond to the appropriate style sheet or character style
@@ -117,10 +116,8 @@ ApplyStyle(char *command, bool include_header_info)
            style correctly.
  ******************************************************************************/
 {
-	const char   *rtf;
 	char	 *header;
 	
-	rtf = SearchRtfCmd(command, STYLE_A);
 	if (rtf == NULL) return;
 
 	header = strchr(rtf,';');
@@ -128,17 +125,23 @@ ApplyStyle(char *command, bool include_header_info)
 		*header = ' ';
 	else
 		*header = '\0';
-		
-	diagnostics(WARNING, "Matching <%s> and inserting <%s>", command, rtf);
 
 	while (*rtf != '\0') {
 	
-		if (*rtf == '*') {
-			rtf++;
+		if (*rtf == '*')
 			WriteFontName(&rtf);
-		} else 
+		else 
 			fprintRTF("%c", *rtf);
 			
 		rtf++;
 	}
+}
+
+void 
+InsertStyle(char *command, bool include_header_info)
+{
+	const char * rtf;
+	
+	rtf = SearchRtfCmd(command, STYLE_A);
+	InsertBasicStyle(rtf,FALSE);
 }
