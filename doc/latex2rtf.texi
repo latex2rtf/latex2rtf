@@ -69,7 +69,7 @@ approved by the Free Software Foundation.
 @subtitle 
 A converter from @latex{} to RTF
 
-Edition 0.5
+Edition 0.6
 @author Georg Lehner,
 updated by Wilfried Hennings and Scott Prahl
 
@@ -229,7 +229,8 @@ bitmaps using the shell script @file{latex2png}, found in @file{scripts/}.
 @file{latex2png} requires that
 both @latex{} and @file{ImageMagick} are installed. 
 @ltor{} will translate documents without a working @file{latex2png}, but some
-features will be missing.
+features will be missing.  You can verify that the @file{latex2png} script
+is working by typing @code{make} in the @file{scripts/} directory.
 
 @item @code{make}
 
@@ -240,11 +241,6 @@ features will be missing.
 On IBM AIX, the IBM make utility does not support some of the commands
 used in Makefile. In this case use @code{gmake} (from GNU) instead.
 
-@item @code{make check}
-
-[OPTIONAL] This tests @ltor{} on a variety of @latex{} files.  Expect
-a whole lot of warnings, but no outright errors. (On IBM AIX, use @code{gmake check}.)
-
 @item @code{make install}
 
 If your @code{mkdir} doesn't support the @option{-p} option, then create
@@ -253,6 +249,13 @@ If your @code{mkdir} doesn't support the @option{-p} option, then create
   a binary directory, and move the contents of the @file{cfg/} directory to
   the location specified by @code{$CFG_INSTALL}.
  
+@item @code{make check}
+
+[OPTIONAL] This tests @ltor{} on a variety of @latex{} files.  Expect
+a whole lot of warnings, but no outright errors. (On IBM AIX, use @code{gmake check}.)
+Note that this will check the basic functionality of the @file{latex2png}
+script, and then that of @file{latex2rtf}.
+
 @item @code{make install-info}
 
 [OPTIONAL] This installs @file{.info} files for use with the @code{info}
@@ -417,33 +420,21 @@ The default is to use @code{gcc}.
 
 @item Encountering errors because the compiler options.  During development
 all compiler warnings are turned on.  However, different compilers have
-different interpretations of @option{-Wall} and @option{-pedantic} and 
-so may generate errors that were not found in a different development
-system.  Plese report these, but a quick fix is to remove all compiler
-options.
+different interpretations of @option{-Wall} and 
+may generate errors that were not found in a different development
+system.  Please report these, but a quick fix is to remove all compiler
+options.  
 
-@item Not defining @env{RTFPATH} (either as environment variable or by
-the command line parameter -P).
-
-@item Not defining @env{HAS_NO_STRDUP} in the Makefile when your system
-lacks this facility.
 @end itemize
 
 @node Problems with make check,, Problems Compiling, Installation
 @section Problems with @code{make check}
 
-All the files in the @file{test} directory are converted (with more or less
-success) using @ltor{} and are tested before each CVS check-in and with
-all released tarballs.  If you have successfully compiled @ltor{} then
-problems are probably caused by
-
-@itemize @bullet
-
-@item Not defining @env{RTFPATH}.
-
-@item Not defining @env{HAS_NO_STRDUP} in the Makefile when your system
-lacks this facility.
-@end itemize
+All the files in the @file{test} directory are converted (with varying degrees
+of success) using @ltor{} and are tested before most CVS check-ins and with
+all released tarballs.  There will be many warning messages, but there should
+be no actual error messages.  If you do not have a working latex2png script, then
+some of the files will fail to be translated.
 
 @node Using LaTeX2RTF, Features, Installation, Top
 @chapter Using LaTeX2RTF
@@ -512,30 +503,6 @@ Unless an @file{bblfile} is specified with the @code{-b} option, @ltor{} uses a
 @file{inputfile.bbl}.  The @file{bblfile} file is used for citations and is typically
 created by running @file{inputfile.aux} through @file{bibtex}.
 
-@item -d
-The @option{-d} option determines the amount of debugging information to send to
-stderr while translating. `0' means only Errors, `1' Warning Messages
-(default) also.  These numbers can go as high as `7'.
-
-@item -i language
-used to set the idiom or language used by the @latex{} document.  Typically, this is
-specified in a @latexe{} document by including @code{\usepackage[language]@{babel@}} where
-@code{language} is one of the languages supported by the @code{babel} package.   All
-languages listed in the babel system are supported so far as translations for ``Chapter,''
-``References,'' and the like.  Specific support for specific options of the german style
-package are explictly supported. The french translated names are found in the
-@file{french.cfg} file in the @file{cfg/} directory.  @xref{Language Configuration}.
-
-@item -l
-same as @option{-i latin1} (Note that the default behavior is to use @option{ansinew}
-which is a superset of @option{latin1}). Included for
-backwards compatibility.
-
-@item -o outputfile
-Unless an @file{outputfile} is specified with the @code{-o} option, the resulting RTF
-filename is formed by removing @file{.tex} from the @file{inputfile} and appending
-@file{.rtf}.
-
 @item -C codepage
 used to specify the character set (code page) used in the @latex{} document. This is only
 important when non-ansi characters are included in the @latex{} document. Typically this
@@ -546,11 +513,39 @@ decmulti, cp1250, cp1252, latin1, latin2, latin3, latin4, latin5, latin9, next. 
 default behavior is to use ansinew (code page 1252).  Cyrillic support includes
 conversion of koi8-r, koi8-u, cp1251, cp855, cp866, maccyr, and macukr encodings.
 
+@item -d debug_level
+The @option{-d} option determines the amount of debugging information to send to
+stderr while translating. debug_level=0 means only Errors, `1' Warning Messages
+(default) also.  The debug_level can go as high as `7' for insane amounts of 
+debugging fun.
+
 @item -D dots_per_inch
 used to specify the number of dots per inch for equations converted to bitmaps.  
 This value is also used when picture environments are converted to bitmaps as well
 as when EPS graphics are converted to png files.  The default value is 300 dots per
 inch.
+
+@item -F
+use LaTeX to create bitmaps for all figures.  This may help when figures are
+not translated properly with the default settings.  This typically requires 
+a functional version of ImageMagick on your machine to work properly.
+
+@item -h
+a short usage description
+
+@item -i language
+used to set the idiom or language used by the @latex{} document.  Typically, this is
+specified in a @latexe{} document by including @code{\usepackage[language]@{babel@}} where
+@code{language} is one of the languages supported by the @code{babel} package.   All
+languages listed in the babel system are supported so far as translations for ``Chapter,''
+``References,'' and the like.  Furthermore, some commands found in the style files for
+german, french, russian, and czech style
+are supported. @xref{Language Configuration}.
+
+@item -l
+same as @option{-i latin1} (Note that the default behavior is to use @option{ansinew}
+which is a superset of @option{latin1}). Included for
+backwards compatibility.
 
 @item -M#
 where # selects the type of equation conversion.  Use
@@ -577,6 +572,20 @@ These switches can be added together to get the desired conversion.  Handy examp
 	@end table
 Bitmap conversion requires that you have installed a working latex2png script.
 Producing bitmaps is slow.
+
+@item -o outputfile
+Unless an @file{outputfile} is specified with the @code{-o} option, the resulting RTF
+filename is formed by removing @file{.tex} from the @file{inputfile} and appending
+@file{.rtf}.
+
+@item -p
+Do not quote printed parentheses in mathematical formulas, as some versions of
+Word (e.g., Word 2000) have deep psychological problems with EQ fields using quoted parentheses.
+If Word displays some formulas with parentheses as ``Error!'', try this option.
+See also the -S option.
+
+This is an option because it will break typesetting equations with non-matching
+parentheses (because an unmatched unquoted parenthesis would terminate the field).
 
 @item -P /path/to/cfg
 used to specify the directory that contains the @code{.cfg} files

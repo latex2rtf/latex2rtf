@@ -365,59 +365,59 @@ ConvertWholeDocument(void)
 static void
 print_version(void)
 {
-	fprintf(stderr, "%s %s\n\n", progname, Version);
-	fprintf(stderr, "Copyright (C) 2002 Free Software Foundation, Inc.\n\n");
-	fprintf(stderr, "This is free software; see the source for copying conditions.  There is NO\n");
-	fprintf(stderr, "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n");
-	fprintf(stderr, "Written by Prahl, Lehner, Granzer, Dorner, Polzer, Trisko, Schlatterbeck.\n");
+	fprintf(stdout, "latex2rtf %s\n\n", Version);
+	fprintf(stdout, "Copyright (C) 2002 Free Software Foundation, Inc.\n");
+	fprintf(stdout, "This is free software; see the source for copying conditions.  There is NO\n");
+	fprintf(stdout, "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n");
+	fprintf(stdout, "Written by Prahl, Lehner, Granzer, Dorner, Polzer, Trisko, Schlatterbeck.\n");
 
-/*		fprintf(stderr, "RTFPATH = '%s'\n", getenv("RTFPATH"));*/
+/*		fprintf(stdout, "RTFPATH = '%s'\n", getenv("RTFPATH"));*/
 }
 
 static void
 print_usage(void)
 {
-	fprintf(stderr, "latex2rtf converts text files in LaTeX format to rich text format (RTF).\n\n");
-	fprintf(stderr, "Usage:  %s [options] input[.tex]\n\n", progname);
-	fprintf(stderr, "Options:\n");
-	fprintf(stderr, "  -a auxfile       use LaTeX auxfile rather than input.aux\n");
-	fprintf(stderr, "  -b bblfile       use BibTex bblfile rather than input.bbl)\n");
-	fprintf(stderr, "  -C codepage      input encoding (latin1, cp850, raw, etc.)\n");
-	fprintf(stderr, "  -d#              debug level (# is 0-6)\n");
-	fprintf(stderr, "  -D#              dots per inch for bitmaps\n");
-	fprintf(stderr, "  -h               display this help\n");
-	fprintf(stderr, "  -i language      babel idiom (german, french)\n");
-	fprintf(stderr, "  -l               use latin1 encoding (default)\n");
-	fprintf(stderr, "  -M#              math equation handling\n");
-	fprintf(stderr, "       -M1          displayed equations to RTF\n");
-	fprintf(stderr, "       -M2          inline equations to RTF\n");
-	fprintf(stderr, "       -M3          inline and displayed equations to RTF (default)\n");
-	fprintf(stderr, "       -M4          displayed equations to bitmap\n");
-	fprintf(stderr, "       -M6          inline equations to RTF and displayed equations to bitmaps\n");
-	fprintf(stderr, "       -M8          inline equations to bitmap\n");
-	fprintf(stderr, "       -M12         inline and displayed equations to bitmaps\n");
-	fprintf(stderr, "       -M16         insert Word comment field that the original equation text\n");
-	fprintf(stderr, "  -o outputfile    RTF output other than input.rtf\n");
-	fprintf(stderr, "  -P /path/to/cfg  directory containing .cfg files\n");
-	fprintf(stderr, "  -S               use ';' to separate args in RTF fields\n");
-	fprintf(stderr, "  -se#             scale factor for bitmap equations\n");
-	fprintf(stderr, "  -sf#             scale factor for bitmap figures\n");
-	fprintf(stderr, "  -T /path/to/tmp  temporary directory\n");
-	fprintf(stderr, "  -v               version information\n");
-	fprintf(stderr, "  -V               version information\n");
-	fprintf(stderr, "  -W               include warnings in RTF\n");
-	fprintf(stderr, "  -Z#              add # of '}'s at end of rtf file (# is 0-9)\n\n");
-	fprintf(stderr, "Examples:\n");
-	fprintf(stderr, "  latex2rtf foo              convert foo.tex to foo.rtf\n");
-	fprintf(stderr, "  latex2rtf <foo >foo.RTF    convert foo to foo.RTF\n");
-	fprintf(stderr, "  latex2rtf -M12 foo         replace equations with bitmaps\n");
-	fprintf(stderr, "  latex2rtf -i russian foo   assume russian tex conventions\n");
-	fprintf(stderr, "  latex2rtf -C raw foo       retain font encoding in rtf file\n");
-	fprintf(stderr, "  latex2rtf -d4 foo          lots of debugging information\n\n");
-	fprintf(stderr, "Report bugs to <latex2rtf-developers@lists.sourceforge.net>\n\n");
-	fprintf(stderr, "RTFPATH designates the directory for configuration files (*.cfg)\n");
-	fprintf(stderr, "  RTFPATH = '%s'\n", getenv("RTFPATH"));
-	fprintf(stderr, "  CFGDIR  = '%s'\n\n", CFGDIR);
+	fprintf(stdout, "`%s' converts text files in LaTeX format to rich text format (RTF).\n\n",progname);
+	fprintf(stdout, "Usage:  %s [options] input[.tex]\n\n", progname);
+	fprintf(stdout, "Options:\n");
+	fprintf(stdout, "  -a auxfile       use LaTeX auxfile rather than input.aux\n");
+	fprintf(stdout, "  -b bblfile       use BibTex bblfile rather than input.bbl)\n");
+	fprintf(stdout, "  -C codepage      latex encoding charset (latin1, cp850, raw, etc.)\n");
+	fprintf(stdout, "  -d level         debugging output (level is 0-6)\n");
+	fprintf(stdout, "  -D dpi           number of dots per inch for bitmaps\n");
+	fprintf(stdout, "  -h               display help\n");
+	fprintf(stdout, "  -i language      idiom or language (e.g., german, french)\n");
+	fprintf(stdout, "  -l               use latin1 encoding (default)\n");
+	fprintf(stdout, "  -M #              math equation handling\n");
+	fprintf(stdout, "       -M1          displayed equations to RTF\n");
+	fprintf(stdout, "       -M2          inline equations to RTF\n");
+	fprintf(stdout, "       -M3          inline and displayed equations to RTF (default)\n");
+	fprintf(stdout, "       -M4          displayed equations to bitmap\n");
+	fprintf(stdout, "       -M6          inline equations to RTF and displayed equations to bitmaps\n");
+	fprintf(stdout, "       -M8          inline equations to bitmap\n");
+	fprintf(stdout, "       -M12         inline and displayed equations to bitmaps\n");
+	fprintf(stdout, "       -M16         insert Word comment field that the original equation text\n");
+	fprintf(stdout, "  -o outputfile    file for RTF output\n");
+	fprintf(stdout, "  -P /path/to/cfg  directory containing .cfg files\n");
+	fprintf(stdout, "  -S               use ';' to separate args in RTF fields\n");
+	fprintf(stdout, "  -se#             scale factor for bitmap equations\n");
+	fprintf(stdout, "  -sf#             scale factor for bitmap figures\n");
+	fprintf(stdout, "  -T /path/to/tmp  temporary directory\n");
+	fprintf(stdout, "  -v               version information\n");
+	fprintf(stdout, "  -V               version information\n");
+	fprintf(stdout, "  -W               include warnings in RTF\n");
+	fprintf(stdout, "  -Z #             add # of '}'s at end of rtf file (# is 0-9)\n\n");
+	fprintf(stdout, "Examples:\n");
+	fprintf(stdout, "  latex2rtf foo              convert foo.tex to foo.rtf\n");
+	fprintf(stdout, "  latex2rtf <foo >foo.RTF    convert foo to foo.RTF\n");
+	fprintf(stdout, "  latex2rtf -M12 foo         replace equations with bitmaps\n");
+	fprintf(stdout, "  latex2rtf -i russian foo   assume russian tex conventions\n");
+	fprintf(stdout, "  latex2rtf -C raw foo       retain font encoding in rtf file\n");
+	fprintf(stdout, "  latex2rtf -d4 foo          lots of debugging information\n\n");
+	fprintf(stdout, "Report bugs to <latex2rtf-developers@lists.sourceforge.net>\n\n");
+	fprintf(stdout, "RTFPATH designates the directory for configuration files (*.cfg)\n");
+	fprintf(stdout, "RTFPATH = '%s'\n\n", getenv("RTFPATH"));
+	fprintf(stdout, "CFGDIR  = '%s'\n\n", CFGDIR);
 	exit(1);
 }
 

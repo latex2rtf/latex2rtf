@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.74 2002/11/27 04:09:31 prahl Exp $
+# $Id: Makefile,v 1.75 2002/11/28 17:29:33 prahl Exp $
 
 CC=gcc
 MKDIR=mkdir -p
@@ -59,7 +59,7 @@ CFGS=cfg/fonts.cfg cfg/direct.cfg cfg/ignore.cfg \
 
 DOCS= doc/latex2rtf.1   doc/latex2png.1    doc/latex2rtf.texi doc/latex2rtf.pdf \
       doc/latex2rtf.txt doc/latex2rtf.info doc/latex2rtf.html doc/credits \
-      doc/copying.txt   doc/Makefile
+      doc/copying.txt   doc/Makefile       doc/latex2png.hlp  doc/latex2rtf.hlp
 
 README= README README.DOS README.Mac Copyright ChangeLog 
 
@@ -105,6 +105,7 @@ main.o: Makefile main.c
 	$(CC) $(CFLAGS) -DCFGDIR=\"$(CFG_INSTALL)\" -c main.c -o main.o
 
 check test: latex2rtf
+	cd scripts && $(MAKE)
 	cd test && $(MAKE) 
 
 checkdir: $(README) $(SRCS) $(HDRS) $(CFGS) $(SCRIPTS) $(TEST) doc/latex2rtf.texi

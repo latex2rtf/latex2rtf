@@ -1,10 +1,10 @@
-.\" $Id: latex2rtf.1,v 1.6 2002/11/26 03:33:44 prahl Exp $
+.\" $Id: latex2rtf.1,v 1.7 2002/11/28 17:29:34 prahl Exp $
 .\"
 .TH latex2rtf 1
 .SH NAME
 latex2rtf \- Convert a LaTeX file to an RTF file
 .SH SYNTAX
-latex2rtf [-phlSV] [ -d# ] [ -M# 
+latex2rtf [-hlpFSV] [ -d# ] [ -M# 
 ] [ -a
 .I auxfile
 ] [ -b
@@ -50,10 +50,18 @@ used to specify the character set (code page) used in the LaTeX
 document for non-ansi characters. 
 .I codepage
 may be one of the following:
-ansinew, applemac, cp437, cp437de, cp850, cp852, cp865, decmulti,
-cp1250, cp1252, latin1, latin2, latin3, latin4, latin5, latin9,
-next, koi8-r, koi8-u, cp1252, cp866, cp855, maccyr, and macukr.  
-The default behavior is to use ansinew (same as cp1252).
+ansinew, applemac, cp437, cp437de, cp850, cp852, cp855, cp865, cp866, decmulti,
+cp1250, cp1252, koi8-r, koi8-u, latin1, latin2, latin3, latin4, latin5, latin9,
+maccyr, macukr, next, raw, raw437, raw852, raw1250, raw1251, and raw1253.  
+The default behavior is to use ansinew (same as cp1252).  For convenience, just 
+the numbers 437, 437de, 850, 852, 855, 866, 1250 or 1252 may be specified.
+
+The raw character set encoding prevents any 8-bit character translation.  The
+RTF file is marked to use the same encoding as the default encoding for the
+program interpreting the RTF file.  This is particularly useful when translating
+a file written in a language (e.g., czech) that maps poorly into the ansinew 
+(western european) character set.  
+
 .TP 
 .B \-d#
 Write extra debugging output to stderr.  Higher numbers cause more debugging output
@@ -63,6 +71,10 @@ and range from 0 (only errors) to 6 (absurdly many messages). The default is
 .B \-D dots_per_inch
 Used to specify the number of dots per inch in equations that are converted to
 bitmaps and for graphics that must be converted.  Default is 300 dpi. 
+.TP
+.B \-F
+use LaTeX to create bitmaps for all figures.  This may help when figures are
+not translated properly.
 .TP 
 .B \-h
 Print a short usage note
@@ -89,22 +101,18 @@ Unless an
 is specified with the -o option, the resulting RTF is produced in a file with .tex
 replaced by .rtf.
 .TP
-.B \-p
-do not quote printed parentheses in mathematical formulas, as some versions of
-Word(TM) have deep psychological problems with EQ fields using quoted parentheses.
-So if Word displays some formulas with parentheses as 'Error!', try this option.
-See also the -S option.
-.TP
-.B \-F
-use LaTeX to create bitmaps for all figures.  This can help when figures do
-not get translated properly.
-.TP
 .B \-M#
 where # selects the type of equation conversion.  -M3 is the default and
 converts both inline and displayed equations to RTF.  -M6 converts inline 
 equations to RTF and displayed equations to bitmaps. -M12 converts inline 
 and displayed equations to bitmaps.  Bitmap conversion requires a working 
 latex2png script.  Producing bitmaps is slow.
+.TP
+.B \-p
+do not quote printed parentheses in mathematical formulas, as some versions of
+Word (e.g Word 2000) have deep psychological problems with EQ fields using quoted parentheses.
+If Word displays some formulas with parentheses as 'Error!', try this option.
+See also the -S option.
 .TP 
 .B \-P /path/to/cfg
 used to specify the directory that contains the @code{.cfg} files
@@ -139,8 +147,8 @@ aborts.  The configuration files allow additional fonts to be
 recognized, additional simple commands to be translation, and 
 additional commands to be ignored.
 .SH CAUTION
-The input file should be a correct LaTeX file. Use LaTeX
-to find and fix errors before using
+The input file must be a valid LaTeX file. Use LaTeX
+to find and fix errors before converting with
 .I latex2rtf.
 .PP
 The configuration files 
@@ -159,8 +167,6 @@ Some might consider RTF to be a bug.
 Some environments are currently ignored. 
 .PP
 Translation without a LaTeX generated .aux file is poor.
-.PP
-Table conversion is particularly poor at the moment.
 .SH REPORTING BUGS
 Report bugs to to the bug tracking system at http://sourceforge.net/projects/latex2rtf/. 
 Only report bugs for the latest version of
@@ -168,14 +174,13 @@ Only report bugs for the latest version of
 that is available.  Please identify your operating system.
 
 .PP
-If the program produces wrong output or does not work for you, include
-a 
-.I short
-LaTeX file along with a description of the problem.  The shorter the 
-LaTeX file, the quicker your bug will get addressed.
+If the program produces wrong output or does not work for you, INCLUDE
+A SHORT LATEX FILE that demonstrates the problem.  The shorter the 
+LaTeX file, the quicker your bug will get addressed.  Bug reports with
+non-existent LaTeX files are not welcomed by the developers.
 Do not bother to send RTF files, since these are usually unhelpful.
 .SH SEE ALSO
-rtf2LaTeX(1), LaTeX User's Guide & Reference Manual by Leslie Lamport
+latex(1), rtf2LaTeX2e(1), LaTeX User's Guide & Reference Manual by Leslie Lamport
 .PP
 For complete, current documentation, refer to the Info file
 .B latex2rtf.info,
