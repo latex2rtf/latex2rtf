@@ -168,8 +168,8 @@ ExtractAndRemoveTag(char *tag, char *text)
 	char *s, *contents, *start, *end;
 
 	s = text;
-	diagnostics(1, "target tag = <%s>", tag);
-	diagnostics(1, "original text = <%s>", text);
+	diagnostics(5, "target tag = <%s>", tag);
+	diagnostics(5, "original text = <%s>", text);
 
 	while (s) {					/* find start of caption */
 		start = strstr(s,tag);
@@ -192,11 +192,8 @@ ExtractAndRemoveTag(char *tag, char *text)
     do *start++=*end++; while (*end);			/* erase "tag{contents}" */
 	*start='\0';
 	
-/*	end = text+strlen(text) -1;
-	while (end>text && (*end==' ' || *end=='\n')) {*end='\0'; *end--;}
-*/
-	diagnostics(1, "final contents = <%s>", contents);
-	diagnostics(1, "final text = <%s>", text);
+	diagnostics(5, "final contents = <%s>", contents);
+	diagnostics(5, "final text = <%s>", text);
 
 	return contents;
 }

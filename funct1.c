@@ -1069,11 +1069,12 @@ CmdList(int code)
 
 	vspace = getLength("topsep")+getLength("parskip");
 	
-	if (GetTexMode()==MODE_VERTICAL)
+	if (GetTexMode()==MODE_VERTICAL) {
+		CmdStartParagraph(FIRST_PAR);
 		vspace += getLength("partopsep");
-	else
+	} else
 		CmdEndParagraph(0);
-	
+
 	switch (code) {
 		case (ITEMIZE | ON):
 		DirectVspace(vspace);

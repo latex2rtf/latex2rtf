@@ -541,6 +541,7 @@ InitializeLatexLengths(void)
 	setLength("leftmargin",		0*20);
 	setLength("floatsep",		0*20);
 	setLength("intextsep",		0*20);
+	setLength("textfloatsep",   0*20);
 	setLength("abovedisplayskip",	0*20);
 	setLength("belowdisplayskip",	 0*20);
 	setLength("abovecaptionskip",	0*20);

@@ -118,6 +118,7 @@ setPackageInputenc(char * option)
 	         strcmp(option, "cp850") == 0    ||
 	         strcmp(option, "cp852") == 0    ||
 	         strcmp(option, "cp855") == 0    ||
+	         strcmp(option, "cp865") == 0    ||
 	         strcmp(option, "cp866") == 0    ||
 	         strcmp(option, "cp1250") == 0   ||
 	         strcmp(option, "cp1251") == 0   ||
@@ -127,6 +128,7 @@ setPackageInputenc(char * option)
 	         strcmp(option, "850") == 0    ||
 	         strcmp(option, "852") == 0    ||
 	         strcmp(option, "855") == 0    ||
+	         strcmp(option, "865") == 0    ||
 	         strcmp(option, "866") == 0    ||
 	         strcmp(option, "1250") == 0   ||
 	         strcmp(option, "1251") == 0   ||
