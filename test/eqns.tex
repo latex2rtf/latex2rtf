@@ -31,11 +31,22 @@ that will have no number
 $$
 \nabla^2 \phi -{1\over c} {\partial \phi\over \partial t}  = 0
 $$
+
+Note: Delimiting an equation by \verb|$$| is a plain\TeX{} command
+which causes inconsistent vertical distances and does not obey
+the class option \textsf{fleqn}.
+Therefore it should \emph{not} be used in \LaTeX{} documents. Use
+\verb#\[...\]# instead:
+\[
+\nabla^2 \phi -{1\over c} {\partial \phi\over \partial t}  = 0
+\]
+
+
 This is followed by a \verb#displaymath# environment
 \begin{displaymath}
 \nabla^2 \phi -{1\over c} {\partial \phi\over \partial t}  = 0
 \end{displaymath}
-Here is an example of the \verb#\[# displaymath environment
+Here is an example of the \verb#\[# environment
 \[
 \nabla^2 \phi -{1\over c} {\partial \phi\over \partial t}  = 0
 \]
@@ -137,33 +148,40 @@ Case 6 Same as above but using \verb#\begin{equation}# to enter a math environme
 Case 7 Same as above but using \verb#\begin{eqnarray}# to enter a math environment
 \begin{eqnarray}a+ \bf R\end{eqnarray} roman type follows
 
-Case 8 Same as above but using \verb#\begin{equation*}# to enter a math environment
-\begin{equation*}a+ \bf R\end{equation*} roman type follows
+Case 8 Same as above but using \verb#\begin{equation*}# to enter a math environment \\
+Note: \verb#\begin{equation*}# produces LaTeX error.\\
+Use \verb#\begin{displaymath}# instead.
+
+Case 8a Same as above but using \verb#\begin{displaymath}# to enter a math environment
+\begin{displaymath}a+ \bf R\end{displaymath} roman type follows
 
 Case 9 Same as above but using \verb#$$# to enter a math environment
 $$a+ \bf R$$ roman type follows
+
+Note: Delimiting an equation by \verb|$$| is a plain\TeX{} command and
+should \emph{not} be used in \LaTeX{} documents.
 
 
 \section{Large Delimiters}
 
 \subsection{Determinant}
 
-$$
+\[
 \det A = \left| \begin{array}{cccc}
 a_{11} & a_{12} & \cdots & a_{1n}\\
 a_{21} & a_{22} & \cdots & a_{2n}\\
 \vdots & \vdots & \ddots & \vdots\\
 a_{m1} & a_{m2} & \cdots & a_{mn}
 \end{array} \right|
-$$
+\]
 
 \subsection{Mixed Delimiters}
-$$
+\[
 w =  \left| 4 x^3 + \left( (x-y) + \frac{42}{1+x^4} \right) \right|.
-$$
+\]
 
 \subsection{Submatrices}
-$$
+\[
 A = \left[ \begin{array}{cccc}
 \left|\begin{array}{cc}
 b_{11}&b_{12}\\
@@ -174,40 +192,41 @@ a_{21} & a_{22} & \cdots & a_{2n}\\
 \vdots & \vdots & \ddots & \vdots\\
 a_{m1} & a_{m2} & \cdots & a_{mn}
 \end{array} \right]
-$$
+\]
 
 \subsection{Fractions}
 Simple
-$$
+\[
 {x \over y}
-$$
+\]
 More complicated
-$$
+\[
 {x+1 \over {x+2 \over y+z +w}}
-$$
+\]
 Missing braces
-$$
+\[
 x \over y
-$$
+\]
 Including braces
-$$
+\[
 {\{ x+y \} \over w}
-$$
+\]
 Including left
-$$
-{\left{\sqrt{y+z}\right}\over w}
-$$
+
+\[
+{\left\{\sqrt{y+z}\right\}\over w}
+\]
 
 \section{fields}
 Problem with mbox containing \$ in a field
-$$
+\[
 x[l]\leftarrow x[(l+m) \bmod  n] \oplus \mbox{shiftright}(x[l])
  \oplus \left\{ \begin{array}{ll}
                 0   & \mbox{if LSB of $x[l]$=0} \\
                 b   & \mbox{if LSB of $x[l]$=1,}
                \end{array}
         \right.
-$$
+\]
 problem with correctly delimiting the above equation 
 $
 x[l]\leftarrow x[(l+m) \bmod  n] \oplus \mbox{shiftright}(x[l])
@@ -219,7 +238,7 @@ x[l]\leftarrow x[(l+m) \bmod  n] \oplus \mbox{shiftright}(x[l])
 $
 
 Look at the position of the superscript in this:
-$$
+\[
   \left[
     \begin{array}{ccc}
       1 & 2 & 3\\
@@ -227,11 +246,11 @@ $$
       7 & 8 & 9
     \end{array}
   \right]^T
-$$
+\]
 or the superscript and subscript superposition:
-$$
+\[
   s = \sum_{i=1}^n x^2_i
-$$
+\]
 or embedded sub/superscripts:
 \[
   s_n=s^{n^2}
