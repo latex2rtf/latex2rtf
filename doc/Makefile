@@ -1,6 +1,10 @@
-# $Id: Makefile,v 1.1 2001/08/12 21:15:46 prahl Exp $
+# $Id: Makefile,v 1.2 2001/10/25 05:48:43 prahl Exp $
 # History:
 # $Log: Makefile,v $
+# Revision 1.2  2001/10/25 05:48:43  prahl
+# Updated Texconv URL
+# Revised another couple of chapters.  Only the last two remain!
+#
 # Revision 1.1  2001/08/12 21:15:46  prahl
 #         Removed last two // comments
 #         Explicitly cast char to int in isalpha() and isdigit()
@@ -48,7 +52,7 @@ almostclean:
 	l2r.texi
 
 clean:	almostclean
-	rm -rf *.pdf *.info* *.html *.dvi l2r.txt
+	rm -rf *.pdf *.info* *.html *.dvi *.kys *.pgs *tps *.tmp l2r.txt
 
 
 

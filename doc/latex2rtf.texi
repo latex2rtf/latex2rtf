@@ -135,7 +135,7 @@ one-semester course by Friedrich Polzer and Gerhard Trisko. The result was @ltor
 1.5.  @email{ralf@@zoo.priv.at,Ralf Schlatterbeck} maintained and extended @ltor{} until 1998.
 
 In 1998 @email{jorge_lehner@@gmx.net,Georg Lehner} found the reference to @ltor{} on
-the @uref{http://www.fz-juelich.de/isr/1/texconv.htm, TeX Conversion Webpage}  of
+the @uref{http://tug.org/utilities/texconv/index.html, TeX Conversion Webpage}  of
 @email{W.Hennings@@fz-juelich.de,Wilfried Hennings} and added some functionality and took
 over the maintainence of the program.  The last version release by Georg is 1.8aa.
 Wilfried Hennings now coordinates
@@ -575,7 +575,7 @@ the converted document.
 You can select any of the above languages using the @option{-l} option.  This
 is not needed if your @latex{} file contains @code{\usepackage[language]@{babel@}}.
 
-Encountering the `german' package or documentstyle option (by H.Partl of the
+Encountering the @option{german} package or documentstyle option (by H. Partl of the
 Viena University) makes @ltor{} behave like that: German Quotes, German
 Umlauts by @code{"a}, etc@enddots{}  This support is programmed directly into @ltor{}
 and supporting similar features for other languages will require patching the
@@ -598,11 +598,38 @@ chosen, crossreference updating is automated by the RTF reader.
 @node Equations, Tables, Cross References, Features
 @section Equations
 
+Equations are now converted to RTF fields.  This is an interim solution.  
+Ideally the equations would become OLE equation objects in the RTF file,
+but this needs to be implemented.
+
+It would be nice to have four separate levels of equation translation
+@enumerate 
+@item The first level would just do a simple text translation without
+any special formatting
+@item The second level (which is what is currently implemented) would be
+to translate equations using fields.  These are not readily editable and
+Word does not do a good job converting these to equation objects
+@item  The third level would be to fully convert the @latex{} equations
+to Word equation objects.  The API for this has been published, but 
+is difficult because OLE encoding needs to be written.
+@item Finally, the fourth translation would be to convert the equations
+to images and embed these images in the RTF file.  This is what @code{ltx2rtf}
+does and the results are not bad.
+@end enumerate
+
+
 @node Tables, Graphics, Equations, Features
 @section Tables
 
+The table code is currently barely working.  It needs to be rewritten.
+
 @node Graphics, Pagestyles, Tables, Features
 @section Graphics
+
+One day I will get around to encorporating all graphics formats into the
+RTF file.  This will probably be done using @code{imagemagick} to do
+the actual translation to formats that are supported by Word and then
+embedding the supported format in RTF.
 
 @node Pagestyles, Hyperlatex, Graphics, Features
 @section Pagestyles
@@ -619,6 +646,8 @@ Note that these features require RTF Version 1.4.
 
 @node Hyperlatex, , Pagestyles, Features
 @section Hyperlatex
+
+Hyperlatex support is largely broken at the moment.
 
 Otfried Schwarzkopf has created the ``Hyperlatex Markup Language'' which is a
 ``little package that allows you to use @latex{} to prepare documents in HTML.''
@@ -655,78 +684,68 @@ This chapter is out of date and needs to be revised.
 
 On processing input @ltor{} first converts the @latex{} special characters. If
 it encounters one of the standard commands it is converted internally. If a
-command is not known to @ltor{} it is first looked up in the section
+command is not known to @ltor{} it is first looked up in
 @file{direct.cfg} and the RTF code specified there is output. If not found there it
-is looked up in the section @file{ignore.cfg}, since there are a lot of @latex{}
-commands that do not show up in the .dvi output (cross reference information
-and the like), or that we are not able or willing to convert to rtf.
+is looked up in the section @file{ignore.cfg}.  This file includes a lot of @latex{}
+commands that do not affect the output (cross reference information
+and the like), or that we are not able or willing to convert to RTF.
 
-You can use @file{ignore.cfg} if you get bored to see ``WARNING: command: foo not
-found - ignored'' and you don't need `foo' in your Word(R) document, but it
-would be nice to send me the offending command to include it in the
-distributions configuration files.
+You can use @file{ignore.cfg} if you get tired of seeing 
+@example
+WARNING: command: `foo' not found - ignored
+@end example
+@noindent and you don't need `foo' in your RTF document.  It would
+be nice to send your additions to the @ltor{} mailing list for inclusion
+in later distributions.
 
-@ltor{} accepts Unix-like, MSDOS and Macintosh line ending codes (\n, \r\n
-and \r).
+@ltor{} accepts Unix, MS-DOS, and Macintosh line ending codes (\n, \r\n
+and \r).  The files it creates are the line ending for the platform on
+which @ltor{} was compiled.
 
-Optionally the input is interpreted as iso-latin1 encoded, section Character
-encoding.
+The @latex{} file may have been created with a wide variety of character
+sets.  If the @latex{} lacks the @code{\package[codepage]@{inputenc@}}
+definition, then you may need to use the command line switch to manually
+select the proper code page. @xref{Input Encoding}.
 
 @node Output formatting, Direct Conversion Configuration, Input processing, Configuring LaTeX2RTF
 @section Output formatting 
 
-Since the RTF-Readers normally have their own mood of typesetting and font
-handling we have to convert the @latex{} fonts to RTF fontnames.   @xref{Font Configuration}.
-
-If you have information about adequate font mappings from Metafont to TrueType
-fonts please send me a note, so I can improve the resemblence beetween @latex{}
-and RTF output. I would be happy to include a font resource list in this
-manual.
-
-Nevertheless you are free to make all fancy things you like, map \rm on
-WingDings if you feel somewhat strange today...
-
-The standard @latex{} styles have some fixed Title names like `Part', `Reference'
-or `Bibliography' that appeared in English or German in the output with the
-original versions of @ltor{}.
-
-Now you can determine what should appear at this places with an appropriate
-section @file{language.cfg} file.
-Actually I grep-ed the descriptions out of the `babel' files from teTeX to
-supply english, german and spanish translations.
-
-On writing output, @ltor{} generates \n (lf, Newline) as line ending code.
-Your RTF-Reader should accept this on any platform. If you ftp your RTf-file
-from or to MSDOS platforms the line ending code can be converted to \r\n. As
-this should also be legal to any RTf-Reader the resulting RTF-rendering should
+On writing output, @ltor{} generates @code{\n} as line ending code.
+Your RTF Reader should accept this on any platform. If you ftp your RTF file
+from or to MS-DOS platforms the line ending code can be converted to @code{\r\n}. As
+this should also be legal to any RTF Reader the resulting RTF rendering should
 not be affected.
+
+@ltor{} does not offer a whole lot of flexibility in how files are translated,
+but it does offer some.  This flexibility resides in four files @file{direct.cfg},
+@file{ignore.cfg}, @file{fonts.cfg}, and @file{language.cfg}.  These filese
+are documented in the next four sections.
 
 @node Direct Conversion Configuration, Ignore Command Configuration, Output formatting, Configuring LaTeX2RTF
 @section Direct Conversion Configuration 
 
 The file @file{direct.cfg} is used for converting @latex{} commands by simple text
 replacement. The format consists of lines with a @latex{} command with backslash
-followed by comma. The rest of the line until a '.' character will be written
-to the RTF file when the command is recognized in the @latex{} file. Lines
-starting with a '#' character are ignored. After the '.' everything is ignored
-to end of line. To select a specific font use *fontname*. Make sure that the
-font name fontname is listed in the fonts configuration file at least as dummy.
-
-To write the '*' character use ``**''. 
+followed by comma. The rest of the line until a @samp{.} character will be written
+to the RTF file when the command is found in the @latex{} file. Lines
+starting with a @samp{#} character are ignored. After the @samp{.} everything is ignored
+to end of line. To select a specific font use @code{*fontname*}, where 
+@code{fontname} be defined in @file{fonts.cfg}.
+To write the @samp{*} character use @samp{**}. 
 @example
-\alpha,@{\f*Symbol* a@}. #alpha under Windows Symbol Font
-\copyright,@{\ansi\'a9\pc@}.
+\alpha,@{\f*Symbol* a@}. #alpha in the Symbol Font
+\copyright,\'a9.
 @end example
 
 @node Ignore Command Configuration, Font Configuration, Direct Conversion Configuration, Configuring LaTeX2RTF
 @section Ignore Command Configuration 
 
-The file @file{ignore.cfg} is used for defining how to ignore certain commands. This
-file is used for recognition of @latex{}-variables, user defined variables, and
+The file @file{ignore.cfg} is used for defining how to ignore specific commands. This
+file is used for recognition of @latex{} variables, user defined variables, and
 some simple commands. All variables are ignored but the converter must know the
 names to correctly ignore assignments to variables. Lines in this file consist
-of a variable-name with backslash, followed by comma and the type of the
-variable followed by '.'. Possible Types are:
+of a variable name with backslash, followed by comma and the type of the
+variable followed by @samp{.}. Possible types are
 
 @table @samp
 @item  NUMBER
@@ -734,10 +753,10 @@ simple numeric value
 @item  MEASURE
 numeric value with following unit of measure
 @item OTHER
-ignores anything to the first character after '=' and from there to next
+ignores anything to the first character after @samp{=} and from there to next
 space. e.g., @code{\setbox\bak=\hbox}
 @item COMMAND
-ignores anything to next '\' and from there to the occurence of anything
+ignores anything to next @samp{\} and from there to the occurence of anything
 but a letter e.g., @code{\newbox\bak}
 @item  SINGLE
 ignore single command e.g., @code{\noindent}
@@ -756,72 +775,51 @@ ignores contents of that environment, e.g., with `ENVIRONMENT,ifhtml.'
 @end table
 
 The types are in upper case exactly as above. Do not use spaces. Lines starting
-with a '#' character are ignored. After the '.' everything is ignored to end of
+with a @samp{#} character are ignored. After the @samp{.} everything is ignored to end of
 line. Example:
 @example
-\pagelength,MEASURE.'
+\pagelength,MEASURE.
 @end example
 
 @node Font Configuration, Language Configuration, Ignore Command Configuration, Configuring LaTeX2RTF
 @section Font Configuration 
 
-The file @file{fonts.cfg} contains the fonts conversion table. A line consists of a
-font name in @latex{} followed by comma and a font name in RTF. The end is marked
-by a '.'. No spaces are allowed. The @latex{} font will be converted to the RTF
-font if encountered in the @latex{} file. If multiple translations for a @latex{}
-font are specified, only the first is used. All fonts in a @latex{} file that are
-not in this file will be mapped to the default font. All RTF fonts listed in
-this file will be in every RTF file header whether used or not. Lines starting
-with a '#' character are ignored. After the '.' everything is ignored to end of
-line. To add a RTF font not used as substitute for a @latex{} font - for example a
-Symbol font used in @file{direct.cfg} --- use a dummy @latex{} name like in the following
+The file @file{fonts.cfg} contains the font name mapping.  For example, this
+file determine what font is used to represent @code{\rm} characters in the RTF file.  
+
+A line consists of a font name in @latex{} followed by comma and a font
+name in RTF. The end is marked by a @samp{.}. No spaces are allowed. The
+@latex{} font will be converted to the RTF font when it is found
+in the @latex{} file. If multiple translations for the same @latex{} font are
+specified, only the first is used. All fonts in a @latex{} file that are
+not in this file will be mapped to the default font. All RTF fonts
+listed in this file will be in every RTF file header whether used or
+not.  Lines starting with a @samp{#} character are ignored. After the
+@samp{.} everything is ignored to end of line. 
+
+To add a RTF font not
+used as substitute for a @latex{} font --- for example a Symbol font used
+in @file{direct.cfg} --- use a dummy @latex{} name like in the following
 @example
 Dummy3,MathematicalSymbols.
 @end example
 
 Make sure you use the correct font name. Take care of spaces in font names. The
-default fonts are named Roman (command \rm), Slanted (command \sl), Sans Serif
-(command \sf), Typewriter (command \tt).
+default fonts are named Roman @code{\rm}, Slanted @code{\sl}, Sans Serif
+@code{\sf}, Typewriter @code{\tt}, or Calligraphic @code{\cal}.
 
 @node Language Configuration,, Font Configuration, Configuring LaTeX2RTF
 @section Language Configuration 
 
 The file(s) @file{language.cfg} control the translation of @latex{}'s ``hardcoded''
 sectioning names.
+The standard @latex{} styles have some fixed Title names like `Part', `Reference'
+or `Bibliography' that appeared in English or German in the output with the
+original versions of @ltor{}. 
 
-I have put in what I found whith grep ``\renewcommand'' * in the @latex{} style
-directory (teTex, babel), the tokens have the ``name'' stripped of and are all
-uppercase i.e. `\contentsname' mutes to `CONTENTS'. Actually @ltor{} uses
-only REF and PART.
-
-@table @env
-@item CONTENTS
-Contents.
-@item LISTFIGURE
-List of Figures.
-@item LISTTABLE
-List of Tables.
-@item REF
-Bibliography.
-@item REFARTICLE
-Reference (Bibliography in the article style).
-@item INDEX
-Index.
-@item FIGURE
-Figure.
-@item TABLE
-Table.
-@item PART
-Part.
-@item APPENDIX
-Appendix.
-@item ABSTRACT
-Abstract.
-@end table
-
-Actually there is an english, a french, a german and a spanish Version. You are
-welcome contribute with @file{language.cfg} files in other idioms to include them in
-the distribution. Send them to @email{Jorge.Lehner@@gmx.net} or @email{W.Hennings@@fz-juelich.de}.
+It is unlikely that you will need to create a new @file{language.cfg} file.
+However, just look at one of the existing files and follow the pattern.
+The format is really simple.  
 
 @node Error Messages and Logging of LaTeX2RTF Activity,, Configuring LaTeX2RTF, Top
 @chapter Error Messages and Logging of LaTeX2RTF Activity 
