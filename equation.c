@@ -288,13 +288,13 @@ CmdDisplayMath(int code)
 			incrementCounter("equation");
 			for (; g_equation_column < 3; g_equation_column++)
 					fprintRTF("\\tab ");
-			fprintRTF("\\tab(");
+			fprintRTF("\\tab{\\b0 (");
 			if (g_equation_label) 
 				fprintRTF("{\\*\\bkmkstart LBL_%s}",g_equation_label);
 			fprintRTF("%d", getCounter("equation"));
 			if (g_equation_label) 
 				fprintRTF("{\\*\\bkmkend LBL_%s}",g_equation_label);
-			fprintRTF(")");
+			fprintRTF(")}");
 			if (g_equation_label) 
 				free(g_equation_label);
 			g_equation_label = NULL;
