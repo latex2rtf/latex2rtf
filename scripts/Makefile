@@ -8,7 +8,7 @@ PNG= test1.png test2.png test3.png test4.png $(TMP)/test1.png test1fig.png
 
 all:
 	mkdir -p $(TMP)
-	make png
+	$(MAKE) png
 
 png: $(PNG)
 

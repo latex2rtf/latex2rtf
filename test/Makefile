@@ -23,7 +23,7 @@ RTF=accentchars.rtf array.rtf bib_simple.rtf bib_apalike.rtf bib_apalike2.rtf \
 
 all:
 	mkdir -p ../tmp
-	make rtf
+	$(MAKE) rtf
 
 rtf: $(RTF)
 
