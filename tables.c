@@ -1,4 +1,4 @@
-/* $Id: tables.c,v 1.18 2002/04/27 16:05:42 prahl Exp $
+/* $Id: tables.c,v 1.19 2002/04/27 22:53:00 prahl Exp $
 
    Translation of tabbing and tabular environments
 */
@@ -400,9 +400,10 @@ TabularGetRow(char *table, char **row, char **next_row, int *height)
 	dimension[dim_chars]='\n';  /* make sure entire string is not parsed */
 	dimension[dim_chars+1]='\0';
 	
-	PushSource(NULL,dimension);
-	*height=getDimension();
-	PopSource();
+	if (PushSource(NULL,dimension) == 0) {
+		*height=getDimension();
+		PopSource();
+	}
 
 	diagnostics(4,"height =<%s>=%d twpi",dimension,height);
 	free(dimension);
@@ -416,11 +417,9 @@ TabularGetRow(char *table, char **row, char **next_row, int *height)
 }
 
 static char *
-TabularNextAmpersand(char *t)
+TabularNextAmpersand(char *s)
 {
-	char *s;
 	int slash=0;
-	s=t;
 	
 	while (s && *s != '\0' && *s != '&' && !(*s=='&' && slash)) {
 		slash = (*s == '\\') ? 1 : 0;
@@ -609,16 +608,17 @@ CmdMultiCol(int code)
 	}
 
 	for (i = 1; i < toBeInserted; i++, actCol++) 
-		fprintRTF(" \\cell \\pard \\intbl ");
+		fprintRTF("\\cell\\pard\\intbl");
 	
 	fprintRTF("\\q%c ", colFormat[0]);
 
 	diagnostics(4, "Entering Convert() from CmdMultiCol()");
 	ConvertString(content);
 	free(content);
+	free(colFormat);
 	diagnostics(4, "Exiting Convert() from CmdMultiCol()");
 
 	for (i = toBeInserted; (i < numCol) && (actCol < colCount); i++, actCol++) 
-		fprintRTF(" \\cell \\pard \\intbl ");
+		fprintRTF("\\cell\\pard\\intbl ");
 
 }

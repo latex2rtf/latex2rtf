@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.69 2002/04/13 18:20:35 prahl Exp $ 
+/* $Id: funct1.c,v 1.70 2002/04/27 22:53:00 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -416,6 +416,7 @@ CmdBeginEnd(int code)
 			CmdVspace(1);
 			CmdIndent(INDENT_INHIBIT);
 		}
+		free(s);
 		return;
 	} else
 		diagnostics(5,"failed to match theorem");
@@ -1723,7 +1724,7 @@ CmdInclude(int code)
 		s = t;
 	}
 
-	if (PushSource(s,NULL)==0)
-		diagnostics(WARNING, "Including file <%s>",t);
+	if (PushSource(s,NULL)==0);
+	diagnostics(WARNING, "Including file <%s>",t);
 	free(s);
 }

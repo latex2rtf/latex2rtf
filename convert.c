@@ -1,4 +1,4 @@
-/* $Id: convert.c,v 1.31 2002/04/21 22:49:59 prahl Exp $ 
+/* $Id: convert.c,v 1.32 2002/04/27 22:53:00 prahl Exp $ 
 	
 TeX has six modes:
 	
@@ -94,9 +94,9 @@ ConvertString(char *string)
 		temp[255] = '\0';
 	}
 	
-	if (PushSource(NULL, string)==0) {
+	if (PushSource(NULL, string) == 0) {
 		diagnostics(4, "Entering Convert() from StringConvert()\n******\n%s\n*****",temp);
-
+	
 		while (StillSource())
 			Convert();
 			
@@ -119,10 +119,10 @@ ConvertAllttString(char *s)
 	if (s==NULL) return;
 	diagnostics(4, "Entering Convert() from StringAllttConvert()");
 
-	if (PushSource(NULL, s)==0) {
+	if(PushSource(NULL, s)==0) {
 
 		while (StillSource()) {
-
+	
 			cThis = getRawTexChar();   /* it is a verbatim like environment */
 			switch (cThis) {
 			
@@ -149,7 +149,6 @@ ConvertAllttString(char *s)
 		}
 		PopSource();
 	}
-
 	diagnostics(4, "Exiting Convert() from StringAllttConvert()");
 }
 

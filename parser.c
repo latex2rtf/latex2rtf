@@ -1,4 +1,4 @@
-/*  $Id: parser.c,v 1.56 2002/04/21 22:49:59 prahl Exp $
+/*  $Id: parser.c,v 1.57 2002/04/27 22:53:00 prahl Exp $
 
    Contains declarations for a generic recursive parser for LaTeX code.
 */
@@ -22,6 +22,7 @@
 typedef struct InputStackType
 {
    char  *string;
+   char  *string_start;
    FILE  *file;
    char  *file_name;
    long   file_line;
@@ -113,7 +114,8 @@ int
 PushSource(char * filename, char * string)
 /***************************************************************************
  purpose:     change the source used by getRawTexChar() to either file or string
- 			  pass NULL for unused argument (both NULL means use stdin)
+ 			  --> pass NULL for unused argument (both NULL means use stdin)
+ 			  --> PushSource duplicates string
 ****************************************************************************/
 {
 	char       s[50];
@@ -162,20 +164,20 @@ PushSource(char * filename, char * string)
     	line = CurrentLineNumber();
 	}    	
 	
-	if (++g_parser_depth >= PARSER_SOURCE_MAX) {
-		diagnostics(ERROR, "To many BeginSource() calls");
-		return 1;
-	}
+	g_parser_depth++;
+	
+	if (g_parser_depth >= PARSER_SOURCE_MAX)
+		diagnostics(ERROR, "More than %d PushSource() calls",(int)PARSER_SOURCE_MAX);
 
-	g_parser_stack[g_parser_depth].string      = string;
+	g_parser_string = (string) ? strdup(string) : NULL;
+	g_parser_stack[g_parser_depth].string      = g_parser_string;
+	g_parser_stack[g_parser_depth].string_start= g_parser_string;
 	g_parser_stack[g_parser_depth].file        = p;
 	g_parser_stack[g_parser_depth].file_line   = line;
 	g_parser_stack[g_parser_depth].file_name   = name;
 	g_parser_file = p;
-	g_parser_string = string;
-/*
-	g_parser_line = line;
-*/
+	g_parser_string = g_parser_stack[g_parser_depth].string;
+
 	if (g_parser_file) {
 		diagnostics(5, "Opening Source File %s", g_parser_stack[g_parser_depth].file_name);
 	}else {
@@ -221,6 +223,9 @@ PopSource(void)
 	char       s[50];
 	int i;
 
+	if (g_parser_depth < 0) 
+		diagnostics(ERROR, "More PopSource() calls than PushSource() ");
+
 	if (0) {
 		diagnostics(1,"Before PopSource** line=%d, g_parser_depth=%d, g_parser_include_level=%d",
 		g_parser_line,g_parser_depth,g_parser_include_level);
@@ -235,20 +240,26 @@ PopSource(void)
 			}
 		}
 	}
-	if (g_parser_file)
-		diagnostics(5, "Closing Source File %s", g_parser_stack[g_parser_depth].file_name);
-	else {
-		strncpy(s,g_parser_string,25);
-		diagnostics(5, "Closing Source string <%s>",s);
-	}
-
-	if (g_parser_depth < 0) 
-		diagnostics(ERROR, "EndSource() calls exceed BeginSource() calls");
-
+	
 	if (g_parser_file) {
+		diagnostics(5, "Closing Source File %s", g_parser_stack[g_parser_depth].file_name);
 		fclose(g_parser_file);
 		free(g_parser_stack[g_parser_depth].file_name);
+		g_parser_stack[g_parser_depth].file_name=NULL;
 		g_parser_include_level--;
+	} 
+	
+	if (g_parser_string) {
+		if (strlen(g_parser_stack[g_parser_depth].string_start)<49) 
+			strcpy(s,g_parser_stack[g_parser_depth].string_start);
+		else {
+			strncpy(s,g_parser_stack[g_parser_depth].string_start,49);
+			s[50]='\0';
+		}
+			
+		diagnostics(5, "Closing Source string <%s>",s);
+		free(g_parser_stack[g_parser_depth].string_start);
+		g_parser_stack[g_parser_depth].string_start=NULL;
 	}
 		
 	g_parser_depth--;
@@ -1038,9 +1049,10 @@ getSection(char **body, char **header, char **label)
 					
 					delta -= index+1;  		/* remove \macroname */
 					str = expandDefinition(i);
-					PushSource(NULL,str);   /* memory leak :-( and ignore failure*/
-					index = 0;
 	    			diagnostics(4,"getSection() expanded macro string is <%s>", str);
+					PushSource(NULL,str); 
+					free(str);
+					index = 0;
 					continue;
 				}
 			}
@@ -1071,7 +1083,8 @@ getSection(char **body, char **header, char **label)
 				else
 					str2 = strdup_together("{",str);
 				free(str);
-				PushSource(NULL,str2);   /* memory leak :-(  */
+				PushSource(NULL,str2);
+				free(str2);
 				delta -= index+1;  		/* remove \begin{userenvironment} */
 				index = 0;
 				diagnostics(4,"getSection() expanded environment string is <%s>", str);
