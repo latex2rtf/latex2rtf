@@ -72,24 +72,25 @@ static bool     TranslateCommand();	/* converts commands */
 static int    ret = 0;
 static int g_TeX_mode = MODE_VERTICAL;
 
-char TexModeName[6][25] = {"vertical", "internal vertical", "horizontal", 
-                        "restricted horizontal", "math", "displaymath"};
+char TexModeName[7][25] = {"bad", "internal vertical", "horizontal", 
+                        "restricted horizontal", "math", "displaymath","vertical"};
 
 void SetTexMode(int mode)
 {
-	if (g_TeX_mode != mode) 
-		diagnostics(4, "TeX mode now %s", TexModeName[mode]);
+	if (abs(mode) != g_TeX_mode) 
+		diagnostics(4, "TeX mode changing from [%s] -> [%s]", TexModeName[g_TeX_mode], TexModeName[abs(mode)]);
 		
-	if (mode < 0) {
+	if (mode < 0) {         /* hack to allow CmdStartParagraph to set mode directly */
 		g_TeX_mode = -mode;
 		return;
 	}
 
-	if (g_TeX_mode == MODE_VERTICAL && mode == MODE_HORIZONTAL) {
-		g_TeX_mode = mode;  /* prevent recursion */
+	if (g_TeX_mode == MODE_VERTICAL && mode == MODE_HORIZONTAL) 
 		CmdStartParagraph(ANY_PAR);
-	}
 	
+	if (g_TeX_mode == MODE_HORIZONTAL && mode == MODE_VERTICAL)
+		CmdEndParagraph(0);
+
 	g_TeX_mode = mode;
 }
 
@@ -546,7 +547,7 @@ TranslateCommand()
 /****************************************************************************
 purpose: The function is called on a backslash in input file and
 	 tries to call the command-function for the following command.
-returns: sucess or not
+returns: success or not
 globals: fTex, fRtf, command-functions have side effects or recursive calls;
          global flags for convert
  ****************************************************************************/
@@ -596,6 +597,7 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 		return TRUE;
 		
 	case ' ':
+	case '\n':
 		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
 		fprintRTF(" ");	/* ordinary interword space */
 		skipSpaces();

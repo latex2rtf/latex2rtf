@@ -69,19 +69,35 @@ CmdStartParagraph(int code)
                Sometimes it is necessary to know what the next paragraph will
                be before it has been parsed.  For example, a section command
                should create a paragraph for the section title and then the
-               next paragraph encountered should be handled like the first 
-               paragraph.  So status is set to 2 (and ignored when 
+               next paragraph encountered should be handled like as a first 
+               paragraph.  So status is set to 2 and decremented to 1 when the
+               section title paragraph is started.
+               
+               If the status is 1, then it is the first paragraph in a section.
+               Usually the first paragraph is not indented.  However, when the
+               document is being typeset in french it should have normal indentation.
+               Another special case occurs when the paragraph being typeset is
+               in a list environment.  In this case, we need to indent according
+               to the current parindent to obtain the proper hanging indentation
+               
+               If the status is 0, then use the default is to indent according to
+               the current parindent.  However, if the g_paragraph_inhibit_indent
+               flag or the g_paragraph_no_indent flag is TRUE, then do not indent
+               the next line.  Typically these flags are set just after a figure
+               or equation or table.
+               
+               Note that when the code is ANY_PAR, the status flag is not touched.
  ******************************************************************************/
 {
 	static int status;
 	int parindent;
 	
-	if (code==TITLE_PAR) status=2;
-	if (code==FIRST_PAR) status=1;
+	if (code == TITLE_PAR) status=2; 
+	if (code == FIRST_PAR) status=1;
 	
 	parindent = getLength("parindent");
 
-	diagnostics(5,"CmdStartParagraph mode = %d", GetTexMode());
+	diagnostics(5,"CmdStartParagraph mode = %s", TexModeName[GetTexMode()]);
 	diagnostics(5,"Noindent is         %s", (g_paragraph_no_indent) ? "TRUE" : "FALSE");
 	diagnostics(5,"Inhibit is          %s", (g_paragraph_inhibit_indent) ? "TRUE" : "FALSE");
 	diagnostics(5,"indent is           %d", indent);
@@ -104,8 +120,8 @@ CmdStartParagraph(int code)
 	if (status==2)
 		parindent=0;
 	
- 	/* French does not indent first paragraphs */
- 	if (status==1 && !FrenchMode )
+ 	/* French indents the first paragraph */
+ 	if (status==1 && !FrenchMode && !g_processing_list_environment)
 		parindent=0;
 	
 	/* use indent flags for ANY_PAR */
@@ -135,7 +151,7 @@ CmdEndParagraph(int code)
 	diagnostics(5,"CmdEndParagraph mode = %d", GetTexMode());
 	if (mode != MODE_VERTICAL) {
 		fprintRTF("\\par\n");
-		SetTexMode(MODE_VERTICAL);
+		SetTexMode(-MODE_VERTICAL);  /* negative value avoids calling CmdEndParagraph! */
 	}
 	
 	g_paragraph_inhibit_indent = FALSE;
@@ -457,7 +473,6 @@ CmdBeginEnd(int code)
 			str = expandTheorem(i,option);
 			CmdEndParagraph(0);
 			CmdVspace(VSPACE_SMALL_SKIP);
-			CmdIndent(INDENT_NONE);
 			CmdStartParagraph(FIRST_PAR);
 			fprintRTF("{\\b %s} {\\i ", str);
 			PushBrace();
@@ -691,7 +706,6 @@ parameter: code: type of section-recursion-level
 	case SECT_PART:
 	case SECT_PART_STAR:
 		fprintRTF("\\page");
-		CmdIndent(INDENT_NONE);
 		CmdStartParagraph(TITLE_PAR);
 		fprintRTF("{\\qc\\b\\fs40 ");
 		ConvertBabelName("PARTNAME");
@@ -709,7 +723,6 @@ parameter: code: type of section-recursion-level
 	case SECT_CHAPTER:
 	case SECT_CHAPTER_STAR:
 		fprintRTF("\\page");
-		CmdIndent(INDENT_NONE);
 		CmdStartParagraph(TITLE_PAR);
 		fprintRTF("{\\plain\\b\\fs40\\kerning28 ");
 		ConvertBabelName("CHAPTERNAME");
@@ -736,7 +749,6 @@ parameter: code: type of section-recursion-level
 	case SECT_NORM:
 	case SECT_NORM_STAR:
 		CmdVspace(VSPACE_BIG_SKIP);
-		CmdIndent(INDENT_NONE);
 		CmdStartParagraph(TITLE_PAR);
 		fprintRTF("{\\plain\\b ");
 		if(code == SECT_NORM && getCounter("secnumdepth")>=0) {		
@@ -761,7 +773,6 @@ parameter: code: type of section-recursion-level
 	case SECT_SUB:
 	case SECT_SUB_STAR:
 		CmdVspace(VSPACE_MEDIUM_SKIP);
-		CmdIndent(INDENT_NONE);
 		CmdStartParagraph(TITLE_PAR);
 		fprintRTF("{\\plain\\b\\fs24 ");
 		if (code == SECT_SUB && getCounter("secnumdepth")>=1) {
@@ -784,7 +795,6 @@ parameter: code: type of section-recursion-level
 	case SECT_SUBSUB:
 	case SECT_SUBSUB_STAR:
 		CmdVspace(VSPACE_MEDIUM_SKIP);
-		CmdIndent(INDENT_NONE);
 		CmdStartParagraph(TITLE_PAR);
 		fprintRTF("{\\plain\\b\\fs24 ");
 		if (code == SECT_SUBSUB && getCounter("secnumdepth")>=2) {
@@ -806,7 +816,6 @@ parameter: code: type of section-recursion-level
 	case SECT_SUBSUBSUB:
 	case SECT_SUBSUBSUB_STAR:
 		CmdVspace(VSPACE_MEDIUM_SKIP);
-		CmdIndent(INDENT_NONE);
 		CmdStartParagraph(TITLE_PAR);
 		fprintRTF("{\\plain\\b ");
 		if (code == SECT_SUBSUBSUB && getCounter("secnumdepth")>=3) {
@@ -827,7 +836,6 @@ parameter: code: type of section-recursion-level
 	case SECT_SUBSUBSUBSUB:
 	case SECT_SUBSUBSUBSUB_STAR:
 		CmdVspace(VSPACE_MEDIUM_SKIP);
-		CmdIndent(INDENT_NONE);
 		CmdStartParagraph(TITLE_PAR);
 		fprintRTF("{\\plain\\b ");
 		if (code == SECT_SUBSUBSUBSUB && getCounter("secnumdepth")>=4) {
@@ -848,8 +856,6 @@ parameter: code: type of section-recursion-level
 		free(g_section_label); 
 		g_section_label = NULL;
 	}
-	
-	CmdIndent(INDENT_NONE);
 }
 
 
@@ -880,7 +886,6 @@ CmdCaption(int code)
 		CmdEndParagraph(0);
 	vspace = getLength("abovecaptionskip");
 	DirectVspace(vspace);
-	CmdIndent(INDENT_NONE);
 	CmdStartParagraph(FIRST_PAR);
 	fprintRTF("{");
 
@@ -1027,15 +1032,14 @@ CmdQuote(int code)
   globals:   indent which is the left-indent-position
  ******************************************************************************/
 {
-	if (GetTexMode()!=MODE_VERTICAL)
-		CmdEndParagraph(0);
+	CmdEndParagraph(0);
 
 	switch (code) {
 	case (QUOTATION | ON):
 		diagnostics(4,"Entering \\begin{quotation}");
 		CmdVspace(VSPACE_SMALL_SKIP);
 		indent += 512;
-		indent_right +=512;
+		indent_right += 512;
 		CmdIndent(INDENT_USUAL);
 		break;
 
@@ -1043,7 +1047,7 @@ CmdQuote(int code)
 		diagnostics(4,"Entering CmdQuote");
 		CmdVspace(VSPACE_SMALL_SKIP);
 		indent += 512;
-		indent_right +=512;
+		indent_right += 512;
 		setLength("parindent",0);
 		CmdIndent(INDENT_USUAL);
 		break;
@@ -1052,7 +1056,7 @@ CmdQuote(int code)
 	case (QUOTE | OFF):
 		diagnostics(4,"Exiting CmdQuote");
 		indent -= 512;
-		indent_right -=512;
+		indent_right -= 512;
 		CmdVspace(VSPACE_SMALL_SKIP);
 	}
 }
@@ -1069,10 +1073,9 @@ CmdList(int code)
 
 	vspace = getLength("topsep")+getLength("parskip");
 	
-	if (GetTexMode()==MODE_VERTICAL) {
-		CmdStartParagraph(FIRST_PAR);
+	if (GetTexMode()==MODE_VERTICAL)
 		vspace += getLength("partopsep");
-	} else
+	else
 		CmdEndParagraph(0);
 
 	switch (code) {
@@ -1138,7 +1141,7 @@ CmdItem(int code)
 	DirectVspace(vspace);
 	
 	CmdIndent(INDENT_USUAL);
-	CmdStartParagraph(ANY_PAR);
+	CmdStartParagraph(FIRST_PAR);
 	
 	itemlabel = getBracketParam();
 	if (itemlabel) {	/* \item[label] */
@@ -1508,7 +1511,6 @@ CmdFigure(int code)
 			label=ExtractAndRemoveTag("\\label",figure_contents);
 			CmdEndParagraph(0);
 			CmdVspace(VSPACE_SMALL_SKIP);
-			CmdIndent(INDENT_NONE);
 			CmdStartParagraph(FIRST_PAR);
 			WriteLatexAsBitmap("\\begin{figure}",figure_contents,"\\end{figure}");
 			ConvertString(caption);

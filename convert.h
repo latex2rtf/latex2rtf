@@ -5,6 +5,8 @@
 #define MODE_DISPLAYMATH           5
 #define MODE_VERTICAL              6
 
+extern char TexModeName[7][25];
+
 void SetTexMode(int mode);
 int  GetTexMode(void);
 
