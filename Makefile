@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.40 2002/03/17 18:42:45 prahl Exp $
+# $Id: Makefile,v 1.41 2002/03/17 19:05:28 prahl Exp $
 
 CC=gcc
 INSTALL=install
@@ -39,12 +39,15 @@ INFO_INSTALL=$(PREFIX)/info
 
 VERSION="`scripts/version`"
 
-SRCS=commands.c commands.h chars.c chars.h direct.c direct.h encode.c encode.h l2r_fonts.c \
-    l2r_fonts.h funct1.c funct1.h tables.c tables.h ignore.c ignore.h main.c \
-    main.h stack.c stack.h version.h cfg.c cfg.h util.c util.h parser.c parser.h \
-    lengths.c lengths.h counters.c counters.h letterformat.c letterformat.h \
-    preamble.c preamble.h equation.c equation.h convert.c convert.h xref.c xref.h\
-    mygetopt.c optind.c encode_tables.h definitions.c definitions.h graphics.c graphics.h \
+SRCS=commands.c chars.c direct.c encode.c l2r_fonts.c funct1.c tables.c ignore.c \
+	main.c stack.c cfg.c util.c parser.c lengths.c counters.c letterformat.c \
+	preamble.c equation.c convert.c xref.c definitions.c graphics.c \
+	mygetopt.c optind.c
+
+HDRS=commands.h chars.h direct.h encode.h l2r_fonts.h funct1.h tables.h ignore.h \
+    main.h stack.h cfg.h util.h parser.h lengths.h counters.h letterformat.h \
+    preamble.h equation.h convert.h xref.h definitions.h graphics.h encode_tables.h \
+    version.h
 
 CFGS=cfg/fonts.cfg cfg/direct.cfg cfg/ignore.cfg \
     cfg/afrikaans.cfg cfg/bahasa.cfg cfg/basque.cfg cfg/brazil.cfg cfg/breton.cfg \
@@ -87,7 +90,7 @@ OBJS=l2r_fonts.o direct.o encode.o commands.o stack.o funct1.o tables.o \
 all : checkdir latex2rtf doc
 	touch stamp-build
 
-latex2rtf: $(OBJS)
+latex2rtf: $(OBJS) $(HDRS)
 	$(CC) $(CFLAGS) $(OBJS)	$(LIBS) -o latex2rtf
 
 cfg.o: cfg.c cfg.h util.h
@@ -96,16 +99,16 @@ cfg.o: cfg.c cfg.h util.h
 check: latex2rtf
 	cd test && $(MAKE) 
 
-checkdir: $(README) $(SRCS) $(CFGS) $(SCRIPTS) $(TEST) doc/latex2rtf.texi
+checkdir: $(README) $(SRCS) $(HDRS) $(CFGS) $(SCRIPTS) $(TEST) doc/latex2rtf.texi
 
 clean: checkdir
 	rm -f $(OBJS) core latex2rtf
 
 depend: $(SRCS)
-	@echo "***** Append makefile.depend to Makefile manually ******"
 	cc -MM $(SRCS) >makefile.depend
+	@echo "***** Append makefile.depend to Makefile manually ******"
 
-dist: $(SRCS) $(CFGS) $(README) Makefile $(SCRIPTS) $(DOCS) $(TEST)
+dist: $(SRCS) $(HDRS) $(CFGS) $(README) Makefile $(SCRIPTS) $(DOCS) $(TEST)
 	mkdir latex2rtf-$(VERSION)
 	mkdir latex2rtf-$(VERSION)/cfg
 	mkdir latex2rtf-$(VERSION)/doc
@@ -113,6 +116,7 @@ dist: $(SRCS) $(CFGS) $(README) Makefile $(SCRIPTS) $(DOCS) $(TEST)
 	mkdir latex2rtf-$(VERSION)/test
 	mkdir latex2rtf-$(VERSION)/scripts
 	ln $(SRCS)         latex2rtf-$(VERSION)
+	ln $(HDRS)         latex2rtf-$(VERSION)
 	ln $(README)       latex2rtf-$(VERSION)
 	ln Makefile        latex2rtf-$(VERSION)
 	ln $(CFGS)         latex2rtf-$(VERSION)/cfg
@@ -124,7 +128,7 @@ dist: $(SRCS) $(CFGS) $(README) Makefile $(SCRIPTS) $(DOCS) $(TEST)
 	    gzip -best > latex2rtf-$(VERSION).tar.gz
 	rm -rf latex2rtf-$(VERSION)
 
-doc: checkdir doc/latex2rtf.texi
+doc: doc/latex2rtf.texi doc/Makefile
 	cd doc && $(MAKE) -k
 
 install: latex2rtf latex2rtf.1 $(CFGS) scripts/latex2png
