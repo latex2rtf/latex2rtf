@@ -1,4 +1,4 @@
-/* $Id: preamble.c,v 1.5 2001/09/06 04:43:04 prahl Exp $
+/* $Id: preamble.c,v 1.6 2001/09/09 19:41:40 prahl Exp $
 
 purpose : Handles LaTeX commands that should only occur in the preamble.
           These are gathered together because the entire preamble must be
@@ -40,6 +40,13 @@ static char * g_preambleAuthor   = NULL;
 static char * g_preambleDate     = NULL;
 static char * g_preambleLanguage = NULL;
 static char * g_preambleEncoding = NULL;
+
+static char * g_preambleCFOOT = NULL;
+static char * g_preambleLFOOT = NULL;
+static char * g_preambleRFOOT = NULL;
+static char * g_preambleCHEAD = NULL;
+static char * g_preambleLHEAD = NULL;
+static char * g_preambleRHEAD = NULL;
 
 static void setPackageBabel(char * option);
 static void setPackageInputenc(char * option);
@@ -374,6 +381,16 @@ CmdHeader(int code)
 		RtfHeader(BOTH_SIDES, NULL);
 }
 
+void CmdThePage(int code)
+/******************************************************************************
+ purpose: handles \thepage in headers and footers
+ ******************************************************************************/
+{  
+  diagnostics(4,"CmdThePage");
+  
+  fprintf(fRtf, "\\chpgn ");
+}
+
 void
 RtfHeader(int where, char *what)
 /******************************************************************************
@@ -550,7 +567,72 @@ WriteHeadFoot(void)
   \footerf        The footer is on the first page only.
 ****************************************************************************/
 {
-	fprintf(fRtf, "\\ftnbj\\sectd\\linex0\\endnhere\\qj\n");
+/*	fprintf(fRtf, "\\ftnbj\\sectd\\linex0\\endnhere\\qj\n"); */
+
+  	if (g_preambleLFOOT || g_preambleCFOOT || g_preambleRFOOT) {
+  		fprintf(fRtf,"{\\footer\\pard\\plain\\tqc\\tx4320\\tqr\\tx8640");
+  		
+		if (g_preambleLFOOT)
+			ConvertString(g_preambleLFOOT);
+		
+		fprintf(fRtf,"\\tab ");
+		if (g_preambleCFOOT)
+			ConvertString(g_preambleCFOOT);
+		
+		if (g_preambleRFOOT) {
+			fprintf(fRtf,"\\tab ");
+			ConvertString(g_preambleRFOOT);
+		}
+  		
+        fprintf(fRtf,"\\par}\n");
+    }
+
+  	if (g_preambleLHEAD || g_preambleCHEAD || g_preambleRHEAD) {
+  		fprintf(fRtf,"{\\header\\pard\\plain\\tqc\\tx4320\\tqr\\tx8640");
+  		
+		if (g_preambleLHEAD)
+			ConvertString(g_preambleLHEAD);
+		
+		fprintf(fRtf,"\\tab ");
+		if (g_preambleCHEAD)
+			ConvertString(g_preambleCHEAD);
+		
+		if (g_preambleRHEAD) {
+			fprintf(fRtf,"\\tab ");
+			ConvertString(g_preambleRHEAD);
+		}
+  		
+        fprintf(fRtf,"\\par}\n");
+    }
+}
+
+void CmdHeadFoot(int code)
+/******************************************************************************
+ purpose: performs \cfoot, \lfoot, \rfoot, \chead, \lhead, \rhead commands (fancyhdr)
+ adapted from code by Taupin in ltx2rtf
+ ******************************************************************************/
+{
+  char *HeaderText = getParam();
+  
+  diagnostics(4,"CmdHeadFoot code=%d <%s>",code, HeaderText);
+  switch(code)
+  {
+  	case CFOOT:	g_preambleCFOOT = HeaderText;
+  			break;
+  	case LFOOT:	g_preambleLFOOT = HeaderText;
+  			break;
+  	case RFOOT:	g_preambleRFOOT = HeaderText;
+  			break;
+  	case CHEAD:	g_preambleCHEAD = HeaderText;
+  			break;
+  	case LHEAD:	g_preambleLHEAD = HeaderText;
+  			break;
+  	case RHEAD: g_preambleRHEAD = HeaderText;
+  			break;
+  }
+  
+  if (!g_processing_preamble) 
+  	WriteHeadFoot();
 }
 
 static void

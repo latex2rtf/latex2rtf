@@ -1,4 +1,4 @@
-/* $Id: main.h,v 1.15 2001/09/06 04:43:04 prahl Exp $ */
+/* $Id: main.h,v 1.16 2001/09/09 19:41:40 prahl Exp $ */
 
 #undef HAS_NO_GETOPT
 
@@ -130,6 +130,7 @@ extern bool     g_processing_equation;
 extern long     linenumber;
 extern bool     tabbing_on_itself;	/* LEG220698*** lclint - really used? */
 extern bool     tabbing_return;	/* LEG220698*** lclint - really used? */
+extern bool     g_processing_preamble;
 extern bool     g_processing_figure;
 extern bool     g_processing_include;	
 extern bool     g_processing_eqnarray;

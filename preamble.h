@@ -33,6 +33,13 @@
 #define HEADER33 "{\\*\\pnseclvl3\\pndec\\pnstart1\\pnindent720\\pnhang{\\pntxta .}}"
 #define HEADER43 "{\\*\\pnseclvl4\\pnlcltr\\pnstart1\\pnindent720\\pnhang{\\pntxta .}}"
 
+#define CFOOT 1
+#define LFOOT 2
+#define RFOOT 3
+#define LHEAD 4
+#define CHEAD 5
+#define RHEAD 6
+
 void CmdDocumentStyle(int code);
 void CmdUsepackage(int code);
 void CmdTitle(int code);
@@ -44,3 +51,5 @@ void CmdHeader(int code);
 void RtfHeader(int where, char *what);
 void CmdHyphenation(int code);
 void WriteRtfHeader(void );
+void CmdHeadFoot(int code);
+void CmdThePage(int code);

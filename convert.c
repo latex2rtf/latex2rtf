@@ -1,4 +1,4 @@
-/* $Id: convert.c,v 1.1 2001/09/06 04:43:04 prahl Exp $ 
+/* $Id: convert.c,v 1.2 2001/09/09 19:41:40 prahl Exp $ 
 	purpose: routines to */
 
 #include <stdio.h>
@@ -36,8 +36,8 @@ void
 ConvertString(char *string)
 /******************************************************************************
      purpose : converts string in TeX-format to Rtf-format
-   parameter : string   will be converted, result is written to Rtf-file
-     globals : linenumber
+   parameter : string to be converted
+     globals : linenumber, fTex
  ******************************************************************************/
 {
 	FILE           *fp, *LatexFile;
@@ -104,7 +104,7 @@ globals: fTex, fRtf and all global flags for convert (see above)
 		if (cThis == '\n')
 			diagnostics(5, "Current character in Convert() is '\\n'");
 		else if (cThis == '\0')
-			diagnostics(5, "Current character in Convert() is '\\0'");
+			diagnostics(5, "Current character in Convert() is NULL");
 		else
 			diagnostics(5, "Current character in Convert() is '%c'", cThis);
 
@@ -153,9 +153,6 @@ globals: fTex, fRtf and all global flags for convert (see above)
 			break;
 
 		case ' ':
-			if (!bInDocument)
-				continue;
-				
 			if ((cLast != ' ') && (cLast != '\n') ) { 
 				if (!mbox)
 					/* if (bNewPar == FALSE) */
@@ -167,8 +164,6 @@ globals: fTex, fRtf and all global flags for convert (see above)
 			
 		case '~':
 			bBlankLine = FALSE;
-			if (!bInDocument)
-				numerror(ERR_NOT_IN_DOCUMENT);
 			fprintf(fRtf, "\\~");
 			break;
 			
@@ -179,8 +174,6 @@ globals: fTex, fRtf and all global flags for convert (see above)
 			
 		case '\n':
 			tabcounter = 0;
-			if (!bInDocument)
-				continue;
 
 			while ((cNext = getTexChar()) == ' ');	/* blank line with
 								 * spaces */
@@ -206,8 +199,6 @@ globals: fTex, fRtf and all global flags for convert (see above)
 
 		case '^':
 			bBlankLine = FALSE;
-			if (!bInDocument)
-				numerror(ERR_NOT_IN_DOCUMENT);
 
 			{
 				char           *s = NULL;
@@ -222,8 +213,6 @@ globals: fTex, fRtf and all global flags for convert (see above)
 
 		case '_':
 			bBlankLine = FALSE;
-			if (!bInDocument)
-				numerror(ERR_NOT_IN_DOCUMENT);
 			{
 				char           *s = NULL;
 				if ((s = getMathParam())) {
@@ -364,17 +353,16 @@ globals: fTex, fRtf and all global flags for convert (see above)
 			
 		default:
 			bBlankLine = FALSE;
-			if (bInDocument) {
-				if (isupper((int)cThis) && ((cLast == '.') || (cLast == '!') || (cLast == '?') || (cLast == ':')))
-					fprintf(fRtf, " ");
 
-				if (TexCharSet == ISO_8859_1)
-					Write_ISO_8859_1(cThis);
-				else
-					Write_Default_Charset(cThis);
+			if (isupper((int)cThis) && ((cLast == '.') || (cLast == '!') || (cLast == '?') || (cLast == ':')))
+				fprintf(fRtf, " ");
 
-				bNewPar = FALSE;
-			}
+			if (TexCharSet == ISO_8859_1)
+				Write_ISO_8859_1(cThis);
+			else
+				Write_Default_Charset(cThis);
+
+			bNewPar = FALSE;
 			break;
 		}
 

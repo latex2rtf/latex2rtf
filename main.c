@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.17 2001/09/06 04:43:04 prahl Exp $ */
+/* $Id: main.c,v 1.18 2001/09/09 19:41:40 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -57,6 +57,7 @@ bool            pagestyledefined = FALSE;	/* flag, set to true by
 						 * PlainPagestyle in
 						 * \begin{document} */
 
+bool            g_processing_preamble = TRUE;	/* flag set until \begin{document} */
 bool            g_processing_figure = FALSE;	/* flag, set for figures and not tables */
 bool            g_processing_include = FALSE;	/* flag set when include file is being processed */
 bool            g_processing_eqnarray = FALSE;	/* flag set when in an eqnarry */
@@ -227,7 +228,8 @@ globals: initializes in- and outputfile fTex, fRtf,
 	PushEnvironment(PREAMBLE);
     ConvertLatexPreamble();
 	WriteRtfHeader();
-		
+	
+	g_processing_preamble = FALSE;
 	PushEnvironment(DOCUMENT);
 	diagnostics(4,"Entering Convert from main");
 	Convert();

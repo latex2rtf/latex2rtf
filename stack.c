@@ -1,4 +1,4 @@
-/* $Id: stack.c,v 1.14 2001/08/22 05:50:23 prahl Exp $
+/* $Id: stack.c,v 1.15 2001/09/09 19:41:40 prahl Exp $
 
   purpose : code that implements a stack to handle braces and recursive calls
 	        created by environments, and open and closing-braces
@@ -38,7 +38,7 @@ BasicPush(int lev, int brack)
    return: top of stack
  ******************************************************************************/
 {
-	diagnostics(5,"pushing rec=%d and bra=%d on  stack",lev,brack);
+/*	diagnostics(5,"pushing rec=%d and bra=%d on  stack",lev,brack);*/
 	++top;
 	stack[top] = lev;
 	++top;
@@ -65,7 +65,7 @@ BasicPop(int *lev, int *brack)
 	if (top < 0) 
 		diagnostics(ERROR, "Nesting problem.  latex2rtf bug, if file TeXs properly");
 
-	diagnostics(5,"popped rec=%d and bra=%d off stack",*lev,*brack);
+/*	diagnostics(5,"popped rec=%d and bra=%d off stack",*lev,*brack); */
 	return top;
 }
 
@@ -134,7 +134,7 @@ int             PopLevel = 0, PopBrack, PPopLevel, PPopBrack, size;
 			break;
 		}
 	}
-	diagnostics(5, "Done Cleaning Stack");
+/*	diagnostics(5, "Done Cleaning Stack");*/
 }
 
 void 
@@ -144,7 +144,7 @@ PushBrace(void)
            enclosed by the braces to be completed
  ******************************************************************************/
 {
-	diagnostics(5,"Pushing Brace Level");
+/*	diagnostics(5,"Pushing Brace Level");*/
 	BasicPush(RecursionLevel,BraceLevel);
 	++BraceLevel;
 }
@@ -157,7 +157,7 @@ PopBrace(void)
 {
 int             PopLevel, PopBrack, PPopLevel, size;
 
-	diagnostics(5,"Popping Brace Level");
+/*	diagnostics(5,"Popping Brace Level");*/
 			
 	BraceLevel--;
 	PPopLevel = RecursionLevel;

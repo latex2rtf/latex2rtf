@@ -1,4 +1,4 @@
-/*  $Id: commands.c,v 1.17 2001/09/06 04:43:04 prahl Exp $
+/*  $Id: commands.c,v 1.18 2001/09/09 19:41:40 prahl Exp $
 
     Defines subroutines to translate LaTeX commands to RTF
 */
@@ -61,6 +61,7 @@ static CommandArray commands[] = {
 
 	{"mdseries", CmdSetFontSeries, F_SERIES_MEDIUM_1},
 	{"textmd",   CmdSetFontSeries, F_SERIES_MEDIUM_2},
+	{"mathmd",   CmdSetFontSeries, F_SERIES_MEDIUM_2},
 
 	{"it",       CmdSetFontShape, F_SHAPE_ITALIC},
 	{"itshape",  CmdSetFontShape, F_SHAPE_ITALIC_1},
@@ -70,14 +71,18 @@ static CommandArray commands[] = {
 
 	{"upshape",  CmdSetFontShape, F_SHAPE_UPRIGHT_1},
 	{"textup",   CmdSetFontShape, F_SHAPE_UPRIGHT_2},
+	{"mathup",   CmdSetFontShape, F_SHAPE_UPRIGHT_2},
 
 	{"sc",       CmdSetFontShape, F_SHAPE_CAPS},
+	{"scfamily", CmdSetFontShape, F_SHAPE_CAPS_1},
 	{"scshape",  CmdSetFontShape, F_SHAPE_CAPS_1},
 	{"textsc",   CmdSetFontShape, F_SHAPE_CAPS_2},
+	{"mathsc",   CmdSetFontShape, F_SHAPE_CAPS_2},
 
 	{"sl",       CmdSetFontShape, F_SHAPE_SLANTED},
 	{"slshape",  CmdSetFontShape, F_SHAPE_SLANTED_1},
 	{"textsl",   CmdSetFontShape, F_SHAPE_SLANTED_2},
+	{"mathls",   CmdSetFontShape, F_SHAPE_SLANTED_2},
 	
 	{"tiny",         CmdSetFontSize, 10},
 	{"scriptsize",   CmdSetFontSize, 14},
@@ -252,6 +257,13 @@ static CommandArray PreambleCommands[] = {
 	{"newcounter", CmdCounter, COUNTER_NEW},
 	{"setcounter", CmdCounter, COUNTER_SET},
 	{"addtocounter", CmdCounter, COUNTER_ADD},
+    {"cfoot", CmdHeadFoot, CFOOT},
+    {"rfoot", CmdHeadFoot, RFOOT},
+    {"lfoot", CmdHeadFoot, LFOOT},
+    {"chead", CmdHeadFoot, CHEAD},
+    {"rhead", CmdHeadFoot, RHEAD},
+    {"lhead", CmdHeadFoot, LHEAD},
+    {"thepage", CmdThePage, 0},
 	{"hyphenation", CmdHyphenation, 0},
 	{"def", CmdIgnoreDef, 0},
 	{"newcommand", CmdIgnoreParameter, One_Opt_Three_NormParam},

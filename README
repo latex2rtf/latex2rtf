@@ -22,18 +22,14 @@ To install (on a UNIX system)
   where support files (ending in .cfg) will be found by the program.
   This is normally the same as the LIBINSTALL variable.
 - make
+- If this is not your first-time installation, you may want to preserve
+  your old configuration (*.cfg) files. Copy them to a safe place before
+  installing.
 - make install
 - If you have problems with make install (for example if your mkdir
   doesn't support the -p option) and you do not need multiple install
   targets, try:
   make simple_install
-- If this is not your first-time installation, you may want to preserve
-  you configuration (*.cfg) files. Copy them to a safe place and issue
-  the command
-  make install_and_delete_old_cfg
-  (If you have problems with mkdir or other problems as above, use the
-  make-target "simple_cfg_install")
-- Try the program and report any errors to the address below.
 - Define the environment variable RTFPATH this is typically /usr/local/lib/latex2rtf
 - Run make test to test your installation
 
