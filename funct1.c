@@ -409,6 +409,9 @@ CmdBeginEnd(int code)
 	else 
 		diagnostics(5, "\\end{%s}", s);
 
+	/* hack to avoid problems with multicols */
+	if (strcmp(s,"multicols")==0) {free(s); return;}
+	
 	i=existsEnvironment(s);
 	if (i>-1) {
 		str = expandEnvironment(i,code);
