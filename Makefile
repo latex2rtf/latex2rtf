@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.111 2005/01/08 05:27:40 prahl Exp $
+# $Id: Makefile,v 1.112 2005/01/19 06:52:31 prahl Exp $
 
 CC=gcc
 MKDIR=mkdir -p
@@ -106,8 +106,8 @@ TEST=   test/Makefile test/bracecheck test/accentchars.tex test/array.tex  \
 	test/fig_testd.pdf test/fig_test3.tex test/fig_size.tex \
 	test/head_book.tex test/head_report.tex test/head_article.tex \
 	test/endnote.tex   test/bib_harvard.tex test/report.tex \
-	test/bibentry_apalike.tex test/bibentry_apalike.bbl \
-	test/bibentry_plain.tex   test/bibentry_plain.bbl
+	test/bibentry_apalike.tex test/bibentry_apalike.bib \
+	test/bibentry_plain.tex   test/bibentry_plain.bib
 	
 OBJS=fonts.o direct.o encode.o commands.o stack.o funct1.o tables.o \
 	chars.o ignore.o cfg.o main.o util.o parser.o lengths.o counters.o \

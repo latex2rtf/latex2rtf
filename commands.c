@@ -175,7 +175,7 @@ static CommandArray commands[] = {
     {"c", CmdCedillaChar, 0},
     {"i", CmdDotlessChar, 0},
     {"j", CmdDotlessChar, 1},
-	{"H", CmdDoubleGraveChar, 0},
+	{"H", CmdDoubleAcuteChar, 0},
 	
 /* sectioning commands */
     {"part", CmdSection, SECT_PART},
