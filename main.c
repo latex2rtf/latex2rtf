@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.31 2001/10/22 04:33:03 prahl Exp $ */
+/* $Id: main.c,v 1.32 2001/10/23 04:24:57 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -99,7 +99,7 @@ globals: initializes in- and outputfile fRtf,
 
 	progname = argv[0];
 	optind = 1;
-	while ((c = getopt(argc, argv, "Vlo:a:b:v:i:")) != EOF) {
+	while ((c = getopt(argc, argv, "Vo:a:b:v:i:C:")) != EOF) {
 		switch (c) {
 		case 'V':
 			printf("%s: %s\n", progname, Version);
@@ -112,9 +112,6 @@ globals: initializes in- and outputfile fRtf,
 			break;
 		case 'o':
 			output = optarg;
-			break;
-		case 'l':
-			setPackageInputenc("latin1");
 			break;
 		case 'i':
 			setPackageBabel(optarg);
@@ -130,16 +127,18 @@ globals: initializes in- and outputfile fRtf,
 						    optarg);
 			}
 			break;
+		case 'C':
+			setPackageInputenc(optarg);
+			break;
 		default:
 			errflag = TRUE;
 		}
 	}
 
 	if (argc > optind + 1 || errflag) {
-		fprintf(stderr, "%s: Usage: %s [-V] [-l] [-o outfile]"
+		fprintf(stderr, "%s: Usage: %s [-V] [-C inputenc] [-o outfile]"
 		" [-a auxfile] [-b bblfile] [-i languagefile] inputfile\n",
 			progname, progname);
-		fprintf(stderr, "-l\t use ISO 8859-1 charset");
 		return (1);
 	}
 	
