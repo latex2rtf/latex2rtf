@@ -12,6 +12,13 @@
 #define EQN_DOLLAR_DOLLAR 14  /* \begin{displaymath} ... \end{displaymath} */
 #define EQN_NO_NUMBER     15	/* \nonumber */
 
+#define LEFT_RIGHT 1
+#define RIGHT_LEFT 2
+#define LONG_LEFTRIGHT 3
+#define LONG_RIGHTLEFT 4
+#define LEFT_LEFT 5
+#define RIGHT_RIGHT 6
+
 void			CmdEquation(int code);
 void            CmdFraction(int code);
 void            CmdRoot(int code);
@@ -24,4 +31,5 @@ void			CmdArray(int code);
 void			CmdLeftRight(int code);
 void			CmdMatrix(int code);
 void			CmdStackrel(int code);
+void			CmdArrows(int code);
 void			WriteLatexAsBitmap(char *pre, char *eq, char *post);

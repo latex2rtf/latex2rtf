@@ -752,6 +752,56 @@ CmdFraction(int code)
 }
 
 void 
+CmdArrows(int code)
+/******************************************************************************
+ converts: amssymb \leftrightarrows and \rightleftarrows
+ ******************************************************************************/
+{
+    int size = CurrentFontSize()/4.5;
+
+	fprintRTF(" \\\\o ({\\up%d ",size);
+
+    switch (code) {
+    case LEFT_RIGHT:
+		ConvertString("\\leftarrow");
+		fprintRTF("}%c{\\dn%d ", g_field_separator, size);
+        ConvertString("\\rightarrow");
+		break;
+
+    case RIGHT_LEFT:
+		ConvertString("\\rightarrow");
+		fprintRTF("}%c{\\dn%d ", g_field_separator, size);
+        ConvertString("\\leftarrow");
+		break;
+		
+    case RIGHT_RIGHT:
+		ConvertString("\\rightarrow");
+		fprintRTF("}%c{\\dn%d ", g_field_separator, size);
+        ConvertString("\\rightarrow");
+		break;
+
+    case LEFT_LEFT:
+		ConvertString("\\leftarrow");
+		fprintRTF("}%c{\\dn%d ", g_field_separator, size);
+        ConvertString("\\leftarrow");
+		break;
+
+    case LONG_LEFTRIGHT:
+		ConvertString("\\longleftarrow");
+		fprintRTF("}%c{\\dn%d ", g_field_separator, size);
+        ConvertString("\\longrightarrow");
+		break;
+    
+    case LONG_RIGHTLEFT:
+		ConvertString("\\longrightarrow");
+		fprintRTF("}%c{\\dn%d ", g_field_separator, size);
+        ConvertString("\\longleftarrow");
+		break;
+    }
+	fprintRTF("}) ");
+}
+
+void 
 CmdLim(int code)
 /******************************************************************************
  purpose: handles \lim
