@@ -736,7 +736,6 @@ parameter: code: type of section-recursion-level
 		CmdStartParagraph(TITLE_PAR);
 		fprintRTF("{");
 		InsertStyle("part");
-		InsertStyle("c_part");
 		fprintRTF(" ");
 		ConvertBabelName("PARTNAME");
 		if (code == SECT_PART) {
@@ -756,7 +755,6 @@ parameter: code: type of section-recursion-level
 		CmdStartParagraph(TITLE_PAR);
 		fprintRTF("{");
 		InsertStyle("chapter");
-		InsertStyle("c_chapter");
 		fprintRTF(" ");
 		ConvertBabelName("CHAPTERNAME");
 		if (code == SECT_CHAPTER && getCounter("secnumdepth")>=-1) {
@@ -774,8 +772,8 @@ parameter: code: type of section-recursion-level
 		}
 		fprintRTF("\\par\\par\n");
 		ConvertString(heading);
-		fprintRTF("}");
 		CmdEndParagraph(0);
+		fprintRTF("}");
 		CmdVspace(VSPACE_SMALL_SKIP);
 		break;
 
@@ -785,7 +783,6 @@ parameter: code: type of section-recursion-level
 		CmdStartParagraph(TITLE_PAR);
 		fprintRTF("{");
 		InsertStyle("section");
-		InsertStyle("c_section");
 		fprintRTF(" ");
 		if(code == SECT_NORM && getCounter("secnumdepth")>=0) {		
 			incrementCounter("section");
@@ -811,7 +808,6 @@ parameter: code: type of section-recursion-level
 		CmdStartParagraph(TITLE_PAR);
 		fprintRTF("{");
 		InsertStyle("subsection");
-		InsertStyle("c_subsection");
 		fprintRTF(" ");
 		if (code == SECT_SUB && getCounter("secnumdepth")>=1) {
 			incrementCounter("subsection");
@@ -825,8 +821,8 @@ parameter: code: type of section-recursion-level
 			free(unit_label);
 		}
 		ConvertString(heading);
-		fprintRTF("}");
 		CmdEndParagraph(0);
+		fprintRTF("}");
 		CmdVspace(VSPACE_SMALL_SKIP);
 		break;
 
@@ -836,7 +832,6 @@ parameter: code: type of section-recursion-level
 		CmdStartParagraph(TITLE_PAR);
 		fprintRTF("{");
 		InsertStyle("subsubsection");
-		InsertStyle("c_subsubsection");
 		fprintRTF(" ");
 		if (code == SECT_SUBSUB && ( getCounter("secnumdepth")>2 ||
 		    (g_document_type == FORMAT_ARTICLE && getCounter("secnumdepth")==2))) {
@@ -850,8 +845,8 @@ parameter: code: type of section-recursion-level
 			free(unit_label);
 		}
 		ConvertString(heading);
-		fprintRTF("}");
 		CmdEndParagraph(0);
+		fprintRTF("}");
 		CmdVspace(VSPACE_SMALL_SKIP);
 		break;
 
@@ -861,7 +856,6 @@ parameter: code: type of section-recursion-level
 		CmdStartParagraph(TITLE_PAR);
 		fprintRTF("{");
 		InsertStyle("paragraph");
-		InsertStyle("c_paragraph");
 		fprintRTF(" ");
 		if (code == SECT_SUBSUBSUB && getCounter("secnumdepth")>=3) {
 			incrementCounter("paragraph");
@@ -873,8 +867,8 @@ parameter: code: type of section-recursion-level
 			free(unit_label);
 		}
 		ConvertString(heading);
-		fprintRTF("} ");
 		CmdEndParagraph(0);
+		fprintRTF("} ");
 		CmdVspace(VSPACE_SMALL_SKIP);
 		break;
 
@@ -884,7 +878,6 @@ parameter: code: type of section-recursion-level
 		CmdStartParagraph(TITLE_PAR);
 		fprintRTF("{");
 		InsertStyle("subparagraph");
-		InsertStyle("c_subparagraph");
 		fprintRTF(" ");
 		if (code == SECT_SUBSUBSUBSUB && getCounter("secnumdepth")>=4) {
 			incrementCounter("subparagraph");
@@ -895,7 +888,9 @@ parameter: code: type of section-recursion-level
 			free(unit_label);
 		}
 		ConvertString(heading);
-		fprintRTF("}  ");
+		CmdEndParagraph(0);
+		fprintRTF("} ");
+		CmdVspace(VSPACE_SMALL_SKIP);
 		break;
 	}
 

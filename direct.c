@@ -110,33 +110,34 @@ void InsertBasicStyle(const char *rtf, bool include_header_info)
            that correspond to the appropriate style sheet or character style
            for example
            		ApplyStyle("section", FALSE);
-           		ApplyStyle("c_section", FALSE);
-           		
-           should insert the RTF commands to set the stylesheet and character
-           style correctly.
  ******************************************************************************/
 {
-	char	 *header;
+	const char *style;
+	char *comma;
 	
 	if (rtf == NULL) return;
 
-	header = strchr(rtf,';');
-	if (include_header_info)
-		*header = ' ';
-	else
-		*header = '\0';
+	style=rtf;	
+	while (*style==' ') style++;				/* skip blanks */
 
-	while (*rtf != '\0') {
+	comma = strchr(style,',');
+	if (comma==NULL) return;
+	if (include_header_info)
+		*comma = ' ';
+	else
+		*comma = '\0'; 
 	
-		if (*rtf == '*')
-			WriteFontName(&rtf);
+	while (*style != '\0') {
+	
+		if (*style == '*')
+			WriteFontName(&style);
 		else 
-			fprintRTF("%c", *rtf);
+			fprintRTF("%c", *style);
 			
-		rtf++;
+		style++;
 	}
 	
-	*header = ';';
+	*comma = ',';		/* change back to a comma */
 }
 
 void 

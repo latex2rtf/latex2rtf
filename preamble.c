@@ -365,13 +365,13 @@ setPointSize(char * option)
 		setLength("parindent",   15*20);
 		setLength("parskip",      0*20);
 
-	}else if (strcmp(option, "11pt") == 0){
+	} else if (strcmp(option, "11pt") == 0){
 		InitializeDocumentFont(-1, 22, -1, -1);
 		setLength("baselineskip",14*20);
 		setLength("parindent",   17*20);
 		setLength("parskip",      0*20);
 
-	}else {
+	} else {
 		InitializeDocumentFont(-1, 24, -1, -1);
 		setLength("baselineskip",(int) 14.5*20);
 		setLength("parindent",   18*20);
@@ -846,18 +846,14 @@ WriteStyleHeader(void)
 	const char *rtf;
 	
 	fprintRTF("{\\stylesheet\n{\\s0\\fs%d\\snext0 Normal;}\n", CurrentFontSize());
-	fprintRTF("{\\cs100 Default Paragraph Font;}\n");
 	
 	style = CfgStartIterate(STYLE_A);
 	while ((style = CfgNext(STYLE_A, style)) != NULL) {
 		rtf = (*style)->RtfCommand;
 		diagnostics(4,"style <%s>=<%s>", (*style)->TexCommand,rtf);
-		if (rtf[1]=='c')
-			fprintRTF("{\\*");  /* make \cs definitions optional */
-		else
-			fprintRTF("{");
+		fprintRTF("{");
 		InsertBasicStyle(rtf, TRUE);
-		fprintRTF(" %s;}\n",(*style)->TexCommand);
+		fprintRTF(";}\n");
 	}
 	fprintRTF("}\n");
 }
