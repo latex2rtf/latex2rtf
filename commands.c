@@ -1,4 +1,4 @@
-/*  $Id: commands.c,v 1.39 2001/11/23 21:43:48 prahl Exp $
+/*  $Id: commands.c,v 1.40 2001/11/28 06:36:04 prahl Exp $
  
     Defines subroutines to translate LaTeX commands to RTF
 */
@@ -258,6 +258,8 @@ static CommandArray commands[] = {
     {"Frac", CmdFraction, 0},
 	{"sqrt", CmdRoot, 0},
     {"int",  CmdIntegral, 0},
+    {"sum",  CmdIntegral, 1},
+    {"prod",  CmdIntegral, 2},
     {"left", CmdLeftRight, 0},
     {"right", CmdLeftRight, 1},
 	{"nonumber",CmdNonumber, EQN_NO_NUMBER},

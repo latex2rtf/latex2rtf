@@ -2,8 +2,26 @@ Bugs:
  	Fix line numbering better
 	Reset footnote numbering at each new chapter
 	Missing references in misc4.tex
+	Mysterious 0.8 in misc4.rtf
+
+	Extra paragraph at
+		- in misc1.tex, near the end, after the italic text before the comma in:
+		{\it missing at random},
+		- in qualisex, at source lines 182 after the slanted text in:
+		 \item les {\sl voies de plusieurs longueurs\/} sont tr\`es %...(line 182)
+		- in qualisex in source line 254 after the footnote before the >> in:
+		<<~lâgitimes\footnote{L\'egitimit\'e \`a \'evaluer en chaque cas, le cas
+		\'ech\'eant par jugement ou d\'ecision des autorit\'es l\'egales.}~>>~:
+		- in proffois, source line 305 after the \"\i{} in:
+		cont\"enu et de la mise en page, ma\"is, ma\"\i{}zena, ma\^{\i}zena, b\"ureau, etc.),
+
+	\iint is handled like \int but should be double integral.
+
 
 Features:
+	support \hsize
+	support ## in macro expansion
+	
 	Add default page numbering
 	
 	Add support for a local cfg directory

@@ -1,112 +1,101 @@
-.\" $Id: latex2rtf.1,v 1.9 2001/08/12 21:15:46 prahl Exp $
-.\" History:
-.\" $Log: latex2rtf.1,v $
-.\" Revision 1.9  2001/08/12 21:15:46  prahl
-.\"         Removed last two // comments
-.\"         Explicitly cast char to int in isalpha() and isdigit()
-.\"         Began the process of supporting Babel better
-.\"
-.\" Revision 1.11  1998/07/03 06:47:24  glehner
-.\" Changed maintainer, added reference to other docs
-.\"
-.\" Revision 1.10  1997/02/15 20:50:20  ralf
-.\" Added Section on bug reports
-.\" Corrected some wording
-.\" Corrected description of config files to match the implementation :-(
-.\" Corrected some incorrect (or non-portable?) troff
-.\"
-.\" Revision 1.9  1995/03/23 15:58:08  ralf
-.\" Reworked version by Friedrich Polzer and Gerhard Trisko
-.\"
-.\" Revision 1.8  1994/06/29  06:35:28  ralf
-.\" Corrected some '\' to '\\'
-.\"
-.\" Revision 1.7  1994/06/29  06:31:54  ralf
-.\" Changed rtf2latex to latex2rtf in several places.
-.\"
-.\" Revision 1.6  1994/06/21  08:14:11  ralf
-.\" Added BUGS section
-.\"
-.\" Revision 1.5  1994/06/17  15:13:07  ralf
-.\" Added description of RTFPATH
-.\"
-.\" Revision 1.4  1994/06/17  14:42:29  ralf
-.\" Added description of -V option
-.\"
-.\" Revision 1.3  1994/06/17  14:19:41  ralf
-.\" Corrected various bugs, for example interactive read of arguments
-.\"
-.\" Revision 1.2  1994/06/17  12:07:30  ralf
-.\" Corrected typos
-.\"
-.\" Revision 1.1  1994/06/17  11:30:33  ralf
-.\" Initial revision
+.\" $Id: latex2rtf.1,v 1.10 2001/11/28 06:36:04 prahl Exp $
 .\"
 .TH latex2rtf 1
 .SH NAME
-latex2rtf \- Converts LaTeX file to RTF text-format
+latex2rtf \- Convert a LaTeX file to an RTF file
 .SH SYNTAX
-latex2rtf [-V] [-l] [ -o
-.I outputfile
+latex2rtf [-hlV] [-d#
 ] [ -a
 .I auxfile
 ] [ -b
 .I bblfile
+] [ -C
+.I codepage
+] [ -i
+.I language
+] [ -o
+.I outputfile
 ] [
 .I inputfile
 ]
 .PP
-.SH WARNING
-This man page is not supported by me (the maintainer of the programm).
-For complete, current documentation, refer to the Info file
-.B latex2rtf.info,
-the PDF file
-.B latex2rtf.pdf
-or the HTML file
-.B l2r.html
-which are made from the Texinfo source file
-.BR latex2rtf.texi.
 .SH DESCRIPTION
 The
 .I latex2rtf
-command converts a LaTeX file into RTF text format. The text and much
-of the formatting 
-information is translated to RTF making the new file look very similar to the
-original. 
-.PP
-The \-V option prints version information on standard output and exits.
-.PP
-The -l option enables you to convert ISO 8859-1 (Latin-1) special characters in the LaTeX source. 
-.PP
+command converts a LaTeX file into RTF text format. The text and much of the formatting
+information is translated to RTF making the new file look similar to the original.
+.TP
+.B \-a auxfile
+Used to specify a particular cross-referencing file.
+When this option is omitted, the 
+.I auxfile 
+is assumed to be the same as 
+.I inputfile
+with the .tex suffix replaced by .aux.
+.TP
+.B \-b bblfile
+Used to specify a particular bibliography file 
+When this option is omitted, the
+.I bblfile 
+is assumed to be the same as 
+.I inputfile
+with the .tex suffix replaced by .bbl.
+.TP 
+.B \-C codepage
+used to specify the character set (code page) used in the LaTeX
+document for non-ansi characters. 
+.I codepage
+may be one of the following:
+ansinew, applemac, cp437, cp437de, cp850, cp852, cp865, decmulti,
+cp1250, cp1252, latin1, latin2, latin3, latin4, latin5, latin9,
+and next.  The default behavior is to use ansinew (same as cp1252).
+.TP 
+.B \-d#
+Write extra debugging output to stderr.  Higher numbers cause more debugging output
+and range from 0 (only errors) to 6 (absurdly many messages). The default is
+1 (Warnings and Errors only).
+.TP 
+.B \-h
+Print a short usage note
+.TP 
+.B \-i language
+used to set the idiom or language used in the LaTeX document
+.I language
+may be one of the following
+afrikaans, german, nynorsk, spanish, bahasa, dutch, icelandic, polish,
+swedish, basque, english, portuges, turkish, brazil, esperanto, irish,
+romanian, usorbian, breton, estonian, italian, samin, welsh, catalan,
+finnish, latin, scottish, croatian, lsorbian, serbian, czech, french,
+magyar, slovak, danish, galician, norsk, slovene.  The default is english.
+.TP 
+.B \-l
+Assume latex source uses ISO 8859-1 (Latin-1) special characters (default behavior). 
+.TP 
+.B \-o outputfile
+Redirect output to
+.I outputfile
 Unless an 
 .I outputfile
-is specified with the -o option, the resulting RTF is produced on standard output.
-.PP
-You can specify an 
-.I auxfile 
-(for citations) with the -a option. If this is omitted, the
-.I inputfile
-with the suffix .aux will be taken.
-.PP
-You can specify an 
-.I bblfile 
-(for citations) with the -b option. If this is omitted, the
-.I inputfile
-with the suffix .bbl will be taken.
-.PP
-If 
-.I inputfile
-is not specified, standard input is read. 
-.PP
-User defined LaTeX commands are ignored. If you are familiar with the
-RTF format and
-the commands can be translated by simply inserting a format string
-into the RTF
-file you can add these commands to the 
-.B direct.cfg
-configuration file.
-See format description below.
-.PP
+is specified with the -o option, the resulting RTF is produced on a file with .tex
+replaced by .rtf.
+.TP 
+.B \-V
+Prints version information on standard output and exits.
+.TP 
+.B \-W 
+Emit warnings directly in RTF file.  Handy for catching things that do not 
+get translated correctly.
+.TP 
+.B \-Z# 
+Add # close braces to end of RTF file.  (Handy when file is not converted
+correctly and will not open in another word processor.)
+.SH CONFIGURATION FILES
+The environment variable RTFPATH may contain a search path for the
+support files (all files ending in .cfg). If no file is found during the
+search in the search-path or if the environment variable is not set, the
+compiled-in default for the configuration-file directory is used. If the
+files are not found at all the program aborts.
+
 To correctly convert font names you must edit the 
 .B fonts.cfg
 configuration file.
@@ -121,15 +110,6 @@ know the names of variables you can add them in the
 file.
 See format description below.
 .PP
-The environment variable RTFPATH may contain a search path for the
-support files (all files ending in .cfg). If no file is found during the
-search in the search-path or if the environment variable is not set, the
-compiled-in default for the configuration-file directory is used. If the
-files are not found at all the program aborts.
-.PP
-\\label, \\ref, and \\pageref commands from LaTeX are translated to
-hidden text in the RTF file. This makes it possible to correctly edit
-the resulting file in the target word processor.
 .SH CAUTION
 Please make sure that the input file is a correct LaTeX file. Use LaTeX
 to find and correct errors before using
@@ -147,92 +127,6 @@ You may have to change
 or
 .B direct.cfg
 to suit your needs.
-.SH CONFIGURATION FILES
-The file
-.B direct.cfg
-is used for converting LaTeX commands by simple text replacement.
-The format consists of lines with a LaTeX command with backslash
-followed by comma.
-The rest of the line until a '.' character will be written to the RTF file
-when the command is recognized in the LaTeX file.
-Lines starting with a '#' character are ignored.
-After the '.' everything is ignored to end of line.
-To select a specific font use 
-.I *fontname*.
-Make sure that the font name 
-.I fontname
-is listed in the fonts configuration file at least as dummy.
-To write the '*' character use "**".
-example:
-.PP
-\\alpha,{\\f*Symbol* a}. #alpha under Windows Symbol Font
-.PP
-\\copyright,{\\ansi\\'a9\\pc}.
-.PP
-The file
-.B fonts.cfg
-contains the fonts conversion table.
-A line consists of a font name in LaTeX followed by comma and a font
-name in RTF. The end is marked by a '.'.
-No spaces are allowed.
-The LaTeX font will be converted to the RTF font if encountered in the
-LaTeX file.
-If multiple translations for a LateX font are specified,
-only the first is used.
-All fonts in a LaTeX file that are not in this file will be mapped to the
-default font.
-All RTF fonts listed in this file will be in every RTF file header whether
-used or not.
-Lines starting with a '#' character are ignored.
-After the '.' everything is ignored to end of line.
-To add a RTF font not used as substitute for a LaTeX font \- for example
-a Symbol font used in 
-.B direct.cfg
-\- use a dummy LaTeX name like in the following example:
-.PP
-Dummy3,MathematicalSymbols.
-.PP
-Make sure you use the correct font name. Take care of spaces in font names.
-The default fonts are named Roman (command \\rm), Slanted (command \\sl),
-Sans Serif (command \\sf), Typewriter (command \\tt).
-.PP
-The file
-.B ignore.cfg
-is used for defining how to ignore certain commands.
-This file is used for recognition of LaTeX-variables, user defined variables,
-and some simple commands.
-All variables are ignored but the converter must know the names to correctly
-ignore assignments to variables.
-Lines in this file consist of a variable-name with backslash, followed
-by comma and the type of the variable followed by '.'.
-Possible Types are:
-.PP
-.TP
-.B NUMBER
-simple numeric value
-.TP
-.B MEASURE
-numeric value with following unit of measure
-.TP
-.B OTHER
-ignores anything to the first character after '=' and from there to next
-space. eg. \\setbox\\bak=\\hbox
-.TP
-.B COMMAND
-ignores anything to next '\\' and from there to occurence of anything
-but a letter. eg. \\newbox\\bak
-.TP
-.B SINGLE
-ignore single command. eg. \\noindent
-.PP
-The types are in upper case exactly as above.
-Do not use spaces.
-Lines starting with a '#' character are ignored.
-After the '.' everything is ignored to end of line.
-Example:
-.PP
-\\pagelength,MEASURE.
-.PP
 .SH BUGS
 Some environments like figure are currently ignored. It would be nice to scan
 the included information and convert things if possible.
@@ -267,9 +161,6 @@ there may be settings which are needed to compile
 successfully. Do this
 .I before
 writing to me.
-.PP 
-For problems with the DOS version, report installation problems to the
-mainainer of the DOS port, Vladimir Menkov, vmenkov@cs.indiana.edu
 .PP
 If the program produces wrong output or does not work for you, include
 a 
@@ -287,5 +178,13 @@ to your question. I will, however, try to fix reported bugs in
 upcoming releases.
 .SH SEE ALSO
 rtf2LaTeX(1), LaTeX User's Guide & Reference Manual by Leslie Lamport
-
+.PP
+For complete, current documentation, refer to the Info file
+.B latex2rtf.info,
+the PDF file
+.B latex2rtf.pdf
+or the HTML file
+.B latex2rtf.html
+which are made from the Texinfo source file
+.BR latex2rtf.texi.
 

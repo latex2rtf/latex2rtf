@@ -407,7 +407,7 @@ parameter: type of operand
 	fprintRTF("%c", FORMULASEP);
 	if (upper_limit)
 		ConvertString(upper_limit);
-	fprintRTF("%c)}{\\fldrslt }}", FORMULASEP);
+	fprintRTF("%c )}{\\fldrslt }}", FORMULASEP);
 	g_processing_fields--;
 
 	if (lower_limit)
