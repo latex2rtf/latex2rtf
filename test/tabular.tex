@@ -11,10 +11,40 @@ left & center & right \\
 one & space & \\
 no & spaces &\\
 && blank\\
-&&&\\
+&&\\
 one & last & line
 \end{tabular}
 \caption{Simple tabular environment to test three types of alignment.}
+\end{center}
+\end{table}
+
+\begin{table}
+\begin{center}
+\begin{tabular}{llr}
+\multicolumn{2}{c}{Item} & \multicolumn{1}{c}{Price} \\
+gnat      & (dozen)  & 3.24\\
+gnu       & (each)   & 24,985.47 
+\end{tabular}
+\caption{Simple example from the \LaTeX{} manual exhibiting multicolumn.}
+\end{center}
+\end{table}
+
+\begin{table}
+\begin{center}
+\begin{tabular}{||l|lr||}
+\hline
+gnats     & gram    & \$13.65 \\
+\hline
+          & each    &     .01 \\
+\hline
+gnu       & stuffed &   92.50 \\
+\cline{1-1} \cline{3-3}
+emur      &         &   33.33 \\
+armadillo & frozen  &    8.99 \\
+\hline
+\end{tabular}
+\caption{Simple example from the \LaTeX{} manual exhibiting horizontal
+and vertical lines.}
 \end{center}
 \end{table}
 
