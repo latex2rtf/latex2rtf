@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.39 2001/11/13 05:43:57 prahl Exp $ */
+/* $Id: main.c,v 1.40 2001/11/14 03:52:31 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -420,6 +420,7 @@ InitializeLatexLengths(void)
 	setCounter("equation",      0);
 	setCounter("footnote",      0);
 	setCounter("mpfootnote",    0);
+	setCounter("secnumdepth",   2);
 	
  }
 

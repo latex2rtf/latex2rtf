@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.46 2001/11/12 06:08:14 prahl Exp $ 
+/* $Id: funct1.c,v 1.47 2001/11/14 03:52:31 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -496,7 +496,6 @@ parameter: code: type of section-recursion-level
 	} else
 		diagnostics(4,"entering CmdSection {%s}",heading);
 
-	
 	CmdEndParagraph(0);
 	CmdIndent(INDENT_NONE);
 	CmdStartParagraph(0);
@@ -514,13 +513,17 @@ parameter: code: type of section-recursion-level
 			sprintf(section_label, "%d", getCounter("part"));
 			fprintRTF("%s\\par ", section_label);
 		}
+		g_section_label = strdup(section_label);
+		ConvertString(heading);
+		CmdEndParagraph(0);
+		fprintRTF("}\n\\page");
 		break;
 
 	case SECT_CHAPTER:
 	case SECT_CHAPTER_STAR:
 		fprintRTF("\\page{\\plain\\b\\fs32\\kerning28 ");
 		ConvertBabelName("CHAPTERNAME");
-		if (code == SECT_CHAPTER) {
+		if (code == SECT_CHAPTER && getCounter("secnumdepth")>=0) {
 			incrementCounter("chapter");
 			setCounter("section",0);
 			setCounter("subsection",0);
@@ -531,12 +534,17 @@ parameter: code: type of section-recursion-level
 			fprintRTF(" %s", section_label);
 		}
 		fprintRTF("\\par}{\\fi0\\plain\\b\\fs40\\kerning28 ");
+		g_section_label = strdup(section_label);
+		ConvertString(heading);
+		CmdEndParagraph(0);
+		fprintRTF("}");
 		break;
 
 	case SECT_NORM:
 	case SECT_NORM_STAR:
+		CmdVspace(3);
 		fprintRTF("{\\plain\\b ");
-		if(code == SECT_NORM) {		
+		if(code == SECT_NORM && getCounter("secnumdepth")>=1) {		
 			incrementCounter("section");
 			setCounter("subsection",0);
 			setCounter("subsubsection",0);
@@ -551,12 +559,18 @@ parameter: code: type of section-recursion-level
 			}
 			fprintRTF("%s  ", section_label);
 		}
+		g_section_label = strdup(section_label);
+		ConvertString(heading);
+		CmdEndParagraph(0);
+		fprintRTF("}");
+		CmdVspace(1);
 		break;
 
 	case SECT_SUB:
 	case SECT_SUB_STAR:
+		CmdVspace(2);
 		fprintRTF("{\\plain\\b\\fs24 ");
-		if (code == SECT_SUB) {
+		if (code == SECT_SUB && getCounter("secnumdepth")>=2) {
 			incrementCounter("subsection");
 			setCounter("subsubsection",0);
 			setCounter("paragraph",0);
@@ -569,12 +583,18 @@ parameter: code: type of section-recursion-level
 				        getCounter("section"), getCounter("subsection"));
 			fprintRTF("%s  ", section_label);
 		}
+		g_section_label = strdup(section_label);
+		ConvertString(heading);
+		CmdEndParagraph(0);
+		fprintRTF("}");
+		CmdVspace(1);
 		break;
 
 	case SECT_SUBSUB:
 	case SECT_SUBSUB_STAR:
+		CmdVspace(2);
 		fprintRTF("{\\plain\\b\\fs24 ");
-		if (SECT_SUBSUB) {
+		if (SECT_SUBSUB && getCounter("secnumdepth")>=3) {
 			incrementCounter("subsubsection");
 			setCounter("paragraph",0);
 			setCounter("subparagraph",0);
@@ -586,12 +606,18 @@ parameter: code: type of section-recursion-level
 				        getCounter("section"), getCounter("subsection"), getCounter("subsubsection"));
 			fprintRTF("%s  ", section_label);
 		}
+		g_section_label = strdup(section_label);
+		ConvertString(heading);
+		CmdEndParagraph(0);
+		fprintRTF("}");
+		CmdVspace(1);
 		break;
 
 	case SECT_SUBSUBSUB:
 	case SECT_SUBSUBSUB_STAR:
+		CmdVspace(2);
 		fprintRTF("{\\plain\\b ");
-		if (SECT_SUBSUBSUB) {
+		if (SECT_SUBSUBSUB && getCounter("secnumdepth")>=4) {
 			incrementCounter("paragraph");
 			setCounter("subparagraph",0);
 			if (g_document_type == FORMAT_ARTICLE)
@@ -604,12 +630,16 @@ parameter: code: type of section-recursion-level
 				        getCounter("subsubsection"),getCounter("paragraph"));
 			fprintRTF("%s  ", section_label);
 		}
+		g_section_label = strdup(section_label);
+		ConvertString(heading);
+		fprintRTF("}  ");
 		break;
 
 	case SECT_SUBSUBSUBSUB:
 	case SECT_SUBSUBSUBSUB_STAR:
+		CmdVspace(2);
 		fprintRTF("{\\plain\\b ");
-		if (SECT_SUBSUBSUBSUB) {
+		if (SECT_SUBSUBSUBSUB && getCounter("secnumdepth")>=5) {
 			incrementCounter("subparagraph");
 			if (g_document_type == FORMAT_ARTICLE)
 				sprintf(section_label, "%d.%d.%d.%d.%d", getCounter("section"), 
@@ -623,14 +653,10 @@ parameter: code: type of section-recursion-level
 			fprintRTF("%s  ", section_label);
 		}
 		break;
+		g_section_label = strdup(section_label);
+		ConvertString(heading);
+		fprintRTF("}  ");
 	}
-	
-	g_section_label = strdup(section_label);
-	ConvertString(heading);
-	CmdEndParagraph(0);
-	fprintRTF("}");
-	if (code == SECT_PART)
-		fprintRTF("\\page");
 
 	if (heading) free(heading);
 	CmdIndent(INDENT_NONE);

@@ -1,4 +1,4 @@
-/* $Id: preamble.c,v 1.27 2001/11/13 05:43:57 prahl Exp $
+/* $Id: preamble.c,v 1.28 2001/11/14 03:52:31 prahl Exp $
 
 purpose : Handles LaTeX commands that should only occur in the preamble.
           These are gathered together because the entire preamble must be
@@ -495,6 +495,7 @@ CmdMakeTitle(int code)
 	sprintf(author_begin, "%s%2d", "\\fs", (24 * CurrentFontSize()) / 20);
 	sprintf(date_begin, "%s%2d", "\\fs", (24 * CurrentFontSize()) / 20);
 
+	alignment = CENTERED;
 	fprintRTF("\n\\par\\pard\\qc {%s ", title_begin);
 	if (g_preambleTitle != NULL && strcmp(g_preambleTitle, "") != 0)
 		ConvertString(g_preambleTitle);
@@ -511,6 +512,7 @@ CmdMakeTitle(int code)
 	fprintRTF("}");
 	
 	fprintRTF("\n\\par\n\\par\\pard\\q%c ", alignment);
+	alignment = JUSTIFIED;
 	if (g_preambleTitlepage)
 		fprintRTF("\\page ");
 }
