@@ -1,34 +1,26 @@
 /*
- * $Id: l2r_fonts.h,v 1.6 2001/08/12 19:32:24 prahl Exp $
+ * $Id: l2r_fonts.h,v 1.7 2001/08/12 19:40:25 prahl Exp $
  * History:
  * $Log: l2r_fonts.h,v $
- * Revision 1.6  2001/08/12 19:32:24  prahl
- * 1.9f
- * 	Reformatted all source files ---
- * 	    previous hodge-podge replaced by standard GNU style
- * 	Compiles cleanly using -Wall under gcc
- *
- * 	added better translation of \frac, \sqrt, and \int
- * 	forced all access to the LaTeX file to use getTexChar() or ungetTexChar()
- * 	    allows better handling of %
- * 	    simplified and improved error checking
- * 	    eliminates the need for WriteTemp
- * 	    potentially allows elimination of getLineNumber()
- *
- * 	added new verbosity level -v5 for more detail
- * 	fixed bug with in handling documentclass options
- * 	consolidated package and documentclass options
- * 	fixed several memory leaks
- * 	enabled the use of the babel package *needs testing*
- * 	fixed bug in font used in header and footers
- * 	minuscule better support for french
- * 	Added testing file for % comment support
- * 	Enhanced frac.tex to include \sqrt and \int tests also
- * 	Fixed bugs associated with containing font changes in
- * 	    equations, tabbing, and quote environments
- * 	Added essential.tex to the testing suite --- pretty comprehensive test.
- * 	Perhaps fix missing .bbl crashing bug
- * 	Fixed ?` and !`
+ * Revision 1.7  2001/08/12 19:40:25  prahl
+ * 1.9g
+ *         Added commands to read and set TeX lengths
+ *         Added commands to read and set TeX counters
+ *         Fixed bug in handling of \item[text]
+ *         Eliminated comparison of fpos_t variables
+ *         Revised getLinenumber ... this is not perfect
+ *         Fixed bug in getTexChar() routine
+ *         Clearly separate preamble from the document in hopes that
+ *           one day more appropriate values for page size, margins,
+ *           paragraph spacing etc, will be used in the RTF header
+ *         I have added initial support for page sizes still needs testing
+ *         added two more test files misc3.tex and misc4.tex
+ *         misc4.tex produces a bad rtf file currently
+ *         separated all letter commands into letterformat.c
+ *         cleaned up warning calls throughout code
+ *         added \neq \leq \geq \mid commands to direct.cfg
+ *         collected and added commands to write RTF header in preamble.c
+ *         broke isolatin1 and hyperlatex support, these will be fixed next version
  *
  * Revision 1.2  1997/02/15 20:55:50  ralf
  * Some reformatting and changes suggested by lclint
@@ -47,6 +39,10 @@
 #define F_SLANTED_1    6
 #define F_SANSSERIF_1  7
 #define F_TYPEWRITER_1 8
+#define F_ROMAN_2      9
+#define F_SLANTED_2    10
+#define F_SANSSERIF_2  11
+#define F_TYPEWRITER_2 12
 
 #define CMD_BOLD 1
 #define CMD_ITALIC 2
@@ -55,21 +51,22 @@
 #define CMD_BOLD_1 5
 #define CMD_ITALIC_1 6
 #define CMD_CAPS_1 7
+#define CMD_BOLD_2 8
+#define CMD_ITALIC_2 9
+#define CMD_CAPS_2 10
 
 /* ----------------------------------- */
-#define CMD_CENTERED 8
+#define CMD_CENTERED 13
 /* ----------------------------------- */
 
-void WriteFontHeader(/*@dependent@*/ FILE* fRtf);
-bool SetFont(char *TexFont, FILE* fRtf);
-size_t GetFontNumber(char * Fname);
-void RemoveFontlist(void);
-size_t GetTexFontNumber(char * Fname);
+bool            SetFont(char *TexFont, FILE * fRtf);
+int             GetFontNumber(char *Fname);
+void            RemoveFontlist(void);
+int             getTexFontNumber(char *Fname);
 
-void CmdSetFontStyle(int code);
-void CmdSetFont(int code);
-void CmdSetFontSize(int code);
-void SetDocumentFontSize(int code);
-int CurrentFontSize(void);
-void BasicSetFontSize(int code);
-
+void            CmdSetFontStyle(int code);
+void            CmdSetFont(int code);
+void            CmdSetFontSize(int code);
+void            SetDocumentFontSize(int code);
+int             CurrentFontSize(void);
+void            BasicSetFontSize(int code);

@@ -1,34 +1,26 @@
 /*
- * $Id: cfg.h,v 1.8 2001/08/12 19:32:24 prahl Exp $
+ * $Id: cfg.h,v 1.9 2001/08/12 19:40:25 prahl Exp $
  * History:
  * $Log: cfg.h,v $
- * Revision 1.8  2001/08/12 19:32:24  prahl
- * 1.9f
- * 	Reformatted all source files ---
- * 	    previous hodge-podge replaced by standard GNU style
- * 	Compiles cleanly using -Wall under gcc
- *
- * 	added better translation of \frac, \sqrt, and \int
- * 	forced all access to the LaTeX file to use getTexChar() or ungetTexChar()
- * 	    allows better handling of %
- * 	    simplified and improved error checking
- * 	    eliminates the need for WriteTemp
- * 	    potentially allows elimination of getLineNumber()
- *
- * 	added new verbosity level -v5 for more detail
- * 	fixed bug with in handling documentclass options
- * 	consolidated package and documentclass options
- * 	fixed several memory leaks
- * 	enabled the use of the babel package *needs testing*
- * 	fixed bug in font used in header and footers
- * 	minuscule better support for french
- * 	Added testing file for % comment support
- * 	Enhanced frac.tex to include \sqrt and \int tests also
- * 	Fixed bugs associated with containing font changes in
- * 	    equations, tabbing, and quote environments
- * 	Added essential.tex to the testing suite --- pretty comprehensive test.
- * 	Perhaps fix missing .bbl crashing bug
- * 	Fixed ?` and !`
+ * Revision 1.9  2001/08/12 19:40:25  prahl
+ * 1.9g
+ *         Added commands to read and set TeX lengths
+ *         Added commands to read and set TeX counters
+ *         Fixed bug in handling of \item[text]
+ *         Eliminated comparison of fpos_t variables
+ *         Revised getLinenumber ... this is not perfect
+ *         Fixed bug in getTexChar() routine
+ *         Clearly separate preamble from the document in hopes that
+ *           one day more appropriate values for page size, margins,
+ *           paragraph spacing etc, will be used in the RTF header
+ *         I have added initial support for page sizes still needs testing
+ *         added two more test files misc3.tex and misc4.tex
+ *         misc4.tex produces a bad rtf file currently
+ *         separated all letter commands into letterformat.c
+ *         cleaned up warning calls throughout code
+ *         added \neq \leq \geq \mid commands to direct.cfg
+ *         collected and added commands to write RTF header in preamble.c
+ *         broke isolatin1 and hyperlatex support, these will be fixed next version
  *
  * Revision 1.5  1998/11/12 15:15:42  glehner
  * Cleaned up includes, moved from .h file to .c
@@ -74,21 +66,10 @@ extern void ReadCfg (void)
 /*@modifies configinfo@*/
 ;
 
-/*@null@*//*@dependent@*/
-extern size_t SearchRtfIndex ( /*@in@*/ const char *theCommand
-                              ,                int WhichArray
-                              );
-/*@null@*/ 
-extern const char *SearchRtfCmd ( /*@in@*/ const char *theCommand
-                                ,                int WhichArray
-	                        );
-/*@null@*/
-extern const ConfigEntryT **CfgStartIterate (/*@unused@*/ int WhichCfg);
-
-/*@null@*/
-extern const ConfigEntryT **CfgNext (                  int            WhichCfg
-                                    , /*@null@*/ const ConfigEntryT **last
-				    );
+extern size_t SearchRtfIndex (const char *theCommand, int WhichArray);
+extern char *SearchRtfCmd (const char *theCommand, int WhichArray);
+extern ConfigEntryT **CfgStartIterate (int WhichCfg);
+extern ConfigEntryT **CfgNext (int WhichCfg, ConfigEntryT **last);
 
 
 /* Values for WhichArray */
@@ -99,7 +80,7 @@ extern const ConfigEntryT **CfgNext (                  int            WhichCfg
 
 extern void ReadLg(char *lang);
 /*@null@*/ 
-extern const char *TranslateName(char *name);
+extern char *TranslateName(char *name);
 
 #ifndef LIBDIR
 #define LIBDIR ""

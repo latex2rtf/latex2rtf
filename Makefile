@@ -3,36 +3,28 @@
 # now use $(MAKE) instead of make
 # added test target
 # incorporated test directory into make process
-# $Id: Makefile,v 1.8 2001/08/12 19:32:24 prahl Exp $
+# $Id: Makefile,v 1.9 2001/08/12 19:40:25 prahl Exp $
 # History:
 # $Log: Makefile,v $
-# Revision 1.8  2001/08/12 19:32:24  prahl
-# 1.9f
-# 	Reformatted all source files ---
-# 	    previous hodge-podge replaced by standard GNU style
-# 	Compiles cleanly using -Wall under gcc
-#
-# 	added better translation of \frac, \sqrt, and \int
-# 	forced all access to the LaTeX file to use getTexChar() or ungetTexChar()
-# 	    allows better handling of %
-# 	    simplified and improved error checking
-# 	    eliminates the need for WriteTemp
-# 	    potentially allows elimination of getLineNumber()
-#
-# 	added new verbosity level -v5 for more detail
-# 	fixed bug with in handling documentclass options
-# 	consolidated package and documentclass options
-# 	fixed several memory leaks
-# 	enabled the use of the babel package *needs testing*
-# 	fixed bug in font used in header and footers
-# 	minuscule better support for french
-# 	Added testing file for % comment support
-# 	Enhanced frac.tex to include \sqrt and \int tests also
-# 	Fixed bugs associated with containing font changes in
-# 	    equations, tabbing, and quote environments
-# 	Added essential.tex to the testing suite --- pretty comprehensive test.
-# 	Perhaps fix missing .bbl crashing bug
-# 	Fixed ?` and !`
+# Revision 1.9  2001/08/12 19:40:25  prahl
+# 1.9g
+#         Added commands to read and set TeX lengths
+#         Added commands to read and set TeX counters
+#         Fixed bug in handling of \item[text]
+#         Eliminated comparison of fpos_t variables
+#         Revised getLinenumber ... this is not perfect
+#         Fixed bug in getTexChar() routine
+#         Clearly separate preamble from the document in hopes that
+#           one day more appropriate values for page size, margins,
+#           paragraph spacing etc, will be used in the RTF header
+#         I have added initial support for page sizes still needs testing
+#         added two more test files misc3.tex and misc4.tex
+#         misc4.tex produces a bad rtf file currently
+#         separated all letter commands into letterformat.c
+#         cleaned up warning calls throughout code
+#         added \neq \leq \geq \mid commands to direct.cfg
+#         collected and added commands to write RTF header in preamble.c
+#         broke isolatin1 and hyperlatex support, these will be fixed next version
 #
 # Revision 1.21  1998/07/03 06:49:36  glehner
 # updated dependencies of multiple .o files
@@ -107,7 +99,7 @@
 # Erick Branderhorst. Parts are written by Ian Jackson and Ian Murdock.
 # TODO: add target "changes". 
 CC=gcc    # C-Compiler 
-CFLAGS=-g $(XCFLAGS) # Use -O here if you want it optimized
+CFLAGS=-g -Wall -ansi -pedantic $(XCFLAGS) # Use -O here if you want it optimized
 COPY=cp
 INSTALL=install
 DIR_MODE=755
@@ -207,9 +199,12 @@ LIBS=
 # Nothing to change below this line
 SOURCES=commands.c commands.h chars.c chars.h direct.c direct.h encode.c encode.h l2r_fonts.c \
     l2r_fonts.h funct1.c funct1.h funct2.c funct2.h ignore.c ignore.h main.c \
-    main.h stack.c stack.h version.h cfg.c cfg.h Makefile README README.DOS README.Mac\
-    Copyright mygetopt.c optind.c version debian.README \
-    debian.control debian.rules util.c util.h  ChangeLog parser.c parser.h l2r.bat
+    main.h stack.c stack.h version.h cfg.c cfg.h util.c util.h parser.c parser.h \
+    lengths.c lengths.h counters.c counters.h letterformat.c letterformat.h \
+    preamble.c preamble.h \
+    Makefile README README.DOS README.Mac Copyright\
+    mygetopt.c optind.c version \
+    debian.README debian.control debian.rules ChangeLog l2r.bat
 SUPPORT=cfg/direct.cfg cfg/fonts.cfg cfg/ignore.cfg \
     cfg/english.cfg cfg/german.cfg cfg/spanish.cfg cfg/french.cfg
 MANUALS=latex2rtf.1
@@ -219,7 +214,8 @@ TEST=   test/Makefile \
 	test/accentchars.tex test/array.tex test/cite.tex test/cite.bib \
 	test/eqns.tex test/fonts.tex test/fontsize.tex test/frac.tex \
 	test/list.tex test/logo.tex test/misc1.tex test/misc2.tex \
-	test/oddchars.tex test/tabular.tex test/percent.tex
+	test/oddchars.tex test/tabular.tex test/percent.tex test/essential.tex test/hndout.sty \
+	test/misc3.tex test/misc4.tex
 
 ARCH="`dpkg --print-architecture`"
 
@@ -230,9 +226,11 @@ all build stamp-build: checkdir latex2rtf
 	touch stamp-build
 
 latex2rtf: l2r_fonts.o direct.o encode.o commands.o stack.o funct1.o funct2.o \
-	chars.o ignore.o cfg.o main.o util.o parser.o mygetopt.o
+	chars.o ignore.o cfg.o main.o util.o parser.o mygetopt.o lengths.o counters.o \
+	preamble.o letterformat.o
 	$(CC) $(CFLAGS) l2r_fonts.o chars.o direct.o encode.o commands.o stack.o \
-	funct1.o funct2.o cfg.o main.o ignore.o util.o parser.o mygetopt.o \
+	funct1.o funct2.o cfg.o main.o ignore.o util.o parser.o lengths.o mygetopt.o counters.o \
+	preamble.o letterformat.o \
 	$(LIBS) -o latex2rtf
 
 l2r_fonts.o: l2r_fonts.c main.h l2r_fonts.h cfg.h

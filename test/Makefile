@@ -4,7 +4,7 @@
 
 all:	accentchars.rtf array.rtf cite.rtf eqns.rtf fonts.rtf fontsize.rtf \
         frac.rtf list.rtf logo.rtf misc1.rtf misc2.rtf oddchars.rtf \
-        tabular.rtf
+        tabular.rtf percent.rtf essential.rtf misc3.rtf misc4.rtf
 
 LATEX= latex
 BIBTEX= bibtex
@@ -26,6 +26,6 @@ misc2.rtf: misc2.tex
 	$(LATEX2RTF) misc2
 
 clean:
-	rm -f *.dvi *.rtf *.aux *.blg *.bbl *.log
+	rm -f *.dvi *.rtf *.aux *.blg *.bbl *.log *.pdf *.toc *.lot
 
 .PHONY: clean all

@@ -1,34 +1,26 @@
 /*
- * $Id: funct2.h,v 1.10 2001/08/12 19:32:24 prahl Exp $
+ * $Id: funct2.h,v 1.11 2001/08/12 19:40:25 prahl Exp $
  * History:
  * $Log: funct2.h,v $
- * Revision 1.10  2001/08/12 19:32:24  prahl
- * 1.9f
- * 	Reformatted all source files ---
- * 	    previous hodge-podge replaced by standard GNU style
- * 	Compiles cleanly using -Wall under gcc
- *
- * 	added better translation of \frac, \sqrt, and \int
- * 	forced all access to the LaTeX file to use getTexChar() or ungetTexChar()
- * 	    allows better handling of %
- * 	    simplified and improved error checking
- * 	    eliminates the need for WriteTemp
- * 	    potentially allows elimination of getLineNumber()
- *
- * 	added new verbosity level -v5 for more detail
- * 	fixed bug with in handling documentclass options
- * 	consolidated package and documentclass options
- * 	fixed several memory leaks
- * 	enabled the use of the babel package *needs testing*
- * 	fixed bug in font used in header and footers
- * 	minuscule better support for french
- * 	Added testing file for % comment support
- * 	Enhanced frac.tex to include \sqrt and \int tests also
- * 	Fixed bugs associated with containing font changes in
- * 	    equations, tabbing, and quote environments
- * 	Added essential.tex to the testing suite --- pretty comprehensive test.
- * 	Perhaps fix missing .bbl crashing bug
- * 	Fixed ?` and !`
+ * Revision 1.11  2001/08/12 19:40:25  prahl
+ * 1.9g
+ *         Added commands to read and set TeX lengths
+ *         Added commands to read and set TeX counters
+ *         Fixed bug in handling of \item[text]
+ *         Eliminated comparison of fpos_t variables
+ *         Revised getLinenumber ... this is not perfect
+ *         Fixed bug in getTexChar() routine
+ *         Clearly separate preamble from the document in hopes that
+ *           one day more appropriate values for page size, margins,
+ *           paragraph spacing etc, will be used in the RTF header
+ *         I have added initial support for page sizes still needs testing
+ *         added two more test files misc3.tex and misc4.tex
+ *         misc4.tex produces a bad rtf file currently
+ *         separated all letter commands into letterformat.c
+ *         cleaned up warning calls throughout code
+ *         added \neq \leq \geq \mid commands to direct.cfg
+ *         collected and added commands to write RTF header in preamble.c
+ *         broke isolatin1 and hyperlatex support, these will be fixed next version
  *
  * Revision 1.5  1998/10/28 06:08:06  glehner
  * Changed ON Flag to 0x4000 for not to use MSB of int on some cc
@@ -83,80 +75,84 @@
 #define TABULAR_2 3
 
 /*--------------------------------function prototypes----------------------*/
-void CmdTabset(void);
+void            CmdTabset(void);
 
-void CmdTabjump(void);
+void            CmdTabjump(void);
 
-void CmdTabkill(int code);
+void            CmdTabkill(int code);
 
-void Tabbing(int code);
+void            CmdTabbing(int code);
 
-void CmdIgnoreFigure(int code);
+void            CmdIgnoreFigure(int code);
 
-void Cmd_OptParam_Without_braces(int code);
+void            CmdFigure(int code);
 
-void Ignore_Environment(char *searchstring); /*LEG210698*** lclint -
-					       consider passing this to ignore.c */
+void            Cmd_OptParam_Without_braces(int code);
 
-void CmdIgnoreEnvironment(int code);
+void            Ignore_Environment(char *searchstring);	/* LEG210698*** lclint -
+							 * consider passing this
+							 * to ignore.c */
 
-void CmdColumn(int code);
+void            CmdIgnoreEnvironment(int code);
 
-void CmdNewPage(int code);
+void            CmdColumn(int code);
 
- 
-void GetInputParam(char *, int);
+void            CmdNewPage(int code);
 
-void ConvertTabbing(void);
 
-void CmdBottom(int code);
+void            GetInputParam(char *, int);
 
-void CmdAbstract(int code);
+void            ConvertTabbing(void);
 
-void CmdTitlepage(int code);
+void            CmdBottom(int code);
 
-void CmdHyphenation(int code);
+void            CmdAbstract(int code);
 
-void CmdFormula2(int code);
+void            CmdTitlepage(int code);
 
-void CmdAddress(int code);
+void            CmdHyphenation(int code);
 
-void CmdSignature(int code);
+void            CmdFormula2(int code);
 
-void CmdOpening(int code);
+void            CmdAddress(int code);
 
-void CmdClosing(int code);
+void            CmdSignature(int code);
 
-void CmdPs(int code);
+void            CmdOpening(int code);
 
-void CmdTabular(int code);
+void            CmdClosing(int code);
 
-void CmdLetter(int code);
+void            CmdPs(int code);
 
-void CmdFigure(int code);
+void            CmdTabular(int code);
 
-void CmdTable(int code);
+void            CmdLetter(int code);
 
-void CmdMultiCol(int code);
+void            CmdFigure(int code);
 
-void CmdNoCite(int code);
+void            CmdTable(int code);
 
-void CmdCite(int code);
+void            CmdMultiCol(int code);
 
-void CmdFraction(int code);
-void CmdRoot(int code);
-void CmdIntegral(int code);
+void            CmdNoCite(int code);
 
-void WriteRefList (void)
-    /*@globals input, bCite @*/
+void            CmdCite(int code);
+
+void            CmdFraction(int code);
+void            CmdRoot(int code);
+void            CmdIntegral(int code);
+
+void 
+WriteRefList(void)
+/* @globals input, bCite @ */
 ;
 
-void CmdAnnotation(int code);
+void            CmdAnnotation(int code);
 
-void CmdColsep(/*@unused@*/ int code);
-void CmdLink(/*@unused@*/ int code);
+void            CmdColsep( /* @unused@ */ int code);
+void            CmdLink( /* @unused@ */ int code);
 
-void CmdConvertBiblio(/*@unused@*/ int code);
+void            CmdConvertBiblio( /* @unused@ */ int code);
 
-void CmdGraphics(int code);
-void GetRequiredParam(char *string, int size);
+void            CmdGraphics(int code);
+void            GetRequiredParam(char *string, int size);

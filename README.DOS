@@ -1,13 +1,10 @@
-This ist the file README.DOS of the LaTeX2rtf-converter, Version 1.8
+The file L2R.BAT is for use with the DJGPP generated version LATEX2RT.EXE.
 
-The file L2R.BAT is for use with the Cygnus-Cygnwin32 generated
-version of L2R.EXE.
+The Unix and Mac distributions do not contain an executable for DOS / Windows.
+Instead, get the DOS / Windows port as file latex2rtf-x.xx_dos.zip 
+(where x.xx is the version number) from 
 
-The file L2R.EXE is precompiled for MS-DOS, it should run at least on
-each DOS-computer with a 80386-CPU or higher. It does not work with
-L2R.BAT.
+     http://sourceforge.net/projects/latex2rtf/
 
-This is all by now. Help yourself or ask.
-
-The LaTeX2rtf-mailing list is on <latex2rtf@fz-juelich.de>
+Last updated June 2001.
 

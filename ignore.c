@@ -1,34 +1,26 @@
 /*
- * $Id: ignore.c,v 1.10 2001/08/12 19:32:24 prahl Exp $
+ * $Id: ignore.c,v 1.11 2001/08/12 19:40:25 prahl Exp $
  * History:
  * $Log: ignore.c,v $
- * Revision 1.10  2001/08/12 19:32:24  prahl
- * 1.9f
- * 	Reformatted all source files ---
- * 	    previous hodge-podge replaced by standard GNU style
- * 	Compiles cleanly using -Wall under gcc
- *
- * 	added better translation of \frac, \sqrt, and \int
- * 	forced all access to the LaTeX file to use getTexChar() or ungetTexChar()
- * 	    allows better handling of %
- * 	    simplified and improved error checking
- * 	    eliminates the need for WriteTemp
- * 	    potentially allows elimination of getLineNumber()
- *
- * 	added new verbosity level -v5 for more detail
- * 	fixed bug with in handling documentclass options
- * 	consolidated package and documentclass options
- * 	fixed several memory leaks
- * 	enabled the use of the babel package *needs testing*
- * 	fixed bug in font used in header and footers
- * 	minuscule better support for french
- * 	Added testing file for % comment support
- * 	Enhanced frac.tex to include \sqrt and \int tests also
- * 	Fixed bugs associated with containing font changes in
- * 	    equations, tabbing, and quote environments
- * 	Added essential.tex to the testing suite --- pretty comprehensive test.
- * 	Perhaps fix missing .bbl crashing bug
- * 	Fixed ?` and !`
+ * Revision 1.11  2001/08/12 19:40:25  prahl
+ * 1.9g
+ *         Added commands to read and set TeX lengths
+ *         Added commands to read and set TeX counters
+ *         Fixed bug in handling of \item[text]
+ *         Eliminated comparison of fpos_t variables
+ *         Revised getLinenumber ... this is not perfect
+ *         Fixed bug in getTexChar() routine
+ *         Clearly separate preamble from the document in hopes that
+ *           one day more appropriate values for page size, margins,
+ *           paragraph spacing etc, will be used in the RTF header
+ *         I have added initial support for page sizes still needs testing
+ *         added two more test files misc3.tex and misc4.tex
+ *         misc4.tex produces a bad rtf file currently
+ *         separated all letter commands into letterformat.c
+ *         cleaned up warning calls throughout code
+ *         added \neq \leq \geq \mid commands to direct.cfg
+ *         collected and added commands to write RTF header in preamble.c
+ *         broke isolatin1 and hyperlatex support, these will be fixed next version
  *
  * Revision 1.7  1998/07/03 06:56:08  glehner
  * adde PARAMETER, PACKAGE, ENVCMD, ENVIRONMENT
@@ -81,12 +73,13 @@
 /*****************************************************************************/
 
 /***********************      prototypes   ***********************************/
-static void IgnoreVar(FILE *fRtf);
-static void IgnoreCmd(FILE *fTex);
+static void     IgnoreVar(FILE * fRtf);
+static void     IgnoreCmd(FILE * fTex);
 /*****************************************************************************/
 
 
-bool TryVariableIgnore(char *command, FILE *fTex)
+bool 
+TryVariableIgnore(char *command, FILE * fTex)
 /****************************************************************************
 purpose : ignores variable-formats shown in file "ignore.cfg"
 params	:    fTex: open Tex-File
@@ -104,82 +97,74 @@ ENVCMD		proceses contents of unknown environment as if it were
 ENVIRONMENT     ignores contentents of that environment
  ****************************************************************************/
 {
-  const char *RtfCommand;
-  char TexCommand[128];
-  bool result = TRUE;
+	const char     *RtfCommand;
+	char            TexCommand[128];
+	bool            result = TRUE;
 
-  if (strlen(command) >= 100)
-  {
-      fprintf(stderr,"\n%s: WARNING: Command %s is too long in LaTeX-File.\n",progname,command)
-;
-      return FALSE;    /* command too long */
-  }
+	if (strlen(command) >= 100) {
+		diagnostics(WARNING, "Command <%s> is too long", command);
+		return FALSE;	/* command too long */
+	}
+	TexCommand[0] = '\\';
+	TexCommand[1] = '\0';
+	strcat(TexCommand, command);
 
-  TexCommand[0] = '\\';
-  TexCommand[1] = '\0';
-  strcat (TexCommand, command);
-
-  RtfCommand = SearchRtfCmd (TexCommand, IGNORE_A);
-  if (RtfCommand == NULL)
-    result = FALSE;
-  else if (strcmp(RtfCommand,"NUMBER")==0)
-    IgnoreVar(fTex);
-  else if (strcmp(RtfCommand,"MEASURE")==0)
-    IgnoreVar(fTex);
-  else if (strcmp(RtfCommand,"OTHER")==0)
-    IgnoreVar(fTex);
-  else if (strcmp(RtfCommand,"COMMAND")==0)
-    IgnoreCmd(fTex);
-  else if (strcmp(RtfCommand,"SINGLE")==0)
-      ;
-  else if (strcmp(RtfCommand,"PARAMETER")==0)
-    CmdIgnoreParameter(No_Opt_One_NormParam);
-//  else if (strcmp(RtfCommand,"LINE")==0)
-//    skipToEOL();
-  else if (strcmp(RtfCommand,"ENVIRONMENT")==0)
-    {
-      char *str;
-      str = malloc(strlen(command)+5); /* envelope: end{..} */
-      if (str == NULL)
-	error(" malloc error -> out of memory!\n");
-      strcpy(str, "end{");
-      strcat(str, command);
-      strcat(str, "}");
-      Ignore_Environment(str);
-      free(str);
-    }
-  else if (strcmp(RtfCommand,"ENVCMD")==0)
-    PushEnvironment(IGN_ENV_CMD);
-  else if (strcmp(RtfCommand,"PACKAGE")==0)
-      ;
-  else
-    result = FALSE;
-  /*LEG210698*** lclint ?  free(RtfCommand);*/
-  return(result);
+	RtfCommand = SearchRtfCmd(TexCommand, IGNORE_A);
+	if (RtfCommand == NULL)
+		result = FALSE;
+	else if (strcmp(RtfCommand, "NUMBER") == 0)
+		IgnoreVar(fTex);
+	else if (strcmp(RtfCommand, "MEASURE") == 0)
+		IgnoreVar(fTex);
+	else if (strcmp(RtfCommand, "OTHER") == 0)
+		IgnoreVar(fTex);
+	else if (strcmp(RtfCommand, "COMMAND") == 0)
+		IgnoreCmd(fTex);
+	else if (strcmp(RtfCommand, "SINGLE") == 0);
+	else if (strcmp(RtfCommand, "PARAMETER") == 0)
+		CmdIgnoreParameter(No_Opt_One_NormParam);
+/*	else if (strcmp(RtfCommand, "LINE") == 0) skipToEOL(); */
+	else if (strcmp(RtfCommand, "ENVIRONMENT") == 0) {
+		char           *str;
+		str = malloc(strlen(command) + 5);	/* envelope: end{..} */
+		if (str == NULL)
+			error(" malloc error -> out of memory!\n");
+		strcpy(str, "end{");
+		strcat(str, command);
+		strcat(str, "}");
+		Ignore_Environment(str);
+		free(str);
+	} else if (strcmp(RtfCommand, "ENVCMD") == 0)
+		PushEnvironment(IGN_ENV_CMD);
+	else if (strcmp(RtfCommand, "PACKAGE") == 0);
+	else
+		result = FALSE;
+	/* LEG210698*** lclint ?  free(RtfCommand); */
+	return (result);
 }
 
 
 /****************************************************************************
 purpose : ignores anything till a space or a newline
 params	: fTex: open Tex-File
-globals : linenumber
  ****************************************************************************/
-void IgnoreVar(FILE *fTex)
+void 
+IgnoreVar(FILE * fTex)
 {
-  char c;
-  while ( (c=getTexChar()) && c != '\n' && c != ' ') ;
+	char            c;
+	while ((c = getTexChar()) && c != '\n' && c != ' ');
 }
 
 
 /****************************************************************************
-purpose : ignores anything till an alphanumeric character 
+purpose : ignores anything till an alphanumeric character
 params	: fTex: open Tex-File
-globals : linenumber
  ****************************************************************************/
-void IgnoreCmd(FILE *fTex)
+void 
+IgnoreCmd(FILE * fTex)
 {
-  char c;
-  while ( (c=getTexChar()) && c != '\\') ;
-  while ( (c=getTexChar()) && !isalpha(c) ) ;
-  rewind_one(c);
+	char            c;
+	while ((c = getTexChar()) && c != '\\');
+	while ((c = getTexChar()) && !isalpha(c));
+	ungetTexChar(c);
 }
