@@ -54,6 +54,7 @@ static int g_current_cite_seen = 0;
 static int g_current_cite_paren = 0;
 static char g_last_author_cited[101];
 static int g_citation_longnamesfirst = 0;
+static int 	g_current_cite_item=0;
 
 void set_longnamesfirst(void)
 {
@@ -510,7 +511,7 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post)
 	abbv=getBraceParam();
 	full=getBraceParam();
 	PopSource();
-	diagnostics(5,"natbib <%s> <%s> <%s> <%s>",n,year,abbv,full);
+	diagnostics(5,"natbib [%s] <%s> <%s> <%s> <%s>",pre,n,year,abbv,full);
 	switch (code) {
 		case CITE_CITE:
 		case CITE_T:
@@ -526,8 +527,8 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post)
 			ConvertString(v);
 
 			fprintRTF(" (");
-			if (pre){ ConvertString(pre); fprintRTF(" "); }
 			ConvertString(year);
+			if (pre){ fprintRTF(", "); ConvertString(pre); }
 			if (post) { fprintRTF(", "); ConvertString(post); }
 			fprintRTF(")");
 			break;
@@ -540,14 +541,19 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post)
 			if (CITE_P_STAR==code)
 				if (!isEmptyName(full)) v = full;
 
+			if (pre && g_current_cite_item==1){ ConvertString(pre); fprintRTF(" "); }
+
 			if (strcmp(v,g_last_author_cited)!=0) {  /*suppress repeated names */
 				ConvertString(v);
 				strcpy(g_last_author_cited,v);
 			}
 			fprintRTF(", ");
 			ConvertString(year);
-			if (post)
-				fprintRTF(", %s ",post);
+			if (post && *post !='\0') {
+				fprintRTF(", ");
+				ConvertString(post);
+				fprintRTF(" ");
+			}
 			break;
 			
 		case CITE_AUTHOR:
@@ -631,7 +637,7 @@ purpose: handles \cite
 	if (g_current_cite_paren)
 		fprintRTF("\n%c", punct[0]);
 		
-	if (pretext && g_document_bibstyle == BIBSTYLE_APACITE) {
+	if (pretext && g_document_bibstyle == BIBSTYLE_APACITE ) {
 		ConvertString(pretext); 
 		fprintRTF(" ");
 	}
@@ -642,8 +648,10 @@ purpose: handles \cite
 	key = keys;
 	next_keys = popCommaName(key);
 	
+	g_current_cite_item=0;
 	while (key) {
 		char *s, *t;
+		g_current_cite_item++;
 		
 		s = ScanAux("bibcite", key, 0);				/* look up bibliographic reference */
 

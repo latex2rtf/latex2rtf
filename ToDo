@@ -4,19 +4,11 @@ Fit & Finish:
 	Improve font sizes in \section etc.
 	Reset footnote numbering at each new chapter
 	add documentation for %latex2rtf
-	document -f switch
-	add help for -f switch
 	
 Potential Features:
 
-	support \raggedright
-	Improve support for other RTF parsers than Word
-	Expand -f support to crossrefences 
 	Expand -f support to array
 	Expand -f support to weird characters
-
-	Allow macro files to be found in another directory
-	Constrain RTF output so it works with more RTF readers
 	
 	New diagnostic level to replace Warning for expected stuff
 	Support \includegraphics options (both graphics and graphicx)
@@ -32,7 +24,6 @@ Potential Features:
 	Add support for \usepackage{fullpage}
 	Add support for \usepackage{doublespace}
 	Add support for \mark commands
-	Add color commands
 	
 	Add autonumbering of equations using fields
 	

@@ -19,7 +19,7 @@ RTF=accentchars.rtf array.rtf bib_simple.rtf bib_apalike.rtf bib_apalike2.rtf \
 	enc_maccyr.rtf enc_macukr.rtf eqns-koi8.rtf \
 	defs.rtf qualisex.rtf ttgfsr7.rtf excalibur.rtf include.rtf ch.rtf\
 	spago1.rtf theorem.rtf picture.rtf tabbing.rtf figtest.rtf figtest2.rtf\
-	chem.rtf subsup.rtf linux.rtf color.rtf figtest3.rtf
+	chem.rtf subsup.rtf linux.rtf color.rtf figtest3.rtf bib_natbib3.rtf
 
 all:
 	mkdir -p ../tmp
@@ -61,6 +61,11 @@ bib_natbib2.rtf: bib_natbib2.tex
 	$(LATEX) bib_natbib2 > latex.log
 	$(LATEX) bib_natbib2 > latex.log
 	$(LATEX2RTF) $(OPTIONS) bib_natbib2
+
+bib_natbib3.rtf: bib_natbib3.tex
+	$(LATEX) bib_natbib3 > latex.log
+	$(LATEX) bib_natbib3 > latex.log
+	$(LATEX2RTF) $(OPTIONS) bib_natbib3
 
 bib_apanat.rtf: bib_apanat.tex
 	$(LATEX) bib_apanat > latex.log

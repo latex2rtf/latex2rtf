@@ -1,0 +1,100 @@
+\documentclass{article}
+
+\usepackage{natbib}
+\parindent=0.0in
+
+\begin{document}
+
+\begin{tabular}{ll}
+
+
+command&\verb#\citep[e.g.][chap.~2]{bustos1999}#\\
+conversion&\citep[e.g.][chap.~2]{bustos1999} \\
+expected&(e.g. Bustos et al., 1999, chap. 2)\\
+\hline
+
+
+
+command&\verb#\citet[chap.~5]{bustos1999}#\\
+conversion&\citet[chap.~5]{bustos1999}\\
+expected&Bustos et al. (1999, chap. 5)\\
+\hline
+
+
+command&\verb#\citep[e.g.][]{chung2002}#\\
+conversion&\citep[e.g.][]{chung2002} \\
+expected&(e.g. Chung and Worster, 2002)\\
+\hline
+
+command&\verb#\citet*{chung2002, biot1941}#\\
+conversion&\citet*{chung2002, biot1941}\\
+expected&Chung and Worster (2002); Biot (1941)\\
+\hline
+command&\verb#\citep*{chung2002, biot1941}#\\
+conversion&\citep*{chung2002, biot1941}\\
+expected&(Chung and Worster, 2002; Biot, 1941)\\
+\hline
+
+command&\verb#\citep[e.g.][]{bustos1999, chung2002, biot1941}#\\
+conversion&\citep[e.g.][]{bustos1999, chung2002, biot1941} \\
+expected&(e.g. Bustos et al., 1999; Chung and Worster, 2002; Biot, 1941)\\
+
+\hline
+command&\verb#\citet[e.g.][]{bustos1999, chung2002, biot1941}#\\
+conversion&\citep[e.g.][]{bustos1999, chung2002, biot1941} \\
+expected&(e.g. Bustos et al., 1999; Chung and Worster, 2002; Biot, 1941)\\
+
+\end{tabular}
+
+\bibliographystyle{apalike}
+
+
+\begin{thebibliography}{}
+
+\bibitem[Biot, 1941]{biot1941}
+Biot, M.~A. (1941).
+\newblock General theory of three-dimensional consolidation.
+\newblock {\em Journal of Applied Physics}, 12:155--165.
+
+\bibitem[Bustos et~al., 1999]{bustos1999}
+Bustos, M.~C., Concha, F., B\"{u}rger, R., and Tory, E.~M. (1999).
+\newblock {\em Sedimentation and Thickening: Phenomenological Foundation and
+  Mathematical Theory}, volume~8 of {\em Mathematical Modelling: Theory and
+  Applications}.
+\newblock Kluwer Academic Publishers, Dordrecht.
+
+\bibitem[Chung and Worster, 2002]{chung2002}
+Chung, C.~A. and Worster, M.~G. (2002).
+\newblock Steady-state chimneys in a mushy layer.
+\newblock {\em Journal of Fluid Mechanics}, 455:387--411.
+
+\end{thebibliography}
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
