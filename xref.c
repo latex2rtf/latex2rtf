@@ -1,4 +1,4 @@
-/* $Id: xref.c,v 1.7 2001/11/04 19:20:44 prahl Exp $ 
+/* $Id: xref.c,v 1.8 2001/11/05 05:28:57 prahl Exp $ 
  
 This file contains routines to handle cross references :
 	\label{key}, \ref{key},   \pageref{key}, \bibitem{key},
@@ -185,6 +185,48 @@ CmdNewblock(int code)
 {
 	/* if openbib chosen then start a paragraph with 1.5em indent 
 	   otherwise do nothing */
+}
+
+void
+CmdIndex(int code)
+/******************************************************************************
+purpose: convert \index{classe!article@\textit{article}!section}
+              to {\xe\v "classe:{\i article}:section"}
+******************************************************************************/
+{
+	char cThis, *text, *r, *s, *t;
+	
+	cThis = getNonBlank();
+	text = getDelimitedText('{', '}', TRUE);
+	diagnostics(4, "CmdIndex \\index{%s}", text);
+	fprintRTF("{\\xe{\\v ");
+	
+	t = text;
+	while (t) {
+		s = t;
+		t = strchr(s,'!');
+		if (t) *t = '\0';
+		r = strchr(s,'@');
+		if (r) s=r+1;
+		ConvertString(s);
+/*		while (*s && *s != '@') putRtfChar(*s++);*/
+		if (t) {
+			fprintRTF("\\:");
+			t++;
+		}
+	}
+			
+	fprintRTF("}}");
+	diagnostics(4, "leaving CmdIndex");
+	free(text);
+}
+
+void
+CmdPrintIndex(int code)
+{
+	CmdEndParagraph(0);
+	fprintRTF("\\page ");
+	fprintRTF("{\\field{\\*\\fldinst{INDEX \\\\c 2}}{\\fldrslt{}}}");
 }
 
 void CmdLabel(int code)

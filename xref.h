@@ -16,3 +16,5 @@ void 	CmdBibliography(int code);
 void 	CmdThebibliography(int code);
 void 	CmdBibitem(int code);
 void 	CmdNewblock(int code);
+void	CmdIndex(int code);
+void	CmdPrintIndex(int code);

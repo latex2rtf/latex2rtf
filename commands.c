@@ -1,4 +1,4 @@
-/*  $Id: commands.c,v 1.35 2001/11/04 20:39:11 prahl Exp $
+/*  $Id: commands.c,v 1.36 2001/11/05 05:28:57 prahl Exp $
  
     Defines subroutines to translate LaTeX commands to RTF
 */
@@ -211,7 +211,8 @@ static CommandArray commands[] = {
 	{"numberline", CmdIgnoreParameter, No_Opt_Two_NormParam},
 	{"stretch", CmdIgnoreParameter, No_Opt_One_NormParam},
 	{"typeaout", CmdIgnoreParameter, No_Opt_One_NormParam},
-	{"index", CmdIgnoreParameter, No_Opt_One_NormParam},
+	{"index", CmdIndex, 0},
+	{"printindex",CmdPrintIndex, 0},
 	{"indexentry", CmdIgnoreParameter, No_Opt_Two_NormParam},
 	{"glossary", CmdIgnoreParameter, No_Opt_One_NormParam},
 	{"glossaryentry", CmdIgnoreParameter, No_Opt_Two_NormParam},
@@ -456,6 +457,7 @@ static CommandArray params[] = {
 	{"latexonly", CmdIgnore, 0},
 	{"htmlonly",CmdIgnoreEnviron,IGNORE_HTMLONLY},
 	{"rawhtml",CmdIgnoreEnviron,IGNORE_RAWHTML},
+	{"theindex",CmdIgnoreEnviron,0},
 	{"", NULL, 0}
 };				/* end of list */
 
