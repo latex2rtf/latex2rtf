@@ -652,8 +652,100 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first)
             ConvertString(g_bibpunct_close);
             break;
 
+        case CITE_ALT:
+        case CITE_ALT_STAR:
+            v = abbv;
+            if (CITE_T == code && g_citation_longnamesfirst && !g_current_cite_seen)
+                if (!isEmptyName(full))
+                    v = full;
+            if (CITE_T_STAR == code)
+                if (!isEmptyName(full))
+                    v = full;
+            if (CITE_CITE == code && g_citation_longnamesfirst)
+                if (!isEmptyName(full))
+                    v = full;
+
+            if (strcmp(v, g_last_author_cited) == 0)
+                author_repeated = TRUE;
+
+            if (!first && !author_repeated) {
+            	ConvertString(g_bibpunct_cite_sep);
+                fprintRTF(" ");
+            }
+
+            if (!author_repeated) { /* suppress repeated names */
+                ConvertString(v);
+                strcpy(g_last_author_cited, v);
+                strcpy(g_last_year_cited, year);
+            }
+            fprintRTF(" ");
+            
+            if (pre && post) {
+                ConvertString(pre);
+            	fprintRTF(" ");
+            }
+
+            ConvertString(year);
+
+            if (pre && !post) {
+            	fprintRTF(", ");
+                ConvertString(pre);
+            }
+
+            if (post) {
+             	ConvertString(g_bibpunct_postnote_sep);
+                ConvertString(post);
+            }
+            break;
+            
         case CITE_P:
+            v = abbv;
+            if (CITE_T == code && g_citation_longnamesfirst && !g_current_cite_seen)
+                if (!isEmptyName(full))
+                    v = full;
+            if (CITE_T_STAR == code)
+                if (!isEmptyName(full))
+                    v = full;
+            if (CITE_CITE == code && g_citation_longnamesfirst)
+                if (!isEmptyName(full))
+                    v = full;
+
+            if (strcmp(v, g_last_author_cited) == 0)
+                author_repeated = TRUE;
+
+            if (!first && !author_repeated) {
+            	ConvertString(g_bibpunct_cite_sep);
+                fprintRTF(" ");
+            }
+
+            if (pre && post) {
+                ConvertString(pre);
+            	fprintRTF(" ");
+            }
+
+            if (!author_repeated) { /* suppress repeated names */
+                ConvertString(v);
+                strcpy(g_last_author_cited, v);
+                strcpy(g_last_year_cited, year);
+            }
+            fprintRTF(", ");
+            
+            ConvertString(year);
+
+            if (pre && !post) {
+            	fprintRTF(", ");
+                ConvertString(pre);
+            }
+
+            if (post) {
+             	ConvertString(g_bibpunct_postnote_sep);
+                ConvertString(post);
+            }
+            break;
+
         case CITE_P_STAR:
+        case CITE_ALP:
+        case CITE_ALP_STAR:
             v = abbv;
             if (CITE_P == code && g_citation_longnamesfirst && !g_current_cite_seen)
                 if (!isEmptyName(full))
@@ -1041,7 +1133,7 @@ void CmdNatbibCite(int code)
 	
 	pretext = getBracketParam();
 	option = getBracketParam();
-	if (code != CITE_P && code != CITE_P_STAR && code != CITE_ALP && code != CITE_ALP_STAR && code != CITE_YEAR_P)
+	if (code != CITE_P && code != CITE_P_STAR && code != CITE_YEAR_P)
 		g_current_cite_paren = FALSE;
     
     text = getBraceParam();
