@@ -130,6 +130,8 @@ CmdBibliography(int code)
 void 
 CmdThebibliography(int code)
 {
+	int amount = 450;
+	
 	if (code & ON) {
 		char * s = getBraceParam();   /*throw away widest_label */
 		free(s);
@@ -145,22 +147,27 @@ CmdThebibliography(int code)
 			ConvertBabelName("BIBNAME");
 		CmdEndParagraph(0);
 		fprintRTF("}");
+
+		PushEnvironment(GENERIC_ENV);
+		setLength("parindent", -amount);
+		indent += amount;
+	} else {
+		CmdEndParagraph(0);
+		CmdVspace(1);
+		PopEnvironment();
 	}
-	
+
+	CmdIndent(INDENT_USUAL);
 }
 
 void 
 CmdBibitem(int code)
 {
 	char *label, *key, *signet, *s;
-	int  old_indent;	
 	
-	/* new paragraph for bib entry */
 	CmdEndParagraph(0);
-	old_indent = getLength("parindent");
-	setLength("parindent", -450);
+	CmdIndent(INDENT_USUAL);
 	CmdStartParagraph(0);
-	fprintRTF("\\li450 ");
 	
 	label = getBracketParam();
 	key = getBraceParam();
@@ -187,7 +194,6 @@ CmdBibitem(int code)
 	free(key);
 	
 	fprintRTF("\\tab ");
-	setLength("parindent", old_indent);
 	skipSpaces();
 }
 

@@ -759,6 +759,10 @@ globals: changes Environment - array of active environments
 		Environments[iEnvCount] = hyperlatex;
 		diag = "hyperlatex";
 		break;
+	case GENERIC_ENV:
+		Environments[iEnvCount] = commands;
+		diag = "Generic Environment";
+		break;
 
 	default:
 		diagnostics(ERROR,"assertion failed at function PushEnvironment");
