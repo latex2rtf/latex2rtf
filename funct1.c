@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.42 2001/10/28 16:45:29 prahl Exp $ 
+/* $Id: funct1.c,v 1.43 2001/10/28 22:27:57 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -463,6 +463,7 @@ parameter: code: type of section-recursion-level
 {
 	char            *toc_entry;
 	char            *heading;
+	char			section_label[20];
 /*	char			c;
 	int				DefFont = DefaultFontFamily();
 */	
@@ -480,13 +481,16 @@ parameter: code: type of section-recursion-level
 	CmdIndent(INDENT_NONE);
 	CmdStartParagraph(0);
 	
+	if (g_section_label) free(g_section_label);
+
 	switch (code) {
 	case SECT_PART:
 		incrementCounter("part");
 		fprintRTF("\\page");
 		fprintRTF("{\\qc\\b\\fs40 ");
 		ConvertBabelName("PARTNAME");
-		fprintRTF("%d\\par ", getCounter("part"));
+		sprintf(section_label, "%d", getCounter("part"));
+		fprintRTF("%s\\par ", section_label);
 		break;
 
 	case SECT_CHAPTER:
@@ -500,7 +504,8 @@ parameter: code: type of section-recursion-level
 */
 		fprintRTF("\\page{\\plain\\b\\fs32\\kerning28 ");
 		ConvertBabelName("CHAPTERNAME");
-		fprintRTF(" %d\\par}", getCounter("chapter"));
+		sprintf(section_label, "%d", getCounter("chapter"));
+		fprintRTF(" %s\\par}", section_label);
 		fprintRTF("{\\fi0\\plain\\b\\fs40\\kerning28 ");
 		break;
 
@@ -520,11 +525,13 @@ parameter: code: type of section-recursion-level
 */
 		fprintRTF("{\\plain\\b");
 		if (g_document_type == FORMAT_ARTICLE) {
-			fprintRTF("\\fs32 %d.  ", getCounter("section"));
+			fprintRTF("\\fs32 ");
+			sprintf(section_label, "%d.", getCounter("section"));
 		} else {
-			fprintRTF("\\fs24 %d.%d  ", getCounter("chapter"),getCounter("section"));
+			fprintRTF("\\fs24 ");
+			sprintf(section_label, "%d.%d", getCounter("chapter"),getCounter("section"));
 		}
-
+		fprintRTF("%s  ", section_label);
 		break;
 
 	case SECT_SUB:
@@ -540,9 +547,12 @@ parameter: code: type of section-recursion-level
 		}
 */
 		fprintRTF("{\\plain\\b\\fs24 ");
-		if (g_document_type != FORMAT_ARTICLE) 
-			fprintRTF("%d.", getCounter("chapter"));
-		fprintRTF("%d.%d  ", getCounter("section"), getCounter("subsection"));
+		if (g_document_type == FORMAT_ARTICLE)
+			sprintf(section_label, "%d.%d", getCounter("section"), getCounter("subsection"));
+		else
+			sprintf(section_label, "%d.%d.%d", getCounter("chapter"), getCounter("section"), 
+			        getCounter("subsection"));
+		fprintRTF("%s  ", section_label);
 		break;
 
 	case SECT_SUBSUB:
@@ -557,13 +567,17 @@ parameter: code: type of section-recursion-level
 		}
 */
 		fprintRTF("{\\plain\\b\\fs24 ");
-		if (g_document_type != FORMAT_ARTICLE) 
-			fprintRTF("%d.", getCounter("chapter"));
-		fprintRTF("%d.%d", getCounter("section"), getCounter("subsection"));
-		fprintRTF(".%d  ", getCounter("subsubsection"));
+		if (g_document_type == FORMAT_ARTICLE)
+			sprintf(section_label, "%d.%d.%d", getCounter("section"), 
+					getCounter("subsection"), getCounter("subsubsection"));
+		else
+			sprintf(section_label, "%d.%d.%d.%d", getCounter("chapter"), getCounter("section"), 
+			        getCounter("subsection"), getCounter("subsubsection"));
+		fprintRTF("%s  ", section_label);
 		break;
 	}
 	
+	g_section_label = strdup(section_label);
 	ConvertString(heading);
 	CmdEndParagraph(0);
 	fprintRTF("}");

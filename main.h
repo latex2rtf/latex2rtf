@@ -1,4 +1,4 @@
-/* $Id: main.h,v 1.30 2001/10/28 16:45:29 prahl Exp $ */
+/* $Id: main.h,v 1.31 2001/10/28 22:27:57 prahl Exp $ */
 #ifndef __MAIN_H
 #define __MAIN_H
 
@@ -100,6 +100,7 @@ extern char     g_encoding[20];
 extern char		*g_figure_label;
 extern char		*g_table_label;
 extern char		*g_equation_label;
+extern char  	*g_section_label;
 
 void fprintRTF(char *format, ...);
 void putRtfChar(char cThis);
