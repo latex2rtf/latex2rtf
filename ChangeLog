@@ -1,3 +1,184 @@
+2002-03-10 08:36  prahl
+
+ Moving scripts to script directory
+	Previous check-in also wrapped optind.c and mygetopt.c in #ifdef's
+	
+2002-03-10 08:19  prahl
+
+ Makefile changes.  New make targets realclean and depend
+	Updated dependencies in Makefile
+	changed name of shell script from tex2png to latex2png
+	
+2002-03-08 21:29  prahl
+
+ Improvements to shell scripts to create files in directory that
+	the latex file is in rather than the current working directory.
+	
+2002-03-07 22:46  prahl
+
+ Bitmap conversion of equations now works.  To use this feature you must
+	get one of the scripts tex2png_* working and installed as tex2png.  This
+	means that in addition of needing latex installed, you will probably need
+	dvips and ImageMagick also installed.  In any case, there still remain bugs
+	in how equation numbers are handled as well as inline equation conversion
+	activation.
+	
+2002-03-03 21:30  prahl
+
+ Minimal support for .eps, .ps, .gif, and .tiff files.  This assumes that
+	you have Imagemagick installed and the shell command convert file.eps file.png
+	will actually create a .png file.
+	
+2002-03-02 22:29  prahl
+
+ Basic support for incorporating .pict, .jpg, and .png files in RTF
+	
+2002-03-02 12:16  prahl
+
+ Creating graphic.c and graphic.h in anticipation of code for better
+	graphics capabilities.  Currently, just moving existing CmdGraphics()
+	routine.
+	
+2002-02-26 20:32  prahl
+
+ Fixes for \mbox{if $x$} within an equation that uses fields
+	
+2002-02-25 21:02  prahl
+
+ Adding \parallel to direct.cfg
+	
+2002-02-24 18:13  prahl
+
+ Added support for \stackrel command
+	
+2002-02-24 12:48  prahl
+
+ support for \iint and \iiint
+	
+2002-02-24 12:28  prahl
+
+ Minimal support for \htmlref
+	
+2002-02-24 11:48  prahl
+
+ Support for \newtheorem and a file to test the new functionality
+	
+2002-02-18 22:32  prahl
+
+ Update to ToDo list.
+	
+2002-02-18 21:58  prahl
+
+ Final step in removing makefile --- add back original Makefile
+	
+2002-02-18 21:57  prahl
+
+ Trying to remove makefile
+	
+2002-02-18 21:55  prahl
+
+ Trying to remove "makefile"
+	
+2002-02-18 21:43  prahl
+
+ Added some support for \htmladdnormalref{text}{ref}
+	Fixed various bugs in citation code
+	Now support \nobreakspace
+	
+2002-02-18 13:14  prahl
+
+ Support \input and \include in preamble (in previous checkin)
+	
+2002-02-18 13:00  prahl
+
+ Fix for improper parsing of complicated citation references.
+	Improve handling of cross-reference labels
+	
+2002-02-18 10:03  prahl
+
+ Fix for \over matching \overline.
+	Enhance bracecheck to report number of files tested
+	
+2002-02-18 09:43  prahl
+
+ Fix to make test in fprintRTF of high bit characters more portable.
+	Shift -M options around slightly.
+	
+2002-02-17 22:36  prahl
+
+ Set default equation processing to how it used to be.
+	
+2002-02-17 21:54  prahl
+
+ Fix for \'{\i} and \`{\i}.
+	
+2002-02-17 21:43  prahl
+
+ Support for stdin and stdout.  Fix bug using latex2rtf without arguments.
+	
+2002-02-17 14:01  prahl
+
+ Fix for problems compiling on Linux by Michael Y. Brukman.  Eliminates
+	non-constant initialization to stdin.
+	
+2002-02-17 13:37  prahl
+
+ #ifdef fix by Michael Y. Brukman to Linux
+	
+2002-02-17 13:32  prahl
+
+ Fix missing -C switch when parsing options.
+	
+2002-02-17 09:17  prahl
+
+ New field for each equation in eqnarray.
+	
+2002-02-17 09:08  prahl
+
+ Convert {A \over B} to \frac{A}{B} so that fractions can be handled by
+	fields.
+	
+2002-02-17 07:42  prahl
+
+ Warn user when open braces remain in translated document.
+	
+2002-02-17 06:55  prahl
+
+ Allow redefinition of equation commands (e.g., \be for \begin{equation})
+	by properly handling macro expansion in getSection().  Add new test file
+	that verifies this behavior.
+	
+2002-02-16 22:19  prahl
+
+ Fix bug in macro expansion in getSection in parser.c
+	
+2002-02-16 21:12  prahl
+
+ Major changes to improve processing of equations.  This is the first step.
+	To get the old default handling of equations use -M1 for now.  More changes
+	to come, but this parses all the test files.
+	
+2001-12-08 13:20  prahl
+
+ Added \\* MERGEFORMAT to prevent references from changing style
+	
+2001-12-06 21:03  prahl
+
+ Add commandline support for directory for .cfg files
+	Add command line support for using a semicolon to separate arguements
+	in a field
+	Fixed a few problems with latex2rtf.texi
+	Fixed \"i and \"\i to do the right thing
+	Changed \include to be \input in include2.tex
+	
+2001-12-02 20:44  prahl
+
+ Remove all uses of ftell and most fseeks
+	
+2001-11-29 21:14  prahl
+
+ Minor changes before 1.9.12 release
+	
 2001-11-27 22:36  prahl
 
  Fix for \sum and \prod to use EQ fields
@@ -572,8 +753,10 @@
 
  Revised fonts.cfg, removed Ferdsch, now set the default font correctly
 	and begun the process of eliminating the $Log: ChangeLog,v $
-	and begun the process of eliminating the Revision 1.12  2001/11/30 05:14:42  prahl
-	and begun the process of eliminating the Minor changes before 1.9.12 release
+	and begun the process of eliminating the Revision 1.13  2002/03/10 19:02:12  prahl
+	and begun the process of eliminating the Update version.h to 1.9.13
+	and begun the process of eliminating the Updated ChangeLog
+	and begun the process of eliminating the Fixes to equation number for bitmap equations
 	and begun the process of eliminating the comments in files.
 	
 2001-08-12 14:15  prahl

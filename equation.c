@@ -206,7 +206,10 @@ SaveEquationAsFile(char *pre, char *eq, char *post)
 		fprintf(f, "\\thispagestyle{empty}\n");
 		fprintf(f, "\\begin{document}\n");
 		fprintf(f, "\\setcounter{equation}{%d}\n",getCounter("equation"));
-		fprintf(f, "%s%s%s", pre, eq, post);
+		if (strstr(pre, "equation"))
+			fprintf(f, "$$%s$$", eq);
+		else
+			fprintf(f, "%s%s%s", pre, eq, post);
 		fprintf(f, "\n\\end{document}");
 		fclose(f);
 	} else {

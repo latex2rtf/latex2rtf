@@ -153,7 +153,7 @@ test: latex2rtf
 	cd test && $(MAKE) 
 
 clean: checkdir
-	rm -f $(OBJS) core stamp-build
+	rm -f $(OBJS) core
 	rm -f latex2rtf latex2rtf-$(VERSION)
 
 realclean: checkdir
