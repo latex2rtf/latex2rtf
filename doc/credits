@@ -1,6 +1,11 @@
+* suggestion for -W option
+    Thomas D. Schneider
+* bug fix for citations with space
+    Thomas D. Schneider
 * bug fix reports by
     W. Hennings
-* some code adapted from ltx2rtf by D. Taupin
+* various code adapted from ltx2rtf by 
+    D. Taupin
 * core dump (assignment to string constant) in tabular environment:
     Peter FELECAN, Laurent Mugnier
 * \glq \glqq problem, german umlaut letters
