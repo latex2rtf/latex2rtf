@@ -1,0 +1,29 @@
+Bugs:
+	Fix the breve and \u in accentchars.tex for non-Macintoshes
+	Fix \right. and \left.
+	Screwy extra space that shows up unexpectedly
+	Adapt margins for letterpaper and a4paper on font size
+	Suppress empty column that sometimes appears in tabular environments
+	Suppress empty row when a final // is present
+	Few fraction bugs present in misc3.tex 
+	Typeset digits in math mode using roman font
+	Wierdness with strdup under SunOS with -Wall -ansi -pedantic
+	move Convert() and ConvertString() to convert.c
+	
+Features:
+	Add full support for \usepackage[encoding]{inputenc}
+	Add more languages to \usepackage[language]{babel}
+	Add support for \usepackage{fontname}
+	Add support for \usepackage{fullpage}
+	Add support for \usepackage{doublespace}
+
+	Add rendering of equations as in ltx2rtf
+
+	Figure out style stuff in rtf header
+	add style support for quote environment
+	add style support for enumerate environment
+	
+	add support for \hline
+	
+	replace getBraceParam by getParam and then rename
+	replace getBracketParam by something that allocates memory
