@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.76 2002/11/28 18:36:14 prahl Exp $
+# $Id: Makefile,v 1.77 2002/11/29 13:25:12 whennings Exp $
 
 CC=gcc
 MKDIR=mkdir -p
@@ -66,7 +66,7 @@ DOCS= doc/latex2rtf.1   doc/latex2png.1    doc/latex2rtf.texi doc/latex2rtf.pdf 
 README= README README.DOS README.Mac Copyright ChangeLog 
 
 SCRIPTS= scripts/version scripts/latex2png scripts/latex2png_1 scripts/latex2png_2 \
-	scripts/latex2png.bat scripts/README \
+	scripts/latex2pn.bat scripts/README \
 	scripts/Makefile scripts/test1.tex scripts/test2.tex scripts/test3.tex \
 	scripts/test3a.tex scripts/test4.tex scripts/test1fig.eps
 
