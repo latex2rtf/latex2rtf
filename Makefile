@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.65 2002/11/07 02:06:56 prahl Exp $
+# $Id: Makefile,v 1.66 2002/11/20 02:43:23 prahl Exp $
 
 CC=gcc
 MKDIR=mkdir -p
@@ -34,8 +34,7 @@ CFG_INSTALL=$(PREFIX)/share/latex2rtf/cfg
 
 # Nothing to change below this line
 
-#CFLAGS:=$(CFLAGS) -g -Wall -fsigned-char
-CFLAGS:=$(CFLAGS) -g -Wall
+CFLAGS:=$(CFLAGS) -g -Wall -fsigned-char
 
 VERSION="`scripts/version`"
 
