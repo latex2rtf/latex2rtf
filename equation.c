@@ -115,6 +115,8 @@ EquationNeedsFields(char *eq)
 	if (strstr(eq,"\\frac")) return 1;
 	if (strstr(eq,"\\sum")) return 1;
 	if (strstr(eq,"\\int")) return 1;
+	if (strstr(eq,"\\iint")) return 1;
+	if (strstr(eq,"\\iiint")) return 1;
 	if (strstr(eq,"\\prod")) return 1;
 	if (strstr(eq,"\\array")) return 1;
 	if (strstr(eq,"\\left")) return 1;
@@ -122,6 +124,7 @@ EquationNeedsFields(char *eq)
 	if (strstr(eq,"\\root")) return 1;
 	if (strstr(eq,"\\sqrt")) return 1;
 	if (strstr(eq,"\\over")) return 1;
+	if (strstr(eq,"\\stackrel")) return 1;
 	return 0;
 }
 
@@ -955,17 +958,38 @@ int n=0;
 		}
 		free(col_align);
 		
-/*		fprintRTF("{\\field{\\*\\fldinst{EQ \\\\a \\\\ac \\\\co%d (", n);*/
 		fprintRTF(" \\\\a \\\\ac \\\\co%d (", n);
-/*		g_processing_fields++;*/
 		g_processing_arrays++;
 		
 	} else {
-/*		fprintRTF(")}}{\\fldrslt{0}}}");*/
 		fprintRTF(")");
 		diagnostics(4, "CmdArray() ... \\end{array}");
-/*		g_processing_fields--;*/
 		g_processing_arrays--;
 	}
 }
+
+void
+CmdStackrel(int code)
+/******************************************************************************
+ purpose   : Handles \stackrel{a}{=}
+ ******************************************************************************/
+{
+char * numer, *denom;
+int size;
+		
+	size = CurrentFontSize()/1.2;
+	numer = getBraceParam();
+	denom = getBraceParam();
+	diagnostics(4, "CmdStackrel() ... \\stackrel{%s}{%s}", numer,denom);
+	
+	fprintRTF(" \\\\a ({\\fs%d ",size);
+	ConvertString(numer);
+	fprintRTF("}%c", g_field_separator);
+	ConvertString(denom);
+	fprintRTF(") ");
+	
+	free(numer);
+	free(denom);
+}
+
 

@@ -12,8 +12,6 @@ Bugs:
 		\'ech\'eant par jugement ou d\'ecision des autorit\'es l\'egales.}~>>~:
 		- in proffois, source line 305 after the \"\i{} in:
 		cont\"enu et de la mise en page, ma\"is, ma\"\i{}zena, ma\^{\i}zena, b\"ureau, etc.),
-
-	\iint is handled like \int but should be double integral.
 		
 	misc4.tex
 		missing references

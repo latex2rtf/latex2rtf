@@ -1,4 +1,4 @@
-/*  $Id: commands.c,v 1.46 2002/02/24 20:48:01 prahl Exp $
+/*  $Id: commands.c,v 1.47 2002/02/25 02:13:45 prahl Exp $
  
     Defines subroutines to translate LaTeX commands to RTF
 */
@@ -264,6 +264,7 @@ static CommandArray commands[] = {
     {"prod",  CmdIntegral, 2},
     {"left", CmdLeftRight, 0},
     {"right", CmdLeftRight, 1},
+    {"stackrel", CmdStackrel, 0},
 	{"nonumber",CmdNonumber, EQN_NO_NUMBER},
 	{"char",CmdChar,0},
 	{"htmladdnormallink",CmdHtml,LABEL_HTMLADDNORMALREF},
