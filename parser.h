@@ -7,6 +7,8 @@
  */
 
 int 			CurrentLineNumber(void);
+void 			AdvanceLineNumber(char *s);
+void			SetScanAhead(int flag);
 char 		   *CurrentFileName(void);
 int 			PushSource(char * filename, char * string);
 int				StillSource(void);

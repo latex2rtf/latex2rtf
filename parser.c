@@ -1,4 +1,4 @@
-/*  $Id: parser.c,v 1.47 2002/03/17 18:42:45 prahl Exp $
+/*  $Id: parser.c,v 1.48 2002/03/17 21:05:51 prahl Exp $
 
    Contains declarations for a generic recursive parser for LaTeX code.
 */
@@ -44,7 +44,7 @@ static bool				g_parser_scan_ahead = FALSE;
 
 static void     parseBracket();
 
-static void
+void
 SetScanAhead(int flag)
 /***************************************************************************
  purpose:     allows getSection to avoid incrementing line number
@@ -69,6 +69,20 @@ CurrentLineNumber(void)
 ****************************************************************************/
 {
 	return g_parser_line;
+}
+
+void 
+AdvanceLineNumber(char *s) 
+/***************************************************************************
+ purpose:    advances the line number according to the number of '\n' in s
+****************************************************************************/
+{
+	if (s == NULL) return;
+	
+	while (*s != '\0') {
+		if (*s == '\n') g_parser_line++;
+		s++;
+	}
 }
 
 char *
