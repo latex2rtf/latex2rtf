@@ -1,4 +1,4 @@
-/* $Id: main.h,v 1.35 2002/02/17 05:12:59 prahl Exp $ */
+/* $Id: main.h,v 1.36 2002/02/17 21:37:04 prahl Exp $ */
 #ifndef __MAIN_H
 #define __MAIN_H
 
@@ -20,7 +20,7 @@
 #endif 
 #endif
 
-#ifdef MACINTOSH || __MWERKS__
+#if defined(MACINTOSH) || defined(__MWERKS__)
 #define HAS_NO_GETOPT
 #define HAS_NO_STRDUP
 #define ENVSEP '^'
