@@ -589,6 +589,24 @@ InitializeLatexLengths(void)
 	setLength("marginparsep", 	10*20);
  }
 
+/****************************************************************************
+purpose: removes %InterpretCommentString from preamble (usually "%latex2rtf:")
+ ****************************************************************************/
+static void 
+RemoveInterpretCommentString(char *s)
+{
+	char *p,*t;
+	int n=strlen(InterpretCommentString);
+	
+	t=s;
+	while ((p=strstr(t,InterpretCommentString))) {
+		t = p-1;
+		if (*t == '%')
+			strcpy(t,t+n+1);
+		else 
+		 	t += n + 1;
+	}
+}
 
 static void 
 ConvertLatexPreamble(void)
@@ -604,6 +622,7 @@ purpose: reads the LaTeX preamble (to \begin{document} ) for the file
 	fRtf = stderr;
 	 
 	g_preamble = getTexUntil(t,1);
+	RemoveInterpretCommentString(g_preamble);
 	
 	diagnostics(4, "Entering ConvertString() from ConvertLatexPreamble <%s>",g_preamble);
 	ConvertString(g_preamble);

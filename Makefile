@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.93 2003/10/30 05:40:08 prahl Exp $
+# $Id: Makefile,v 1.94 2003/11/01 15:42:38 prahl Exp $
 
 CC=gcc
 MKDIR=mkdir -p
@@ -35,7 +35,7 @@ CFG_INSTALL=$(PREFIX)/share/latex2rtf/cfg
 CFLAGS:=$(CFLAGS) -g -Wall -fsigned-char
 
 LIBS=
-LIBS=-lMallocDebug -force_flat_namespace
+#LIBS=-lMallocDebug -force_flat_namespace
 
 VERSION="`scripts/version`"
 
@@ -137,7 +137,7 @@ dist: checkdir uptodate latex2rtf doc $(SRCS) $(HDRS) $(CFGS) $(README) Makefile
 	ln $(SCRIPTS)      latex2rtf-$(VERSION)/scripts
 	ln $(TEST)         latex2rtf-$(VERSION)/test
 	tar cvf - latex2rtf-$(VERSION) | \
-	    gzip -best > latex2rtf-$(VERSION).tar.gz
+	    gzip > latex2rtf-$(VERSION).tar.gz
 	rm -rf latex2rtf-$(VERSION)
 
 uptodate:
