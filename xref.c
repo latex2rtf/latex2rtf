@@ -580,7 +580,7 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first)
     abbv = getBraceParam();
     full = getBraceParam();
     PopSource();
-    diagnostics(6, "natbib [%s] <%s> <%s> <%s> <%s>", pre, n, year, abbv, full);
+    diagnostics(5, "natbib pre=[%s] post=<%s> n=<%s> year=<%s> abbv=<%s> full=<%s>", pre, post, n, year, abbv, full);
     author_repeated = FALSE;
     year_repeated = FALSE;
     switch (code) {
@@ -638,9 +638,11 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first)
             if (strncmp(year, g_last_year_cited, 4) == 0)   /* over simplistic test * ... */
                 year_repeated = TRUE;
 
-            if (pre && !isEmptyName(post) && g_current_cite_item == 1) {
-                ConvertString(pre);
-                fprintRTF(" ");
+            if (pre && post!=NULL && g_current_cite_item == 1) {
+                if (*pre) {
+                	ConvertString(pre);
+                 	fprintRTF(" ");
+                 }
             }
             if (!first && !author_repeated)
                 fprintRTF("; ");    /* punctuation between * citations */
@@ -664,7 +666,7 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first)
                 }
             }
 
-            if (pre && isEmptyName(post)) {
+            if (pre && post==NULL) {
                 fprintRTF(", ");
                 ConvertString(pre);
                 fprintRTF(" ");

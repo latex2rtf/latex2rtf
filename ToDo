@@ -2,16 +2,18 @@ Fit & Finish:
 	
 	last line tabular in one column mode
 	extra spaces around \hline in tabular
-	parser bug wrt %
-	graphic sizing bugs
 	
-	Improve spacing before and after \section etc.
-	Improve font sizes in \section etc.
 	Reset footnote numbering at each new chapter
 	add documentation for %latex2rtf
+	add examples to help page
+	improve readme.osx
 	
 Potential Features:
 
+	add \tableofcontents, \listoftables, \listoffigures
+	add estimates for column sizes to tables
+	add support for \endfloat
+	
 	Expand -f support to array
 	Expand -f support to weird characters
 	
@@ -25,7 +27,6 @@ Potential Features:
 	
 	Add default page numbering
 	
-    Add support for \usepackage{endfloat}
 	Add support for \usepackage{fullpage}
 	Add support for \usepackage{doublespace}
 	Add support for \mark commands
@@ -35,7 +36,6 @@ Potential Features:
 	Style stuff in rtf header
 		add style support for quote environment
 		add style support for enumerate environment
- 		add back style support for \section, \subsection
 
 	support \hsize
 	add support for \vspace

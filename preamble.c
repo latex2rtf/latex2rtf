@@ -371,9 +371,6 @@ static void setPointSize(char *option)
 
 
 static void setDocumentOptions(char *optionlist)
-
-/******************************************************************************
-******************************************************************************/
 {
     char *option;
 
@@ -432,6 +429,8 @@ static void setDocumentOptions(char *optionlist)
             /* do nothing ... but don't complain */
         } else if (strcmp(option, "color") == 0) {
             diagnostics(WARNING, "Color support limited to eight basic colors");
+        } else if (strcmp(option, "endnotes") == 0) {
+            diagnostics(WARNING, "Limited endnote support");
         } else if (!TryVariableIgnore(option)) {
             diagnostics(WARNING, "Unknown style option %s ignored", option);
         }
@@ -439,11 +438,10 @@ static void setDocumentOptions(char *optionlist)
     }
 }
 
-void CmdDocumentStyle(int code)
-
 /******************************************************************************
  purpose: parse \documentstyle[options]{format} or \documentclass[options]{format}
  ******************************************************************************/
+void CmdDocumentStyle(int code)
 {
     char *format, *format_with_spaces;
     char *options, *options_with_spaces;
@@ -487,11 +485,10 @@ void CmdDocumentStyle(int code)
     free(format);
 }
 
-void CmdUsepackage(int code)
-
 /******************************************************************************
  purpose: handle \usepackage[option]{packagename}
 ******************************************************************************/
+void CmdUsepackage(int code)
 {
     char *package, *package_with_spaces;
     char *options, *options_with_spaces;
