@@ -1,3 +1,65 @@
+2004-10-19 19:44  prahl
+
+ support for compression of citations i.e., [1,2,3,4] is now [1-4]
+	
+2004-10-18 06:53  prahl
+
+ support for sorted citations
+	
+2004-10-17 09:51  prahl
+
+ Fixes for natbib style when numbers are used
+	
+2004-10-17 09:26  prahl
+
+ support for \ensuremath
+	
+2004-10-16 20:34  prahl
+
+ fix for bibliographic reference for non-alpha natbib entries
+	
+2004-10-15 22:04  prahl
+
+ fixes for superscripted natbib style
+	
+2004-10-15 22:03  prahl
+
+ update docs with information about bibliography styles
+	
+2004-10-15 22:01  prahl
+
+ trying to check in
+	
+2004-10-14 20:13  prahl
+
+ Change format of error messages
+	Fix missing filename in error messages
+	Change diagnostic level of warnings in a couple of places
+	
+2004-10-08 22:06  prahl
+
+ Fix annoying extra page break at beginning of reports and books
+	
+2004-10-04 22:09  prahl
+
+ Some support for \citealt and \citealp commands from natbib package.  Not
+	thoroughly tested but it works ok for single authors.
+	cvs: ----------------------------------------------------------------------
+	
+2004-10-04 21:27  prahl
+
+ Add support for \euro{amount} and \EUR{amount}
+	
+2004-10-04 08:17  prahl
+
+ Added lines to babel_czech.tex to facilitate processing with latex
+	Updated subsup.tex in tarball.`
+	
+2004-10-03 21:27  prahl
+
+ add babel_spanish.tex and fig_size.tex to distribution
+	fixes for \centering in table and figure environments
+	
 2004-10-03 15:35  prahl
 
  fix font handling in equations so that ${\rm A}$ typesets in roman.
@@ -2137,9 +2199,8 @@
 
  Revised fonts.cfg, removed Ferdsch, now set the default font correctly
 	and begun the process of eliminating the $Log: ChangeLog,v $
-	and begun the process of eliminating the Revision 1.23  2004/10/04 04:27:43  prahl
-	and begun the process of eliminating the add babel_spanish.tex and fig_size.tex to distribution
-	and begun the process of eliminating the fixes for \centering in table and figure environments
+	and begun the process of eliminating the Revision 1.24  2004/11/07 15:44:31  prahl
+	and begun the process of eliminating the Preparing for 1.9.16 release
 	and begun the process of eliminating the comments in files.
 	
 2001-08-12 14:15  prahl

@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.107 2004/10/04 04:27:43 prahl Exp $
+# $Id: Makefile,v 1.108 2004/11/07 15:44:31 prahl Exp $
 
 CC=gcc
 MKDIR=mkdir -p
@@ -72,7 +72,8 @@ DOCS= doc/latex2rtf.1   doc/latex2png.1    doc/latex2rtf.texi doc/latex2rtf.pdf 
       doc/latex2rtf.txt doc/latex2rtf.info doc/latex2rtf.html doc/credits \
       doc/copying.txt   doc/Makefile       doc/latex2pn.txt  doc/latex2rt.txt
 
-README= README README.DOS README.Mac README.OS2 README.Solaris README.VMS Copyright ChangeLog
+README= README README.DOS README.Mac README.OS2 README.Solaris README.VMS README.OSX \
+        Copyright ChangeLog
 
 SCRIPTS= scripts/version scripts/latex2png scripts/latex2png_1 scripts/latex2png_2 \
 	scripts/latex2pn.bat scripts/README \
@@ -136,7 +137,7 @@ depend: $(SRCS)
 	$(CC) -MM $(SRCS) >makefile.depend
 	@echo "***** Append makefile.depend to Makefile manually ******"
 
-dist: checkdir uptodate latex2rtf doc $(SRCS) $(HDRS) $(CFGS) $(README) Makefile vms_make.com $(SCRIPTS) $(DOCS) $(TEST)
+dist: checkdir releasedate latex2rtf doc $(SRCS) $(HDRS) $(CFGS) $(README) Makefile vms_make.com $(SCRIPTS) $(DOCS) $(TEST)
 	$(MKDIR) latex2rtf-$(VERSION)
 	$(MKDIR) latex2rtf-$(VERSION)/cfg
 	$(MKDIR) latex2rtf-$(VERSION)/doc
@@ -156,7 +157,11 @@ dist: checkdir uptodate latex2rtf doc $(SRCS) $(HDRS) $(CFGS) $(README) Makefile
 	rm -rf latex2rtf-$(VERSION)
 
 uptodate:
-	perl -pi.bak -e '$$date=scalar localtime; s/\(.*/($$date)";/' version.h
+#	perl -pi.bak -e '$$date=scalar localtime; s/\(.*/($$date)";/' version.h
+#	rm version.h.bak
+
+releasedate:
+	perl -pi.bak -e '$$date=scalar localtime; s/\(.*/(released $$date)";/; s/d ..../d /;s/\d\d:\d\d:\d\d //;' version.h
 	rm version.h.bak
 
 doc: doc/latex2rtf.texi doc/Makefile

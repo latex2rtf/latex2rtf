@@ -4,15 +4,13 @@ Fit & Finish:
 	extra spaces around \hline in tabular
 	
 	Reset footnote numbering at each new chapter
-	add documentation for %latex2rtf
+	add documentation for %latex2rtf:
 	add examples to help page
-	improve readme.osx
 
 Potential Features:
 
 	add \tableofcontents, \listoftables, \listoffigures
 	add estimates for column sizes to tables
-	add support for \endfloat
 	
 	Expand -f support to array
 	Expand -f support to weird characters
@@ -30,6 +28,7 @@ Potential Features:
 	Add support for \usepackage{fullpage}
 	Add support for \usepackage{doublespace}
 	Add support for \usepackage{geometry}
+	Add support for \usepackage{endfloat}
 	Add support for \mark commands
 	
 	Add autonumbering of equations using fields
@@ -37,7 +36,7 @@ Potential Features:
 	Style stuff in rtf header
 		add style support for quote environment
 		add style support for enumerate environment
-                add style support for superscript natbib entries
+        add style support for superscript natbib entries
 
 	support \hsize
 	add support for \vspace

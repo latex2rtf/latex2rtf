@@ -1,0 +1,47 @@
+latex2rtf is a translator program that translates LaTeX formatted 
+documents into RTF formatted files.  RTF (Rich Text Format) is a
+common mark-up used by various text processors, most notably Word.
+
+For the Copyright of the Program see the file Copyright.
+
+latex2rtf does not require a TeX implementation, nor does it require
+that ImageMagick be installed.  However, latex2rtf does make use of
+the auxilary files created by LaTeX and BibTeX --- specifically the
+.aux and .bbl files if they are available.  Latex2rtf will convert
+equations to bitmaps with the right set of options.  This facility
+requires that both a working TeX implementation as well as a working
+installation of ImageMagick. Finally, translation of figures is 
+greatly facilitated by the presence of ImageMagick.  
+
+To install (on a UNIX system)
+- Make sure that you have installed the developer tools for your system
+- Edit Makefile for your local configuration.  The default install
+  is reasonable, but if you do not have root access, then you might
+  need to set $PREFIX to be your home directory.
+- make
+- If this is not your first-time installation, you may want to preserve
+  your old configuration (*.cfg) files. Copy them to a safe place before
+  installing.
+- make check   (expect warnings but no errors)
+- make install
+
+If all this is too much trouble, you can install using fink
+
+   http://fink.sourceforge.net/
+
+or as an i-installer package 
+
+   http://www.rna.nl/ii.html
+
+Reporting bugs to the homepage at Sourceforge
+
+              http://sourceforge.net/projects/latex2rtf/
+
+* Please verify your bug with the most recent version of the program.
+* Please provide the version of the program you are using
+* Please provide your operating system and version number
+* Provide a short latex file that exhibits the bug.  It is
+  imperative that you spend time isolating the problem into a small
+  latex file.  This shows that you actually care enough about the 
+  problem to spend some of your time trying to help isolate the bug.
+* Be patient.  Provide patches.  Enjoy.
