@@ -31,7 +31,7 @@ Authors:
 #include "parser.h"
 
 char *  
-strndup(char *src, int n)
+my_strndup(char *src, int n)
 /******************************************************************************
  purpose:  returns a new string with n characters from s (with '\0' at the end)
 ******************************************************************************/
@@ -131,7 +131,7 @@ char *p, *t;
 	while (p >= t && (*p == ' ' || *p == '\n')) p--;	/* last non blank char */
 	
 	if (t>p) return strdup("");
-	return strndup(t,p-t+1);
+	return my_strndup(t,p-t+1);
 }
 
 char *

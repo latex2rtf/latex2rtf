@@ -329,7 +329,7 @@ TabularNextCell(char *cell_start, char **cell_end)
 	end = TabularNextAmpersand(cell_start);
 
 	if (*end=='&') {
-		dup = strndup(cell_start,end-cell_start);
+		dup = my_strndup(cell_start,end-cell_start);
 		*cell_end = end+1;
 	} else {
 		dup = strdup(cell_start);
@@ -725,7 +725,7 @@ TabbingNextCell(char *cell_start, char **cell_end)
 	TabbingNextCellEnd(cell_start, &end, &next_cell);
 
 	if (end<cell_start) end=cell_start;
-	dup = strndup(cell_start, end-cell_start);
+	dup = my_strndup(cell_start, end-cell_start);
 	
 	if (*next_cell=='\0')
 		*cell_end = NULL;
