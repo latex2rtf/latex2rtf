@@ -1,4 +1,4 @@
-/* $Id: graphics.c,v 1.6 2002/03/14 06:42:21 prahl Exp $ 
+/* $Id: graphics.c,v 1.7 2002/03/16 05:12:47 prahl Exp $ 
 This file contains routines that handle LaTeX graphics commands
 */
 
@@ -13,6 +13,8 @@ This file contains routines that handle LaTeX graphics commands
 #include "commands.h"
 #include "convert.h"
 #include "equation.h"
+
+#define POINTS_PER_M 2834.65
 
 /* Little endian macros to convert to and from host format to network byte ordering */
 #define LETONS(A) ((((A) & 0xFF00) >> 8) | (((A) & 0x00FF) << 8))
@@ -197,7 +199,7 @@ PutPngFile(char * s, double scale)
 {
 FILE *fp;
 unsigned char buffer[16];
-unsigned long width, height;
+unsigned long width, height, w, h;
 char reftag[9] = "\211PNG\r\n\032\n";
 char refchunk[5] = "IHDR";
 int iscale;
@@ -230,10 +232,13 @@ int iscale;
 
 	diagnostics(1,"width = %ld, height = %ld", width, height);
 	
-	fprintRTF("\n{\\pict\\pngblip\\picw%ld\\pich%ld", width, height);
+	w = (unsigned long)( 100000.0*width  )/ ( 20* POINTS_PER_M );
+	h = (unsigned long)( 100000.0*height )/ ( 20* POINTS_PER_M );
+	fprintRTF("\n{\\pict\\pngblip\\picw%ld\\pich%ld", w, h);
+	fprintRTF("\\picwgoal%ld\\pichgoal%ld", width*20, height*20);
 	if (scale != 1.0) {
 		iscale = (int) (scale * 100);
-		fprintRTF("\\picscalex%d\\picscaley%d\n", iscale, iscale);
+		fprintRTF("\\picscalex%d\\picscaley%d", iscale, iscale);
 	}
 	fprintRTF("\n");
 	rewind(fp);
@@ -252,6 +257,7 @@ FILE *fp;
 unsigned short buffer[2];
 int m,c;
 unsigned short width, height;
+unsigned long w, h;
 
 	fp = open_graphics_file(s);
 	if (fp == NULL) return;
@@ -287,7 +293,11 @@ unsigned short width, height;
 
 	diagnostics(1,"width = %d, height = %d", width, height);
 
-	fprintRTF("\n{\\pict\\jpegblip\\picw%d\\pich%d\n", width, height);
+	w = (unsigned long)( 100000.0*width  )/ ( 20* POINTS_PER_M );
+	h = (unsigned long)( 100000.0*height )/ ( 20* POINTS_PER_M );
+	fprintRTF("\n{\\pict\\jpegblip\\picw%ld\\pich%ld", w, h);
+	fprintRTF("\\picwgoal%ld\\pichgoal%ld\n", width*20, height*20);
+
 	rewind(fp);
 	PutHexFile(fp);
 	fprintRTF("}\n");
