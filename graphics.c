@@ -1,13 +1,15 @@
-/* $Id: graphics.c,v 1.2 2002/03/03 06:29:06 prahl Exp $ 
+/* $Id: graphics.c,v 1.3 2002/03/04 05:30:18 prahl Exp $ 
 This file contains routines that handle LaTeX graphics commands
 */
 
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <unistd.h>
 #include "main.h"
 #include "graphics.h"
 #include "parser.h"
+#include "util.h"
 
 /* macros to extract big-endian short and long ints: */
 /*
@@ -44,6 +46,58 @@ Version 1.6 RTF files can include pictures as follows
 \dibitmapN              Source of the picture is a Windows device-independent bitmap
 \wbitmapN               Source of the picture is a Windows device-dependent bitmap
 */
+
+typedef struct _WindowsMetaHeader
+{
+	unsigned short	FileType;		/* Type of metafile (0=memory, 1=disk) */
+	unsigned short	HeaderSize;		/* Size of header in WORDS (always 9) */
+	unsigned short	Version;		/* Version of Microsoft Windows used */
+	unsigned long	FileSize;		/* Total size of the metafile in WORDs */
+	unsigned short	NumOfObjects;	/* Number of objects in the file */
+	unsigned long	MaxRecordSize;	/* The size of largest record in WORDs */
+	unsigned short	NumOfParams;	/* Not Used (always 0) */
+} WMFHEAD;
+
+typedef struct _PlaceableMetaHeader
+{
+	unsigned long	Key;			/* Magic number (always 0x9AC6CDD7) */
+	unsigned short	Handle;			/* Metafile HANDLE number (always 0) */
+	short			Left;			/* Left coordinate in twips */
+	short			Top;			/* Top coordinate in twips */
+	short			Right;			/* Right coordinate in twips */
+	short			Bottom;			/* Bottom coordinate in twips */
+	unsigned short	Inch;			/* Scaling factor, 1440 => 1:1, 360 => 4:1, 2880 => 1:2 (half size) */
+	unsigned long	Reserved;		/* Reserved (always 0) */
+	unsigned short	Checksum;		/* Checksum value for previous 10 WORDs */
+} PLACEABLEMETAHEADER;
+
+typedef struct _EnhancedMetaHeader
+{
+	unsigned long	RecordType;		/* Record type (always 0x00000001)*/
+	unsigned long	RecordSize;		/* Size of the record in bytes */
+	long			BoundsLeft;		/* Left inclusive bounds */
+	long			BoundsRight;	/* Right inclusive bounds */
+	long			BoundsTop;		/* Top inclusive bounds */
+	long			BoundsBottom;	/* Bottom inclusive bounds */
+	long			FrameLeft;		/* Left side of inclusive picture frame */
+	long			FrameRight;		/* Right side of inclusive picture frame */
+	long			FrameTop;		/* Top side of inclusive picture frame */
+	long			FrameBottom;	/* Bottom side of inclusive picture frame */
+	unsigned long	Signature;		/* Signature ID (always 0x464D4520) */
+	unsigned long	Version;		/* Version of the metafile */
+	unsigned long	Size;			/* Size of the metafile in bytes */
+	unsigned long	NumOfRecords;	/* Number of records in the metafile */
+	unsigned short	NumOfHandles;	/* Number of handles in the handle table */
+	unsigned short	Reserved;		/* Not used (always 0) */
+	unsigned long	SizeOfDescrip;	/* Size of description string in WORDs */
+	unsigned long	OffsOfDescrip;	/* Offset of description string in metafile */
+	unsigned long	NumPalEntries;	/* Number of color palette entries */
+	long			WidthDevPixels;	/* Width of reference device in pixels */
+	long			HeightDevPixels;/* Height of reference device in pixels */
+	long			WidthDevMM;		/* Width of reference device in millimeters */
+	long			HeightDevMM;	/* Height of reference device in millimeters */
+} ENHANCEDMETAHEADER;
+
 
 static FILE * 
 open_graphics_file(char * s)
@@ -103,7 +157,7 @@ PutPictFile(char * s)
 FILE *fp;
 short buffer[5];
 short top, left, bottom, right;
-int width, height,i;
+int width, height;
 
 	fp = open_graphics_file(s);
 	if (fp == NULL) return;
@@ -113,11 +167,6 @@ int width, height,i;
 		fclose(fp);
 		return;
 	}
-	
-	fprintf(stderr,"\n");
-	for (i=0; i<10; i++)
-		fprintf(stderr,"%0X ", buffer[i]);
-	fprintf(stderr,"\n");
 	
 	top    = buffer[0];
 	left   = buffer[1];
@@ -145,7 +194,6 @@ PutPngFile(char * s)
  ******************************************************************************/
 {
 FILE *fp;
-int i;
 unsigned char buffer[16];
 unsigned long width, height;
 char reftag[9] = "\211PNG\r\n\032\n";
@@ -160,12 +208,6 @@ char refchunk[5] = "IHDR";
 		return;
 	}
 
-	fprintf(stderr,"\n");
-	for (i=0; i<20; i++)
-		fprintf(stderr,"%0X ", buffer[i]);
-	fprintf(stderr,"\n");
-	
-	
 	if (memcmp(buffer,reftag,8)!=0 || memcmp(buffer+12,refchunk,4)!=0) {
 		diagnostics (WARNING, "Graphics file <%s> is not a PNG file!", s);
 		fclose(fp);
@@ -194,7 +236,7 @@ PutJpegFile(char * s)
 {
 FILE *fp;
 unsigned short buffer[2];
-int m,c,i;
+int m,c;
 unsigned short width, height;
 
 	fp = open_graphics_file(s);
@@ -232,8 +274,121 @@ unsigned short width, height;
 	fclose(fp);
 }
 
+static void
+PutEmfFile(char *s)
+{
+	FILE *fp;
+	int width, height;
+	
+	fp = open_graphics_file(s);
+	if (fp == NULL) return;
+
+/* identify file type */
+/* extract size information */
+
+	diagnostics(1, "EMF files are not implemented yet");
+
+/*	width = buffer[1];
+	height = buffer[0];
+	diagnostics(1,"width = %d, height = %d", width, height);
+
+	fprintRTF("\n{\\pict\\emfblip\\picw%d\\pich%d\n", width, height);
+	rewind(fp);
+	PutHexFile(fp);
+	fprintRTF("}\n");
+*/
+	fclose(fp);
+}
+
+static void
+PutEpsFile(char *s)
+{
+	char *cmd, *s1, *p, *png;
+	diagnostics(1, "filename = <%s>", s);
+	s1 = strdup(s);
+	if ((p=strstr(s1,".eps")) == NULL && (p=strstr(s1,".EPS")) == NULL) {
+		diagnostics(1, "<%s> is not an EPS file", s);
+		free(s1);
+		return;
+	}
+	strcpy(p,".png");
+	png = strdup_together(g_tmp_path,s1);
+	cmd = (char *) malloc(strlen(s)+strlen(png)+10);
+	sprintf(cmd, "convert %s %s", s, png);	
+	system(cmd);
+	
+	PutPngFile(png);
+	unlink(png);
+	
+	free(png);
+	free(cmd);
+	free(s1);
+}
+
+static void
+PutTiffFile(char *s)
+{
+	char *cmd, *s1, *p, *png;
+	diagnostics(1, "filename = <%s>", s);
+	s1 = strdup(s);
+	if ((p=strstr(s1,".tiff")) == NULL && (p=strstr(s1,".TIFF")) == NULL) {
+		diagnostics(1, "<%s> is not an EPS file", s);
+		free(s1);
+		return;
+	}
+	strcpy(p,".png");
+	png = strdup_together(g_tmp_path,s1);
+	cmd = (char *) malloc(strlen(s)+strlen(png)+10);
+	sprintf(cmd, "convert %s %s", s, png);	
+	system(cmd);
+	
+	PutPngFile(png);
+	unlink(png);
+	
+	free(png);
+	free(cmd);
+	free(s1);
+}
+
+static void
+PutGifFile(char *s)
+{
+	char *cmd, *s1, *p, *png;
+	diagnostics(1, "filename = <%s>", s);
+	s1 = strdup(s);
+	if ((p=strstr(s1,".gif")) == NULL && (p=strstr(s1,".GIF")) == NULL) {
+		diagnostics(1, "<%s> is not an gif file", s);
+		free(s1);
+		return;
+	}
+	strcpy(p,".png");
+	png = strdup_together(g_tmp_path,s1);
+	cmd = (char *) malloc(strlen(s)+strlen(png)+10);
+	sprintf(cmd, "convert %s %s", s, png);	
+	system(cmd);
+	
+	PutPngFile(png);
+	unlink(png);
+	
+	free(png);
+	free(cmd);
+	free(s1);
+}
+
 void 
 CmdGraphics(int code)
+/*
+\includegraphics[parameters]{filename}
+
+where parameters is a comma-separated list of any of the following: 
+bb=llx lly urx ury (bounding box),
+width=h_length,
+height=v_length,
+angle=angle,
+scale=factor,
+clip=true/false,
+draft=true/false.
+*/
 {
 	char           *options;
 	char           *filename;
@@ -253,6 +408,21 @@ CmdGraphics(int code)
 		
 	else if (strstr(filename, ".png")  || strstr(filename, ".PNG"))
 		PutPngFile(filename);
+
+	else if (strstr(filename, ".gif")  || strstr(filename, ".GIF"))
+		PutGifFile(filename);
+
+	else if (strstr(filename, ".emf")  || strstr(filename, ".EMF"))
+		PutEmfFile(filename);
+
+	else if (strstr(filename, ".eps")  || strstr(filename, ".EPS"))
+		PutEpsFile(filename);
+
+	else if (strstr(filename, ".ps")  || strstr(filename, ".PS"))
+		PutEpsFile(filename);
+
+	else if (strstr(filename, ".tiff")  || strstr(filename, ".TIFF"))
+		PutTiffFile(filename);
 
 	else if (strstr(filename, ".jpg")  || strstr(filename, ".JPG") ||
 		strstr(filename, ".jpeg") || strstr(filename, ".JPEG"))

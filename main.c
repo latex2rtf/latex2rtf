@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.52 2002/02/18 17:43:18 prahl Exp $ */
+/* $Id: main.c,v 1.53 2002/03/04 05:30:18 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -172,6 +172,9 @@ int main(int argc, char **argv)
 		}
 	}
 
+	if (g_tmp_path==NULL)
+		g_tmp_path = strdup("/tmp/");
+		
  	argc -= optind;
     argv += optind;
 	
