@@ -22,3 +22,4 @@ void 	CmdNewblock(int code);
 void	CmdIndex(int code);
 void	CmdPrintIndex(int code);
 void 	CmdHtml(int code);
+void	InsertBookmark(char *name, char *text);

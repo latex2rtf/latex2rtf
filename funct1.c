@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.64 2002/03/31 17:13:11 prahl Exp $ 
+/* $Id: funct1.c,v 1.65 2002/03/31 20:17:57 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -23,6 +23,7 @@ Authors:  Dorner, Granzer, Polzer, Trisko, Schlatterbeck, Lehner, Prahl
 #include "lengths.h"
 #include "definitions.h"
 #include "preamble.h"
+#include "xref.h"
 
 extern bool     twocolumn;	/* true if twocolumn-mode is enabled */
 extern int      indent;		/* includes the left margin e.g. for itemize-commands */
@@ -310,25 +311,24 @@ CmdSlashSlash(int code)
 	if (vertical_space) 				/* ignore for now */
 		free(vertical_space);
 
-	if (g_processing_eqnarray) {	/* eqnarray */
-
+	if (g_processing_eqnarray) {	/* eqnarray */		
 		if (g_processing_fields)
 			fprintRTF("}}{\\fldrslt }}");
 		if (g_show_equation_number && !g_suppress_equation_number) {
+			char number[20];
+			
 			for (; g_equation_column < 3; g_equation_column++)
 				fprintRTF("\\tab ");
 			incrementCounter("equation");
 			
-			fprintRTF("\\tab(");
-			if (g_equation_label) 
-				fprintRTF("{\\*\\bkmkstart LBL_%s}",g_equation_label);
-			fprintRTF("%d", getCounter("equation"));
-			if (g_equation_label) 
-				fprintRTF("{\\*\\bkmkend LBL_%s}",g_equation_label);
-			fprintRTF(")");
-			if (g_equation_label) 
-				free(g_equation_label);				
-			g_equation_label = NULL;
+			fprintRTF("\\tab{\\b0 (");
+			sprintf(number,"%d",getCounter("equation"));
+			InsertBookmark(g_equation_label,number);
+			if (g_equation_label) {
+				free(g_equation_label);
+				g_equation_label = NULL;
+			}
+			fprintRTF(")}");
 		}
 
 		fprintRTF("\\par\n\\tab ");
@@ -665,11 +665,7 @@ parameter: code: type of section-recursion-level
 			resetTheoremCounter("chapter");
 			unit_label = FormatUnitNumber("chapter");
 			fprintRTF(" ");
-			if (g_section_label) fprintRTF("{\\v{\\*\\bkmkstart LBL_%s}",g_section_label);
-			fprintRTF("%s", unit_label);
-			if (g_section_label) fprintRTF("{\\*\\bkmkend LBL_%s}}",g_section_label);
-			if (g_section_label) fprintRTF("{\\v{\\*\\bkmkstart PR_%s}",g_section_label);
-			if (g_section_label) fprintRTF("{\\*\\bkmkend PR_%s}}",g_section_label);
+			InsertBookmark(g_section_label, unit_label);
 			free(unit_label);
 		}
 		fprintRTF("\\par\\par}{\\fi0\\plain\\b\\fs40\\kerning28 ");
@@ -691,11 +687,7 @@ parameter: code: type of section-recursion-level
 			resetTheoremCounter("section");
 			unit_label = FormatUnitNumber("section");
 			fprintRTF("\\fs32 ");
-			if (g_section_label) fprintRTF("{\\v{\\*\\bkmkstart LBL_%s}",g_section_label);
-			fprintRTF("%s", unit_label);
-			if (g_section_label) fprintRTF("{\\*\\bkmkend LBL_%s}}",g_section_label);
-			if (g_section_label) fprintRTF("{\\v{\\*\\bkmkstart PR_%s}",g_section_label);
-			if (g_section_label) fprintRTF("{\\*\\bkmkend PR_%s}}",g_section_label);
+			InsertBookmark(g_section_label, unit_label);
 			fprintRTF("  ");
 			free(unit_label);
 		}
@@ -716,11 +708,7 @@ parameter: code: type of section-recursion-level
 			setCounter("subparagraph",0);
 			resetTheoremCounter("subsection");
 			unit_label = FormatUnitNumber("subsection");
-			if (g_section_label) fprintRTF("{\\v{\\*\\bkmkstart LBL_%s}",g_section_label);
-			fprintRTF("%s", unit_label);
-			if (g_section_label) fprintRTF("{\\*\\bkmkend LBL_%s}}",g_section_label);
-			if (g_section_label) fprintRTF("{\\v{\\*\\bkmkstart PR_%s}",g_section_label);
-			if (g_section_label) fprintRTF("{\\*\\bkmkend PR_%s}}",g_section_label);
+			InsertBookmark(g_section_label, unit_label);
 			fprintRTF("  ");
 			free(unit_label);
 		}
@@ -740,11 +728,7 @@ parameter: code: type of section-recursion-level
 			setCounter("subparagraph",0);
 			resetTheoremCounter("subsubsection");
 			unit_label = FormatUnitNumber("subsubsection");
-			if (g_section_label) fprintRTF("{{\\*\\bkmkstart LBL_%s}",g_section_label);
-			fprintRTF("%s", unit_label);
-			if (g_section_label) fprintRTF("{\\*\\bkmkend LBL_%s}}",g_section_label);
-			if (g_section_label) fprintRTF("{{\\*\\bkmkstart PR_%s}",g_section_label);
-			if (g_section_label) fprintRTF("{\\*\\bkmkend PR_%s}}",g_section_label);
+			InsertBookmark(g_section_label, unit_label);
 			fprintRTF("  ");
 			free(unit_label);
 		}
@@ -763,11 +747,7 @@ parameter: code: type of section-recursion-level
 			resetTheoremCounter("paragraph");
 			unit_label = FormatUnitNumber("paragraph");
 			setCounter("subparagraph",0);
-			if (g_section_label) fprintRTF("{{\\*\\bkmkstart LBL_%s}",g_section_label);
-			fprintRTF("%s", unit_label);
-			if (g_section_label) fprintRTF("{\\*\\bkmkend LBL_%s}}",g_section_label);
-			if (g_section_label) fprintRTF("{{\\*\\bkmkstart PR_%s}",g_section_label);
-			if (g_section_label) fprintRTF("{\\*\\bkmkend PR_%s}}",g_section_label);
+			InsertBookmark(g_section_label, unit_label);
 			fprintRTF("  ");
 			free(unit_label);
 		}
@@ -783,11 +763,7 @@ parameter: code: type of section-recursion-level
 			incrementCounter("subparagraph");
 			resetTheoremCounter("subparagraph");
 			unit_label = FormatUnitNumber("subparagraph");
-			if (g_section_label) fprintRTF("{{\\*\\bkmkstart LBL_%s}",g_section_label);
-			fprintRTF("%s", unit_label);
-			if (g_section_label) fprintRTF("{\\*\\bkmkend LBL_%s}}",g_section_label);
-			if (g_section_label) fprintRTF("{{\\*\\bkmkstart PR_%s}",g_section_label);
-			if (g_section_label) fprintRTF("{\\*\\bkmkend PR_%s}}",g_section_label);
+			InsertBookmark(g_section_label, unit_label);
 			fprintRTF("  ");
 			free(unit_label);
 		}
@@ -815,6 +791,7 @@ CmdCaption(int code)
 	char           *lst_entry;
 	int				n;
 	char   			old_align;
+	char			number[20];
 	
 	old_align = alignment;
 	alignment = CENTERED;
@@ -843,21 +820,19 @@ CmdCaption(int code)
 	}
 
 	fprintRTF(" ");
-	if (g_processing_figure && g_figure_label)
-		fprintRTF("{\\*\\bkmkstart LBL_%s}",g_figure_label);
-
-	if (g_processing_table && g_table_label)
-		fprintRTF("{\\*\\bkmkstart LBL_%s}",g_table_label);
-
 	if (g_document_type != FORMAT_ARTICLE) 
-		fprintRTF("%d.", getCounter("chapter"));
-	fprintRTF("%d", n);
-
+		sprintf(number, "%d.%d", getCounter("chapter"), n);
+	else
+		sprintf(number, "%d", getCounter("chapter"));
+	
 	if (g_processing_figure && g_figure_label)
-		fprintRTF("{\\*\\bkmkend LBL_%s}",g_figure_label);
-
-	if (g_processing_table && g_table_label)
-		fprintRTF("{\\*\\bkmkend LBL_%s}",g_table_label);
+		InsertBookmark(g_figure_label, number);
+	
+	else if (g_processing_table && g_table_label)
+		InsertBookmark(g_table_label, number);
+	
+	else
+		fprintRTF("%s", number);
 
 	fprintRTF(":  ");
 	thecaption = getBraceParam();

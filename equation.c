@@ -15,6 +15,7 @@
 #include "lengths.h"
 #include "util.h"
 #include "graphics.h"
+#include "xref.h"
 
 int g_equation_column = 1;
 
@@ -358,7 +359,7 @@ PrepareRtfEquation(int code, int EQ_Needed)
 
 void 
 FinishRtfEquation(int code, int EQ_Needed)
-{
+{	
 	if (EQ_Needed && g_processing_fields==1) {
 		fprintRTF("}}{\\fldrslt }}");
 		g_processing_fields--;	
@@ -421,19 +422,18 @@ FinishRtfEquation(int code, int EQ_Needed)
 		case EQN_ARRAY:
 		    diagnostics(4,"FinishRtfEquation --- equation or eqnarray");
 			if (g_show_equation_number && !g_suppress_equation_number) {
+				char number[20];
 				incrementCounter("equation");
 				for (; g_equation_column < 3; g_equation_column++)
 						fprintRTF("\\tab ");
 				fprintRTF("\\tab{\\b0 (");
-				if (g_equation_label) 
-					fprintRTF("{\\*\\bkmkstart LBL_%s}",g_equation_label);
-				fprintRTF("%d", getCounter("equation"));
-				if (g_equation_label) 
-					fprintRTF("{\\*\\bkmkend LBL_%s}",g_equation_label);
-				fprintRTF(")}");
-				if (g_equation_label) 
+				sprintf(number,"%d",getCounter("equation"));
+				InsertBookmark(g_equation_label,number);
+				if (g_equation_label) {
 					free(g_equation_label);
-				g_equation_label = NULL;
+					g_equation_label = NULL;
+				}
+				fprintRTF(")}");
 			}
 			g_processing_eqnarray = FALSE;
 			g_processing_tabular = FALSE;
@@ -785,19 +785,18 @@ CmdDisplayMath(int code)
 		diagnostics(4,"Exiting CmdDisplayMath");
 		
 		if (g_show_equation_number && !g_suppress_equation_number) {
+			char number[20];
 			incrementCounter("equation");
 			for (; g_equation_column < 3; g_equation_column++)
 					fprintRTF("\\tab ");
 			fprintRTF("\\tab{\\b0 (");
-			if (g_equation_label) 
-				fprintRTF("{\\*\\bkmkstart LBL_%s}",g_equation_label);
-			fprintRTF("%d", getCounter("equation"));
-			if (g_equation_label) 
-				fprintRTF("{\\*\\bkmkend LBL_%s}",g_equation_label);
-			fprintRTF(")}");
-			if (g_equation_label) 
+			sprintf(number,"%d",getCounter("equation"));
+			InsertBookmark(g_equation_label,number);
+			if (g_equation_label) {
 				free(g_equation_label);
-			g_equation_label = NULL;
+				g_equation_label = NULL;
+			} 
+			fprintRTF(")}");
 		}
 
 		CmdEndParagraph(0);

@@ -1,4 +1,4 @@
-/* $Id: xref.c,v 1.17 2002/03/31 17:13:11 prahl Exp $ 
+/* $Id: xref.c,v 1.18 2002/03/31 20:17:57 prahl Exp $ 
  
 This file contains routines to handle cross references :
 	\label{key}, \ref{key},   \pageref{key}, \bibitem{key},
@@ -202,6 +202,15 @@ CmdPrintIndex(int code)
 	fprintRTF("{\\field{\\*\\fldinst{INDEX \\\\c 2}}{\\fldrslt{}}}");
 }
 
+void
+InsertBookmark(char *name, char *text)
+{
+	if (name)
+		fprintRTF("{\\*\\bkmkstart %s}%s{\\*\\bkmkend %s}",name,text,name);
+	else
+		fprintRTF("%s",text);
+}
+
 void CmdLabel(int code)
 /******************************************************************************
 purpose: handles \label \ref \pageref \cite
@@ -227,9 +236,10 @@ purpose: handles \label \ref \pageref \cite
 				g_equation_label = signet;
 				diagnostics(3,"equation label is <%s>",signet);
 				break;
-			}
-			fprintRTF("{\\v{\\*\\bkmkstart LBL_%s}",signet);
-			fprintRTF("{\\*\\bkmkend LBL_%s}}",signet);
+			} else 
+				diagnostics(3,"xref label is <%s>",signet);
+/*			fprintRTF("{\\*\\bkmkstart %s}",signet);
+			fprintRTF("{\\*\\bkmkend %s}",signet);*/
 			free(signet);
 			break;
 		
@@ -237,7 +247,7 @@ purpose: handles \label \ref \pageref \cite
 		case LABEL_REF:
 			signet = strdup_nobadchars(text);
 			s = ScanAux("newlabel", text, 1);
-			fprintRTF("{\\field{\\*\\fldinst{\\lang1024 REF LBL_%s \\\\* MERGEFORMAT }}",signet);
+			fprintRTF("{\\field{\\*\\fldinst{\\lang1024 REF %s \\\\* MERGEFORMAT }}",signet);
 			fprintRTF("{\\fldrslt{");
 			if (s)
 				ConvertString(s);
@@ -249,7 +259,7 @@ purpose: handles \label \ref \pageref \cite
 			if (s) free(s);
 			break;
 		
-/* {\field{\*\fldinst{\lang1024 REF LBL_section31 \\* MERGEFORMAT }}{\fldrslt{?}}} */
+/* {\field{\*\fldinst{\lang1024 REF section31 \\* MERGEFORMAT }}{\fldrslt{?}}} */
 		case LABEL_CITE:
 			fprintRTF("\n[");
 			str = strdup_noblanks(text);
@@ -283,7 +293,7 @@ purpose: handles \label \ref \pageref \cite
 		case LABEL_HYPERPAGEREF:
 		case LABEL_PAGEREF:
 			signet = strdup_nobadchars(text);
-			fprintRTF("{\\field{\\*\\fldinst{\\lang1024 PAGEREF LBL_%s \\\\* MERGEFORMAT }}",signet);
+			fprintRTF("{\\field{\\*\\fldinst{\\lang1024 PAGEREF %s \\\\* MERGEFORMAT }}",signet);
 			fprintRTF("{\\fldrslt{}}}",signet);
 			free(signet);
 			break;
