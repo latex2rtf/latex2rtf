@@ -1,10 +1,11 @@
-/* $Id: graphics.c,v 1.8 2002/03/19 16:17:36 prahl Exp $ 
+/* $Id: graphics.c,v 1.9 2002/03/21 03:43:19 prahl Exp $ 
 This file contains routines that handle LaTeX graphics commands
 */
 
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <limits.h>
 #ifdef UNIX
 #include <unistd.h>
 #endif
@@ -134,7 +135,7 @@ FILE		   *fp = NULL;
 	fullpath = strdup(s);
 #endif
 
-	diagnostics(1, "processing picture <%s>\n", fullpath);
+	diagnostics(6, "processing picture <%s>\n", fullpath);
 	fp=fopen(fullpath, "rb");
 	free(fullpath);
 	return fp;
@@ -204,19 +205,20 @@ int width, height;
 	fclose(fp);
 }
 
-void 
-PutPngFile(char * s, double scale)
+void
+GetPngSize(char *s, unsigned long *w, unsigned long *h)
 /******************************************************************************
-     purpose : Include .png file in RTF
+     purpose : determine height and width of file
  ******************************************************************************/
 {
 FILE *fp;
 unsigned char buffer[16];
-unsigned long width, height, w, h;
+unsigned long width, height;
 char reftag[9] = "\211PNG\r\n\032\n";
 char refchunk[5] = "IHDR";
-int iscale;
 
+	*w = 0;
+	*h = 0;
 	fp = open_graphics_file(s);
 	if (fp == NULL) return;
 
@@ -243,8 +245,29 @@ int iscale;
 		height = LETONL(height);
 	}
 
+	*w = width;
+	*h = height;
+	fclose(fp);
+}
+
+void 
+PutPngFile(char * s, double scale)
+/******************************************************************************
+     purpose : Include .png file in RTF
+ ******************************************************************************/
+{
+FILE *fp;
+unsigned long width, height, w, h;
+int iscale;
+
+	GetPngSize(s, &width, &height);
+
 	diagnostics(1,"width = %ld, height = %ld", width, height);
+	if (width==0) return;
 	
+	fp = open_graphics_file(s);
+	if (fp == NULL) return;
+
 	w = (unsigned long)( 100000.0*width  )/ ( 20* POINTS_PER_M );
 	h = (unsigned long)( 100000.0*height )/ ( 20* POINTS_PER_M );
 	fprintRTF("\n{\\pict\\pngblip\\picw%ld\\pich%ld", w, h);
@@ -421,6 +444,40 @@ PutGifFile(char *s)
 	free(cmd);
 	free(s1);
 	free(tmp);
+}
+
+void
+PutLatexFile(char *s)
+/******************************************************************************
+ purpose   : Convert LaTeX to Bitmap and insert in RTF file
+ ******************************************************************************/
+{
+	char *png, *cmd;
+	int err;
+	unsigned long width, height;
+	unsigned long max=32767/20;
+	int resolution = 600; /*points per inch */
+	
+	diagnostics(4, "Entering PutLatexFile");
+
+	png = strdup_together(s,".png");
+	cmd = (char *) malloc(strlen(s)+18);	/* shell commands to convert equations */
+
+	/* iterate until png is small enough for Word */
+	do {
+		resolution /= 2;
+		sprintf(cmd, "latex2png -d %d %s", resolution, s);	
+		err = system(cmd);
+		GetPngSize(png, &width, &height);
+		diagnostics(1, "cmd = <%s>", cmd);
+		diagnostics(4, "png size width=%d height =%d", width, height);
+	} while (!err && resolution>25 && ( (width>max) || (height>max)) );
+	
+	if (err==0)
+		PutPngFile(png,72.0/resolution);
+	
+	free(png);
+	free(cmd);
 }
 
 void 

@@ -1,5 +1,11 @@
 Bugs:
- 	Fix line numbering
+ 	Fix source line numbering
+	Fix equation numbering for eqnarray environments
+	Fix image sizes which are larger than 32767 twips
+	Add command-line density option
+	Fix latex2png -H
+	Add path support to files
+	
 	Add support for a local cfg directory
 	Add support for \includegraphics options (both graphics and graphicx)
 

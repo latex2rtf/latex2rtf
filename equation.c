@@ -229,30 +229,23 @@ WriteLatexAsBitmap(char *pre, char *eq, char *post)
  purpose   : Convert LaTeX to Bitmap and write to RTF file
  ******************************************************************************/
 {
-	char *png, *pdf, *name, *cmd;
-	int resolution = 288; /*points per inch */
+	char *p, *name;
 	
 	diagnostics(4, "Entering WriteEquationAsBitmap");
 
-/* filename mangling */
-	name = SaveEquationAsFile(pre,eq,post);
-	if (!name) return;
+/* suppress bitmap equation numbers in eqnarrays with zero or one \label{}'s*/
+	if (strcmp(pre,"\\begin{eqnarray}")==0){
+		p = strstr(eq, "\\label");
+		if (p != NULL && strlen(p)>6)			/* found one ... is there a second? */
+			p = strstr(p+6, "\\label");
+		if (p==NULL) 
+			name = SaveEquationAsFile("\\begin{eqnarray*}",eq,"\\end{eqnarray*}");
+		else
+			name = SaveEquationAsFile(pre,eq,post);
+	} else
+		name = SaveEquationAsFile(pre,eq,post);
 	
-	png = strdup_together(name,".png");
-	pdf = strdup_together(name,".pdf");
-
-/* create shell commands to convert equations */
-	cmd = (char *) malloc(strlen(name)+18);
-	sprintf(cmd, "latex2png -d %d %s", resolution, name);	
-	diagnostics(1, "EQN to bitmap cmd = <%s>", cmd);
-
-	if (system(cmd) == 0)
-		PutPngFile(png,(72.0/resolution));
-	
-	free(name);
-	free(pdf);
-	free(png);
-	free(cmd);
+	PutLatexFile(name);
 }
 
 void 
