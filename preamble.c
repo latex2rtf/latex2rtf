@@ -209,11 +209,11 @@ CmdUsepackage(int code)
 	free(package);
 }
 
+void
+CmdTitle(int code)
 /******************************************************************************
   purpose: saves title, author or date information
  ******************************************************************************/
-void
-CmdTitle(int code)
 {
 	switch (code) {
 	case TITLE_TITLE:
@@ -271,7 +271,8 @@ CmdMakeTitle(int code)
 void 
 CmdPreambleBeginEnd(int code)
 /***************************************************************************
-   purpose: catch missed \begin{document} command ***************************************************************************/
+   purpose: catch missed \begin{document} command 
+***************************************************************************/
 {
 	char           *cParam = getParam();
 	
@@ -282,14 +283,14 @@ CmdPreambleBeginEnd(int code)
 	free(cParam);
 }
 
+void
+PlainPagestyle(void)
 /******************************************************************************
   LEG030598
   purpose: sets centered page numbering at bottom in rtf-output
 
   globals : pagenumbering set to TRUE if pagenumbering is to occur, default
  ******************************************************************************/
-void
-PlainPagestyle(void)
 {
 	int fn = getTexFontNumber("Roman");
 	pagenumbering = TRUE;
@@ -308,6 +309,8 @@ PlainPagestyle(void)
 	}
 }
 
+void
+CmdPagestyle( /* @unused@ */ int code)
 /******************************************************************************
  * LEG030598
  purpose: sets page numbering in rtf-output
@@ -321,10 +324,7 @@ Produces latex-like headers and footers.
 Needs to be terminated for:
 - headings chapter, section informations and page numbering
 - myheadings page nunmbering, combined with markboth, markright.
-
  ******************************************************************************/
-void
-CmdPagestyle( /* @unused@ */ int code)
 {
 	static char    *style = "";
 
@@ -351,17 +351,14 @@ CmdPagestyle( /* @unused@ */ int code)
 	}
 }
 
-
-
+void
+CmdHeader(int code)
 /******************************************************************************
- * LEG030598
  purpose: converts the \markboth and \markright Command in Header information
  parameter: code: BOTH_SIDES, RIGHT_SIDE
 
  globals : twoside,
  ******************************************************************************/
-void
-CmdHeader(int code)
 {
 	if (code == BOTH_SIDES) {
 		if (g_preambleTwoside) {
@@ -373,15 +370,14 @@ CmdHeader(int code)
 		RtfHeader(BOTH_SIDES, NULL);
 }
 
+void
+RtfHeader(int where, char *what)
 /******************************************************************************
-  LEG030598
   purpose: generates the header command in the rtf-output
   parameter: where: RIGHT_SIDE, LEFT_SIDE -handed page, BOTH_SIDES
            what:  NULL - Convert from LaTeX input, else put "what" into rtf
                   output
  ******************************************************************************/
-void
-RtfHeader(int where, char *what)
 {
 	int fn = getTexFontNumber("Roman");
 	switch (where) {
@@ -422,11 +418,7 @@ static void
 WriteFontHeader(void)
 /****************************************************************************
  *   purpose: writes fontnumbers and styles for headers into Rtf-File
- * parameter: fRtf: File-Pointer to Rtf-File
- *   globals:
- *            DefFont (default font number)
- *   note;
-
+ 
  \fcharset0:    ANSI coding
  \fcharset1:    MAC coding
  \fcharset2:    PC coding (implies CodePage 437)
@@ -436,32 +428,32 @@ WriteFontHeader(void)
 	int                  num = 0;
 	ConfigEntryT       **config_handle;
 
-	fprintf(fRtf, "{\\fonttbl");
+	fprintf(fRtf, "{\\fonttbl\n");
 
 	config_handle = CfgStartIterate(FONT_A);
 	while ((config_handle = CfgNext(FONT_A, config_handle)) != NULL) {
 		if (strstr((*config_handle)->TexCommand, "MacRoman"))
 			fprintf(fRtf
-				,"{\\f%u\\fnil\\fcharset1 %s;}"
+				," {\\f%u\\fnil\\fcharset1 %s;}\n"
 				,(unsigned int) num
 				,(*config_handle)->RtfCommand
 				);
 		else if (strstr((*config_handle)->RtfCommand, "Symbol"))
 			fprintf(fRtf
-				,"{\\f%u\\fnil\\fcharset2 %s;}"
+				," {\\f%u\\fnil\\fcharset2 %s;}\n"
 				,(unsigned int) num
 				,(*config_handle)->RtfCommand
 				);
 		else
 			fprintf(fRtf
-				,"{\\f%u\\fnil\\fcharset0 %s;}"
+				," {\\f%u\\fnil\\fcharset0 %s;}\n"
 				,(unsigned int) num
 				,(*config_handle)->RtfCommand
 				);
 		++num;
 	}
 
-	fprintf(fRtf, "}");
+	fprintf(fRtf, "}\n");
 }
 
 static void

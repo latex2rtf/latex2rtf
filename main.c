@@ -1,69 +1,5 @@
-/*
- * $Id: main.c,v 1.13 2001/08/12 21:15:46 prahl Exp $
- * History:
- * $Log: main.c,v $
- * Revision 1.13  2001/08/12 21:15:46  prahl
- *         Removed last two // comments
- *         Explicitly cast char to int in isalpha() and isdigit()
- *         Began the process of supporting Babel better
- *
- * Revision 1.11  1998/10/28 06:10:25  glehner
- * Added "errno.h"
- * Moved stdin/stdout assignation from declaration to function body
- * of (main).
- * Trying to call (getLinenumber) only when not reading from stdin.
- * Implemented (WriteTemp) from Wilfried Hennings (and colleagues)
- * to provide for proper eol-handling across different platforms.
- * Changed all eol-rtf-output to "\r\n".
- * Added second closing brace end eol in (CloseRtf).
- *
- * Revision 1.10  1998/07/03 06:54:13  glehner
- * added `language' and -i option
- * `twoside' for pagestyle handling
- * function diagnostic and asterisk form of LaTeX commands
- *
- * Revision 1.9  1997/02/15 20:52:27  ralf
- * Corrected some bugs and variable declarations found by lclint
- * Moved config file opening to cfg.c
- *
- * Revision 1.8  1995/05/24 17:12:11  ralf
- * Corrected bug with variable input being NULL
- *
- * Revision 1.7  1995/05/24  16:02:41  ralf
- * Changes by Vladimir Menkov for DOS port
- *
- * Revision 1.6  1995/05/24  15:09:10  ralf
- * Added support for spanish ligatures by John E. Davis (untested)
- *
- * Revision 1.5  1995/05/24  14:48:57  ralf
- * Corrected searching for citations in .aux
- *
- * Revision 1.4  1995/03/23  15:58:08  ralf
- * Reworked version by Friedrich Polzer and Gerhard Trisko
- *
- *
- * Revision 1.3  1994/06/21  08:14:11  ralf
- * Corrected some bugs
- *
- * Revision 1.2  1994/06/17  14:19:41  ralf
- * Corrected various bugs, for example interactive read of arguments
- *
- * Revision 1.1  1994/06/17  11:26:29  ralf
- * Initial revision
- */
-/***************************************************************************
-     name : main.c
-   author : DORNER Fernando, GRANZER Andreas
-            POLZER Friedrich,TRISKO Gerhard
-            MS DOS changes by Vladimir MENKOV
- * removed RemoveFontList() in main()
- * blanklines can consist of blanks (bBlankLine in Convert)
- * new option -l for Latin-1
- * writing of reference-list included
-  purpose : main convert-routine from LaTex2Rtf
- *****************************************************************************/
+/* $Id: main.c,v 1.14 2001/08/12 22:56:01 prahl Exp $ */
 
-/****************************** includes *************************************/
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
@@ -281,7 +217,8 @@ globals: initializes in- and outputfile fTex, fRtf,
 
 	InitializeStack();
 	InitializeLatexLengths();
-	ConvertLatexPreamble();
+	DefFont = getTexFontNumber("Roman");
+        ConvertLatexPreamble();
 	WriteRtfHeader();
 	
 	diagnostics(4,"Entering Convert from main");
