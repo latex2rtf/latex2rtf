@@ -1,4 +1,4 @@
-/* $Id: xref.c,v 1.9 2001/11/14 04:31:23 prahl Exp $ 
+/* $Id: xref.c,v 1.10 2001/11/14 05:00:23 prahl Exp $ 
  
 This file contains routines to handle cross references :
 	\label{key}, \ref{key},   \pageref{key}, \bibitem{key},
@@ -42,18 +42,27 @@ CmdFootNote(int code)
 	number = getBracketParam();	/* ignored by automatic footnumber generation */
 
 	if (number) free(number);
-	text_ref_upsize = (6 * CurrentFontSize()) / 20;
-	foot_ref_upsize = (6 * CurrentFontSize()) / 20;
+	text_ref_upsize = 0.8 * CurrentFontSize();
+	foot_ref_upsize = 0.8 * CurrentFontSize();
 
-	if (code == THANKS) {
-		thankno++;
-		fprintRTF("{\\up%d %d}\n", text_ref_upsize, thankno);
-		fprintRTF("{\\*\\footnote \\pard\\plain\\s246\\f%d",DefFont);
-		fprintRTF("\\fs%d {\\up%d %d}", CurrentFontSize(), foot_ref_upsize, thankno);
-	} else {
-		fprintRTF("{\\up%d\\chftn}\n", text_ref_upsize);
-		fprintRTF("{\\*\\footnote \\pard\\plain\\s246\\f%d",DefFont);
-		fprintRTF("\\fs%d {\\up%d\\chftn}", CurrentFontSize(), foot_ref_upsize);
+	switch (code) {
+		case FOOTNOTE_THANKS:
+			thankno++;
+			fprintRTF("{\\up%d %d}\n", text_ref_upsize, thankno);
+			fprintRTF("{\\*\\footnote \\pard\\plain\\s246\\f%d",DefFont);
+			fprintRTF("\\fs%d {\\up%d %d}", CurrentFontSize(), foot_ref_upsize, thankno);
+			break;
+	
+		case FOOTNOTE:
+			fprintRTF("{\\up%d\\chftn}\n", text_ref_upsize);
+			fprintRTF("{\\*\\footnote \\pard\\plain\\s246\\f%d",DefFont);
+			fprintRTF("\\fs%d {\\up%d\\chftn}", CurrentFontSize(), foot_ref_upsize);
+			break;
+	
+		case FOOTNOTE_TEXT:
+			fprintRTF("{\\*\\footnote \\pard\\plain\\s246\\f%d",DefFont);
+			fprintRTF("\\fs%d ", CurrentFontSize());
+			break;
 	}
 
 	Convert();
@@ -68,51 +77,6 @@ CmdNoCite(int code)
  ******************************************************************************/
 {
 	free(getBraceParam());	/* just skip the parameter */
-}
-
-void 
-CmdCite(int code)
-/******************************************************************************
- purpose: opens existing aux-file and reads the citation number
-parameter: if FALSE (0) work as normal
-           if HYPERLATEX get reference string from remembered \link parameter
- ******************************************************************************/
-{
-	char            *reference, *str1, *str2, *nonblank,*text;
-
-	fprintRTF("[");
-
-	if (code == HYPERLATEX) {
-		if (hyperref == NULL) {
-			diagnostics(WARNING, "WARNING: \\Cite called before \\link\n");
-			fprintRTF("?]");
-			return;
-		}
-		reference = strdup(hyperref);
-	} else {
-		text = getBracketParam();
-		reference = getBraceParam();
-	}
-
-	nonblank = strdup_noblanks(reference);
-	diagnostics(4,"before <%s>, after <%s>", reference, nonblank);
-	str1 = nonblank;
-	while ((str2 = strchr(str1, ',')) != NULL) {
-		*str2 = '\0';	/* replace ',' with '\0' */
-		ScanAux("bibcite", str1, 0);
-		fprintRTF(",");
-		str1 = str2 + 1;
-	}
-
-	ScanAux("bibcite", str1, 0);
-	if (text) {
-		fprintRTF(", ");
-		ConvertString(text);
-		free(text);
-	}
-	fprintRTF("]");
-	free(nonblank);
-	free(reference);
 }
 
 void 

@@ -1,4 +1,4 @@
-/*  $Id: commands.c,v 1.37 2001/11/12 06:08:14 prahl Exp $
+/*  $Id: commands.c,v 1.38 2001/11/14 05:00:23 prahl Exp $
  
     Defines subroutines to translate LaTeX commands to RTF
 */
@@ -35,7 +35,7 @@ static CommandArray commands[] = {
 	{"begin", CmdBeginEnd, CMD_BEGIN},
 	{"end", CmdBeginEnd, CMD_END},
 	{"today", CmdToday, 0},
-	{"footnote", CmdFootNote, FOOTN},
+	{"footnote", CmdFootNote, FOOTNOTE},
 
 	{"rmfamily", CmdFontFamily, F_FAMILY_ROMAN  },
 	{"rm",       CmdFontFamily, F_FAMILY_ROMAN_1},
@@ -183,7 +183,6 @@ static CommandArray commands[] = {
 	{"moveleft", CmdLength, 0},
 	{"moveright", CmdLength, 0},
 	{"footnotemark", CmdIgnoreParameter, One_Opt_No_NormParam},
-	{"footnotetext", CmdIgnoreParameter, One_Opt_One_NormParam},
 	{"label", CmdLabel, LABEL_LABEL},
 	{"ref", CmdLabel, LABEL_REF},
 	{"pageref", CmdLabel, LABEL_PAGEREF},
@@ -250,7 +249,7 @@ static CommandArray commands[] = {
 	{"lineskip", Cmd_OptParam_Without_braces, 0},
 	{"vsize", Cmd_OptParam_Without_braces, 0},
 	{"setbox", Cmd_OptParam_Without_braces, 0},
-	{"thanks", CmdFootNote, THANKS},
+	{"thanks", CmdFootNote, FOOTNOTE_THANKS},
 	{"bibliographystyle", CmdIgnoreParameter, No_Opt_One_NormParam},
 	{"let", CmdIgnoreLet, 0},
 	{"cline", CmdIgnoreParameter, No_Opt_One_NormParam},
@@ -322,6 +321,7 @@ static CommandArray PreambleCommands[] = {
 	{"textwidth",CmdSetTexLength, SL_TEXTWIDTH},
 	{"oddsidemargin",CmdSetTexLength, SL_ODDSIDEMARGIN},
 	{"evensidemargin",CmdSetTexLength, SL_EVENSIDEMARGIN},
+	{"footnotetext", CmdFootNote, FOOTNOTE_TEXT},
 	{"", NULL, 0}
 };				/* end of list */
 
@@ -468,7 +468,7 @@ purpose: commands for hyperlatex package
 static CommandArray hyperlatex[] = {
 	{"link", CmdLink, 0},
 	{"xlink", CmdLink, 0},
-	{"Cite", CmdCite, LABEL_HYPERCITE},
+	{"Cite", CmdLabel, LABEL_HYPERCITE},
 	{"Ref", CmdLabel, LABEL_HYPERREF},
 	{"Pageref", CmdLabel, LABEL_HYPERPAGEREF},
 	{"S", CmdColsep, 0},

@@ -1,4 +1,6 @@
-#define FOOTN               1
+#define FOOTNOTE            1
+#define FOOTNOTE_TEXT       2
+#define FOOTNOTE_THANKS     3
 
 #define LABEL_LABEL			1
 #define LABEL_HYPERREF		2
@@ -11,7 +13,6 @@
 void    CmdFootNote(int code);
 void    CmdLabel(int code);
 void 	CmdNoCite(int code);
-void 	CmdCite(int code);
 void 	CmdBibliography(int code);
 void 	CmdThebibliography(int code);
 void 	CmdBibitem(int code);
