@@ -1141,6 +1141,128 @@ PutLatexFile(char *s, double scale, char *pre)
 	free(cmd);
 }
 
+char * upper_case_string(char *s)
+{
+	char *t, *x;
+	
+	if (!s) return NULL;
+	
+	t=strdup(s);
+	x=t;
+	
+	while (*x) {
+		if (islower(*x)) *x = toupper(*x);
+		x++;
+	}
+	
+	return t;
+}
+
+char * exists_with_extension(char *s, char *ext)
+/******************************************************************************
+ purpose   : return s.ext or s.EXT if it exists otherwise return NULL
+ ******************************************************************************/
+{
+	char *t,*x;
+	FILE *fp;
+	
+	t=strdup_together(s,ext);
+	fp=fopen(t,"r");
+	diagnostics(4,"trying to open %s, result = %0x",t,fp);
+	if (fp) {
+		fclose(fp);
+		return t;
+	}
+	free(t);
+	
+/* now try upper case version of ext */
+	x=upper_case_string(ext);
+	t=strdup_together(s,x);
+	free(x);
+	
+	fp=fopen(t,"r");
+	diagnostics(4,"trying to open %s, result = %0x",t,fp);
+	if (fp) {
+		fclose(fp);
+		return t;
+	}
+	free(t);
+	return NULL;
+}
+
+int has_extension(char *s, char *ext)
+/******************************************************************************
+ purpose   : return true if ext is at end of s (case insensitively)
+ ******************************************************************************/
+{
+	char *t;
+	
+	t = s + strlen(s) - strlen(ext);
+	
+	if (strcasecmp(t,ext)==0) return TRUE;
+
+	return FALSE;	
+}
+
+char * append_graphic_extension(char *s)
+{
+	char *t;
+	
+	if (has_extension(s, ".pict") ||
+		has_extension(s, ".png")  ||
+		has_extension(s, ".gif")  ||
+		has_extension(s, ".emf")  ||
+		has_extension(s, ".wmf")  ||
+		has_extension(s, ".eps")  ||
+		has_extension(s, ".pdf")  ||
+		has_extension(s, ".ps")   ||
+		has_extension(s, ".tiff") ||
+		has_extension(s, ".tif")  ||
+		has_extension(s, ".jpg")  ||
+		has_extension(s, ".jpeg"))
+		return strdup(s);
+
+	t = exists_with_extension(s,".png");
+	if (t) return t;
+	
+	t = exists_with_extension(s,".jpg");
+	if (t) return t;
+	
+	t = exists_with_extension(s,".jpeg");
+	if (t) return t;
+	
+	t = exists_with_extension(s,".tif");
+	if (t) return t;
+	
+	t = exists_with_extension(s,".tiff");
+	if (t) return t;
+	
+	t = exists_with_extension(s,".gif");
+	if (t) return t;
+	
+	t = exists_with_extension(s,".eps");
+	if (t) return t;
+
+	t = exists_with_extension(s,".pdf");
+	if (t) return t;
+
+	t = exists_with_extension(s,".ps");
+	if (t) return t;
+
+	t = exists_with_extension(s,".pict");
+	if (t) return t;
+
+	t = exists_with_extension(s,".emf");
+	if (t) return t;
+
+	t = exists_with_extension(s,".wmf");
+	if (t) return t;
+	
+	/* failed to find any file */
+	return strdup(s);
+
+}
+
 void 
 CmdGraphics(int code)
 /*
@@ -1163,7 +1285,7 @@ code=4 => psfig
 */
 {
 	char           *options,*options2;
-	char           *filename,*fullpathname;
+	char           *filename,*fullpathname, *fullname;
 	double			scale=1.0;
 	double			baseline=0.0;
 	double 			x;
@@ -1218,37 +1340,44 @@ code=4 => psfig
 	
 	SetTexMode(MODE_HORIZONTAL);
 
-	fullpathname=strdup_absolute_path(filename);
-
-	if (strstr(filename, ".pict") || strstr(filename, ".PICT"))
+	fullname=strdup_absolute_path(filename);
+	fullpathname=append_graphic_extension(fullname);
+	free(fullname);
+	
+	if (has_extension(fullpathname, ".pict"))
 		PutPictFile(fullpathname, scale, baseline, TRUE);
 		
-	else if (strstr(filename, ".png")  || strstr(filename, ".PNG"))
+	else if (has_extension(fullpathname, ".png"))
 		PutPngFile(fullpathname, scale, baseline, TRUE);
 
-	else if (strstr(filename, ".gif")  || strstr(filename, ".GIF"))
+	else if (has_extension(fullpathname, ".gif"))
 		PutGifFile(fullpathname, scale, baseline, TRUE);
 
-	else if (strstr(filename, ".emf")  || strstr(filename, ".EMF"))
+	else if (has_extension(fullpathname, ".emf"))
 		PutEmfFile(fullpathname, scale, baseline, TRUE);
 
-	else if (strstr(filename, ".wmf")  || strstr(filename, ".WMF"))
+	else if (has_extension(fullpathname, ".wmf"))
 		PutWmfFile(fullpathname, scale, baseline, TRUE);
 
-	else if (strstr(filename, ".eps")  || strstr(filename, ".EPS"))
+	else if (has_extension(fullpathname, ".eps"))
 		PutEpsFile(fullpathname, scale, baseline, TRUE);
                 
-	else if (strstr(filename, ".pdf")  || strstr(filename, ".PDF"))
+	else if (has_extension(fullpathname, ".pdf"))
 		PutPdfFile(fullpathname, scale, baseline, TRUE);
 
-	else if (strstr(filename, ".ps")  || strstr(filename, ".PS"))
+	else if (has_extension(fullpathname, ".ps"))
 		PutEpsFile(fullpathname, scale, baseline, TRUE);
 
-	else if (strstr(filename, ".tiff")  || strstr(filename, ".TIFF"))
+	else if (has_extension(fullpathname, ".tiff"))
 		PutTiffFile(fullpathname, scale, baseline, TRUE);
 
-	else if (strstr(filename, ".jpg")  || strstr(filename, ".JPG") ||
-		strstr(filename, ".jpeg") || strstr(filename, ".JPEG"))
+	else if (has_extension(fullpathname, ".tif"))
+		PutTiffFile(fullpathname, scale, baseline, TRUE);
+
+	else if (has_extension(fullpathname, ".jpg"))
+		PutJpegFile(fullpathname, scale, baseline, TRUE);
+
+	else if (has_extension(fullpathname, ".jpeg"))
 		PutJpegFile(fullpathname, scale, baseline, TRUE);
 
 	else 
