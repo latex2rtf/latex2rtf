@@ -257,7 +257,11 @@ To install,
 @item
 Edit @file{Makefile} for your local configuration.  In particular, pay attention
 to the @env{PREFIX} variable.  If you do not have root access you might wish 
-to set the makefile variable @env{PREFIX} to be your home directory.  
+to set the makefile variable @env{PREFIX} to be your home directory. 
+
+On some machines the cc compiler will issue errors. 
+In this case, better use the gcc compiler (from GNU). 
+Edit @file{Makefile} and change the line @code{CC=cc} into @code{CC=gcc}.
 
 @item
 As of version 1.9.13, @ltor{} supports conversion of @latex{} equations to
@@ -272,6 +276,9 @@ features will be missing.
  If this is not your first time installation, you may want to preserve
   your old configuration (@file{*.cfg}) files. Copy them to a safe place before
   installing.
+
+On IBM AIX, the IBM make utility does not support some of the commands
+used in Makefile. In this case use @code{gmake} (from GNU) instead.
 
 @item @code{make check}
 
