@@ -1,4 +1,4 @@
-/* $Id: preamble.c,v 1.8 2001/09/16 05:11:19 prahl Exp $
+/* $Id: preamble.c,v 1.9 2001/09/16 16:33:51 prahl Exp $
 
 purpose : Handles LaTeX commands that should only occur in the preamble.
           These are gathered together because the entire preamble must be
@@ -30,7 +30,7 @@ static int    g_preambleFormat   = FORMAT_ARTICLE;
 static bool   g_preambleTwoside  = FALSE;
 static bool   g_preambleTwocolumn= FALSE;
 static bool   g_preambleTitlepage= FALSE;
-static bool   g_preambleLandscape= TRUE;
+static bool   g_preambleLandscape= FALSE;
 
 extern bool   pagestyledefined;
 extern enum   TexCharSetKind TexCharSet;
@@ -78,6 +78,19 @@ setPackageFont(char * font)
 }
 
 static void
+setThree(char * s, int ten, int eleven, int twelve)
+{
+	int n = DefaultFontSize();
+	
+	if (n==20)
+		setLength(s, ten*20);
+	else if (n==22)
+		setLength(s, eleven*20);
+	else
+		setLength(s, twelve*20);
+}
+
+static void
 setPaperSize(char * option)
 /******************************************************************************
    Should also try to reset some of the other sizes at this time
@@ -86,21 +99,131 @@ setPaperSize(char * option)
 	if (strcmp(option, "landscape") == 0) {
 		g_preambleLandscape = TRUE;
 		
-	} else if (strcmp(option, "a4paper") == 0 || strcmp(option, "a4") == 0) {
-		setLength("pagewidth", 21.0/2.54*72*20);
-		setLength("pageheight", 29.7/2.54*72*20);
+	} else if (strcmp(option, "a4paper") == 0 ) {
 	
+		setLength("pageheight",  845*20);
+		setLength("hoffset",       0*20);
+		setThree("oddsidemargin",53,46,31);
+		setLength("headheight",   12*20);
+		setThree("textheight",598,596,592);
+		setLength("footskip",     30*20);
+		setLength("marginparpush", 5*20);
+
+		setLength("pagewidth",   598*20);
+		setLength("voffset",       0*20);
+		setLength("topmargin",    17*20);
+		setLength("headsep",      25*20);	
+		setThree("textwidth",345,360,390);
+		setLength("marginparsep", 10*20);
+		setLength("columnsep",    10*20);
+
+	} else if (strcmp(option, "a4") == 0) {
+	
+		setLength("pageheight",  845*20);
+		setLength("hoffset",       0*20);
+		setThree("oddsidemargin",40,33,14);
+		setLength("headheight",   12*20);
+		setThree("textheight",646,637,621);
+		setLength("footskip",     30*20);
+		setLength("marginparpush", 5*20);
+
+		setLength("pagewidth",   598*20);
+		setLength("voffset",       0*20);
+		setLength("topmargin",     0*20);
+		setLength("headsep",      25*20);	
+		setThree("textwidth",361,376,412);
+		setLength("marginparsep", 10*20);
+		setLength("columnsep",    10*20);
+
 	} else if (strcmp(option, "a4wide") == 0 ) {
-		setLength("pagewidth", 5.875*72*20);
-		setLength("pageheight", 29.7/2.54*72*20);
+
+		setLength("pageheight",  845*20);
+		setLength("hoffset",       0*20);
+		setThree("oddsidemargin",18,9,0);
+		setLength("headheight",   12*20);
+		setThree("textheight",621,637,621);
+		setLength("footskip",     30*20);
+		setLength("marginparpush", 5*20);
+
+		setLength("pagewidth",   598*20);
+		setLength("voffset",       0*20);
+		setLength("topmargin",     0*20);
+		setLength("headsep",      25*20);	
+		setThree("textwidth",425,443,461);
+		setLength("marginparsep", 10*20);
+		setLength("columnsep",    10*20);
 
 	} else if (strcmp(option, "letterpaper") == 0) {
-		setLength("pagewidth", 8.5*72*20);
-		setLength("pageheight", 11*72*20);
+
+		setLength("pageheight",  795*20);
+		setLength("hoffset",       0*20);
+		setThree("oddsidemargin",62,54,39);
+		setLength("headheight",   12*20);
+		setThree("textheight",550,541,549);
+		setLength("footskip",     30*20);
+		setLength("marginparpush", 5*20);
+
+		setLength("pagewidth",   614*20);
+		setLength("voffset",       0*20);
+		setLength("topmargin",    18*20);
+		setLength("headsep",      25*20);	
+		setThree("textwidth",345,360,390);
+		setLength("marginparsep", 10*20);
+		setLength("columnsep",    10*20);
 
 	} else if (strcmp(option, "legalpaper") == 0) {
-		setLength("pagewidth", 8.5*72*20);
-		setLength("pageheight", 14*72*20);
+
+		setLength("pageheight", 1012*20);
+		setLength("hoffset",       0*20);
+		setThree("oddsidemargin",62,54,39);
+		setLength("headheight",   12*20);
+		setThree("textheight",766,759,766);
+		setLength("footskip",     30*20);
+		setLength("marginparpush", 5*20);
+
+		setLength("pagewidth",   614*20);
+		setLength("voffset",       0*20);
+		setLength("topmargin",    18*20);
+		setLength("headsep",      25*20);	
+		setThree("textwidth",345,360,390);
+		setLength("marginparsep", 10*20);
+		setLength("columnsep",    10*20);
+
+	} else if (strcmp(option, "a5paper") == 0) {
+
+		setLength("pageheight",  598*20);
+		setLength("hoffset",       0*20);
+		setLength("oddsidemargin", 0*20);
+		setLength("headheight",   12*20);
+		setLength("textheight",  350*20);
+		setLength("footskip",     30*20);
+		setLength("marginparpush", 5*20);
+
+		setLength("pagewidth",   421*20);
+		setLength("voffset",       0*20);
+		setLength("topmargin",    18*20);
+		setLength("headsep",      25*20);	
+		setLength("textwidth",   276*20);
+		setLength("marginparsep", 10*20);
+		setLength("columnsep",    10*20);
+
+	} else if (strcmp(option, "b5paper") == 0) {
+
+		setLength("pageheight",  711*20);
+		setLength("hoffset",       0*20);
+		setLength("oddsidemargin", 0*20);
+		setLength("headheight",   12*20);
+		setLength("textheight",  460*20);
+		setLength("footskip",     30*20);
+		setLength("marginparpush", 5*20);
+
+		setLength("pagewidth",   501*20);
+		setLength("voffset",       0*20);
+		setLength("topmargin",    19*20);
+		setLength("headsep",      25*20);	
+		setLength("textwidth",   350*20);
+		setLength("marginparsep", 10*20);
+		setLength("columnsep",    10*20);
 	}
 }
 
@@ -124,6 +247,8 @@ setDocumentOptions(char *optionlist)
 		else if (strcmp(option, "a4")  == 0 ||
 			     strcmp(option, "a4paper") == 0 || 
 			     strcmp(option, "a4wide") == 0 || 
+			     strcmp(option, "b5paper") == 0 || 
+			     strcmp(option, "a5paper") == 0 || 
 			     strcmp(option, "letterpaper") == 0 || 
 			     strcmp(option, "landscape") == 0 || 
 				 strcmp(option, "legalpaper")  == 0) 
@@ -538,7 +663,7 @@ WritePageSize(void)
 	if (g_preambleTwocolumn)
 		fprintRTF("\\cols2\\colsx709");	 /* two columns -- space between columns 709 */
 
-	n = getLength("hoffset") + 72*20 + getLength("marginparsep");
+	n = getLength("hoffset") + 72*20 + getLength("oddsidemargin");
 	fprintRTF("\\margl%d", n);
 	n = getLength("pagewidth") - (n + getLength("textwidth"));
 	fprintRTF("\\margr%d", n);
