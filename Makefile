@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.48 2002/03/31 17:13:11 prahl Exp $
+# $Id: Makefile,v 1.49 2002/04/03 15:28:32 prahl Exp $
 
 CC=gcc
 MKDIR=mkdir -p
@@ -26,7 +26,6 @@ MAN_INSTALL=$(PREFIX)/man/man1
 INFO_INSTALL=$(PREFIX)/info
 SUPPORT_INSTALL=$(PREFIX)/share/latex2rtf
 CFG_INSTALL=$(PREFIX)/share/latex2rtf/cfg
-HTML_INSTALL=$(PREFIX)/share/latex2rtf/html
 
 # Nothing to change below this line
 
@@ -53,7 +52,7 @@ CFGS=cfg/fonts.cfg cfg/direct.cfg cfg/ignore.cfg \
     cfg/turkish.cfg cfg/usorbian.cfg cfg/welsh.cfg 
 
 DOCS= doc/latex2rtf.1 doc/latex2rtf.texi doc/latex2rtf.pdf doc/latex2rtf.txt \
-	doc/latex2rtf.info doc/credits doc/copying.txt doc/Makefile
+	doc/latex2rtf.info doc/latex2rtf.html doc/credits doc/copying.txt doc/Makefile
 
 README= README README.DOS README.Mac Copyright ChangeLog 
 
@@ -89,7 +88,7 @@ latex2rtf: $(OBJS) $(HDRS)
 cfg.o: Makefile
 	$(CC) $(CFLAGS) -DLIBDIR=\"$(CFG_INSTALL)\" -c cfg.c -o cfg.o
 
-check: latex2rtf
+check test: latex2rtf
 	cd test && $(MAKE) 
 
 checkdir: $(README) $(SRCS) $(HDRS) $(CFGS) $(SCRIPTS) $(TEST) doc/latex2rtf.texi
@@ -114,7 +113,6 @@ dist: $(SRCS) $(HDRS) $(CFGS) $(README) Makefile $(SCRIPTS) $(DOCS) $(TEST)
 	ln Makefile        latex2rtf-$(VERSION)
 	ln $(CFGS)         latex2rtf-$(VERSION)/cfg
 	ln $(DOCS)         latex2rtf-$(VERSION)/doc
-	ln doc/latex2rtf/* latex2rtf-$(VERSION)/doc/latex2rtf
 	ln $(SCRIPTS)      latex2rtf-$(VERSION)/scripts
 	ln $(TEST)         latex2rtf-$(VERSION)/test
 	tar cvf - latex2rtf-$(VERSION) | \
@@ -128,14 +126,13 @@ install: latex2rtf doc/latex2rtf.1 $(CFGS) scripts/latex2png
 	$(MKDIR) $(BIN_INSTALL)
 	$(MKDIR) $(MAN_INSTALL)
 	$(MKDIR) $(CFG_INSTALL)
-	$(MKDIR) $(HTML_INSTALL)
-	cp latex2rtf         $(BIN_INSTALL)
-	cp scripts/latex2png $(BIN_INSTALL)
-	cp doc/latex2rtf.1   $(MAN_INSTALL)
-	cp $(CFGS)           $(CFG_INSTALL)
-	cp doc/latex2rtf/*   $(HTML_INSTALL)
-	cp doc/latex2rtf.pdf $(SUPPORT_INSTALL)
-	cp doc/latex2rtf.txt $(SUPPORT_INSTALL)
+	cp latex2rtf          $(BIN_INSTALL)
+	cp scripts/latex2png  $(BIN_INSTALL)
+	cp doc/latex2rtf.1    $(MAN_INSTALL)
+	cp $(CFGS)            $(CFG_INSTALL)
+	cp doc/latex2rtf.html $(SUPPORT_INSTALL)
+	cp doc/latex2rtf.pdf  $(SUPPORT_INSTALL)
+	cp doc/latex2rtf.txt  $(SUPPORT_INSTALL)
 	@echo "******************************************************************"
 	@echo "*** latex2rtf successfully installed"
 	@echo "***"
