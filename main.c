@@ -384,6 +384,7 @@ print_usage(void)
 	fprintf(stdout, "  -b bblfile       use BibTex bblfile rather than input.bbl)\n");
 	fprintf(stdout, "  -C codepage      latex encoding charset (latin1, cp850, raw, etc.)\n");
 	fprintf(stdout, "  -d level         debugging output (level is 0-6)\n");
+	fprintf(stdout, "  -F               use LaTeX to convert all figures to bitmaps\n");
 	fprintf(stdout, "  -D dpi           number of dots per inch for bitmaps\n");
 	fprintf(stdout, "  -h               display help\n");
 	fprintf(stdout, "  -i language      idiom or language (e.g., german, french)\n");
@@ -398,6 +399,7 @@ print_usage(void)
 	fprintf(stdout, "       -M12         inline and displayed equations to bitmaps\n");
 	fprintf(stdout, "       -M16         insert Word comment field that the original equation text\n");
 	fprintf(stdout, "  -o outputfile    file for RTF output\n");
+	fprintf(stdout, "  -p               option to avoid bug in Word for some equations\n");
 	fprintf(stdout, "  -P /path/to/cfg  directory containing .cfg files\n");
 	fprintf(stdout, "  -S               use ';' to separate args in RTF fields\n");
 	fprintf(stdout, "  -se#             scale factor for bitmap equations\n");

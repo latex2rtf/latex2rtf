@@ -1609,8 +1609,8 @@ CmdAbstract(int code)
 {
 	static char     oldalignment;
 
-	CmdEndParagraph(0);
-	if (code == ON) {
+	if (code == ON || code == 1) {
+		CmdEndParagraph(0);
 		if (g_document_type == FORMAT_REPORT || titlepage) 
 			fprintRTF("\\page ");
 
@@ -1623,7 +1623,9 @@ CmdAbstract(int code)
 		indent_right +=1024;
 		oldalignment = alignment;
 		alignment = JUSTIFIED;
-	} else {
+	} 
+	
+	if (code != ON || code == 1) {
 		CmdEndParagraph(0);
 		indent -= 1024;
 		indent_right -=1024;

@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.75 2002/11/28 17:29:33 prahl Exp $
+# $Id: Makefile,v 1.76 2002/11/28 18:36:14 prahl Exp $
 
 CC=gcc
 MKDIR=mkdir -p
@@ -8,20 +8,22 @@ CFLAGS:=-DUNIX
 #CFLAGS:=-DMACINTOSH     #MacOS 8/9
 #CFLAGS:=-DOS2           #OS/2
 
-#Uncomment next two lines for windows machines
+#Uncomment for some windows machines (not needed for djgpp)
 #EXE_SUFFIX=.exe
+
+#Uncomment next line for windows machines
 #PREFIX_DRIVE=c:
 
 #Uncomment next line when using rsx compiler, target win32
 #CFLAGS:=$(CFLAGS) -Zwin32  
 
-#Base directory
+#Base directory - adapt as needed
 PREFIX=$(PREFIX_DRIVE)/usr/local
 
-#Name of executable binary
+#Name of executable binary --- beware of 8.3 restriction under DOS
 BINARY_NAME=latex2rtf$(EXE_SUFFIX)
 
-# Location of binary, man, info, and support files
+# Location of binary, man, info, and support files - adapt as needed
 BIN_INSTALL=$(PREFIX)/bin
 MAN_INSTALL=$(PREFIX)/man/man1
 INFO_INSTALL=$(PREFIX)/info

@@ -312,6 +312,7 @@ static CommandArray commands[] = {
 	{"htmladdnormallink",CmdHtml,LABEL_HTMLADDNORMALREF},
 	{"htmlref",CmdHtml, LABEL_HTMLREF},
 	{"nobreakspace", CmdNonBreakSpace, 0},
+	{"abstract", CmdAbstract, 1},
 	{"", NULL, 0}
 };
 
