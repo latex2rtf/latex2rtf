@@ -570,7 +570,7 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 {
     char cCommand[MAXCOMMANDLEN];
     int i, mode;
-    int cThis;
+    int cThis,cNext;
 
 
     cThis = getTexChar();
@@ -579,6 +579,14 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
     diagnostics(5, "Beginning TranslateCommand() \\%c", cThis);
 
     switch (cThis) {
+        case 'a':
+            if (!g_processing_tabbing) break;
+            cNext = getTexChar();
+            if (cNext=='=' ) {CmdMacronChar(0); return;}
+            if (cNext=='\'') {CmdRApostrophChar(0); return;}
+            if (cNext=='`' ) {CmdLApostrophChar(0); return;}
+            ungetTexChar(cNext);
+            break;
         case '}':
             if (mode == MODE_VERTICAL)
                 SetTexMode(MODE_HORIZONTAL);

@@ -934,10 +934,28 @@ static int TabbingColumnPosition(int n, int total)
     return colWidth * (n + 1);
 }
 
+/******************************************************************************
+ purpose:  simple minded way to skip \verb#contents$# in cell
+ ******************************************************************************/
+static char *skip_verb(char *s)
+{
+	char endchar;
+	diagnostics(6,"before verb <<%s>>",s);
+	if (s && strncmp(s,"verb",4)==0){
+		s+=4;
+		endchar = *s;
+		s++;
+		while (*s && *s!= endchar) s++;
+		if (*s) s++;
+	}
+	diagnostics(6,"after  verb <<%s>>",s);
+	return s;
+}
+
 static void TabbingNextCellEnd(char *t, char **cell_end, char **next_cell)
 
 /******************************************************************************
- purpose:  find the next ampersand while avoiding \&
+ purpose:  find the end of this tabbing cell
  ******************************************************************************/
 {
     char *s;
@@ -954,13 +972,20 @@ static void TabbingNextCellEnd(char *t, char **cell_end, char **next_cell)
 
         if (*s == '\\') {
             s++;
+            s = skip_verb(s);
             if (*s == '=' || *s == '>' || *s == '<' || *s == '\'' || *s == '`') {
                 *cell_end = s - 1;
                 *next_cell = s + 1;
                 return;
             }
         }
-        s++;
+        
+        if (*s == '\0') {
+            *cell_end = s;
+            *next_cell = s;
+            return;
+        }
+		s++;
     }
 }
 
@@ -992,6 +1017,7 @@ static char *TabbingNextCell(char *cell_start, char **cell_end)
 
     dup2 = strdup_noendblanks(dup);
     free(dup);
+    diagnostics(4,"next cell = [[%s]]", dup);
     return dup2;
 }
 
@@ -1112,6 +1138,8 @@ static void TabbingGetColumnAlignments(char *row, char *align, int *n, int *next
         }
 
         row++;
+        row = skip_verb(row);
+        
         switch (*row) {
 
             case '=':

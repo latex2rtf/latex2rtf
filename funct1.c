@@ -1376,7 +1376,7 @@ void CmdVerb(int code)
     char cThis, *text, *s;
     char markingchar='#';
     int num;
-
+	
     SetTexMode(MODE_HORIZONTAL);
     num = TexFontNumber("Typewriter");
     fprintRTF("{\\b0\\i0\\scaps0\\f%d ", num);
