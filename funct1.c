@@ -122,7 +122,7 @@ void CmdStartParagraph(int code)
         g_column_new = FALSE;
     }
 
-    fprintRTF("\\q%c", alignment);
+    fprintRTF("\\pard\\q%c", alignment);
 
     if (g_vertical_space_to_add > 0)
         fprintRTF("\\sb%d ", g_vertical_space_to_add);
@@ -1902,10 +1902,10 @@ parameter: code: on/off-option
 void CmdAbstract(int code)
 {
     static char oldalignment;
-
-    CmdEndParagraph(0);
-
-    if (code == ON) {
+	    	    
+    if (code == 2 || code == (1 | ON) ) {
+	    CmdEndParagraph(0);
+        oldalignment = alignment;
         if (g_document_type == FORMAT_REPORT || titlepage)
             CmdNewPage(NewPage);
 
@@ -1916,10 +1916,19 @@ void CmdAbstract(int code)
         CmdEndParagraph(0);
         g_left_margin_indent += 1024;
         g_right_margin_indent += 1024;
-        oldalignment = alignment;
         alignment = JUSTIFIED;
 
-    } else {
+    } 
+    
+    if (code == 2) {
+    	char *s = getBraceParam();
+    	ConvertString(s);
+    	free(s);
+    }
+    
+    if (code == 2 || code == (1 | OFF) ) {
+        CmdIndent(INDENT_USUAL);
+    	CmdEndParagraph(0);
         g_left_margin_indent -= 1024;
         g_right_margin_indent -= 1024;
         alignment = oldalignment;

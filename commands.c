@@ -332,7 +332,7 @@ static CommandArray commands[] = {
     {"htmladdnormallink", CmdHtml, LABEL_HTMLADDNORMALREF},
     {"htmlref", CmdHtml, LABEL_HTMLREF},
     {"nobreakspace", CmdNonBreakSpace, 0},
-    {"abstract", CmdAbstract, 1},
+    {"abstract", CmdAbstract, 2},
     {"endinput", CmdEndInput, 0},
     {"textcolor", CmdTextColor, 0},
     {"tableofcontents", CmdListOf, TABLE_OF_CONTENTS},
@@ -632,7 +632,7 @@ static CommandArray params[] = {
     {"table", CmdTable, TABLE},
     {"table*", CmdTable, TABLE_1},
     {"thebibliography", CmdThebibliography, 0},
-    {"abstract", CmdAbstract, 0},
+    {"abstract", CmdAbstract, 1},
 	{"acknowledgments", CmdAcknowledgments, 0},
     {"titlepage", CmdTitlepage, 0},
 

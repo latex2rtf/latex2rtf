@@ -85,6 +85,10 @@ void setPackageBabel(char *option)
         ReadLanguage("russian");
     }
 
+    if (strcmp(option, "spanish") == 0) {
+        ReadLanguage("spanish");
+    }
+
     if (strcmp(option, "czech") == 0) {
         CzechMode = TRUE;
         PushEnvironment(CZECH_MODE);
@@ -521,6 +525,9 @@ void CmdUsepackage(int code)
     else if (strcmp(package, "isolatin1") == 0)
         setPackageInputenc("latin1");
 
+    else if (strcmp(package, "spanish") == 0)
+            setPackageBabel(package);
+
     else if (strcmp(package, "babel") == 0) {
         if (options)
             setPackageBabel(options);
@@ -623,12 +630,12 @@ void CmdMakeTitle(int code)
         ConvertString(g_preambleTitle);
     fprintRTF("}");
 
-    fprintRTF("\n\\par\\qc {%s ", author_begin);
+    fprintRTF("\n\\par\\pard\\qc {%s ", author_begin);
     if (g_preambleAuthor != NULL && strcmp(g_preambleAuthor, "") != 0)
         ConvertString(g_preambleAuthor);
     fprintRTF("}");
 
-    fprintRTF("\n\\par\\qc {%s ", date_begin);
+    fprintRTF("\n\\par\\pard\\qc {%s ", date_begin);
     if (g_preambleDate != NULL && strcmp(g_preambleDate, "") != 0)
         ConvertString(g_preambleDate);
     fprintRTF("}");
