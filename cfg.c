@@ -1,48 +1,7 @@
-/*
- * $Id: cfg.c,v 1.11 2001/08/12 21:15:46 prahl Exp $
- * History:
- * $Log: cfg.c,v $
- * Revision 1.11  2001/08/12 21:15:46  prahl
- *         Removed last two // comments
- *         Explicitly cast char to int in isalpha() and isdigit()
- *         Began the process of supporting Babel better
- *
- * Revision 1.7  1998/11/12 15:15:42  glehner
- * Cleaned up includes, moved from .h file to .c
- * added #ifndef __CFG_H ....
- *
- * Revision 1.6  1998/07/03 07:01:28  glehner
- * added ReadLg() for language.cfg files
- * fixed open_cfg search path parsing
- *
- * Revision 1.5  1997/02/15 21:17:42  ralf
- * Created default for environment separator.
- *
- * Revision 1.4  1997/02/15 21:10:45  ralf
- * Added environment separator ENVSEP (uses ';' for DOS)
- *
- * Revision 1.3  1997/02/15 20:36:29  ralf
- * Almost complete rewrite of config file reading.
- * The interface was made cleaner, there are no external functions
- * that access internal data structures now.
- * The opening of config files was also cleaned up.
- * There was a bug fix for parsing of the environment settings
- * that prevented some directories from being found on second
- * parsing. This was reported by L. Mugnier and there was a proposed fix
- * by V. Menkov.
- *
- * Revision 1.2  1995/05/24 11:54:03  ralf
- * Removed an off-by-one malloc error
- *
- * Revision 1.1  1995/03/23  16:09:01  ralf
- * Initial revision
- *
- */
-/*****************************************************************************
-     name : cfg.c
-    autor : Ralf Schlatterbeck
-  purpose : Read config files and provide lookup routines
- *****************************************************************************/
+/* $Id: cfg.c,v 1.12 2001/08/22 05:50:23 prahl Exp $
+
+     purpose : Read config files and provide lookup routines
+*/
 
 #include <stdio.h>
 #include <stdlib.h>

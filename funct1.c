@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.15 2001/08/20 01:12:46 prahl Exp $ 
+/* $Id: funct1.c,v 1.16 2001/08/22 05:50:23 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -33,7 +33,6 @@ extern int      indent;		/* includes the left margin e.g. for
 static bool     NoNewLine;
 extern bool     bNewPar;
 extern bool     mbox;
-extern int      DefFont;
 extern char    *language;
 extern enum     TexCharSetKind TexCharSet;
 extern int      curr_fontbold[MAXENVIRONS];
@@ -166,65 +165,6 @@ CmdLdots( /* @unused@ */ int code)
 }
 
 void 
-CmdEmphasize( /* @unused@ */ int code)
-/****************************************************************************
-CmdEmphasize
- purpose: turn on/off the emphasized style for characters
- globals : fRtf
- ******************************************************************************/
-{
-	if (!tabbing_on) {	/* tabbing-environment ignores
-				 * emphasized-style */
-		static bool     Em_on = FALSE;
-		if (!(Em_on))
-			fprintf(fRtf, "{\\i ");
-		else
-			fprintf(fRtf, "{\\plain ");
-		Em_on = !Em_on;
-		diagnostics(4,"Entering Convert from CmdEmphasize");
-		Convert();
-		diagnostics(4,"Exiting Convert from CmdEmphasize");
-		fprintf(fRtf, "}");
-		Em_on = !Em_on;
-	}
-}
-
-void 
-Format(int code)
-/******************************************************************************
- purpose: makes the same as the function CmdEmphasize above
-	  but this is an environment-handling-routine in contrast
-	  to the function above which converts an ordinary \em-command
- parameter: code: EMPHASIZED with ON at environment start;
-				  OFF at environment end
- globals : fRtf
-           tabbing_on
- ******************************************************************************/
-{
-	if (tabbing_on) {	/* tabbing-environment ignores
-				 * emphasized-style */
-		static bool     Em_on = FALSE;
-		switch (code) {
-		case (EMPHASIZE | ON):
-			if (!(Em_on))
-				fprintf(fRtf, "{\\i ");
-			else
-				fprintf(fRtf, "{ ");
-			Em_on = !Em_on;
-			break;
-		case (EMPHASIZE | OFF):
-			if ((Em_on))
-			{
-				fprintf(fRtf, "}");
-			}
-			Em_on = FALSE;
-			break;
-		}
-	}
-}
-
-/******************************************************************************/
-void 
 Environment(int code)
 /******************************************************************************
   purpose: pushes/pops the new environment-commands on/from the stack
@@ -258,13 +198,13 @@ CmdSection(int code)
   purpose: converts the LaTex-section-commands into similar Rtf-styles
 parameter: code: type of section-recursion-level
  globals : fRtf
-           DefFont: default-font-number
            bNewPar
            bBlankLine
  ******************************************************************************/
 {
 	char            optparam[100] = "";
 	char            *heading;
+	int				DefFont = DefaultFontFamily();
 	
 	getBracketParam(optparam, 99);
 	heading = getParam();
@@ -349,6 +289,7 @@ parameter: code: type of section-recursion-level
 		break;
 	}
 	if (heading) free(heading);
+	CmdTextNormal(F_TEXT_NORMAL);
 }
 
 
@@ -487,15 +428,14 @@ CmdFootNote(int code)
 /******************************************************************************
  purpose: converts footnotes from LaTeX to Rtf
  params : code specifies whether it is a footnote or a thanks-mark
- globals: fTex, fRtf
-          DefFont
  ******************************************************************************/
 {
 	char            number[255];
 	static int      thankno = 1;
 	int             text_ref_upsize, foot_ref_upsize;
 	char            *footnote;
-
+	int				DefFont = DefaultFontFamily();
+	
 	diagnostics(4,"Entering ConvertFootNote");
 	getBracketParam(number, 254);	/* is ignored because of the
 					 * automatic footnumber-generation */
@@ -847,7 +787,7 @@ CmdVerb(int code)
 		}
 	}
 
-	num = getTexFontNumber("Typewriter");
+	num = TexFontNumber("Typewriter");
 	fprintf(fRtf, "{\\f%d ", num);
 
 	while ((cThis = getRawTexChar()) && cThis != markingchar) 
@@ -869,7 +809,7 @@ CmdVerbatim(int code)
 
 	if (code & ON) {
 		diagnostics(4, "Entering CmdVerbatim");
-		num = getTexFontNumber("Typewriter");
+		num = TexFontNumber("Typewriter");
 		fprintf(fRtf, "{\\f%d ", num);
 	
 		for (;;) {
@@ -989,7 +929,6 @@ globals: reads from fTex and writes to fRtf
 	}
 }
 
-/******************************************************************************/
 void 
 CmdPrintRtf(int code)
 /***************************************************************************

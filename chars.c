@@ -1,20 +1,7 @@
-/***************************************************************************
-$Id: chars.c,v 1.2 2001/08/20 00:02:24 prahl Exp $
+/* $Id: chars.c,v 1.3 2001/08/22 05:50:23 prahl Exp $
 
-   name : chars.c
- author : PRAHL, Scott
-
- Contributions by,
-          DORNER Fernando,
-          GRANZER Andreas
-          POLZER, Friedrich,
-          TRISKO, Gerhard
-          TAUPIN, Daniel
-          LEHNER, Georg
-
-purpose : handles special characters and logos
-
- ****************************************************************************/
+   purpose : handles special characters and logos
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -82,7 +69,7 @@ CmdUmlauteChar(int code)
 		break;
 
 	default:
-		num = GetFontNumber("MT Extra");
+		num = RtfFontNumber("MT Extra");
 		fprintf(fRtf, "{\\field{\\*\\fldinst  EQ \\\\O");
 		fprintf(fRtf, "(%c%c\\\\S(\\f%d\\'26\\'26))}", cParam[0], FORMULASEP, num);
 		fprintf(fRtf, "{\\fldrslt }}");
@@ -136,7 +123,7 @@ CmdLApostrophChar( /* @unused@ */ int code)
 		fprintf(fRtf, "{\\ansi\\'f9}");
 		break;
 	default:
-		num = GetFontNumber("MT Extra");
+		num = RtfFontNumber("MT Extra");
 		fprintf(fRtf, "{\\field{\\*\\fldinst  EQ \\\\O");
 		fprintf(fRtf, "(%c%c\\\\S(\\f%d\\'23))}", cParam[0], FORMULASEP, num);
 		fprintf(fRtf, "{\\fldrslt }}");
@@ -292,7 +279,7 @@ CmdHatChar(int code)
 		break;
 
 	default:
-		num = GetFontNumber("MT Extra");
+		num = RtfFontNumber("MT Extra");
 		fprintf(fRtf, "{\\field{\\*\\fldinst  EQ \\\\O");
 		fprintf(fRtf, "(%c%c\\\\S(\\f%d\\'24))}", cParam[0], FORMULASEP, num);
 		fprintf(fRtf, "{\\fldrslt }}");
@@ -373,7 +360,7 @@ CmdTildeChar( int code)
 		fprintf(fRtf, "{\\ansi\\'d1}");
 		break;
 	default:
-		num = GetFontNumber("MT Extra");
+		num = RtfFontNumber("MT Extra");
 		fprintf(fRtf, "{\\field{\\*\\fldinst  EQ \\\\O");
 		fprintf(fRtf, "(%c%c\\\\S(\\f%d\\'25))}", cParam[0], FORMULASEP, num);
 		fprintf(fRtf, "{\\fldrslt }}");
@@ -450,7 +437,7 @@ CmdVecChar( /* @unused@ */ int code)
 		upsize = (CurrentFontSize() * 3) / 4;
 	}
 
-	num = GetFontNumber("MT Extra");
+	num = RtfFontNumber("MT Extra");
 
 	fprintf(fRtf, "{\\field{\\*\\fldinst  EQ \\\\O");
 	fprintf(fRtf, "(%c%c\\\\S(\\up%d\\f%d\\'72))}", cParam[0], FORMULASEP, upsize, num);
@@ -475,7 +462,7 @@ CmdBreveChar( /* @unused@ */ int code)
 	if (cParam == NULL)
 		return;
 
-	num = getTexFontNumber("MacRoman");
+	num = TexFontNumber("MacRoman");
 
 	fprintf(fRtf, "{\\field{\\*\\fldinst  EQ \\\\O");
 	fprintf(fRtf, "(%c%c\\\\S(\\f%d\\'f9))}", cParam[0], FORMULASEP, num);
@@ -520,7 +507,7 @@ CmdHacekChar(int code)
 		return;
 
 	upsize = (0.4 * CurrentFontSize()) + 0.45;
-	num = GetFontNumber("Symbol");
+	num = RtfFontNumber("Symbol");
 
 	fprintf(fRtf, "{\\field{\\*\\fldinst  EQ \\\\O");
 	fprintf(fRtf, "(%c%c\\\\S(\\up%d\\f%d\\'da))}", cParam[0], FORMULASEP, upsize, num);
@@ -543,7 +530,7 @@ CmdDotChar(int code)
 	if (cParam == NULL)
 		return;
 
-	num = GetFontNumber("MT Extra");
+	num = RtfFontNumber("MT Extra");
 
 	fprintf(fRtf, "{\\field{\\*\\fldinst  EQ \\\\O");
 	fprintf(fRtf, "(%c%c\\\\S(\\f%d\\'26))}", cParam[0], FORMULASEP, num);
@@ -566,7 +553,7 @@ CmdUnderbarChar(int code)
 	if (cParam == NULL)
 		return;
 
-	num = GetFontNumber("MT Extra");
+	num = RtfFontNumber("MT Extra");
 
 	if (cParam[0]) {
 		fprintf(fRtf, "{\\field{\\*\\fldinst  EQ \\\\O");
@@ -622,7 +609,7 @@ CmdLogo(int code)
 	float           FloatFsize;
 	float           DnSize;
 
-	font_num = GetFontNumber("Roman");
+	font_num = RtfFontNumber("Roman");
 	fprintf(fRtf, "{\\plain\\f%d ",font_num);
 	
 	switch (code) {
@@ -649,7 +636,7 @@ CmdLogo(int code)
 		};
 		DnSize = 0.3 * CurrentFontSize();
 		dnsize = DnSize + 0.45;
-		font_num = GetFontNumber("Symbol");
+		font_num = RtfFontNumber("Symbol");
 		fprintf(fRtf, "2{\\dn%d\\f%d e}", dnsize, font_num);
 		break;
 	case CMD_AMSTEX:

@@ -1,38 +1,4 @@
-/*
- * $Id: main.h,v 1.13 2001/08/12 21:15:46 prahl Exp $
- * History:
- * $Log: main.h,v $
- * Revision 1.13  2001/08/12 21:15:46  prahl
- *         Removed last two // comments
- *         Explicitly cast char to int in isalpha() and isdigit()
- *         Began the process of supporting Babel better
- *
- * Revision 1.7  1998/11/04 13:40:57  glehner
- * Added HAS_NO_GETOPT preprocessor flag
- *
- * Revision 1.6  1998/07/03 07:01:00  glehner
- * added diagnostics()
- *
- * Revision 1.5  1997/02/15 20:30:47  ralf
- * Added lclint comments and corrected some types.
- *
- * Revision 1.4  1995/03/23 15:58:08  ralf
- * Reworked version by Friedrich Polzer and Gerhard Trisko
- *
- *
- * Revision 1.3  1994/07/13  09:27:31  ralf
- * Corrected fpos/SEEK_SET bug for SunOs 4.3.1 reported by Ulrich Schmid
- * <schmid@dkrz.d400.de>
- *
- * Revision 1.2  1994/06/17  14:19:41  ralf
- * Corrected various bugs, for example interactive read of arguments
- *
- * Revision 1.1  1994/06/17  11:26:29  ralf
- * Initial revision
- *
- */
-/*** Main Includefile ***/
-/*** global definitons used in nearly all files ***/
+/* $Id: main.h,v 1.14 2001/08/22 05:50:23 prahl Exp $ */
 
 #undef HAS_NO_GETOPT
 
@@ -139,7 +105,6 @@ extern char     alignment;	/* default for justified: */
 extern fpos_t   pos_begin_kill;
 extern bool     bCite;		/* to produce citations */
 extern bool     GermanMode;
-extern int      DefFont;
 extern				/* @only@ */
  /* @null@ */ char *colFmt;
 /* @null@ */

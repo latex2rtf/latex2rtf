@@ -1,10 +1,11 @@
-/***************************************************************************
+/* $Id: preamble.c,v 1.4 2001/08/22 05:50:23 prahl Exp $
+
 purpose : Handles LaTeX commands that should only occur in the preamble.
           These are gathered together because the entire preamble must be
 		  parsed before the RTF header can be written.
 		  
 		  When \begin{document} is encountered, then the RTF header is created.
- ****************************************************************************/
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -106,10 +107,12 @@ setDocumentOptions(char *optionlist)
 
 	while (option) {
 		diagnostics(4, "                    option   %s", option);
-		if (strcmp(option, "11pt") == 0)
-			SetDocumentFontSize(22);
+		if (strcmp(option, "10pt") == 0)
+			InitializeDocumentFont(20);
+		else if (strcmp(option, "11pt") == 0)
+			InitializeDocumentFont(22);
 		else if (strcmp(option, "12pt") == 0)
-			SetDocumentFontSize(24);
+			InitializeDocumentFont(24);
 		else if (strcmp(option, "a4")  == 0 ||
 			     strcmp(option, "a4paper") == 0 || 
 			     strcmp(option, "a4wide") == 0 || 
@@ -292,7 +295,7 @@ PlainPagestyle(void)
   globals : pagenumbering set to TRUE if pagenumbering is to occur, default
  ******************************************************************************/
 {
-	int fn = getTexFontNumber("Roman");
+	int fn = TexFontNumber("Roman");
 	pagenumbering = TRUE;
 	
 	if (g_preambleTwoside) {
@@ -379,7 +382,7 @@ RtfHeader(int where, char *what)
                   output
  ******************************************************************************/
 {
-	int fn = getTexFontNumber("Roman");
+	int fn = TexFontNumber("Roman");
 	switch (where) {
 		case RIGHT_SIDE:
 		fprintf(fRtf, "\n{\\headerr \\pard\\plain\\f%d ",fn);
@@ -476,6 +479,7 @@ WriteStyleHeader(void)
          \par}
  ****************************************************************************/
 {
+	int DefFont = DefaultFontFamily();
 	fprintf(fRtf, "{\\stylesheet{\\fs%d\\lang1031\\snext0 Normal;}", CurrentFontSize());
 	fprintf(fRtf, "{%s%u%s \\sbasedon0\\snext0 heading 1;}\n", HEADER11, DefFont, HEADER12);
 	fprintf(fRtf, "{%s%u%s \\sbasedon0\\snext0 heading 2;}\n", HEADER21, DefFont, HEADER22);

@@ -1,30 +1,7 @@
-/*
- * $Id: parser.c,v 1.10 2001/08/12 21:15:46 prahl Exp $
- * History:
- * $Log: parser.c,v $
- * Revision 1.10  2001/08/12 21:15:46  prahl
- *         Removed last two // comments
- *         Explicitly cast char to int in isalpha() and isdigit()
- *         Began the process of supporting Babel better
- *
- * Revision 1.2  1998/10/27 04:51:38  glehner
- * Changed function prototype of parseBrace & parseBracket to
- * void parse...  (from char parse...)
- *
- * Revision 1.1  1998/10/27 04:46:43  glehner
- * Initial revision
- *
- *
- * LEG 070798 adapted Frank Barnes contribution to r2l coding conventions
- *
+/*  $Id: parser.c,v 1.11 2001/08/22 05:50:23 prahl Exp $
 
- * Contains declarations for a generic recursive parser the  LaTex2RTF code.
- 
- * Revision history
- * ================ 
- * 26th June 1998 - Created initial version - fb 
- * 24th May  2001 - Now includes getParam, getbracketparam, getbraceparam
- ****************************************************************************/
+   Contains declarations for a generic recursive parser for LaTeX code.
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -272,12 +249,9 @@ CmdIgnoreParameter(int code)
 			return;
 		}
 	}
-	/**********************************************************/
-	/* Check for trailing optional parameter                  */
-	/* (I dont think optionals come last - but just in case!) */
-	/* Of course, optionals very often come last. e.g.: the   */
-	/* \item[label] of item in a description list.           */
-	/**********************************************************/
+
+	/* Check for trailing optional parameter e.g., \item[label] */
+
 	if (optParmCount > 0) {
 		cThis=getNonSpace();
 		if (cThis == '[') 

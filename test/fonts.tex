@@ -1,9 +1,70 @@
 \documentclass{article}
 \begin{document}
 
+\section{Font commands}
+
+This is roman, testing \verb#itshape# {\itshape italics} more roman text.
+This is roman, testing \verb#\begin{itshape}# \begin{itshape} italics\end{itshape} more roman text.
+This is roman, testing \verb#\textit# \textit{italics} more roman text.
+
+\section{Emphasize commands}
+
+\subsection{the em environment}
+Testing the \verb#\em# environment by \begin{em}emphasizing text and then \begin{em}embedding another
+level inside\end{em} of the first level.\end{em}
+
+this is some text \begin{em} with some emphasized text \end{em} in the middle.
+
+{\bf this is some bold text \begin{em} with some emphasized text \end{em} in the middle.}
+
+\textbf{this is some bold text \begin{em} with some emphasized text \end{em} in the middle.}
+
+\textit{this is some italic text \begin{em} with some emphasized text \end{em} in the middle.}
+
+\subsection{the emph command}
+
+Next testing \verb#\emph# by \emph{emphasizing text and then \emph{embedding another
+level inside} of the first level.}
+
+this is some text \emph{with some emphasized text} in the middle.
+
+{\bf this is some bold text \emph{with some emphasized text} in the middle.}
+
+\textbf{this is some bold text \emph{with some emphasized text} in the middle.}
+
+\textit{this is some italic text \emph{with some emphasized text} in the middle.}
+
+\subsection{the em command}
+
+First testing \verb#\em# by {\em emphasizing text and then {\em embedding another
+level inside} of the first level.}
+
+this is some text {\em with some emphasized text} in the middle.
+
+{\bf this is some bold text {\em with some emphasized text} in the middle.}
+
+\textbf{this is some bold text {\em with some emphasized text} in the middle.}
+
+\textit{this is some italic text {\em with some emphasized text} in the middle.}
+
+\section{Miscellaneous}
+what about \it some italics \bf some bold \rm followed by roman
+
+{\it here is italics \tt followed by typewriter}
+
+{\it here is italics \sf followed by sans serif}
+
+\textbf{here is bold \sf followed by sans serif}
+
+{\bf here is bold \textsf{followed by sans serif}}
+
+\textbf{\textit{bold italics \sf followed by sans serif}}
+
+\textbf{\textit{bold italics \textsf{followed by sans serif}}}
+
+
 \section{Normal roman font}
 
-This is some text.  \emph{This text is emphasized}
 \begin{itemize}
 \item
 Testing \verb#\rm# by \textsf{sans serif text with {\rm some roman text} in the middle}.

@@ -1,34 +1,8 @@
-/*
- * $Id: stack.c,v 1.13 2001/08/12 21:15:46 prahl Exp $
- * History:
- * $Log: stack.c,v $
- * Revision 1.13  2001/08/12 21:15:46  prahl
- *         Removed last two // comments
- *         Explicitly cast char to int in isalpha() and isdigit()
- *         Began the process of supporting Babel better
- *
- * Revision 1.5  1998/07/03 07:03:16  glehner
- * lclint cleaning
- *
- * Revision 1.4  1997/02/15 20:29:45  ralf
- * Did some corrections for lclint checking
- *
- * Revision 1.3  1995/05/10 06:37:43  ralf
- * Added own includefile (for consistency checking of decls)
- *
- * Revision 1.2  1995/03/23  15:58:08  ralf
- * Reworked version by Friedrich Polzer and Gerhard Trisko
- *
- * Revision 1.1  1994/06/17  11:26:29  ralf
- * Initial revision
- *
- */
-/***************************************************************************
-     name : stack.c
-   author : DORNER Fernando, GRANZER Andreas
-  purpose : this is an stack-model to handle braces and recursive calls
+/* $Id: stack.c,v 1.14 2001/08/22 05:50:23 prahl Exp $
+
+  purpose : code that implements a stack to handle braces and recursive calls
 	        created by environments, and open and closing-braces
- ******************************************************************************/
+*/
 
 #include <stdio.h>
 #include <stdlib.h>

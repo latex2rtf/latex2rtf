@@ -1,23 +1,6 @@
-/*
- * $Id: commands.h,v 1.13 2001/08/12 21:15:46 prahl Exp $
- * History:
- * $Log: commands.h,v $
- * Revision 1.13  2001/08/12 21:15:46  prahl
- *         Removed last two // comments
- *         Explicitly cast char to int in isalpha() and isdigit()
- *         Began the process of supporting Babel better
- *
- * Revision 1.3  1998/07/03 06:57:28  glehner
- * added command number to ignore unwanted environments
- *
- * Revision 1.2  1997/02/15 20:42:58  ralf
- * Corrected some declarations found by lclint.
- *
- * Revision 1.1  1994/06/17 11:26:29  ralf
- * Initial revision
- *
- */
-#define HEADER 1
+/* $Id: commands.h,v 1.14 2001/08/22 05:50:23 prahl Exp $ */
+
+#define PREAMBLE 1
 #define DOCUMENT 2
 #define ITEMIZE 3
 #define ENUMERATE 4

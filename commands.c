@@ -1,7 +1,6 @@
-/*  $Id: commands.c,v 1.14 2001/08/20 00:02:24 prahl Exp $
+/*  $Id: commands.c,v 1.15 2001/08/22 05:50:23 prahl Exp $
 
-  purpose : Defines subroutines to translate LaTeX commands to RTF
-  
+    Defines subroutines to translate LaTeX commands to RTF
 */
 
 #include <stdio.h>
@@ -30,11 +29,6 @@ typedef struct commandtag {
 static int      iEnvCount = 0;			/* number of active environments */
 static CommandArray *Environments[100];	/* list of active environments */
 
-extern int      curr_fontbold[MAXENVIRONS];
-extern int      curr_fontital[MAXENVIRONS];
-extern int      curr_fontscap[MAXENVIRONS];
-extern int      curr_fontnumb[MAXENVIRONS];
-
 /********************************************************************/
 /* commands for environment document */
 /********************************************************************/
@@ -43,52 +37,67 @@ static CommandArray commands[] = {
 	{"end", CmdBeginEnd, CMD_END},
 	{"today", CmdToday, 0},
 	{"footnote", CmdFootNote, FOOTN},
-	/* ------------------------------------------ */
-	{"centerline", Paragraph, PAR_CENTERLINE},
-	/* ---------- FONT FAMILIES ------------------- */
-	{"rm", CmdSetFont, F_ROMAN_1},
-	{"textrm", CmdSetFont, F_ROMAN_2},
-	{"rmfamily", CmdSetFont, F_ROMAN},
-	{"mathrm", CmdSetFont, F_ROMAN_2},
-	{"sf", CmdSetFont, F_SANSSERIF_1},
-	{"textsf", CmdSetFont, F_SANSSERIF_2},
-	{"sffamily", CmdSetFont, F_SANSSERIF},
-	{"mathsf", CmdSetFont, F_SANSSERIF},
-	{"tt", CmdSetFont, F_TYPEWRITER_1},
-	{"texttt", CmdSetFont, F_TYPEWRITER_2},
-	{"ttfamily", CmdSetFont, F_TYPEWRITER},
-	{"sl", CmdSetFont, F_SLANTED_1},
-	{"textsl", CmdSetFont, F_SLANTED_2},
-	{"slshape", CmdSetFont, F_SLANTED},
-	/* ---------- FONT SERIES ------------------- */
-	{"bf", CmdSetFontStyle, CMD_BOLD_1},
-	{"textbf", CmdSetFontStyle, CMD_BOLD_2},
-	{"mathbf", CmdSetFontStyle, CMD_BOLD_2},
-	{"bfseries", CmdSetFontStyle, CMD_BOLD},
-	{"textmd", CmdSetFontStyle, CMD_BOLD_2},	/* poor approximation */
-	{"mdseries", CmdSetFontStyle, CMD_BOLD},
-	/* ---------- FONT SHAPE ------------------- */
-	{"it", CmdSetFontStyle, CMD_ITALIC_1},
-	{"textit", CmdSetFontStyle, CMD_ITALIC_2},
-	{"mathit", CmdSetFontStyle, CMD_ITALIC_2},
-	{"itshape", CmdSetFontStyle, CMD_ITALIC},
-	{"sc", CmdSetFontStyle, CMD_CAPS_1},
-	{"textsc", CmdSetFontStyle, CMD_CAPS_2},
-	{"scshape", CmdSetFontStyle, CMD_CAPS},
-	{"underline", CmdSetFontStyle, CMD_UNDERLINE},
-	/* ---------- FONT SIZE ------------------- */
-	{"tiny", CmdSetFontSize, 10},
-	{"scriptsize", CmdSetFontSize, 14},
+
+	{"rm",       CmdSetFontFamily, F_FAMILY_ROMAN},
+	{"rmfamily", CmdSetFontFamily, F_FAMILY_ROMAN_1},
+	{"mathrm",   CmdSetFontFamily, F_FAMILY_ROMAN_2},
+	{"textrm",   CmdSetFontFamily, F_FAMILY_ROMAN_2},
+
+	{"sf",       CmdSetFontFamily, F_FAMILY_SANSSERIF},
+	{"sffamily", CmdSetFontFamily, F_FAMILY_SANSSERIF_1},
+	{"mathsf",   CmdSetFontFamily, F_FAMILY_SANSSERIF_2},
+	{"textsf",   CmdSetFontFamily, F_FAMILY_SANSSERIF_2},
+
+	{"tt",       CmdSetFontFamily, F_FAMILY_TYPEWRITER},
+	{"ttfamily", CmdSetFontFamily, F_FAMILY_TYPEWRITER},
+	{"mathtt",   CmdSetFontFamily, F_FAMILY_TYPEWRITER_2},
+	{"texttt",   CmdSetFontFamily, F_FAMILY_TYPEWRITER_2},
+
+	{"cal",      CmdSetFontFamily, F_FAMILY_CALLIGRAPHIC_1},
+	{"mathcal",  CmdSetFontFamily, F_FAMILY_CALLIGRAPHIC_2},
+
+	{"bf",       CmdSetFontSeries, F_SERIES_BOLD},
+	{"bfseries", CmdSetFontSeries, F_SERIES_BOLD_1},
+	{"textbf",   CmdSetFontSeries, F_SERIES_BOLD_2},
+	{"mathbf",   CmdSetFontSeries, F_SERIES_BOLD_2},
+
+	{"mdseries", CmdSetFontSeries, F_SERIES_MEDIUM_1},
+	{"textmd",   CmdSetFontSeries, F_SERIES_MEDIUM_2},
+
+	{"it",       CmdSetFontShape, F_SHAPE_ITALIC},
+	{"itshape",  CmdSetFontShape, F_SHAPE_ITALIC_1},
+	{"mit",      CmdSetFontShape, F_SHAPE_ITALIC_1},
+	{"textit",   CmdSetFontShape, F_SHAPE_ITALIC_2},
+	{"mathit",   CmdSetFontShape, F_SHAPE_ITALIC_2},
+
+	{"sc",       CmdSetFontShape, F_SHAPE_CAPS},
+	{"scshape",  CmdSetFontShape, F_SHAPE_CAPS_1},
+	{"textsc",   CmdSetFontShape, F_SHAPE_CAPS_2},
+
+	{"sl",       CmdSetFontShape, F_SHAPE_SLANTED},
+	{"slshape",  CmdSetFontShape, F_SHAPE_SLANTED_1},
+	{"textsl",   CmdSetFontShape, F_SHAPE_SLANTED_2},
+	
+	{"tiny",         CmdSetFontSize, 10},
+	{"scriptsize",   CmdSetFontSize, 14},
 	{"footnotesize", CmdSetFontSize, 16},
-	{"small", CmdSetFontSize, 18},
-	{"normalsize", CmdSetFontSize, 20},
-	{"large", CmdSetFontSize, 24},
-	{"Large", CmdSetFontSize, 28},
-	{"LARGE", CmdSetFontSize, 34},
-	{"huge", CmdSetFontSize, 40},
-	{"Huge", CmdSetFontSize, 50},
-	{"em", CmdEmphasize, 0},
-	{"emph", CmdEmphasize, 0},
+	{"small",        CmdSetFontSize, 18},
+	{"normalsize",   CmdSetFontSize, 20},
+	{"large",        CmdSetFontSize, 24},
+	{"Large",        CmdSetFontSize, 28},
+	{"LARGE",        CmdSetFontSize, 34},
+	{"huge",         CmdSetFontSize, 40},
+	{"Huge",         CmdSetFontSize, 50},
+	
+	/* ---------- OTHER FONT STUFF ------------------- */
+	{"em",           CmdEmphasize, F_EMPHASIZE_NORMAL},
+	{"emph",         CmdEmphasize, F_EMPHASIZE_IMMEDIATE},
+	{"underline",    CmdUnderline, 0},
+	{"textnormal",   CmdTextNormal, F_TEXT_NORMAL_2},
+	{"normalfont",   CmdTextNormal, F_TEXT_NORMAL_2},
+	{"mathnormal",   CmdTextNormal, F_TEXT_NORMAL_3},
+
+	{"centerline", Paragraph, PAR_CENTERLINE},
 	/* ---------- LOGOS ------------------- */
 	{"LaTeX", CmdLogo, CMD_LATEX},
 	{"LaTeXe", CmdLogo, CMD_LATEXE},
@@ -117,25 +126,6 @@ static CommandArray commands[] = {
 	{"c", CmdCedillaChar, 0},
 	{"hat", CmdHatChar, 0},
 
-	/* ---------- FRENCH ABBREVIATIONS ------------------- */
-/*   { "degree", CmdFrenchAbbrev, DEGREE}, */
-   { "ier", CmdFrenchAbbrev, IERF},
-   { "iere", CmdFrenchAbbrev, IEREF},
-   { "iers", CmdFrenchAbbrev, IERSF},
-   { "ieres", CmdFrenchAbbrev, IERESF},
-   { "ieme", CmdFrenchAbbrev, IEMEF},
-   { "iemes", CmdFrenchAbbrev, IEMESF},
-   { "numero", CmdFrenchAbbrev, NUMERO},
-   { "numeros", CmdFrenchAbbrev, NUMEROS},
-   { "Numero", CmdFrenchAbbrev, CNUMERO},
-   { "Numeros", CmdFrenchAbbrev, CNUMEROS},
-/*   { "degres", CmdFrenchAbbrev, DEGREE}, */
-/*   { "textdegree", CmdFrenchAbbrev, DEGREE}, */
-   { "primo", CmdFrenchAbbrev, PRIMO},
-   { "secundo", CmdFrenchAbbrev, SECUNDO},
-   { "tertio", CmdFrenchAbbrev, TERTIO},
-   { "quarto", CmdFrenchAbbrev, QUARTO},
-   { "fup", CmdFrenchAbbrev, FUP},
 	{"ldots", CmdLdots, 0},
 	{"title", CmdTitle, TITLE_TITLE},
 	{"author", CmdTitle, TITLE_AUTHOR},
@@ -175,9 +165,6 @@ static CommandArray commands[] = {
 	{"includegraphics*", CmdGraphics, 0},
 	{"moveleft", CmdLength, 0},
 	{"moveright", CmdLength, 0},
-	{"addtolength", CmdLength, LENGTH_ADD},
-	{"setlength", CmdLength, LENGTH_SET},
-	{"newlength", CmdLength, LENGTH_NEW},
 	{"footnotemark", CmdIgnoreParameter, One_Opt_No_NormParam},
 	{"footnotetext", CmdIgnoreParameter, One_Opt_One_NormParam},
 	{"label", CmdLabel, LABEL},
@@ -220,15 +207,10 @@ static CommandArray commands[] = {
 	{"def", CmdIgnoreDef, 0},
 	{"newcommand", IgnoreNewCmd, 0},
 	{"renewcommand", IgnoreNewCmd, 0},
-	{"newenvironment", CmdIgnoreParameter, One_Opt_Three_NormParam},
-	{"renewenvironment", CmdIgnoreParameter, One_Opt_Three_NormParam},
 	{"newtheorem", CmdIgnoreParameter, One_Opt_Two_NormParam},
 	{"renewtheorem", CmdIgnoreParameter, One_Opt_Two_NormParam},
 	{"newcount", CmdIgnoreDef, 0},
 	{"output", CmdIgnoreDef, 0},
-	{"newcounter", CmdCounter, COUNTER_NEW},
-	{"setcounter", CmdCounter, COUNTER_SET},
-	{"addtocounter", CmdCounter, COUNTER_ADD},
 	{"value", CmdCounter, COUNTER_VALUE},
 	{"makebox", CmdIgnoreParameter, Two_Opt_One_NormParam},
 	{"framebox", CmdIgnoreParameter, Two_Opt_One_NormParam},
@@ -266,10 +248,6 @@ static CommandArray commands[] = {
 	{"let", CmdIgnoreLet, 0},
 	{"cline", CmdIgnoreParameter, No_Opt_One_NormParam},
 	{"multicolumn", CmdMultiCol, 0},
-	{"newcommand", CmdIgnoreParameter, 13},	/* one optional 3 required */
-	{"newenvironment", CmdIgnoreParameter, 13},	/* ditto */
-	{"newtheorem", CmdIgnoreParameter, 12},	/* one optional two required */
-	{"newcounter", CmdIgnoreParameter, 11},	/* one optional one required */
 	{"frac", CmdFraction, 0},
 	{"sqrt", CmdRoot, 0},
 	{"int", CmdIntegral, 0},
@@ -284,7 +262,7 @@ static CommandArray PreambleCommands[] = {
 	{"documentclass", CmdDocumentStyle, 0},
 	{"documentstyle", CmdDocumentStyle, 0},
 	{"usepackage", CmdUsepackage, 0},
-	{"begin", CmdPreambleBeginEnd, CMD_BEGIN},          /* only \begin{document} should occur */
+/*	{"begin", CmdPreambleBeginEnd, CMD_BEGIN},*/
 	{"title", CmdTitle, TITLE_TITLE},
 	{"author", CmdTitle, TITLE_AUTHOR},
 	{"date", CmdTitle, TITLE_DATE},
@@ -297,9 +275,15 @@ static CommandArray PreambleCommands[] = {
 	{"setcounter", CmdCounter, COUNTER_SET},
 	{"addtocounter", CmdCounter, COUNTER_ADD},
 	{"hyphenation", CmdHyphenation, 0},
+	{"address", CmdAddress, 0},
+	{"signature", CmdSignature, 0},
 	{"def", CmdIgnoreDef, 0},
-	{"newcommand", CmdIgnoreParameter, One_Opt_Two_NormParam},
+	{"newcommand", CmdIgnoreParameter, One_Opt_Three_NormParam},
 	{"renewcommand", CmdIgnoreParameter, One_Opt_Two_NormParam},
+	{"newenvironment", CmdIgnoreParameter, One_Opt_Three_NormParam},
+	{"renewenvironment", CmdIgnoreParameter, One_Opt_Three_NormParam},
+	{"newtheorem", CmdIgnoreParameter, One_Opt_Two_NormParam},
+	{"renewtheorem", CmdIgnoreParameter, One_Opt_Two_NormParam},
 	{"pagestyle", CmdIgnoreParameter, No_Opt_One_NormParam},
 	{"pagenumbering", CmdIgnoreParameter, No_Opt_One_NormParam},
 	{"markboth", CmdIgnoreParameter, No_Opt_Two_NormParam},
@@ -309,8 +293,6 @@ static CommandArray PreambleCommands[] = {
 	{"listoffiles",CmdIgnoreParameter,0},
 	{"nofiles",CmdIgnoreParameter,0},
 	{"makelabels",CmdIgnoreParameter,0},
-	{"address", CmdAddress, 0},
-	{"signature", CmdSignature, 0},
 	{"", NULL, 0}
 };				/* end of list */
 
@@ -352,19 +334,35 @@ static CommandArray LetterCommands[] = {
 };
 
 static CommandArray GermanModeCommands[] = {
-	/*
-	 * { "ck" , CmdPrintRtf , (int)"ck" }, { "glqq" , CmdPrintRtf ,
-	 * (int)"\\ldblquote "}, { "glq" , CmdPrintRtf , (int)"\\lquote "}, {
-	 * "grqq" , CmdPrintRtf , (int)"\\rdblquote "}, { "grq" , CmdPrintRtf
-	 * , (int)"\\rquote "},
-	 */
 	{"ck", GermanPrint, GP_CK},
 	{"glqq", GermanPrint, GP_LDBL},
 	{"glq", GermanPrint, GP_L},
 	{"grq", GermanPrint, GP_R},
 	{"grqq", GermanPrint, GP_RDBL},
 	{"", NULL, 0}
-};				/* end of list */
+};
+
+static CommandArray FrenchModeCommands[] = {
+/*   { "degree", CmdFrenchAbbrev, DEGREE}, */
+   { "ier", CmdFrenchAbbrev, IERF},
+   { "iere", CmdFrenchAbbrev, IEREF},
+   { "iers", CmdFrenchAbbrev, IERSF},
+   { "ieres", CmdFrenchAbbrev, IERESF},
+   { "ieme", CmdFrenchAbbrev, IEMEF},
+   { "iemes", CmdFrenchAbbrev, IEMESF},
+   { "numero", CmdFrenchAbbrev, NUMERO},
+   { "numeros", CmdFrenchAbbrev, NUMEROS},
+   { "Numero", CmdFrenchAbbrev, CNUMERO},
+   { "Numeros", CmdFrenchAbbrev, CNUMEROS},
+/*   { "degres", CmdFrenchAbbrev, DEGREE}, */
+/*   { "textdegree", CmdFrenchAbbrev, DEGREE}, */
+   { "primo", CmdFrenchAbbrev, PRIMO},
+   { "secundo", CmdFrenchAbbrev, SECUNDO},
+   { "tertio", CmdFrenchAbbrev, TERTIO},
+   { "quarto", CmdFrenchAbbrev, QUARTO},
+   { "fup", CmdFrenchAbbrev, FUP},
+	{"", NULL, 0}
+};
 
 /********************************************************************/
 /* commands for begin-end environments */
@@ -381,7 +379,7 @@ static CommandArray params[] = {
 	{"picture", CmdIgnoreFigure, PICTURE},
 	{"minipage", CmdIgnoreFigure, MINIPAGE},
 	/* { "thebibliography", CmdIgnoreFigure, THEBIBLIOGRAPHY }, */
-	{"em", Format, EMPHASIZE},
+
 	{"quote", CmdQuote, QUOTE},
 	{"quotation", CmdQuote, QUOTATION},
 	{"enumerate", CmdList, ENUMERATE},
@@ -410,6 +408,15 @@ static CommandArray params[] = {
 	/* { "thebibliography", CmdIgnoreEnvironment, BIBLIOGRAPHY }, */
 	{"abstract", CmdAbstract, 0},
 	{"titlepage", CmdTitlepage, 0},
+	{"em", CmdEmphasize, F_EMPHASIZE},
+	{"rmfamily", CmdSetFontFamily, F_FAMILY_ROMAN_3},
+	{"sffamily", CmdSetFontFamily, F_FAMILY_SANSSERIF_3},
+	{"ttfamily", CmdSetFontFamily, F_FAMILY_TYPEWRITER_3},
+	{"bfseries", CmdSetFontSeries, F_SERIES_BOLD_3},
+	{"mdseries", CmdSetFontSeries, F_SERIES_MEDIUM_3},
+	{"itshape",  CmdSetFontShape, F_SHAPE_ITALIC_3},
+	{"scshape",  CmdSetFontShape, F_SHAPE_CAPS_3},
+	{"slshape",  CmdSetFontShape, F_SHAPE_SLANTED_3},
 	{"", NULL, 0}
 };				/* end of list */
 
@@ -442,10 +449,11 @@ globals: command-functions have side effects or recursive calls
 
 	diagnostics(5,"CallCommandFunc %s, iEnvCount = %d",cCommand,iEnvCount);
 	
-	for (j = iEnvCount - 1; j >= 0; j--, i = 0) {
+	for (j = iEnvCount - 1; j >= 0; j--) {
+		i = 0;
 		while (strcmp(Environments[j][i].cpCommand, "") != 0) {
 
-/*			diagnostics(5,"CallCommandFunc Trying %s",Environments[j][i].cpCommand); */
+		/*	diagnostics(5,"CallCommandFunc Trying %s",Environments[j][i].cpCommand); */
 			
 			if (strcmp(Environments[j][i].cpCommand, cCommand) == 0) {
 				if (Environments[j][i].func == NULL)
@@ -453,6 +461,8 @@ globals: command-functions have side effects or recursive calls
 				if (*Environments[j][i].func == CmdIgnoreParameter) {
 					diagnostics(WARNING, "Command \\%s ignored", cCommand);
 				}
+
+			diagnostics(5,"CallCommandFunc Found %s iEnvCount=%d number=%d",Environments[j][i].cpCommand, j, i); 
 				(*Environments[j][i].func) ((Environments[j][i].param));
 				return TRUE;	/* Command Function found */
 			}
@@ -513,55 +523,56 @@ globals: changes Environment - array of active environments
 		 iEnvCount   - counter of active environments
  ****************************************************************************/
 {
-	int             previous_font_size;
 	char           *diag = "";
 
-	previous_font_size = CurrentFontSize();
 	switch (code) {
-	case HEADER:
-		Environments[iEnvCount++] = PreambleCommands;
-		diag = "preample";
+	case PREAMBLE:
+		Environments[iEnvCount] = PreambleCommands;
+		diag = "preamble";
 		break;
 	case DOCUMENT:
-		Environments[iEnvCount++] = commands;
+		Environments[iEnvCount] = commands;
 		if (GermanMode)
-			Environments[iEnvCount++] = GermanModeCommands;
+		{
+			iEnvCount++;
+			Environments[iEnvCount] = GermanModeCommands;
+		}
 		diag = "document";
 		break;
 	case ITEMIZE:
-		Environments[iEnvCount++] = ItemizeCommands;
+		Environments[iEnvCount] = ItemizeCommands;
 		diag = "itemize";
 		break;
 	case ENUMERATE:
-		Environments[iEnvCount++] = EnumerateCommands;
+		Environments[iEnvCount] = EnumerateCommands;
 		diag = "enumerate";
 		break;
 	case TABBING:
-		Environments[iEnvCount++] = TabbingCommands;
+		Environments[iEnvCount] = TabbingCommands;
 		diag = "tabbing";
 		break;
 	case LETTER:
-		Environments[iEnvCount++] = LetterCommands;
+		Environments[iEnvCount] = LetterCommands;
 		diag = "letter";
 		break;
 	case DESCRIPTION:
-		Environments[iEnvCount++] = DescriptionCommands;
+		Environments[iEnvCount] = DescriptionCommands;
 		diag = "description";
 		break;
 	case GERMANMODE:
-		Environments[iEnvCount++] = GermanModeCommands;
+		Environments[iEnvCount] = GermanModeCommands;
 		diag = "?german?";
 		break;
 	case FIGURE_ENV:
-		Environments[iEnvCount++] = FigureCommands;
+		Environments[iEnvCount] = FigureCommands;
 		diag = "figure";
 		break;
 	case IGN_ENV_CMD:
-		Environments[iEnvCount++] = commands;
+		Environments[iEnvCount] = commands;
 		diag = "*latex2rtf ignored*";
 		break;
 	case HYPERLATEX:
-		Environments[iEnvCount++] = hyperlatex;
+		Environments[iEnvCount] = hyperlatex;
 		diag = "hyperlatex";
 		break;
 
@@ -569,14 +580,9 @@ globals: changes Environment - array of active environments
 		error("assertion failed at function PushEnvironment");
 	}
 
-	curr_fontnumb[iEnvCount] = curr_fontnumb[iEnvCount - 1];
-	curr_fontbold[iEnvCount] = curr_fontbold[iEnvCount - 1];
-	curr_fontital[iEnvCount] = curr_fontital[iEnvCount - 1];
-	curr_fontscap[iEnvCount] = curr_fontscap[iEnvCount - 1];
-	BasicSetFontSize(previous_font_size);
-
+	iEnvCount++;
+	DupPrevFontEnvironment();
 	diagnostics(3, "Entered %s environment, iEnvCount now = %d", diag, iEnvCount);
-
 }
 
 

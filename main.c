@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.15 2001/08/20 01:12:46 prahl Exp $ */
+/* $Id: main.c,v 1.16 2001/08/22 05:50:23 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -73,13 +73,8 @@ int             g_enumerate_depth = 0;
 bool            g_suppress_equation_number = FALSE;
 bool            g_aux_file_missing = FALSE;	/* assume that it exists */
 
-int             curr_fontbold[MAXENVIRONS] = {0};
-int             curr_fontital[MAXENVIRONS] = {0};
-int             curr_fontscap[MAXENVIRONS] = {0};
-int             curr_fontnumb[MAXENVIRONS] = {0};
-
-static void     PrepareTex(const char *filename ,FILE ** f);
-static void     PrepareRtf(char *filename, FILE ** f);
+static void     OpenTexFile(const char *filename ,FILE ** f);
+static void     OpenRtfFile(char *filename, FILE ** f);
 static void     CloseTex(FILE ** f);
 static void     CloseRtf(FILE ** f);
 static void     ConvertLatexPreamble(void);
@@ -91,10 +86,8 @@ void           *GetCommandFunc(char *cCommand);
 
 enum TexCharSetKind TexCharSet = SEVEN_BIT;	/* default SEVEN_BIT for converting special chars */
 
-
-
-extern /* @observer@ */ char *optarg;
-extern int      optind;
+extern char *optarg;
+extern int   optind;
 extern int getopt(int ac, char *const av[], const char *optstring);
 
 /****************************************************************************
@@ -111,9 +104,6 @@ globals: initializes in- and outputfile fTex, fRtf,
 	fTex = stdin;		/* default input/output */
 	fRtf = stdout;
 
-	SetDocumentFontSize(20);
-	PushEnvironment(HEADER);
-	PushEnvironment(DOCUMENT);
 	progname = argv[0];
 	optind = 1;
 	while ((c = getopt(argc, argv, "Vlo:a:b:v:i:")) != EOF) {
@@ -163,6 +153,7 @@ globals: initializes in- and outputfile fTex, fRtf,
 		fprintf(stderr, "\t converted into RTF-Commands!\n");
 		return (1);
 	}
+	
 	if (argc == optind + 1) {
 		char           *s, *newrtf;
 
@@ -211,16 +202,20 @@ globals: initializes in- and outputfile fTex, fRtf,
 			*AuxName = '\0';
 		}
 	}
+
 	ReadCfg();
-	PrepareTex(input, &fTex);
-	PrepareRtf(output, &fRtf);
+	OpenTexFile(input, &fTex);
+	OpenRtfFile(output, &fRtf);
 
 	InitializeStack();
 	InitializeLatexLengths();
-	DefFont = getTexFontNumber("Roman");
-        ConvertLatexPreamble();
+	InitializeDocumentFont(20);
+
+	PushEnvironment(PREAMBLE);
+    ConvertLatexPreamble();
 	WriteRtfHeader();
-	
+		
+	PushEnvironment(DOCUMENT);
 	diagnostics(4,"Entering Convert from main");
 	Convert();
 	diagnostics(4,"Exiting Convert from main");
@@ -326,11 +321,13 @@ globals: fTex, fRtf and all global flags for convert (see above)
 		case '{':
 			bBlankLine = FALSE;
 			PushBrace();
+			fprintf(fRtf, "{");
 			break;
 			
 		case '}':
 			bBlankLine = FALSE;
 			ret = RecursionLevel - PopBrace();
+			fprintf(fRtf, "}");
 			if (ret > 0) {
 				ret--;
 				RecursionLevel--;
@@ -782,7 +779,7 @@ purpose: reads the LaTeX preamble (to \begin{document} ) for the file
 
 
 void 
-PrepareRtf(char *filename, FILE ** f)
+OpenRtfFile(char *filename, FILE ** f)
 /****************************************************************************
 purpose: creates output file and writes RTF-header.
 params: filename - name of outputfile, possibly NULL for already open file
@@ -807,7 +804,7 @@ params: filename - name of outputfile, possibly NULL for already open file
 
 
 void 
-PrepareTex(const char *filename, FILE ** f)
+OpenTexFile(const char *filename, FILE ** f)
 /****************************************************************************
 purpose: opens input file.
 params: filename - name of inputfile, possibly NULL

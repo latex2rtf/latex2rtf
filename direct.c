@@ -1,45 +1,8 @@
-/*
- * $Id: direct.c,v 1.13 2001/08/12 21:15:46 prahl Exp $
- * History:
- * $Log: direct.c,v $
- * Revision 1.13  2001/08/12 21:15:46  prahl
- *         Removed last two // comments
- *         Explicitly cast char to int in isalpha() and isdigit()
- *         Began the process of supporting Babel better
- *
- * Revision 1.7  1998/10/28 04:09:56  glehner
- * (WriteFontName): Cleaned up. Eliminated unecessary warning
- * and not completed rtf-output when using *Font*.
- *
- * Revision 1.6  1998/07/03 07:03:16  glehner
- * lclint cleaning
- *
- * Revision 1.5  1997/02/15 20:45:41  ralf
- * Some lclint changes and corrected variable declarations
- *
- * Revision 1.4  1995/03/23 15:58:08  ralf
- * Reworked version by Friedrich Polzer and Gerhard Trisko
- *
- *
- * Revision 1.3  1994/06/21  08:14:11  ralf
- * Corrected Bug in keyword search
- *
- * Revision 1.2  1994/06/17  14:19:41  ralf
- * Corrected various bugs, for example interactive read of arguments
- *
- * Revision 1.1  1994/06/17  11:26:29  ralf
- * Initial revision
- *
- */
-/***************************************************************************
-     name : direct.c
-   author : DORNER Fernando, GRANZER Andreas
-            POLZER Friedrich,TRISKO Gerhard
-  * changed TryDirectConvert: use search on sorted array
-  purpose : This file is used for converting LaTeX commands by simply text exchange
- ******************************************************************************/
+/* $Id: direct.c,v 1.14 2001/08/22 05:50:23 prahl Exp $ 
 
-/**********************************  includes ***********************************/
+  purpose : Convert simple LaTeX commands using direct.cfg
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -47,18 +10,11 @@
 #include "direct.h"
 #include "l2r_fonts.h"
 #include "cfg.h"
-/******************************************************************************/
-
-/*************************** prototypes **************************************/
 
 static bool     WriteFontName(const char **buffpoint, FILE * fRtf);
 
-/******************************* defines *************************************/
 #define MAXFONTLEN 100
-/******************************************************************************/
 
-
-/******************************************************************************/
 bool 
 WriteFontName(const char **buffpoint, FILE * fRtf)
 /******************************************************************************
@@ -89,7 +45,7 @@ globals:   progname
 		(*buffpoint)++;
 	}
 	buffer[i] = '\0';
-	if ((fnumber = GetFontNumber(buffer)) < 0) {
+	if ((fnumber = RtfFontNumber(buffer)) < 0) {
 		fprintf(stderr, "\n%s: ERROR: Unknown fontname in direct command", progname);
 		fprintf(stderr, "\nprogram aborted\n");
 		exit(EXIT_FAILURE);
