@@ -1,4 +1,4 @@
-.\" $Id: latex2rtf.1,v 1.5 2002/11/19 04:06:01 prahl Exp $
+.\" $Id: latex2rtf.1,v 1.6 2002/11/26 03:33:44 prahl Exp $
 .\"
 .TH latex2rtf 1
 .SH NAME
@@ -71,11 +71,12 @@ Print a short usage note
 used to set the idiom or language used in the LaTeX document
 .I language
 may be one of the following
-afrikaans, german, nynorsk, spanish, bahasa, dutch, icelandic, polish,
-swedish, basque, english, portuges, turkish, brazil, esperanto, irish,
-romanian, usorbian, breton, estonian, italian, samin, welsh, catalan,
-finnish, latin, scottish, croatian, lsorbian, serbian, czech, french,
-magyar, slovak, danish, galician, norsk, slovene.  The default is english.
+afrikaans, bahasa, basque, brazil, breton, catalan, croatian, czech,
+danish, dutch, english, esperanto, estonian, finnish, french, galician,
+german, icelandic, irish,italian, latin, lsorbian, magyar, norsk,
+nynorsk, polish, portuges, romanian, russian, samin, scottish, serbian,
+slovak, slovene, spanish, swedish, turkish, usorbian, welsh.  The default
+is english.
 .TP 
 .B \-l
 Assume LaTeX source uses ISO 8859-1 (Latin-1) special characters (default behavior). 
@@ -92,6 +93,11 @@ replaced by .rtf.
 do not quote printed parentheses in mathematical formulas, as some versions of
 Word(TM) have deep psychological problems with EQ fields using quoted parentheses.
 So if Word displays some formulas with parentheses as 'Error!', try this option.
+See also the -S option.
+.TP
+.B \-F
+use LaTeX to create bitmaps for all figures.  This can help when figures do
+not get translated properly.
 .TP
 .B \-M#
 where # selects the type of equation conversion.  -M3 is the default and
@@ -107,6 +113,8 @@ used to specify the directory that contains the @code{.cfg} files
 Use semicolons to separate arguments in RTF fields.
 This is needed when the machine opening the RTF file
 has a version of Word that uses commas for decimal points.
+This also can fix displaying some formulas as 'Error!'
+You may also need to try the -p option.
 .TP
 .B \-V
 Prints version on standard output and exits.
