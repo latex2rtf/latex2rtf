@@ -1,4 +1,4 @@
-/*  $Id: commands.c,v 1.54 2002/04/27 03:55:39 prahl Exp $
+/*  $Id: commands.c,v 1.55 2002/05/04 18:12:13 prahl Exp $
  
     Defines subroutines to translate LaTeX commands to RTF
 */
@@ -255,7 +255,6 @@ static CommandArray commands[] = {
 	{"thanks", CmdFootNote, FOOTNOTE_THANKS},
 	{"bibliographystyle", CmdIgnoreParameter, No_Opt_One_NormParam},
 	{"let", CmdIgnoreLet, 0},
-	{"cline", CmdIgnoreParameter, No_Opt_One_NormParam},
 	{"multicolumn", CmdMultiCol, 0},
 	{"frac", CmdFraction, 0},
 	{"dfrac", CmdFraction, 0},
@@ -341,6 +340,8 @@ static CommandArray PreambleCommands[] = {
 	{"htmlref",CmdHtml, LABEL_HTMLREF},
 	{"nobreakspace", CmdNonBreakSpace, 0},
 	{"signature", CmdSignature, 0},
+	{"hline", CmdHline, 0},
+	{"cline", CmdHline, 1},
 	{"", NULL, 0}
 };				/* end of list */
 

@@ -1,4 +1,4 @@
-/* $Id: tables.h,v 1.3 2002/04/21 22:49:59 prahl Exp $ */
+/* $Id: tables.h,v 1.4 2002/05/04 18:12:14 prahl Exp $ */
 
 #define TABULAR   1
 #define TABULAR_STAR 2
@@ -16,3 +16,4 @@ void            ConvertTabbing(void);
 void            CmdTabular(int code);
 void            CmdTable(int code);
 void            CmdMultiCol(int code);
+void 			CmdHline(int code);

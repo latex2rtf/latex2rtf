@@ -1,4 +1,4 @@
-/* $Id: tables.c,v 1.22 2002/05/04 17:52:08 prahl Exp $
+/* $Id: tables.c,v 1.23 2002/05/04 18:12:13 prahl Exp $
 
    Translation of tabbing and tabular environments
 */
@@ -361,7 +361,6 @@ TabularCountVert(char *s, int vert[])
 				break;
 			case '|':
 				vert[i]++;
-				fprintf(stderr,"adding one to %d now %d\n",i, vert[i]);
 				break;
 			default:
 				break;
@@ -392,9 +391,6 @@ TabularPreamble(char *text, char *width, char *pos, char *cols)
 		tab.align[i] = colFmt[i-1];
 		
 	TabularCountVert(cols,tab.vert);
-
-	for (i=0; i<=colCount; i++)
-		fprintf(stderr, "vert[%d]=%d\n", i,tab.vert[i]);
 
 	if (GetTexMode() != MODE_HORIZONTAL){
 		CmdIndent(INDENT_NONE);
@@ -853,7 +849,7 @@ CmdMultiCol(int code)
 	content = strdup_noendblanks(bcontent);
 	free(bcontent);
 
-	diagnostics(1,"CmdMultiCol cols=%s format=<%s> content=<%s>",num,format,content);
+	diagnostics(4,"CmdMultiCol cols=%s format=<%s> content=<%s>",num,format,content);
 	numCol = atoi(num);
 	free(num);
 	
@@ -867,4 +863,16 @@ CmdMultiCol(int code)
 	}
 
 	free(content);
+}
+
+void 
+CmdHline(int code)
+{
+/* should already be handled by tabular code */
+	char *s;
+	
+	if (code==1) {
+		s = getBraceParam();
+		free(s);
+	}
 }

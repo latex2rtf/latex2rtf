@@ -1,4 +1,4 @@
-/* $Id: preamble.c,v 1.35 2002/04/28 18:45:53 prahl Exp $
+/* $Id: preamble.c,v 1.36 2002/05/04 18:12:13 prahl Exp $
 
 purpose : Handles LaTeX commands that should only occur in the preamble.
           These are gathered together because the entire preamble must be
@@ -357,7 +357,11 @@ setDocumentOptions(char *optionlist)
 			PushEnvironment(HYPERLATEX); 
 		} else if (strcmp(option, "fancyhdr") == 0) {
 			diagnostics(WARNING, "Only partial support for %s", option);
-		} else if (!TryVariableIgnore(option)) {
+		} else if (strcmp(option, "textcomp")==0 ||
+				   strcmp(option, "fontenc")==0) {
+			/* do nothing ... but don't complain */
+		}
+		else if (!TryVariableIgnore(option)) {
 			diagnostics(WARNING, "Unknown style option %s ignored", option);
 		}
 		option = strtok(NULL, ",");

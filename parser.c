@@ -1,4 +1,4 @@
-/*  $Id: parser.c,v 1.57 2002/04/27 22:53:00 prahl Exp $
+/*  $Id: parser.c,v 1.58 2002/05/04 18:12:13 prahl Exp $
 
    Contains declarations for a generic recursive parser for LaTeX code.
 */
@@ -1076,8 +1076,8 @@ getSection(char **body, char **header, char **label)
 				
 			if (str){							/* found */
 				char *str2;
-				diagnostics(1,"matched <%s}>", p);
-				diagnostics(1,"expanded <%s>", str);
+				diagnostics(4,"matched <%s}>", p);
+				diagnostics(4,"expanded <%s>", str);
 				if (*(p+1)=='e')
 					str2 = strdup_together(str,"}");
 				else
