@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.50 2002/02/18 05:43:20 prahl Exp $ */
+/* $Id: main.c,v 1.51 2002/02/18 06:36:38 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -70,7 +70,7 @@ char		   *g_tmp_path = NULL;
 char           *g_preamble = NULL;
 char     		g_field_separator = ',';
 
-bool 			g_equation_rtf = FALSE;
+bool 			g_equation_rtf = TRUE;
 bool			g_equation_inline_bitmap = FALSE;
 bool			g_equation_display_bitmap = FALSE;
 bool			g_equation_comment = FALSE;

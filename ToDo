@@ -15,14 +15,9 @@ Bugs:
 
 	\iint is handled like \int but should be double integral.
 
-	\over needs to be hooked up and implemented
-
 	\input is not working properly.
-	need to fix redirection of stdin
-	need to support \'{i}
 	
 	spago issues
-		\left{ and \over
 		line numbering
 	
 	misc4.tex
@@ -32,9 +27,18 @@ Bugs:
 	essential.tex
 		error while processing
 		
+	ttgfsr7.tex
+		step four in appendix has bad equation processing
+		
+	excalibur.tex
+		extraneous label text in section 7.3.6
+		word disregards \* MERGEFORMAT in same section
+		
 Features:
 	support \hsize
 	support ## in macro expansion
+	add support for \symbol{\'134}
+	
 	
 	Add default page numbering
 	
