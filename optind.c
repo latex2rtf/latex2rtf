@@ -11,4 +11,3 @@ int             optind = 1;
 #else
 int AVOID_EMPTY_OPTIND_SOURCE;
 #endif
-/* end of optind.c */

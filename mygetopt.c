@@ -1,17 +1,4 @@
 /*
- * $Id: mygetopt.c,v 1.12 2002/04/06 04:37:04 prahl Exp $ History: $Log:
- * mygetopt.c,v $ Revision 1.1  1998/11/12 13:05:43  glehner Initial revision
- * 
- * 
- */
-
-#include "main.h"
-#ifdef HAS_NO_GETOPT
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-/*
  * my_getopt  is supposed to emulate the C Library getopt (which, according
  * to the man pages, is written by Henry Spencer to emulate the Bell Lab
  * version).
@@ -28,11 +15,14 @@
  * 
  * See the getopt manual pages for more information on getopt.
  * 
- * 
- * 
  * Written by V.Menkov, IU, 1995
- * 
  */
+
+#include "main.h"
+#ifdef HAS_NO_GETOPT
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 extern char    *optarg;
 extern int      optind;
