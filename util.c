@@ -136,8 +136,8 @@ char *p, *dup;
 			 s++;							/* first char after comment */
 		}
 		*p = *s;
-		*p++;
-		*s++;
+		p++;
+		s++;
 	}
 done:
 	*p = '\0';		
