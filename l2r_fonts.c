@@ -1,7 +1,11 @@
 /*
- * $Id: l2r_fonts.c,v 1.9 2001/08/12 21:15:46 prahl Exp $
+ * $Id: l2r_fonts.c,v 1.10 2001/08/20 00:02:24 prahl Exp $
  * History:
  * $Log: l2r_fonts.c,v $
+ * Revision 1.10  2001/08/20 00:02:24  prahl
+ * Fixed problem with processing fonts.tex
+ * Added support for a variety French abbreviations
+ *
  * Revision 1.9  2001/08/12 21:15:46  prahl
  *         Removed last two // comments
  *         Explicitly cast char to int in isalpha() and isdigit()
@@ -261,10 +265,12 @@ parameter: code: includes the font-type
 	
 	fprintf(fRtf, "{");
 
+/* \rmfamily \rm \textrm \mathrm \tt \sl \sf */
 	if (code == F_ROMAN        || code == F_ROMAN_1   || code == F_ROMAN_2 || 
 		code == F_TYPEWRITER_1 || code == F_SLANTED_1 || code == F_SANSSERIF_1)
 		fprintf(fRtf, "\\plain");
 	
+/* \textrm{string} or \textsf{string} or \texttt{string} or \textsl{string} */
 	if (code == F_ROMAN_2      || code == F_SANSSERIF_2 || 
 	    code == F_TYPEWRITER_2 || code == F_SLANTED_2) {
 		char *s;
@@ -272,12 +278,14 @@ parameter: code: includes the font-type
 		s = getParam();
 		ConvertString(s);
 		free(s);
+		fprintf(fRtf, "} ");
 
 	} else {
 		fprintf(fRtf, "\\f%d ", num);
 		Convert();
+		fprintf(fRtf, "} ");
+		Convert();
 	}
-	fprintf(fRtf, "}");
 
 	diagnostics(4, "Exiting CmdSetFont");
 }

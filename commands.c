@@ -1,42 +1,8 @@
-/*
- * $Id: commands.c,v 1.13 2001/08/12 21:15:46 prahl Exp $
- * History:
- * $Log: commands.c,v $
- * Revision 1.13  2001/08/12 21:15:46  prahl
- *         Removed last two // comments
- *         Explicitly cast char to int in isalpha() and isdigit()
- *         Began the process of supporting Babel better
- *
- * Revision 1.7  1998/10/28 06:30:53  glehner
- * changed thebibliography from CmdIgnore... to CmdConvertBiblio.
- *
- * Revision 1.6  1998/07/03 06:59:05  glehner
- * LaTeX2e support, documentclass, usepackage
- * added ignoring environment
- *
- * Revision 1.5  1997/02/15 21:34:50  ralf
- * Fixed bug in german quotes as corrected by Oliver Moldenhauer
- *
- * Revision 1.4  1997/02/15 20:42:58  ralf
- * Corrected some declarations found by lclint.
- *
- * Revision 1.3  1995/05/24 15:35:32  ralf
- * Changes by Vladimir Menkov for DOS port
- * Added include of stdlib.h
- *
- * Revision 1.2  1995/03/23  15:58:08  ralf
- * Reworked version by Friedrich Polzer and Gerhard Trisko
- *
- * Revision 1.1  1994/06/17  11:26:29  ralf
- * Initial revision
- */
-/***************************************************************************
-     name : commands.c
-   author : DORNER Fernando, GRANZER Andreas
-            POLZER Friedrich,TRISKO Gerhard
-  * \centerline, \c, commands for citation, table & title
-  purpose : includes all LaTex-Commands which can be converted into Rtf-Commands
- ******************************************************************************/
+/*  $Id: commands.c,v 1.14 2001/08/20 00:02:24 prahl Exp $
+
+  purpose : Defines subroutines to translate LaTeX commands to RTF
+  
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -151,6 +117,25 @@ static CommandArray commands[] = {
 	{"c", CmdCedillaChar, 0},
 	{"hat", CmdHatChar, 0},
 
+	/* ---------- FRENCH ABBREVIATIONS ------------------- */
+/*   { "degree", CmdFrenchAbbrev, DEGREE}, */
+   { "ier", CmdFrenchAbbrev, IERF},
+   { "iere", CmdFrenchAbbrev, IEREF},
+   { "iers", CmdFrenchAbbrev, IERSF},
+   { "ieres", CmdFrenchAbbrev, IERESF},
+   { "ieme", CmdFrenchAbbrev, IEMEF},
+   { "iemes", CmdFrenchAbbrev, IEMESF},
+   { "numero", CmdFrenchAbbrev, NUMERO},
+   { "numeros", CmdFrenchAbbrev, NUMEROS},
+   { "Numero", CmdFrenchAbbrev, CNUMERO},
+   { "Numeros", CmdFrenchAbbrev, CNUMEROS},
+/*   { "degres", CmdFrenchAbbrev, DEGREE}, */
+/*   { "textdegree", CmdFrenchAbbrev, DEGREE}, */
+   { "primo", CmdFrenchAbbrev, PRIMO},
+   { "secundo", CmdFrenchAbbrev, SECUNDO},
+   { "tertio", CmdFrenchAbbrev, TERTIO},
+   { "quarto", CmdFrenchAbbrev, QUARTO},
+   { "fup", CmdFrenchAbbrev, FUP},
 	{"ldots", CmdLdots, 0},
 	{"title", CmdTitle, TITLE_TITLE},
 	{"author", CmdTitle, TITLE_AUTHOR},

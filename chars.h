@@ -23,3 +23,23 @@ void            CmdDotChar(int code);
 void            CmdUnderbarChar(int code);
 
 void            CmdLogo(int code);
+
+void CmdFrenchAbbrev(int code);
+
+#define IERF 1
+#define IEREF 2
+#define IERSF 3
+#define IERESF 4
+#define IEMEF 5
+#define IEMESF 6
+#define DEGREE 7
+#define NUMERO 8
+#define NUMEROS 9
+#define CNUMERO 10
+#define CNUMEROS 11
+#define PRIMO 12
+#define SECUNDO 13
+#define TERTIO 14
+#define QUARTO 15
+#define FUP 16
+

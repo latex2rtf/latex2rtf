@@ -1,4 +1,6 @@
 /***************************************************************************
+$Id: chars.c,v 1.2 2001/08/20 00:02:24 prahl Exp $
+
    name : chars.c
  author : PRAHL, Scott
 
@@ -27,6 +29,7 @@ purpose : handles special characters and logos
 #include "encode.h"
 #include "parser.h"
 #include "chars.h"
+#include "funct1.h"
 
 void            TeXlogo();
 void            LaTeXlogo();
@@ -660,4 +663,56 @@ CmdLogo(int code)
 		break;
 	}
 	fprintf(fRtf,"}");
+}
+
+void CmdFrenchAbbrev(int code)
+/******************************************************************************
+  purpose: makes \\ier, \\ieme, etc
+ ******************************************************************************/
+{
+  float FloatFsize;
+  int up, size;
+  char *fuptext;
+
+  if (code == NUMERO) fprintf(fRtf,"n");
+  if (code == NUMEROS) fprintf(fRtf,"n");
+  if (code == CNUMERO) fprintf(fRtf,"N");
+  if (code == CNUMEROS) fprintf(fRtf,"N");
+  if (code == PRIMO) fprintf(fRtf,"1");
+  if (code == SECUNDO) fprintf(fRtf,"2");
+  if (code == TERTIO) fprintf(fRtf,"3");
+  if (code == QUARTO) fprintf(fRtf,"4");
+  
+  FloatFsize = CurrentFontSize();
+  
+  if(FloatFsize > 14) FloatFsize *= 0.75;
+
+  up = 0.3*FloatFsize+0.45;
+  size = FloatFsize+0.45;
+  
+  fprintf(fRtf,"{\\fs%d\\up%d ",size ,up);
+  switch(code)
+  {
+    case NUMERO : fprintf(fRtf,"o"); break;  	
+    case CNUMERO : fprintf(fRtf,"o"); break;  	
+    case NUMEROS : fprintf(fRtf,"os"); break;  	
+    case CNUMEROS : fprintf(fRtf,"os"); break;  	
+    case PRIMO : fprintf(fRtf,"o"); break;  	
+    case SECUNDO : fprintf(fRtf,"o"); break;  	
+    case TERTIO : fprintf(fRtf,"o"); break;  	
+    case QUARTO : fprintf(fRtf,"o"); break;  	
+    case IERF: fprintf(fRtf,"er"); break;  	
+    case IERSF: fprintf(fRtf,"ers"); break;  	
+    case IEMEF: fprintf(fRtf,"e"); break;  	
+    case IEMESF: fprintf(fRtf,"es"); break;  	
+    case IEREF: fprintf(fRtf,"re"); break;  	
+    case IERESF: fprintf(fRtf,"res"); break;  	
+    case FUP: 
+    			fuptext=getParam();
+        		ConvertString(fuptext); 
+        		free(fuptext);
+        		break;  	
+  }
+  
+  fprintf(fRtf,"}");
 }
