@@ -1108,7 +1108,7 @@ CmdItem(int code)
 		break;
 
 	case DESCRIPTION:
-		fprintRTF("\\tab ");	/* indent */
+		if (!itemlabel) fprintRTF("\\tab ");	/* indent */
 		break;
 	}
 	
