@@ -889,7 +889,7 @@ PutPdfFile(char *s, double scale, double baseline, int full_path)
 static void
 PutEpsFile(char *s, double scale, double baseline, int full_path)
 {
-	char *png, *emf, *pict, *pdf;
+	char *png, *emf, *pict;
 	diagnostics(2, "PutEpsFile filename = <%s>", s);
      
 	if (1) {

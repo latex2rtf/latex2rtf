@@ -14,7 +14,7 @@ all:accentchars.rtf array.rtf bib_simple.rtf bib_apalike.rtf bib_apalike2.rtf \
 	enc_cp1251.rtf   enc_cp855.rtf enc_cp866.rtf    enc_koi8-r.rtf enc_koi8-u.rtf \
 	enc_maccyr.rtf enc_macukr.rtf eqns-koi8.rtf \
 	defs.rtf qualisex.rtf ttgfsr7.rtf excalibur.rtf include.rtf ch.rtf\
-	spago1.rtf theorem.rtf picture.rtf tabbing.rtf figtest.rtf \
+	spago1.rtf theorem.rtf picture.rtf tabbing.rtf figtest.rtf figtest2.rtf\
 	chem.rtf subsup.rtf linux.rtf
 
 LATEX= latex
@@ -85,8 +85,10 @@ ttgfsr7.rtf: ttgfsr7.tex
 figtest.rtf: figtest.tex figtest.eps
 	$(LATEX) figtest > latex.log
 	$(LATEX) figtest > latex.log
-	echo "only works if latex2png is installed"
 	$(LATEX2RTF) $(OPTIONS) -F figtest
+
+figtest2.rtf: figtest2.tex figtestb.pdf
+	$(LATEX2RTF) $(OPTIONS) figtest2
 
 linux.rtf: linux.tex
 	$(LATEX) linux > latex.log
@@ -97,7 +99,9 @@ check:
 	./bracecheck
 	
 clean:
+	mv figtestb.pdf figtestb.tmp
 	rm -f *.dvi *.rtf *.aux *.blg *.bbl *.log *.pdf *.toc *.lot *.idx *.ilg *.ind
 	rm -f l2r*tex
+	mv figtestb.tmp figtestb.pdf
 
 .PHONY: clean all
