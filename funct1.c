@@ -1,63 +1,9 @@
-/*
- * $Id: funct1.c,v 1.13 2001/08/12 21:15:46 prahl Exp $
- * History:
- * $Log: funct1.c,v $
- * Revision 1.13  2001/08/12 21:15:46  prahl
- *         Removed last two // comments
- *         Explicitly cast char to int in isalpha() and isdigit()
- *         Began the process of supporting Babel better
- *
- * Revision 1.9  1998/10/28 06:19:38  glehner
- * Changed all occurences of eol-output to "\r\n" to allow
- * transport across different platforms.
- * Fixed (CmdTitle) which caused a "Could not write tempfile" error.
- * Fixed (CmdFormula) for \[ and \{, nested Formula - error.
- * Added support for \encode package with [isolatin] option (only).
- * Some fixes for character conversion and \emph.
- * Fixed (CmdLabel) and helpers, to not do swallow the parameter.
- * Converting now optional argument of \item in description env.3
- *
- * Revision 1.8  1998/07/03 06:58:24  glehner
- * LaTeX2e support, CmdUsepackage
- * twoside, language support
- *
- * Revision 1.7  1997/02/15 21:49:13  ralf
- * Corrected printing of german umlaut-accent characters as reported by
- * Oliver Moldenhauer
- *
- * Revision 1.6  1997/02/15 20:59:48  ralf
- * Mainly lclint-suggested changes
- *
- * Revision 1.5  1995/05/24 17:06:47  ralf
- * Removed bug with generation of include filenames
- *
- * Revision 1.4  1995/05/24  12:06:22  ralf
- * Changed two wrong checks after malloc
- *
- * Revision 1.3  1995/03/23  15:58:08  ralf
- * Reworked version by Friedrich Polzer and Gerhard Trisko
- *
- *
- * Revision 1.2  1994/06/21  08:14:11  ralf
- * Corrected Bug in keyword search
- *
- * Revision 1.1  1994/06/17  11:26:29  ralf
- * Initial revision
- *
- */
-/***************************************************************************
-   name : funct1.c
- author : DORNER Fernando, GRANZER Andreas
-          POLZER Friedrich,TRISKO Gerhard
- * in footnote: special characters treated correctly
- * now produces section-numbers
- * getParam allocates only the needed amount of memory
- * \c
- * footnotes treats \"o etc correctly
- * paragraph formatting properties of itemize/liste environment corrected
- *
-purpose : includes besides funct2.c all functions which are called from the programm commands.c;
- ****************************************************************************/
+/* $Id: funct1.c,v 1.14 2001/08/12 23:39:12 prahl Exp $ 
+ 
+This file contains routines that interpret various LaTeX commands and produce RTF
+
+Authors:  Dorner, Granzer, Polzer, Trisko, Schlatterbeck, Lehner, Prahl
+*/
 
 #include <stdio.h>
 #include <stdlib.h>

@@ -1,34 +1,6 @@
-/*
- * $Id: funct1.h,v 1.13 2001/08/12 21:15:46 prahl Exp $
- * History:
- * $Log: funct1.h,v $
- * Revision 1.13  2001/08/12 21:15:46  prahl
- *         Removed last two // comments
- *         Explicitly cast char to int in isalpha() and isdigit()
- *         Began the process of supporting Babel better
- *
- * Revision 1.5  1998/11/04 13:39:40  glehner
- * Changed ON-Flag to 0x4000 for little int compilers.
- *
- * Revision 1.4  1998/07/03 07:10:10  glehner
- * updated for latex2rtf V1.7
- *
- * Revision 1.3  1997/02/15 20:59:48  ralf
- * Mainly lclint-suggested changes
- *
- * Revision 1.2  1995/03/23 15:58:08  ralf
- * Reworked version by Friedrich Polzer and Gerhard Trisko
- *
- * Revision 1.1  1994/06/17  11:26:29  ralf
- * Initial revision
- *
- */
-/*** prototypes fof functions in funct1 ***/
-
+/* $Id: funct1.h,v 1.14 2001/08/12 23:39:12 prahl Exp $ */
 
 #define AST_FORM 100
-
-
 #define EMPHASIZE 1
 void            Format(int code);
 
