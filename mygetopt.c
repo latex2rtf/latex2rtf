@@ -22,8 +22,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-extern char    *optarg;
-extern int      optind;
+char           *optarg = 0;
+int             optind = 1;
 
 int 
 my_getopt(int argc, char **argv, char *optstring)

@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.69 2002/11/23 16:40:43 prahl Exp $
+# $Id: Makefile,v 1.70 2002/11/23 16:52:09 prahl Exp $
 
 CC=gcc
 MKDIR=mkdir -p
@@ -40,7 +40,7 @@ VERSION="`scripts/version`"
 SRCS=commands.c chars.c direct.c encode.c l2r_fonts.c funct1.c tables.c ignore.c \
 	main.c stack.c cfg.c util.c parser.c lengths.c counters.c letterformat.c \
 	preamble.c equation.c convert.c xref.c definitions.c graphics.c \
-	mygetopt.c optind.c
+	mygetopt.c
 
 HDRS=commands.h chars.h direct.h encode.h l2r_fonts.h funct1.h tables.h ignore.h \
     main.h stack.h cfg.h util.h parser.h lengths.h counters.h letterformat.h \
@@ -89,7 +89,7 @@ TEST=   test/Makefile test/bracecheck \
 OBJS=l2r_fonts.o direct.o encode.o commands.o stack.o funct1.o tables.o \
 	chars.o ignore.o cfg.o main.o util.o parser.o lengths.o counters.o \
 	preamble.o letterformat.o equation.o convert.o xref.o definitions.o graphics.o \
-	optind.o mygetopt.o
+	mygetopt.o
 
 all : checkdir latex2rtf
 	touch stamp-build
@@ -214,7 +214,6 @@ convert.o : main.h convert.h commands.h chars.h funct1.h l2r_fonts.h \
 xref.o : main.h util.h convert.h funct1.h commands.h cfg.h xref.h parser.h \
   preamble.h lengths.h l2r_fonts.h 
 mygetopt.o : 
-optind.o : 
 definitions.o : main.h convert.h definitions.h parser.h funct1.h util.h \
   cfg.h counters.h 
 graphics.o : main.h graphics.h parser.h util.h 

@@ -133,7 +133,7 @@ int main(int argc, char **argv)
 		
 	SetEndianness();
 	progname = argv[0];
-	optind = 1;
+
 	while ((c = my_getopt(argc, argv, "lhpvFSWZ:o:a:b:d:i:s:C:D:M:P:T:")) != EOF) {
 		switch (c) {
 		case 'a':
