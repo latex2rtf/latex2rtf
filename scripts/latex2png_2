@@ -44,8 +44,23 @@ dir=`dirname "$1"`
 #need to search the current working directory for \input or \include
 TEXINPUTS=`pwd`":"
 cd $dir
+rm -f $name.png
+rm -f $name.pdf
+
 pdflatex $name > /dev/null
+
+if [ ! -e "$name.pdf" ] ; then
+ 	error "ERROR: pdflatex failed to create $name.pdf"
+	exit 1
+fi
+
 pstoimg -crop lbtr -density ${opt_d} -type png $name.pdf >& /dev/null
+
+if [ ! -e "$name.png" ] ; then
+ 	error "ERROR: pstoimg failed to create $name.png from $name.pdf"
+	exit 1
+fi
+
 if [ $opt_k -eq 0 ] ; then
 	rm -f $name.aux
 	rm -f $name.log

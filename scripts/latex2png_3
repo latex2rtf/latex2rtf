@@ -47,11 +47,31 @@ dir=`dirname "$1"`
 #need to search the current working directory for \input or \include
 TEXINPUTS=`pwd`":"
 cd $dir
+rm -f $name.png
+rm -f $name.dvi
+
 latex  --interaction batchmode $name > /dev/null
+
+if [ ! -e "$name.dvi" ] ; then
+ 	error "ERROR: latex failed to create $name.dvi from $name.tex"
+	exit 1
+fi
+
 dvips -E -o $name.eps $name.dvi >& /dev/null
+
+if [ ! -e "$name.eps" ] ; then
+ 	error "ERROR: dvips failed to create $name.eps from $name.dvi"
+	exit 1
+fi
+
 gs -dNOPAUSE -sDEVICE=pbmraw -r${opt_d} -sOutputFile=$name.pbm $name.eps -c quit.ps >& /dev/null
 pnmcrop $name.pbm | pnmtopng > $name.png 2> /dev/null
  
+if [ ! -e "$name.png" ] ; then
+ 	error "ERROR: gs/pnmcrop/pnmtopng failed to create $name.eps from $name.png"
+	exit 1
+fi
+
 if [ $opt_k -eq 0 ] ; then
 	rm -f $name.dvi
 	rm -f $name.aux
