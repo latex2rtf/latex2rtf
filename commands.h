@@ -1,4 +1,4 @@
-/* $Id: commands.h,v 1.22 2004/10/01 05:03:13 prahl Exp $ */
+/* $Id: commands.h,v 1.23 2004/10/03 03:26:15 prahl Exp $ */
 
 #define PREAMBLE 1
 #define DOCUMENT 2
@@ -24,7 +24,6 @@
 
 void            PushEnvironment(int code);
 void            PopEnvironment();
-void            ClearEnvironment();
 bool            CallCommandFunc(char *cCommand);
 void            CallParamFunc(char *cCommand, int AddParam);
 int             CurrentEnvironmentCount(void);

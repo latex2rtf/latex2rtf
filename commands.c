@@ -52,7 +52,9 @@ typedef struct commandtag {
 } CommandArray;
 
 static int iEnvCount = 0;       /* number of active environments */
+static int iAllCommands = 0;       /* number of (lists of commands) */
 static CommandArray *Environments[100]; /* list of active environments */
+static CommandArray *All_Commands[100]; /* list of (list of commands) */
 static int g_par_indent_array[100];
 static int g_left_indent_array[100];
 static int g_right_indent_array[100];
@@ -344,7 +346,7 @@ static CommandArray PreambleCommands[] = {
     {"documentclass", CmdDocumentStyle, 0},
     {"documentstyle", CmdDocumentStyle, 0},
     {"usepackage", CmdUsepackage, 0},
-    {"begin", CmdPreambleBeginEnd, CMD_BEGIN},
+/*    {"begin", CmdPreambleBeginEnd, CMD_BEGIN},*/
     {"title", CmdTitle, TITLE_TITLE},
     {"author", CmdTitle, TITLE_AUTHOR},
     {"date", CmdTitle, TITLE_DATE},
@@ -750,12 +752,13 @@ static CommandArray natbibCommands[] = {
 purpose: commands for harvard package 
 ********************************************************************/
 static CommandArray harvardCommands[] = {
-    {"citeasnoun", CmdCite, CITE_AS_NOUN},
-    {"possessivecite", CmdCite, CITE_POSSESSIVE},
-    {"citeaffixed", CmdCite, CITE_AFFIXED},
-    {"citeyear", CmdCite, CITE_YEAR},
-    {"citeyear*", CmdCite, CITE_YEAR_STAR},
-    {"citename", CmdCite, CITE_NAME},
+    {"cite", CmdHarvardCite, CITE_CITE},
+    {"citeasnoun", CmdHarvardCite, CITE_AS_NOUN},
+    {"possessivecite", CmdHarvardCite, CITE_POSSESSIVE},
+    {"citeaffixed", CmdHarvardCite, CITE_AFFIXED},
+    {"citeyear", CmdHarvardCite, CITE_YEAR},
+    {"citeyear*", CmdHarvardCite, CITE_YEAR_STAR},
+    {"citename", CmdHarvardCite, CITE_NAME},
     {"harvarditem", CmdHarvard, CITE_HARVARD_ITEM},
     {"harvardand", CmdHarvard, CITE_HARVARD_AND},
     {"harvardyearleft", CmdHarvard, CITE_HARVARD_YEAR_LEFT},
@@ -784,7 +787,7 @@ globals: command-functions have side effects or recursive calls
     int i, j;
     char *macro_string;
 
-    diagnostics(5, "CallCommandFunc <%s>, iEnvCount = %d", cCommand, iEnvCount);
+    diagnostics(3, "CallCommandFunc seeking <%s>, iAllCommands = %d", cCommand, iAllCommands);
 
     i = existsDefinition(cCommand);
     if (i > -1) {
@@ -795,21 +798,22 @@ globals: command-functions have side effects or recursive calls
         return TRUE;
     }
 
-    for (j = iEnvCount - 1; j >= 0; j--) {
+    for (j = iAllCommands - 1; j >= 0; j--) {
         i = 0;
-        while (strcmp(Environments[j][i].cpCommand, "") != 0) {
+        while (strcmp(All_Commands[j][i].cpCommand, "") != 0) {
 
-            /* diagnostics(5,"CallCommandFunc Trying %s",Environments[j][i].cpCommand); */
+            if (i<5)
+            	diagnostics(3,"CallCommandFunc (%d,%3d) Trying %s",j,i,All_Commands[j][i].cpCommand);
 
-            if (strcmp(Environments[j][i].cpCommand, cCommand) == 0) {
-                if (Environments[j][i].func == NULL)
+            if (strcmp(All_Commands[j][i].cpCommand, cCommand) == 0) {
+                if (All_Commands[j][i].func == NULL)
                     return FALSE;
-                if (*Environments[j][i].func == CmdIgnoreParameter) {
+                if (*All_Commands[j][i].func == CmdIgnoreParameter) {
                     diagnostics(WARNING, "Command \\%s ignored", cCommand);
                 }
 
-                diagnostics(5, "CallCommandFunc Found %s iEnvCount=%d number=%d", Environments[j][i].cpCommand, j, i);
-                (*Environments[j][i].func) ((Environments[j][i].param));
+                diagnostics(3, "CallCommandFunc Found %s iAllCommands=%d number=%d", All_Commands[j][i].cpCommand, j, i);
+                (*All_Commands[j][i].func) ((All_Commands[j][i].param));
                 return TRUE;    /* Command Function found */
             }
             ++i;
@@ -866,10 +870,12 @@ purpose: adds the command list for a specific environment to the list
 params:  constant identifying the environment
 globals: changes Environment - array of active environments
 		 iEnvCount   - counter of active environments
+		 iAllCommands - counter for lists of commands
  ****************************************************************************/
 {
     char *diag = "";
-
+	int i;
+	
     g_par_indent_array[iEnvCount] = getLength("parindent");
     g_left_indent_array[iEnvCount] = g_left_margin_indent;
     g_right_indent_array[iEnvCount] = g_right_margin_indent;
@@ -952,11 +958,20 @@ globals: changes Environment - array of active environments
         default:
             diagnostics(ERROR, "assertion failed at function PushEnvironment");
     }
+    
+    for (i=0; i<iAllCommands; i++) {
+    	if (Environments[iEnvCount] == All_Commands[i])
+    		break;
+    }
+    
+    if (i==iAllCommands) {
+    	All_Commands[iAllCommands] = Environments[iEnvCount];
+    	iAllCommands++;
+    }
 
     iEnvCount++;
-    diagnostics(3, "Entered %s environment, iEnvCount now = %d", diag, iEnvCount);
+    diagnostics(3, "Entered %s environment iEnvCount=%d iAllCommands=%d", diag, iEnvCount, iAllCommands);
 }
-
 
 void PopEnvironment()
 
@@ -967,6 +982,11 @@ globals: changes Environment - array of active environments
  ****************************************************************************/
 {
     --iEnvCount;
+    if (All_Commands[iAllCommands-1] == Environments[iEnvCount]){
+    	All_Commands[iAllCommands-1] = NULL;
+    	iAllCommands--;
+    }
+    	
     Environments[iEnvCount] = NULL;
 
     setLength("parindent", g_par_indent_array[iEnvCount]);
@@ -981,19 +1001,5 @@ globals: changes Environment - array of active environments
      */
 
     diagnostics(3, "Exited environment, iEnvCount now = %d", iEnvCount);
-    return;
-}
-
-
-void ClearEnvironment()
-
-/****************************************************************************
-purpose: removes all environment-commands lists
-globals: changes Environment - array of active environments
-		 iEnvCount - counter of active environments
- ****************************************************************************/
-{
-    Environments[0] = NULL;
-    iEnvCount = 0;
     return;
 }
