@@ -1,10 +1,10 @@
-.\" $Id: latex2rtf.1,v 1.10 2001/11/28 06:36:04 prahl Exp $
+.\" $Id: latex2rtf.1,v 1.11 2002/03/17 05:09:24 prahl Exp $
 .\"
 .TH latex2rtf 1
 .SH NAME
 latex2rtf \- Convert a LaTeX file to an RTF file
 .SH SYNTAX
-latex2rtf [-hlV] [-d#
+latex2rtf [-hlSV] [ -d# ] [ -M# 
 ] [ -a
 .I auxfile
 ] [ -b
@@ -15,6 +15,8 @@ latex2rtf [-hlV] [-d#
 .I language
 ] [ -o
 .I outputfile
+] [ -P
+.I /path/to/cfg
 ] [
 .I inputfile
 ]
@@ -23,7 +25,7 @@ latex2rtf [-hlV] [-d#
 The
 .I latex2rtf
 command converts a LaTeX file into RTF text format. The text and much of the formatting
-information is translated to RTF making the new file look similar to the original.
+information is translated to RTF.
 .TP
 .B \-a auxfile
 Used to specify a particular cross-referencing file.
@@ -69,18 +71,33 @@ finnish, latin, scottish, croatian, lsorbian, serbian, czech, french,
 magyar, slovak, danish, galician, norsk, slovene.  The default is english.
 .TP 
 .B \-l
-Assume latex source uses ISO 8859-1 (Latin-1) special characters (default behavior). 
+Assume LaTeX source uses ISO 8859-1 (Latin-1) special characters (default behavior). 
 .TP 
 .B \-o outputfile
 Redirect output to
 .I outputfile
 Unless an 
 .I outputfile
-is specified with the -o option, the resulting RTF is produced on a file with .tex
+is specified with the -o option, the resulting RTF is produced in a file with .tex
 replaced by .rtf.
 .TP 
+.B \-M#
+where # selects the type of equation conversion.  -M3 is the default and
+converts both inline and displayed equations to RTF.  -M6 converts inline 
+equations to RTF and displayed equations to bitmaps. -M12 converts inline 
+and displayed equations to bitmaps.  Bitmap conversion requires a working 
+latex2png script.  Producing bitmaps is slow.
+.TP 
+.B \-P /path/to/cfg
+used to specify the directory that contains the @code{.cfg} files
+.TP 
+.B \-S
+Use semicolons to separate arguments in RTF fields.
+This is needed when the machine opening the RTF file
+has a version of Word that uses commas for decimal points.
+.TP
 .B \-V
-Prints version information on standard output and exits.
+Prints version on standard output and exits.
 .TP 
 .B \-W 
 Emit warnings directly in RTF file.  Handy for catching things that do not 
@@ -90,34 +107,23 @@ get translated correctly.
 Add # close braces to end of RTF file.  (Handy when file is not converted
 correctly and will not open in another word processor.)
 .SH CONFIGURATION FILES
-The environment variable RTFPATH may contain a search path for the
-support files (all files ending in .cfg). If no file is found during the
-search in the search-path or if the environment variable is not set, the
-compiled-in default for the configuration-file directory is used. If the
-files are not found at all the program aborts.
-
-To correctly convert font names you must edit the 
-.B fonts.cfg
-configuration file.
-You have to specify the font names you use and how the LaTeX default font names
-should be converted to RTF. See format description below.
-.PP
-LaTeX variables and user defined commands are not evaluated.
-They will be simply ignored. To let
-.I latex2rtf
-know the names of variables you can add them in the 
-.B ignore.cfg
-file.
-See format description below.
-.PP
+The configuration files are searched first in any directory specified
+by -P, then in the location specified by the environment variable 
+RTFPATH, and finally in the location LIBDIR specified when 
+.I
+latex2rtf
+was compiled.  If the configuration files are not found then
+.I
+latex2rtf 
+aborts.  The configuration files allow additional fonts to be 
+recognized, additional simple commands to be translation, and 
+additional commands to be ignored.
 .SH CAUTION
-Please make sure that the input file is a correct LaTeX file. Use LaTeX
-to find and correct errors before using
+The input file should be a correct LaTeX file. Use LaTeX
+to find and fix errors before using
 .I latex2rtf.
-The conversion command does not properly handle all
-errors because of corrupt input files.
 .PP
-Make sure that the configuration files 
+The configuration files 
 .B direct.cfg
 and
 .B fonts.cfg
@@ -128,54 +134,26 @@ or
 .B direct.cfg
 to suit your needs.
 .SH BUGS
-Some environments like figure are currently ignored. It would be nice to scan
-the included information and convert things if possible.
+Some might consider RTF to be a bug.
 .PP
-Because the seek-command is used on input there are only file-redirections 
-possible when reading from stdin. 
+Some environments are currently ignored. 
 .PP
-Some of the generated table can confuse Word, the problem may be corrected 
-by editing the offending table within Word.
+Translation without a LaTeX generated .aux file is poor.
 .PP
+Table conversion is particularly poor at the moment.
 .SH REPORTING BUGS
-Report bugs to glehner@unanleon.edu.ni (Georg Lehner). Please give the
-following information and observe the following guidelines when
-reporting a bug in the program:
-.PP
-Tell me the version of the program. For the executable you get the version by
-specifying the \-V option to 
-.I latex2rtf.
-For the sources the version is
-the version number of the file
-.B version.h.
-.PP
-The Operating System and version number where you are running or
-trying to install
-.I latex2rtf.
-Be sure to check the file 
-.B Makefile
-for settings that may be specific to your machine, especially for some
-versions of
-.B SunOS
-there may be settings which are needed to compile
-successfully. Do this
-.I before
-writing to me.
+Report bugs to to the bug tracking system at http://sourceforge.net/projects/latex2rtf/. 
+Only report bugs for the latest version of
+.I latex2rtf
+that is available.  Please identify your operating system.
+
 .PP
 If the program produces wrong output or does not work for you, include
 a 
 .I short
-latex file along with a description of the problem.
-.I Do not
-send me large latex or rtf files, I simply do not have the time to
-wade through large files to search for a bug! If necessary (i.e., the
-program produces wrong or invalid rtf), send the rtf file that is
-produced along with the latex input file.
-.PP
-Be patient with me. I am maintaining the program in my free time. I
-did not write most of the code. Often I do not have the time to answer
-to your question. I will, however, try to fix reported bugs in
-upcoming releases.
+LaTeX file along with a description of the problem.  The shorter the 
+LaTeX file, the quicker your bug will get addressed.
+Do not bother to send RTF files, since these are usually unhelpful.
 .SH SEE ALSO
 rtf2LaTeX(1), LaTeX User's Guide & Reference Manual by Leslie Lamport
 .PP

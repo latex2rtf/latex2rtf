@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.61 2002/03/15 06:00:19 prahl Exp $ */
+/* $Id: main.c,v 1.62 2002/03/17 05:09:24 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -326,7 +326,8 @@ usage(void)
 		fprintf(stderr, "\t -W               : include warnings in RTF\n");
 		fprintf(stderr, "\t -Z#              : add # of '}'s at end of rtf file (# is 0-9)\n\n");
 		fprintf(stderr, "RTFPATH designates the directory for configuration files (*.cfg)\n");
-		fprintf(stderr, "\t RTFPATH = '%s'\n\n", getenv("RTFPATH"));
+		fprintf(stderr, "\t RTFPATH = '%s'\n", getenv("RTFPATH"));
+		fprintf(stderr, "\t LIBDIR  = '%s'\n\n", LIBDIR);
 		exit(1);
 }
 
