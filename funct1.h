@@ -1,9 +1,39 @@
 /*
- * $Id: funct1.h,v 1.4 2001/08/12 17:29:00 prahl Exp $
+ * $Id: funct1.h,v 1.5 2001/08/12 17:50:50 prahl Exp $
  * History:
  * $Log: funct1.h,v $
- * Revision 1.4  2001/08/12 17:29:00  prahl
- * latex2rtf version 1.8aa by Georg Lehner
+ * Revision 1.5  2001/08/12 17:50:50  prahl
+ * latex2rtf version 1.9b by Scott Prahl
+ * 1.9b
+ * 	Improved enumerate environment so that it may be nested and
+ * 	    fixed labels in nested enumerate environments
+ * 	Improved handling of description and itemize environments
+ * 	Improved eqnarray environment
+ * 	Improved array environment
+ * 	Improved \verb handling
+ * 	Improved handling of \mbox and \hbox in math mode
+ * 	Improved handling of \begin{array} environment
+ * 	Improved handling of some math characters on the mac
+ * 	Fixed handling of \( \) and \begin{math} \end{math} environments
+ * 	Fixed bugs in equation numbering
+ * 	Made extensive changes to character translation so that the RTF
+ * 	     documents work under Word 5.1 and Word 98 on the Mac
+ *
+ *
+ * 1.9a
+ * 	Fixed bug with 'p{width}' in tabular environment
+ * 		not fully implemented, but no longer creates bad RTF code
+ *
+ * 1.9
+ * 	Fixed numbering of equations
+ * 	Improved/added support for all types of equations
+ * 	Now includes PICT files in RTF
+ * 	Fixed \include to work (at least a single level of includes)
+ *
+ * 1.8
+ * 	Fixed problems with \\[1mm]
+ * 	Fixed handling of tabular environments
+ * 	Fixed $x^\alpha$ and $x_\alpha$
  *
  * Revision 1.5  1998/11/04 13:39:40  glehner
  * Changed ON-Flag to 0x4000 for little int compilers.
@@ -63,6 +93,7 @@ void CmdLApostrophChar(int code);
 void CmdRApostrophChar(int code);
 void CmdSpitzeChar();
 void CmdTildeChar(int code);
+void CmdSymbolChar( int code);
 
 #define CMD_TEX 1
 #define CMD_LATEX 2
@@ -94,11 +125,17 @@ void CmdSection(int code);
 
 void CmdFootNote(int code);
 
-#define FORM_DOLLAR 2	/* ('$')  */
-#define FORM_RND_OPEN 3      /* ('/(') */
-#define FORM_ECK_OPEN 4      /* ('/[') */
+#define FORM_DOLLAR    2      /* ('$')  */
+#define FORM_RND_OPEN  3      /* ('/(') */
+#define FORM_ECK_OPEN  4      /* ('/[') */
 #define FORM_RND_CLOSE 5      /* ('/)') */
 #define FORM_ECK_CLOSE 6      /* ('/]') */
+#define FORM_NO_NUMBER 7      /* \nonumber */
+#define EQNARRAY       8      /* eqnarray environment */
+#define EQNARRAY_1     9      /* eqnarray* environment */
+#define EQUATION      10      /* equation environment */
+#define EQUATION_1    11      /* equation* environment */
+#define FORM_MATH     12      /* math environment */
 
 void CmdFormula(int code);
 
@@ -106,7 +143,7 @@ void CmdFormula(int code);
 #define QUOTATION 2
 void CmdQuote(int code);
 
-#define RESET 0
+#define RESET_ITEM_COUNTER 0
 
 void CmdList(int code);
 
@@ -166,4 +203,3 @@ void ConvertString(char *string);
 #define BOTH_SIDES  348
 #define LEFT_SIDE  349
 /*LEG030598 End*/
-

@@ -1,9 +1,39 @@
 /*
- * $Id: commands.c,v 1.4 2001/08/12 17:29:00 prahl Exp $
+ * $Id: commands.c,v 1.5 2001/08/12 17:50:50 prahl Exp $
  * History:
  * $Log: commands.c,v $
- * Revision 1.4  2001/08/12 17:29:00  prahl
- * latex2rtf version 1.8aa by Georg Lehner
+ * Revision 1.5  2001/08/12 17:50:50  prahl
+ * latex2rtf version 1.9b by Scott Prahl
+ * 1.9b
+ * 	Improved enumerate environment so that it may be nested and
+ * 	    fixed labels in nested enumerate environments
+ * 	Improved handling of description and itemize environments
+ * 	Improved eqnarray environment
+ * 	Improved array environment
+ * 	Improved \verb handling
+ * 	Improved handling of \mbox and \hbox in math mode
+ * 	Improved handling of \begin{array} environment
+ * 	Improved handling of some math characters on the mac
+ * 	Fixed handling of \( \) and \begin{math} \end{math} environments
+ * 	Fixed bugs in equation numbering
+ * 	Made extensive changes to character translation so that the RTF
+ * 	     documents work under Word 5.1 and Word 98 on the Mac
+ *
+ *
+ * 1.9a
+ * 	Fixed bug with 'p{width}' in tabular environment
+ * 		not fully implemented, but no longer creates bad RTF code
+ *
+ * 1.9
+ * 	Fixed numbering of equations
+ * 	Improved/added support for all types of equations
+ * 	Now includes PICT files in RTF
+ * 	Fixed \include to work (at least a single level of includes)
+ *
+ * 1.8
+ * 	Fixed problems with \\[1mm]
+ * 	Fixed handling of tabular environments
+ * 	Fixed $x^\alpha$ and $x_\alpha$
  *
  * Revision 1.7  1998/10/28 06:30:53  glehner
  * changed thebibliography from CmdIgnore... to CmdConvertBiblio.
@@ -39,6 +69,8 @@
 /****************************** includes ************************************/
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include "cfg.h"
 #include "main.h"
 #include "funct1.h"
 #include "commands.h"
@@ -68,11 +100,17 @@ static CommandArray commands[] = {
    { "footnote", CmdFootNote, FOOTN },
    { "bf", CmdCharFormat, CMD_BOLD },
    { "it", CmdCharFormat, CMD_ITALIC },
+   { "sc", CmdCharFormat, CMD_CAPS },
 /* ------------------------------------------ */
    { "centerline", Paragraph, PAR_CENTERLINE },
    { "c", CmdC, 0},
 /* ------------------------------------------ */
    { "underline", CmdCharFormat, CMD_UNDERLINE },
+   { "textit", CmdCharFormat, CMD_ITALIC },
+   { "mathit", CmdCharFormat, CMD_ITALIC},
+   { "mathbf", CmdCharFormat, CMD_BOLD},
+   { "textbf", CmdCharFormat, CMD_BOLD },
+   { "textsc", CmdCharFormat, CMD_CAPS },
    { "tiny", CmdFontSize, 10 },
    { "scriptsize", CmdFontSize, 12 },
    { "footnotesize", CmdFontSize, 14 },
@@ -118,6 +156,7 @@ static CommandArray commands[] = {
    { "sl", CmdSetFont, F_SLANTED},		     /* set font Slanted */
    { "sf", CmdSetFont, F_SANSSERIF},		     /* set font Sans Serif */
    { "tt", CmdSetFont, F_TYPEWRITER},		     /* set font Typewriter */
+   { "mathrm", CmdSetFont, F_ROMAN},		     /* set font Roman */
    { "include", CmdInclude, 0}, 		     /* include Latex file */
    { "input", CmdInclude, 0},			     /* include Latex file */
    { "verb", CmdVerb, 0},
@@ -126,6 +165,8 @@ static CommandArray commands[] = {
    { "twocolumn", CmdColumn, Two_Column },
    { "flushbottom", CmdBottom, 0},
    { "raggedbottom", CmdBottom, 0},
+   { "includegraphics", CmdGraphics, 0},
+   { "includegraphics*", CmdGraphics, 0},
    { "setlength", CmdIgnoreParameter, No_Opt_Two_NormParam },
    { "footnotemark", CmdIgnoreParameter, One_Opt_No_NormParam },
    { "footnotetext", CmdIgnoreParameter, One_Opt_One_NormParam },
@@ -254,6 +295,7 @@ static CommandArray HeaderCommands[] = {
    { "opening", CmdOpening, 0},
    { "closing", CmdClosing, 0},
    { "ps", CmdPs, 0},
+   { "nonumber", CmdFormula, FORM_NO_NUMBER },
    { "", NULL, 0 }
 };    /* end of list */
 
@@ -346,10 +388,15 @@ static CommandArray params[] = {
    { "tabular*", CmdTabular, TABULAR_1 },
    { "longtable", CmdTabular, TABULAR },
    { "longtable*", CmdTabular, TABULAR_1 },
+   { "array", CmdTabular, TABULAR_2},
+   
    { "multicolumn", CmdMultiCol, 0 },
-   { "math", CmdFormula2, 0 },
-   { "displaymath" , CmdFormula2, 0 },
-   { "equation", CmdFormula2, 0 },
+   { "math", CmdFormula, FORM_MATH },
+   { "displaymath" , CmdFormula2, FORM_DOLLAR },
+   { "equation", CmdFormula2, EQUATION },
+   { "equation*", CmdFormula2, EQUATION_1 },
+   { "eqnarray*" , CmdFormula2, EQNARRAY_1 },
+   { "eqnarray", CmdFormula2, EQNARRAY },
    { "letter", CmdLetter, 0 },
    { "table", CmdTable, TABLE },
    { "table*", CmdTable, TABLE_1 },
@@ -357,9 +404,6 @@ static CommandArray params[] = {
    /*   { "thebibliography", CmdIgnoreEnvironment, BIBLIOGRAPHY },*/
    { "abstract", CmdAbstract, 0},
    { "titlepage", CmdTitlepage, 0},
-   { "array", CmdArray, ARRAY },
-   { "eqnarray", CmdArray, EQNARRAY },
-   { "eqnarray*", CmdArray, EQNARRAY_1},
    { "", NULL, 0 }
 };    /* end of list */
 

@@ -1,9 +1,39 @@
 /*
- * $Id: cfg.c,v 1.2 2001/08/12 17:29:00 prahl Exp $
+ * $Id: cfg.c,v 1.3 2001/08/12 17:50:50 prahl Exp $
  * History:
  * $Log: cfg.c,v $
- * Revision 1.2  2001/08/12 17:29:00  prahl
- * latex2rtf version 1.8aa by Georg Lehner
+ * Revision 1.3  2001/08/12 17:50:50  prahl
+ * latex2rtf version 1.9b by Scott Prahl
+ * 1.9b
+ * 	Improved enumerate environment so that it may be nested and
+ * 	    fixed labels in nested enumerate environments
+ * 	Improved handling of description and itemize environments
+ * 	Improved eqnarray environment
+ * 	Improved array environment
+ * 	Improved \verb handling
+ * 	Improved handling of \mbox and \hbox in math mode
+ * 	Improved handling of \begin{array} environment
+ * 	Improved handling of some math characters on the mac
+ * 	Fixed handling of \( \) and \begin{math} \end{math} environments
+ * 	Fixed bugs in equation numbering
+ * 	Made extensive changes to character translation so that the RTF
+ * 	     documents work under Word 5.1 and Word 98 on the Mac
+ *
+ *
+ * 1.9a
+ * 	Fixed bug with 'p{width}' in tabular environment
+ * 		not fully implemented, but no longer creates bad RTF code
+ *
+ * 1.9
+ * 	Fixed numbering of equations
+ * 	Improved/added support for all types of equations
+ * 	Now includes PICT files in RTF
+ * 	Fixed \include to work (at least a single level of includes)
+ *
+ * 1.8
+ * 	Fixed problems with \\[1mm]
+ * 	Fixed handling of tabular environments
+ * 	Fixed $x^\alpha$ and $x_\alpha$
  *
  * Revision 1.7  1998/11/12 15:15:42  glehner
  * Cleaned up includes, moved from .h file to .c
@@ -99,6 +129,11 @@ static int cfg_compare (ConfigEntryT **el1, ConfigEntryT **el2)
 }
 
 
+#ifdef __MWERKS__
+#define ENVSEP '^'
+#define PATHSEP ':'
+#endif
+
 /* Default to ':' for environment separator */
 #ifndef ENVSEP
 #define ENVSEP ':'
@@ -192,7 +227,7 @@ params:  name: config-file-name
 	}
     }
     strcpy(path, LIBDIR);
-    strcat(path, "/");
+    strcat(path, "");
     strcat(path, name);
     if((fp = fopen(path,"r")) == NULL)
     {
@@ -330,12 +365,12 @@ static ConfigEntryT **search_rtf (const char *theTexCommand, int WhichCfg)
  *           pointer to the data
  ****************************************************************************/
 {
-    const ConfigEntryT compare_item =
-    {
-	  theTexCommand
-	, ""
-    };
-    const ConfigEntryT * const compare_ptr = &compare_item;
+    ConfigEntryT compare_item;
+    ConfigEntryT * compare_ptr;
+    
+    compare_item.TexCommand = theTexCommand;
+    compare_item.RtfCommand = "";    
+    compare_ptr = &compare_item;
 
     assert (WhichCfg >= 0 && (size_t) WhichCfg < CONFIG_SIZE);
     assert (configinfo[WhichCfg].config_info != NULL);

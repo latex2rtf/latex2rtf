@@ -1,9 +1,39 @@
 /*
- * $Id: funct2.c,v 1.4 2001/08/12 17:29:00 prahl Exp $
+ * $Id: funct2.c,v 1.5 2001/08/12 17:50:50 prahl Exp $
  * History:
  * $Log: funct2.c,v $
- * Revision 1.4  2001/08/12 17:29:00  prahl
- * latex2rtf version 1.8aa by Georg Lehner
+ * Revision 1.5  2001/08/12 17:50:50  prahl
+ * latex2rtf version 1.9b by Scott Prahl
+ * 1.9b
+ * 	Improved enumerate environment so that it may be nested and
+ * 	    fixed labels in nested enumerate environments
+ * 	Improved handling of description and itemize environments
+ * 	Improved eqnarray environment
+ * 	Improved array environment
+ * 	Improved \verb handling
+ * 	Improved handling of \mbox and \hbox in math mode
+ * 	Improved handling of \begin{array} environment
+ * 	Improved handling of some math characters on the mac
+ * 	Fixed handling of \( \) and \begin{math} \end{math} environments
+ * 	Fixed bugs in equation numbering
+ * 	Made extensive changes to character translation so that the RTF
+ * 	     documents work under Word 5.1 and Word 98 on the Mac
+ *
+ *
+ * 1.9a
+ * 	Fixed bug with 'p{width}' in tabular environment
+ * 		not fully implemented, but no longer creates bad RTF code
+ *
+ * 1.9
+ * 	Fixed numbering of equations
+ * 	Improved/added support for all types of equations
+ * 	Now includes PICT files in RTF
+ * 	Fixed \include to work (at least a single level of includes)
+ *
+ * 1.8
+ * 	Fixed problems with \\[1mm]
+ * 	Fixed handling of tabular environments
+ * 	Fixed $x^\alpha$ and $x_\alpha$
  *
  * Revision 1.10  1998/11/05 13:21:49  glehner
  * *** empty log message ***
@@ -79,6 +109,8 @@ static int number_of_tabstops=0;
 /***************************** function prototypes ***************************/
 
 static void Convert_Tabbing_with_kill(void);
+FILE* OpenBblFile(void);
+void MakeBiblio(FILE* fBbl);
 
 
 /*----------------------------Tabbing Environment ------------------------*/
@@ -166,7 +198,7 @@ void CmdTabkill(/*@unused@*/ int code)
 /******************************************************************************/
 void CmdIgnoreFigure(int code)
 /******************************************************************************
-  purpose: function, which overreads the Figure,Picture,Bibliopgraphy and Minipage
+  purpose: function, which overreads the Figure,Picture,Bibliography and Minipage
 	   Environment
 parameter: code: which environment to ignore
  ******************************************************************************/
@@ -383,7 +415,7 @@ CmdLink(int code)
 		   contents of the first parameter */
      diagnostics(4, "  Converted first parameter");
 
-     GetOptParam(optparam, 255);
+     GetBracketParam(optparam, 255);
      /**/ /*LEG190498 now should come processing of the optional parameter */
      if(optparam[0] == '\0') 
        rewind_one(); /* rewind to get the '{' back to: */
@@ -480,54 +512,110 @@ parameter: searchstring : includes the string to search for
     } /* while */
     numerror(ERR_EOF_INPUT);
 }
-/*------------------------------------------------------------------------*/
-
 
 /******************************************************************************/
-void GetOptParam(char *string, int size)
+bool GetBracketParam(char *string, int size)
 /******************************************************************************
   purpose: function to get an optional parameter
 parameter: string: returnvalue of optional parameter
 	   size: max. size of returnvalue
+	   returns true if a brackets are found
+	   allows us to figure out if \item[] is found for example 
  ******************************************************************************/
 {
-char cThis;
-int i,PopLevel,PopBrack;
+char c;
+int i=0;
+int bracketlevel=0;
 
-  if ( (fTexRead(&cThis,1,1,fTex) < 1))
-    numerror(ERR_EOF_INPUT);
+  *string = '\0';
 
-  if ( cThis != '[' )
+  while (fTexRead(&c,1,1,fTex) == 1)  /* skip initial spaces */
   {
-    *string = '\0';
-    return;
+  	if ((c != ' ') && (c != '\n')) break;
   }
-  else
+
+  if ( c != '[' )		/* does not start with a brace, abort */
   {
-    ++BracketLevel;
-    (void)Push(RecursLevel,BracketLevel);
+    rewind_one();
+    return FALSE;
   }
-  for (i = 0; ;i++)   /* get param from input stream */
+
+  while (fTexRead(&c,1,1,fTex) == 1)
   {
-    if (fTexRead(&cThis,1,1,fTex) < 1)
-       numerror(ERR_EOF_INPUT);
-    if (cThis == ']')
+    
+    if ((c == ']') && (bracketlevel == 0)) break;
+  		 
+    if (c == '%')
     {
-      --BracketLevel;
-      (void)Pop(&PopLevel,&PopBrack);
-      break;
-    }
-    if (cThis == '%')
-      {
        IgnoreTo('\n');
        continue;
-      }
-    if (size-- > 0)
-      string[i] = cThis;
+    }
+    
+    if (c == '[') bracketlevel++;
+
+  	if (c == ']') bracketlevel--;
+    
+    if (i < size-1)				/* throw away excess */
+      string[i++] = c;
   }
   string[i] = '\0';
+  return TRUE;
+/* fprintf(stderr, "\nthe bracketed string is %s\n", string); */
 }
-/*------------------------------------------------------------------------*/
+
+/******************************************************************************/
+void GetBraceParam(char *string, int size)
+/******************************************************************************
+  purpose: function to get a parameter between {}
+parameter: string: returnvalue of optional parameter
+	   size: max. size of returnvalue
+
+If it a {} expression does not follow, then return an empty expression
+with fTex pointing to the first non-space character
+
+ ******************************************************************************/
+{
+char c;
+int i=0;
+int bracelevel=0;
+bool read_one = FALSE;
+
+  *string = '\0';
+
+  while (fTexRead(&c,1,1,fTex) == 1)  /* skip initial spaces */
+  {
+  	read_one = TRUE;
+  	if ((c != ' ') && (c != '\n')) break;
+  }
+
+  if ( c != '{' )		/* does not start with a brace, abort */
+  {
+    if (read_one) rewind_one();
+    return;
+  }
+
+  while (fTexRead(&c,1,1,fTex) == 1)
+  {
+    
+    if ((c == '}') && (bracelevel == 0)) break;
+  		 
+    if (c == '%')
+    {
+       IgnoreTo('\n');
+       continue;
+    }
+    
+    if (c == '{') bracelevel++;
+
+  	if (c == '}') bracelevel--;
+    
+    if (i < size-1)				/* throw away excess */
+      string[i++] = c;
+  }
+  string[i] = '\0';
+
+/* fprintf(stderr, "\nthe braced string is %s\n", string); */
+}
 
 /******************************************************************************/
 void CmdIgnoreEnvironment(int code)
@@ -632,6 +720,7 @@ parameter: code: newpage or newcolumn-option
 
 /******************************************************************************/
 void Cmd_OptParam_Without_braces(/*@unused@*/ int code)
+
 /******************************************************************************
  purpose: gets an optional parameter which isn't surrounded by braces but by spaces
  ******************************************************************************/
@@ -978,16 +1067,72 @@ void CmdHyphenation(/*@unused@*/ int code)
 /******************************************************************************/
 void CmdFormula2(int code)
 /******************************************************************************
- purpose: the same as the function CmdFormula: see above!
+ purpose: creates a displayed equation
+          \begin{equation} gets a right justified equation number
+          \begin{displaymath} gets no equation number
+          \[ gets no equation number
+          $$ gets no equation number
+          
  ******************************************************************************/
 {
-  if (code & ON)  /* on switch */
+  if ((code & ON) || ((code == FORM_DOLLAR) && !g_processing_equation))  /* on switch */
   {
-     MathMode = TRUE;
+     code &= ~(ON);  /* mask MSB */
+     g_processing_equation = TRUE;
+	 g_suppress_equation_number = FALSE;
+     BracketLevel++;
+     fprintf(fRtf,"\n\\par\n\\par\\pard");
+     switch (code)
+     {
+     	case FORM_DOLLAR:							/* $$ or displaymath */
+     	case EQUATION_1:							/* equation* */
+		    g_show_equation_number = FALSE;
+	        fprintf(fRtf,"\\tqc\\tx4320\n");
+	        break;
+        
+		case EQUATION:								/* equation */
+	    	g_show_equation_number = TRUE;
+        	fprintf(fRtf,"\\tqc\\tx4320\\tqr\\tx8640\n");
+        	break;
+        
+     	case EQNARRAY_1:							/* eqnarray* */
+			g_show_equation_number = FALSE;
+			g_processing_eqnarray = TRUE;
+	     	g_processing_tabular = TRUE;
+			actCol = 1;
+	        fprintf(fRtf,"\\tqr\\tx2880\\tqc\\tx3240\\tql\\tx3600\n");
+	     	break;
+
+     	case EQNARRAY:								/* eqnarray */
+			g_show_equation_number = TRUE;
+			g_processing_eqnarray = TRUE;
+	     	g_processing_tabular = TRUE;
+			actCol = 1;
+	        fprintf(fRtf,"\\tqr\\tx2880\\tqc\\tx3240\\tql\\tx3600\\tqr\\tx8640\n");		
+	     	break;
+
+        default: ;
+     }
+     fprintf(fRtf,"\\tab {\\i ");
   }
   else /* off switch */
   {
-     MathMode = FALSE;
+     code &= ~(OFF);  /* mask MSB */
+     BracketLevel--;
+     g_processing_equation = FALSE;
+     fprintf(fRtf,"}");
+     if (g_show_equation_number && !g_suppress_equation_number)
+     {
+     	g_equation_number++;
+        fprintf(fRtf,"\\tab (%d)",g_equation_number);
+     }
+     fprintf(fRtf,"\n\\par\n\\par");
+
+     if (code == EQNARRAY || code == EQNARRAY_1)
+     {
+     	g_processing_tabular = FALSE;
+		g_processing_eqnarray = FALSE;
+     }
   }
 }
 
@@ -1100,65 +1245,6 @@ void CmdPs(/*@unused@*/ int code)
 }
 
 /******************************************************************************/
-void CmdArray(int code)
-/******************************************************************************
- purpose: converts the LaTex-Array/eqnarray to a similar Rtf-style
-	  this converting is only partially
-	  so the user has to convert some part of the array/eqnarray-environment by hand
-parameter: type of array-environment
- ******************************************************************************/
-{
-  if (code & ON)  /* on switch */
-  {
-    code &= ~(ON);  /* mask MSB */
-    fprintf(stderr,"%s: WARNING: Following environment cannot be converted completely!\n",progname);
-    fprintf(stderr,"Some parts of this environment have to be converted and corrected by hand\n");
-
-    if (code == ARRAY)
-      {
-      fprintf(stderr,"Begin of environment: ARRAY\n");
-      fprintf(fRtf,"\\par ***begin of environment: ARRAY ***\\par");
-      }
-    if (code == EQNARRAY)
-      {
-      fprintf(stderr,"Begin of environment: EQNARRAY\n");
-      fprintf(fRtf,"\\par ***begin of environment: EQNARRAY ***\\par");
-      }
-    if (code == EQNARRAY_1)
-      {
-      fprintf(stderr,"Begin of environment: EQNARRAY* \n");
-      fprintf(fRtf,"\\par ***begin of environment: EQNARRAY*    ***\\par");
-      }
-  }
-  else /* off switch */
-  {
-    code &= ~(OFF);  /* mask MSB */
-    if (code == ARRAY)
-      {
-      fprintf(stderr,"End of environment: ARRAY\n");
-      fprintf(fRtf,"\\par ***end of environment: ARRAY ***\\par");
-      }
-    if (code == EQNARRAY)
-      {
-      fprintf(stderr,"End of environment: EQNARRAY\n");
-      fprintf(fRtf,"\\par ***end of environment: EQNARRAY ***\\par");
-      }
-    if (code == EQNARRAY_1)
-      {
-      fprintf(stderr,"End of environment: EQNARRAY* \n");
-      fprintf(fRtf,"\\par ***end of environment: EQNARRAY*    ***\\par");
-      }
-  }
-}
-
-
-
-
-
-
-
-
-/******************************************************************************/
 void CmdMultiCol (/*@unused@*/ int code)
 /******************************************************************************
  purpose: converts the LaTex-Multicolumn to a similar Rtf-style
@@ -1176,7 +1262,7 @@ parameter: unused
 
   if (!bWarningDisplayed)
   {
-     fprintf (stderr, "WARNING - Multicolumn: Cells must be merged by hand!\n");
+     fprintf (stderr, "\nWARNING - Multicolumn: Cells must be merged by hand!\n");
      bWarningDisplayed = TRUE;
   }
 
@@ -1246,17 +1332,6 @@ parameter: unused
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
 /******************************************************************************/
 void CmdTabular(int code)
 /******************************************************************************
@@ -1265,74 +1340,41 @@ void CmdTabular(int code)
 parameter: type of array-environment
  globals: fTex: Tex-file-pointer
           fRtf: Rtf-file-pointer
-          bTabular: TRUE if EnvironmenTabular is converted
+          g_processing_tabular: TRUE if EnvironmenTabular is converted
           colFmt: contains alignment of the columns in the tabular
           colCount: number of columns in tabular is set
           actCol: actual treated column
+
+   Does not handle \begin{tabular*}{width}[h]{ccc} 
+   but it does do \begin{tabular*}[h]{ccc}
+              and \begin{tabular*}{ccc}
+
  ******************************************************************************/
 {
-  char dummy[20];
+  char dummy[51];
   int i, n;
   char inchar[2];
   static bool bWarningDisplayed = FALSE;
   int openBracesInParam = 1;
 
-
-  dummy[0] = '\0';
-
   if (code & ON)  /* on switch */
   {
-    if (bTabular)
-        error(" Nested tabulars not supported! Programme aborted! \n");
     code &= ~(ON);  /* mask MSB */
-    if (code == TABULAR)
-    {
-       do
-       {
-          if ( (fTexRead(&dummy,1,1,fTex) < 1))
-             numerror(ERR_EOF_INPUT);
-       }
-       while (dummy[0] == ' ' || dummy[0] == '\n');
-       rewind_one();
-
-       GetOptParam(dummy,20);
-       bTabular = TRUE;
-    }
-    if (code == TABULAR_1)
-    {
-       bTabular = TRUE;
-       do
-       {
-          if ( (fTexRead(&dummy,1,1,fTex) < 1))
-             numerror(ERR_EOF_INPUT);
-       }  
-       while (dummy[0] != '}');
-      
-       do
-       {
-          if ( (fTexRead(&dummy,1,1,fTex) < 1))
-             numerror(ERR_EOF_INPUT);
-       }
-       while (dummy[0] == ' ' || dummy[0] == '\n');
-       rewind_one();
-
-       GetOptParam(dummy,20);
-    }
     
+    if (g_processing_tabular) error(" Nested tabular and array environments not supported! Giving up! \n");
+    g_processing_tabular = TRUE;
+    
+    GetBracketParam(dummy, 50);	  /* throw it away */
+/*	fprintf(stderr, "the bracket string is '%s'\n",dummy);*/
+    GetBraceParam(dummy, 50);	  /* dummy should now have all the column instructions */
+    
+/*	fprintf(stderr, "the brace string is '%s'\n",dummy);*/
+	
     if (!bWarningDisplayed)
     {
-       fprintf (stderr, "WARNING - Environment tabular: Should be resized by hand!\n");
+       fprintf (stderr, "\nWARNING - tabular or array environment: May need resizing.\n");
        bWarningDisplayed = TRUE;
     }
-
-    if (dummy[0] != '{')       /* was '{' consumed by GetOptParam ? */
-       do
-       {
-          if ( (fTexRead(&dummy,1,1,fTex) < 1))
-             numerror(ERR_EOF_INPUT);
-       }
-       while (dummy[0] == ' ' || dummy[0] == '\n');
-
 
     assert(colFmt == NULL);
     colFmt = (char*) malloc (sizeof(char) * 20);
@@ -1340,12 +1382,11 @@ parameter: type of array-environment
       error(" malloc error -> out of memory!\n");
     n = 0;
     colFmt[n++] = ' ';     /* colFmt[0] unused */
-
-    do
-    {
-       if ( (fTexRead(&inchar,1,1,fTex) < 1))
-          numerror(ERR_EOF_INPUT);
-       switch(inchar[0])
+    i = 0;
+	while (dummy[i])
+	{
+/*       fprintf(stderr,"char='%c'\n",dummy[i]); */
+       switch(dummy[i++])
        {
           case 'c':
                colFmt[n++] = 'c';
@@ -1362,48 +1403,58 @@ parameter: type of array-environment
           case '}':
                openBracesInParam--;
                break;
-          default:
-             
+          case 'p':
+       			fprintf (stderr, "\nWARNING - 'p{width}' not fully supported.\n");
+               colFmt[n++] = 'l';
                break;
-       }  
+          case '*':
+       			fprintf (stderr, "\nWARNING - '*{num}{cols}' not supported.\n");
+               break;
+          case '@':
+       			fprintf (stderr, "\nWARNING - '@{text}' not supported.\n");
+               break;
+          default:
+               break;
+       }
     }
-    while ( ! ( (inchar[0] == '}') && (openBracesInParam <= 0) ) );
 
     colFmt[n] = '\0';
     colCount = n-1;
     actCol = 1;
 
-    fprintf(fRtf, "\\par \\trowd \\trqc \\trrh0 ");
+	if (code == TABULAR_2)
+	{
+	     fprintf(fRtf,"\n\\par\\pard");
+         fprintf(fRtf,"\\tqc\\tx1000\\tx2000\\tx3000\\tx4000\\tx5000\\tx6000\\tx7000\n\\tab");
+		  return;
+	}
+		
+    fprintf(fRtf, "\\par\\trowd\\trqc\\trrh0");
     for (i=1; i<= colCount; i++)
     { 
        fprintf (fRtf, "\\cellx%d ", (7236 / colCount) * i);  /* 7236 twips in A4 page */
     }
-    fprintf (fRtf, "\n \\pard \\intbl \\q%c ", colFmt[1]);
-
-       
-
+    fprintf (fRtf, "\n\\pard\\intbl\\q%c ", colFmt[1]);
   }
   else /* off switch */
   {
     code &= ~(OFF);  /* mask MSB */
-    if (code == TABULAR)
-    {
-      bTabular = FALSE;
-    }
-    if (code == TABULAR_1)
-    {
-      bTabular = FALSE;
-    }
-
-    for (; actCol< colCount; actCol++)
-    {
-       fprintf (fRtf, " \\cell \\pard \\intbl ");
-    }
-    fprintf(fRtf," \\cell \\pard \\intbl \\row \\pard\\par \\pard\\q%c\n",alignment); 
+    g_processing_tabular = FALSE;
 
     assert(colFmt != NULL);
     free (colFmt);
     colFmt = NULL;
+
+	if (code == TABULAR_2)
+		return;
+
+    for (; actCol< colCount; actCol++)
+    {
+       fprintf (fRtf, "\\cell\\pard\\intbl ");
+    }
+    fprintf(fRtf,"\\cell\\pard\\intbl\\row\n"); 
+    fprintf(fRtf,"\n\\pard\\par\\pard\\q%c\n",alignment); 
+
   }
 }
 
@@ -1415,24 +1466,29 @@ parameter: type of array-environment
  * purpose: hyperlatex support, makes the same as '&' in the convert
  * routine in main.c parameter: not used
  ***************************************************************************/
-void
-CmdColsep(int code)
+void CmdColsep(int code)
 {
-  if (bTabular)
-    {
-      fprintf(fRtf," \\cell \\pard \\intbl ");
-      actCol++;
-      if(colFmt == NULL)
-	diagnostics(WARNING, "Fatal, Fatal! CmdColsep called whith colFmt == NULL.");
-      else
-	fprintf (fRtf, "\\q%c ", colFmt[actCol]);
-    }
-  else
-    fprintf(fRtf,"\\ansi\\'a7\\pc ");
+	if (!g_processing_tabular)
+	{
+		fprintf(fRtf,"{\\ansi\\'a7}");
+		return;
+	}
+	
+	actCol++;
+
+	if (g_processing_equation)   /* means that we are in an eqnarray or array */
+	{
+		fprintf(fRtf,"\\tab ");
+	}
+ 	else
+ 	{
+		fprintf(fRtf," \\cell \\pard \\intbl ");
+		if(colFmt == NULL)
+			diagnostics(WARNING, "Fatal, Fatal! CmdColsep called whith colFmt == NULL.");
+  		else
+			fprintf (fRtf, "\\q%c ", colFmt[actCol]);
+	}
 }
-
-
-
 
 /******************************************************************************/
 void CmdTable(int code)
@@ -1448,31 +1504,18 @@ parameter: type of array-environment
   if (code & ON)  /* on switch */
   {
     code &= ~(ON);  /* mask MSB */
-    do
-    {
-       if ( (fTexRead(&location,1,1,fTex) < 1))
-          numerror(ERR_EOF_INPUT);
-    }
-    while (location[0] == ' ' || location[0] == '\n');
-    rewind_one();
 
-    GetOptParam (location, 10);
- 
-    rewind_one();
-    if ( (fTexRead(&location,1,1,fTex) < 1))
-          numerror(ERR_EOF_INPUT);
-    if (location[0] != ']') 
-       rewind_one();
+    if ((code == FIGURE) || (code == FIGURE_1))
+    	g_processing_figure=TRUE;
+
+    GetBracketParam(location, 10);
   }
   else /* off switch */
   {
     code &= ~(OFF);  /* mask MSB */
+    g_processing_figure = FALSE;   
   }
 }
-
-
-
-
 
 /******************************************************************************/
 void CmdNoCite(/*@unused@*/ int code)
@@ -1487,7 +1530,53 @@ void CmdNoCite(/*@unused@*/ int code)
   free(GetParam ()); /* just skip the parameter */
 }
 
+void CmdGraphics(int code)
+{
+	char options[255];
+	char fullpath[1023], filename[255];
+	char *dp, c;
+	int cc,i;
+	short top,left,bottom,right;
+	FILE *fp;
+	
+	/* could be \includegraphics*[0,0][5,5]{file.pict} */
+	
+	GetBracketParam(options, 255);
+	GetBracketParam(options, 255);
+	GetBraceParam(filename, 255);
+	
+    if (strstr(filename,".pict")||strstr(filename,".PICT"))
+    {
+	/*SAP fixes for Mac Platform*/
+	  	strcpy(fullpath,latexname);
+	  	dp=strrchr(fullpath,':');
+	  	if (dp!=NULL) {dp++;*dp='\0';} else strcpy(fullpath,"");
+	  	strcat(fullpath,filename);
+	/*SAP end fix*/
+	
+		fprintf(stderr,"processing picture %s\n",fullpath);
+		fp = fopen(fullpath,"rb");
 
+		if(fseek(fp, 514L, SEEK_CUR)) {fclose(fp); return;}
+	    if(fread(&top,2,1,fp) <1) {fclose(fp); return;}
+	    if(fread(&left,2,1,fp) <1) {fclose(fp); return;}
+	    if(fread(&bottom,2,1,fp) <1) {fclose(fp); return;}
+	    if(fread(&right,2,1,fp) <1) {fclose(fp); return;}
+		if(fseek(fp, -10L, SEEK_CUR)){fclose(fp); return;}
+	    
+	    fprintf (fRtf, "\n{\\pict\\macpict\\picw%d\\pich%d\n",right-left,bottom-top);
+	    
+	    i=0;
+		while ((cc=fgetc(fp)) != EOF) 
+		{
+			fprintf(fRtf, "%.2x", cc);
+			if (++i>126) {i=0; fprintf(fRtf, "\n");}  /* keep lines 254 chars long */
+		}
+		
+	    fclose(fp);
+	    fprintf (fRtf, "}\n");
+    }
+}
 
 /******************************************************************************/
 /*LEG190498*/
@@ -1511,7 +1600,7 @@ parameter: if FALSE (0) work as normal
   char inchar[3];
   char reference[255] = "";
   char help[255] = "";
-  char AuxLine[255];
+  char AuxLine[1024];
   char *str;
   int i;
 
@@ -1549,7 +1638,10 @@ parameter: if FALSE (0) work as normal
 	{
 	  if ( (fTexRead(&inchar,1,1,fTex) < 1))
 	    numerror(ERR_EOF_INPUT);
-	  reference[i++] = inchar[0];     
+	/*SAP270700  Don't put newline in reference*/
+	  if (inchar[0]!='\n')
+	/*SAP270700  */
+	  	reference[i++] = inchar[0];     
 	} /* { */ while ( (inchar[0] != '}') && (inchar[0] != ','));
 
       /* for vi { */
@@ -1567,23 +1659,30 @@ parameter: if FALSE (0) work as normal
 	      {
 		fprintf(stderr,"Error opening AUX-file: %s - ", AuxName);
 		error("no reference-list will be created.\n");
+
 		/*LEG210698 lclint - unreachable:  bCite = UNDEFINED;
 		return; */
 	      }
 	  } /* if */
 	
+	/*SAP270700  Always rewind .aux file*/
+	if (fseek (fAux, 0L, SEEK_SET) == -1)
+		error ("Error rewinding AUX-file\n");
+
 	strcpy (help, "\\bibcite\0");
 	strcat (help, reference);
 	strcpy (reference, help);
 	
+//	  fprintf(stderr, "Seeking '%s' in .aux file\n", reference);
 	do
 	  {
-	    if (fgets (AuxLine, 255, fAux) == NULL)
+	    if (fgets (AuxLine, 1024, fAux) == NULL)
 	      if (feof(fAux))
 		break;
 	      else
 		error ("Error reading AUX-File!\n");
 	    
+//	  fprintf(stderr, "Checking '%s'\n", AuxLine);
 	    if (strstr (AuxLine, reference) )
 	      {
 		
@@ -1606,7 +1705,10 @@ parameter: if FALSE (0) work as normal
 	} while (!feof(fAux));
       if (feof(fAux))
 	{
-	  fprintf(stderr, "Citation not found in AUX-file: Rerun BiBTeX/LaTeX first to get correct citations.\n");
+	/*SAP270700  More useful error message*/
+	  fprintf(stderr, "Citation for '%s' not found in .aux file\n", reference);
+	  fprintf(stderr, "Rerun BiBTeX/LaTeX first.\n");
+	/*SAP270700  end*/
 	  bCite = FALSE;
 	}
       

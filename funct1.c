@@ -1,9 +1,39 @@
 /*
- * $Id: funct1.c,v 1.4 2001/08/12 17:29:00 prahl Exp $
+ * $Id: funct1.c,v 1.5 2001/08/12 17:50:50 prahl Exp $
  * History:
  * $Log: funct1.c,v $
- * Revision 1.4  2001/08/12 17:29:00  prahl
- * latex2rtf version 1.8aa by Georg Lehner
+ * Revision 1.5  2001/08/12 17:50:50  prahl
+ * latex2rtf version 1.9b by Scott Prahl
+ * 1.9b
+ * 	Improved enumerate environment so that it may be nested and
+ * 	    fixed labels in nested enumerate environments
+ * 	Improved handling of description and itemize environments
+ * 	Improved eqnarray environment
+ * 	Improved array environment
+ * 	Improved \verb handling
+ * 	Improved handling of \mbox and \hbox in math mode
+ * 	Improved handling of \begin{array} environment
+ * 	Improved handling of some math characters on the mac
+ * 	Fixed handling of \( \) and \begin{math} \end{math} environments
+ * 	Fixed bugs in equation numbering
+ * 	Made extensive changes to character translation so that the RTF
+ * 	     documents work under Word 5.1 and Word 98 on the Mac
+ *
+ *
+ * 1.9a
+ * 	Fixed bug with 'p{width}' in tabular environment
+ * 		not fully implemented, but no longer creates bad RTF code
+ *
+ * 1.9
+ * 	Fixed numbering of equations
+ * 	Improved/added support for all types of equations
+ * 	Now includes PICT files in RTF
+ * 	Fixed \include to work (at least a single level of includes)
+ *
+ * 1.8
+ * 	Fixed problems with \\[1mm]
+ * 	Fixed handling of tabular environments
+ * 	Fixed $x^\alpha$ and $x_\alpha$
  *
  * Revision 1.9  1998/10/28 06:19:38  glehner
  * Changed all occurences of eol-output to "\r\n" to allow
@@ -67,7 +97,7 @@ purpose : includes besides funct2.c all functions which are called from the prog
 #include "funct2.h"
 #include "commands.h"
 #include "stack.h"
-#include "fonts.h"
+#include "l2r_fonts.h"
 #include "cfg.h"
 #include "ignore.h"
 #include "util.h"
@@ -78,7 +108,7 @@ purpose : includes besides funct2.c all functions which are called from the prog
 extern bool bInDocument;                 /* true if File-Pointer is in the document */
 extern int BracketLevel;                 /* counts open braces */
 extern int RecursLevel;                  /* counts returns occured by closing braces */
-extern bool MathMode;                    /* true at a formula-convertion */
+extern bool g_processing_equation;                    /* true at a formula-convertion */
 extern int fontsize;                     /* includes the actual fontsize in points */
 extern bool twocolumn;                   /* true if twocolumn-mode is enabled */
 extern bool titlepage;                   /* true if titlepage-mode is set */
@@ -101,6 +131,8 @@ static void CmdLabelOld(int code, char *text);
 static void RtfHeader(int where, /*@null@*/ char *what);
 static void PlainPagestyle(void);
 static void ScanAux(char *token, char* reference, int code);
+void CmdPagestyle(/*@unused@*/ int code);
+void CmdHeader(int code);
 
 
 /****************************************************************************/
@@ -113,7 +145,7 @@ void CmdCharFormat(int code)
      globals : fRtf: Rtf-File-Pointer
  ****************************************************************************/
 {
-  if (tabbing_on)
+  if (tabbing_on || 1)
     {
      switch(code)
      {
@@ -387,7 +419,7 @@ char *cParam;
 
   switch(cParam[0])
   {
-  case 'c': fprintf(fRtf,"\\ansi\\'e7 ");
+  case 'c': fprintf(fRtf,"{\\ansi\\'e7}");
             break;
   }
   free (cParam);
@@ -405,27 +437,27 @@ void CmdUmlaute(void)
 
   switch(cParam[0])
   {
-    case 'o': fprintf(fRtf,"\\ansi\\'f6\\pc ");
+    case 'o': fprintf(fRtf,"{\\ansi\\'f6}");
 	      break;
-    case 'O': fprintf(fRtf,"\\ansi\\'d6\\pc ");
+    case 'O': fprintf(fRtf,"{\\ansi\\'d6}");
 	      break;
-    case 'a': fprintf(fRtf,"\\ansi\\'e4\\pc ");
+    case 'a': fprintf(fRtf,"{\\ansi\\'e4}");
 	      break;
-    case 'A': fprintf(fRtf,"\\ansi\\'c4\\pc ");
+    case 'A': fprintf(fRtf,"{\\ansi\\'c4}");
 	      break;
-    case 'u': fprintf(fRtf,"\\ansi\\'fc\\pc ");
+    case 'u': fprintf(fRtf,"{\\ansi\\'fc}");
 	      break;
-    case 'U': fprintf(fRtf,"\\ansi\\'dc\\pc ");
+    case 'U': fprintf(fRtf,"{\\ansi\\'dc}");
 	      break;
-    case 'E':fprintf(fRtf, "\\ansi\\'cb\\pc ");
+    case 'E':fprintf(fRtf, "{\\ansi\\'cb}");
 	     break;
-    case 'I':fprintf(fRtf, "\\ansi\\'cf\\pc ");
+    case 'I':fprintf(fRtf, "{\\ansi\\'cf}");
 	     break;
-    case 'e':fprintf(fRtf, "\\ansi\\'eb\\pc ");
+    case 'e':fprintf(fRtf, "{\\ansi\\'eb}");
 	     break;
-    case 'i':fprintf(fRtf, "\\ansi\\'ef\\pc ");
+    case 'i':fprintf(fRtf, "{\\ansi\\'ef}");
 	     break;
-    case 'y':fprintf(fRtf, "\\ansi\\'ff\\pc ");
+    case 'y':fprintf(fRtf, "{\\ansi\\'ff}");
 	     break;
   }
   free (cParam);
@@ -443,30 +475,29 @@ void CmdLApostrophChar(/*@unused@*/ int code)
   cParam = GetParam();
   switch(cParam[0])
   {
-    case 'A':fprintf(fRtf, "\\ansi\\'c0\\pc ");
+    case 'A':fprintf(fRtf, "{\\ansi\\'c0}");
 	     break;
-    case 'E':fprintf(fRtf, "\\ansi\\'c8\\pc ");
+    case 'E':fprintf(fRtf, "{\\ansi\\'c8}");
 	     break;
-    case 'I':fprintf(fRtf, "\\ansi\\'cc\\pc ");
+    case 'I':fprintf(fRtf, "{\\ansi\\'cc}");
 	     break;
-    case 'O':fprintf(fRtf, "\\ansi\\'d2\\pc ");
+    case 'O':fprintf(fRtf, "{\\ansi\\'d2}");
 	     break;
-    case 'U':fprintf(fRtf, "\\ansi\\'d9\\pc ");
+    case 'U':fprintf(fRtf, "{\\ansi\\'d9}");
 	     break;
-    case 'a':fprintf(fRtf, "\\ansi\\'e0\\pc ");
+    case 'a':fprintf(fRtf, "{\\ansi\\'e0}");
 	     break;
-    case 'e':fprintf(fRtf, "\\ansi\\'e8\\pc ");
+    case 'e':fprintf(fRtf, "{\\ansi\\'e8}");
 	     break;
-    case 'i':fprintf(fRtf, "\\ansi\\'ec\\pc ");
+    case 'i':fprintf(fRtf, "{\\ansi\\'ec}");
 	     break;
-    case 'o':fprintf(fRtf, "\\ansi\\'f2\\pc ");
+    case 'o':fprintf(fRtf, "{\\ansi\\'f2}");
 	     break;
-    case 'u':fprintf(fRtf, "\\ansi\\'f9\\pc ");
+    case 'u':fprintf(fRtf, "{\\ansi\\'f9}");
 	     break;
   }
   free (cParam);
 }
-
 
 /******************************************************************************/
 void CmdRApostrophChar(/*@unused@*/ int code)
@@ -480,29 +511,29 @@ void CmdRApostrophChar(/*@unused@*/ int code)
   cParam = GetParam();
   switch(cParam[0])
   {
-    case 'A':fprintf(fRtf, "\\ansi\\'c1\\pc ");
+    case 'A':fprintf(fRtf, "{\\ansi\\'c1}");
 	     break;
-    case 'E':fprintf(fRtf, "\\ansi\\'c9\\pc ");
+    case 'E':fprintf(fRtf, "{\\ansi\\'c9}");
 	     break;
-    case 'I':fprintf(fRtf, "\\ansi\\'cd\\pc ");
+    case 'I':fprintf(fRtf, "{\\ansi\\'cd}");
 	     break;
-    case 'O':fprintf(fRtf, "\\ansi\\'d3\\pc ");
+    case 'O':fprintf(fRtf, "{\\ansi\\'d3}");
 	     break;
-    case 'U':fprintf(fRtf, "\\ansi\\'da\\pc ");
+    case 'U':fprintf(fRtf, "{\\ansi\\'da}");
 	     break;
-    case 'a':fprintf(fRtf, "\\ansi\\'e1\\pc ");
+    case 'a':fprintf(fRtf, "{\\ansi\\'e1}");
 	     break;
-    case 'e':fprintf(fRtf, "\\ansi\\'e9\\pc ");
+    case 'e':fprintf(fRtf, "{\\ansi\\'e9}");
 	     break;
-    case 'i':fprintf(fRtf, "\\ansi\\'ed\\pc ");
+    case 'i':fprintf(fRtf, "{\\ansi\\'ed}");
 	     break;
-    case 'o':fprintf(fRtf, "\\ansi\\'f3\\pc ");
+    case 'o':fprintf(fRtf, "{\\ansi\\'f3}");
 	     break;
-    case 'u':fprintf(fRtf, "\\ansi\\'fa\\pc ");
+    case 'u':fprintf(fRtf, "{\\ansi\\'fa}");
 	     break;
-    case 'y':fprintf(fRtf, "\\ansi\\'fd\\pc ");
+    case 'y':fprintf(fRtf, "{\\ansi\\'fd}");
 	     break;
-    case 'Y':fprintf(fRtf, "\\ansi\\'dd\\pc ");
+    case 'Y':fprintf(fRtf, "{\\ansi\\'dd}");
 	     break;
   }
   free (cParam);
@@ -520,25 +551,25 @@ void CmdSpitzeChar()
   cParam = GetParam();
   switch(cParam[0])
   {
-    case 'A':fprintf(fRtf, "\\ansi\\'c2\\pc ");
+    case 'A':fprintf(fRtf, "{\\ansi\\'c2}");
 	     break;
-    case 'E':fprintf(fRtf, "\\ansi\\'ca\\pc ");
+    case 'E':fprintf(fRtf, "{\\ansi\\'ca}");
 	     break;
-    case 'I':fprintf(fRtf, "\\ansi\\'ce\\pc ");
+    case 'I':fprintf(fRtf, "{\\ansi\\'ce}");
 	     break;
-    case 'O':fprintf(fRtf, "\\ansi\\'d4\\pc ");
+    case 'O':fprintf(fRtf, "{\\ansi\\'d4}");
 	     break;
-    case 'U':fprintf(fRtf, "\\ansi\\'db\\pc ");
+    case 'U':fprintf(fRtf, "{\\ansi\\'db}");
 	     break;
-    case 'a':fprintf(fRtf, "\\ansi\\'e2\\pc ");
+    case 'a':fprintf(fRtf, "{\\ansi\\'e2}");
 	     break;
-    case 'e':fprintf(fRtf, "\\ansi\\'ea\\pc ");
+    case 'e':fprintf(fRtf, "{\\ansi\\'ea}");
 	     break;
-    case 'i':fprintf(fRtf, "\\ansi\\'ee\\pc ");
+    case 'i':fprintf(fRtf, "{\\ansi\\'ee}");
 	     break;
-    case 'o':fprintf(fRtf, "\\ansi\\'f4\\pc ");
+    case 'o':fprintf(fRtf, "{\\ansi\\'f4}");
 	     break;
-    case 'u':fprintf(fRtf, "\\ansi\\'fb\\pc ");
+    case 'u':fprintf(fRtf, "{\\ansi\\'fb}");
 	     break;
   }
   free (cParam);
@@ -556,13 +587,13 @@ void CmdTildeChar(/*@unused@*/ int code)
   cParam = GetParam();
   switch(cParam[0])
   {
-    case 'A':fprintf(fRtf, "\\ansi\\'c3\\pc ");
+    case 'A':fprintf(fRtf, "{\\ansi\\'c3}");
 	     break;
-    case 'O':fprintf(fRtf, "\\ansi\\'d5\\pc ");
+    case 'O':fprintf(fRtf, "{\\ansi\\'d5}");
 	     break;
-    case 'a':fprintf(fRtf, "\\ansi\\'e3\\pc ");
+    case 'a':fprintf(fRtf, "{\\ansi\\'e3}");
 	     break;
-    case 'o':fprintf(fRtf, "\\ansi\\'f5\\pc ");
+    case 'o':fprintf(fRtf, "{\\ansi\\'f5}");
 	     break;
   }
   free (cParam);
@@ -601,7 +632,7 @@ void CmdLogo(int code)
  purpose: sets the Math-Formula-Mode depending on the code-parameter
  parameter : code: type of braces which include the formula
  globals : fRtf
-           MathMode
+           g_processing_equation
            progname; latexname;
            linenumber
            bNewPar
@@ -609,55 +640,70 @@ void CmdLogo(int code)
 void
 CmdFormula(int code)
 {
+
+  if (code & ON)			/* this is only true if starting \begin{math} */
+  {
+  	fprintf(fRtf,"{\\i ");
+  	g_processing_equation = TRUE;
+  	BracketLevel++;
+    diagnostics(4, "Switching g_processing_equation on with \\begin{math}");
+    return;
+  }
+     
   switch(code)
   {
+    case FORM_NO_NUMBER:
+	    if (g_processing_eqnarray)
+    		g_suppress_equation_number = TRUE;
+    	break;
+    	
     case FORM_DOLLAR:
-      fprintf(fRtf," ");
-      MathMode = !MathMode;
-      diagnostics(4, "Switching MathMode to %d with $", MathMode);
-      break;
-    case FORM_RND_OPEN:
-      fprintf(fRtf," ");
-      if (MathMode)
+      if (g_processing_equation)
       {
-	fprintf(stderr,"\n%s: ERROR: warning - nested formulas (1) in File: %s at linenumber: %ld\n",progname,latexname,getLinenumber());
-	fprintf(stderr,"\nprogram aborted\n");
-	exit(EXIT_FAILURE);
+      	fprintf(fRtf,"}");
+      	g_processing_equation = FALSE;
+      	BracketLevel--;
+        diagnostics(4, "Switching g_processing_equation off with $");
       }
-      diagnostics(4, "Switching MathMode on with \\(");
-      MathMode = TRUE;
-      break;
-    case FORM_RND_CLOSE:
-      diagnostics(4, "Switching MathMode off with \\)");
-      fprintf(fRtf," ");
-      /*      if (MathMode)
+      else
       {
-	fprintf(stderr,"\n%s: ERROR: warning - nested formulas (2) in File: %s at linenumber: %ld\n",progname,latexname,getLinenumber());
-	fprintf(stderr,"\nprogram aborted\n");
-	exit(EXIT_FAILURE);
-      }*/
-      MathMode = FALSE;
-      break;
-    case FORM_ECK_OPEN:
-      fprintf(fRtf,"\n\\par ");
-      if (MathMode)
-      {
-	fprintf(stderr,"\n%s: ERROR: warning - nested formulas (3) in File: %s at linenumber: %ld\n",progname,latexname,getLinenumber());
-	fprintf(stderr,"\nprogram aborted\n");
-	exit(EXIT_FAILURE);
+      	fprintf(fRtf,"{\\i ");
+      	g_processing_equation = TRUE;
+      	BracketLevel++;
+        diagnostics(4, "Switching g_processing_equation on with $");
       }
-      MathMode = TRUE;
       break;
-    case FORM_ECK_CLOSE:
-      fprintf(fRtf,"\n\\par ");
-      /*      if (MathMode)
-      {
-	fprintf(stderr,"\n%s: ERROR: warning - nested formulas (4) in File: %s at linenumber: %ld\n",progname,latexname,getLinenumber());
-	fprintf(stderr,"\nprogram aborted\n");
-	exit(EXIT_FAILURE);
-      }*/
-      MathMode = FALSE;
+      
+    case FORM_RND_OPEN:  /* \( */
+      fprintf(fRtf,"{\\i ");
+      g_processing_equation = TRUE;
+      diagnostics(4, "Switching g_processing_equation on with \\(");
+      break;
+      
+    case FORM_RND_CLOSE:   /* \) */
+      fprintf(fRtf,"}");
+      g_processing_equation = FALSE;
+      diagnostics(4, "Switching g_processing_equation off with \\)");
+      break;
+      
+    case FORM_ECK_OPEN:   /* \[ */
+      fprintf(fRtf,"\n\\par{\\i  ");
+      g_processing_equation = TRUE;
+      diagnostics(4, "Switching g_processing_equation on with \\[");
+      break;
+      
+    case FORM_ECK_CLOSE:      /* \] */
+      fprintf(fRtf,"}\n\\par ");
+      g_processing_equation = FALSE;
       bNewPar = TRUE;
+      diagnostics(4, "Switching g_processing_equation off with \\]");
+      break;
+
+    case FORM_MATH:   /* will only be encountered for \end{math} */
+	  fprintf(fRtf,"}");
+	  g_processing_equation = FALSE;
+	  BracketLevel--;
+	  diagnostics(4, "Switching g_processing_equation off with \\end{math}");
       break;
   }
 }
@@ -751,7 +797,7 @@ globals  : bIndocument
       /* LEG Meanwhile commented out    ClearEnvironment();*/
       bInDocument = TRUE;
       if(!pagestyledefined) {
-	diagnostics(WARNING, "rtf 1.4 codes generated, funct1.c (Environment)");
+//	diagnostics(WARNING, "rtf 1.4 codes generated, funct1.c (Environment)");
 	PlainPagestyle();
       }
       ReadLg(language);
@@ -860,10 +906,12 @@ void CmdDocumentStyle(/*@unused@*/ int code)
 		      diagnostics(4, "Documentstyle/class `%s' encountered", style);
 
 		      break;
-	   case '[' : style = (char*) malloc (100*sizeof(char));
-                      if (style == NULL)
-                         error(" malloc error -> out of memory!\n");
-                      GetOptParam(style,99);
+	   case '[' : 
+	   			style = (char*) malloc (100*sizeof(char));
+                if (style == NULL)
+                     error(" malloc error -> out of memory!\n");
+                rewind_one();
+                GetBracketParam(style,99);
 		      has_optparam = TRUE;
 		      diagnostics(4,"Documentstyle/classoptions: `%s'", style);
 		      break;
@@ -975,42 +1023,11 @@ char *stralloc(size_t len)
  ******************************************************************************/
 void CmdUsepackage(/*@unused@*/ int code)
 {
-  static char *package = "";
-  static char *options = ""; /*LEG190498?*/
-  char cThis = ' ';
-  bool optparam = FALSE;
-
-  while ( cThis == ' ')
-    {
-      if ( (fread(&cThis,1,1,fTex) < 1))
-	numerror(ERR_EOF_INPUT);
-    }
-  if(fseek(fTex,-1L,SEEK_CUR) != 0) /* reread last character */
-    diagnostics(ERROR, "Seek error in LaTex-file");
-  
-  switch (cThis)
-    {
-    case '{' : package = GetParam();  
-      diagnostics(4, "Package `%s'", package);
-      break;
-    case '[' : options = (char*) malloc (100*sizeof(char));
-      if (options == NULL)
-	error(" malloc error -> out of memory!\n");
-      GetOptParam(options,99);
-      optparam = TRUE;
-
-      package = GetParam(); /* This is not very save, leading whitespace, or missing
-			       parameter won't be detected */
-      break;
-
-    default:  
-      diagnostics(WARNING, "Missing parameter for \\usepackage.");
-      return;
-      break;
-    } /* switch */
-  
-  if ( (fread(&cThis,1,1,fTex) < 1)) 
-    numerror(ERR_EOF_INPUT); 
+  char package[100];
+  char options[100]; 
+ 
+  GetBracketParam(options,99);
+  GetBraceParam(package,99);
   
   diagnostics(4, "Package {%s} with options [%s] encountered", package, options);
   
@@ -1068,9 +1085,6 @@ void CmdUsepackage(/*@unused@*/ int code)
 	  TexCharSet = ISO_8859_1;
 	  fprintf(stderr,"\nLatin-1 (= ISO 8859-1) special characters will be ");
 	  fprintf(stderr,"converted into RTF-Commands!\n");
-	  optparam = FALSE; /* to turn off warning message */
-	  free(options);
-	  options = NULL;
 	}
     }
   /*  would be nice, but needs language option from documentclass
@@ -1099,14 +1113,7 @@ void CmdUsepackage(/*@unused@*/ int code)
       fprintf(stderr,"\n%s: WARNING: unknown \\usepackage{%s} ignored",
 	      progname, package);
     }
-  if (optparam) {
-    fprintf(stderr,"\n%s: WARNING: Optional Parameter(s) [%s]"
-	    "in \\usepackage ignored", progname, options);
-    free(options);
-    options = NULL;
   }
-
-}
      
 
 /******************************************************************************/
@@ -1125,16 +1132,12 @@ parameter: code: type of section-recursion-level
   static int section = 0;
   static int subsection = 0;
   static int subsubsection = 0;
-  static int caption = 0;
+  static int table_caption = 0;
+  static int figure_caption = 0;
   char optparam[100] = "";
   char cNext = ' ';
 
-  if ( (fread(&cNext,1,1,fTex) < 1))
-	 numerror(ERR_EOF_INPUT);
-  if(fseek(fTex,-1L,SEEK_CUR) != 0) /* reread last character */
-    diagnostics(ERROR, "Seek error in LaTeX-file.");
-  if (cNext == '[')
-     GetOptParam(optparam,99);
+  GetBracketParam(optparam,99);
   switch (code)
   {
   case SECT_PART:
@@ -1290,11 +1293,24 @@ parameter: code: type of section-recursion-level
     break;
 
   case SECT_CAPTION:
-    caption++;
-    if (GermanMode)
-       fprintf(fRtf,"\n\\par \\pard\\qc {Tabelle %d: ", caption);
-    else
-       fprintf(fRtf,"\n\\par \\pard\\qc {Table %d: ", caption);
+/*SAP Change to produce count figures and tables separately*/
+    if (g_processing_figure)
+    {
+	    figure_caption++;
+	    if (GermanMode)
+	       fprintf(fRtf,"\n\\par \\pard\\qc {Abbildung %d: ", figure_caption);
+	    else
+	       fprintf(fRtf,"\n\\par \\pard\\qc {Figure %d: ", figure_caption);
+	}
+	else
+	{
+	    table_caption++;
+	    if (GermanMode)
+	       fprintf(fRtf,"\n\\par \\pard\\qc {Tabelle %d: ", table_caption);
+	    else
+	       fprintf(fRtf,"\n\\par \\pard\\qc {Table %d: ", table_caption);
+	}
+/*SAP end fix */
     Convert();
     fprintf(fRtf,"} \\par \\pard\\q%c\n",alignment);
     break;
@@ -1305,7 +1321,7 @@ parameter: code: type of section-recursion-level
 /******************************************************************************/
 void CmdFootNote(int code)
 /******************************************************************************
- purpose: converts footnotes from LaTex to Rtf
+ purpose: converts footnotes from LaTeX to Rtf
  params : code specifies whether it is a footnote or a thanks-mark
  globals: fTex, fRtf
           fontsize 
@@ -1316,13 +1332,7 @@ void CmdFootNote(int code)
   char cNext;
   static int thankno = 1;
   
-
-  if ( (fread(&cNext,1,1,fTex) < 1))
-	 numerror(ERR_EOF_INPUT);
-  rewind_one(); /* reread last character */
-
-  if (cNext == '[')
-      GetOptParam(number,254); /* is ignored because of the automatic footnumber-generation */
+  GetBracketParam(number,254); /* is ignored because of the automatic footnumber-generation */
 
   if (code == THANKS)
   {
@@ -1533,13 +1543,15 @@ parameter : code : type of environment and on/off-state
       break;
    case (ENUMERATE | ON):
       PushEnvironment(ENUMERATE);
-      CmdItem(RESET);
+      g_enumerate_depth++;
+      CmdItem(RESET_ITEM_COUNTER);
       indent += 512;
       NoNewLine = TRUE;
       bNewPar = FALSE;
       break;
     case (ENUMERATE | OFF):
       PopEnvironment();
+      g_enumerate_depth--;
       indent -= 512;
       NoNewLine = FALSE;
       fprintf(fRtf,"\n\\par\\fi0\\li%d ",indent);
@@ -1568,66 +1580,76 @@ void CmdItem(int code)
 	   here are only \-commands are handled and in the function
 	   CmdList only the \begin or \end{environment}-command is handled
 parameter : code : type of environment and on/off-state
- globals  : nonewline, indent: look at funtction CmdQuote
+ globals  : nonewline, indent: look at function CmdQuote
             bNewPar: 
             fRtf: Rtf-file-pointer
  ******************************************************************************/
-{ char labeltext[100];
-  char cNext;
-  static int number = 0;
-  switch (code)
+{ 
+  char itemlabel[100];
+  static int item_number[4];
+  
+  if (code == RESET_ITEM_COUNTER)
   {
-    case RESET:
-      number = 1;
-      break;
-    case ITEMIZE:
-       if ( (fread(&cNext,1,1,fTex) < 1))
-	      numerror(ERR_EOF_INPUT);
-       rewind_one(); /* reread last character */
-       labeltext[0] = '\0';
-       fprintf(fRtf,"\n\\par ");
-       if (cNext == '[')
-       {
-	 int i;	   
-	 fprintf(fRtf,"{\\b "); /*bold on */
-	 GetOptParam(labeltext,99);
-	 switch (TexCharSet)
-	   {
-	   case ISO_8859_1:
-	     for(i = 0; labeltext[i] != '\0'; i++)
-	       Write_ISO_8859_1(labeltext[i]);
-	     break;
-	   case SEVEN_BIT:
-	   default:
-	     fprintf(fRtf,"%s ",labeltext);
-	     break;
-	   }
-	 fprintf(fRtf,"} "); /*bold end */
-       }
-       fprintf(fRtf,"\\fi-512\\li%d \\bullet  ",indent);
-       Convert();
-       bNewPar = FALSE;
-       break;
-    case ENUMERATE:
-       fprintf(fRtf,"\n\\par\\fi-512\\li%d %d. \\~",indent,number++);
-       bNewPar = FALSE;
-       break;
-    case DESCRIPTION:
-       if ( (fread(&cNext,1,1,fTex) < 1))
-	      numerror(ERR_EOF_INPUT);
-       rewind_one(); /* reread last character */
-       labeltext[0] = '\0';
-       fprintf(fRtf,"\n\\par ");
-       if (cNext == '[')
-       {
-	   GetOptParam(labeltext,99);
-           fprintf(fRtf,"{\\b %s} ",labeltext);
-       }
-       fprintf(fRtf,"\\fi-512\\li%d ",indent);
-       Convert();
-       bNewPar = FALSE;
-       break;
+      item_number[g_enumerate_depth] = 1;
+      return;
   }
+  
+  fprintf(fRtf,"\n\\par\\fi0\\li%d ",indent); 
+  
+  if (GetBracketParam(itemlabel,99)) /* \item[label] */
+  {
+    int i;
+ 	fprintf(fRtf,"{\\b "); /*bold on */
+
+	for(i = 0; itemlabel[i] != '\0'; i++)
+	{
+		if (TexCharSet==ISO_8859_1)
+			Write_ISO_8859_1(itemlabel[i]);
+		else
+		    Write_Default_Charset(itemlabel[i]);
+	}
+
+ 	fprintf(fRtf,"}\\tab "); /*bold off*/
+  }
+  else									/* \item */
+  {
+	switch (code)
+	{      
+	    case ITEMIZE:
+	       fprintf(fRtf,"\\bullet\\tab ");
+	       break;
+
+	    case ENUMERATE:
+	       switch (g_enumerate_depth)
+	       {
+	       	   case 1:
+	           fprintf(fRtf,"%d.",item_number[g_enumerate_depth]);
+	           break;
+	           
+	           case 2:
+ 	 	   	   fprintf(fRtf,"(%c)",'a'+item_number[g_enumerate_depth]-1); 
+ 	 	   	   break;
+
+	           case 3:
+	           roman_item(item_number[g_enumerate_depth], itemlabel);
+ 	 	   	   fprintf(fRtf,"%s.",itemlabel); 
+ 	 	   	   break;
+
+	           case 4:
+ 	 	   	   fprintf(fRtf,"%c.",'A'+item_number[g_enumerate_depth]-1); 
+ 	 	   	   break;
+ 	 	   }
+	       fprintf(fRtf,"\\tab ");
+ 	 	   item_number[g_enumerate_depth]++;
+	       break;
+
+	    case DESCRIPTION: 
+ 	 	   fprintf(fRtf,"\\tab "); /*indent*/
+	       break;
+	 }
+   }
+   Convert();
+   bNewPar = FALSE;
 }
 
 /******************************************************************************/
@@ -1637,24 +1659,37 @@ void CmdMbox(/*@unused@*/ int code)
   globals: mbox
  ******************************************************************************/
 {
+bool was_processing_equation = g_processing_equation;
+  if (g_processing_equation)
+  {
+  	g_processing_equation = FALSE;
+ 	fprintf(fRtf,"}"); /*close italics*/
+  }
+  
   mbox = TRUE;
   Convert();
   mbox = FALSE;
+
+  if (was_processing_equation)
+  {
+  	g_processing_equation = TRUE;
+ 	fprintf(fRtf,"{\\i "); /*reopen math italics*/
+  }
 }
 
 /******************************************************************************/
 void ConvertFormula()
 /******************************************************************************
  purpose : necessary commands for the formula-environment are pushed onto a stack
- globals : MathMode
+ globals : g_processing_equation
  ******************************************************************************/
 {
   (void)Push(RecursLevel,BracketLevel);
   ++BracketLevel;    /* Math End char is treated as } math begin as { */
   (void)Push(RecursLevel,BracketLevel);
-  MathMode = TRUE;
+  g_processing_equation = TRUE;
   Convert();
-  MathMode = FALSE;
+  g_processing_equation = FALSE;
 }
 
 
@@ -1694,7 +1729,10 @@ parameter: code: includes the font-type
 void
 CmdInclude(/*@unused@*/ int code)
 {
-  char fname[255];
+  char fname[1024];
+  char fullpath[1024];
+  char *dp;
+  
   /*@dependent@*/      FILE *fp;
   /*@dependent@*/      FILE *LatexFile;
   char *olatexname;
@@ -1736,17 +1774,36 @@ CmdInclude(/*@unused@*/ int code)
      return;
      }
 
-  /* extension .tex is appended automaticly */
+/* extension .tex is appended automatically */
   if(strchr(fname,'.')==NULL)
     strcat(fname,".tex");
+
+/*SAP fixes for Mac Platform*/
+  strcpy(fullpath,latexname);
+  dp=strrchr(fullpath,':');
+  if (dp!=NULL) {dp++;*dp='\0';} else strcpy(fullpath,"");
+  strcat(fullpath,fname);
+  strcpy(fname,fullpath);
+/*SAP end fix*/
+  
+  if (g_processing_include)
+  {
+  	fprintf(stderr,"\nWARNING: cannot process nested include file: %s\n",fullpath);
+  	return;
+  }
+  g_processing_include = TRUE;
+  
+  
   if ( (fp=(fopen(fname,"rb")))==NULL )
   {
-    fprintf(stderr,"\n%s: WARNING: cannot open include file: %s\n",progname,fname);
+    fprintf(stderr,"\nWARNING: cannot open include file: %s\n",fullpath);
     return;
   }
 
-  LatexFile = fTex;
-  fTex = fp;
+  fprintf(stderr,"\nProcessing include file: %s\n",fullpath);
+    
+  LatexFile = fTex;					/* Save current file pointer */
+  WriteTemp(fp);         			/* Normalize eol in fp, close fp, and make fTex = tmpfile() */
   oldlinenumber = linenumber;
   linenumber = 1;
   olatexname = latexname;
@@ -1757,10 +1814,12 @@ CmdInclude(/*@unused@*/ int code)
   fprintf(fRtf,"}");
   BracketLevel--;
 
+  fclose(fTex);
   fTex = LatexFile;
   latexname = olatexname;
   linenumber = oldlinenumber;
-  (void)fclose(fp);
+  g_processing_include=FALSE;
+//  (void)fclose(fp);
 }
 
 /******************************************************************************/
@@ -1771,6 +1830,9 @@ void CmdVerb(int code)
 {
   char cThis;
   char markingchar = '\177';
+  size_t num;
+
+
   while (fTexRead(&cThis, 1,1,fTex) == 1)
   {
     if ((cThis != ' ') && (cThis != '*') && !isalpha((unsigned char) cThis))
@@ -1781,28 +1843,28 @@ void CmdVerb(int code)
   }
   if (cThis != markingchar)
     numerror(ERR_EOF_INPUT);
+    
+  num = GetTexFontNumber("Typewriter");
+  fprintf(fRtf,"{\\f%u ", (unsigned int)num);
+
   while (fTexRead(&cThis, 1,1,fTex) == 1)
   {
     if (cThis == markingchar)
       break;
-    else
-    {   /* print character */
-      if (cThis == '\\')    /* care for \\ */
-	fprintf(fRtf,"\\\\");
-      else
-      {
-	if (code == AST_FORM)
-	{
-	  if (cThis == ' ')   /* print dot instead of space */
-	    fprintf(fRtf,"{\\ansi\\'b7\\pc}");
-	  else
-	    fprintf(fRtf,"%c",cThis);
-	}
+
+    if (cThis == '\\')
+		fprintf(fRtf,"\\\\");
+    else if (cThis == '{')
+		fprintf(fRtf,"\\{");
+    else if (cThis == '}')
+		fprintf(fRtf,"\\}");
+	else if (code == AST_FORM && cThis == ' ')  /* print dot instead of space */
+	    fprintf(fRtf,"{\\ansi\\'b7}");
 	else
 	  fprintf(fRtf,"%c",cThis);
-      }
-    }
   }
+  fprintf(fRtf,"}");
+  
   if (cThis != markingchar)
     numerror(ERR_EOF_INPUT);
 }
@@ -1934,13 +1996,13 @@ globals: reads from fTex and writes to fRtf
 
   switch(cThis)
   {
-    case 'a': fprintf(fRtf, "\\ansi\\'e4\\pc ");
+    case 'a': fprintf(fRtf, "{\\ansi\\'e4}");
 	      break;
-    case 'o': fprintf(fRtf, "\\ansi\\'f6\\pc ");
+    case 'o': fprintf(fRtf, "{\\ansi\\'f6}");
 	      break;
-    case 'u': fprintf(fRtf, "\\ansi\\'fc\\pc ");
+    case 'u': fprintf(fRtf, "{\\ansi\\'fc}");
 	      break;
-    case 's': fprintf(fRtf, "\\ansi\\'df\\pc ");
+    case 's': fprintf(fRtf, "{\\ansi\\'df}");
 	      break;
     case '|': break;  /* ignore */
     case '-': break;  /* ignore */
@@ -2253,10 +2315,9 @@ void ConvertString(char *string)
   long oldlinenumber;
   int test;
 
-  tmpname = tempnam(getenv("TMPDIR"), "l2r"); /* LEG210698*** lclint -
-						 tempnam declared in
-						 stdio */
-  if ((fp = fopen(tmpname,"w+")) == NULL)
+// tmpname = tempnam(getenv("TMPDIR"), "l2r");
+// if ((fp = fopen(tempname,"w+")) == NULL)
+  if ((fp = tmpfile()) == NULL)
   {
     fprintf(stderr,"%s: Fatal Error: cannot create temporary file\n", progname);
     exit(EXIT_FAILURE);
@@ -2268,7 +2329,7 @@ void ConvertString(char *string)
 		"(ConvertString): "
 		"Could not write `%s' to tempfile %s, "
 		"fwrite returns %d, should be 1",
-		string, tmpname, test);
+		string, "tmpfile()", test);
   if(fseek(fp,0L,SEEK_SET) != 0)
     diagnostics(ERROR, "Could not position to 0 in tempfile (ConvertString)");
 
@@ -2285,9 +2346,9 @@ void ConvertString(char *string)
   linenumber = oldlinenumber;
   if(fclose(fp) != 0)
     diagnostics(ERROR, "Could not close tempfile, (ConvertString).");
-  if(remove(tmpname) != 0)
-    diagnostics(ERROR, "Could not remove tempfile, (ConvertString).");
-  free(tmpname);
+//  if(remove(tmpname) != 0)
+//    diagnostics(ERROR, "Could not remove tempfile, (ConvertString).");
+//  free(tmpname);
 }
 
 

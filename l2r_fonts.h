@@ -1,8 +1,8 @@
 /*
- * $Id: util.h,v 1.2 2001/08/12 17:50:50 prahl Exp $
+ * $Id: l2r_fonts.h,v 1.1 2001/08/12 17:50:50 prahl Exp $
  * History:
- * $Log: util.h,v $
- * Revision 1.2  2001/08/12 17:50:50  prahl
+ * $Log: l2r_fonts.h,v $
+ * Revision 1.1  2001/08/12 17:50:50  prahl
  * latex2rtf version 1.9b by Scott Prahl
  * 1.9b
  * 	Improved enumerate environment so that it may be nested and
@@ -35,23 +35,17 @@
  * 	Fixed handling of tabular environments
  * 	Fixed $x^\alpha$ and $x_\alpha$
  *
- * Revision 1.2  1998/07/03 07:03:16  glehner
- * lclint cleaning
+ * Revision 1.2  1997/02/15 20:55:50  ralf
+ * Some reformatting and changes suggested by lclint
+ * Removed direct access to data structures in cfg.c
  *
- * Revision 1.1  1997/02/15 21:09:16  ralf
+ * Revision 1.1  1994/06/17 11:26:29  ralf
  * Initial revision
  *
  */
-#include <stdio.h>
-#define BUFFER_INCREMENT 1024
 
-/*@dependent@*/ /*@null@*/
-char *ReadUptoMatch (FILE *infile, /*@observer@*/ const char *scanchars);
-char *StrSave       (/*@observer@*/ const char *str);
-/*@exits@*/
-extern void  Fatal         (/*@observer@*/ const char *fmt, ...);
-/*@exits@*/
-void  ParseError    (/*@observer@*/ const char *fmt, ...);
-
-void rewind_one(void);
-void roman_item(int n, char * s);
+void WriteFontHeader(/*@dependent@*/ FILE* fRtf);
+bool SetFont(char *TexFont, FILE* fRtf);
+size_t GetFontNumber(char * Fname);
+void RemoveFontlist(void);
+size_t GetTexFontNumber(char * Fname);
