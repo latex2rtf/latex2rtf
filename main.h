@@ -1,12 +1,8 @@
-/* $Id: main.h,v 1.50 2002/09/21 23:26:01 prahl Exp $ */
+/* $Id: main.h,v 1.51 2002/09/22 00:47:43 prahl Exp $ */
 #ifndef __MAIN_H
 #define __MAIN_H
 
-#ifndef CFGDIR
-#define CFGDIR "/usr/local/share/latex2rtf/cfg"
-#endif
-
-#ifdef UNIX
+#if defined(UNIX) && !defined(HAS_DOS_SEP)
 #ifndef ENVSEP
 #define ENVSEP ':'
 #endif
@@ -15,7 +11,7 @@
 #endif 
 #endif
 
-#ifdef MSDOS
+#if defined(MSDOS) || defined(HAS_DOS_SEP)
 #ifndef ENVSEP
 #define ENVSEP ';'
 #endif
