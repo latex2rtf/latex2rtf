@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.20 2001/09/16 05:11:19 prahl Exp $ */
+/* $Id: main.c,v 1.21 2001/09/18 03:40:25 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -36,10 +36,9 @@ char           *progname;	            /* name of the executable file */
 char           *latexname = "stdin";	/* name of LaTex-File */
 char            alignment = JUSTIFIED;	/* default for justified: */
 fpos_t          pos_begin_kill;
-bool            bCite = FALSE;	        /* to produce citations */
 bool            GermanMode = FALSE;	    /* support germanstyle */
 
-char           *language = "english";	/* in \begin{document} "language".cfg is read in */
+char           *g_language = "english";	/* before \begin{document} "g_language".cfg is read in */
 bool            twoside = FALSE;
 static int      verbosity = WARNING;
 static FILE    *logfile = NULL;
@@ -77,7 +76,7 @@ bool            bInDocument = FALSE;
 int             tabcounter = 0;
 bool            twocolumn = FALSE;
 bool            titlepage = FALSE;
-bool            article = TRUE;
+bool            g_document_type = FORMAT_ARTICLE;
 bool            tabbing_on = FALSE;
 bool            tabbing_return = FALSE;
 bool            tabbing_on_itself = FALSE;
@@ -140,15 +139,14 @@ globals: initializes in- and outputfile fTex, fRtf,
 			fprintf(stderr, "converted into RTF-Commands!\n");
 			break;
 		case 'i':
-			language = optarg;
+			g_language = optarg;
 			break;
 		case 'v':
 			{
 				char           *endptr;
 				verbosity = (int) strtol(optarg, &endptr, 10);
-				if ((verbosity < 0) || verbosity > MAX_VERBOSITY)
-					diagnostics(ERROR, "verbosity %d not between 0 and %d",
-						  verbosity, MAX_VERBOSITY);
+				if (verbosity < 0)
+					diagnostics(ERROR, "verbosity should be a positive integer 0--6");
 				if ((*endptr != '\0') || (endptr == optarg))
 					diagnostics(ERROR, "argument to -v option malformed: %s",
 						    optarg);
@@ -217,6 +215,23 @@ globals: initializes in- and outputfile fTex, fRtf,
 		}
 	}
 
+	if (BblName == NULL) {
+		char           *s;
+		if (input != NULL) {
+			if ((BblName = malloc(strlen(input) + 5)) == NULL)
+				error(" malloc error -> out of memory!\n");
+			strcpy(BblName, input);
+			if ((s = strrchr(BblName, '.')) == NULL || strcmp(s, ".tex") != 0)
+				strcat(BblName, ".bbl");
+			else
+				strcpy(s, ".bbl");
+		} else {
+			if ((BblName = malloc(1)) == NULL)
+				error(" malloc error -> out of memory!\n");
+			BblName = '\0';
+		}
+	}
+
 	ReadCfg();
 	OpenTexFile(input, &fTex);
 	OpenRtfFile(output, &fRtf);
@@ -226,20 +241,15 @@ globals: initializes in- and outputfile fTex, fRtf,
 	InitializeDocumentFont(TexFontNumber("Roman"), 20, F_SHAPE_UPRIGHT, F_SERIES_MEDIUM);
 
 	PushEnvironment(PREAMBLE);
-    ConvertLatexPreamble();
+    ConvertLatexPreamble(); 
 	WriteRtfHeader();
 	
+	ReadLanguage(g_language);
+
 	g_processing_preamble = FALSE;
-/*	PushEnvironment(DOCUMENT);*/
 	diagnostics(4,"Entering Convert from main");
 	Convert();
 	diagnostics(4,"Exiting Convert from main");
-
-	if (bCite){
-		diagnostics(4,"Starting bibliography");
-		PushEnvironment(DOCUMENT);
-		WriteRefList();
-	}
 
 	CloseTex(&fTex);
 	CloseRtf(&fRtf);
@@ -398,25 +408,29 @@ diagnostics(int level, char *format,...)
 static void
 InitializeLatexLengths(void)
 {
-	
-	setLength("textheight", 550*20);
-	setLength("pageheight", 795*20);
-	setLength("headheight",  12*20);
-	setLength("voffset",      0*20);
-	setLength("footskip",    30*20);
-	setLength("topmargin",   16*20);
-	setLength("headsep",     25*20);	
-	setLength("textwidth",  345*20);
-	setLength("pagewidth",  614*20);
-	setLength("textwidth",  345*20);
-	setLength("hoffset",      0*20);
-	setLength("marginparsep",11*20);
+	/* Default Page Sizes */
+	setLength("pageheight",  795*20);
+	setLength("hoffset",       0*20);
+	setLength("oddsidemargin",62*20);
+	setLength("headheight",   12*20);
+	setLength("textheight",  550*20);
+	setLength("footskip",     30*20);
+	setLength("marginparpush", 5*20);
 
-	setLength("baselineskip",11*20);
-	setLength("parindent",   11*20);
-	setLength("parskip",     11*20);
-	setLength("evensidemargin",     11*20);
-	setLength("oddsidemargin",     11*20);
+	setLength("pagewidth",   614*20);
+	setLength("voffset",       0*20);
+	setLength("topmargin",    18*20);
+	setLength("headsep",      25*20);	
+	setLength("textwidth",   345*20);
+	setLength("marginparsep", 10*20);
+	setLength("columnsep",    10*20);
+
+	setLength("evensidemargin",11*20);
+
+	/* Default Paragraph Sizes */
+	setLength("baselineskip",12*20);
+	setLength("parindent",   15*20);
+	setLength("parskip",      0*20);
 				
 	setCounter("page",          0);
 	setCounter("chapter",       0);

@@ -1,4 +1,4 @@
-/* $Id: main.h,v 1.17 2001/09/16 05:11:19 prahl Exp $ */
+/* $Id: main.h,v 1.18 2001/09/18 03:40:25 prahl Exp $ */
 
 #undef HAS_NO_GETOPT
 
@@ -58,7 +58,6 @@ void            diagnostics(int level, char *format,...);
 
 #define ERROR 0
 #define WARNING 1
-#define MAX_VERBOSITY 5
 
 bool            rtf_restrict(int major, int minor);
 
@@ -101,7 +100,6 @@ extern /* @observer@ */ char *progname;	/* name of the executable file */
 extern /* @only@ */ char *latexname;	/* name of LaTex-File */
 extern char     alignment;	/* default for justified: */
 extern fpos_t   pos_begin_kill;
-extern bool     bCite;		/* to produce citations */
 extern bool     GermanMode;
 extern				/* @only@ */
  /* @null@ */ char *colFmt;
@@ -124,7 +122,6 @@ extern int      colCount;
 extern int      actCol;
 extern int      tabcounter;
 extern bool     twocolumn;
-extern bool     article;
 extern bool     titlepage;
 extern bool     g_processing_equation;
 extern long     linenumber;
@@ -139,6 +136,8 @@ extern bool     g_show_equation_number;
 extern int      g_enumerate_depth;
 extern bool     g_suppress_equation_number;
 extern bool     g_aux_file_missing;
+extern int    	g_document_type;
+extern char    *g_language;
 
 void fprintRTF(char *format, ...);
 void putRtfChar(char cThis);

@@ -1,5 +1,5 @@
-/* $Id: convert.c,v 1.5 2001/09/16 05:11:19 prahl Exp $ 
-	purpose: routines to */
+/* $Id: convert.c,v 1.6 2001/09/18 03:40:25 prahl Exp $ 
+	purpose: ConvertString(), Convert(), TranslateCommand() */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -29,8 +29,27 @@
 static bool     TranslateCommand();	/* converts commands */
 
 extern enum   TexCharSetKind TexCharSet;
-static int      ret = 0;
-static int      ConvertFlag;
+static int    ret = 0;
+
+int    g_paragraph_counter = 0;
+/* static int    g_paragraph_alignment = JUSTIFIED; */
+
+void
+CmdParagraph(int code)
+/******************************************************************************
+     purpose : handle creation of a new paragraph.  This routine is in this
+               file because of possible interaction between \par and \n\n
+ ******************************************************************************/
+{
+	int parindent;
+	
+	if (g_paragraph_counter==0)
+		parindent = 0;
+	else
+		parindent = getLength("parindent");
+	
+	fprintRTF("\n\\par\\fi%d\\li%d ", parindent+indent,indent);
+}
 
 void 
 ConvertString(char *string)
@@ -95,24 +114,14 @@ globals: fTex, fRtf and all global flags for convert (see above)
 
 	RecursionLevel++;
 	PushLevels();
-	++ConvertFlag;
-/*	if (!strstr(g_babel_language,"english"))
-		babelMode = TRUE;
-*/		
+
 	while ((cThis = getTexChar()) && cThis != '\0') {
 	
 		if (cThis == '\n')
 			diagnostics(5, "Current character in Convert() is '\\n'");
-		else if (cThis == '\0')
-			diagnostics(5, "Current character in Convert() is NULL");
 		else
 			diagnostics(5, "Current character in Convert() is '%c'", cThis);
 
-/*		if (babelMode) {
-			cThis = babelConvert(cThis, g_babel_language);
-			if (cThis == '\0') break;
-		}
-*/		
 		switch (cThis) {
 
 		case '\\':
@@ -170,7 +179,7 @@ globals: fTex, fRtf and all global flags for convert (see above)
 			break;
 			
 		case '\r':
-			diagnostics(WARNING, "Ignoring \\r in %s at line %ld", latexname, getLinenumber());
+			diagnostics(WARNING, "This should not happen, ignoring \\r");
 			cThis = ' ';
 			break;
 			
@@ -179,28 +188,17 @@ globals: fTex, fRtf and all global flags for convert (see above)
 				break;
 			tabcounter = 0;
 
-			while ((cNext = getTexChar()) == ' ');	/* blank line with
-								 * spaces */
-			ungetTexChar(cNext);
-
-			if (cLast != '\n') {
-				if (bNewPar) {
-					bNewPar = FALSE;
-					cThis = ' ';
-					break;
-				}
-				if (cLast != ' ')
-					fprintRTF(" ");	/* treat as 1 space */
-				else if (bBlankLine)
-					fprintRTF("\n\\par\\fi0\\li%d ", indent);
-			} else {
-				if (cLast2 != '\n') {
-					fprintRTF("\n\\par\\fi0\\li%d ", indent);
-				}
+			if (cLast == '\n') {
+				char cNext = getNonBlank();  	/* skip spaces and newlines */
+				ungetTexChar(cNext);
+				CmdParagraph(0);
+			} else {	
+				skipSpaces();					/* skip any spaces */
+				if (cLast != ' ')				/* emit a space if needed */
+					fprintRTF(" ");                 
 			}
-			bBlankLine = TRUE;
 			break;
-
+			
 		case '^':
 			bBlankLine = FALSE;
 

@@ -1,4 +1,4 @@
-/* $Id: l2r_fonts.c,v 1.15 2001/09/16 05:11:19 prahl Exp $
+/* $Id: l2r_fonts.c,v 1.16 2001/09/18 03:40:25 prahl Exp $
 
 	All changes to font size, font style, and font face are 
 	handled in this file.  Explicit changing of font characteristics
@@ -128,7 +128,9 @@ CmdFontFamily(int code)
 
 	if (!(code & ON) &&
 	    (true_code == F_FAMILY_CALLIGRAPHIC_3 || true_code ==F_FAMILY_TYPEWRITER_3 ||
-	     true_code == F_FAMILY_SANSSERIF_3    || true_code == F_FAMILY_ROMAN_3       ) ) 
+	     true_code == F_FAMILY_SANSSERIF_3    || true_code == F_FAMILY_ROMAN_3     ||
+	     true_code ==F_FAMILY_TYPEWRITER_4    ||
+	     true_code == F_FAMILY_SANSSERIF_4    || true_code == F_FAMILY_ROMAN_4      ) ) 
 	     return;
 
 	switch (true_code) {
@@ -136,6 +138,7 @@ CmdFontFamily(int code)
 		case F_FAMILY_ROMAN_1:
 		case F_FAMILY_ROMAN_2:
 		case F_FAMILY_ROMAN_3:
+		case F_FAMILY_ROMAN_4:
 			num = TexFontNumber("Roman");
 			break;
 			
@@ -143,6 +146,7 @@ CmdFontFamily(int code)
 		case F_FAMILY_SANSSERIF_1:
 		case F_FAMILY_SANSSERIF_2:
 		case F_FAMILY_SANSSERIF_3:
+		case F_FAMILY_SANSSERIF_4:
 			num = TexFontNumber("Sans Serif");
 			break;
 			
@@ -150,6 +154,7 @@ CmdFontFamily(int code)
 		case F_FAMILY_TYPEWRITER_1:
 		case F_FAMILY_TYPEWRITER_2:
 		case F_FAMILY_TYPEWRITER_3:
+		case F_FAMILY_TYPEWRITER_4:
 			num = TexFontNumber("Typewriter");
 			break;
 			
@@ -177,7 +182,9 @@ CmdFontFamily(int code)
 		case F_FAMILY_ROMAN_1:   
 		case F_FAMILY_SANSSERIF_1:
 		case F_FAMILY_TYPEWRITER_1:
-		case F_FAMILY_CALLIGRAPHIC_1:
+		case F_FAMILY_ROMAN_4:   
+		case F_FAMILY_SANSSERIF_4:
+		case F_FAMILY_TYPEWRITER_4:
 			fprintRTF("\\i0\\scaps0\\b0\\f%d ", num);          
 			break;
 
@@ -207,6 +214,8 @@ CmdFontShape(int code)
      			F_SHAPE_ITALIC_1  for \it
      			F_SHAPE_ITALIC_2  for \textit{...}
      			F_SHAPE_ITALIC_3  for \begin{itshape}
+     			F_SHAPE_ITALIC_4  for \begin{it}
+
  ****************************************************************************/
 {
 	int true_code  = code & ~ON;
@@ -216,19 +225,23 @@ CmdFontShape(int code)
 	               RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape,\
 	               RtfFontInfo[FontInfoDepth].series);
 
-	/* \end{itshape}, \end{scshape} ... */
+	/* \end{itshape}, \end{sc} ... */
 	if (!(code & ON) && 
 	    (true_code == F_SHAPE_UPRIGHT_3 || true_code ==F_SHAPE_ITALIC_3 ||
-	     true_code == F_SHAPE_SLANTED_3 || true_code == F_SHAPE_CAPS_3    ) ) 
+	     true_code == F_SHAPE_SLANTED_3 || true_code == F_SHAPE_CAPS_3  ||
+	     true_code ==F_SHAPE_ITALIC_4   ||
+	     true_code == F_SHAPE_SLANTED_4 || true_code == F_SHAPE_CAPS_4    ) ) 
 	     return;
 	
 	switch (true_code) {
 		
-		case F_SHAPE_UPRIGHT:   fprintRTF("\\i0\\scaps0 ");  break;
-		case F_SHAPE_UPRIGHT_1: fprintRTF("\\i0\\b0\\scaps0 ");  break;
-		case F_SHAPE_UPRIGHT_2:	fprintRTF("{\\i0\\b0\\scaps0 ");  break;
+		case F_SHAPE_UPRIGHT:
 		case F_SHAPE_UPRIGHT_3: fprintRTF("\\i0\\scaps0 ");  break;
-	
+
+		case F_SHAPE_UPRIGHT_1: fprintRTF("\\i0\\scaps0\\b0 ");  break;
+
+		case F_SHAPE_UPRIGHT_2:	fprintRTF("{\\i0\\b0\\scaps0 ");  break;
+
 		case F_SHAPE_SLANTED:
 		case F_SHAPE_ITALIC:	fprintRTF("\\scaps0\\i ");        break;
 		
@@ -241,10 +254,16 @@ CmdFontShape(int code)
 		case F_SHAPE_SLANTED_3:
 		case F_SHAPE_ITALIC_3:  fprintRTF("\\scaps0\\i ");        break;
 
-		case F_SHAPE_CAPS:   	fprintRTF("\\scaps ");        break;
-		case F_SHAPE_CAPS_1:    fprintRTF("{\\i0\\b0\\scaps ");  break;
-		case F_SHAPE_CAPS_2:    fprintRTF("{\\scaps ");        break;
+		case F_SHAPE_SLANTED_4:
+		case F_SHAPE_ITALIC_4:  fprintRTF("\\scaps0\\b0\\i ");        break;
+
+		case F_SHAPE_CAPS:
 		case F_SHAPE_CAPS_3:    fprintRTF("\\scaps ");        break;
+		
+		case F_SHAPE_CAPS_1:
+		case F_SHAPE_CAPS_4:    fprintRTF("\\i0\\b0\\scaps ");        break;
+		
+		case F_SHAPE_CAPS_2:    fprintRTF("{\\scaps ");        break;
 	}
 
 	if (true_code == F_SHAPE_UPRIGHT_2 || true_code == F_SHAPE_ITALIC_2 || 
@@ -283,7 +302,8 @@ CmdFontSeries(int code)
 	               RtfFontInfo[FontInfoDepth].series);
 
 	/* either \end{bfseries} or \end{mdseries} */
-	if ((true_code == F_SERIES_MEDIUM_3 || true_code == F_SERIES_BOLD_3) && !(code & ON)) 
+	if ((true_code == F_SERIES_MEDIUM_3 || true_code == F_SERIES_BOLD_3 ||
+	     true_code == F_SERIES_BOLD_4) && !(code & ON)) 
 	     return;
 
 	
@@ -305,6 +325,7 @@ CmdFontSeries(int code)
 								break;
 								
 		case F_SERIES_BOLD_1:  	
+		case F_SERIES_BOLD_4:  	
 								fprintRTF("\\i0\\scaps0\\b ");  
 								break;
 								
@@ -610,7 +631,7 @@ PushFontSettings(void)
 	RtfFontInfo[FontInfoDepth+1].series = RtfFontInfo[FontInfoDepth].series;
 	FontInfoDepth++;
 
-	diagnostics(5,"PushFontSettings depth=%d, family=%d, size=%d, shape=%d, series=%d",\
+	diagnostics(6,"PushFontSettings depth=%d, family=%d, size=%d, shape=%d, series=%d",\
 				   FontInfoDepth, RtfFontInfo[FontInfoDepth].family, \
 	               RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape,\
 	               RtfFontInfo[FontInfoDepth].series);
@@ -623,7 +644,7 @@ PopFontSettings(void)
 		error("FontInfoDepth = 0, cannot PopFontSettings()!");
 	
 	FontInfoDepth--;
-	diagnostics(5,"PopFontSettings depth=%d, family=%d, size=%d, shape=%d, series=%d",\
+	diagnostics(6,"PopFontSettings depth=%d, family=%d, size=%d, shape=%d, series=%d",\
 				   FontInfoDepth, RtfFontInfo[FontInfoDepth].family, \
 	               RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape,\
 	               RtfFontInfo[FontInfoDepth].series);
@@ -634,8 +655,8 @@ MonitorFontChanges(char *text)
 {	
 	int n;
 	
-	diagnostics(5, "\nMonitorFont %10s\n", text);
-	diagnostics(5,"MonitorFont before depth=%d, family=%d, size=%d, shape=%d, series=%d",\
+	diagnostics(6, "\nMonitorFont %10s\n", text);
+	diagnostics(6,"MonitorFont before depth=%d, family=%d, size=%d, shape=%d, series=%d",\
 				   FontInfoDepth, RtfFontInfo[FontInfoDepth].family, \
 	               RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape,\
 	               RtfFontInfo[FontInfoDepth].series);
@@ -671,7 +692,7 @@ MonitorFontChanges(char *text)
 		RtfFontInfo[FontInfoDepth].series = RtfFontInfo[0].series;
 	}
 	
-	diagnostics(5,"MonitorFont after depth=%d, family=%d, size=%d, shape=%d, series=%d",\
+	diagnostics(6,"MonitorFont after depth=%d, family=%d, size=%d, shape=%d, series=%d",\
 				   FontInfoDepth, RtfFontInfo[FontInfoDepth].family, \
 	               RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape,\
 	               RtfFontInfo[FontInfoDepth].series);

@@ -1,4 +1,4 @@
-/* $Id: funct1.h,v 1.15 2001/09/06 04:43:04 prahl Exp $ */
+/* $Id: funct1.h,v 1.16 2001/09/18 03:40:25 prahl Exp $ */
 
 #define AST_FORM 100
 #define EMPHASIZE 1
@@ -15,11 +15,11 @@ void            CmdBeginEnd(int code);
 #define PAR_RIGHT 2
 #define PAR_LEFT 3
 #define PAR_CENTERLINE 4
-void            Paragraph(int code);
+void            CmdParagraph(int code);
+void            CmdAlign(int code);
 void            CmdToday(int code);
 void            CmdIgnore(int code);
 void            CmdLdots(int code);
-void            CmdEmphasize(int code);
 void            Environment(int code);
 
 #define SECT_NORM 1
@@ -65,8 +65,6 @@ void            CmdVerbatim(int code);
 void            CmdVerse(int code);
 
 void            TranslateGerman(void);
-void            CmdPrintRtf(int code);
-
 void            GermanPrint(int code);
 #define GP_CK 1
 #define GP_LDBL 2
@@ -88,11 +86,7 @@ void            IgnoreNewCmd(int code);
 /* LEG190498 End */
 
 void            CmdLabel(int code);
-
-void            CmdUsepackage(int code);
-
 void            CmdIgnoreDef(int code);
-
 void            CmdItem(int code);
 
 /* LEG030598 Start */
@@ -106,7 +100,6 @@ int             ScanAux(char *token, char *reference, int code);
 #define FIGURE 1
 #define PICTURE 2
 #define MINIPAGE 3
-#define THEBIBLIOGRAPHY 4
 #define FIGURE_1 5
 
 #define No_Opt_One_NormParam 01
@@ -127,7 +120,6 @@ int             ScanAux(char *token, char *reference, int code);
 #define NewPage 1
 #define NewColumn 2
 
-#define BIBLIOGRAPHY 1
 #define ARRAY 1
 #define TABLE 2
 #define TABLE_1 3
@@ -152,12 +144,8 @@ void            CmdTitlepage(int code);
 void            CmdHyphenation(int code);
 void            CmdFigure(int code);
 void            CmdMultiCol(int code);
-void            CmdNoCite(int code);
-void            CmdCite(int code);
-void 			WriteRefList(void);
 void            CmdAnnotation(int code);
 void            CmdLink(int code);
-void            CmdConvertBiblio(int code);
 void            CmdGraphics(int code);
 void            GetRequiredParam(char *string, int size);
 void 			CmdQuad(int kk);

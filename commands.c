@@ -1,4 +1,4 @@
-/*  $Id: commands.c,v 1.20 2001/09/16 05:11:19 prahl Exp $
+/*  $Id: commands.c,v 1.21 2001/09/18 03:40:25 prahl Exp $
 
     Defines subroutines to translate LaTeX commands to RTF
 */
@@ -18,6 +18,7 @@
 #include "letterformat.h"
 #include "commands.h"
 #include "parser.h"
+#include "biblio.h"
 
 void            error(char *);
 
@@ -104,7 +105,7 @@ static CommandArray commands[] = {
 	{"normalfont",   CmdTextNormal, F_TEXT_NORMAL_2},
 	{"mathnormal",   CmdTextNormal, F_TEXT_NORMAL_3},
 
-	{"centerline", Paragraph, PAR_CENTERLINE},
+	{"centerline", CmdAlign, PAR_CENTERLINE},
 	/* ---------- LOGOS ------------------- */
 	{"LaTeX", CmdLogo, CMD_LATEX},
 	{"LaTeXe", CmdLogo, CMD_LATEXE},
@@ -134,6 +135,7 @@ static CommandArray commands[] = {
 
 	{"ldots", CmdLdots, 0},
 	{"maketitle", CmdMakeTitle, 0},
+	{"par", CmdParagraph, 0},
 	{"section", CmdSection, SECT_NORM},
 	{"section*", CmdSection, SECT_NORM},
 	{"caption", CmdCaption, 0},
@@ -171,7 +173,9 @@ static CommandArray commands[] = {
 	{"label", CmdLabel, LABEL},
 	{"ref", CmdLabel, REF},
 	{"pageref", CmdLabel, PAGEREF},
-	{"bibliography", CmdIgnoreParameter, No_Opt_One_NormParam},
+	{"bibliography", CmdBibliography, 0},
+	{"bibitem", CmdBibitem, 0},
+	{"newblock", CmdNewblock, 0},
 	{"newsavebox", CmdIgnoreParameter, No_Opt_One_NormParam},
 	{"usebox", CmdIgnoreParameter, No_Opt_One_NormParam},
 	{"fbox", CmdIgnoreParameter, No_Opt_One_NormParam},
@@ -273,6 +277,7 @@ static CommandArray PreambleCommands[] = {
 	{"newtheorem", CmdIgnoreParameter, One_Opt_Two_NormParam},
 	{"renewtheorem", CmdIgnoreParameter, One_Opt_Two_NormParam},
 	{"pagestyle", CmdIgnoreParameter, No_Opt_One_NormParam},
+	{"thispagestyle", CmdIgnoreParameter, No_Opt_One_NormParam},
 	{"pagenumbering", CmdIgnoreParameter, No_Opt_One_NormParam},
 	{"markboth", CmdIgnoreParameter, No_Opt_Two_NormParam},
 	{"markright", CmdIgnoreParameter, No_Opt_One_NormParam},
@@ -301,7 +306,7 @@ static CommandArray EnumerateCommands[] = {
 
 static CommandArray FigureCommands[] = {
 	{"caption", CmdCaption, 0},
-	{"center", Paragraph, PAR_CENTER},
+	{"center", CmdAlign, PAR_CENTER},
 	{"", NULL, 0}
 };
 
@@ -357,9 +362,9 @@ static CommandArray FrenchModeCommands[] = {
 /* only strings used in the form \begin{text} or \end{text} */
 /********************************************************************/
 static CommandArray params[] = {
-	{"center", Paragraph, PAR_CENTER},
-	{"flushright", Paragraph, PAR_RIGHT},
-	{"flushleft", Paragraph, PAR_LEFT},
+	{"center", CmdAlign, PAR_CENTER},
+	{"flushright", CmdAlign, PAR_RIGHT},
+	{"flushleft", CmdAlign, PAR_LEFT},
 	{"document", Environment, DOCUMENT},
 	{"tabbing", CmdTabbing, TABBING},
 	{"figure", CmdFigure, FIGURE},
@@ -392,7 +397,7 @@ static CommandArray params[] = {
 	{"letter", CmdLetter, 0},
 	{"table", CmdTable, TABLE},
 	{"table*", CmdTable, TABLE_1},
-	{"thebibliography", CmdConvertBiblio, 0},
+	{"thebibliography", CmdThebibliography, 0},
 	{"abstract", CmdAbstract, 0},
 	{"titlepage", CmdTitlepage, 0},
 	{"em", CmdEmphasize, F_EMPHASIZE_3},
@@ -404,15 +409,20 @@ static CommandArray params[] = {
 	{"itshape",  CmdFontShape, F_SHAPE_ITALIC_3},
 	{"scshape",  CmdFontShape, F_SHAPE_CAPS_3},
 	{"slshape",  CmdFontShape, F_SHAPE_SLANTED_3},
-	{"upshape",  CmdFontShape, F_SHAPE_UPRIGHT_3},
+	{"it",  CmdFontShape, F_SHAPE_ITALIC_4},
+	{"sc",  CmdFontShape, F_SHAPE_CAPS_4},
+	{"sl",  CmdFontShape, F_SHAPE_SLANTED_4},
+	{"bf",  CmdFontShape, F_SERIES_BOLD_4},
+	{"sf", CmdFontFamily, F_FAMILY_ROMAN_4},
+	{"tt", CmdFontFamily, F_FAMILY_SANSSERIF_4},
+	{"rm", CmdFontFamily, F_FAMILY_TYPEWRITER_4},
 	{"", NULL, 0}
 };				/* end of list */
 
 
-/********************************************************************/
-/* commands for hyperlatex package */
-/* */
-/********************************************************************/
+/********************************************************************
+purpose: commands for hyperlatex package 
+********************************************************************/
 static CommandArray hyperlatex[] = {
 	{"link", CmdLink, 0},
 	{"xlink", CmdLink, 0},
@@ -427,7 +437,7 @@ static CommandArray hyperlatex[] = {
 bool 
 CallCommandFunc(char *cCommand)
 /****************************************************************************
-purpose: The tries to call the command-function for the commandname
+purpose: Tries to call the command-function for the commandname
 params:  string with command name
 returns: success or failure
 globals: command-functions have side effects or recursive calls
@@ -520,11 +530,6 @@ globals: changes Environment - array of active environments
 		break;
 	case DOCUMENT:
 		Environments[iEnvCount] = commands;
-		if (GermanMode)
-		{
-			iEnvCount++;
-			Environments[iEnvCount] = GermanModeCommands;
-		}
 		diag = "document";
 		break;
 	case ITEMIZE:
@@ -547,9 +552,13 @@ globals: changes Environment - array of active environments
 		Environments[iEnvCount] = DescriptionCommands;
 		diag = "description";
 		break;
-	case GERMANMODE:
+	case GERMAN_MODE:
 		Environments[iEnvCount] = GermanModeCommands;
-		diag = "?german?";
+		diag = "german";
+		break;
+	case FRENCH_MODE:
+		Environments[iEnvCount] = FrenchModeCommands;
+		diag = "french";
 		break;
 	case FIGURE_ENV:
 		Environments[iEnvCount] = FigureCommands;

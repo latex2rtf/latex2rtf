@@ -1,4 +1,4 @@
-/*  $Id: parser.c,v 1.11 2001/08/22 05:50:23 prahl Exp $
+/*  $Id: parser.c,v 1.12 2001/09/18 03:40:25 prahl Exp $
 
    Contains declarations for a generic recursive parser for LaTeX code.
 */
@@ -154,7 +154,7 @@ getNonSpace(void)
 void 
 skipSpaces(void)
 /***************************************************************************
- Description: get the next non-space character from the input stream
+ Description: skip to the next non-space character from the input stream
 ****************************************************************************/
 {
 	char            c;
@@ -311,48 +311,6 @@ parameter: string: returnvalue of optional parameter
 	return TRUE;
 }
 
-void 
-getBraceParam(char *string, int size)
-/******************************************************************************
-  purpose: function to get a parameter between {}
-parameter: string: returnvalue of optional parameter
-	   size: max. size of returnvalue
-
-If it a {} expression does not follow, then return an empty expression
-with fTex pointing to the first non-space character
- ******************************************************************************/
-{
-	char            c;
-	int             i = 0;
-	int             bracelevel = 0;
-
-	*string = '\0';
-
-	c = getNonBlank();
-
-	if (c != '{') {		/* does not start with a brace, abort */
-		ungetTexChar(c);
-		return;
-	}
-	while ((c = getTexChar())) {
-
-		if ((c == '}') && (bracelevel == 0))
-			break;
-
-		if (c == '{')
-			bracelevel++;
-
-		if (c == '}')
-			bracelevel--;
-
-		if (i < size - 1)	/* throw away excess */
-			string[i++] = c;
-	}
-	string[i] = '\0';
-
-	/* fprintf(stderr, "\nthe string in braces is %s\n", string); */
-}
-
 char    *
 getSimpleCommand(void)
 /**************************************************************************
@@ -367,7 +325,7 @@ getSimpleCommand(void)
 	if (buffer[0] != '\\')
 		return NULL;
 
-	for (size = 0; size < 127; size++) {
+	for (size = 1; size < 127; size++) {
 		buffer[size] = getTexChar();
 
 		if (!isalpha((int)buffer[size])) {
@@ -482,14 +440,16 @@ getMathParam(void)
 	char            buffer[2];
 
 	diagnostics(5,"entering getMathParam");
-	buffer[0] = getTexChar();
+
+	buffer[0] = getNonSpace();			/*skip spaces and one possible newline */
+	if (buffer[0] == '\n')
+		buffer[0] = getNonSpace();	
 
 	if (buffer[0] == '{') {
 		ungetTexChar(buffer[0]);
 		return getParam();
 	} else if (buffer[0] == '\\') {
-		if (buffer[0] != ' ')	/* TeX eats the space after control words */
-			ungetTexChar(buffer[0]);
+		ungetTexChar(buffer[0]);
 		return getSimpleCommand();
 	} else {
 		buffer[1] = '\0';
@@ -575,11 +535,12 @@ getDimension(void)
 			return num;
 		}
 	} else {
-		char * s;
+		char * s, *t;
 		ungetTexChar(buffer[0]);
 		s = getSimpleCommand();
-		diagnostics(4,"getDimension() dimension is <%s>", s);
-		num *= getLength(s);
+		t = s+1;                  /* skip initial backslash */
+		diagnostics(4,"getDimension() dimension is <%s>", t);
+		num *= getLength(t);
 		free(s);
 		return num;
 	}

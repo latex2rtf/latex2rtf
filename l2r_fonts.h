@@ -1,17 +1,20 @@
-/* $Id: l2r_fonts.h,v 1.12 2001/09/16 05:11:19 prahl Exp $ */
+/* $Id: l2r_fonts.h,v 1.13 2001/09/18 03:40:25 prahl Exp $ */
 
 #define F_FAMILY_ROMAN          1
 #define F_FAMILY_ROMAN_1        2
 #define F_FAMILY_ROMAN_2        3
 #define F_FAMILY_ROMAN_3        4
+#define F_FAMILY_ROMAN_4        17
 #define F_FAMILY_SANSSERIF      5
 #define F_FAMILY_SANSSERIF_1    6
 #define F_FAMILY_SANSSERIF_2    7
 #define F_FAMILY_SANSSERIF_3    8
+#define F_FAMILY_SANSSERIF_4    18
 #define F_FAMILY_TYPEWRITER     9
 #define F_FAMILY_TYPEWRITER_1   10
 #define F_FAMILY_TYPEWRITER_2   11
 #define F_FAMILY_TYPEWRITER_3   12
+#define F_FAMILY_TYPEWRITER_4   19
 #define F_FAMILY_CALLIGRAPHIC   13
 #define F_FAMILY_CALLIGRAPHIC_1 14
 #define F_FAMILY_CALLIGRAPHIC_2 15
@@ -21,14 +24,17 @@
 #define F_SHAPE_SLANTED_1    2
 #define F_SHAPE_SLANTED_2    3
 #define F_SHAPE_SLANTED_3    4
+#define F_SHAPE_SLANTED_4    17
 #define F_SHAPE_ITALIC       5
 #define F_SHAPE_ITALIC_1     6
 #define F_SHAPE_ITALIC_2     7
 #define F_SHAPE_ITALIC_3     8
+#define F_SHAPE_ITALIC_4     18
 #define F_SHAPE_CAPS         9
 #define F_SHAPE_CAPS_1       10
 #define F_SHAPE_CAPS_2       11
 #define F_SHAPE_CAPS_3       12
+#define F_SHAPE_CAPS_4       19
 #define F_SHAPE_UPRIGHT      13
 #define F_SHAPE_UPRIGHT_1    14
 #define F_SHAPE_UPRIGHT_2    15
@@ -42,6 +48,7 @@
 #define F_SERIES_BOLD_1      6
 #define F_SERIES_BOLD_2      7
 #define F_SERIES_BOLD_3      8
+#define F_SERIES_BOLD_4      9
 
 #define F_TEXT_NORMAL      1
 #define F_TEXT_NORMAL_1    2

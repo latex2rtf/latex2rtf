@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.20 2001/09/16 05:11:19 prahl Exp $ 
+/* $Id: funct1.c,v 1.21 2001/09/18 03:40:25 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -26,18 +26,13 @@ Authors:  Dorner, Granzer, Polzer, Trisko, Schlatterbeck, Lehner, Prahl
 
 extern bool     bInDocument;	/* true if File-Pointer is in the document */
 extern bool     g_processing_equation;	/* true at a formula-convertion */
+extern int      g_paragraph_counter;
 extern bool     twocolumn;	/* true if twocolumn-mode is enabled */
-extern bool     article;	/* true if article-mode is set */
 extern int      indent;		/* includes the left margin e.g. for itemize-commands */
 static bool     NoNewLine;
 extern bool     bNewPar;
 extern bool     mbox;
-extern char    *language;
 extern enum     TexCharSetKind TexCharSet;
-extern int      curr_fontbold[MAXENVIRONS];
-extern int      curr_fontital[MAXENVIRONS];
-extern int      curr_fontscap[MAXENVIRONS];
-extern int      curr_fontnumb[MAXENVIRONS];
 
 static void     CmdLabel1_4(int code, char *text);
 static void     CmdLabelOld(int code, char *text);
@@ -54,7 +49,7 @@ CmdBeginEnd(int code)
 		          CMD_END:   end of environment
  ***************************************************************************/
 {
-	char            c;
+/*	char            c;*/
 	char           *s = getParam();
 
 	switch (code) {
@@ -68,17 +63,16 @@ CmdBeginEnd(int code)
 		assert(0);
 	}
 	free(s);
-	c = getNonBlank();
-	ungetTexChar(c);
+/*	c = getNonBlank();
+	ungetTexChar(c);*/
 }
 
 void 
-Paragraph(int code)
+CmdAlign(int code)
 /*****************************************************************************
     purpose : sets the alignment for a paragraph
   parameter : code: alignment centered, justified, left or right
-     globals: fRtf: Rtf-file-pointer
-              alignment: alignment of paragraphs
+     globals: alignment: alignment of paragraphs
               bNewPar
  ********************************************************************************/
 {
@@ -92,9 +86,9 @@ Paragraph(int code)
 		old_alignment_before_centerline = alignment;
 		alignment = CENTERED;
 		fprintRTF("\\par\n{\\pard\\q%c ", alignment);
-		diagnostics(4,"Entering Convert from Paragraph");
+		diagnostics(4,"Entering Convert from CmdAlign");
 		Convert();
-		diagnostics(4,"Exiting Convert from Paragraph");
+		diagnostics(4,"Exiting Convert from CmdAlign");
 		alignment = old_alignment_before_centerline;
 		fprintRTF("\\par}\n\\pard\\q%c ", alignment);
 		bNewPar = TRUE;
@@ -176,15 +170,9 @@ globals  : bIndocument
 	if (code & ON) {	/* on switch */
 		code &= ~(ON);	/* mask MSB */
 		diagnostics(4,"Entering Environment");
-		if (code == DOCUMENT) {
-			/* LEG Meanwhile commented out    ClearEnvironment(); */
+		if (code == DOCUMENT) 
 			bInDocument = TRUE;
-/*			if (!pagestyledefined) {
-				diagnostics(WARNING, "rtf 1.4 codes generated, funct1.c (Environment)");
-				PlainPagestyle();
-			}
-*/			ReadLg(language);
-		}
+		
 		PushEnvironment(code);
 	} else {		/* off switch */
 		diagnostics(4,"Exiting Environment");
@@ -210,6 +198,8 @@ parameter: code: type of section-recursion-level
 	getBracketParam(optparam, 99);
 	heading = getParam();
 	diagnostics(4,"entering CmdSection [%s]{%s}",optparam,heading);
+	g_paragraph_counter = 0;
+	
 	switch (code) {
 	case SECT_PART:
 		incrementCounter("part");
@@ -240,7 +230,7 @@ parameter: code: type of section-recursion-level
 		setCounter("subsection",0);
 		setCounter("subsubsection",0);
 		fprintRTF("{\\par\\pard\\pntext\\pard\\plain\\b");
-		if (article) {
+		if (g_document_type == FORMAT_ARTICLE) {
 			fprintRTF("\\fs32\\kerning28 %d\\tab}\\pard\\plain\n", getCounter("section"));
 			fprintRTF("%s\\f%d%s{", HEADER11, DefFont, HEADER12);
 		} else {
@@ -258,7 +248,7 @@ parameter: code: type of section-recursion-level
 		incrementCounter("subsection");
 		setCounter("subsubsection",0);
 		fprintRTF("{\\par\\pard\\pntext\\pard\\plain\\b");
-		if (article) {
+		if (g_document_type == FORMAT_ARTICLE) {
 			fprintRTF("\\fs24 %d.%d\\tab}\\pard\\plain\n", getCounter("section"), getCounter("subsection"));
 			fprintRTF("%s\\f%d%s{", HEADER21, DefFont, HEADER22);
 		} else {
@@ -275,7 +265,7 @@ parameter: code: type of section-recursion-level
 	case SECT_SUBSUB:
 		incrementCounter("subsubsection");
 		fprintRTF("{\\par\\pard\\pntext\\pard\\plain\\b");
-		if (article) {
+		if (g_document_type == FORMAT_ARTICLE) {
 			fprintRTF("\\fs24 %d.%d.%d\\tab}\\pard\\plain\n", getCounter("section"), getCounter("subsection"), getCounter("subsubsection"));
 			fprintRTF("%s\\f%d%s{", HEADER31, DefFont, HEADER32);
 		} else {
@@ -461,11 +451,14 @@ CmdFootNote(int code)
 		fprintRTF("\\fs%d {\\up%d\\chftn}", CurrentFontSize(), foot_ref_upsize);
 	}
 
+	Convert();
+/*
 	footnote = getParam();
 	if (footnote) {
 		ConvertString(footnote);
 		free(footnote);
 	}
+*/
 	diagnostics(4,"Exiting CmdFootNote");
 	fprintRTF("}\n ");
 }
@@ -640,26 +633,23 @@ CmdBox( /* @unused@ */ int code)
   globals: mbox
  ******************************************************************************/
 {
-	char           *s;
+	bool			was_processing_equation = FALSE;
 	
 	if (g_processing_equation) {
 		g_processing_equation = FALSE;
-		fprintRTF("}");	/* close math italics */
-
-		mbox = TRUE;
-		s = getParam();
-		diagnostics(4, "Entering ConvertString(%s) from CmdBox",s);
-		ConvertString(s);
-		diagnostics(4, "Exiting Convert() from CmdBox");
-		free(s);
+		was_processing_equation = TRUE;
+		fprintRTF("{\\i0 ");	/* brace level without math italics */
+	}
+	
+	mbox = TRUE;
+	diagnostics(4, "Entering Convert() from CmdBox");
+	Convert();
+	diagnostics(4, "Exiting Convert() from CmdBox");
+	mbox = FALSE;
 		
-		mbox = FALSE;
+	if (was_processing_equation){
 		g_processing_equation = TRUE;
-		fprintRTF("{\\i ");	/* reopen math italics */
-	} else {
-		mbox = TRUE;
-		Convert();
-		mbox = FALSE;
+		fprintRTF("}");
 	}
 }
 
@@ -684,7 +674,12 @@ CmdInclude(int code)
 	fname = getParam();
 	if (strstr(fname, "german.sty") != NULL) {
 		GermanMode = TRUE;
-		PushEnvironment(GERMANMODE);
+		PushEnvironment(GERMAN_MODE);
+		return;
+	}
+
+	if (strstr(fname, "french.sty") != NULL) {
+		PushEnvironment(FRENCH_MODE);
 		return;
 	}
 	assert(fname != NULL);
@@ -867,7 +862,6 @@ TranslateGerman(void)
 /***************************************************************************
 purpose: called on active german-mode and " character in input file to
 	 handle " as an active (meta-)character.
-globals: reads from fTex and writes to fRtf
  ***************************************************************************/
 {
 	char            cThis;
@@ -897,7 +891,7 @@ globals: reads from fTex and writes to fRtf
 		fprintRTF("\\ldblquote ");
 		break;
 	case '`':
-		fprintRTF("\\rdblquote ");
+		fprintRTF("{\\'84}");
 		break;
 	case '<':
 		break;
@@ -909,32 +903,22 @@ globals: reads from fTex and writes to fRtf
 }
 
 void 
-CmdPrintRtf(int code)
-/***************************************************************************
-purpose: writes string to RTF file
-globals: writes to fRtf
- ***************************************************************************/
-{
-	fprintRTF((char *) code);
-}
-
-void 
 GermanPrint(int code)
 {
 	switch (code) {
 		case GP_CK:fprintRTF("ck");
 		break;
 	case GP_LDBL:
-		fprintRTF("\\ldblquote");
+		fprintRTF("{\\'84}");
 		break;
 	case GP_L:
-		fprintRTF("\\lquote");
+		fprintRTF(",");
 		break;
 	case GP_R:
-		fprintRTF("\\rquote");
+		fprintRTF("\\lquote");
 		break;
 	case GP_RDBL:
-		fprintRTF("\\rdblquote");
+		fprintRTF("\\ldblquote");
 	}
 }
 
@@ -963,11 +947,11 @@ CmdIgnoreLet( /* @unused@ */ int code)
  *LEG250498
  * purpose: opens existing aux-file and scans for token, with value
  * reference.  Then outputs the corresponding ref-information to the
- * rtf-file parameters: code 0 = get the first parameter ( {refnumber}
- * -> refnumber)
- *                           1 = get the first par. of the first {
- * {{sectref}{line}} } -> sectref ) globals: input (name of
- * LaTeX-Inputfile) fRtf rtf-Outputfile
+ * rtf-file parameters: 
+ * code 0 = get the first parameter {refnumber} -> refnumber)
+ *      1 = get the first par. of the first {{{sectref}{line}} } -> sectref 
+ * 
+ * globals: input (name of LaTeX-Inputfile) fRtf rtf-Outputfile
  * returns 1 if target is found otherwise 0
  ************************************************************************/
 
@@ -977,8 +961,7 @@ ScanAux(char *token, char *reference, int code)
 	static FILE    *fAux = NULL;
 	static char     openbrace = '{';
 	static char     closebrace = '}';
-	char            tokenref[255];	/* should really be allocated
-					 * dynmically */
+	char            tokenref[255];	/* should really be allocated dynmically */
 	char            AuxLine[1024];
 	char           *s;
 
@@ -986,14 +969,15 @@ ScanAux(char *token, char *reference, int code)
 		fprintRTF("?");
 		return 0;
 	}
+	
 	if (fAux == NULL && (fAux = fopen(AuxName, "r")) == NULL) {	/* open .aux file if not
 									 * opened before */
-		fprintf(stderr, "Error opening AUX-file: %s\n", AuxName);
-		fprintf(stderr, "Try running LaTeX first\n");
+		diagnostics(WARNING, "No .aux file.  Run LaTeX to create %s\n", AuxName);
 		g_aux_file_missing = TRUE;
 		fprintRTF("?");
 		return 0;
 	}
+	
 	rewind(fAux);
 	sprintf(tokenref, "\\%s{%s}", token, reference);
 
@@ -1002,20 +986,16 @@ ScanAux(char *token, char *reference, int code)
 		if ((s = strstr(AuxLine, tokenref)) != NULL) {
 			s += strlen(tokenref);
 
-			for (; code >= 0; code--) {	/* Do once or twice
-							 * depending on code */
+			for (; code >= 0; code--) {	/* Do once or twice depending on code */
 				s = strchr(s, openbrace);
-				if (s == NULL) {	/* no parameter found,
-							 * just print '?' and
-							 * return */
+				if (s == NULL) {	/* no parameter found, print '?' and return */
 					fprintRTF("?");
 					return 0;
 				}
 				s++;
 			}
 
-			while (*s != closebrace && *s != '\0')	/* print the number and
-								 * exit */
+			while (*s != closebrace && *s != '\0')	/* print the number and exit */
 				fprintRTF("%c", *s++);
 
 			return 1;
@@ -1186,7 +1166,7 @@ CmdFigure(int code)
 void 
 CmdIgnoreFigure(int code)
 /******************************************************************************
-  purpose: function to read Picture,Bibliography and Minipage Environment
+  purpose: function to ignore Picture and Minipage Environment
 parameter: code: which environment to ignore
  ******************************************************************************/
 {
@@ -1201,10 +1181,6 @@ parameter: code: which environment to ignore
 	
 	case MINIPAGE:
 			strcpy(environ, "minipage");
-			break;
-	
-	case THEBIBLIOGRAPHY:
-			strcpy(environ, "thebibliography");
 			break;
 	
 	default:
@@ -1375,7 +1351,7 @@ CmdAbstract(int code)
 
 	fprintRTF("\n\\par\n\\par\\pard ");
 	if (code == ON) {
-		if (!article || !titlepage) 
+		if (!(g_document_type == FORMAT_ARTICLE) || !titlepage) 
 			fprintRTF("\\page");
 
 		fprintRTF("\\pard\\qj ");

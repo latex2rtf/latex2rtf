@@ -1,4 +1,4 @@
-/* $Id: cfg.c,v 1.13 2001/09/06 04:43:04 prahl Exp $
+/* $Id: cfg.c,v 1.14 2001/09/18 03:40:25 prahl Exp $
 
      purpose : Read config files and provide lookup routines
 
@@ -338,7 +338,7 @@ LATEXTOKEN,Translation.
 
  ****************************************************************************/
 void
-ReadLg(char *lang)
+ReadLanguage(char *lang)
 {
 	FILE           *fp;
 	char           *langfn;

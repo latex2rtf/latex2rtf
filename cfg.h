@@ -1,4 +1,4 @@
-/* $Id: cfg.h,v 1.12 2001/09/06 04:43:04 prahl Exp $*/
+/* $Id: cfg.h,v 1.13 2001/09/18 03:40:25 prahl Exp $*/
 
 #ifndef __CFG_H
 #define __CFG_H
@@ -28,7 +28,7 @@ extern ConfigEntryT **CfgNext (int WhichCfg, ConfigEntryT **last);
 #define IGNORE_A	2
 #define LANGUAGE_A      3
 
-extern void ReadLg(char *lang);
+extern void ReadLanguage(char *lang);
 void ConvertBabelName(char *name);
 
 #ifndef LIBDIR

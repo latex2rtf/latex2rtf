@@ -1,4 +1,4 @@
-/* $Id: preamble.c,v 1.9 2001/09/16 16:33:51 prahl Exp $
+/* $Id: preamble.c,v 1.10 2001/09/18 03:40:25 prahl Exp $
 
 purpose : Handles LaTeX commands that should only occur in the preamble.
           These are gathered together because the entire preamble must be
@@ -26,19 +26,17 @@ purpose : Handles LaTeX commands that should only occur in the preamble.
 #include "commands.h"
 #include "counters.h"
 
-static int    g_preambleFormat   = FORMAT_ARTICLE;
+extern bool   pagestyledefined;
+extern enum   TexCharSetKind TexCharSet;
+
 static bool   g_preambleTwoside  = FALSE;
 static bool   g_preambleTwocolumn= FALSE;
 static bool   g_preambleTitlepage= FALSE;
 static bool   g_preambleLandscape= FALSE;
 
-extern bool   pagestyledefined;
-extern enum   TexCharSetKind TexCharSet;
-
 static char * g_preambleTitle    = NULL;
 static char * g_preambleAuthor   = NULL;
 static char * g_preambleDate     = NULL;
-static char * g_preambleLanguage = NULL;
 static char * g_preambleEncoding = NULL;
 
 static char * g_preambleCFOOT = NULL;
@@ -59,9 +57,19 @@ static void WritePageSize(void);
 static void
 setPackageBabel(char * option)
 {
-	g_preambleLanguage = strdup(option);
-	if (strcmp(option, "german") == 0)
-		GermanMode = TRUE;
+	if (strcmp(option, "german") == 0 ||
+	    strcmp(option, "ngerman") == 0 ) {
+			GermanMode = TRUE;
+			PushEnvironment(GERMAN_MODE);
+			g_language = strdup("german");
+	}
+	
+	if (strcmp(option, "french") == 0)
+	{
+		PushEnvironment(FRENCH_MODE);
+		g_language = strdup(option);
+	}
+		
 }
 
 static void
@@ -227,6 +235,30 @@ setPaperSize(char * option)
 	}
 }
 
+static void
+setPointSize(char * option)
+{
+	if (strcmp(option, "10pt") == 0){
+		InitializeDocumentFont(TexFontNumber("Roman"), 20, F_SHAPE_UPRIGHT, F_SERIES_MEDIUM);
+		setLength("baselineskip",12*20);
+		setLength("parindent",   15*20);
+		setLength("parskip",      0*20);
+
+	}else if (strcmp(option, "11pt") == 0){
+		InitializeDocumentFont(TexFontNumber("Roman"), 22, F_SHAPE_UPRIGHT, F_SERIES_MEDIUM);
+		setLength("baselineskip",14*20);
+		setLength("parindent",   17*20);
+		setLength("parskip",      0*20);
+
+	}else {
+		InitializeDocumentFont(TexFontNumber("Roman"), 24, F_SHAPE_UPRIGHT, F_SERIES_MEDIUM);
+		setLength("baselineskip",14.5*20);
+		setLength("parindent",   18*20);
+		setLength("parskip",      0*20);
+	}
+}
+
+
 static void 
 setDocumentOptions(char *optionlist)
 /******************************************************************************
@@ -238,20 +270,18 @@ setDocumentOptions(char *optionlist)
 
 	while (option) {
 		diagnostics(4, "                    option   %s", option);
-		if (strcmp(option, "10pt") == 0)
-	InitializeDocumentFont(TexFontNumber("Roman"), 20, F_SHAPE_UPRIGHT, F_SERIES_MEDIUM);
-		else if (strcmp(option, "11pt") == 0)
-	InitializeDocumentFont(TexFontNumber("Roman"), 22, F_SHAPE_UPRIGHT, F_SERIES_MEDIUM);
-		else if (strcmp(option, "12pt") == 0)
-	InitializeDocumentFont(TexFontNumber("Roman"), 24, F_SHAPE_UPRIGHT, F_SERIES_MEDIUM);
-		else if (strcmp(option, "a4")  == 0 ||
-			     strcmp(option, "a4paper") == 0 || 
-			     strcmp(option, "a4wide") == 0 || 
-			     strcmp(option, "b5paper") == 0 || 
-			     strcmp(option, "a5paper") == 0 || 
+		if      (strcmp(option, "10pt"       ) == 0 ||
+			     strcmp(option, "11pt"       ) == 0 || 
+				 strcmp(option, "12pt"       ) == 0) 
+			setPointSize(option);
+		else if (strcmp(option, "a4"         ) == 0 ||
+			     strcmp(option, "a4paper"    ) == 0 || 
+			     strcmp(option, "a4wide"     ) == 0 || 
+			     strcmp(option, "b5paper"    ) == 0 || 
+			     strcmp(option, "a5paper"    ) == 0 || 
 			     strcmp(option, "letterpaper") == 0 || 
-			     strcmp(option, "landscape") == 0 || 
-				 strcmp(option, "legalpaper")  == 0) 
+			     strcmp(option, "landscape"  ) == 0 || 
+				 strcmp(option, "legalpaper" ) == 0) 
 			setPaperSize(option);
 		else if (strcmp(option, "german")  == 0 ||
 			     strcmp(option, "spanish") == 0 || 
@@ -294,21 +324,21 @@ CmdDocumentStyle(int code)
 
 	diagnostics(4, "Documentstyle/class[%s]{%s}", optionlist,format);
 
-	g_preambleFormat = FORMAT_ARTICLE;
+	g_document_type = FORMAT_ARTICLE;
 	if (strcmp(format, "book") == 0)
-		g_preambleFormat = FORMAT_BOOK;
+		g_document_type = FORMAT_BOOK;
 		
 	else if (strcmp(format, "report") == 0)
-		g_preambleFormat = FORMAT_REPORT;
+		g_document_type = FORMAT_REPORT;
 
 	else if (strcmp(format, "letter") == 0)
-		g_preambleFormat = FORMAT_LETTER;
+		g_document_type = FORMAT_LETTER;
 
 	else if (strcmp(format, "article") == 0)
-		g_preambleFormat = FORMAT_ARTICLE;
+		g_document_type = FORMAT_ARTICLE;
 
 	else if (strcmp(format, "slides") == 0)
-		g_preambleFormat = FORMAT_SLIDES;
+		g_document_type = FORMAT_SLIDES;
 
 	else
 		fprintf(stderr, "\nDocument format <%s> unknown, using article format", format);
@@ -337,6 +367,11 @@ CmdUsepackage(int code)
 	else if (strcmp(package, "babel") == 0)
 		setPackageBabel(optionlist);
 		
+	else if (strcmp(package, "german")  == 0 ||
+		     strcmp(package, "ngerman")  == 0 ||
+		     strcmp(package, "french")  == 0) 
+		setPackageBabel(package);
+
 	else if (strcmp(package, "palatino") == 0 ||
 	         strcmp(package, "times") == 0    ||
 	         strcmp(package, "helvetica") == 0 )
@@ -618,13 +653,13 @@ WriteStyleHeader(void)
  ****************************************************************************/
 {
 	int DefFont = DefaultFontFamily();
-	fprintRTF("{\\stylesheet{\\fs%d\\lang1031\\snext0 Normal;}\n", CurrentFontSize());
+	fprintRTF("{\\stylesheet{\\fs%d\\lang1024\\snext0 Normal;}\n", CurrentFontSize());
 	fprintRTF("{%s\\f%d%s \\sbasedon0\\snext0 heading 1;}\n", HEADER11, DefFont, HEADER12);
 	fprintRTF("{%s\\f%d%s \\sbasedon0\\snext0 heading 2;}\n", HEADER21, DefFont, HEADER22);
 	fprintRTF("{%s\\f%d%s \\sbasedon0\\snext0 heading 3;}\n", HEADER31, DefFont, HEADER32);
 	fprintRTF("{%s\\f%d%s \\sbasedon0\\snext0 heading 4;}\n", HEADER41, DefFont, HEADER42);
-
 	fprintRTF("%s\n", HEADER03);
+	
 	fprintRTF("%s\n", HEADER13);
 	fprintRTF("%s\n", HEADER23);
 	fprintRTF("%s\n", HEADER33);
@@ -673,7 +708,7 @@ WritePageSize(void)
 	fprintRTF("\\margb%d", n);
 	
 	fprintRTF("\\pgnstart%d", getCounter("page"));
-	fprintRTF("\\widowctrl\n");
+	fprintRTF("\\widowctrl\\qj\n");
 }
 
 static void
@@ -689,8 +724,10 @@ WriteHeadFoot(void)
 {
 /*	fprintRTF("\\ftnbj\\sectd\\linex0\\endnhere\\qj\n"); */
 
+  	int textwidth = getLength("textwidth");
+  	
   	if (g_preambleLFOOT || g_preambleCFOOT || g_preambleRFOOT) {
-  		fprintRTF("{\\footer\\pard\\plain\\tqc\\tx4320\\tqr\\tx8640");
+  		fprintRTF("{\\footer\\pard\\plain\\tqc\\tx%d\\tqr\\tx%d ", textwidth/2, textwidth);
   		
 		if (g_preambleLFOOT)
 			ConvertString(g_preambleLFOOT);
@@ -708,7 +745,7 @@ WriteHeadFoot(void)
     }
 
   	if (g_preambleLHEAD || g_preambleCHEAD || g_preambleRHEAD) {
-  		fprintRTF("{\\header\\pard\\plain\\tqc\\tx4320\\tqr\\tx8640");
+  		fprintRTF("{\\header\\pard\\plain\\tqc\\tx%d\\tqr\\tx%d ", textwidth/2, textwidth);
   		
 		if (g_preambleLHEAD)
 			ConvertString(g_preambleLHEAD);
@@ -789,9 +826,8 @@ purpose: writes header info for the RTF file
 	WriteFontHeader();
 	WriteStyleHeader();
 	WriteInfo();
-	WritePageSize();
 	WriteHeadFoot();
-/*	fprintRTF("\\f%d\\ansi ", TexFontNumber("Roman"));*/
+	WritePageSize();
 }
 
 
