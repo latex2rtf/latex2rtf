@@ -22,6 +22,7 @@ This file is available from http://sourceforge.net/projects/latex2rtf/
 
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include "main.h"
 #include "convert.h"
 #include "definitions.h"
@@ -182,7 +183,8 @@ static char *expandmacro(char *macro, char *opt_param, int params)
             } else if (param < params) {
                 diagnostics(3, "expandmacro arg =<%s>", args[param]);
                 if (expanded+strlen(args[param])+1 <buffer+buff_size) {
-                    if (*(expanded-1)!=' ') {
+                    char c = *(expanded-1);
+                    if (isalpha(c)) {
                     	*expanded=' ';
                         expanded++;
                     }
