@@ -1,3 +1,113 @@
+2002-11-20 08:30  prahl
+
+ Add missing test files to CVS
+	
+2002-11-20 08:25  prahl
+
+ Remove proffois.tex from CVS and tarball
+	
+2002-11-20 08:19  prahl
+
+ Remove extra header file from mygetopt.c
+	
+2002-11-20 08:08  prahl
+
+ Fix for bad footnote processing.
+	
+2002-11-20 07:56  prahl
+
+ Fix broken -C command line option
+	
+2002-11-19 21:26  prahl
+
+ Fixed indentation bug in second paragraph of list item
+	
+2002-11-19 21:12  prahl
+
+ Fix to properly create .pbm files when inline equation flag is present
+	
+2002-11-19 21:08  prahl
+
+ Add readme for scripts directory
+	
+2002-11-19 21:07  prahl
+
+ Add Makefile and test files for latex2png script.  Removed old scripts
+	added files to main Makefile for packaging.
+	
+2002-11-19 18:43  prahl
+
+ Make -fsigned-char the default (mostly for AIX)
+	
+2002-11-19 04:04  prahl
+
+ Hack to work around \begin{multicols} ... \end{multicols} bug.  There is no
+	support, but create a valid RTF file.
+	
+2002-11-19 03:55  prahl
+
+ Use endash and not bullet in itemize environment
+	
+2002-11-19 03:28  prahl
+
+ Fix indentation bugs in bibliography environment
+	
+2002-11-18 20:09  prahl
+
+ update credits, todo list
+	
+2002-11-18 20:06  prahl
+
+ Various fixes to improve equation handling by C. Bernard.
+	
+2002-11-18 17:38  prahl
+
+ Adding a few more commands from french.sty
+	
+2002-11-18 09:16  prahl
+
+ Fix indenting of paragraphs following section in FrenchMode
+	
+2002-11-17 21:43  prahl
+
+ Fix for duplicated labels in apalike bibliographies.
+	Explicitly handle \bibliographystyle
+	Fix bug in opening .bbl file
+	Provide warning if file has not be latexed enough times
+	Ensure that name of bibliography is discarded.
+	
+2002-11-17 17:45  prahl
+
+ Fixes to make list environments (enumerate, itemize, and description) align
+	better.
+	
+2002-11-17 08:52  prahl
+
+ Fix broken -o option
+	
+2002-11-16 22:20  prahl
+
+ Changes to make inline equations align properly.  This required changes to
+	the latex2png script and how png files are placed.
+	
+2002-11-08 08:03  prahl
+
+ Add -c -g -m and -i options to all scripts.  Make default, _1 and _2
+	scripts work with included eps files.  -i support not implemented.
+	latex2png was contributed by B. Horeni, but mangled by me so it probably
+	does not work on any platform at the moment.
+	
+	Finally, -i support will be added when the inline equation option
+	is added to the latex2rtf source.
+	
+2002-11-06 18:06  prahl
+
+ Support for processing figures using latex and including the result as a
+	png in the RTF file.  This is the new (undocumented) option -F.  This
+	check-in also adds support for processing \begin{music}...\end{music}
+	in the same way.  I also see that some of the partially enhanced latex2png
+	files have also made their way into this check-in as well.
+	
 2002-11-05 07:17  prahl
 
  Removed -ansi and added -fsigned-char to CFLAGS
@@ -1213,12 +1323,8 @@
 
  Revised fonts.cfg, removed Ferdsch, now set the default font correctly
 	and begun the process of eliminating the $Log: ChangeLog,v $
-	and begun the process of eliminating the Revision 1.17  2002/11/07 02:06:56  prahl
-	and begun the process of eliminating the Support for processing figures using latex and including the result as a
-	and begun the process of eliminating the png in the RTF file.  This is the new (undocumented) option -F.  This
-	and begun the process of eliminating the check-in also adds support for processing \begin{music}...\end{music}
-	and begun the process of eliminating the in the same way.  I also see that some of the partially enhanced latex2png
-	and begun the process of eliminating the files have also made their way into this check-in as well.
+	and begun the process of eliminating the Revision 1.18  2002/11/21 15:54:00  prahl
+	and begun the process of eliminating the different conventions for calling latex2png under MSDOS
 	and begun the process of eliminating the comments in files.
 	
 2001-08-12 14:15  prahl

@@ -952,13 +952,23 @@ Exit:
 	return baseline;	
 }
 
+static char *
+get_latex2png_name()
+{
+#ifdef MSDOS
+	return strdup("command.com /e:2048 /c latex2pn");
+#else
+	return strdup("latex2png");
+#endif
+}
+
 void
 PutLatexFile(char *s, double scale, char *pre)
 /******************************************************************************
  purpose   : Convert LaTeX to Bitmap and insert in RTF file
  ******************************************************************************/
 {
-	char *png, *cmd;
+	char *png, *cmd, *l2p;
 	int err, cmd_len, baseline,second_pass;
 	unsigned long width, height, rw, rh;
 	double maxsize=32767/20;
@@ -967,9 +977,9 @@ PutLatexFile(char *s, double scale, char *pre)
 	diagnostics(4, "Entering PutLatexFile");
 
 	png = strdup_together(s,".png");
+	l2p = get_latex2png_name();
 
-
-	cmd_len = strlen(s)+25;
+	cmd_len = strlen(l2p)+strlen(s)+25;
 	if (g_home_dir)
 		cmd_len += strlen(g_home_dir);
 
@@ -978,9 +988,9 @@ PutLatexFile(char *s, double scale, char *pre)
 	do {
 		second_pass = FALSE; 	/* only needed if png is too large for Word */
 		if (g_home_dir==NULL)
-			sprintf(cmd, "latex2png -d %d %s", resolution, s);	
+			sprintf(cmd, "%s -d %d %s", l2p, resolution, s);	
 		else
-			sprintf(cmd, "latex2png -d %d -H \"%s\" %s", resolution, g_home_dir, s);	
+			sprintf(cmd, "%s -d %d -H \"%s\" %s", l2p, resolution, g_home_dir, s);	
 
 		diagnostics(1, "cmd = <%s>", cmd);
 		err=system(cmd);
@@ -1001,6 +1011,7 @@ PutLatexFile(char *s, double scale, char *pre)
 	if (err==0)
 		PutPngFile(png, scale*72.0/resolution, baseline, TRUE);
 	
+	free(l2p);
 	free(png);
 	free(cmd);
 }
