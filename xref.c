@@ -228,8 +228,7 @@ static char *ScanBbl(char *reference)
 {
     static FILE *f_bbl = NULL;
     char buffer[4096];
-    char target[512];
-    char *s;
+    char *s, *t;
 	char last_c;
 	int  i=1;
 	
@@ -237,8 +236,6 @@ static char *ScanBbl(char *reference)
         return NULL;
     }
     diagnostics(4, "seeking '\\bibitem{%s}' in .bbl", reference);
-
-    snprintf(target, 512, "\\bibitem{%s}", reference);
 	
     if (f_bbl == NULL && (f_bbl = my_fopen(g_bbl_name, "r")) == NULL) {
         diagnostics(WARNING, "No .bbl file.  Run LaTeX to create %s\n", g_bbl_name);
@@ -249,8 +246,11 @@ static char *ScanBbl(char *reference)
 
 	/* scan each line for \bibentry{reference} */
     while (fgets(buffer, 4095, f_bbl) != NULL) {
-        s = strstr(buffer, target);
-        if (s) break;
+        t = strstr(buffer, "\\bibitem");
+        if (t) {
+        	s = strstr(buffer, reference);
+        	if (s) break;
+        }
     }
 
 	if (!s) return NULL;
