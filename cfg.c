@@ -55,20 +55,16 @@ static ConfigInfoT configinfo[] =
 	{"direct.cfg", NULL, 0, FALSE},
 	{"fonts.cfg", NULL, 0, FALSE},
 	{"ignore.cfg", NULL, 0, FALSE},
+	{"style.cfg", NULL, 0, FALSE},
 	{"english.cfg", NULL, 0, FALSE},
-
 };
+
 #define CONFIG_SIZE (sizeof(configinfo) / sizeof(ConfigInfoT))
 #define BUFFER_INCREMENT 1024
 
-extern void     Fatal(const char *fmt,...);
-void            ParseError(const char *fmt,...);
-char           *ReadUptoMatch(FILE * infile, const char *scanchars);
+char *ReadUptoMatch(FILE * infile, const char *scanchars);
 
-static char * g_cfg_filename;
-
-static int 
-cfg_compare(ConfigEntryT ** el1, ConfigEntryT ** el2)
+static int cfg_compare(ConfigEntryT ** el1, ConfigEntryT ** el2)
 /****************************************************************************
  * purpose:  compare-function for bsearch
  * params:   el1, el2: Config Entries to be compared
@@ -79,6 +75,11 @@ cfg_compare(ConfigEntryT ** el1, ConfigEntryT ** el2)
 
 static FILE *
 try_path(const char *path, const char *file)
+/****************************************************************************
+ * purpose:  append path to .cfg file name and open
+             return NULL upon failure,
+             return filepointer otherwise
+ ****************************************************************************/
 {
 	char * both;
 	FILE * fp=NULL;
@@ -171,82 +172,89 @@ purpose: open config by trying multiple paths
 	return NULL;
 }
 
-
-/***/
 static size_t 
-read_cfg(FILE * cfgfile
-	 ,ConfigEntryT *** pointer_array
-	 ,bool do_remove_backslash
-)
+read_cfg(FILE * cfgfile, ConfigEntryT *** pointer_array, bool do_remove_backslash)
 /****************************************************************************
  * purpose: Read config file and provide sorted lookup table
  ****************************************************************************/
-/* @modifies pointer_array@ */
 {
 	size_t          bufindex = 0, bufsize = 0;
 	char           *line, *cmdend;
 
 	if (*pointer_array == NULL) {
-		if ((*pointer_array = malloc(BUFFER_INCREMENT * sizeof(char *))) == NULL) {
-			Fatal("Cannot allocate memory for pointer list\n");
-		}
+		*pointer_array = malloc(BUFFER_INCREMENT * sizeof(char *));
 		bufsize = BUFFER_INCREMENT;
+		if (*pointer_array == NULL)
+			diagnostics(ERROR,"Cannot allocate memory for pointer list");
 	}
+	
 	while ((line = ReadUptoMatch(cfgfile, "\n")) != NULL) {
-		(void) getc(cfgfile);	/* skip newline */
+		
+		/* skip newline */
+		getc(cfgfile);	
+		
 		/* Skip leading white space */
-		while (isspace((unsigned char) *line)) {
+		while (isspace((unsigned char) *line)) 
 			line++;
-		}
-		if (*line == '#' || *line == '\0') {
+		
+		/* Skip comment line */
+		if (*line == '#') 
 			continue;
-		}
+		
+		/* Skip blank line */
+		if (*line == '\0') 
+			continue;
+			
+		/* Find period that terminates command */
 		cmdend = strrchr(line, '.');
-		if (cmdend == NULL) {
-			ParseError("Bad config file, missing final period\nBad line is \"%s\"", line);
-		}
+		if (cmdend == NULL)
+			diagnostics(ERROR,"Bad config file, missing final period\nBad line is \"%s\"", line);
+		
+		/* Replace period with NULL */
 		*cmdend = '\0';
+		
+		/* Skip backslash if specified */
 		if (do_remove_backslash) {
-			if (*line != '\\') {
-				ParseError("Bad config file, missing initial'\\'\nBad line is\"%s\"", line);
-			} else {
+			if (*line != '\\')
+				diagnostics(ERROR,"Bad config file, missing initial'\\'\nBad line is\"%s\"", line);
+			else
 				line++;
-			}
 		}
+		
+		/* resize buffer if needed */
 		if (bufindex >= bufsize) {
-			/*
-			 * LEG210698*** Here we know, that pointer array is
-			 * not null! What to do with the second allocation?
-			 */
-			if ((*pointer_array
-			     = malloc((bufsize += BUFFER_INCREMENT) * sizeof(char *))
-			     ) == NULL
-				) {
-				Fatal("Cannot allocate memory for pointer list\n");
-			}
+			bufsize += BUFFER_INCREMENT;
+			*pointer_array = realloc(*pointer_array, bufsize * sizeof(char *));
+			if (*pointer_array == NULL) 
+				diagnostics(ERROR,"Cannot allocate memory for pointer list");
 		}
-		line = strdup(line);
+		
+		/* find start of definition */
 		cmdend = strchr(line, ',');
-		if (cmdend == NULL) {
-			ParseError("Bad config file, missing ',' between elements\nBad line is\"%s\"", line);
-		}
-		*cmdend++ = '\0';
+		if (cmdend == NULL) 
+			diagnostics(ERROR,"Bad config file, missing ',' between elements\nBad line is\"%s\"", line);
+		
+		/* terminate command */
+		*cmdend = '\0';
 
-		if (((*pointer_array)[bufindex] = malloc(sizeof(ConfigEntryT))) == NULL) {
-			Fatal("Cannot allocate memory for config entry\n");
-		}
+		(*pointer_array)[bufindex] = malloc(sizeof(ConfigEntryT));
+		
+		if ((*pointer_array)[bufindex] == NULL)
+			diagnostics(ERROR,"Cannot allocate memory for config entry");
+		
 		(*pointer_array)[bufindex]->TexCommand = line;
-		(*pointer_array)[bufindex]->RtfCommand = cmdend;
+		(*pointer_array)[bufindex]->RtfCommand = cmdend+1;
 		bufindex++;
 	}
+		
 	qsort(*pointer_array
 	      ,bufindex
 	      ,sizeof(**pointer_array)
 	      ,(fptr) cfg_compare
 		);
+
 	return bufindex;
 }
-
 
 void 
 ReadCfg(void)
@@ -257,10 +265,13 @@ ReadCfg(void)
 {
 	size_t          i;
 	FILE           *fp;
-
+	char		   *fname;
+	
 	for (i = 0; i < CONFIG_SIZE; i++) {
-		g_cfg_filename = configinfo[i].filename;
-		fp = (FILE *) open_cfg(configinfo[i].filename, TRUE);
+		fname = configinfo[i].filename;
+		fp = (FILE *) open_cfg(fname, TRUE);
+		diagnostics(4,"reading config file %s", fname);
+		
 		configinfo[i].config_info_size
 			= read_cfg(fp
 				   ,&(configinfo[i].config_info)
@@ -404,34 +415,7 @@ ConvertBabelName(char *name)
 		ConvertString(s);
 }
 
-/* @exits@ */
-void 
-ParseError(const char *fmt,...)
-{
-	va_list         ap;
-
-	fprintf(stderr, "%s: %s: ", progname, g_cfg_filename);
-	va_start(ap, fmt);
-	(void) vfprintf(stderr, fmt, ap);
-	va_end(ap);
-	fprintf(stderr, "\n");
-	exit(EXIT_FAILURE);
-}
-
-void 
-Fatal(const char *fmt,...)
-{
-	va_list         ap;
-
-	fprintf(stderr, "%s: Fatal error: ", progname);
-	va_start(ap, fmt);
-	(void) vfprintf(stderr, fmt, ap);
-	va_end(ap);
-	fprintf(stderr, "\n");
-	exit(EXIT_FAILURE);
-}
-
-static char *buffer;
+static char		*buffer = NULL;
 static size_t   bufsize = 0;
 
 #define CR (char) 0x0d
@@ -441,21 +425,22 @@ static size_t   bufsize = 0;
  * This function assumes there are no '\0' characters in the input.
  * if there are any, they are ignored.
  */
-char           *
-ReadUptoMatch(FILE * infile, /* @observer@ */ const char *scanchars)
+char *
+ReadUptoMatch(FILE * infile, const char *scanchars)
 {
 	size_t          bufindex = 0;
 	int             c;
 
-	if (feof(infile) != 0) {
+	if (feof(infile) != 0)
 		return NULL;
-	}
+	
 	if (buffer == NULL) {
-		if ((buffer = malloc(BUFFER_INCREMENT)) == NULL) {
-			Fatal("Cannot allocate memory for input buffer\n");
-		}
+		buffer = malloc(BUFFER_INCREMENT * sizeof(char));
+		if (buffer == NULL) 
+			diagnostics(ERROR, "Cannot allocate memory for input buffer");
 		bufsize = BUFFER_INCREMENT;
 	}
+	
 	while ((c = getc(infile)) != EOF ) {
 	
 		if (c == CR || c == LF)
@@ -464,25 +449,21 @@ ReadUptoMatch(FILE * infile, /* @observer@ */ const char *scanchars)
 		if (strchr(scanchars, c))
 			break;
 			
-		if (c == (int) '\0') {
+		if (c == (int) '\0') 
 			continue;
-		}
-/*		if (c == (int) '\n') {
-			linenumber++;
-		}
-*/		buffer[bufindex++] = (char) c;
+
+		buffer[bufindex++] = (char) c;
 		if (bufindex >= bufsize) {
-			if ((buffer = realloc(buffer, bufsize += BUFFER_INCREMENT)) == NULL) {
-				Fatal("Cannot allocate memory for input buffer\n");
-			}
+			bufsize += BUFFER_INCREMENT;
+			buffer = realloc(buffer, bufsize);
+			if (buffer == NULL)
+				diagnostics(ERROR,"Cannot allocate memory for input buffer");
 		}
 	}
 	buffer[bufindex] = '\0';
-	if (c != EOF) {
-		ungetc(c, infile);	/* LEG210698*** lclint, GNU libc
-					 * doesn't say what's the return
-					 * value */
-	}
+	if (c != EOF)
+		ungetc(c, infile);
+
 	return buffer;
 }
 

@@ -1,9 +1,10 @@
-/* $Id: cfg.h,v 1.16 2003/09/28 20:27:17 prahl Exp $*/
+/* $Id: cfg.h,v 1.17 2003/12/14 06:44:26 prahl Exp $*/
 
 #define DIRECT_A	0
 #define FONT_A		1
 #define IGNORE_A	2
-#define LANGUAGE_A  3
+#define STYLE_A     3
+#define LANGUAGE_A  4
 
 #ifndef CFGDIR
 #define CFGDIR ""

@@ -786,7 +786,7 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 		return;
 	}
 	
-	if (TryDirectConvert(cCommand, fRtf)) return;
+	if (TryDirectConvert(cCommand)) return;
 	
 	if (TryVariableIgnore(cCommand)) return;
 		

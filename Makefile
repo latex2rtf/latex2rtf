@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.94 2003/11/01 15:42:38 prahl Exp $
+# $Id: Makefile,v 1.95 2003/12/14 06:44:26 prahl Exp $
 
 CC=gcc
 MKDIR=mkdir -p
@@ -49,7 +49,7 @@ HDRS=commands.h chars.h direct.h encode.h l2r_fonts.h funct1.h tables.h ignore.h
     preamble.h equation.h convert.h xref.h definitions.h graphics.h encode_tables.h \
     version.h mygetopt.h
 
-CFGS=cfg/fonts.cfg cfg/direct.cfg cfg/ignore.cfg \
+CFGS=cfg/fonts.cfg cfg/direct.cfg cfg/ignore.cfg cfg/style.cfg \
     cfg/afrikaans.cfg cfg/bahasa.cfg cfg/basque.cfg cfg/brazil.cfg cfg/breton.cfg \
     cfg/catalan.cfg cfg/croatian.cfg cfg/czech.cfg cfg/danish.cfg cfg/dutch.cfg \
     cfg/english.cfg cfg/esperanto.cfg cfg/estonian.cfg cfg/finnish.cfg cfg/french.cfg \
