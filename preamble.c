@@ -1,4 +1,4 @@
-/* $Id: preamble.c,v 1.31 2002/04/13 18:20:35 prahl Exp $
+/* $Id: preamble.c,v 1.32 2002/04/21 22:49:59 prahl Exp $
 
 purpose : Handles LaTeX commands that should only occur in the preamble.
           These are gathered together because the entire preamble must be
@@ -293,7 +293,7 @@ setPointSize(char * option)
 
 	}else {
 		InitializeDocumentFont(-1, 24, -1, -1);
-		setLength("baselineskip",14.5*20);
+		setLength("baselineskip",(int) 14.5*20);
 		setLength("parindent",   18*20);
 		setLength("parskip",      0*20);
 	}

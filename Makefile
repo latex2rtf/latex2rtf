@@ -1,8 +1,8 @@
-# $Id: Makefile,v 1.50 2002/04/03 15:44:18 prahl Exp $
+# $Id: Makefile,v 1.51 2002/04/21 22:49:59 prahl Exp $
 
 CC=gcc
 MKDIR=mkdir -p
-LIBS=
+LIBS=-lMallocDebug -force_flat_namespace
 
 CFLAGS:=-DUNIX
 #CFLAGS:=-DMSDOS
@@ -48,8 +48,9 @@ CFGS=cfg/fonts.cfg cfg/direct.cfg cfg/ignore.cfg \
     cfg/serbian.cfg cfg/slovak.cfg cfg/slovene.cfg cfg/spanish.cfg cfg/swedish.cfg \
     cfg/turkish.cfg cfg/usorbian.cfg cfg/welsh.cfg 
 
-DOCS= doc/latex2rtf.1 doc/latex2rtf.texi doc/latex2rtf.pdf doc/latex2rtf.txt \
-	doc/latex2rtf.info doc/latex2rtf.html doc/credits doc/copying.txt doc/Makefile
+DOCS= doc/latex2rtf.1   doc/latex2png.1    doc/latex2rtf.texi doc/latex2rtf.pdf \
+      doc/latex2rtf.txt doc/latex2rtf.info doc/latex2rtf.html doc/credits \
+      doc/copying.txt   doc/Makefile
 
 README= README README.DOS README.Mac Copyright ChangeLog 
 
@@ -83,7 +84,7 @@ latex2rtf: $(OBJS) $(HDRS)
 	$(CC) $(CFLAGS) $(OBJS)	$(LIBS) -o latex2rtf
 
 cfg.o: Makefile
-	$(CC) $(CFLAGS) -DLIBDIR=\"$(CFG_INSTALL)\" -c cfg.c -o cfg.o
+	$(CC) $(CFLAGS) -DCFGDIR=\"$(CFG_INSTALL)\" -c cfg.c -o cfg.o
 
 check test: latex2rtf
 	cd test && $(MAKE) 
@@ -101,7 +102,6 @@ dist: $(SRCS) $(HDRS) $(CFGS) $(README) Makefile $(SCRIPTS) $(DOCS) $(TEST)
 	$(MKDIR) latex2rtf-$(VERSION)
 	$(MKDIR) latex2rtf-$(VERSION)/cfg
 	$(MKDIR) latex2rtf-$(VERSION)/doc
-	$(MKDIR) latex2rtf-$(VERSION)/doc/latex2rtf
 	$(MKDIR) latex2rtf-$(VERSION)/test
 	$(MKDIR) latex2rtf-$(VERSION)/scripts
 	ln $(SRCS)         latex2rtf-$(VERSION)
@@ -126,6 +126,7 @@ install: latex2rtf doc/latex2rtf.1 $(CFGS) scripts/latex2png
 	cp latex2rtf          $(BIN_INSTALL)
 	cp scripts/latex2png  $(BIN_INSTALL)
 	cp doc/latex2rtf.1    $(MAN_INSTALL)
+	cp doc/latex2png.1    $(MAN_INSTALL)
 	cp $(CFGS)            $(CFG_INSTALL)
 	cp doc/latex2rtf.html $(SUPPORT_INSTALL)
 	cp doc/latex2rtf.pdf  $(SUPPORT_INSTALL)

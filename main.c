@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.69 2002/04/13 18:20:35 prahl Exp $ */
+/* $Id: main.c,v 1.70 2002/04/21 22:49:59 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -335,7 +335,7 @@ usage(void)
 		fprintf(stderr, "\t -Z#              : add # of '}'s at end of rtf file (# is 0-9)\n\n");
 		fprintf(stderr, "RTFPATH designates the directory for configuration files (*.cfg)\n");
 		fprintf(stderr, "\t RTFPATH = '%s'\n", getenv("RTFPATH"));
-		fprintf(stderr, "\t LIBDIR  = '%s'\n\n", LIBDIR);
+		fprintf(stderr, "\t CFGDIR  = '%s'\n\n", CFGDIR);
 		exit(1);
 }
 
@@ -635,12 +635,15 @@ my_strdup(const char *str)
 purpose: duplicate string --- exists to ease porting
  ****************************************************************************/
 {
-	char           *s;
-
-	if ((s = malloc(strlen(str) + 1)) == NULL) {
-		diagnostics(ERROR,"Cannot allocate memory for string\n");
-	}
+	char           *s=NULL;
+	unsigned long  strsize;
+	
+	strsize = strlen(str);
+	s = (char *) malloc(strsize+1);
+	if (s == NULL) 
+		diagnostics(ERROR,"Cannot allocate memory to duplicate string");
 	strcpy(s, str);
+/*	diagnostics(3,"ptr %x",(unsigned long)s);*/
 	return s;
 }
 

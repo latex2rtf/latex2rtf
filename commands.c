@@ -1,4 +1,4 @@
-/*  $Id: commands.c,v 1.52 2002/04/13 18:38:51 prahl Exp $
+/*  $Id: commands.c,v 1.53 2002/04/21 22:49:59 prahl Exp $
  
     Defines subroutines to translate LaTeX commands to RTF
 */
@@ -436,9 +436,9 @@ static CommandArray params[] = {
 	{"verbatim", CmdVerbatim, VERBATIM_1},
 	{"verse", CmdVerse, 0},
 	{"tabular", CmdTabular, TABULAR},
-	{"tabular*", CmdTabular, TABULAR_1},
-	{"longtable", CmdTabular, TABULAR},
-	{"longtable*", CmdTabular, TABULAR_1},
+	{"tabular*", CmdTabular, TABULAR_STAR},
+	{"longtable", CmdTabular, TABULAR_LONG},
+	{"longtable*", CmdTabular, TABULAR_LONG_STAR},
 	{"array", CmdArray, 1},
 
 	{"displaymath", CmdEquation, EQN_DISPLAYMATH},

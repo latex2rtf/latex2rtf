@@ -1,4 +1,4 @@
-/* $Id: xref.c,v 1.21 2002/04/06 04:37:04 prahl Exp $ 
+/* $Id: xref.c,v 1.22 2002/04/21 22:49:59 prahl Exp $ 
  
 This file contains routines to handle cross references :
 	\label{key}, \ref{key},   \pageref{key}, \bibitem{key},
@@ -46,8 +46,8 @@ CmdFootNote(int code)
 	number = getBracketParam();	/* ignored by automatic footnumber generation */
 
 	if (number) free(number);
-	text_ref_upsize = 0.8 * CurrentFontSize();
-	foot_ref_upsize = 0.8 * CurrentFontSize();
+	text_ref_upsize = (int) (0.8 * CurrentFontSize());
+	foot_ref_upsize = (int) (0.8 * CurrentFontSize());
 
 	switch (code) {
 		case FOOTNOTE_THANKS:

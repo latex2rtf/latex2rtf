@@ -839,7 +839,7 @@
 2001-09-26 07:02  prahl
 
  Patch by Chris Lawrence to fix off-by-one error in cfg.c
-	This fixes bug when LIBDIR does not end with a '/'
+	This fixes bug when CFGDIR does not end with a '/'
 	
 2001-09-25 22:34  prahl
 
@@ -978,6 +978,12 @@
 
  Revised fonts.cfg, removed Ferdsch, now set the default font correctly
 	and begun the process of eliminating the $Log: ChangeLog,v $
+	and begun the process of eliminating the Revision 1.16  2002/04/21 22:49:59  prahl
+	and begun the process of eliminating the More tabular fixes.
+	and begun the process of eliminating the Weird malloc problem under OSX
+	and begun the process of eliminating the Added man file for latex2png
+	and begun the process of eliminating the More robust code for user environment expansions
+	and begun the process of eliminating the
 	and begun the process of eliminating the Revision 1.15  2002/04/04 03:11:24  prahl
 	and begun the process of eliminating the Remove diagnostic label warning
 	and begun the process of eliminating the support \dfrac (mostly)

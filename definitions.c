@@ -28,6 +28,8 @@ struct {
 
 struct {
 	char * name;
+	char * begname;
+	char * endname;
 	char * begdef;
 	char * enddef;
 	int  params;
@@ -97,7 +99,7 @@ expandmacro(char *macro, int params)
 	
 	for (i=0; i<params; i++) {
 		args[i] = getBraceParam();
-		diagnostics(3, "argument #%d <%s>", i+1, args[i]);
+		diagnostics(5, "argument #%d <%s>", i+1, args[i]);
 	}
 	
 	expanded = buffer;
@@ -267,6 +269,9 @@ expandDefinition(int thedef)
 **************************************************************************/
 {
 
+	if (thedef<0 || thedef>=iDefinitionCount)
+		return NULL;
+	
 	diagnostics(3, "expandDefinition name   =<%s>", Definitions[thedef].name);
 	diagnostics(3, "expandDefinition def    =<%s>", Definitions[thedef].def);
 	diagnostics(3, "expandDefinition params =<%d>", Definitions[thedef].params);
@@ -285,7 +290,7 @@ existsEnvironment(char * s)
 	
 	n = strlen(s);
 	while(i < iNewEnvironmentCount && !strequal(s,NewEnvironments[i].name)) {
-		diagnostics(6, "seeking=<%s>, i=%d, current=<%s>", s,i,NewEnvironments[i].name);
+		diagnostics(4, "e seeking=<%s>, i=%d, current=<%s>", s,i,NewEnvironments[i].name);
 		i++;
 	}
 
@@ -293,6 +298,30 @@ existsEnvironment(char * s)
 		return -1;
 	else
 		return i;
+}
+
+int
+maybeEnvironment(char * s, int n)
+/**************************************************************************
+     purpose: checks to see if a named TeX environment possibly exists
+     returns: the array index of the named TeX definition
+**************************************************************************/
+{
+	int i;
+	
+	if (n==0) return TRUE;
+	
+	for (i=0; i<iNewEnvironmentCount; i++) {
+		diagnostics(6, "seeking=<%s>, i=%d, current=<%s>", s,i,NewEnvironments[i].name);
+		if (strncmp(s,NewEnvironments[i].begname,n) == 0 || 
+		    strncmp(s,NewEnvironments[i].endname,n) == 0) {
+		    	diagnostics(6,"possible");
+		   		return TRUE;
+		}
+	}
+
+	diagnostics(6,"not possible");
+	return FALSE;
 }
 
 void
@@ -308,13 +337,17 @@ newEnvironment(char *name, char *begdef, char *enddef, int params)
 	}
 	
 	NewEnvironments[iNewEnvironmentCount].name=strdup(name); 
+	NewEnvironments[iNewEnvironmentCount].begname=strdup_together("\\begin{",name); 
+	NewEnvironments[iNewEnvironmentCount].endname=strdup_together("\\end{",name); 
 	NewEnvironments[iNewEnvironmentCount].begdef=strdup(begdef); 
 	NewEnvironments[iNewEnvironmentCount].enddef=strdup(enddef); 
 	NewEnvironments[iNewEnvironmentCount].params=params; 
 
-	if (NewEnvironments[iNewEnvironmentCount].name==NULL ||
-		NewEnvironments[iNewEnvironmentCount].begdef==NULL ||
-	    NewEnvironments[iNewEnvironmentCount].enddef==NULL) {
+	if (NewEnvironments[iNewEnvironmentCount].name   ==NULL ||
+		NewEnvironments[iNewEnvironmentCount].begdef ==NULL ||
+		NewEnvironments[iNewEnvironmentCount].begname==NULL ||
+		NewEnvironments[iNewEnvironmentCount].endname==NULL ||
+	    NewEnvironments[iNewEnvironmentCount].enddef ==NULL) {
 		diagnostics(ERROR, "Cannot allocate memory for \\newenvironment{%s}", name);
 	}
 	
@@ -337,6 +370,10 @@ renewEnvironment(char *name, char *begdef, char *enddef, int params)
 	} else {
 		free(NewEnvironments[i].begdef);
 		free(NewEnvironments[i].enddef);
+		free(NewEnvironments[i].begname);
+		free(NewEnvironments[i].endname);
+		NewEnvironments[iNewEnvironmentCount].begname=strdup_together("\\begin{",name); 
+		NewEnvironments[iNewEnvironmentCount].endname=strdup_together("\\end{",name); 
 		NewEnvironments[i].params = params;
 		NewEnvironments[i].begdef = strdup(begdef);
 		NewEnvironments[i].enddef = strdup(enddef);
@@ -352,15 +389,18 @@ expandEnvironment(int thedef, int code)
      purpose: retrieves and expands a \newenvironment 
 **************************************************************************/
 {
+	if (thedef<0 || thedef>=iNewEnvironmentCount)
+		return NULL;
+	
 	if (code == CMD_BEGIN) {
 	
-		diagnostics(4, "\\begin{%s} <%s>", NewEnvironments[thedef].name, \
+		diagnostics(3, "\\begin{%s} <%s>", NewEnvironments[thedef].name, \
 										   NewEnvironments[thedef].begdef);
 		return expandmacro(NewEnvironments[thedef].begdef, NewEnvironments[thedef].params);
 	
 	} else {
 
-		diagnostics(4, "\\end{%s} <%s>", NewEnvironments[thedef].name, \
+		diagnostics(3, "\\end{%s} <%s>", NewEnvironments[thedef].name, \
 										 NewEnvironments[thedef].enddef);
 		return expandmacro(NewEnvironments[thedef].enddef, 0);
 	}

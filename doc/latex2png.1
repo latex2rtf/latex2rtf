@@ -1,0 +1,44 @@
+.TH latex2png 1
+.SH NAME
+latex2rtf \- Convert a LaTeX file to a PNG image
+.SH SYNTAX
+latex2png [-hk] [ -H
+.I home_directory
+] [ -d
+.I dots_per_inch
+] [
+.I inputfile
+]
+.PP
+.SH DESCRIPTION
+The
+.I latex2png
+command converts a LaTeX file into a PNG graphic.  The first page is
+translated into an image at the specified resolution.
+.TP
+.B \-d dots_per_inch
+Used to specify the number of dots per inch for the output image.
+Default is 144 dpi.
+.TP 
+.B \-h
+Print a short usage note
+.TP 
+.B \-k
+Keep intermediate files (for debugging).
+.TP 
+.B \-H home_dir
+Add
+.I home_dir
+to the search path for LaTeX.
+.SH SEE ALSO
+latex2rtf (1).
+.PP
+For complete, current documentation, refer to the Info file
+.B latex2rtf.info,
+the PDF file
+.B latex2rtf.pdf
+or the HTML file
+.B latex2rtf.html
+which are made from the TeXInfo source file
+.BR latex2rtf.texi.
+

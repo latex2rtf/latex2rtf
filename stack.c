@@ -1,4 +1,4 @@
-/* $Id: stack.c,v 1.18 2002/02/17 05:12:59 prahl Exp $
+/* $Id: stack.c,v 1.19 2002/04/21 22:49:59 prahl Exp $
 
   purpose : code that implements a stack to handle braces and recursive calls
 	        created by environments, and open and closing-braces
@@ -19,7 +19,7 @@ int             BasicPop(int *lev, int *brack);
 int             getStackRecursionLevel(void);
 
 void
-printStack(void)
+myprintStack(void)
 {
 int i, lev, brack;
 
@@ -93,7 +93,7 @@ PushLevels(void)
 	diagnostics(5, "PushLevels");
 	CleanStack();
 	(void) BasicPush(RecursionLevel, BraceLevel);
-	/*printStack();*/
+	/*myprintStack();*/
 }
 
 int 
@@ -151,7 +151,7 @@ int             PopLevel, PopBrack, PPopLevel, PPopBrack;
 	if (PPopLevel != PopLevel || PPopBrack != PopBrack)
 		BasicPush(PPopLevel, PPopBrack);
 	
-/*	printStack(); */
+/*	myprintStack(); */
 }
 
 void 

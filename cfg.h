@@ -1,4 +1,4 @@
-/* $Id: cfg.h,v 1.13 2001/09/18 03:40:25 prahl Exp $*/
+/* $Id: cfg.h,v 1.14 2002/04/21 22:49:59 prahl Exp $*/
 
 #ifndef __CFG_H
 #define __CFG_H
@@ -31,8 +31,8 @@ extern ConfigEntryT **CfgNext (int WhichCfg, ConfigEntryT **last);
 extern void ReadLanguage(char *lang);
 void ConvertBabelName(char *name);
 
-#ifndef LIBDIR
-#define LIBDIR ""
+#ifndef CFGDIR
+#define CFGDIR ""
 #endif
 
 #ifndef TRUE

@@ -1,6 +1,10 @@
-/* $Id: main.h,v 1.45 2002/04/13 18:20:35 prahl Exp $ */
+/* $Id: main.h,v 1.46 2002/04/21 22:49:59 prahl Exp $ */
 #ifndef __MAIN_H
 #define __MAIN_H
+
+#ifndef CFGDIR
+#define CFGDIR "/usr/local/share/latex2rtf/cfg"
+#endif
 
 #ifdef UNIX
 #ifndef ENVSEP

@@ -1,5 +1,5 @@
 /*
- * $Id: util.c,v 1.20 2002/04/03 15:44:19 prahl Exp $ 
+ * $Id: util.c,v 1.21 2002/04/21 22:49:59 prahl Exp $ 
  */
 #include <stdlib.h>
 #include <string.h>
@@ -81,12 +81,12 @@ char *p, *t;
 	p = s + strlen(s) - 1;
 	while (p >= t && (*p == ' ' || *p == '\n')) p--;	/* skip to non blank */
 
-	if (p < s)
+	if (p < t)
 		return strdup("");
 	
 	p++;
 	*p='\0';
-	return strdup(s);
+	return strdup(t);
 }
 
 char *

@@ -4,6 +4,7 @@ void	newDefinition(char *name, char *def, int params);
 void	renewDefinition(char * name, char * def, int params);
 char *	expandDefinition(int thedef);
 
+int		maybeEnvironment(char * s, int n);
 int		existsEnvironment(char * s);
 void	newEnvironment(char *name, char *begdef, char *enddef, int params);
 void	renewEnvironment(char *name, char *begdef, char *enddef, int params);

@@ -1,4 +1,4 @@
-/* $Id: tables.c,v 1.16 2002/04/13 19:59:27 prahl Exp $
+/* $Id: tables.c,v 1.17 2002/04/21 22:49:59 prahl Exp $
 
    Translation of tabbing and tabular environments
 */
@@ -314,71 +314,229 @@ Convert_Tabbing_with_kill(void)
 	}			/* while command_kill_found */
 }				/* Convert_Tabbing_with_kill */
 
+static void
+TabularPreamble(char *text, char *width, char *pos, char *cols)
+{
+	int i, colWidth;
+	
+	colFmt = ConvertFormatString(cols);
+	colCount = strlen(colFmt);
+	actCol = 0;
+	colWidth = getLength("textwidth")/colCount;
+
+	if (GetTexMode() != MODE_HORIZONTAL){
+		CmdIndent(INDENT_NONE);
+		CmdStartParagraph(0);
+	}
+	
+	fprintRTF("\\par\n\\trowd\\trrh0");
+
+	for (i = 0; i < colCount; i++) {
+		fprintRTF("\\cellx%d", colWidth * (i+1));
+	}
+}
+
+static void
+TabularGetRow(char *table, char **row, char **next_row, int *height)
+/******************************************************************************
+ purpose:  duplicate the next row from the table and any height changes
+ 			e.g.   the & cell & is & here \\[2pt]
+ 			       but & then & it & died \\
+ 			will return "the & cell & is & here" and height should be 40 (twips)
+ ******************************************************************************/
+{
+	char *s,*dimension,*dim_start;
+	int slash=0;
+	int row_chars=0;
+	int dim_chars=0;
+	
+	s=table;
+	*row=NULL;
+	*next_row=NULL;
+	*height=0;
+	
+	if (!s) return;
+	
+/* find \\ */
+	while (*s != '\0' && !(*s == '\\' && slash)) {
+		slash = (*s == '\\') ? 1 : 0;
+		row_chars++;
+		s++;
+	}
+
+	if (row_chars) row_chars--;	
+	*row = (char *)malloc((row_chars+1)*sizeof(char));
+	strncpy(*row, table, row_chars);
+	(*row)[row_chars]='\0';
+	
+	diagnostics(4,"row =<%s>",*row);
+	if (*s=='\0') return;
+	
+/* move after \\ */
+	s++;
+	
+/* skip blanks */
+	while (*s != '\0' && (*s==' ' || *s=='\n')) s++;
+		
+	if (*s=='\0') return;
+
+	if (*s != '[')  {
+		*next_row = s;
+		return;
+	}
+	
+/* read line space dimension */
+	s++;
+	dim_start=s;
+	while (*s != '\0' && *s != ']') {
+		s++; 
+		dim_chars++;
+	}
+	if (*s=='\0') return;
+
+/* figure out the row height */	
+	dimension=malloc((dim_chars+2)*sizeof(char));
+	strncpy(dimension,dim_start,dim_chars);
+	dimension[dim_chars]='\n';  /* make sure entire string is not parsed */
+	dimension[dim_chars+1]='\0';
+	
+	PushSource(NULL,dimension);
+	*height=getDimension();
+	PopSource();
+
+	diagnostics(4,"height =<%s>=%d twpi",dimension,height);
+	free(dimension);
+
+	/* skip blanks */
+	s++;
+	while (*s != '\0' && (*s==' ' || *s=='\n')) s++;
+
+	if (*s=='\0') return;
+	*next_row = s;
+}
+
+static char *
+TabularNextAmpersand(char *t)
+{
+	char *s;
+	int slash=0;
+	s=t;
+	
+	while (s && *s != '\0' && *s != '&' && !(*s=='&' && slash)) {
+		slash = (*s == '\\') ? 1 : 0;
+		s++;
+	}
+	return s;
+}
+
+static void
+TabularBeginCell(int column)
+{
+	fprintRTF("\n\\pard\\intbl\\q%c ", colFmt[column]);
+}
+
+static void
+TabularEndCell(int column)
+{
+	fprintRTF("\\cell ");
+}
+
+static void
+TabularWriteRow(char *row, int height)
+{
+	int column=0;
+	char *cell_end, *cell, *cell_start;
+	
+	diagnostics(4, "TabularWriteRow height=%d twpi, row <%s>",height, row); 
+	
+	cell_start = row;
+	while (cell_start) {
+		cell_end = TabularNextAmpersand(cell_start);
+		if (*cell_end=='&')
+			*cell_end='\0'; 
+		else 
+			cell_end=NULL;
+		
+		cell = strdup_noendblanks(cell_start);
+
+		TabularBeginCell(column);
+		fprintRTF("{");
+		diagnostics(4, "TabularWriteRow cell=<%s>",cell); 
+		ConvertString(cell);
+		fprintRTF("}");
+		TabularEndCell(column);
+		
+		column++;
+		cell_start = (cell_end) ? cell_end+1 : NULL;
+		free(cell);
+	}
+
+	fprintRTF("\\pard\\intbl\\row");
+}
+
 void 
 CmdTabular(int code)
 /******************************************************************************
  purpose: 	\begin{tabular}[pos]{cols}          ... \end{tabular}
  			\begin{tabular*}{width}[pos]{cols}  ... \end{tabular*}
  			\begin{array}[pos]{cols}            ... \end{array}
-
-          colFmt: contains alignment of the columns in the tabular
-          colCount: number of columns in tabular is set
-          actCol: actual treated column
  ******************************************************************************/
 {
-	int             true_code,i,colWidth;
-	char           *cols,*pos;
+	int             true_code,height;
+	char           *cols,*pos,*end,*width,*row, *next_row,*row_start;
+	char   		   *table=NULL;
 
-	true_code = code & ~(ON);
-	if (code & ON) {
-
-		if (g_processing_tabular)
-			diagnostics(ERROR, "Nested tabular and array environments not supported! Giving up! \n");
-		g_processing_tabular = TRUE;
-
-		pos = getBracketParam();
-		cols = getBraceParam();		
-
-		diagnostics(4, "Entering CmdTabular() options [%s], format {%s}\n",pos, cols); 
-
-		if (pos) free(pos);
-
-		colFmt = ConvertFormatString(cols);
-		free(cols);
-		colCount = strlen(colFmt);
-		actCol = 0;
-		colWidth = getLength("textwidth")/colCount;
-
-		if (true_code == TABULAR_2) {
-			fprintRTF("\n\\par\\pard");
-			fprintRTF("\\tqc\\tx1000\\tx2000\\tx3000\\tx4000\\tx5000\\tx6000\\tx7000\n\\tab");
-			return;
-		}
-		fprintRTF("\\par\n\\trowd\\trrh0");
-
-		for (i = 0; i < colCount; i++) {
-			fprintRTF("\\cellx%d", colWidth * (i+1));
-		}
-		fprintRTF("\n\\pard\\intbl\\q%c ", colFmt[actCol]);
-	
-		CmdIndent(INDENT_NONE);
-	} else {
-		diagnostics(4, "Exiting CmdTabular");
+	if (!(code & ON)) {
+		diagnostics(1, "Exiting CmdTabular");
 		g_processing_tabular = FALSE;
-
-		assert(colFmt != NULL);
-		free(colFmt);
-		colFmt = NULL;
-
-		if (code == TABULAR_2)
-			return;
-
-		for (; actCol < colCount; actCol++) {
-			fprintRTF("\\cell\\pard\\intbl ");
-		}
-		fprintRTF("\\row\\pard\\par\\pard\\q%c\n", alignment);
-
+		return;
 	}
+
+	width = NULL;
+	true_code = code & ~(ON);
+	switch (true_code) {
+		case TABULAR: 
+			end = strdup("\\end{tabular}");
+			break;
+		case TABULAR_STAR: 
+			end = strdup("\\end{tabular*}");
+			width = getBraceParam();
+			break;
+		case TABULAR_LONG: 
+			end = strdup("\\end{longtable}");
+			break;
+		case TABULAR_LONG_STAR: 
+			end = strdup("\\end{longtable*}");
+			width = getBraceParam();
+			break;
+	}
+
+	pos = getBracketParam();
+	cols = getBraceParam();		
+	
+	diagnostics(3, "Entering CmdTabular() options [%s], format {%s}",pos, cols); 
+
+	table = getTexUntil(end,FALSE);
+	diagnostics(2, "table_table_table_table_table\n%stable_table_table_table_table",table);
+
+	TabularPreamble(table,width,pos,cols);
+	
+	row_start=table;
+	TabularGetRow(row_start,&row,&next_row,&height);
+	while (row) {
+		TabularWriteRow(row,height);
+		free(row);
+		row_start=next_row;
+		TabularGetRow(row_start,&row,&next_row,&height);
+	}
+	
+	ConvertString(end);
+
+	if (pos) free(pos);
+	if (width) free(width);
+	free(cols);
+	free(table);
+	free(end);
 }
 
 void 

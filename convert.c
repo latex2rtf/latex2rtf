@@ -1,4 +1,4 @@
-/* $Id: convert.c,v 1.30 2002/04/13 19:59:27 prahl Exp $ 
+/* $Id: convert.c,v 1.31 2002/04/21 22:49:59 prahl Exp $ 
 	
 TeX has six modes:
 	
@@ -81,14 +81,21 @@ ConvertString(char *string)
      purpose : converts string in TeX-format to Rtf-format
  ******************************************************************************/
 {
-	char            temp[51];
+	char            temp[256];
 	
 	if (string==NULL) return;
 	
-	strncpy(temp,string,50);
-
+	if (strlen(string)<250)
+		strncpy(temp,string,250);
+	else {
+		strncpy(temp,string,125);
+		strncpy(temp+125,"\n...\n", 5);
+		strncpy(temp+130,string+strlen(string)-125,125);
+		temp[255] = '\0';
+	}
+	
 	if (PushSource(NULL, string)==0) {
-		diagnostics(4, "Entering Convert() from StringConvert() <%s>",temp);
+		diagnostics(4, "Entering Convert() from StringConvert()\n******\n%s\n*****",temp);
 
 		while (StillSource())
 			Convert();

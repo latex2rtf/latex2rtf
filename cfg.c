@@ -1,4 +1,4 @@
-/* $Id: cfg.c,v 1.23 2002/04/06 04:37:03 prahl Exp $
+/* $Id: cfg.c,v 1.24 2002/04/21 22:49:59 prahl Exp $
 
      purpose : Read config files and provide lookup routines
 
@@ -118,8 +118,8 @@ purpose: open config by trying multiple paths
 		free(env_path);
 	}		
 
-/* last resort.  try LIBDIR */
-	lib_path = strdup(LIBDIR);
+/* last resort.  try CFGDIR */
+	lib_path = strdup(CFGDIR);
 	if (lib_path) {
 		p = lib_path;
 		while (p) {
@@ -139,9 +139,9 @@ purpose: open config by trying multiple paths
 	diagnostics(WARNING, "Locate the directory containing the .cfg files and");
 	diagnostics(WARNING, "   (1) define the environment variable RTFPATH, *or*");
 	diagnostics(WARNING, "   (2) use command line path option \"-P /path/to/cfg/file\", *or*");
-	diagnostics(WARNING, "   (3) recompile latex2rtf with LIBDIR defined properly");
+	diagnostics(WARNING, "   (3) recompile latex2rtf with CFGDIR defined properly");
 	diagnostics(WARNING, "Current RTFPATH: %s", getenv("RTFPATH"));
-	diagnostics(WARNING, "Current  LIBDIR: %s", LIBDIR);
+	diagnostics(WARNING, "Current  CFGDIR: %s", CFGDIR);
 	diagnostics(ERROR,   " Giving up.  Have a nice day.");
 	return NULL;
 }

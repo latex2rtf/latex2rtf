@@ -6,4 +6,4 @@ int             PopLevels(void);
 void            CleanStack(void);
 void            PushBrace(void);
 int             PopBrace(void);
-void			printStack(void);
+void			myprintStack(void);

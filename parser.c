@@ -1,4 +1,4 @@
-/*  $Id: parser.c,v 1.55 2002/04/13 18:20:35 prahl Exp $
+/*  $Id: parser.c,v 1.56 2002/04/21 22:49:59 prahl Exp $
 
    Contains declarations for a generic recursive parser for LaTeX code.
 */
@@ -693,7 +693,9 @@ getTexUntil(char * target, int raw)
      returns: NULL if not found
  **************************************************************************/
 {
-	char            *s, buffer[4096];
+	enum {BUFFSIZE = 8000};
+	char            *s;
+	char            buffer[BUFFSIZE+1] = {'\0'};
 	int				last_i = -1;
 	int             i   = 0;       /* size of string that has been read */
 	int             j   = 0;       /* number of found characters */
@@ -702,22 +704,29 @@ getTexUntil(char * target, int raw)
 	
 	PushTrackLineNumber(FALSE);
 
-	diagnostics(3, "getTexUntil target = <%s> raw_search = %d ", target, raw);
+	diagnostics(5, "getTexUntil target = <%s> raw_search = %d ", target, raw);
 
-	while (j < len && i < 4095) {
+	while (j < len && i < BUFFSIZE) {
 	
 		if (i > last_i) {
 			buffer[i] = (raw) ? getRawTexChar() : getTexChar();
 			last_i = i;
+			if (buffer[i]!='\n')
+				diagnostics(7,"next char = <%c>, %d, %d, %d",buffer[i],i,j,last_i);
+			else
+				diagnostics(7,"next char = <\\n>");
+
 		}
 		
-		if (!buffer[i]) {
+		if (buffer[i]=='\0') {
 			end_of_file_reached = TRUE;
+			diagnostics(7,"end of file reached");
 			break;
 		}
 		
 		if (buffer[i] != target[j]) {
 			if (j > 0) {			        /* false start, put back what was found */
+				diagnostics(8,"failed to match target[%d]=<%c> != buffer[%d]=<%c>", j,target[j], i,buffer[i]);
 				i-=j;
 				j=0;
 			}
@@ -727,13 +736,15 @@ getTexUntil(char * target, int raw)
 		i++;
 	}
 	
-	if (i == 4096) 
-		diagnostics(ERROR, "Could not find <%s> in 4096 characters", target);
+	if (i == BUFFSIZE) 
+		diagnostics(ERROR, "Could not find <%s> in %d characters", BUFFSIZE);
 	
 	if (!end_of_file_reached) /* do not include target in returned string*/
 		buffer[i-len] = '\0';
 	
 	PopTrackLineNumber();
+
+	diagnostics(3,"buffer size =[%d], actual=[%d]", strlen(buffer), i-len);
 
 	s = strdup(buffer);
 	diagnostics(3,"strdup result = %s",s);
@@ -887,8 +898,9 @@ getSection(char **body, char **header, char **label)
 	char cNext, *s,*text,*next_header,*str;
 	int i;
 	long delta;
-	int  match[29];
-	char * command[29] = {"",  /* 0 entry is for user definitions */
+	int  match[30];
+	char * command[30] = {"",  /* 0 entry is for user definitions */
+	                      "",  /* 1 entry is for user environments */
 						  "\\begin{verbatim}", "\\begin{figure}", "\\begin{equation}", 
 						  "\\begin{eqnarray}", "\\begin{table}", "\\begin{description}",
 						  "\\end{verbatim}", "\\end{figure}", "\\end{equation}", 
@@ -898,29 +910,29 @@ getSection(char **body, char **header, char **label)
 	                     "\\label", "\\input", "\\include", "\\verb", "\\url",
 	                     "\\newcommand", "\\def" , "\\renewcommand"};
 
-	int ncommands = 29;
+	int ncommands = 30;
 
-	const int b_verbatim_item   = 1;
-	const int b_figure_item     = 2;
-	const int b_equation_item   = 3;
-	const int b_eqnarray_item   = 4;
-	const int b_table_item      = 5;
-	const int b_description_item= 6;
-	const int e_verbatim_item   = 7;
-	const int e_figure_item     = 8;
-	const int e_equation_item   = 9;
-	const int e_eqnarray_item   =10;
-	const int e_table_item      =11;
-	const int e_description_item=12;
+	const int b_verbatim_item   = 2;
+	const int b_figure_item     = 3;
+	const int b_equation_item   = 4;
+	const int b_eqnarray_item   = 5;
+	const int b_table_item      = 6;
+	const int b_description_item= 7;
+	const int e_verbatim_item   = 8;
+	const int e_figure_item     = 9;
+	const int e_equation_item   =10;
+	const int e_eqnarray_item   =11;
+	const int e_table_item      =12;
+	const int e_description_item=13;
 
-	const int label_item   = 21;
-	const int input_item   = 22;
-	const int include_item = 23;
-	const int verb_item    = 24;
-	const int url_item     = 25;
-	const int new_item     = 26;
-	const int def_item     = 27;
-	const int renew_item   = 28;
+	const int label_item   = 22;
+	const int input_item   = 23;
+	const int include_item = 24;
+	const int verb_item    = 25;
+	const int url_item     = 26;
+	const int new_item     = 27;
+	const int def_item     = 28;
+	const int renew_item   = 29;
 
 	int bs_count = 0;
 	int index = 0;
@@ -991,9 +1003,13 @@ getSection(char **body, char **header, char **label)
 		if (match[0])  	/* do any user defined commands possibly match? */
 			match[0] = maybeDefinition(section_buffer+delta-index+1, index-1);
 		
-		possible_match = match[0];
+		  	/* do any user defined commands possibly match? */
+		if (match[1])	
+			match[1] = maybeEnvironment(section_buffer+delta-index, index-1);
+
+		possible_match = match[0] || match[1];
 		
-		for (i=1; i<ncommands; i++) {	/* test each command for match */
+		for (i=2; i<ncommands; i++) {	/* test each command for match */
 			if (!match[i]) continue;
 				
 			if (*(section_buffer+delta)!=command[i][index]) {
@@ -1030,7 +1046,42 @@ getSection(char **body, char **header, char **label)
 			}
 		}
 		
-		for (i=1; i<ncommands; i++) {	/* discover any exact matches */
+		if (match[1]) {						/* expand user environments */
+			char * p = section_buffer+delta-index;
+			cNext = getRawTexChar();		/* wrong when cNext == '%' */			
+			str=NULL;
+			
+			if (cNext=='}' && index>5) {	/* is environ name complete? */
+				*(p+index+1) = '\0';
+				if (*(p+1) == 'e'){									/* find \\end{userenvironment} */
+					i   = existsEnvironment(p+strlen("\\end{"));
+					str = expandEnvironment(i,CMD_END);
+				} else if (index > 8) { 							/* find \\begin{userenvironment} */
+					i = existsEnvironment(p+strlen("\\begin{"));
+					str = expandEnvironment(i,CMD_BEGIN);
+				}
+			}
+				
+			if (str){							/* found */
+				char *str2;
+				diagnostics(1,"matched <%s}>", p);
+				diagnostics(1,"expanded <%s>", str);
+				if (*(p+1)=='e')
+					str2 = strdup_together(str,"}");
+				else
+					str2 = strdup_together("{",str);
+				free(str);
+				PushSource(NULL,str2);   /* memory leak :-(  */
+				delta -= index+1;  		/* remove \begin{userenvironment} */
+				index = 0;
+				diagnostics(4,"getSection() expanded environment string is <%s>", str);
+				continue;
+			}
+			
+			ungetTexChar(cNext);	/* put the character back */
+		}
+
+		for (i=2; i<ncommands; i++) {	/* discover any exact matches */
 			if (!match[i]) continue;
 			if (index+1 == strlen(command[i])) {
 				found = TRUE;
