@@ -1,14 +1,12 @@
-/* $Id: encode.c,v 1.5 2001/10/07 17:48:39 prahl Exp $ 
+/* $Id: encode.c,v 1.6 2001/10/12 05:45:07 prahl Exp $ 
    Translate high bit characters into RTF assuming that
    the default codepage is ansi (1252)
    
    There are many non-translated characters, patches welcome.
 */
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
 #include "main.h"
 #include "l2r_fonts.h"
 #include "funct1.h"

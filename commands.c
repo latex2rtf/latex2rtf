@@ -1,9 +1,8 @@
-/*  $Id: commands.c,v 1.28 2001/10/11 04:27:12 prahl Exp $
+/*  $Id: commands.c,v 1.29 2001/10/12 05:45:07 prahl Exp $
  
     Defines subroutines to translate LaTeX commands to RTF
 */
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "cfg.h"
@@ -404,7 +403,8 @@ static CommandArray params[] = {
 	{"list", CmdList, ITEMIZE},
 	{"itemize", CmdList, ITEMIZE},
 	{"description", CmdList, DESCRIPTION},
-	{"verbatim", CmdVerbatim, 1},
+	{"verbatim", CmdVerbatim, VERBATIM_1},
+	{"Verbatim", CmdVerbatim, VERBATIM_2},
 	{"verse", CmdVerse, 0},
 	{"tabular", CmdTabular, TABULAR},
 	{"tabular*", CmdTabular, TABULAR_1},

@@ -1,4 +1,4 @@
-/* $Id: cfg.c,v 1.15 2001/09/26 14:02:59 prahl Exp $
+/* $Id: cfg.c,v 1.16 2001/10/12 05:45:07 prahl Exp $
 
      purpose : Read config files and provide lookup routines
 
@@ -131,10 +131,9 @@ params:  name: config-file-name
 	}
 	strcat(path, name);
 	if ((fp = fopen(path, "r")) == NULL) {
-		fprintf(stderr, "\n%s: ERROR: cannot open config file '%s'.\n", progname, name);
 		diagnostics(4, "Path: %s", path);
 		diagnostics(4, "cfg-Path: %s", cfg_path);
-		exit(EXIT_FAILURE);
+		diagnostics(ERROR, "cannot open config file '%s'", name);
 	}
 	diagnostics(4, "Opened default config file %s", path);
 

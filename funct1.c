@@ -1,11 +1,10 @@
-/* $Id: funct1.c,v 1.29 2001/10/11 14:06:10 prahl Exp $ 
+/* $Id: funct1.c,v 1.30 2001/10/12 05:45:07 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
 Authors:  Dorner, Granzer, Polzer, Trisko, Schlatterbeck, Lehner, Prahl
 */
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -894,13 +893,14 @@ void
 CmdVerbatim(int code)
 /******************************************************************************
 	convert characters 1:1 until \end{verbatim} or \end{Verbatim} is reached
-	There has got to be a better way of doing this
+	VERBATIM_1	 for \begin{verbatim} ... \end{verbatim}
+	VERBATIM_2   for \begin{Verbatim} ... \end{Verbatim}
 ******************************************************************************/
 {
-	char            endstring[] = "\\end{verbatim}";
-	int             num, i = 0, j = 0;
-	char            cThis;
-
+	char			*verbatim_text, *vptr;
+	int				num;
+	int true_code = code & ~ON;
+	
 	if (code & ON) {
 		
 		diagnostics(4, "Entering CmdVerbatim");
@@ -909,30 +909,19 @@ CmdVerbatim(int code)
 		CmdStartParagraph(0);
 		num = TexFontNumber("Typewriter");
 		fprintRTF("\\b0\\i0\\scaps0\\f%d ", num);
-	
-		for (;;) {
-			cThis = getRawTexChar();
-			if ((cThis != endstring[i]) || ((i > 0) && (cThis == ' '))) {
-				if (i > 0) {
-					for (j = 0; j < i; j++) {
-						if (j == 0)
-							putRtfChar('\\');
-						else
-							putRtfChar(endstring[j]);
-					}
-					i = 0;
-				}
-				putRtfChar(cThis);
-			} else {
-				if (cThis != ' ')
-					++i;
-				if (i >=  strlen(endstring)) {               /* put \end{verbatim} back */
-					for (i=strlen(endstring)-1; i>=0; i--)
-						ungetTexChar(endstring[i]);
-					return;
-				}
-			}
-		}
+		
+		if (true_code == VERBATIM_2) 
+			verbatim_text = getTexUntil("\\end{Verbatim}", 1);
+		else
+			verbatim_text = getTexUntil("\\end{verbatim}", 1);
+
+		vptr = verbatim_text;
+		
+		while (*vptr) 
+			putRtfChar(*vptr++);
+		
+		free(verbatim_text);
+
 	} else {
 		diagnostics(4, "Exiting CmdVerbatim");
 		CmdEndParagraph(0);
@@ -976,12 +965,12 @@ CmdIgnoreDef( /* @unused@ */ int code)
 	      converted into Rtf and so they must be ignored
  ******************************************************************************/
 {
-	char            cThis, *temp;
+	char            cThis;
 
 	while ((cThis = getTexChar()) && cThis != '{');
-    ungetTexChar(cThis);
-	temp = getParam();
-	free(temp);
+    
+    parseBrace();
+    
 }
 
 void 
@@ -1244,25 +1233,6 @@ CmdLabelOld(int code, char *text)
 	}
 }
 
-void 
-IgnoreNewCmd( /* @unused@ */ int code)
-/******************************************************************************
-     purpose : ignore \newcmd
-   parameter : code  not used
- ******************************************************************************/
-{
-	char            cThis;
-
-	/* ignore first '{' */
-	cThis = getTexChar();
-	ungetTexChar(cThis);
-
-	if (cThis == '\\')
-		CmdIgnoreDef(0);
-	else
-		CmdIgnoreParameter(No_Opt_Two_NormParam);
-}
-
 void CmdQuad(int kk)
 /******************************************************************************
  purpose: inserts kk quad spaces (D. Taupin)
@@ -1311,11 +1281,11 @@ CmdIgnoreFigure(int code)
 	
 		switch (code & ~(ON)) {
 			case PICTURE:
-					getTexUntil("\\end{picture}");
+					getTexUntil("\\end{picture}",0);
 					break;
 			
 			case MINIPAGE:
-					getTexUntil("\\end{minipage}");
+					getTexUntil("\\end{minipage}",0);
 					break;
 		}
 	}

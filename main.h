@@ -1,11 +1,10 @@
-/* $Id: main.h,v 1.21 2001/10/07 05:42:18 prahl Exp $ */
+/* $Id: main.h,v 1.22 2001/10/12 05:45:07 prahl Exp $ */
 
 #undef HAS_NO_GETOPT
 
 #ifdef __MWERKS__
 #define HAS_NO_GETOPT
 #define HAS_NO_STRDUP
-#define DEFAULT_MAC_ENCODING
 #define ENVSEP '^'
 #define PATHSEP ':'
 char           *strdup(const char *str);
@@ -18,7 +17,7 @@ char           *strdup(const char *str);
 
 #ifndef PATHSEP
 #define PATHSEP '/'
-#endif
+#endif 
 
 #include <assert.h>
 #include <stdio.h>
@@ -29,11 +28,6 @@ char           *strdup(const char *str);
 #ifndef SEEK_SET
 #define SEEK_SET 0
 #define SEEK_CUR 1
-#endif
-#ifdef HAS_NO_FPOS
-typedef long    fpos_t;
-#define fgetpos(file, posptr) (*(posptr) = ftell(file))
-#define fsetpos(file, posptr) fseek(file, *(posptr), SEEK_SET)
 #endif
 
 #ifdef HAS_NO_GETOPT
@@ -99,7 +93,7 @@ extern				/* @null@ */
 extern /* @observer@ */ char *progname;	/* name of the executable file */
 extern /* @only@ */ char *latexname;	/* name of LaTex-File */
 extern char     alignment;	/* default for justified: */
-extern fpos_t   pos_begin_kill;
+extern long   pos_begin_kill;
 extern bool     GermanMode;
 extern				/* @only@ */
  /* @null@ */ char *colFmt;

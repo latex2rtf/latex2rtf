@@ -1,4 +1,4 @@
-/* $Id: l2r_fonts.c,v 1.19 2001/10/07 21:20:51 prahl Exp $
+/* $Id: l2r_fonts.c,v 1.20 2001/10/12 05:45:07 prahl Exp $
 
 	All changes to font size, font style, and font face are 
 	handled in this file.  Explicit changing of font characteristics
@@ -51,7 +51,6 @@
 				
 */
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>

@@ -1,4 +1,4 @@
-/* $Id: funct1.h,v 1.19 2001/10/07 21:20:51 prahl Exp $ */
+/* $Id: funct1.h,v 1.20 2001/10/12 05:45:07 prahl Exp $ */
 
 #define AST_FORM 100
 #define EMPHASIZE 1
@@ -20,6 +20,9 @@ void            CmdBeginEnd(int code);
 #define INDENT_NONE    1
 #define INDENT_INHIBIT 2
 #define INDENT_USUAL   3
+
+#define VERBATIM_1	 1
+#define VERBATIM_2   2
 
 void            CmdStartParagraph(int code);
 void            CmdEndParagraph(int code);
@@ -78,8 +81,6 @@ void            GermanPrint(int code);
 #define GP_RDBL 5
 
 void            CmdIgnoreLet(int code);
-
-void            IgnoreNewCmd(int code);
 
 #define LABEL 1
 #define REF 2

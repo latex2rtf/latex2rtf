@@ -1,9 +1,8 @@
-/* $Id: chars.c,v 1.11 2001/10/11 15:16:45 prahl Exp $
+/* $Id: chars.c,v 1.12 2001/10/12 05:45:07 prahl Exp $
 
    purpose : handles special characters and logos
 */
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -12,7 +11,6 @@
 #include "l2r_fonts.h"
 #include "cfg.h"
 #include "ignore.h"
-#include "util.h"
 #include "encode.h"
 #include "parser.h"
 #include "chars.h"

@@ -1,9 +1,8 @@
-/* $Id: tables.c,v 1.5 2001/10/08 02:43:19 prahl Exp $
+/* $Id: tables.c,v 1.6 2001/10/12 05:45:07 prahl Exp $
 
    Translation of tabbing and tabular environments
 */
 
-#include <stdio.h>
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
@@ -16,7 +15,6 @@
 #include "tables.h"
 #include "stack.h"
 #include "cfg.h"
-#include "util.h"
 #include "parser.h"
 #include "counters.h"
 
@@ -42,8 +40,7 @@ parameter: code : on/off at begin/end-environment
 			/* tabbing_on_itself = FALSE; */
 
 			fprintRTF("\\par\\line ");
-			if (fgetpos(fRtf, &pos_begin_kill) != 0)
-				diagnostics(ERROR, "Failed fgetpos; funct2.c (Tabbing): errno %d", errno);
+			pos_begin_kill= ftell(fRtf);
 			/* Test ConvertTabbing(); */
 		}
 	} else {		/* off switch */
@@ -90,8 +87,7 @@ CmdTabkill( /* @unused@ */ int code)
 {
 	int             i;
 
-	if (fsetpos(fRtf, &pos_begin_kill) != 0)
-		diagnostics(ERROR, "Failed fsetpos; funct2.c (CmdTabkill): errno %d", errno);
+	fseek(fRtf, pos_begin_kill, SEEK_SET);
 
 	for (i = 0; i < number_of_tabstops; i++) {
 		fprintRTF("\\tx%d ", tabstoparray[i]);	/* Tab at tabstop/567 centimeters */

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.26 2001/10/08 02:43:19 prahl Exp $ */
+/* $Id: main.c,v 1.27 2001/10/12 05:45:07 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -80,7 +80,7 @@ bool            titlepage = FALSE;
 bool            tabbing_on = FALSE;
 bool            tabbing_return = FALSE;
 bool            tabbing_on_itself = FALSE;
-fpos_t          pos_begin_kill;
+long          pos_begin_kill;
 
 int             colCount;			/* number of columns in a tabular environment */
 int             actCol;				/* actual column in the tabular environment */
@@ -272,7 +272,7 @@ purpose: writes error message
 globals: reads progname;
  ****************************************************************************/
 {
-	fprintf(stderr, "\nERROR at line %ld: %s", getLinenumber(), text);
+	fprintf(stderr, "\nERROR at line %ld: %s", linenumber, text);
 	fprintf(stderr, "\nprogram aborted\n");
 	exit(EXIT_FAILURE);
 }
@@ -292,18 +292,18 @@ globals: progname; latexname; linenumber;
 	case ERR_EOF_INPUT:
 		if (g_processing_include)
 			return;	/* SAP - HACK end of file ok in include files */
-		sprintf(text, "%s%s%s%ld%s", "unexpected end of input file in: ", latexname, " at linenumber: ", getLinenumber(), "\n");
+		sprintf(text, "%s%s%s%ld%s", "unexpected end of input file in: ", latexname, " at linenumber: ", linenumber, "\n");
 		error(text);
 		/* @notreached@ */
 		break;
 	case ERR_WRONG_COMMAND:
-		sprintf(text, "%s%s%s%ld%s", "unexpected command or character in: ", latexname, " at linenumber: ", getLinenumber(), "\n");
+		sprintf(text, "%s%s%s%ld%s", "unexpected command or character in: ", latexname, " at linenumber: ", linenumber, "\n");
 		error(text);
 		/* @notreached@ */
 		break;
 
 	case ERR_NOT_IN_DOCUMENT:
-		sprintf(text, "\nNot in document %s at line %ld.  Missing \\begin{document}?\n", latexname, getLinenumber());
+		sprintf(text, "\nNot in document %s at line %ld.  Missing \\begin{document}?\n", latexname, linenumber);
 		error(text);
 		/* @notreached@ */
 		break;
@@ -312,7 +312,7 @@ globals: progname; latexname; linenumber;
 		/* @notreached@ */
 		break;
 	case ERR_WRONG_COMMAND_IN_TABBING:
-		sprintf(text, "%s%s%s%ld%s", "wrong command in Tabbing-kill-command-line in: ", latexname, " at linenumber: ", getLinenumber(), "\n");
+		sprintf(text, "%s%s%s%ld%s", "wrong command in Tabbing-kill-command-line in: ", latexname, " at linenumber: ", linenumber, "\n");
 		error(text);
 		/* @notreached@ */
 		break;
@@ -433,7 +433,7 @@ purpose: reads the LaTeX preamble (to \begin{document} ) for the file
 	hidden = fRtf;
 	fRtf = stderr;
 	 
-	s = getTexUntil("\\begin{document}");
+	s = getTexUntil("\\begin{document}",0);
 	
 	diagnostics(4, "Entering ConvertString() from ConvertLatexPreamble <%s>",s);
 	ConvertString(s);
@@ -576,45 +576,4 @@ purpose: output filter to track of brace depth and font settings
 		}
 		text++;
 	}			
-}
-
-/****************************************************************************
-purpose: get number of actual line (do not use global linenumber, because
-         it does not work correctly!)
-         this function is not very efficient, but it will be used only
-	 once when
-         printing an error-message + program abort
-params:  none
- ****************************************************************************/
-long
-getLinenumber(void)
-{
-	char            buffer[1024];
-	long            oldpos;
-	long            pos;
-	int             linenum = 0;
-
-	if (fTex == NULL || fTex == stdin)
-		return 0;
-
-	oldpos=ftell(fTex);
-	if (oldpos == -1)
-		error("ftell: can\'t get linenumber");
-	if (fseek(fTex, 0L, SEEK_SET) == -1)
-		error("fseek: can\'t get linenumber");
-
-	do {
-		if (fgets(buffer, 1023, fTex) == NULL)
-			error("fgets: can\'t get linenumber");
-		linenum++;
-		pos = ftell(fTex);
-		if (pos == -1)
-			error("ftell: can\'t get linenumber");
-	}
-	while (pos < oldpos);
-
-	if (fseek(fTex, oldpos, SEEK_SET) == -1)
-		error("fseek: can\'t get linenumber");
-
-	return linenum;
 }

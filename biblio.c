@@ -1,20 +1,15 @@
-/* $Id: biblio.c,v 1.4 2001/09/26 03:31:50 prahl Exp $ 
+/* $Id: biblio.c,v 1.5 2001/10/12 05:45:07 prahl Exp $ 
  
 This file contains routines to handle bibliographic and cite commands
 */
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
 #include "main.h"
 #include "convert.h"
 #include "funct1.h"
 #include "commands.h"
-#include "stack.h"
-#include "l2r_fonts.h"
 #include "cfg.h"
-#include "ignore.h"
 #include "biblio.h"
 #include "parser.h"
 #include "preamble.h"

@@ -1,4 +1,4 @@
-/* $Id: preamble.c,v 1.17 2001/10/11 05:42:10 prahl Exp $
+/* $Id: preamble.c,v 1.18 2001/10/12 05:45:07 prahl Exp $
 
 purpose : Handles LaTeX commands that should only occur in the preamble.
           These are gathered together because the entire preamble must be
@@ -7,20 +7,16 @@ purpose : Handles LaTeX commands that should only occur in the preamble.
 		  When \begin{document} is encountered, then the RTF header is created.
 */
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
 #include "main.h"
 #include "convert.h"
 #include "preamble.h"
 #include "l2r_fonts.h"
 #include "cfg.h"
-#include "util.h"
 #include "encode.h"
 #include "parser.h"
 #include "funct1.h"
-#include "preamble.h"
 #include "lengths.h"
 #include "ignore.h"
 #include "commands.h"

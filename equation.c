@@ -1,7 +1,5 @@
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
 #include "main.h"
 #include "convert.h"
 #include "commands.h"
@@ -9,7 +7,6 @@
 #include "l2r_fonts.h"
 #include "cfg.h"
 #include "ignore.h"
-#include "util.h"
 #include "parser.h"
 #include "equation.h"
 #include "counters.h"

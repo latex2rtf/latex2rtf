@@ -2,14 +2,12 @@
 purpose : Handles LaTeX commands specific to the letter format
  ****************************************************************************/
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "main.h"
 #include "parser.h"
 #include "letterformat.h"
 #include "cfg.h"
-#include "util.h"
 #include "commands.h"
 #include "funct1.h"
 #include "convert.h"

@@ -1,18 +1,5 @@
 /*
- * $Id: util.c,v 1.10 2001/08/12 21:15:46 prahl Exp $
- * History:
- * $Log: util.c,v $
- * Revision 1.10  2001/08/12 21:15:46  prahl
- *         Removed last two // comments
- *         Explicitly cast char to int in isalpha() and isdigit()
- *         Began the process of supporting Babel better
- *
- * Revision 1.2  1998/07/03 07:03:16  glehner
- * lclint cleaning
- *
- * Revision 1.1  1997/02/15 21:09:16  ralf
- * Initial revision
- *
+ * $Id: util.c,v 1.11 2001/10/12 05:45:07 prahl Exp $ 
  */
 #include <stdlib.h>
 #include <string.h>
@@ -23,11 +10,12 @@
  /* @null@ *//* @owned@ */ static char *buffer;
 static size_t   bufsize = 0;
 
+#define CR (char) 0x0d
+#define LF (char) 0x0a
 /*
- * This function assumes there are no ´\0´ characters in the input.
+ * This function assumes there are no '\0' characters in the input.
  * if there are any, they are ignored.
  */
-/* @dependent@ *//* @null@ */
 char           *
 ReadUptoMatch(FILE * infile, /* @observer@ */ const char *scanchars)
 {
@@ -43,14 +31,21 @@ ReadUptoMatch(FILE * infile, /* @observer@ */ const char *scanchars)
 		}
 		bufsize = BUFFER_INCREMENT;
 	}
-	while ((c = getc(infile)) != EOF && strchr(scanchars, c) == NULL) {
+	while ((c = getc(infile)) != EOF ) {
+	
+		if (c == CR || c == LF)
+			c = '\n';
+		
+		if (strchr(scanchars, c))
+			break;
+			
 		if (c == (int) '\0') {
 			continue;
 		}
-		if (c == (int) '\n') {
+/*		if (c == (int) '\n') {
 			linenumber++;
 		}
-		buffer[bufindex++] = (char) c;
+*/		buffer[bufindex++] = (char) c;
 		if (bufindex >= bufsize) {
 			if ((buffer = realloc(buffer, bufsize += BUFFER_INCREMENT)) == NULL) {
 				Fatal("Cannot allocate memory for input buffer\n");

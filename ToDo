@@ -4,6 +4,7 @@ Bugs:
 	Improve font sizes in \section et al.
 	
 Features:
+	Add RTF support for \label, \ref, \pageref ...
 	Add support for \usepackage{fullpage}
 	Add support for \usepackage{doublespace}
 	Add support for \includegraphics

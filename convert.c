@@ -1,4 +1,4 @@
-/* $Id: convert.c,v 1.10 2001/10/07 05:42:18 prahl Exp $ 
+/* $Id: convert.c,v 1.11 2001/10/12 05:45:07 prahl Exp $ 
 	purpose: ConvertString(), Convert(), TranslateCommand() 
 	
 TeX has six modes according to the TeX Book:
@@ -27,12 +27,10 @@ correctly, as well as vertical and horizontal space.
 
 */
 
-#include <stdio.h>
-#include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
-#include <stdarg.h>
 #include <errno.h>
+#include <ctype.h>
 #include "main.h"
 #include "convert.h"
 #include "commands.h"
@@ -524,8 +522,8 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 		CmdIndent(INDENT_INHIBIT);
 		
 		tabcounter = 0;
-		if (tabbing_on && (fgetpos(fRtf, &pos_begin_kill) != 0))
-				diagnostics(ERROR, "File access problem in tabbing environment");
+		if (tabbing_on)
+			pos_begin_kill= ftell(fRtf);
 		return TRUE;
 
 	case ' ':

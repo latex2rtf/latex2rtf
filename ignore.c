@@ -1,11 +1,10 @@
-/* $Id: ignore.c,v 1.16 2001/09/26 03:31:50 prahl Exp $
+/* $Id: ignore.c,v 1.17 2001/10/12 05:45:07 prahl Exp $
 
   purpose : ignores variable-name-commands which can't be converted from LaTeX2Rtf
 	    (variable-command-formats must be added by the user in the file
 	     "ignore.cfg")
 */
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
@@ -16,7 +15,6 @@
 #include "ignore.h"
 #include "funct1.h"
 #include "commands.h"
-#include "util.h"
 #include "parser.h"
 
 static void     IgnoreVar(void);
@@ -135,7 +133,7 @@ parameter: searchstring : includes the string to search for
 	CmdEndParagraph(0);
 	CmdIndent(INDENT_INHIBIT);
 
-	buffer = getTexUntil(unknown_environment);
+	buffer = getTexUntil(unknown_environment,0);
 	free(buffer);
 	
 	diagnostics(4, "Exiting IgnoreEnvironment");

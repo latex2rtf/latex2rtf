@@ -1,9 +1,8 @@
-/* $Id: direct.c,v 1.15 2001/09/16 05:11:19 prahl Exp $ 
+/* $Id: direct.c,v 1.16 2001/10/12 05:45:07 prahl Exp $ 
 
   purpose : Convert simple LaTeX commands using direct.cfg
 */
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "main.h"

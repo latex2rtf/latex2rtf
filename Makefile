@@ -5,8 +5,8 @@
 # Recent changes by Scott Prahl
 
 CC=gcc    # C-Compiler 
-#CFLAGS=-g -Wall -ansi -pedantic $(XCFLAGS)
-CFLAGS=$(XCFLAGS) # Use -O here if you want it optimized
+CFLAGS=-g -Wall -ansi -pedantic $(XCFLAGS)
+#CFLAGS=$(XCFLAGS) # Use -O here if you want it optimized
 #CFLAGS=
 COPY=cp
 INSTALL=install

@@ -7,7 +7,6 @@ Scott Prahl, June 2001
 
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 #include "main.h"
 #include "lengths.h"
 #include "parser.h"
