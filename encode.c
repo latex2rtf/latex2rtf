@@ -1,4 +1,4 @@
-/* $Id: encode.c,v 1.3 2001/10/07 05:42:18 prahl Exp $ 
+/* $Id: encode.c,v 1.4 2001/10/07 15:10:09 prahl Exp $ 
    Translate high bit characters into RTF assuming that
    the default codepage is ansi (1252)
    
@@ -1698,7 +1698,7 @@ char *s;
 void WriteEightBitChar(char cThis)
 {
 	int index = (int) cThis + 128;
-	diagnostics(3, "WriteEightBitChar char=%d index=%d encoding=%s\n",(int) cThis, index, g_encoding);
+	diagnostics(5, "WriteEightBitChar char=%d index=%d encoding=%s",(int) cThis, index, g_encoding);
 	if (strcmp(g_encoding, "applemac") == 0)
 		applemac_enc(index);
 	else if (strcmp(g_encoding, "cp437") == 0)

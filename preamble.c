@@ -1,4 +1,4 @@
-/* $Id: preamble.c,v 1.11 2001/10/07 05:42:18 prahl Exp $
+/* $Id: preamble.c,v 1.12 2001/10/07 15:10:09 prahl Exp $
 
 purpose : Handles LaTeX commands that should only occur in the preamble.
           These are gathered together because the entire preamble must be
@@ -285,11 +285,13 @@ setDocumentOptions(char *optionlist)
 ******************************************************************************/
 {
 	char           *option;
-
+	
 	option = strtok(optionlist, ",");
 
 	while (option) {
-		diagnostics(4, "                    option   %s", option);
+
+		while (*option == ' ') option++;  /*skip leading blanks */
+		diagnostics(4, "                    option   <%s>", option);
 		if      (strcmp(option, "10pt"       ) == 0 ||
 			     strcmp(option, "11pt"       ) == 0 || 
 				 strcmp(option, "12pt"       ) == 0) 
