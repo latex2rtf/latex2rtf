@@ -12,7 +12,8 @@ all:	accentchars.rtf array.rtf cite.rtf eqns.rtf fonts.rtf fontsize.rtf \
 	enc_cp1251.rtf   enc_cp855.rtf enc_cp866.rtf    enc_koi8-r.rtf enc_koi8-u.rtf \
 	enc_maccyr.rtf enc_macukr.rtf eqns-koi8.rtf \
 	defs.rtf qualisex.rtf ttgfsr7.rtf excalibur.rtf include.rtf ch.rtf\
-	spago1.rtf theorem.rtf picture.rtf tabbing.rtf figtest.rtf
+	spago1.rtf theorem.rtf picture.rtf tabbing.rtf figtest.rtf \
+	apalike.rtf chem.rtf
 
 LATEX= latex
 BIBTEX= bibtex
@@ -54,6 +55,14 @@ figtest.rtf: figtest.tex figtest.eps
 	$(LATEX) figtest > latex.log
 	echo "only works if latex2png is installed"
 	$(LATEX2RTF) $(OPTIONS) -F figtest
+
+apalike.rtf: apalike.tex apalike.bib
+	$(LATEX) apalike > latex.log
+	$(BIBTEX) apalike > bibtex.log
+	$(LATEX) apalike > latex.log
+	$(LATEX) apalike > latex.log
+	$(LATEX2RTF) $(OPTIONS) apalike
+
 
 check:
 	./bracecheck

@@ -847,10 +847,21 @@ parameter: type of operand
 	char           *upper_limit = NULL;
 	char           *lower_limit = NULL;
 	char            cThis;
+	char		   *command;
 
 	/* is there an exponent/subscript ? */
 	cThis = getNonBlank();
 
+	if (cThis=='\\') {			/* handle \nolimits and \limits gracefully*/
+		ungetTexChar(cThis);
+		command=getSimpleCommand();	
+		if (!(strstr(command,"\\limits")==0) && !(strstr(command,"\\nolimits")==0))
+			PushSource(NULL,command);
+		else 
+			free(command);
+		cThis = getNonBlank();
+	}
+	
 	if (cThis == '_')
 		lower_limit = getBraceParam();
 	else if (cThis == '^')
@@ -892,12 +903,11 @@ parameter: type of operand
 		free(upper_limit);
 }
 
-/*--------------------------------------------------------------*/
-/* Stack a superscript and a subscript together                 */
-/*--------------------------------------------------------------*/
-
 void
 SubSupWorker (bool big)
+/******************************************************************************
+ purpose:  Stack a superscript and a subscript together
+ ******************************************************************************/
 {
 	char cThis;
 	char *upper_limit = NULL;

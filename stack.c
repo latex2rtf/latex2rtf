@@ -29,7 +29,7 @@ Authors:
 #include "main.h"
 #include "stack.h"
 
-#define STACKSIZE 500
+#define STACKSIZE 1000
 
 static int      stack[STACKSIZE];
 static int      top = 0;
@@ -172,7 +172,7 @@ int             PopLevel, PopBrack, PPopLevel, PPopBrack;
 	if (PPopLevel != PopLevel || PPopBrack != PopBrack)
 		BasicPush(PPopLevel, PPopBrack);
 	
-/*	myprintStack(); */
+	/* myprintStack(); */
 }
 
 void 
