@@ -4,10 +4,11 @@ Bugs:
 	Improve font sizes in \section etc.
 	Possible malloc problem in .cfg
 	Input/Include files is buggy
+	Reset footnote numbering at each new chapter
+	Fix default pagenumbers
 
 Features:
 	Add support for using the local cfg directory
-	Add support for secnumdepth
 	Add final scanning routine for section labels
 
 	Add support for \usepackage{fullpage}

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.40 2001/11/14 03:52:31 prahl Exp $ */
+/* $Id: main.c,v 1.41 2001/11/14 05:18:30 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -39,10 +39,6 @@ bool            twoside = FALSE;
 int      		g_verbosity_level = WARNING;
 static FILE    *logfile = NULL;
 
-/* flags indicating to which rtf-version output is restricted */
-static int      rtf_major = 1;
-static int      rtf_minor = 5;
-
 /* Holds the last referenced "link" value, used by \Ref and \Pageref */
 char           *hyperref = NULL;
 bool            pagenumbering = TRUE;	/* by default use plain style */
@@ -81,7 +77,6 @@ static void     CloseRtf(FILE ** f);
 static void     ConvertLatexPreamble(void);
 static void     InitializeLatexLengths(void);
 static void		printhelp(void);
-static bool     rtf_restrict(int major, int minor);
 
 void           *GetCommandFunc(char *cCommand);
 static void 	ConvertWholeDocument(void);
@@ -295,18 +290,6 @@ printhelp(void)
 		fprintf(stderr, "\t -Z#           : add # of '}'s at end of rtf file (# is 0-9)\n\n");
 		fprintf(stderr, "RTFPATH designates the directory for configuration files (*.cfg)\n");
 		fprintf(stderr, "\t RTFPATH = '%s'\n\n", getenv("RTFPATH"));
-}
-
-/***********************************************************************
- * not zero if major and minor are under the prefixed rtf-version to
- * generate (established by -rm.m option).  Purpose: check if you want
- * to generate the following rtf-tokens or if you have to output a
- * diagnostic message.
- **********************************************************************/
-bool
-rtf_restrict(int major, int minor)
-{
-	return ((major <= rtf_major) && (minor <= rtf_minor));
 }
 
 void
