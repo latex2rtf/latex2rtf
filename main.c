@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.60 2002/03/14 07:21:38 prahl Exp $ */
+/* $Id: main.c,v 1.61 2002/03/15 06:00:19 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -185,7 +185,7 @@ int main(int argc, char **argv)
 	
 	if (argc > 1) {
 		diagnostics(WARNING, "Only a single file can be processed at a time");
-		usage();
+		diagnostics(ERROR,   " Type \"latex2rtf -h\" for help");
 	}
 	
 	if (argc == 1) {

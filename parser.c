@@ -1,4 +1,4 @@
-/*  $Id: parser.c,v 1.45 2002/03/14 16:39:47 prahl Exp $
+/*  $Id: parser.c,v 1.46 2002/03/15 06:00:19 prahl Exp $
 
    Contains declarations for a generic recursive parser for LaTeX code.
 */
@@ -109,17 +109,20 @@ PushSource(char * filename, char * string)
 		g_parser_stack[g_parser_depth].string    = g_parser_string;
 	}
 		
+	/* first test to see if we should use stdin */
 	if ((filename==NULL || strcmp(filename,"-")==0) && string == NULL) {
 		g_parser_include_level++;
 		g_parser_line=1;
 		name = strdup("stdin");
 		p = stdin;
-		
+	
+	/* if not then try to open a file */	
 	} else if (filename) {
 		name = strdup(filename);
 		p = fopen(filename, "rb");
 		if (!p) {
-           diagnostics(WARNING, "Cannot open <%s>\n", filename);
+           diagnostics(WARNING, "Cannot open <%s>", filename);
+           free(name);
            return 0;
        }
        g_parser_include_level++;
@@ -716,6 +719,23 @@ getDimension(void)
 
 /* obtain optional sign */
 	cThis=getTexChar();
+	
+/* skip "to" */
+	if (cThis=='t') {
+		cThis=getTexChar();
+		cThis=getTexChar();
+	}
+	
+/* skip "spread" */
+	if (cThis=='s') {
+		cThis=getTexChar();
+		cThis=getTexChar();
+		cThis=getTexChar();
+		cThis=getTexChar();
+		cThis=getTexChar();
+		cThis=getTexChar();
+	}
+
 	if (cThis=='-' || cThis == '+')
 	{
 		buffer[i++]=cThis;
@@ -735,6 +755,7 @@ getDimension(void)
 	
 	if (i==19 || sscanf(buffer, "%f", &num) != 1) {
 		diagnostics(WARNING, "Screwy number in TeX dimension");
+		diagnostics(1,"getDimension() number is <%s>", buffer);
 		return 0;
 	}
 /*	num *= 2;                    convert pts to twips */

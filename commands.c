@@ -1,4 +1,4 @@
-/*  $Id: commands.c,v 1.49 2002/03/11 05:28:37 prahl Exp $
+/*  $Id: commands.c,v 1.50 2002/03/15 06:00:19 prahl Exp $
  
     Defines subroutines to translate LaTeX commands to RTF
 */
@@ -183,6 +183,8 @@ static CommandArray commands[] = {
 	{"includegraphics*", CmdGraphics, 0},
 	{"moveleft", CmdLength, 0},
 	{"moveright", CmdLength, 0},
+	{"hsize", CmdLength, 0},
+	{"letterspace", CmdLength, 0},
 	{"footnotemark", CmdIgnoreParameter, One_Opt_No_NormParam},
 	{"label", CmdLabel, LABEL_LABEL},
 	{"ref", CmdLabel, LABEL_REF},

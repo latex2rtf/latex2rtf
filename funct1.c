@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.62 2002/03/11 15:58:37 prahl Exp $ 
+/* $Id: funct1.c,v 1.63 2002/03/15 06:00:19 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -1766,9 +1766,13 @@ CmdInclude(int code)
 		s = strdup(name);
 	}
 			
-	t = strdup_together(s,".tex");
-	PushSource(t,NULL);
-	diagnostics(1, "Including file <%s>",t);
+	if (strstr(s, ".tex") == NULL) { /* append .tex if missing*/
+		t = strdup_together(s, ".tex");
+		free(s);
+		s = t;
+	}
+
+	if (PushSource(s,NULL))
+		diagnostics(1, "Including file <%s>",t);
 	free(s);
-	free(t);
 }
