@@ -1887,3 +1887,12 @@ CmdInclude(int code)
 		diagnostics(WARNING, "Including file <%s>",t);
 	free(s);
 }
+
+void
+CmdEndInput(int code)
+/******************************************************************************
+ purpose: handles \endinput
+ ******************************************************************************/
+{
+	PopSource();
+}

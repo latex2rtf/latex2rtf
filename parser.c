@@ -970,8 +970,8 @@ getSection(char **body, char **header, char **label)
 	char cNext, *s,*text,*next_header,*str;
 	int i;
 	size_t delta;
-	int  match[30];
-	char * command[30] = {"",  /* 0 entry is for user definitions */
+	int  match[31];
+	char * command[31] = {"",  /* 0 entry is for user definitions */
 	                      "",  /* 1 entry is for user environments */
 						  "\\begin{verbatim}", "\\begin{figure}", "\\begin{equation}", 
 						  "\\begin{eqnarray}", "\\begin{table}", "\\begin{description}",
@@ -980,9 +980,9 @@ getSection(char **body, char **header, char **label)
 	                     "\\part", "\\chapter", "\\section", "\\subsection", "\\subsubsection", 
 	                     "\\section*", "\\subsection*", "\\subsubsection*", 
 	                     "\\label", "\\input", "\\include", "\\verb", "\\url",
-	                     "\\newcommand", "\\def" , "\\renewcommand"};
+	                     "\\newcommand", "\\def" , "\\renewcommand", "\\endinput"};
 
-	int ncommands = 30;
+	int ncommands = 31;
 
 	const int b_verbatim_item   = 2;
 	const int b_figure_item     = 3;
@@ -1005,6 +1005,7 @@ getSection(char **body, char **header, char **label)
 	const int new_item     = 27;
 	const int def_item     = 28;
 	const int renew_item   = 29;
+	const int endinput_item= 30;
 
 	int bs_count = 0;
 	size_t index = 0;
@@ -1183,6 +1184,13 @@ getSection(char **body, char **header, char **label)
 					
 		if (!found) continue;
 			
+		if (i==endinput_item) {
+			delta -=  9;  			/* remove \endinput */
+			PopSource();
+			index = 0;				/* keep looking */
+			continue;
+		}
+
 		if (i==verb_item || i==url_item) {				/* slurp \verb#text# */
 			if (i==url_item && cNext=='{') cNext = '}';
 			delta++;

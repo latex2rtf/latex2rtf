@@ -314,6 +314,7 @@ static CommandArray commands[] = {
 	{"htmlref",CmdHtml, LABEL_HTMLREF},
 	{"nobreakspace", CmdNonBreakSpace, 0},
 	{"abstract", CmdAbstract, 1},
+	{"endinput", CmdEndInput, 0},
 	{"", NULL, 0}
 };
 
