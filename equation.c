@@ -13,6 +13,8 @@
 #include "funct1.h"
 #include "lengths.h"
 
+int g_equation_column = 1;
+
 void
 CmdSuperscript(int code)
 /******************************************************************************
@@ -233,9 +235,9 @@ CmdDisplayMath(int code)
 
 		g_suppress_equation_number = FALSE;
 		
-		a = 0.25 *width;
-		b = 0.3 * width;
-		c = 0.35 * width;
+		a = 0.45 *width;
+		b = 0.5 * width;
+		c = 0.55 * width;
 		fprintRTF("\\par\\par\n\\pard");
 		switch (true_code) {
 		case EQN_DISPLAYMATH:
@@ -252,7 +254,7 @@ CmdDisplayMath(int code)
 
 		case EQN_EQUATION:
 			diagnostics(4,"Entering CmdDisplayMath -- equation");
-			actCol = 5;							/* avoid adding \tabs when finishing */
+			g_equation_column = 5;				/* avoid adding \tabs when finishing */
 			g_show_equation_number = TRUE;
 			fprintRTF("\\tqc\\tx%d\\tqr\\tx%d", mid, width);
 			break;
@@ -262,7 +264,7 @@ CmdDisplayMath(int code)
 			g_show_equation_number = FALSE;
 			g_processing_eqnarray = TRUE;
 			g_processing_tabular = TRUE;
-			actCol = 1;
+			g_equation_column = 1;
 			fprintRTF("\\tqr\\tx%d\\tqc\\tx%d\\tql\\tx%d", a, b, c);
 			break;
 
@@ -271,11 +273,11 @@ CmdDisplayMath(int code)
 			g_show_equation_number = TRUE;
 			g_processing_eqnarray = TRUE;
 			g_processing_tabular = TRUE;
-			actCol = 1;
-			fprintRTF("\\tqr\\tx%d\\tqc\\tx%d\\tql\\tx%d\\tqr\\tx%d ", a, b, c, width);
+			g_equation_column = 1;
+			fprintRTF("\\tqr\\tx%d\\tqc\\tx%d\\tql\\tx%d\\tqr\\tx%d", a, b, c, width);
 			break;
 		}
-		fprintRTF("\n\\tab ");
+		fprintRTF("\\tab ");
 		SetTexMode(MODE_DISPLAYMATH);
 		
 	} else {
@@ -284,9 +286,18 @@ CmdDisplayMath(int code)
 		
 		if (g_show_equation_number && !g_suppress_equation_number) {
 			incrementCounter("equation");
-			for (; actCol < 3; actCol++)
+			for (; g_equation_column < 3; g_equation_column++)
 					fprintRTF("\\tab ");
-			fprintRTF("\\tab{\\i0 (%d)}", getCounter("equation"));
+			fprintRTF("\\tab(");
+			if (g_equation_label) 
+				fprintRTF("{\\*\\bkmkstart LBL_%s}",g_equation_label);
+			fprintRTF("%d", getCounter("equation"));
+			if (g_equation_label) 
+				fprintRTF("{\\*\\bkmkend LBL_%s}",g_equation_label);
+			fprintRTF(")");
+			if (g_equation_label) 
+				free(g_equation_label);
+			g_equation_label = NULL;
 		}
 
 		CmdEndParagraph(0);

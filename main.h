@@ -1,4 +1,4 @@
-/* $Id: main.h,v 1.29 2001/10/28 04:02:44 prahl Exp $ */
+/* $Id: main.h,v 1.30 2001/10/28 16:45:29 prahl Exp $ */
 #ifndef __MAIN_H
 #define __MAIN_H
 
@@ -77,6 +77,7 @@ extern bool     tabbing_on;
 extern bool     g_processing_tabular;
 extern int      colCount;
 extern int      actCol;
+extern int 		g_equation_column;
 extern int      tabcounter;
 
 extern bool     twocolumn;
@@ -98,6 +99,7 @@ extern int    	g_document_type;
 extern char     g_encoding[20];
 extern char		*g_figure_label;
 extern char		*g_table_label;
+extern char		*g_equation_label;
 
 void fprintRTF(char *format, ...);
 void putRtfChar(char cThis);

@@ -1,4 +1,4 @@
-/* $Id: xref.c,v 1.4 2001/10/28 04:02:44 prahl Exp $ 
+/* $Id: xref.c,v 1.5 2001/10/28 16:45:29 prahl Exp $ 
  
 This file contains routines to handle cross references :
 	\label{key}, \ref{key},   \pageref{key}, \bibitem{key},
@@ -21,6 +21,8 @@ This file contains routines to handle cross references :
 
 char * g_figure_label = NULL;
 char * g_table_label = NULL;
+char * g_equation_label = NULL;
+
 char * ScanAux(char *token, char * reference, int code);
 
 void 
@@ -192,6 +194,7 @@ purpose: handles \label \ref \pageref \cite
 	char *text, *signet;
 	char *str1, *comma, *s, *str;
 	
+	int mode = GetTexMode();
 	text = getBraceParam();
 	if (strlen(text)==0) {
 		free(text);
@@ -202,6 +205,11 @@ purpose: handles \label \ref \pageref \cite
 		case LABEL_LABEL:
 			if (g_processing_figure || g_processing_table) break;
 			signet = strdup_nobadchars(text);
+			if (mode == MODE_DISPLAYMATH) {
+				g_equation_label = signet;
+				diagnostics(3,"equation label is <%s>",signet);
+				break;
+			}
 			fprintRTF("{\\*\\bkmkstart LBL_%s}",signet);
 			fprintRTF("{\\*\\bkmkend LBL_%s}",signet);
 			free(signet);

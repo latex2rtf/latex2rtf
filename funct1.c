@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.41 2001/10/28 04:02:44 prahl Exp $ 
+/* $Id: funct1.c,v 1.42 2001/10/28 16:45:29 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -255,15 +255,25 @@ CmdSlashSlash(int code)
 	if (g_processing_eqnarray) {	/* eqnarray */
 
 		if (g_show_equation_number && !g_suppress_equation_number) {
-			for (; actCol < 3; actCol++)
+			for (; g_equation_column < 3; g_equation_column++)
 				fprintRTF("\\tab ");
 			incrementCounter("equation");
 			
-			fprintRTF("\\tab {\\i0 (%d)}", getCounter("equation"));
+			fprintRTF("\\tab(");
+			if (g_equation_label) 
+				fprintRTF("{\\*\\bkmkstart LBL_%s}",g_equation_label);
+			fprintRTF("%d", getCounter("equation"));
+			if (g_equation_label) 
+				fprintRTF("{\\*\\bkmkend LBL_%s}",g_equation_label);
+			fprintRTF(")");
+			if (g_equation_label) 
+				free(g_equation_label);				
+			g_equation_label = NULL;
 		}
+
 		fprintRTF("\\par\n\\tab ");
 		g_suppress_equation_number = FALSE;
-		actCol = 1;
+		g_equation_column = 1;
 		return;
 	}
 	
@@ -1485,6 +1495,7 @@ void
 CmdColsep(int code)
 /***************************************************************************
  * purpose: hyperlatex support, handles '&' as in Convert() in convert.c
+ only called by \S
  ***************************************************************************/
 {
 	if (!g_processing_tabular) {

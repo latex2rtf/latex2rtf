@@ -1,4 +1,4 @@
-/* $Id: convert.c,v 1.19 2001/10/23 03:47:10 prahl Exp $ 
+/* $Id: convert.c,v 1.20 2001/10/28 16:45:29 prahl Exp $ 
 	purpose: ConvertString(), Convert(), TranslateCommand() 
 	
 TeX has six modes according to the TeX Book:
@@ -281,7 +281,7 @@ globals: fTex, fRtf and all global flags for convert (see above)
 
 			if (GetTexMode() == MODE_MATH || GetTexMode() == MODE_DISPLAYMATH) {	/* in eqnarray */
 				fprintRTF("\\tab ");
-				actCol++;
+				g_equation_column++;
 				break;
 			}
 			
