@@ -299,6 +299,7 @@ static CommandArray commands[] = {
     {"left", CmdLeftRight, 0},
     {"right", CmdLeftRight, 1},
     {"stackrel", CmdStackrel, 0},
+    {"matrix", CmdMatrix, 0},
 	{"nonumber",CmdNonumber, EQN_NO_NUMBER},
 	{"char",CmdChar,0},
 	{"htmladdnormallink",CmdHtml,LABEL_HTMLADDNORMALREF},

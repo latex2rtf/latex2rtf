@@ -974,12 +974,12 @@ CmdLeftRight(int code)
 	char ldelim,rdelim;
 	char *contents;
 
-	ldelim = getTexChar();
+	ldelim = getNonSpace();
 	if (ldelim == '\\')			/* might be \{ or \} */
 		ldelim = getTexChar();
 
 	contents= getLeftRightParam();
-	rdelim= getTexChar();
+	rdelim= getNonSpace();
 
 	if (rdelim == '\\')			/* might be \{ or \} */
 		rdelim = getTexChar();
@@ -1056,6 +1056,20 @@ int n=0;
 		diagnostics(4, "CmdArray() ... \\end{array}");
 		g_processing_arrays--;
 	}
+}
+
+void
+CmdMatrix(int code)
+/******************************************************************************
+ purpose   : Does not handle plain tex \matrix command, but does not
+             produce improper RTF either.
+ ******************************************************************************/
+{
+	char *contents;
+	
+	fprintRTF(" matrix not implemented ");
+	contents = getBraceParam();
+	free(contents);
 }
 
 void
