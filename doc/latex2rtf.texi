@@ -610,21 +610,22 @@ we need to know if any @code{\label} occurs in that section before the
 section is processed. A plausible alternative would be to insert a
 bookmark when @code{\label} is encountered with the proper number, and
 then cross-reference these bookmarks. Unfortunately, if the bookmarks
-are hidden, then the cross-reference is also hidden.  So the choice are
+are hidden, then the cross-reference is also hidden.  So this did not
+work.
+
+So the choices were 
 @enumerate
 @item to insert a visible bookmark in the document at the place where the @code{\label}
 @item to use the cross-reference information available in the @file{.aux} file
-and lose all information
+and lose the link.  This is not too bad when the section numbering is not automatic.
 @item to process the @latex{} file twice so that the section labels will be 
-known when the section header is processed
-@item to process each section, subsection, subsubsection as a unit.  This is
-what is done for the table and figure environments, but is 
-much more likely to break because it is less likely to encounter @code{\end@{table@}}
-in a table environment tha the sequence @code{\verb#\section#}.  Things would
-break  if that @code{\section} was used to start a new section.  
+known when the section header is processed.  This is hard and breaks using 
+@ltor{} as pipe.
+@item to process each section, subsection, subsubsection as a unit.  
 @end enumerate
-Currently the first is implemented.  I think that this will change to the second.
-Ultimately, I may get the energy to write the function needed for the fourth.
+I opted for the last because this allows @ltor{} to bookmark the number in
+the section header avoids the drawbacks of the other options.  This was harder
+to code, and possibly makes things a bit more fragile.  
 
 Page references work but are implemented as ``warm'' cross-references.  This
 means that Word does not automatically update the page references when the file
@@ -636,15 +637,23 @@ present.  This is where @ltor{} obtains the reference numbers.  It would be
 nice if @ltor{} just automatically numbered the references when there was
 no @file{.aux} file, but @ltor{} does not do this yet.
  
-Footnotes are implemented and currently appear at the end of the document.
+Footnotes are implemented and appear at the bottom of each page.  
 
-Currently, @code{\index} commands are not supported.  Likewise I have not 
-added support for @code{\labels} of @code{\item}s in enumerate environments.
+Indexing is reasonable well supported.  The simple mark-up of @code{makeindex}
+@example
+\index@{topic!subtopic@\textit@{subtopic@}@}
+@end example
+is supported.  The rest of the fancy indexing stuff is not implemented.
+The index is created at the location of the @code{\printindex} command.
+When a file with an index is first opened in Word, you must select the 
+entire file and update the page references and fields by pressing @code{F9}.
+
+Currently, there is no support for @code{\labels} of @code{\item}s in enumerate environments.
 
 The conversion of cross-references is not perfect because of the different
 mechanisms in the @latex{} and Word worlds.  In particular, if there are 
-multiple @code{\label} in a figure or table environment then only the first
-gets processed.  It is also easy to confuse the converter in eqnarray environments.
+multiple @code{\label} in a figure, table, or section environment then only the first
+gets processed.  It is also possible to confuse the @ltor{} in eqnarray environments.
 
 @node Equations, Tables, Cross References, Features
 @section Equations
