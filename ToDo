@@ -14,12 +14,7 @@ Bugs:
 		cont\"enu et de la mise en page, ma\"is, ma\"\i{}zena, ma\^{\i}zena, b\"ureau, etc.),
 
 	\iint is handled like \int but should be double integral.
-
-	\input is not working properly.
-	
-	spago issues
-		line numbering
-	
+		
 	misc4.tex
 		missing references
 		error while processing
@@ -34,19 +29,11 @@ Bugs:
 		extraneous label text in section 7.3.6
 		word disregards \* MERGEFORMAT in same section
 		
-	Schneider
-		add \latex
-		add \htmladdnormallink
-		add \nobreakspace
-		add \bodytext
-		fix wierdness in citations
-		add \newtheorem
-		
 Features:
 	support \hsize
 	support ## in macro expansion
 	add support for \symbol{\'134}
-	
+	add support for \newtheorem
 	
 	Add default page numbering
 	
