@@ -1,4 +1,4 @@
-/*  $Id: commands.c,v 1.34 2001/10/22 04:33:03 prahl Exp $
+/*  $Id: commands.c,v 1.35 2001/11/04 20:39:11 prahl Exp $
  
     Defines subroutines to translate LaTeX commands to RTF
 */
@@ -135,25 +135,33 @@ static CommandArray commands[] = {
 	{"r", CmdOaccentChar, 0},
 	{"b", CmdUnderbarChar, 0},
 	{"c", CmdCedillaChar, 0},
+	{"i", CmdDotlessChar, 0},
+	{"j", CmdDotlessChar, 1},
+
+/* sectioning commands */
+	{"part", CmdSection, SECT_PART},
+	{"part*", CmdSection, SECT_PART_STAR},
+	{"chapter", CmdSection, SECT_CHAPTER},
+	{"chapter*", CmdSection, SECT_CHAPTER_STAR},
+	{"section", CmdSection, SECT_NORM},
+	{"section*", CmdSection, SECT_NORM_STAR},
+	{"subsection", CmdSection, SECT_SUB},
+	{"subsection*", CmdSection, SECT_SUB_STAR},
+	{"subsubsection", CmdSection, SECT_SUBSUB},
+	{"subsubsection*", CmdSection, SECT_SUBSUB_STAR},
+	{"paragraph", CmdSection, SECT_SUBSUBSUB},
+	{"paragraph*", CmdSection, SECT_SUBSUBSUB_STAR},
+	{"subparagraph", CmdSection, SECT_SUBSUBSUBSUB},
+	{"subparagraph*", CmdSection, SECT_SUBSUBSUBSUB_STAR},
 
 	{"ldots", CmdLdots, 0},
 	{"maketitle", CmdMakeTitle, 0},
 	{"par", CmdEndParagraph, 0},
 	{"noindent", CmdIndent, INDENT_NONE},
 	{"indent", CmdIndent, INDENT_USUAL},
-	{"section", CmdSection, SECT_NORM},
-	{"section*", CmdSection, SECT_NORM},
 	{"caption", CmdCaption, 0},
-	{"chapter", CmdSection, SECT_CHAPTER},
-	{"subsection", CmdSection, SECT_SUB},
-	{"subsection*", CmdSection, SECT_SUB},
-	{"subsubsection", CmdSection, SECT_SUBSUB},
-	{"subsubsection*", CmdSection, SECT_SUBSUB},
-	{"part", CmdSection, SECT_PART},
 	{"appendix", CmdIgnore, 0},
 	{"protect", CmdIgnore, 0},
-	{"paragraph", CmdSection, SECT_SUB},
-	{"subparagraph", CmdSection, SECT_SUBSUB},
 	{"clearpage", CmdNewPage, NewPage},
 	{"cleardoublepage", CmdNewPage, NewPage},
 	{"newpage", CmdNewPage, NewColumn},

@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.43 2001/10/28 22:27:57 prahl Exp $ 
+/* $Id: funct1.c,v 1.44 2001/11/04 20:39:11 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -485,95 +485,123 @@ parameter: code: type of section-recursion-level
 
 	switch (code) {
 	case SECT_PART:
-		incrementCounter("part");
+	case SECT_PART_STAR:
 		fprintRTF("\\page");
 		fprintRTF("{\\qc\\b\\fs40 ");
 		ConvertBabelName("PARTNAME");
-		sprintf(section_label, "%d", getCounter("part"));
-		fprintRTF("%s\\par ", section_label);
+		if (code == SECT_PART) {
+			incrementCounter("part");
+			sprintf(section_label, "%d", getCounter("part"));
+			fprintRTF("%s\\par ", section_label);
+		}
 		break;
 
 	case SECT_CHAPTER:
-		incrementCounter("chapter");
-		setCounter("section",0);
-		setCounter("subsection",0);
-		setCounter("subsubsection",0);
-/*		fprintRTF("\\pard\\page\\pard{\\pntext\\pard\\plain\\b\\fs32\\kerning28 ");
-		fprintRTF("%d\\par \\par }\\pard\\plain\n", getCounter("chapter"));
-		fprintRTF("%s\\f%d%s{", HEADER11, DefFont, HEADER12);
-*/
+	case SECT_CHAPTER_STAR:
 		fprintRTF("\\page{\\plain\\b\\fs32\\kerning28 ");
 		ConvertBabelName("CHAPTERNAME");
-		sprintf(section_label, "%d", getCounter("chapter"));
-		fprintRTF(" %s\\par}", section_label);
-		fprintRTF("{\\fi0\\plain\\b\\fs40\\kerning28 ");
+		if (code == SECT_CHAPTER) {
+			incrementCounter("chapter");
+			setCounter("section",0);
+			setCounter("subsection",0);
+			setCounter("subsubsection",0);
+			setCounter("paragraph",0);
+			setCounter("subparagraph",0);
+			sprintf(section_label, "%d", getCounter("chapter"));
+			fprintRTF(" %s", section_label);
+		}
+		fprintRTF("\\par}{\\fi0\\plain\\b\\fs40\\kerning28 ");
 		break;
 
 	case SECT_NORM:
-		incrementCounter("section");
-		setCounter("subsection",0);
-		setCounter("subsubsection",0);
-/*
-		fprintRTF("{\\pard\\pntext\\plain\\b");
-		if (g_document_type == FORMAT_ARTICLE) {
-			fprintRTF("\\fs32\\kerning28 %d\\tab}\\pard\\plain\n", getCounter("section"));
-			fprintRTF("%s%s{", HEADER11, HEADER12);
-		} else {
-			fprintRTF("\\fs24 %d.%d\\tab}\\pard\\plain\n", getCounter("chapter"),getCounter("section"));
-			fprintRTF("%s%s{", HEADER21, HEADER22);
+	case SECT_NORM_STAR:
+		fprintRTF("{\\plain\\b ");
+		if(code == SECT_NORM) {		
+			incrementCounter("section");
+			setCounter("subsection",0);
+			setCounter("subsubsection",0);
+			setCounter("paragraph",0);
+			setCounter("subparagraph",0);
+			if (g_document_type == FORMAT_ARTICLE) {
+				fprintRTF("\\fs32 ");
+				sprintf(section_label, "%d.", getCounter("section"));
+			} else {
+				fprintRTF("\\fs24 ");
+				sprintf(section_label, "%d.%d", getCounter("chapter"),getCounter("section"));
+			}
+			fprintRTF("%s  ", section_label);
 		}
-*/
-		fprintRTF("{\\plain\\b");
-		if (g_document_type == FORMAT_ARTICLE) {
-			fprintRTF("\\fs32 ");
-			sprintf(section_label, "%d.", getCounter("section"));
-		} else {
-			fprintRTF("\\fs24 ");
-			sprintf(section_label, "%d.%d", getCounter("chapter"),getCounter("section"));
-		}
-		fprintRTF("%s  ", section_label);
 		break;
 
 	case SECT_SUB:
-		incrementCounter("subsection");
-		setCounter("subsubsection",0);
-/*		fprintRTF("{\\par\\pard\\pntext\\pard\\plain\\b");
-		if (g_document_type == FORMAT_ARTICLE) {
-			fprintRTF("\\fs24 %d.%d\\tab}\\pard\\plain\n", getCounter("section"), getCounter("subsection"));
-			fprintRTF("%s\\f%d%s{", HEADER21, DefFont, HEADER22);
-		} else {
-			fprintRTF("\\fs24 %d.%d.%d\\tab}\\pard\\plain\n", getCounter("chapter"), getCounter("section"), getCounter("subsection"));
-			fprintRTF("%s\\f%d%s{", HEADER31, DefFont, HEADER32);
-		}
-*/
+	case SECT_SUB_STAR:
 		fprintRTF("{\\plain\\b\\fs24 ");
-		if (g_document_type == FORMAT_ARTICLE)
-			sprintf(section_label, "%d.%d", getCounter("section"), getCounter("subsection"));
-		else
-			sprintf(section_label, "%d.%d.%d", getCounter("chapter"), getCounter("section"), 
-			        getCounter("subsection"));
-		fprintRTF("%s  ", section_label);
+		if (code == SECT_SUB) {
+			incrementCounter("subsection");
+			setCounter("subsubsection",0);
+			setCounter("paragraph",0);
+			setCounter("subparagraph",0);
+			if (g_document_type == FORMAT_ARTICLE)
+				sprintf(section_label, "%d.%d", getCounter("section"),
+				        getCounter("subsection"));
+			else
+				sprintf(section_label, "%d.%d.%d", getCounter("chapter"),
+				        getCounter("section"), getCounter("subsection"));
+			fprintRTF("%s  ", section_label);
+		}
 		break;
 
 	case SECT_SUBSUB:
-		incrementCounter("subsubsection");
-/*		fprintRTF("{\\par\\pard\\pntext\\pard\\plain\\b");
-		if (g_document_type == FORMAT_ARTICLE) {
-			fprintRTF("\\fs24 %d.%d.%d\\tab}\\pard\\plain\n", getCounter("section"), getCounter("subsection"), getCounter("subsubsection"));
-			fprintRTF("%s\\f%d%s{", HEADER31, DefFont, HEADER32);
-		} else {
-			fprintRTF("\\fs24 %d.%d.%d.%d\\tab}\\pard\\plain\n", getCounter("chapter"), getCounter("section"), getCounter("subsection"), getCounter("subsubsection"));
-			fprintRTF("%s\\f%d%s{", HEADER41, DefFont, HEADER42);
-		}
-*/
+	case SECT_SUBSUB_STAR:
 		fprintRTF("{\\plain\\b\\fs24 ");
-		if (g_document_type == FORMAT_ARTICLE)
-			sprintf(section_label, "%d.%d.%d", getCounter("section"), 
-					getCounter("subsection"), getCounter("subsubsection"));
-		else
-			sprintf(section_label, "%d.%d.%d.%d", getCounter("chapter"), getCounter("section"), 
-			        getCounter("subsection"), getCounter("subsubsection"));
-		fprintRTF("%s  ", section_label);
+		if (SECT_SUBSUB) {
+			incrementCounter("subsubsection");
+			setCounter("paragraph",0);
+			setCounter("subparagraph",0);
+			if (g_document_type == FORMAT_ARTICLE)
+				sprintf(section_label, "%d.%d.%d", getCounter("section"), 
+						getCounter("subsection"), getCounter("subsubsection"));
+			else
+				sprintf(section_label, "%d.%d.%d.%d", getCounter("chapter"), 
+				        getCounter("section"), getCounter("subsection"), getCounter("subsubsection"));
+			fprintRTF("%s  ", section_label);
+		}
+		break;
+
+	case SECT_SUBSUBSUB:
+	case SECT_SUBSUBSUB_STAR:
+		fprintRTF("{\\plain\\b ");
+		if (SECT_SUBSUBSUB) {
+			incrementCounter("paragraph");
+			setCounter("subparagraph",0);
+			if (g_document_type == FORMAT_ARTICLE)
+				sprintf(section_label, "%d.%d.%d.%d", getCounter("section"), 
+						getCounter("subsection"), getCounter("subsubsection"),
+						getCounter("paragraph"));
+			else
+				sprintf(section_label, "%d.%d.%d.%d.%d", getCounter("chapter"), 
+				        getCounter("section"), getCounter("subsection"), 
+				        getCounter("subsubsection"),getCounter("paragraph"));
+			fprintRTF("%s  ", section_label);
+		}
+		break;
+
+	case SECT_SUBSUBSUBSUB:
+	case SECT_SUBSUBSUBSUB_STAR:
+		fprintRTF("{\\plain\\b ");
+		if (SECT_SUBSUBSUBSUB) {
+			incrementCounter("subparagraph");
+			if (g_document_type == FORMAT_ARTICLE)
+				sprintf(section_label, "%d.%d.%d.%d.%d", getCounter("section"), 
+						getCounter("subsection"),  getCounter("subsubsection"),
+						getCounter("paragraph"),   getCounter("subparagraph"));
+			else
+				sprintf(section_label, "%d.%d.%d.%d.%d.%d", getCounter("chapter"), 
+				        getCounter("section"),        getCounter("subsection"), 
+				        getCounter("subsubsection"),  getCounter("paragraph"),
+				        getCounter("subparagraph"));
+			fprintRTF("%s  ", section_label);
+		}
 		break;
 	}
 	

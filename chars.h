@@ -21,6 +21,7 @@ void            CmdVecChar(int code);
 void            CmdBreveChar(int code);
 void            CmdDotChar(int code);
 void            CmdUnderbarChar(int code);
+void            CmdDotlessChar(int code);
 
 void            CmdLogo(int code);
 

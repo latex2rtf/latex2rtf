@@ -1,4 +1,4 @@
-/* $Id: chars.c,v 1.16 2001/10/27 14:19:31 prahl Exp $
+/* $Id: chars.c,v 1.17 2001/11/04 20:39:11 prahl Exp $
 
    purpose : handles special characters and logos
 */
@@ -547,6 +547,18 @@ CmdUnderbarChar(int code)
 		fprintRTF("{\\fldrslt }}");
 	}
 	free(cParam);
+}
+
+void 
+CmdDotlessChar(int code)
+/******************************************************************************
+ purpose: converts \i and \j to 'i' and 'j'
+ ******************************************************************************/
+{
+	if (code==0)
+		fprintRTF("i");
+	else
+		fprintRTF("j");
 }
 
 void 

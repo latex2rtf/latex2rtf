@@ -1,4 +1,4 @@
-/* $Id: funct1.h,v 1.25 2001/10/22 04:33:03 prahl Exp $ */
+/* $Id: funct1.h,v 1.26 2001/11/04 20:39:11 prahl Exp $ */
 
 #define THANKS 2
 
@@ -42,12 +42,23 @@ void            CmdIgnore(int code);
 void            CmdLdots(int code);
 void            Environment(int code);
 
-#define SECT_NORM 1
-#define SECT_SUB 2
-#define SECT_SUBSUB 3
-#define SECT_CAPTION 4
-#define SECT_CHAPTER 5
-#define SECT_PART 6
+#define SECT_PART               1
+#define SECT_CHAPTER            2
+#define SECT_NORM               3
+#define SECT_SUB                4
+#define SECT_SUBSUB             5
+#define SECT_SUBSUBSUB          6
+#define SECT_SUBSUBSUBSUB       7
+
+#define SECT_PART_STAR         11
+#define SECT_CHAPTER_STAR      12
+#define SECT_NORM_STAR         13
+#define SECT_SUB_STAR          14
+#define SECT_SUBSUB_STAR       15
+#define SECT_SUBSUBSUB_STAR    16
+#define SECT_SUBSUBSUBSUB_STAR 17
+
+#define SECT_CAPTION            8
 void            CmdSection(int code);
 
 #define QUOTE 1
