@@ -103,12 +103,12 @@ figtest.rtf: figtest.tex figtest.eps figtestc.ps
 	$(LATEX) figtest > latex.log
 	$(LATEX2RTF) $(OPTIONS) -F figtest
 
-figtest2.rtf: figtest2.tex figtestb.pdf
+figtest2.rtf: figtest2.tex figtestb.pdf figtestc.pdf
 	$(LATEX2RTF) $(OPTIONS) -D 300 figtest2
 	mv figtest2.rtf figtest2a.rtf
 	$(LATEX2RTF) $(OPTIONS) figtest2
 
-figtest3.rtf: figtest3.tex figtestc.ps
+figtest3.rtf: figtest3.tex figtestd.ps figtestd.pdf
 	$(LATEX2RTF) $(OPTIONS) figtest3
 
 linux.rtf: linux.tex
@@ -121,9 +121,13 @@ check:
 	
 clean:
 	mv figtestb.pdf figtestb.tmp
+	mv figtestc.pdf figtestc.tmp
+	mv figtestd.pdf figtestd.tmp
 	rm -f *.dvi *.rtf *.aux *.blg *.bbl *.log *.pdf *.toc *.lot *.idx *.ilg *.ind
 	rm -f l2r*tex
 	mv figtestb.tmp figtestb.pdf
+	mv figtestc.tmp figtestc.pdf
+	mv figtestd.tmp figtestd.pdf
 	rm -rf ../tmp
 
 .PHONY: clean all check
