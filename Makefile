@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.81 2003/03/22 22:16:47 prahl Exp $
+# $Id: Makefile,v 1.82 2003/04/07 01:46:45 prahl Exp $
 
 CC=gcc
 MKDIR=mkdir -p
@@ -71,7 +71,9 @@ SCRIPTS= scripts/version scripts/latex2png scripts/latex2png_1 scripts/latex2png
 	scripts/test3a.tex scripts/test4.tex scripts/test1fig.eps
 
 TEST=   test/Makefile test/bracecheck \
-	test/accentchars.tex test/array.tex test/cite.tex test/cite.bib \
+	test/accentchars.tex test/array.tex test/bib_simple.tex test/bib_simple.bib \
+	test/bib_apacite.tex test/bib_apalike.tex test/bib_apalike2.tex \
+	test/bib_natbib1.tex test/bib_natbib2.tex \
 	test/eqns.tex test/fonts.tex test/fontsize.tex test/frac.tex \
 	test/list.tex test/logo.tex test/misc1.tex test/misc2.tex \
 	test/oddchars.tex test/tabular.tex test/percent.tex test/essential.tex test/hndout.sty \
@@ -87,7 +89,7 @@ TEST=   test/Makefile test/bracecheck \
 	test/include1.tex test/include2.tex test/include3.tex test/ch.tex test/spago1.tex \
 	test/theorem.tex test/picture.tex test/russian.tex test/eqns-koi8.tex \
 	test/tabbing.tex test/figtest.tex test/figtest.eps test/chem.tex \
-	test/apalike.tex test/apalike.bib test/linux.tex
+	test/linux.tex
 
 OBJS=l2r_fonts.o direct.o encode.o commands.o stack.o funct1.o tables.o \
 	chars.o ignore.o cfg.o main.o util.o parser.o lengths.o counters.o \

@@ -390,7 +390,7 @@ setDocumentOptions(char *optionlist)
 	while (option) {
 
 /*		while (*option == ' ') option++;  skip leading blanks */
-		diagnostics(4, "                    option   <%s>", option);
+		diagnostics(3, " (setDocumentOptions) option <%s>", option);
 		if      (strcmp(option, "10pt"       ) == 0 ||
 			     strcmp(option, "11pt"       ) == 0 || 
 				 strcmp(option, "12pt"       ) == 0) 
@@ -419,10 +419,17 @@ setDocumentOptions(char *optionlist)
 			g_preambleTitlepage = TRUE;
 		else if (strcmp(option, "isolatin1") == 0)
 			setPackageInputenc("latin1");
+		else if (strcmp(option, "hyperlatex") == 0)
+			PushEnvironment(HYPERLATEX); 
 		else if (strcmp(option, "apalike") == 0)
 			g_document_bibstyle = BIBSTYLE_APALIKE;
-		else if (strcmp(option, "hyperlatex") == 0) {
-			PushEnvironment(HYPERLATEX); 
+		else if (strcmp(option, "natbib") == 0){
+			PushEnvironment(NATBIB_MODE);
+			g_document_bibstyle = BIBSTYLE_NATBIB;
+		} else if (strcmp(option, "apacite")==0   ||
+			     strcmp(option, "apacitex") == 0 ) {
+			PushEnvironment(APACITE_MODE);
+			g_document_bibstyle = BIBSTYLE_APACITE;
 		} else if (strcmp(option, "fancyhdr") == 0) {
 			diagnostics(WARNING, "Only partial support for %s", option);
 		} else if (strcmp(option, "textcomp")==0 ||
@@ -530,8 +537,12 @@ CmdUsepackage(int code)
 	         strstr(package, "newcen")        ||
 	         strstr(package, "helvet") )
 		setPackageFont(package);
-		
-	else
+
+	else if (strcmp(package, "natbib") == 0) {
+		if (strstr(options, "")) set_longnamesfirst();
+		PushEnvironment(NATBIB_MODE);
+		g_document_bibstyle = BIBSTYLE_NATBIB;
+	} else
 		setDocumentOptions(package);
 	
 	if (options)

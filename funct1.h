@@ -185,3 +185,4 @@ char            *FormatUnitNumber(char *name);
 void            CmdNewTheorem(int code);
 void            CmdInclude(int code);
 void			CmdEndInput(int code);
+void			CmdIf(int code);

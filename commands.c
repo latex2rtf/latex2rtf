@@ -220,7 +220,7 @@ static CommandArray commands[] = {
 	{"label", CmdLabel, LABEL_LABEL},
 	{"ref", CmdLabel, LABEL_REF},
 	{"pageref", CmdLabel, LABEL_PAGEREF},
-	{"cite", CmdLabel, LABEL_CITE},
+	{"cite", CmdCite, CITE_CITE},
 	{"bibliography", CmdBibliography, 0},
 	{"bibliographystyle", CmdBibliographyStyle, 0},
 	{"bibitem", CmdBibitem, 0},
@@ -387,6 +387,7 @@ static CommandArray PreambleCommands[] = {
 	{"signature", CmdSignature, 0},
 	{"hline", CmdHline, 0},
 	{"cline", CmdHline, 1},
+	{"ifx", CmdIf, 0},
 	{"", NULL, 0}
 };				/* end of list */
 
@@ -627,6 +628,90 @@ static CommandArray hyperlatex[] = {
 	{"", NULL, 0}
 };				/* end of list */
 
+/********************************************************************
+purpose: commands for apacite package 
+********************************************************************/
+static CommandArray apaciteCommands[] = {
+	{ "BBOP",   CmdApaCite,  0}, /* Open parenthesis Default is "(" */
+	{ "BBAA",   CmdApaCite,  1}, /* Last ``and'' Default is "\&" */
+	{ "BBAB",   CmdApaCite,  2}, /* Last ``and'' Default is "and" */
+	{ "BBAY",   CmdApaCite,  3}, /* Punctuation  Default is ", " */
+	{ "BBC",    CmdApaCite,  4}, /* Punctuation  Default is "; " */
+	{ "BBN",    CmdApaCite,  5}, /* Punctuation Default is ", " */
+	{ "BBCP",   CmdApaCite,  6}, /* Closing parenthesis, Default is ")" */
+	{ "BBOQ",   CmdApaCite,  7}, /* Opening quote Default is the empty string */
+	{ "BBCQ",   CmdApaCite,  8}, /* Closing quote Default is the empty string */
+	{ "BCBT",   CmdApaCite,  9}, /* Comma Default is "," */
+	{ "BCBL",   CmdApaCite, 10}, /* Comma Default is "," */
+	{ "BOthers",CmdApaCite, 11}, /* Used for ``others'' Default is "et~al." */
+	{ "BIP",    CmdApaCite, 12}, /* ``In press'', Default is "in press" */
+	{ "BAnd",   CmdApaCite, 13}, /* Used as ``and'' Default is "and" */
+	{ "BED",    CmdApaCite, 14}, /* Editor Default is "Ed." */
+	{ "BEDS",   CmdApaCite, 15}, /* Editors Default is "Eds." */
+	{ "BTRANS", CmdApaCite, 16}, /* Translator. Default is "Trans." */
+	{ "BTRANSS",CmdApaCite, 17}, /* Translators. Default is "Trans." */
+	{ "BCHAIR", CmdApaCite, 18}, /* Chair Default is "Chair" */
+	{ "BCHAIRS",CmdApaCite, 19}, /* Chairs. Default is "Chairs" */
+	{ "BVOL",   CmdApaCite, 20}, /* Volume,  Default is "Vol." */
+	{ "BVOLS",  CmdApaCite, 21}, /* Volumes, Default is "Vols." */
+	{ "BNUM",   CmdApaCite, 22}, /* Number, Default is "No." */
+	{ "BNUMS",  CmdApaCite, 23}, /* Numbers, Default is "Nos." */
+	{ "BEd",    CmdApaCite, 24}, /* Edition, Default is "ed." */
+	{ "BPG",    CmdApaCite, 25}, /* Page, default is "p." */
+	{ "BPGS",   CmdApaCite, 26}, /* Pages, default is "pp." */
+	{ "BTR",    CmdApaCite, 27}, /* technical report Default is "Tech.\ Rep." */
+	{ "BPhD",   CmdApaCite, 28}, /* Default is "Doctoral dissertation" */
+	{ "BUPhD",  CmdApaCite, 29}, /* Unpublished PhD Default is "Unpublished doctoral dissertation" */
+	{ "BMTh",   CmdApaCite, 30}, /* MS thesis Default is "Master's thesis" */
+	{ "BUMTh",  CmdApaCite, 31}, /* unpublished MS Default is "Unpublished master's thesis" */
+	{ "BOWP",   CmdApaCite, 32}, /* default is "Original work published " */
+	{ "BREPR",  CmdApaCite, 33}, /* default is "Reprinted from " */
+	{ "BCnt",   CmdApaCite, 34}, /* convert number to letter */
+	{ "BCntIP", CmdApaCite, 34}, /* convert number to letter */
+	{ "BBA",    CmdApaCite, 35}, /* "&" in paren, "and" otherwise */
+	{ "AX",     CmdApaCite, 36}, /* index name */
+	{ "Bem",    CmdEmphasize, F_EMPHASIZE_2},	
+	{ "BCAY",   CmdApaCite, 100},
+	{"fullcite", CmdCite, CITE_FULL},
+	{"shortcite", CmdCite, CITE_SHORT},
+	{"citeNP", CmdCite, CITE_CITE_NP},
+	{"fullciteNP", CmdCite, CITE_FULL_NP},
+	{"shortciteNP", CmdCite, CITE_SHORT_NP},
+	{"citeA", CmdCite, CITE_CITE_A},
+	{"fullciteA", CmdCite, CITE_FULL_A},
+	{"shortciteA", CmdCite, CITE_SHORT_A},
+	{"citeauthor", CmdCite, CITE_CITE_AUTHOR},
+	{"fullciteauthor", CmdCite, CITE_FULL_AUTHOR},
+	{"shortciteauthor", CmdCite, CITE_SHORT_AUTHOR},
+	{"citeyear", CmdCite, CITE_YEAR},
+	{"citeyearNP", CmdCite, CITE_YEAR_NP},
+	{"", NULL, 0}
+};
+
+/********************************************************************
+purpose: commands for apacite package 
+********************************************************************/
+static CommandArray natbibCommands[] = {
+	{"citet", CmdCite, CITE_T},
+	{"citet*", CmdCite, CITE_T_STAR},
+	{"citep", CmdCite, CITE_P},
+	{"citep*", CmdCite, CITE_P_STAR},
+	{"citealt", CmdCite, CITE_ALT},
+	{"citealp", CmdCite, CITE_ALP},
+	{"citealt*", CmdCite, CITE_ALT_STAR},
+	{"citealp*", CmdCite, CITE_ALP_STAR},
+	{"citetext", CmdCite, CITE_TEXT},
+	{"citeauthor", CmdCite, CITE_AUTHOR},
+	{"citeauthor*", CmdCite, CITE_AUTHOR_STAR},
+	{"citeyear", CmdCite, CITE_YEAR},
+	{"citeyearpar", CmdCite, CITE_YEAR_P},
+	{"Citet", CmdCite, CITE_T},
+	{"Citep", CmdCite, CITE_P},
+	{"Citealt", CmdCite, CITE_ALT},
+	{"Citealp", CmdCite, CITE_ALP},
+	{"Citeauthor", CmdCite, CITE_AUTHOR},
+	{"", NULL, 0}
+};
 
 bool 
 CallCommandFunc(char *cCommand)
@@ -782,6 +867,14 @@ globals: changes Environment - array of active environments
 	case HYPERLATEX:
 		Environments[iEnvCount] = hyperlatex;
 		diag = "hyperlatex";
+		break;
+	case APACITE_MODE:
+		Environments[iEnvCount] = apaciteCommands;
+		diag = "apacite";
+		break;
+	case NATBIB_MODE:
+		Environments[iEnvCount] = natbibCommands;
+		diag = "natbib";
 		break;
 	case GENERIC_ENV:
 		Environments[iEnvCount] = commands;

@@ -2,7 +2,8 @@
 # Initial version 28 May 2001 Scott Prahl
 #
 
-all:	accentchars.rtf array.rtf cite.rtf eqns.rtf fonts.rtf fontsize.rtf \
+all:	accentchars.rtf array.rtf bib_simple.rtf bib_apalike.rtf bib_apalike2.rtf \
+        bib_apacite.rtf bib_natbib1.rtf eqns.rtf fonts.rtf fontsize.rtf \
         frac.rtf list.rtf logo.rtf misc1.rtf misc2.rtf oddchars.rtf \
         tabular.rtf percent.rtf essential.rtf misc3.rtf misc4.rtf fancy.rtf \
 	align.rtf german.rtf russian.rtf box.rtf \
@@ -13,7 +14,7 @@ all:	accentchars.rtf array.rtf cite.rtf eqns.rtf fonts.rtf fontsize.rtf \
 	enc_maccyr.rtf enc_macukr.rtf eqns-koi8.rtf \
 	defs.rtf qualisex.rtf ttgfsr7.rtf excalibur.rtf include.rtf ch.rtf\
 	spago1.rtf theorem.rtf picture.rtf tabbing.rtf figtest.rtf \
-	apalike.rtf chem.rtf subsup.rtf linux.rtf
+	chem.rtf subsup.rtf linux.rtf
 
 LATEX= latex
 BIBTEX= bibtex
@@ -23,12 +24,37 @@ OPTIONS  = -Z3 -P ../cfg
 %.rtf:	%.tex
 	$(LATEX2RTF) $(OPTIONS) $<
 
-cite.rtf: cite.tex cite.bib
-	$(LATEX) cite > latex.log
-	$(BIBTEX) cite > bibtex.log
-	$(LATEX) cite > latex.log
-	$(LATEX) cite > latex.log
-	$(LATEX2RTF) $(OPTIONS) cite
+bib_simple.rtf: bib_simple.tex bib_simple.bib
+	$(LATEX) bib_simple > latex.log
+	$(BIBTEX) bib_simple > bibtex.log
+	$(LATEX) bib_simple > latex.log
+	$(LATEX) bib_simple > latex.log
+	$(LATEX2RTF) $(OPTIONS) bib_simple
+
+bib_apalike.rtf: bib_apalike.tex
+	$(LATEX) bib_apalike > latex.log
+	$(LATEX) bib_apalike > latex.log
+	$(LATEX2RTF) $(OPTIONS) bib_apalike
+
+bib_apacite.rtf: bib_apacite.tex
+	$(LATEX) bib_apacite > latex.log
+	$(LATEX) bib_apacite > latex.log
+	$(LATEX2RTF) $(OPTIONS) bib_apacite
+
+bib_apalike2.rtf: bib_apalike2.tex
+	$(LATEX) bib_apalike2 > latex.log
+	$(LATEX) bib_apalike2 > latex.log
+	$(LATEX2RTF) $(OPTIONS) bib_apalike2
+
+bib_natbib1.rtf: bib_natbib1.tex
+	$(LATEX) bib_natbib1 > latex.log
+	$(LATEX) bib_natbib1 > latex.log
+	$(LATEX2RTF) $(OPTIONS) bib_natbib1
+
+bib_natbib2.rtf: bib_natbib2.tex
+	$(LATEX) bib_natbib2 > latex.log
+	$(LATEX) bib_natbib2 > latex.log
+	$(LATEX2RTF) $(OPTIONS) bib_natbib2
 
 misc2.rtf: misc2.tex
 	$(LATEX) misc2 > latex.log
@@ -55,13 +81,6 @@ figtest.rtf: figtest.tex figtest.eps
 	$(LATEX) figtest > latex.log
 	echo "only works if latex2png is installed"
 	$(LATEX2RTF) $(OPTIONS) -F figtest
-
-apalike.rtf: apalike.tex apalike.bib
-	$(LATEX) apalike > latex.log
-	$(BIBTEX) apalike > bibtex.log
-	$(LATEX) apalike > latex.log
-	$(LATEX) apalike > latex.log
-	$(LATEX2RTF) $(OPTIONS) apalike
 
 linux.rtf: linux.tex
 	$(LATEX) linux > latex.log

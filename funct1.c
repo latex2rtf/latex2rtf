@@ -1899,6 +1899,16 @@ CmdInclude(int code)
 }
 
 void
+CmdIf(int code)
+/******************************************************************************
+ purpose: handles \ifx by skippint to next \fi
+ ******************************************************************************/
+{
+	char *s=getTexUntil("\\fi", FALSE);
+	if (s) free(s);
+}
+
+void
 CmdEndInput(int code)
 /******************************************************************************
  purpose: handles \endinput
