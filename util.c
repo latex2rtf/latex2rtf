@@ -117,6 +117,34 @@ strdup_together(char *s, char *t)
 }
 
 char *
+strdup_nocomments(char *s)
+/******************************************************************************
+ purpose:  duplicates a string but removes TeX  %comment\n
+******************************************************************************/
+{
+char *p, *dup;
+	if (s==NULL) return NULL;
+	
+	dup = malloc(strlen(s) + 1);
+	p = dup;
+	
+	while (*s) {
+		while (*s == '%') {					/* remove comment */
+			 s++;							/* one char past % */
+			 while (*s && *s != '\n') s++;	/* find end of line */
+			 if (*s == '\0') goto done;
+			 s++;							/* first char after comment */
+		}
+		*p = *s;
+		*p++;
+		*s++;
+	}
+done:
+	*p = '\0';		
+	return dup;
+}
+
+char *
 strdup_noblanks(char *s)
 /******************************************************************************
  purpose:  duplicates a string without including spaces or newlines

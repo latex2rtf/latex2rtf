@@ -579,7 +579,7 @@ purpose: handles \cite
 ******************************************************************************/
 {
 	char punct[4]="[],";
-	char *text;
+	char *text, *str1;
 	char *keys, *key, *next_keys;
 	char *option = NULL;
 	char *pretext = NULL;
@@ -616,6 +616,10 @@ purpose: handles \cite
 	}
 
 	text = getBraceParam();
+	str1 = strdup_nocomments(text);
+	free(text);
+	text=str1;
+	
 	if (strlen(text)==0) {
 		free(text);
 		if (pretext) free(pretext);
