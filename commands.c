@@ -65,6 +65,7 @@ static CommandArray commands[] = {
     {"end", CmdBeginEnd, CMD_END},
     {"today", CmdToday, 0},
     {"footnote", CmdFootNote, FOOTNOTE},
+	{"endnote", CmdFootNote, FOOTNOTE | FOOTNOTE_ENDNOTE},
 
 	{"rmfamily", CmdFontFamily, F_FAMILY_ROMAN  },
     {"rm", CmdFontFamily, F_FAMILY_ROMAN_1},
