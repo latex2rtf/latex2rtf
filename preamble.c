@@ -431,6 +431,14 @@ setDocumentOptions(char *optionlist)
 		else if (strcmp(option, "natbib") == 0){
 			PushEnvironment(NATBIB_MODE);
 			g_document_bibstyle = BIBSTYLE_NATBIB;
+		} else if (strcmp(option, "authordate") == 0 ||
+			     strcmp(option, "authordate1") == 0 ||
+			     strcmp(option, "authordate2") == 0 ||
+			     strcmp(option, "authordate3") == 0 ||
+			     strcmp(option, "authordate4") == 0 ||
+			     strcmp(option, "authordate1-4") == 0 ){
+	/*		PushEnvironment(AUTHORDATE_MODE);*/
+			g_document_bibstyle = BIBSTYLE_AUTHORDATE;
 		} else if (strcmp(option, "apacite")==0   ||
 			     strcmp(option, "apacitex") == 0 ) {
 			PushEnvironment(APACITE_MODE);

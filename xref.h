@@ -16,6 +16,7 @@
 #define BIBSTYLE_APALIKE    2
 #define BIBSTYLE_APACITE    3
 #define BIBSTYLE_NATBIB     4
+#define BIBSTYLE_AUTHORDATE 5
 
 #define CITE_CITE           1
 #define CITE_FULL           2

@@ -40,6 +40,7 @@ char * g_figure_label = NULL;
 char * g_table_label = NULL;
 char * g_equation_label = NULL;
 char * g_section_label = NULL;
+int g_suppress_name = FALSE;
 
 #define MAX_LABELS 200
 #define MAX_CITATIONS 1000
@@ -606,6 +607,11 @@ purpose: handles \cite
 		option  = getBracketParam();
 	}
 	
+	if (g_document_bibstyle == BIBSTYLE_AUTHORDATE){
+		strcpy(punct,"();");
+		option  = getBracketParam();
+	}
+	
 	if (g_document_bibstyle == BIBSTYLE_NATBIB){
 		pretext = getBracketParam();
 		option  = getBracketParam();
@@ -663,6 +669,15 @@ purpose: handles \cite
 			ConvertString(t);
 		}
 		
+		if (g_document_bibstyle == BIBSTYLE_AUTHORDATE) { 
+			t = s ? s : key;							
+			if (code==CITE_SHORT) 
+				g_suppress_name=TRUE;
+			ConvertString(t);
+			if (code==CITE_SHORT) 
+				g_suppress_name=FALSE;
+		}
+		
 		if (g_document_bibstyle == BIBSTYLE_APACITE) {  /*  */
 			t = s ? s : key;							
 			g_current_cite_seen=citation_used(key);
@@ -697,7 +712,7 @@ purpose: handles \cite
 	}
 
 	/* final text after citation */
-	if (option && g_document_bibstyle == BIBSTYLE_APACITE) {
+	if (option && (g_document_bibstyle == BIBSTYLE_APACITE || g_document_bibstyle == BIBSTYLE_AUTHORDATE)) {
 		fprintRTF(", ");
 		ConvertString(option);
 	}
@@ -891,7 +906,8 @@ purpose: handles \citename from authordate bib style
 
 	s = getBraceParam();
 	
-	ConvertString(s);
+	if (!g_suppress_name)
+		ConvertString(s);
 	
 	free(s);
 	
