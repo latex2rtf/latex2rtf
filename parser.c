@@ -1,4 +1,4 @@
-/*  $Id: parser.c,v 1.28 2001/10/28 04:02:44 prahl Exp $
+/*  $Id: parser.c,v 1.29 2001/10/30 15:20:52 prahl Exp $
 
    Contains declarations for a generic recursive parser for LaTeX code.
 */
@@ -558,7 +558,6 @@ getTexUntil(char * target, int raw)
 /**************************************************************************
      purpose: returns the portion of the file to the beginning of target
      returns: NULL if not found
-     
  **************************************************************************/
 {
 	char            buffer[4096];
@@ -687,3 +686,110 @@ getDimension(void)
 		
 }
 
+#define BUFFER_SIZE 32000
+
+void
+getSection(char *text, char *next_header)
+/*
+	purpose: obtain next chunk of latex file that has the same label
+	
+	along the way, beware of \verb and \begin{verbatim} ... \end{verbatim}
+	this will make linenumbers less useful.  Aargh.
+*/
+
+{
+	int match[7], any_match, found;
+	char cNext, *p, *s, buffer[BUFFER_SIZE];
+	int i;
+	char * command[7] = {"\\verb", "\\begin{verbatim}",
+	                     "\\section", "\\subsection", "\\subsubsection", 
+	                     "\\chapter", "\\part"};
+	int ncommands = 7;
+	int verb = 0;
+	int verbatim = 1;
+	int bs_count = 0;
+	int index = 0;
+	char * bufend = buffer + BUFFER_SIZE;
+
+	text = NULL;			
+	next_header = NULL;  /* typically becomes \subsection{Cows eat grass}  */
+	for (p = buffer; p < bufend; p++) {
+		
+		*p = getTexChar();
+		if (*p == '\0') break;
+
+		if (*p == '\\') {				/* restart search if backslash found */
+			bs_count ++;
+			if (bs_count % 2) {		/* avoid "\\section" and "\\\\section" */
+				for(i=0; i<ncommands; i++) match[i]=TRUE;
+				index = 1;
+				continue;
+			}
+		} else 
+			bs_count = 0;
+		
+		if (index == 0) continue;
+			
+		any_match = FALSE;
+		found = FALSE;
+		
+		for (i=0; i<ncommands; i++) {	/* check each command for match */
+			if (!match[i]) continue;
+				
+			if (*p!=command[i][index]) {
+				match[i] = FALSE;
+				continue;
+			}
+			any_match = TRUE;
+			if (index == strlen(command[i])) {
+				found = TRUE;
+				break;
+			}
+		}
+		
+		if (found) {			/* make sure the next char is the right sort */
+			cNext = getTexChar();
+			ungetTexChar(cNext);
+			if (!(cNext == ' ' || cNext == '{' || (i==verb) || (i==verbatim && !isalpha(cNext)))) {
+				any_match = FALSE;
+			}
+		}
+		
+		if (!any_match) {			/* no possible matches, reset and wait for next '\\'*/
+			index = 0;
+			continue;
+		}
+					
+		if (!found) continue;
+			
+		if (i==verb) {				/* slurp \verb#text# */
+			*p++ = getTexChar();
+			while ((*p=getRawTexChar()) != '\0' && *p != cNext && p <bufend) p++;
+			index = 0;				/* keep looking */
+			continue;
+		}
+
+		if (i==verbatim) {			/* slurp \begin{verbatim} ... \end{verbatim} */
+			s=getTexUntil("\\end{verbatim}",TRUE);
+			if (p+strlen(s)>=bufend)
+				diagnostics(ERROR, "out of buffer memory in getSection");
+			strcpy(p,s);
+			p += strlen(s);
+			free(s);
+			index = 0;				/* keep looking */
+			continue;
+		} 
+		
+		/* actually found command to end the section */
+		s = getBraceParam();
+		next_header = malloc(strlen(command[i])+strlen(s)+1);
+		strcpy(next_header, command[i]);
+		strcpy(next_header+strlen(command[i]),s);
+		free(s);
+		p-=strlen(command[i]);
+		*p='\0';
+		break;
+	}
+	
+	text = strdup(buffer);		
+}
