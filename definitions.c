@@ -113,7 +113,8 @@ static char *expandmacro(char *macro, char *opt_param, int params)
 **************************************************************************/
 {
     int i = 0, param;
-    char *args[9], *dmacro, *macro_piece, *next_piece, *expanded, buffer[1024], *cs;
+    char *args[9], *dmacro, *macro_piece, *next_piece, *expanded, *buffer=NULL, *cs;
+    int max_len = 0;
 
     if (params <= 0)
         return strdup(macro);
@@ -122,17 +123,26 @@ static char *expandmacro(char *macro, char *opt_param, int params)
         args[i++] = getBracketParam();
         if (!args[0])
             args[0] = strdup(opt_param);
+        max_len += strlen(args[i-1]);
     }
 
     for (; i < params; i++) {
         args[i] = getBraceParam();
+        max_len += strlen(args[i]);
         diagnostics(3, "argument #%d <%s>", i + 1, args[i]);
     }
 
-    *buffer = '\0';
-    expanded = buffer;
     dmacro = strdup(macro);
     macro_piece = dmacro;
+	max_len += strlen(macro_piece);
+
+	diagnostics(3, "max_len in expandmacro = %d\n", max_len);
+	if(max_len > 0) {
+		buffer = (char*)malloc(sizeof(char) * max_len);
+		memset(buffer,'\0',max_len);
+	}
+ 	
+	expanded = buffer;
 
     /* convert "\csname" to "\" */
     while ((cs = strstr(dmacro, "\\csname")) != NULL)
@@ -178,12 +188,16 @@ static char *expandmacro(char *macro, char *opt_param, int params)
 
 
 /*	ConvertString(buffer);*/
-    for (i = 0; i < params; i++)
+    for (i = 0; i < params; i++) {
         if (args[i])
             free(args[i]);
-
+	}
+	
     if (dmacro)
         free(dmacro);
+
+    if (buffer)
+    	free(buffer);
 
     diagnostics(3, "expandmacro expanded=<%s>", buffer);
     return strdup(buffer);
