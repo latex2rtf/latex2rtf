@@ -1,4 +1,4 @@
-/* $Id: xref.c,v 1.18 2002/03/31 20:17:57 prahl Exp $ 
+/* $Id: xref.c,v 1.19 2002/04/01 04:41:17 prahl Exp $ 
  
 This file contains routines to handle cross references :
 	\label{key}, \ref{key},   \pageref{key}, \bibitem{key},
@@ -23,6 +23,10 @@ char * g_figure_label = NULL;
 char * g_table_label = NULL;
 char * g_equation_label = NULL;
 char * g_section_label = NULL;
+
+#define MAX_LABELS 200
+char * g_label_list[MAX_LABELS];
+int g_label_list_number=-1;
 
 char * ScanAux(char *token, char * reference, int code);
 
@@ -202,13 +206,51 @@ CmdPrintIndex(int code)
 	fprintRTF("{\\field{\\*\\fldinst{INDEX \\\\c 2}}{\\fldrslt{}}}");
 }
 
+static int
+ExistsBookmark(char *s)
+{
+	int i;
+	if (!s) return FALSE;
+	for (i=0; i<=g_label_list_number; i++) {
+		if (strcmp(s,g_label_list[i])==0) 
+			return TRUE;
+	}
+	return FALSE;
+}
+
+static void
+RecordBookmark(char *s)
+{
+	if (!s) return;
+	if (g_label_list_number>=MAX_LABELS)
+		diagnostics(WARNING, "Too many labels...some cross-references will fail");
+	else {
+		g_label_list_number++;
+		g_label_list[g_label_list_number] = strdup(s);
+	}
+}
+
 void
 InsertBookmark(char *name, char *text)
 {
-	if (name)
-		fprintRTF("{\\*\\bkmkstart %s}%s{\\*\\bkmkend %s}",name,text,name);
-	else
+	char *signet;
+	if (!name) {
 		fprintRTF("%s",text);
+		return;
+	}
+
+	signet = strdup_nobadchars(name);
+
+	if (ExistsBookmark(signet)) {
+		diagnostics(3,"bookmark %s already exists",signet);
+
+	} else {
+		diagnostics(3,"bookmark %s being inserted around <%s>",signet,text);
+		RecordBookmark(signet);
+		fprintRTF("{\\*\\bkmkstart %s}%s{\\*\\bkmkend %s}",signet,text,signet);
+	}
+	
+	free(signet);
 }
 
 void CmdLabel(int code)
@@ -219,8 +261,8 @@ purpose: handles \label \ref \pageref \cite
 	char *text, *signet;
 	char *str1, *comma, *s, *str;
 	char *option = NULL;
+	int mode=GetTexMode();
 	
-	int mode = GetTexMode();
 	option = getBracketParam();
 	text = getBraceParam();
 	if (strlen(text)==0) {
@@ -231,16 +273,11 @@ purpose: handles \label \ref \pageref \cite
 	switch (code) {
 		case LABEL_LABEL:
 			if (g_processing_figure || g_processing_table) break;
-			signet = strdup_nobadchars(text);
 			if (mode == MODE_DISPLAYMATH) {
-				g_equation_label = signet;
-				diagnostics(3,"equation label is <%s>",signet);
-				break;
+				g_equation_label = strdup_nobadchars(text);
+				diagnostics(1,"equation label is <%s>",text);
 			} else 
-				diagnostics(3,"xref label is <%s>",signet);
-/*			fprintRTF("{\\*\\bkmkstart %s}",signet);
-			fprintRTF("{\\*\\bkmkend %s}",signet);*/
-			free(signet);
+				InsertBookmark(text,"");
 			break;
 		
 		case LABEL_HYPERREF:

@@ -9,18 +9,8 @@ Fit & Finish:
 
 	misc4.tex
 		missing references
-		
-	excalibur.tex
-		word disregards \* MERGEFORMAT in some sections
-		
+				
 	Extra paragraph at
-		- in misc1.tex, near the end, after the italic text before the comma in:
-		{\it missing at random},
-		- in qualisex, at source lines 182 after the slanted text in:
-		 \item les {\sl voies de plusieurs longueurs\/} sont tr\`es %...(line 182)
-		- in qualisex in source line 254 after the footnote before the >> in:
-		<<~lâgitimes\footnote{L\'egitimit\'e \`a \'evaluer en chaque cas, le cas
-		\'ech\'eant par jugement ou d\'ecision des autorit\'es l\'egales.}~>>~:
 		- in proffois, source line 305 after the \"\i{} in:
 		cont\"enu et de la mise en page, ma\"is, ma\"\i{}zena, ma\^{\i}zena, b\"ureau, etc.),
 
@@ -51,6 +41,7 @@ Potential Features:
 		Suppress empty row when a final // is present
 
 	support \hsize
+	add support for \vspace
 	add support for \hspace
 	add support for \hline
 
