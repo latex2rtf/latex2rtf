@@ -395,6 +395,36 @@ eps_to_png(char *eps)
 }
 
 static char *
+pdf_to_png(char *pdf)
+/******************************************************************************
+     purpose : create a png file from an PDF file and return file name
+ ******************************************************************************/
+{
+	char *cmd, *s1, *p, *png;
+	size_t cmd_len;
+	diagnostics(1, "filename = <%s>", pdf);
+
+	s1 = strdup(pdf);
+	if ((p=strstr(s1,".pdf")) == NULL && (p=strstr(s1,".PDF")) == NULL) {
+		diagnostics(1, "<%s> is not a PDF file", pdf);
+		free(s1);
+		return NULL;
+	}
+
+	strcpy(p,".png");
+	png = strdup_tmp_path(s1);
+	cmd_len=strlen(pdf)+strlen(png)+10;
+	cmd = (char *) malloc(cmd_len);
+	snprintf(cmd, cmd_len, "convert %s %s", pdf, png);	
+	diagnostics(2, "system command to conver to png = <%s>", cmd);
+	system(cmd);	
+	
+	free(cmd);
+	free(s1);
+	return png;
+}
+
+static char *
 eps_to_emf(char *eps)
 /******************************************************************************
      purpose : create a wmf file from an EPS file and return file name
@@ -840,11 +870,28 @@ out:
 }
 
 static void
+PutPdfFile(char *s, double scale, double baseline, int full_path)
+{
+	char *png;
+	diagnostics(2, "PutPdfFile filename = <%s>", s);
+     
+	if (1) {
+		png = pdf_to_png(s);
+		if (png) {
+			PutPngFile(png, scale, baseline, TRUE);
+			my_unlink(png);
+			free(png);
+		}
+	}
+	
+}
+
+static void
 PutEpsFile(char *s, double scale, double baseline, int full_path)
 {
-	char *png, *emf, *pict;
+	char *png, *emf, *pict, *pdf;
 	diagnostics(2, "PutEpsFile filename = <%s>", s);
-
+     
 	if (1) {
 		png = eps_to_png(s);
 		if (png) {
@@ -853,12 +900,12 @@ PutEpsFile(char *s, double scale, double baseline, int full_path)
 			free(png);
 		}
 	}
-	
+	        
 	if (0) {
 		pict = eps_to_pict(s);
 		if (pict) {
 			PutPictFile(pict, scale, baseline, TRUE);
-/*			my_unlink(pict);  */
+			my_unlink(pict);  
 			free(pict);
 		}
 	}
@@ -1187,6 +1234,9 @@ code=4 => psfig
 
 	else if (strstr(filename, ".eps")  || strstr(filename, ".EPS"))
 		PutEpsFile(fullpathname, scale, baseline, TRUE);
+                
+	else if (strstr(filename, ".pdf")  || strstr(filename, ".PDF"))
+		PutPdfFile(fullpathname, scale, baseline, TRUE);
 
 	else if (strstr(filename, ".ps")  || strstr(filename, ".PS"))
 		PutEpsFile(fullpathname, scale, baseline, TRUE);
