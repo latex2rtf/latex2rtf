@@ -1,4 +1,4 @@
-/* $Id: convert.c,v 1.22 2001/11/04 19:46:39 prahl Exp $ 
+/* $Id: convert.c,v 1.23 2001/11/13 05:43:56 prahl Exp $ 
 	purpose: ConvertString(), Convert(), TranslateCommand() 
 	
 TeX has six modes according to the TeX Book:
@@ -355,6 +355,32 @@ globals: fTex, fRtf and all global flags for convert (see above)
 				fprintRTF("\"");
 			break;
 
+		case '<':
+			if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
+			if (GetTexMode() == MODE_HORIZONTAL && FrenchMode ){
+				cNext = getTexChar();
+				if (cNext == '<')
+					fprintRTF("\\'ab");
+				else {
+					ungetTexChar(cNext);
+					fprintRTF("<");
+				}
+			}
+			break;
+
+		case '>':
+			if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
+			if (GetTexMode() == MODE_HORIZONTAL && FrenchMode ){
+				cNext = getTexChar();
+				if (cNext == '>')
+					fprintRTF("\\'bb");
+				else {
+					ungetTexChar(cNext);
+					fprintRTF(">");
+				}
+			}
+			break;
+
 		case '!':
 			if (mode == MODE_MATH || mode == MODE_DISPLAYMATH)
 				fprintRTF("!");	
@@ -417,6 +443,7 @@ globals: fTex, fRtf and all global flags for convert (see above)
 			diagnostics(WARNING, "This should not happen, ignoring %%");
 			cThis = ' ';
 			break;
+
 
 #ifdef SEMICOLONSEP
 		case ';':
