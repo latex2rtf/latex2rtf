@@ -682,7 +682,7 @@ static void PutJpegFile(char *s, double scale, double baseline, int full_path)
     FILE *fp;
     char *jpg;
     unsigned short buffer[2];
-    int m, c;
+    int m=0, c;
     unsigned short width, height;
     unsigned long w, h;
 
@@ -1382,7 +1382,7 @@ code=4 => psfig
 */
 {
     char *options, *options2;
-    char *filename, *fullpathname, *fullname;
+    char *filename=NULL, *fullpathname, *fullname;
     double scale = 1.0;
     double baseline = 0.0;
     double x;

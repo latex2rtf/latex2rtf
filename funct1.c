@@ -191,7 +191,7 @@ void CmdVspace(int code)
      		   code ==  3 if \bigskip
  ******************************************************************************/
 {
-    int vspace;
+    int vspace=0;
     char c;
 
     switch (code) {
@@ -228,7 +228,7 @@ void CmdNewDef(int code)
      purpose : handles \def \newcommand \renewcommand
  ******************************************************************************/
 {
-    char *name, *opt_param, *def, cThis;
+    char *name=NULL, *opt_param=NULL, *def=NULL, cThis;
     char *params = NULL;
     int param = 0;
 
@@ -279,8 +279,11 @@ void CmdNewDef(int code)
 
     }
 
-    diagnostics(3, "CmdNewDef name=<%s> param=%d opt_param=<%s> def=<%s>", name, param, (opt_param) ? opt_param : "",
-      def);
+    diagnostics(3, "CmdNewDef name=<%s> param=%d opt_param=<%s> def=<%s>", 
+                   (name) ? name : "",
+                   param, 
+                   (opt_param) ? opt_param : "",
+                   (def) ? def : "");
     free(name);
     free(def);
     if (params)
@@ -1347,7 +1350,7 @@ void CmdVerb(int code)
  ******************************************************************************/
 {
     char cThis, *text, *s;
-    char markingchar;
+    char markingchar='#';
     int num;
 
     SetTexMode(MODE_HORIZONTAL);
@@ -1397,7 +1400,7 @@ void CmdVerbatim(int code)
 	VERBATIM_2   for \begin{Verbatim} ... \end{Verbatim}
 ******************************************************************************/
 {
-    char *verbatim_text, *vptr, *endtag;
+    char *verbatim_text, *vptr, *endtag=NULL;
     int num;
     int true_code = code & ~ON;
 
@@ -2066,7 +2069,7 @@ void CmdInclude(int code)
  purpose: handles \input file, \input{file}, \include{file}
  ******************************************************************************/
 {
-    char name[50], *s, *t, cNext;
+    char name[50], *s, *t=NULL, cNext;
     int i;
 
     cNext = getNonSpace();
@@ -2094,7 +2097,7 @@ void CmdInclude(int code)
     }
 
     if (PushSource(s, NULL) == 0)
-        diagnostics(WARNING, "Including file <%s>", t);
+        diagnostics(WARNING, "Including file <%s>", (t) ? t : "");
     free(s);
 }
 

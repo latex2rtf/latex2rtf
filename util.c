@@ -237,8 +237,10 @@ char *ExtractLabelTag(char *text)
  ******************************************************************************/
 char *ExtractAndRemoveTag(char *tag, char *text)
 {
-    char *s, *contents, *start, *end;
+    char *s, *contents, *start=NULL, *end;
 
+    if (text==NULL || *text=='\0') return NULL;
+    
     s = text;
     diagnostics(5, "target tag = <%s>", tag);
     diagnostics(5, "original text = <%s>", text);

@@ -788,7 +788,7 @@ void CmdTabular(int code)
  ******************************************************************************/
 {
     int true_code, this_height, next_height, first_row, begins, ends;
-    char *end, *begin, *this_row, *next_row, *next_row_start, *row_start;
+    char *end=NULL, *begin=NULL, *this_row, *next_row, *next_row_start, *row_start;
     char *table = NULL;
     char *cols = NULL;
     char *pos = NULL;

@@ -1536,7 +1536,7 @@ void CmdHtml(int code)
 
 void CmdBCAY(int code)
 {
-    char *s, *t, *v, *year;
+    char *s=NULL, *t, *v, *year;
 
     s = getBraceParam();
 
@@ -1746,11 +1746,11 @@ purpose: handles \citename from authordate bib style
 ******************************************************************************/
 void CmdCiteName(int code)
 {
-    char *s;
+    char *s=NULL;
 
     s = getBraceParam();
 
-    diagnostics(4, "Entering CmdCitename", s);
+    diagnostics(4, "Entering CmdCitename [%s]", (s) ? s : "");
 
     if (!g_suppress_name)
         ConvertString(s);
