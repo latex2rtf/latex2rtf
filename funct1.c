@@ -112,7 +112,7 @@ void CmdStartParagraph(int code)
     diagnostics(5, "paragraph indent is %d", getLength("parindent"));
 
     if (g_page_new) {
-        fprintRTF("\\page ");   /* causes new page */
+        fprintRTF("\\page{} ");   /* causes new page */
         g_page_new = FALSE;
         g_column_new = FALSE;
     }
@@ -770,7 +770,7 @@ parameter: code: type of section-recursion-level
     switch (code) {
         case SECT_PART:
         case SECT_PART_STAR:
-            CmdNewPage(NewPage);
+            if (getCounter("part") > 0) CmdNewPage(NewPage);
             CmdStartParagraph(TITLE_PAR);
             fprintRTF("{");
             InsertStyle("part");
@@ -790,7 +790,7 @@ parameter: code: type of section-recursion-level
 
         case SECT_CHAPTER:
         case SECT_CHAPTER_STAR:
-            CmdNewPage(NewPage);
+            if (getCounter("chapter") > 0) CmdNewPage(NewPage);
             CmdStartParagraph(TITLE_PAR);
             fprintRTF("{");
             InsertStyle("chapter");
