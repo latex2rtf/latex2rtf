@@ -1,8 +1,14 @@
-.\" $Id: latex2rtf.1,v 1.1 2001/08/12 15:32:27 prahl Exp $
+.\" $Id: latex2rtf.1,v 1.2 2001/08/12 15:47:04 prahl Exp $
 .\" History:
 .\" $Log: latex2rtf.1,v $
-.\" Revision 1.1  2001/08/12 15:32:27  prahl
-.\" Initial revision
+.\" Revision 1.2  2001/08/12 15:47:04  prahl
+.\" latex2rtf version 1.1 by Ralf Schlatterbeck
+.\"
+.\" Revision 1.8  1994/06/29  06:35:28  ralf
+.\" Corrected some '\' to '\\'
+.\"
+.\" Revision 1.7  1994/06/29  06:31:54  ralf
+.\" Changed rtf2latex to latex2rtf in several places.
 .\"
 .\" Revision 1.6  1994/06/21  08:14:11  ralf
 .\" Added BUGS section
@@ -34,7 +40,7 @@ latex2rtf [-V] [ -o
 .PP
 .SH DESCRIPTION
 The
-.PN rtf2latex
+.PN latex2rtf
 command
 converts a LaTeX file into RTF text format. The text and much of the formatting
 information is translated to RTF making the new file look very similar to the
@@ -62,7 +68,7 @@ should be converted to RTF. See format description below.
 .PP
 LaTeX variables and user defined commands are not evaluated.
 They will be simply ignored. To let
-.PN rtf2latex
+.PN latex2rtf
 know the names of variables you can add them in the 
 .B ignore.cfg
 file.
@@ -80,7 +86,7 @@ the resulting file in the target word processor.
 .SH CAUTION
 Please make sure that the input file is a correct LaTeX file. Use LaTeX
 to find and correct errors before using
-.PN rtf2latex.
+.PN latex2rtf.
 The conversion command does not properly handle all
 errors because of corrupt input files.
 .PP
@@ -155,9 +161,9 @@ OTHER: ignores anything to the first character after '='
 and from there to next space. eg. \\setbox\\bak=\\hbox
 .br
 COMMAND: ignores anything to next '\\' and from there to occurence
-of anything but a letter. eg. \newbox\bak
+of anything but a letter. eg. \\newbox\\bak
 .br
-SINGLE: ignore single command. eg. \noindent
+SINGLE: ignore single command. eg. \\noindent
 .br
 Please write the type in upper case exactly as above.
 Do not use spaces.

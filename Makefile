@@ -1,8 +1,12 @@
-# $Id: Makefile,v 1.1 2001/08/12 15:32:28 prahl Exp $
+# $Id: Makefile,v 1.2 2001/08/12 15:47:04 prahl Exp $
 # History:
 # $Log: Makefile,v $
-# Revision 1.1  2001/08/12 15:32:28  prahl
-# Initial revision
+# Revision 1.2  2001/08/12 15:47:04  prahl
+# latex2rtf version 1.1 by Ralf Schlatterbeck
+#
+# Revision 1.9  1994/07/13  09:27:31  ralf
+# Corrected fpos/SEEK_SET bug for SunOs 4.3.1 reported by Ulrich Schmid
+# <schmid@dkrz.d400.de>
 #
 # Revision 1.8  1994/06/21  08:13:57  ralf
 # Added CFLAGS
@@ -30,7 +34,7 @@
 # Initial revision
 #
 CC=gcc    # C-Compiler 
-CFLAGS=-g # Use -O here if you want it optimized
+CFLAGS=-g $(XCFLAGS) # Use -O here if you want it optimized
 COPY=cp
 # Note: If install doesn't work for you, use simple_install instead.
 #
@@ -46,6 +50,13 @@ LIBINSTALL=/quasi/local/lib/latex2rtf:/oberon/local/lib/latex2rtf
 BININSTALL=/quasi/local/bin:/oberon/local/bin
 #BININSTALL=/usr/local/bin
 MANINSTALL=/usr/local/man/man1
+
+# The following should fix compatibility problems on some machines, you
+# may add the following option to XCFLAGS
+# -DHAS_NO_FPOS for SunOs 4.1.3 (Thanks to Ulrich Schmid schmid@dkrz.d400.de)
+
+XCFLAGS=
+#XCFLAGS=-DHAS_NO_FPOS
 
 # Nothing to change below this line
 SOURCES=commands.c commands.h direct.c direct.h fonts.c fonts.h \

@@ -1,9 +1,9 @@
 /*
- * $Id: direct.c,v 1.1 2001/08/12 15:32:18 prahl Exp $
+ * $Id: direct.c,v 1.2 2001/08/12 15:47:04 prahl Exp $
  * History:
  * $Log: direct.c,v $
- * Revision 1.1  2001/08/12 15:32:18  prahl
- * Initial revision
+ * Revision 1.2  2001/08/12 15:47:04  prahl
+ * latex2rtf version 1.1 by Ralf Schlatterbeck
  *
  * Revision 1.3  1994/06/21  08:14:11  ralf
  * Corrected Bug in keyword search
