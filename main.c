@@ -155,7 +155,7 @@ int main(int argc, char **argv)
 			setPackageBabel("latin1");
 			break;
 		case 'o':
-			g_rtf_name = optarg;
+			g_rtf_name = strdup(optarg);
 			break;
 		case 'v':
 			print_version();
@@ -256,7 +256,9 @@ int main(int argc, char **argv)
 			*t = '\0';
 		
 		g_tex_name = strdup_together(basename, ".tex");
-		g_rtf_name = strdup_together(basename, ".rtf");
+		
+		if (g_rtf_name==NULL)
+			g_rtf_name = strdup_together(basename, ".rtf");
 	} 
 	
 	if (g_aux_name == NULL && basename != NULL) 
