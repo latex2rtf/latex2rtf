@@ -139,36 +139,36 @@ CmdThebibliography(int code)
 		free(s);
 		
 		CmdEndParagraph(0);
-		CmdIndent(INDENT_NONE);
-		fprintRTF("{");
-		CmdStartParagraph(FIRST_PAR);
-		fprintRTF("\\fs28\\b ");
+		CmdVspace(VSPACE_MEDIUM_SKIP);
+		CmdStartParagraph(TITLE_PAR);
+
+		fprintRTF("{\\plain\\b\\fs32 ");
 		if (g_document_type == FORMAT_ARTICLE)
 			ConvertBabelName("REFNAME");
 		else
 			ConvertBabelName("BIBNAME");
-		CmdEndParagraph(0);
 		fprintRTF("}");
+		CmdEndParagraph(0);
+		CmdVspace(VSPACE_SMALL_SKIP);
 
 		PushEnvironment(GENERIC_ENV);
 		setLength("parindent", -amount);
-		indent += amount;
+		indent += 2*amount;
 	} else {
 		CmdEndParagraph(0);
 		CmdVspace(VSPACE_SMALL_SKIP);
 		PopEnvironment();
+		g_processing_list_environment=FALSE;
 	}
-
-	CmdIndent(INDENT_USUAL);
 }
 
 void 
 CmdBibitem(int code)
 {
-	char *label, *key, *signet, *s;
+	char *label, *key, *signet, *s, c;
 	
+	g_processing_list_environment=TRUE;
 	CmdEndParagraph(0);
-	CmdIndent(INDENT_USUAL);
 	CmdStartParagraph(FIRST_PAR);
 	
 	label = getBracketParam();
@@ -196,7 +196,8 @@ CmdBibitem(int code)
 	free(key);
 	
 	fprintRTF("\\tab ");
-	skipSpaces();
+	c=getNonBlank();
+	ungetTexChar(c);
 }
 
 void 

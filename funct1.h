@@ -156,6 +156,8 @@ void            CmdMinipage(int code);
 #define NewPage 1
 #define NewColumn 2
 
+extern bool  g_processing_list_environment;
+
 void            CmdIgnoreEnviron(int code);
 void            CmdFigure(int code);
 void            Cmd_OptParam_Without_braces(int code);

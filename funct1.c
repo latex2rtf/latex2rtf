@@ -56,8 +56,8 @@ char 			*roman_item(int n);
 
 static bool  g_paragraph_no_indent = FALSE;
 static bool  g_paragraph_inhibit_indent = FALSE;
-static bool  g_processing_list_environment = FALSE;
 static int   g_vertical_space_to_add = 0;
+bool  g_processing_list_environment = FALSE;
 
 void
 CmdStartParagraph(int code)
