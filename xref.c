@@ -289,7 +289,7 @@ InsertBookmark(char *name, char *text)
 	} else {
 		diagnostics(3,"bookmark %s being inserted around <%s>",signet,text);
 		RecordBookmark(signet);
-		fprintRTF("{\\*\\bkmkstart %s}%s{\\*\\bkmkend %s}",signet,text,signet);
+		fprintRTF("{\\*\\bkmkstart BM%s}%s{\\*\\bkmkend BM%s}",signet,text,signet);
 	}
 	
 	free(signet);
@@ -326,7 +326,7 @@ purpose: handles \label \ref \pageref \cite
 		case LABEL_REF:
 			signet = strdup_nobadchars(text);
 			s = ScanAux("newlabel", text, 1);
-			fprintRTF("{\\field{\\*\\fldinst{\\lang1024 REF %s \\\\* MERGEFORMAT }}",signet);
+			fprintRTF("{\\field{\\*\\fldinst{\\lang1024 REF BM%s \\\\* MERGEFORMAT }}",signet);
 			fprintRTF("{\\fldrslt{");
 			if (s)
 				ConvertString(s);
@@ -372,7 +372,7 @@ purpose: handles \label \ref \pageref \cite
 		case LABEL_HYPERPAGEREF:
 		case LABEL_PAGEREF:
 			signet = strdup_nobadchars(text);
-			fprintRTF("{\\field{\\*\\fldinst{\\lang1024 PAGEREF %s \\\\* MERGEFORMAT }}",signet);
+			fprintRTF("{\\field{\\*\\fldinst{\\lang1024 PAGEREF BM%s \\\\* MERGEFORMAT }}",signet);
 			fprintRTF("{\\fldrslt{}}}",signet);
 			free(signet);
 			break;
