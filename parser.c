@@ -1,4 +1,4 @@
-/*  $Id: parser.c,v 1.30 2001/11/04 19:20:44 prahl Exp $
+/*  $Id: parser.c,v 1.31 2001/11/10 16:03:29 prahl Exp $
 
    Contains declarations for a generic recursive parser for LaTeX code.
 */
@@ -710,6 +710,9 @@ getSection(char **body, char **header)
 	const int verbatim = 1;
 	const int url = 2;
 	const int figure = 3;
+	const int section = 4;
+	const int subsection = 5;
+	const int subsubsection = 6;
 	int bs_count = 0;
 	int index = 0;
 	char * bufend = buffer + BUFFER_SIZE;
@@ -761,6 +764,15 @@ getSection(char **body, char **header)
 			diagnostics(5,"matched %s", command[i]);
 			cNext = getTexChar();
 			ungetTexChar(cNext);
+
+			if (cNext == '*' && (i==section || i==subsection || i==subsubsection)) {
+				p++;
+				*p = cNext;
+				cNext = getTexChar();
+				cNext = getTexChar();
+				ungetTexChar(cNext);
+			}
+				
 			if (!(cNext == ' ' || cNext == '{' || (i==verb) || (i==url) || (i==verbatim && !isalpha(cNext)))) {
 				possible_match = FALSE;
 			}
