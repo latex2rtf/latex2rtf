@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.18 2001/09/10 03:14:06 prahl Exp $ 
+/* $Id: funct1.c,v 1.19 2001/09/10 05:40:26 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -55,7 +55,9 @@ CmdBeginEnd(int code)
 		          CMD_END:   end of environment
  ***************************************************************************/
 {
+	char            c;
 	char           *s = getParam();
+
 	switch (code) {
 	case CMD_BEGIN:
 		(void) CallParamFunc(s, ON);
@@ -67,6 +69,8 @@ CmdBeginEnd(int code)
 		assert(0);
 	}
 	free(s);
+	c = getNonBlank();
+	ungetTexChar(c);
 }
 
 void 
@@ -88,12 +92,12 @@ Paragraph(int code)
 	case (PAR_CENTERLINE):
 		old_alignment_before_centerline = alignment;
 		alignment = CENTERED;
-		fprintf(fRtf, "\\par \\pard\\q%c{", alignment);
+		fprintf(fRtf, "\\par\n{\\pard\\q%c ", alignment);
 		diagnostics(4,"Entering Convert from Paragraph");
 		Convert();
 		diagnostics(4,"Exiting Convert from Paragraph");
 		alignment = old_alignment_before_centerline;
-		fprintf(fRtf, "}\\par \\pard\\q%c\n", alignment);
+		fprintf(fRtf, "\\par}\n\\pard\\q%c ", alignment);
 		bNewPar = TRUE;
 		break;
 
@@ -104,7 +108,7 @@ Paragraph(int code)
 		break;
 	case (PAR_CENTER | OFF):
 		alignment = old_alignment_before_center;
-		fprintf(fRtf, "\\par}\n\\pard \\q%c ", alignment);
+		fprintf(fRtf, "\\par}\n\\pard\\q%c ", alignment);
 		bNewPar = TRUE;
 		break;
 
@@ -201,6 +205,7 @@ parameter: code: type of section-recursion-level
 {
 	char            optparam[100] = "";
 	char            *heading;
+	char			c;
 	int				DefFont = DefaultFontFamily();
 	
 	getBracketParam(optparam, 99);
@@ -290,6 +295,9 @@ parameter: code: type of section-recursion-level
 	CmdTextNormal(F_TEXT_NORMAL);
 	fprintf(fRtf, "\\f%d\\q%c\n", DefFont, alignment);
 	if (heading) free(heading);
+	c = getNonBlank();
+	ungetTexChar(c);
+
 }
 
 
@@ -308,12 +316,12 @@ CmdCaption(int code)
 
 	if (g_processing_figure) {
 		incrementCounter("figure");
-		fprintf(fRtf, "\n\\par\\pard\\qc {");
+		fprintf(fRtf, "\\par\n{\\pard\\qc ");
 		ConvertBabelName("FIGURENAME");
 		fprintf(fRtf, " %d: ",getCounter("figure"));
 	} else {
 		incrementCounter("table");
-		fprintf(fRtf, "\n\\par\\pard\\qc {");
+		fprintf(fRtf, "\\par\n{\\pard\\qc ");
 		ConvertBabelName("TABLENAME");
 		fprintf(fRtf, " %d: ",getCounter("table"));
 	}
@@ -322,7 +330,7 @@ CmdCaption(int code)
 	diagnostics(4, "in CmdCaption [%s]", thecaption);
 	ConvertString(thecaption);
 	free(thecaption);
-	fprintf(fRtf, "}\n\\par\\pard\\q%c\n", alignment);
+	fprintf(fRtf, "\\par}\n\\pard\\q%c\n", alignment);
 	diagnostics(4, "exiting CmdCaption");
 }
 
@@ -490,9 +498,9 @@ parameter: code: QUOTE and QUOTATION On/Off
 		indent -= 512;
 		NoNewLine = FALSE;
 		if (indent>0)
-			fprintf(fRtf, "}\n\\par\\li%d ", indent);
+			fprintf(fRtf, "\\par}\n\\li%d ", indent);
 		else
-	    	fprintf(fRtf, "}\n\\par\\pard\\q%c ", alignment);
+	    	fprintf(fRtf, "\\par}\n\\pard\\q%c ", alignment);
 		break;
 	}
 }
@@ -781,7 +789,7 @@ CmdVerb(int code)
 	}
 
 	num = TexFontNumber("Typewriter");
-	fprintf(fRtf, "{\\f%d ", num);
+	fprintf(fRtf, "{\\plain\\f%d ", num);
 
 	while ((cThis = getRawTexChar()) && cThis != markingchar) 
 		putRtfChar(cThis);
@@ -846,12 +854,12 @@ parameter: code: turns on/off handling routine
 {
 	switch (code) {
 		case ON:
-		fprintf(fRtf, "\n\\par\\pard\\q%c\\fi-567\\li1134\\ri1134\\keep ", alignment);
+		fprintf(fRtf, "\\par\n\\pard\\q%c\\fi-567\\li1134\\ri1134\\keep ", alignment);
 		NoNewLine = FALSE;
 		bNewPar = TRUE;
 		break;
 	case OFF:
-		fprintf(fRtf, "\n\\par\\pard\\q%c ", alignment);
+		fprintf(fRtf, "\\par\n\\pard\\q%c ", alignment);
 		bNewPar = TRUE;
 		break;
 	}

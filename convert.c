@@ -1,4 +1,4 @@
-/* $Id: convert.c,v 1.3 2001/09/10 03:14:06 prahl Exp $ 
+/* $Id: convert.c,v 1.4 2001/09/10 05:40:26 prahl Exp $ 
 	purpose: routines to */
 
 #include <stdio.h>
@@ -123,8 +123,8 @@ globals: fTex, fRtf and all global flags for convert (see above)
 			CleanStack();
 
 			if (ret > 0) {
-				--ret;
-				--RecursionLevel;
+				ret--;
+				RecursionLevel--;
 				return;
 			}
 			break;
@@ -345,9 +345,9 @@ globals: fTex, fRtf and all global flags for convert (see above)
 				bBlankLine = FALSE;
 				if ((ch = getTexChar()) && ch == '`') {
 					if (cThis == '?')
-						fprintf(fRtf, "{\\ansi\\'bf}");
+						fprintf(fRtf, "{\\'bf}");
 					else
-						fprintf(fRtf, "{\\ansi\\'a1}");
+						fprintf(fRtf, "{\\'a1}");
 				} else {
 						fprintf(fRtf, "%c", cThis);
 						ungetTexChar(ch);
@@ -389,7 +389,7 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 {
 	char            cCommand[MAXCOMMANDLEN];
 	int             i;
-	char            cThis;
+	int            cThis;
 	char            option_string[100];
 
 	diagnostics(5, "Beginning TranslateCommand()");
@@ -570,14 +570,14 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 		CmdIgnore(0);	/* \@ produces an "end of sentence" space */
 		return TRUE;
 	case '3':
-		fprintf(fRtf, "{\\ansi\\'df}");	/* german symbol 'á' */
+		fprintf(fRtf, "{\\'df}");	/* german symbol 'á' */
 		return TRUE;
 	}
 
 
 	/* LEG180498 Commands consist of letters and can have an optional * at the end */
 	for (i = 0; i < MAXCOMMANDLEN; i++) {
-		if (!isalpha((int)cThis) && (cThis != '*')) {
+		if (!isalpha(cThis) && (cThis != '*')) {
 			bool            found_nl = FALSE;
 
 			/* all spaces after commands are ignored, a single \n may occur */
@@ -587,8 +587,8 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 				cThis = getTexChar();
 			}
 
-			ungetTexChar(cThis);	/* char after command and optional space */
-			break;
+			ungetTexChar(cThis);	/* put back first non-space char after command */
+			break;					/* done skipping spaces */
 		} else
 			cCommand[i] = cThis;
 
@@ -600,13 +600,19 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 
 	if (i == 0)
 		return FALSE;
-	if (strcmp(cCommand,"begin")==0)
-		PushBrace();
-	if (strcmp(cCommand,"end")==0)
-		ret = RecursionLevel - PopBrace();
 		
-	if (CallCommandFunc(cCommand))	/* call handling function for command */
+	if (strcmp(cCommand,"begin")==0){
+		fprintf(fRtf, "{");
+		PushBrace();
+	}
+		
+	if (CallCommandFunc(cCommand)){	/* call handling function for command */
+		if (strcmp(cCommand,"end")==0) {
+			ret = RecursionLevel - PopBrace();
+			fprintf(fRtf, "}");
+		}
 		return TRUE;
+	}
 	if (TryDirectConvert(cCommand, fRtf))
 		return TRUE;
 	if (TryVariableIgnore(cCommand))
