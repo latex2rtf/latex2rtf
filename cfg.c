@@ -1,4 +1,4 @@
-/* $Id: cfg.c,v 1.22 2002/03/14 06:42:21 prahl Exp $
+/* $Id: cfg.c,v 1.23 2002/04/06 04:37:03 prahl Exp $
 
      purpose : Read config files and provide lookup routines
 
@@ -56,7 +56,7 @@ cfg_compare(ConfigEntryT ** el1, ConfigEntryT ** el2)
 	return strcmp((*el1)->TexCommand, (*el2)->TexCommand);
 }
 
-FILE *
+static FILE *
 try_path(const char *path, const char *file)
 {
 	char * both;
@@ -87,7 +87,7 @@ try_path(const char *path, const char *file)
 	return fp;
 }
 
-FILE *
+static FILE *
 open_cfg(const char *name)
 /****************************************************************************
 purpose: open config by trying multiple paths

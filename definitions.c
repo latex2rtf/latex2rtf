@@ -44,7 +44,7 @@ static int iDefinitionCount = 0;
 static int iNewEnvironmentCount = 0;
 static int iNewTheoremCount = 0;
 
-int 
+static int 
 strequal(char *a, char *b)
 {
 	if (a==NULL || b==NULL)

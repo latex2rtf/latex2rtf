@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.67 2002/04/03 15:44:19 prahl Exp $ */
+/* $Id: main.c,v 1.68 2002/04/06 04:37:04 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -647,4 +647,23 @@ purpose: duplicate string --- exists to ease porting
 	return s;
 }
 
+FILE *
+my_fopen(char *path, char *mode)
+{
+	char *name;
+	FILE *p;
+	
+	if (g_home_dir==NULL)
+		name = strdup(path);
+	else
+		name = strdup_together(g_home_dir, path);
+
+	p = fopen(name, mode);
+
+	if (!p)
+	   diagnostics(WARNING, "Cannot open <%s>", name);
+	   
+	free(name);
+	return p;
+}
 

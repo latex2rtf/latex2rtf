@@ -1,4 +1,4 @@
-/* $Id: graphics.c,v 1.10 2002/03/31 17:13:11 prahl Exp $ 
+/* $Id: graphics.c,v 1.11 2002/04/06 04:37:04 prahl Exp $ 
 This file contains routines that handle LaTeX graphics commands
 */
 
@@ -118,23 +118,7 @@ FILE		   *fp = NULL;
 
 	if (s==NULL) return NULL;
 	
-#ifdef __MWERKS__
-	{
-		char * path, *dp;			/* use directory of latex file */
-		path = strdup(latexname);		
-		dp = strrchr(path, ':');
-		if (dp != NULL) {
-			dp++;
-			*dp = '\0';
-		} else
-			*path = '\0';
-		fullpath = strdup_together(path, s);
-		free(path);
-	}
-#else
 	fullpath = strdup(s);
-#endif
-
 	diagnostics(6, "processing picture <%s>\n", fullpath);
 	fp=fopen(fullpath, "rb");
 	free(fullpath);
@@ -205,7 +189,7 @@ int width, height;
 	fclose(fp);
 }
 
-void
+static void
 GetPngSize(char *s, unsigned long *w, unsigned long *h)
 /******************************************************************************
      purpose : determine height and width of file
@@ -306,9 +290,9 @@ unsigned long w, h;
 	
 	do {  /* Look for SOFn tag */
 	
-		  while (!feof(fp) && fgetc(fp) != 0xFF);   		/* Find 0xFF byte */
+		  while (!feof(fp) && fgetc(fp) != 0xFF){}   		/* Find 0xFF byte */
 		  
-		  while (!feof(fp) && (m=fgetc(fp)) == 0xFF);  	/* Skip multiple 0xFFs */
+		  while (!feof(fp) && (m=fgetc(fp)) == 0xFF){}  	/* Skip multiple 0xFFs */
 		  
 	} while (!feof(fp) && m!=0xC0 && m!=0xC1 && m!=0xC2 && m!=0xC3 && m!=0xC5 && m!=0xC6 && m!=0xC7 &&
 					      m!=0xC9 && m!=0xCA && m!=0xCB && m!=0xCD && m!=0xCE && m!=0xCF );    

@@ -1,4 +1,4 @@
-/* $Id: xref.c,v 1.20 2002/04/04 03:11:24 prahl Exp $ 
+/* $Id: xref.c,v 1.21 2002/04/06 04:37:04 prahl Exp $ 
  
 This file contains routines to handle cross references :
 	\label{key}, \ref{key},   \pageref{key}, \bibitem{key},
@@ -361,7 +361,7 @@ code=1 means \token{reference}{{sect}{line}} -> "sect"
 
 	sprintf(target, "\\%s{%s}", token, reference);
 	
-	if (fAux == NULL && (fAux = fopen(g_aux_name, "r")) == NULL) {
+	if (fAux == NULL && (fAux = my_fopen(g_aux_name, "r")) == NULL) {
 		diagnostics(WARNING, "No .aux file.  Run LaTeX to create %s\n", g_aux_name);
 		g_aux_file_missing = TRUE;
 		return NULL;

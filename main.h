@@ -1,4 +1,4 @@
-/* $Id: main.h,v 1.43 2002/04/04 03:11:24 prahl Exp $ */
+/* $Id: main.h,v 1.44 2002/04/06 04:37:04 prahl Exp $ */
 #ifndef __MAIN_H
 #define __MAIN_H
 
@@ -126,6 +126,7 @@ extern bool		g_little_endian;
 void fprintRTF(char *format, ...);
 void putRtfChar(char cThis);
 char *getTmpPath(void);
-char *  my_strdup(const char *str);
+char *my_strdup(const char *str);
+FILE *my_fopen(char *path, char *mode);
 
 #endif				/* __MAIN_H */

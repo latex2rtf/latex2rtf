@@ -69,7 +69,7 @@ char *s, *t, *u;
 	return u;
 }
 
-void
+static void
 SlurpEquation(int code, char **pre, char **eq, char **post)
 {
 	int true_code = code & ~ON;
@@ -148,7 +148,7 @@ SlurpEquation(int code, char **pre, char **eq, char **post)
 	}
 }
 
-int
+static int
 EquationNeedsFields(char *eq)
 /******************************************************************************
  purpose   : Determine if equation needs EQ field for RTF conversion
@@ -171,7 +171,7 @@ EquationNeedsFields(char *eq)
 	return 0;
 }
 
-void
+static void
 WriteEquationAsComment(char *pre, char *eq, char *post)
 /******************************************************************************
  purpose   : Writes equation to RTF file as text of COMMENT field
@@ -184,7 +184,7 @@ WriteEquationAsComment(char *pre, char *eq, char *post)
 	fprintRTF("}{ }}{\\fldrslt }}");
 }
 
-char *
+static char *
 SaveEquationAsFile(char *pre, char *eq, char *post)
 {	
 	FILE * f;
@@ -250,7 +250,7 @@ WriteLatexAsBitmap(char *pre, char *eq, char *post)
 	PutLatexFile(name);
 }
 
-void 
+static void 
 PrepareRtfEquation(int code, int EQ_Needed)
 {
 	int width,a,b,c;
@@ -358,7 +358,7 @@ PrepareRtfEquation(int code, int EQ_Needed)
 	
 }
 
-void 
+static void 
 FinishRtfEquation(int code, int EQ_Needed)
 {	
 	if (EQ_Needed && g_processing_fields==1) {
@@ -448,7 +448,7 @@ FinishRtfEquation(int code, int EQ_Needed)
 		}
 }
 
-char *
+static char *
 scanback(char *s, char *t)
 /******************************************************************************
  purpose   : Find '{' that starts a fraction designated by \over 
@@ -478,7 +478,7 @@ scanback(char *s, char *t)
 	return t;
 }
 
-char *
+static char *
 scanahead(char *s)
 /******************************************************************************
  purpose   : Find '}' that ends a fraction designated by \over 
@@ -514,7 +514,7 @@ scanahead(char *s)
 	return t;
 }
 
-void
+static void
 ConvertOverToFrac(char ** equation)
 /******************************************************************************
  purpose   : Convert {A \over B} to \frac{A}{B} 
@@ -563,7 +563,7 @@ ConvertOverToFrac(char ** equation)
 	diagnostics(4,"ConvertOverToFrac after <%s>",eq);
 }
 
-void 
+static void 
 WriteEquationAsRTF(int code, char **eq)
 /******************************************************************************
  purpose   : Translate equation to RTF 
@@ -651,179 +651,6 @@ CmdEquation(int code)
 	free(eq);
 	free(post);
 	
-}
-
-
-void
-CmdMath(int code)
-/******************************************************************************
- purpose   : sets the TeX mode to math or horizontal as appropriate
-             for $...$ \( ... \) and \begin{math} ... \end{math}
- ******************************************************************************/
-{
-	int true_code = code & ~ON;
-	
-	switch (true_code) {
-	
-		case EQN_MATH:
-			if (code & ON) {
-				diagnostics(4, "CmdMath() ... \\begin{math}");
-				SetTexMode(MODE_MATH);
-			} else {
-				diagnostics(4, "CmdMath() ... \\end{math}");
-				SetTexMode(MODE_HORIZONTAL);
-			}
-			break;
-	
-		case EQN_DOLLAR:
-			if (GetTexMode() != MODE_MATH) {
-				diagnostics(4, "Entering CmdMath() ... $");
-				fprintRTF("{");
-				SetTexMode(MODE_MATH);
-			} else {
-				diagnostics(4, "Exiting CmdMath() ... $");
-				fprintRTF("}");
-				SetTexMode(MODE_HORIZONTAL);
-			}
-			break;
-	
-		case EQN_RND_OPEN:	/* \( */
-			diagnostics(4, "CmdMath() ... \\(");
-			fprintRTF("{");
-			SetTexMode(MODE_MATH);
-			break;
-	
-		case EQN_RND_CLOSE:	/* \) */
-			diagnostics(4, "CmdMath() ... \\)");
-			fprintRTF("}");
-			SetTexMode(MODE_HORIZONTAL);
-			break;
-	}
-}
-
-void 
-CmdDisplayMath(int code)
-/******************************************************************************
- purpose: creates a displayed equation
-          \begin{equation} gets a right justified equation number
-          \begin{displaymath} gets no equation number
-          \[ gets no equation number
-          $$ gets no equation number
- ******************************************************************************/
-{
-	int width, mid, mode, true_code,a,b,c;
-	width = getLength("textwidth");
-	mid = width/2;
-	mode = GetTexMode();
-	true_code = code & ~ON;
-	
-	if (true_code == EQN_DOLLAR_DOLLAR) {
-		if (mode != MODE_DISPLAYMATH) {
-			diagnostics(4,"Entering CmdDisplayMath -- $$");
-			CmdEndParagraph(0);
-			SetTexMode(MODE_DISPLAYMATH);
-			g_show_equation_number = FALSE;
-			fprintRTF("{\\pard\\tqc\\tx%d\\tab ", mid);
-		} else {
-			diagnostics(4,"Exiting CmdDisplayMath -- $$");
-			CmdEndParagraph(0);
-			CmdIndent(INDENT_INHIBIT);
-			fprintRTF("}");
-		}
-		return;
-	}
-	
-	if (true_code == EQN_BRACKET_OPEN) {
-		diagnostics(4,"Entering CmdDisplayMath -- \\[");
-		SetTexMode(MODE_DISPLAYMATH);
-		g_show_equation_number = TRUE;
-		fprintRTF("\\par\\par\n{\\pard\\tqc\\tx%d\\tqr\\tx%d\n\\tab ", mid, width);
-		return;
-	}
-
-	if (true_code == EQN_BRACKET_CLOSE) {
-		diagnostics(4,"Exiting CmdDisplayMath -- \\]");
-		SetTexMode(MODE_VERTICAL);
-		fprintRTF("\\par\\par\n}");
-		return;
-	}
-
-	if (code & ON) {  /* \begin{equation}, etc. */
-
-		g_suppress_equation_number = FALSE;
-		
-		a = 0.45 *width;
-		b = 0.5 * width;
-		c = 0.55 * width;
-		fprintRTF("\\par\\par\n\\pard");
-		switch (true_code) {
-		case EQN_DISPLAYMATH:
-			diagnostics(4,"Entering CmdDisplayMath -- displaymath");
-			g_show_equation_number = FALSE;
-			fprintRTF("\\tqc\\tx%d", mid);
-			break;
-
-		case EQN_EQUATION_STAR:
-			diagnostics(4,"Entering CmdDisplayMath -- equation*");
-			g_show_equation_number = FALSE;
-			fprintRTF("\\tqc\\tx%d", mid);
-			break;
-
-		case EQN_EQUATION:
-			diagnostics(4,"Entering CmdDisplayMath -- equation");
-			g_equation_column = 5;				/* avoid adding \tabs when finishing */
-			g_show_equation_number = TRUE;
-			fprintRTF("\\tqc\\tx%d\\tqr\\tx%d", mid, width);
-			break;
-
-		case EQN_ARRAY_STAR:
-			diagnostics(4,"Entering CmdDisplayMath -- eqnarray* ");
-			g_show_equation_number = FALSE;
-			g_processing_eqnarray = TRUE;
-			g_processing_tabular = TRUE;
-			g_equation_column = 1;
-			fprintRTF("\\tqr\\tx%d\\tqc\\tx%d\\tql\\tx%d", a, b, c);
-			break;
-
-		case EQN_ARRAY:
-		    diagnostics(4,"Entering CmdDisplayMath --- eqnarray");
-			g_show_equation_number = TRUE;
-			g_processing_eqnarray = TRUE;
-			g_processing_tabular = TRUE;
-			g_equation_column = 1;
-			fprintRTF("\\tqr\\tx%d\\tqc\\tx%d\\tql\\tx%d\\tqr\\tx%d", a, b, c, width);
-			break;
-		}
-		fprintRTF("\\tab ");
-		SetTexMode(MODE_DISPLAYMATH);
-		
-	} else {
-	
-		diagnostics(4,"Exiting CmdDisplayMath");
-		
-		if (g_show_equation_number && !g_suppress_equation_number) {
-			char number[20];
-			incrementCounter("equation");
-			for (; g_equation_column < 3; g_equation_column++)
-					fprintRTF("\\tab ");
-			fprintRTF("\\tab{\\b0 (");
-			sprintf(number,"%d",getCounter("equation"));
-			InsertBookmark(g_equation_label,number);
-			if (g_equation_label) {
-				free(g_equation_label);
-				g_equation_label = NULL;
-			} 
-			fprintRTF(")}");
-		}
-
-		CmdEndParagraph(0);
-		CmdIndent(INDENT_INHIBIT);
-
-		if (true_code == EQN_ARRAY || true_code == EQN_ARRAY_STAR) {
-			g_processing_tabular = FALSE;
-			g_processing_eqnarray = FALSE;
-		}
-	}
 }
 
 void 

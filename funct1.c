@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.67 2002/04/04 03:11:24 prahl Exp $ 
+/* $Id: funct1.c,v 1.68 2002/04/06 04:37:03 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -106,7 +106,7 @@ CmdVspace(int code)
 			break;
 			
 		case 0 :
-			while ((c = getTexChar()) && c != '{');
+			while ((c = getTexChar()) && c != '{'){}
 			vspace = getDimension();
 			parseBrace();
 			break;
@@ -915,7 +915,7 @@ CmdLength(int code)
 			
 			if (cThis=='{') {
 				num = getDimension();
-				while ((cThis=getTexChar()) != '}');
+				while ((cThis=getTexChar()) != '}'){}
 						
 				if (code == LENGTH_ADD)
 					setLength(s1, getLength(s1)+num);
@@ -1248,7 +1248,7 @@ CmdIgnoreDef( /* @unused@ */ int code)
 {
 	char            cThis;
 
-	while ((cThis = getTexChar()) && cThis != '{');
+	while ((cThis = getTexChar()) && cThis != '{'){}
     
     parseBrace();
     
@@ -1338,12 +1338,12 @@ CmdIgnoreLet( /* @unused@ */ int code)
 {
 	char            cThis;
 
-	while ((cThis = getTexChar()) && cThis != ' '  && cThis != '\\');
+	while ((cThis = getTexChar()) && cThis != ' '  && cThis != '\\'){}
 
 	if (cThis == ' ')
 	{
 		skipSpaces();
-		while ((cThis = getTexChar()) && cThis != ' ');
+		while ((cThis = getTexChar()) && cThis != ' '){}
 		skipSpaces();
 	}
 }

@@ -71,6 +71,7 @@ CmdOpening(int code)
 
 /* put return address and date at the top right */
 	g_letterOpened = TRUE;
+	oldalignment=alignment;
 	alignment = RIGHT;
 	fprintRTF("\n\\par\\pard\\q%c ", alignment);
 	diagnostics(5, "Entering ConvertString() from CmdAddress");

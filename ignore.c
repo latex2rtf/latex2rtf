@@ -1,4 +1,4 @@
-/* $Id: ignore.c,v 1.19 2001/12/03 04:44:13 prahl Exp $
+/* $Id: ignore.c,v 1.20 2002/04/06 04:37:04 prahl Exp $
 
   purpose : ignores variable-name-commands which can't be converted from LaTeX2Rtf
 	    (variable-command-formats must be added by the user in the file
@@ -63,7 +63,8 @@ returns : TRUE if variable was ignored correctly, otherwise FALSE
 		IgnoreVar();
 	else if (strcmp(RtfCommand, "COMMAND") == 0)
 		IgnoreCmd();
-	else if (strcmp(RtfCommand, "SINGLE") == 0);
+	else if (strcmp(RtfCommand, "SINGLE") == 0)
+		{}
 	else if (strcmp(RtfCommand, "PARAMETER") == 0)
 		CmdIgnoreParameter(No_Opt_One_NormParam);
 /*	else if (strcmp(RtfCommand, "LINE") == 0) skipToEOL(); */
@@ -79,7 +80,8 @@ returns : TRUE if variable was ignored correctly, otherwise FALSE
 		free(str);
 	} else if (strcmp(RtfCommand, "ENVCMD") == 0)
 		PushEnvironment(IGN_ENV_CMD);
-	else if (strcmp(RtfCommand, "PACKAGE") == 0);
+	else if (strcmp(RtfCommand, "PACKAGE") == 0)
+		{}
 	else
 		result = FALSE;
 	return (result);
@@ -93,7 +95,7 @@ purpose : ignores anything till a space or a newline
  ****************************************************************************/
 {
 	char            c;
-	while ((c = getTexChar()) && c != '\n' && c != ' ');
+	while ((c = getTexChar()) && c != '\n' && c != ' '){}
 }
 
 
@@ -104,8 +106,8 @@ purpose : ignores anything till an alphanumeric character
  ****************************************************************************/
 {
 	char            c;
-	while ((c = getTexChar()) && c != '\\');
-	while ((c = getTexChar()) && !isalpha((int)c));
+	while ((c = getTexChar()) && c != '\\'){}
+	while ((c = getTexChar()) && !isalpha((int)c)){}
 	ungetTexChar(c);
 }
 
@@ -140,68 +142,3 @@ parameter: searchstring : includes the string to search for
 	
 	diagnostics(4, "Exiting IgnoreEnvironment");
 }
-
-void 
-Ignore_Environment2(char *searchstring)
-/******************************************************************************
-  purpose: function, which ignores an unconvertable environment in LaTex
-           and writes text unchanged into the Rtf-file.
-parameter: searchstring : includes the string to search for
-	   example: \begin{unknown} ... \end{unknown}
-		    searchstring="end{unknown}"
- ******************************************************************************/
-{
-	char            thechar;
-	bool            found = FALSE;
-	int             i, j, endstring;
-	
-	endstring = strlen(searchstring) - 1;
-	while ((thechar = getTexChar()) && !found) {
-		if (thechar == '\\') {
-		
-			for (i = 0; i <= endstring; i++) {
-				thechar = getTexChar();
-
-				if (thechar != searchstring[i])
-					break;
-				if (i == endstring)	/* end-environment-found */
-					found = TRUE;
-			}	/* for */
-
-			if (!found) {
-				fprintRTF("\\\\");
-				for (j = 0; j < i; j++)
-					switch (searchstring[j]) {
-					case '\n':
-						fprintRTF("\\par\n");
-						break;
-					case '\\':
-					case '{':
-					case '}':
-						fprintRTF("\\%c",searchstring[j]);
-						break;
-					default:
-						fprintRTF("%c", searchstring[j]);
-						break;
-					}
-			}
-		}		/* if */
-		
-		if ((thechar != '%') && !found)
-			switch (thechar) {
-			case '\n':
-				fprintRTF("\\par \n");
-				break;
-			case '\\':
-			case '{':
-			case '}':
-				fprintRTF("\\%c", thechar);
-				break;
-			default:
-				fprintRTF("%c", thechar);
-				break;
-			}
-	}
-	return;
-}
-

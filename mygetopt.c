@@ -1,15 +1,15 @@
 /*
- * $Id: mygetopt.c,v 1.11 2002/03/10 16:19:22 prahl Exp $ History: $Log:
+ * $Id: mygetopt.c,v 1.12 2002/04/06 04:37:04 prahl Exp $ History: $Log:
  * mygetopt.c,v $ Revision 1.1  1998/11/12 13:05:43  glehner Initial revision
  * 
  * 
  */
 
+#include "main.h"
 #ifdef HAS_NO_GETOPT
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "main.h"
 
 /*
  * my_getopt  is supposed to emulate the C Library getopt (which, according

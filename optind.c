@@ -3,6 +3,8 @@
  * latex2rtf) that expect optarg and optind to be declared sowewhere.
  */
 
+#include "main.h"
+
 #ifdef HAS_NO_GETOPT
 char           *optarg = 0;
 int             optind = 1;

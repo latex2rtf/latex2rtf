@@ -1,4 +1,4 @@
-/*  $Id: parser.c,v 1.53 2002/04/04 03:11:24 prahl Exp $
+/*  $Id: parser.c,v 1.54 2002/04/06 04:37:04 prahl Exp $
 
    Contains declarations for a generic recursive parser for LaTeX code.
 */
@@ -152,18 +152,9 @@ PushSource(char * filename, char * string)
 	
 	/* if not then try to open a file */	
 	} else if (filename) {
-		if (g_home_dir==NULL)
-			name = strdup(filename);
-		else
-			name = strdup_together(g_home_dir, filename);
-		p = fopen(name, "rb");
-		if (!p) {
-           diagnostics(WARNING, "Cannot open <%s>", name);
-           free(name);
-           return 0;
-       }
-       g_parser_include_level++;
-       g_parser_line=1;
+		p=my_fopen(name, "rb");
+		g_parser_include_level++;
+		g_parser_line=1;
        
     } else {
     	name = CurrentFileName();
@@ -415,7 +406,7 @@ purpose: ignores anything from inputfile until the end of line.
  ****************************************************************************/
 {
 	char            cThis;
-	while ((cThis=getRawTexChar()) && cThis != '\n');
+	while ((cThis=getRawTexChar()) && cThis != '\n'){}
 }
 
 char 
@@ -425,7 +416,7 @@ getNonBlank(void)
 ****************************************************************************/
 {
 	char            c;
-	while ((c = getTexChar()) && (c == ' ' || c == '\n'));
+	while ((c = getTexChar()) && (c == ' ' || c == '\n')){}
 	return c;
 }
 
@@ -436,7 +427,7 @@ getNonSpace(void)
 ****************************************************************************/
 {
 	char            c;
-	while ((c = getTexChar()) && c == ' ');
+	while ((c = getTexChar()) && c == ' '){}
 	return c;
 }
 
@@ -447,7 +438,7 @@ skipSpaces(void)
 ****************************************************************************/
 {
 	char            c;
-	while ((c = getTexChar()) && c == ' ');
+	while ((c = getTexChar()) && c == ' '){}
 	ungetTexChar(c);
 }
 
@@ -1107,25 +1098,7 @@ getSection(char **body, char **header, char **label)
 					free(s);
 					s = s2;
 				}
-	
-				/* Classic MacOS because of how DropUnix handles directories */
-				#ifdef __MWERKS__
-					{
-						char            fullpath[1024];
-						char           *dp;
-						strcpy(fullpath, latexname);
-						dp = strrchr(fullpath, ':');
-						if (dp != NULL) {
-							dp++;
-							*dp = '\0';
-						} else
-							strcpy(fullpath, "");
-						s2 = strdup_together(fullpath, s);
-						free(s);
-						s = s2;
-					}
-				#endif
-				
+					
 				PushSource(s, NULL);
 			}
 			delta -=  (i==input_item) ? 6 : 8;  /* remove \input or \include */
