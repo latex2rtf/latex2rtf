@@ -438,6 +438,9 @@ setDocumentOptions(char *optionlist)
 				   strcmp(option, "fontenc")==0) {
 			/* do nothing ... but don't complain */
 		}
+		else if (strcmp(option, "color") == 0) {
+			diagnostics(WARNING, "Limited color support");
+		}
 		else if (!TryVariableIgnore(option)) {
 			diagnostics(WARNING, "Unknown style option %s ignored", option);
 		}
@@ -988,22 +991,22 @@ WriteColorTable(void)
  ***************************************************************************/
 {
 	fprintRTF("{\\colortbl;\n");
-	fprintRTF("\\red0\\green0\\blue0;\n");
-	fprintRTF("\\red0\\green0\\blue255;\n");
-	fprintRTF("\\red0\\green255\\blue255;\n");
-	fprintRTF("\\red0\\green255\\blue0;\n");
-	fprintRTF("\\red255\\green0\\blue255;\n");
-	fprintRTF("\\red255\\green0\\blue0;\n");
-	fprintRTF("\\red255\\green255\\blue0;\n");
-	fprintRTF("\\red255\\green255\\blue255;\n");
-	fprintRTF("\\red0\\green0\\blue128;\n");
-	fprintRTF("\\red0\\green128\\blue128;\n");
-	fprintRTF("\\red0\\green128\\blue0;\n");
-	fprintRTF("\\red128\\green0\\blue128;\n");
-	fprintRTF("\\red128\\green0\\blue0;\n");
-	fprintRTF("\\red128\\green128\\blue0;\n");
-	fprintRTF("\\red128\\green128\\blue128;\n");
-	fprintRTF("\\red192\\green192\\blue192;\n");
+	fprintRTF("\\red0\\green0\\blue0;\n");      /* black */
+	fprintRTF("\\red0\\green0\\blue255;\n");    /* blue */
+	fprintRTF("\\red0\\green255\\blue255;\n");  /* cyan */
+	fprintRTF("\\red0\\green255\\blue0;\n");    /* green */
+	fprintRTF("\\red255\\green0\\blue255;\n");  /* magenta */
+	fprintRTF("\\red255\\green0\\blue0;\n");    /* red */
+	fprintRTF("\\red255\\green255\\blue0;\n");  /* yellow */
+	fprintRTF("\\red255\\green255\\blue255;\n");/* white */
+	fprintRTF("\\red0\\green0\\blue128;\n");    /* dark blue */
+	fprintRTF("\\red0\\green128\\blue128;\n");  /* dark cyan */
+	fprintRTF("\\red0\\green128\\blue0;\n");    /* dark green */
+	fprintRTF("\\red128\\green0\\blue128;\n");  /* dark magenta */
+	fprintRTF("\\red128\\green0\\blue0;\n");    /* dark red */
+	fprintRTF("\\red128\\green128\\blue0;\n");  /* dark yellow */
+	fprintRTF("\\red128\\green128\\blue128;\n");/* dark gray */
+	fprintRTF("\\red192\\green192\\blue192;\n");/* light gray */
 	fprintRTF("}\n");
 }
 

@@ -1596,6 +1596,53 @@ FixTildes(char *s)
 }
 
 void
+CmdTextColor(int code)
+/******************************************************************************
+  purpose: hyperlatex support for \textcolor{color}{words to be in color}
+******************************************************************************/
+{
+	char           *color,*text,*color1,*text1;
+	int n;
+	
+	diagnostics(4, "Entering CmdTextColor");
+	color1 = getBraceParam();
+	text1 = getBraceParam();
+	color = strdup_noendblanks(color1);
+	text  = strdup_noendblanks(text1);
+	free(color1);
+	free(text1);
+	
+	n=-1;
+	if (strcmp(color,"black")==0) 
+		n=1;
+	else if (strcmp(color,"blue")==0) 
+		n=2;
+	else if (strcmp(color,"cyan")==0) 
+		n=3;
+	else if (strcmp(color,"green")==0) 
+		n=4;
+	else if (strcmp(color,"magenta")==0) 
+		n=5;
+	else if (strcmp(color,"red")==0) 
+		n=6;
+	else if (strcmp(color,"yellow")==0) 
+		n=7;
+	else if (strcmp(color,"white")==0) 
+		n=8;
+	else if (strcmp(color,"gray")==0) 
+		n=16;
+	
+	if (n>0) {
+		fprintRTF("{\\cf%d ",n);
+		ConvertString(text);
+		fprintRTF("}");
+	}	
+
+	free(text);
+	free(color);
+}
+
+void
 CmdLink(int code)
 /******************************************************************************
   purpose: hyperlatex support for \link{anchor}[ltx]{label}
