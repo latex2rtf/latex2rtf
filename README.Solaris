@@ -1,3 +1,6 @@
+Sun make is special.  You should probably try to use gmake
+to build latex2rtf
+
 Sun has decided to support the XPG4 standard on Solaris by an
 alternative set of binaries.  So to get make check to work, 
 change the first line of latex2png to: 
