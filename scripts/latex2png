@@ -21,7 +21,7 @@
 #set -x  # uncomment for debugging
 #
 
-DVIPS="dvips -E -R"
+DVIPS="dvips -q -E -R"
 LATEX="latex --interaction batchmode"
 CONVERT="convert"
 EPS2EPS="eps2eps"
@@ -122,7 +122,7 @@ if [ $ext = "tex" ] ; then
         exit 1
     fi
     
-    $DVIPS -q -o $name.tmp.eps $name.dvi
+    $DVIPS -o $name.tmp.eps $name.dvi
     
     if [ ! -e "$name.tmp.eps" ] ; then
         echo "error: dvips failed to translate $name.dvi to $name.tmp.eps"

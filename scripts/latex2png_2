@@ -21,7 +21,7 @@
 #set -x  # uncomment for debugging
 #
 
-DVIPS="dvips -E -R"
+DVIPS="dvips -q -E -R"
 GHOSTSCRIPT="gs -dQUIET -dNOPAUSE -dBATCH -dSAFER"
 LATEX="latex --interaction batchmode"
 PNMCROP="pnmcrop"
@@ -128,7 +128,7 @@ if [ $ext = "tex" ] ; then
 		exit 1
 	fi
 	
-	$DVIPS -o $name.eps $name.dvi 2> /dev/null
+	$DVIPS -o $name.eps $name.dvi
 	
 	if [ ! -e "$name.eps" ] ; then
 		echo "error: dvips failed to translate $name.dvi to $name.eps"
