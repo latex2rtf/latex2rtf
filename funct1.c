@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.39 2001/10/27 15:25:51 prahl Exp $ 
+/* $Id: funct1.c,v 1.40 2001/10/27 21:56:30 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -956,8 +956,7 @@ CmdVerb(int code)
 	if (code == VERB_URL) {	
 		cThis = getNonSpace();
 		if (cThis == '{') {				/* \url{http://} */
-			ungetTexChar(cThis);
-			text = getBraceParam();
+			text = getDelimitedText('{','}',TRUE);
 			s = text;
 			diagnostics(4, "CmdVerbatim \\url{%s}",text);
 			while (*s) {

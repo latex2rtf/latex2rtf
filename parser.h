@@ -32,3 +32,4 @@ int             getDimension(void);
 void			parseBrace(void);
 long 			ftellTex(void);
 void 			fseekTex(long pos);
+char           *getDelimitedText(char left, char right, bool raw);

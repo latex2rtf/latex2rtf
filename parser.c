@@ -1,4 +1,4 @@
-/*  $Id: parser.c,v 1.26 2001/10/22 04:33:03 prahl Exp $
+/*  $Id: parser.c,v 1.27 2001/10/27 21:56:31 prahl Exp $
 
    Contains declarations for a generic recursive parser for LaTeX code.
 */
@@ -311,13 +311,13 @@ getSameChar(char c)
 	return count;
 }
 
-static char *
-getDelimitedText(char left, char right)
+char *
+getDelimitedText(char left, char right, bool raw)
 /******************************************************************************
   purpose: general scanning routine that allocates and returns a string
   		   that is between "left" and "right" that accounts for escaping by '\'
   		   
-  		   Example for getDelimitedText('{','}') 
+  		   Example for getDelimitedText('{','}',TRUE) 
   		   
   		   "{the \{ is shown {\it by} a\\}" ----> "the \{ is shown {\it by} a\\"
   		    
@@ -334,7 +334,7 @@ getDelimitedText(char left, char right)
 
 		size++;
 		last_char = marker;
-		buffer[size] = getTexChar();
+		buffer[size] = (raw) ? getRawTexChar() : getTexChar();
 		marker = buffer[size];
 
 		if (buffer[size] != right || last_char == '\\') {    	/* avoid \}  */
@@ -361,7 +361,7 @@ parseBrace(void)
   Description: Skip text to balancing close brace                          
  ****************************************************************************/
 {
-	char *s = getDelimitedText('{','}');	
+	char *s = getDelimitedText('{','}',FALSE);	
 	free(s);
 }
 
@@ -371,7 +371,7 @@ parseBracket(void)
   Description: Skip text to balancing close bracket
  ****************************************************************************/
 {
-	char *s = getDelimitedText('[',']');
+	char *s = getDelimitedText('[',']',FALSE);
 	free(s);
 }
 
@@ -480,7 +480,7 @@ getBracketParam(void)
 	c = getNonBlank();
 
 	if (c == '[') {
-		text = getDelimitedText('[',']');
+		text = getDelimitedText('[',']',FALSE);
 		diagnostics(5, "getBracketParam [%s]", text);
 
 	} else {
@@ -519,7 +519,7 @@ getBraceParam(void)
 		text=getSimpleCommand();
 
 	} else 	if (s[0] == '{') 
-		text = getDelimitedText('{','}');
+		text = getDelimitedText('{','}',FALSE);
 	
 	else {
 		s[1] = '\0';
