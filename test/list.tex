@@ -1,0 +1,144 @@
+\documentclass{article}
+
+\begin{document}
+
+The enumerate environment with labels
+\begin{enumerate}
+\item[frog~~~] this is a frog
+\item[spider~~~] this is an arachnid
+\item this has no label
+\item[] this has an empty label
+\end{enumerate}
+Here is some text so that the paragraph break after this
+is more clear than it is without this sentence which of
+course must be very long so that it will reach the end of
+the line and I see what is happening very clearly.
+
+ The
+enumerate environment without labels
+\begin{enumerate}
+\item this is a frog
+\item this is an arachnid
+\item this is a bone
+\end{enumerate}
+Here is some text so that the paragraph break after this
+is more clear than it is without this sentence which of
+course must be very long so that it will reach the end of
+the line and I see what is happening very clearly.
+
+The itemize environment with labels
+\begin{itemize}
+\item[frog~~~] this is a frog
+\item[spider~~~] this is an arachnid
+\item this has no label
+\item[] this has an empty label
+\end{itemize}
+Here is some text so that the paragraph break after this
+is more clear than it is without this sentence which of
+course must be very long so that it will reach the end of
+the line and I see what is happening very clearly.
+
+The itemize environment without labels
+\begin{itemize}
+\item this is a frog
+\item this is an arachnid
+\item this is a bone
+\end{itemize}
+Here is some text so that the paragraph break after this
+is more clear than it is without this sentence which of
+course must be very long so that it will reach the end of
+the line and I see what is happening very clearly.
+
+The description environment with labels
+\begin{description}
+\item[frog~~~] this is a frog
+\item[spider~~~] this is an arachnid
+\item this has no label
+\item[] this has an empty label
+\end{description}
+Here is some text so that the paragraph break after this
+is more clear than it is without this sentence which of
+course must be very long so that it will reach the end of
+the line and I see what is happening very clearly.
+
+The description environment without labels
+\begin{description}
+\item[] this is a frog
+\item[] this is an arachnid
+\item this is a bone
+\end{description}
+Here is some text so that the paragraph break after this
+is more clear than it is without this sentence which of
+course must be very long so that it will reach the end of
+the line and I see what is happening very clearly.
+
+Now to test nested environments.  First the enumerate 
+environment without labels
+\begin{enumerate}
+\item this is the first sublist
+   \begin{enumerate}
+   \item this 1a a frog
+   \item this 1b an arachnid
+   \item this 1c a bone
+   \end{enumerate}
+\item this is the second sublist
+   \begin{itemize}
+   \item this a sub sub list
+      \begin{enumerate}
+      \item this is 2 (a) frog
+      \item this is 2 (b) an arachnid
+      \item this is 2 (c) bone
+      \end{enumerate}
+   \item this is an arachnid
+   \item this another sub sub list
+      \begin{enumerate}
+      \item this is 2 (a) frog
+      \item this is 2 (b) an arachnid
+      \item this is 2 (c) bone
+      \end{enumerate}
+   \end{itemize}
+\item this is 3 an arachnid
+\item this is 4 the third sublist
+   \begin{enumerate}
+   \item this (a) is sub sub list
+      \begin{enumerate}
+      \item  i. this is a frog
+          \begin{enumerate}
+          \item this A. is a frog
+          \item this B. is an arachnid
+          \item this C. is a bone
+          \end{enumerate}
+      \item this is ii. an arachnid
+      \item this is iii. a bone
+      \end{enumerate}
+   \item this is an arachnid Here is some text so that the paragraph break after this
+is more clear than it is without this sentence which of
+course must be very long so that it will reach the end of
+the line and I see what is happening very clearly.
+
+   \item this another sub sub list Here is some text so that the paragraph break after this
+is more clear than it is without this sentence which of
+course must be very long so that it will reach the end of
+the line and I see what is happening very clearly.
+
+      \begin{enumerate}
+      \item this i. is a frog
+      \item this ii. is an arachnid
+      \item this iii. is a bone
+      \item this iv. is a frog
+      \item this v. is an arachnid
+      \item this vi. is a frog
+      \item this vii. is an arachnid
+      \item this viii. is a bone
+      \item this ix. is a frog
+      \item this x. is an arachnid
+      \end{enumerate}
+   \end{enumerate}
+\end{enumerate}
+Here is some text so that the paragraph break after this
+is more clear than it is without this sentence which of
+course must be very long so that it will reach the end of
+the line and I see what is happening very clearly.
+
+
+\end{document}

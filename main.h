@@ -1,39 +1,18 @@
 /*
- * $Id: main.h,v 1.5 2001/08/12 17:50:50 prahl Exp $
+ * $Id: main.h,v 1.6 2001/08/12 18:25:13 prahl Exp $
  * History:
  * $Log: main.h,v $
- * Revision 1.5  2001/08/12 17:50:50  prahl
- * latex2rtf version 1.9b by Scott Prahl
- * 1.9b
- * 	Improved enumerate environment so that it may be nested and
- * 	    fixed labels in nested enumerate environments
- * 	Improved handling of description and itemize environments
- * 	Improved eqnarray environment
- * 	Improved array environment
- * 	Improved \verb handling
- * 	Improved handling of \mbox and \hbox in math mode
- * 	Improved handling of \begin{array} environment
- * 	Improved handling of some math characters on the mac
- * 	Fixed handling of \( \) and \begin{math} \end{math} environments
- * 	Fixed bugs in equation numbering
- * 	Made extensive changes to character translation so that the RTF
- * 	     documents work under Word 5.1 and Word 98 on the Mac
+ * Revision 1.6  2001/08/12 18:25:13  prahl
+ * latex2rtf version 1.9c
  *
- *
- * 1.9a
- * 	Fixed bug with 'p{width}' in tabular environment
- * 		not fully implemented, but no longer creates bad RTF code
- *
- * 1.9
- * 	Fixed numbering of equations
- * 	Improved/added support for all types of equations
- * 	Now includes PICT files in RTF
- * 	Fixed \include to work (at least a single level of includes)
- *
- * 1.8
- * 	Fixed problems with \\[1mm]
- * 	Fixed handling of tabular environments
- * 	Fixed $x^\alpha$ and $x_\alpha$
+ * 	Added support for \frac
+ * 	Complete support for all characters in the symbol font now
+ * 	Better support for unusual ansi characters (e.g., \dag and \ddag)
+ * 	Gave direct.cfg a spring cleaning
+ * 	Added support for \~n and \~N
+ * 	New file oddchars.tex for testing many of these translations.
+ * 	New file frac.tex to test \frac and \over
+ * 	Removed a lot of annoying warning messages that weren't very helpful
  *
  * Revision 1.7  1998/11/04 13:40:57  glehner
  * Added HAS_NO_GETOPT preprocessor flag
@@ -108,11 +87,6 @@ void WriteTemp(FILE *f);
 #define MAX_VERBOSITY 4
 
 bool rtf_restrict(int major, int minor);
-
-#ifndef __MWERKS__
-#define FALSE (bool) 0
-#define TRUE  !FALSE
-#endif
 
 #define MAXCOMMANDLEN 100
 

@@ -1,8 +1,17 @@
-# $Id: Makefile,v 1.4 2001/08/12 17:29:00 prahl Exp $
+# $Id: Makefile,v 1.5 2001/08/12 18:25:13 prahl Exp $
 # History:
 # $Log: Makefile,v $
-# Revision 1.4  2001/08/12 17:29:00  prahl
-# latex2rtf version 1.8aa by Georg Lehner
+# Revision 1.5  2001/08/12 18:25:13  prahl
+# latex2rtf version 1.9c
+#
+# 	Added support for \frac
+# 	Complete support for all characters in the symbol font now
+# 	Better support for unusual ansi characters (e.g., \dag and \ddag)
+# 	Gave direct.cfg a spring cleaning
+# 	Added support for \~n and \~N
+# 	New file oddchars.tex for testing many of these translations.
+# 	New file frac.tex to test \frac and \over
+# 	Removed a lot of annoying warning messages that weren't very helpful
 #
 # Revision 1.21  1998/07/03 06:49:36  glehner
 # updated dependencies of multiple .o files
@@ -161,8 +170,8 @@ XCFLAGS=
 LIBS=
 
 # Nothing to change below this line
-SOURCES=commands.c commands.h direct.c direct.h encode.c encode.h fonts.c \
-    fonts.h funct1.c funct1.h funct2.c funct2.h ignore.c ignore.h main.c \
+SOURCES=commands.c commands.h direct.c direct.h encode.c encode.h l2r_fonts.c \
+    l2r_fonts.h funct1.c funct1.h funct2.c funct2.h ignore.c ignore.h main.c \
     main.h stack.c stack.h version.h cfg.c cfg.h Makefile README README.DOS\
     Copyright mygetopt.c optind.c version debian.README \
     debian.control debian.rules util.c util.h  ChangeLog parser.c parser.h
@@ -182,31 +191,31 @@ VERSION="`./version`"
 all build stamp-build: checkdir latex2rtf
 	touch stamp-build
 
-latex2rtf: fonts.o direct.o encode.o commands.o stack.o funct1.o funct2.o \
+latex2rtf: l2r_fonts.o direct.o encode.o commands.o stack.o funct1.o funct2.o \
 	ignore.o cfg.o main.o util.o parser.o mygetopt.o
-	$(CC) $(CFLAGS) fonts.o direct.o encode.o commands.o stack.o \
+	$(CC) $(CFLAGS) l2r_fonts.o direct.o encode.o commands.o stack.o \
 	funct1.o funct2.o cfg.o main.o ignore.o util.o parser.o mygetopt.o \
 	$(LIBS) -o latex2rtf
 
-fonts.o: fonts.c main.h fonts.h cfg.h
-	$(CC) $(CFLAGS) -c fonts.c -o fonts.o
+l2r_fonts.o: l2r_fonts.c main.h l2r_fonts.h cfg.h
+	$(CC) $(CFLAGS) -c l2r_fonts.c -o l2r_fonts.o
 
-direct.o: direct.c main.h direct.h fonts.h cfg.h
+direct.o: direct.c main.h direct.h l2r_fonts.h cfg.h
 	$(CC) $(CFLAGS) -c direct.c -o direct.o
 
 stack.o: stack.c stack.h
 	$(CC) $(CFLAGS) -c stack.c -o stack.o
 
-funct1.o: funct1.c main.h funct1.h funct2.h commands.h stack.h fonts.h cfg.h ignore.h util.h encode.h
+funct1.o: funct1.c main.h funct1.h funct2.h commands.h stack.h l2r_fonts.h cfg.h ignore.h util.h encode.h
 	$(CC) $(CFLAGS) -c funct1.c -o funct1.o
 
 funct2.o: funct2.c main.h funct1.h commands.h funct2.h stack.h cfg.h util.h
 	$(CC) $(CFLAGS) -c funct2.c -o funct2.o
 
-ignore.o: ignore.c main.h direct.h fonts.h cfg.h ignore.h util.h
+ignore.o: ignore.c main.h direct.h l2r_fonts.h cfg.h ignore.h util.h
 	$(CC) $(CFLAGS) -c ignore.c -o ignore.o
 
-encode.o: encode.c encode.h main.h funct1.h fonts.h
+encode.o: encode.c encode.h main.h funct1.h l2r_fonts.h
 	$(CC) $(CFLAGS) -c encode.c -o encode.o
 
 cfg.o: cfg.c cfg.h util.h
@@ -215,7 +224,7 @@ cfg.o: cfg.c cfg.h util.h
 util.o: util.c util.h
 	$(CC) $(CFLAGS) -c util.c -o util.o
 
-main.o: main.c main.h commands.h funct1.h fonts.h stack.h funct2.h \
+main.o: main.c main.h commands.h funct1.h l2r_fonts.h stack.h funct2.h \
 	direct.h ignore.h version.h cfg.h encode.h util.h
 	$(CC) $(CFLAGS) -c main.c -o main.o
 
@@ -236,7 +245,7 @@ doc:	checkdir change.log
 
 clean: checkdir
 	rm -f stack.o main.o funct1.o funct2.o ignore.o commands.o mygetopt.o\
-	    encode.o direct.o fonts.o cfg.o util.o core latex2rtf.tar.gz \
+	    encode.o direct.o l2r_fonts.o cfg.o util.o core latex2rtf.tar.gz \
 	    *~ ./#* stamp-build latex2rtf-$(VERSION).tar.gz __tmp__ \
 	    *.deb
 	rm -rf latex2rtf latex2rtf-$(VERSION)
@@ -244,7 +253,7 @@ clean: checkdir
 	cd doc ; make almostclean
 
 $(SOURCES) $(SUPPORT) $(MANUALS):
-	co $@
+	cp $@
 
 checkout checkdir: $(SOURCES) $(SUPPORT) $(MANUALS)
 
