@@ -27,3 +27,4 @@ char           *getSimpleCommand(void);
 bool            getBracketParam(char *string, int size);
 char           *getTexUntil(char * target);
 int             getDimension(void);
+void			parseBrace(void);

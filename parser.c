@@ -1,4 +1,4 @@
-/*  $Id: parser.c,v 1.14 2001/09/26 03:31:50 prahl Exp $
+/*  $Id: parser.c,v 1.15 2001/10/08 01:59:03 prahl Exp $
 
    Contains declarations for a generic recursive parser for LaTeX code.
 */
@@ -27,7 +27,6 @@ long            lineStack[POSSTACKSIZE];
 int             stackIndex = 0;
 extern FILE    *fTex;
 
-static void     parseBrace();	/* parse an open/close brace sequence                */
 static void     parseBracket();	/* parse an open/close bracket sequence              */
 
 
@@ -182,7 +181,7 @@ getSameChar(char c)
 }
 
 void
-parseBrace()
+parseBrace(void)
 /****************************************************************************
   Description: Skip text to balancing close brace                          
  ****************************************************************************/
@@ -205,7 +204,7 @@ parseBrace()
 }
 
 void
-parseBracket()
+parseBracket(void)
 /****************************************************************************
   Description: Skip text to balancing close bracket
  ****************************************************************************/
@@ -512,8 +511,10 @@ getDimension(void)
 	buffer[i]='\0';
 	diagnostics(4,"getDimension() number is <%s>", buffer);
 	
-	if (i==19 || sscanf(buffer, "%f", &num) != 1)
-		error("Screwy number in TeX dimension");
+	if (i==19 || sscanf(buffer, "%f", &num) != 1) {
+		diagnostics(WARNING, "Screwy number in TeX dimension");
+		return 0;
+	}
 	num *= 2;                   /* convert pts to twips */
 	
 /* obtain unit of measure */
