@@ -1,3 +1,99 @@
+2002-11-28 10:36  prahl
+
+ Add support fo \abstract{}
+	
+2002-11-28 10:08  prahl
+
+ Remove control characters from .hlp files
+	
+2002-11-28 09:29  prahl
+
+ Documentation updates.
+	
+2002-11-26 20:09  prahl
+
+ add linux.tex as a test file.  Add list environment with braces
+	
+2002-11-25 20:55  prahl
+
+ Ensure that bookmarks begin with letters BM
+	
+2002-11-25 19:33  prahl
+
+ Fix attribution in russian.cfg.  Documentation tweaks.
+	
+2002-11-25 08:05  prahl
+
+ Add mygetopt.h to Makefile
+	
+2002-11-25 08:01  prahl
+
+ Adding mygetopt.h to distribution
+	
+2002-11-25 07:59  prahl
+
+ Adding test files
+	
+2002-11-25 07:22  prahl
+
+ Eliminate extra tab in description environment
+	
+2002-11-24 22:36  prahl
+
+ Support for xlink.
+	Adding test cases to existing test files
+	Fix crashing bug when graphics file is not found
+	
+2002-11-24 19:54  prahl
+
+ Fix segfault when including files that cannot be opened
+	
+2002-11-24 16:46  prahl
+
+ Properly ignore \limits and \nolimits
+	Increase stack size so misc2.tex continues to translate
+	
+2002-11-23 23:04  prahl
+
+ Add support for leftrightarrows and kin (found in amssymb)
+	
+2002-11-23 21:15  prahl
+
+ Fix for \left and \right
+	Add proper parsing for plain tex \matrix command
+	
+2002-11-23 15:35  prahl
+
+ Add CzechMode and \uv{quote} command for czech
+	
+2002-11-23 11:02  prahl
+
+ Add comments and rename EXESFX to EXE_SUFFIX
+	
+2002-11-23 08:52  prahl
+
+ Remove optind.c from distribution
+	
+2002-11-23 08:40  prahl
+
+ Simplify Makefile by eliminating HAS_DOS_SEP and HAS_NO_GETOPT
+	
+2002-11-21 08:19  prahl
+
+ Add \up to work just like \fup
+	
+2002-11-21 08:11  prahl
+
+ Allow -C 850 as well as -C cp580 (patch by D. Taupin)
+	
+2002-11-21 08:06  prahl
+
+ Make equation option -M default to more sensible behavior
+	
+2002-11-21 07:54  prahl
+
+ different conventions for calling latex2png under MSDOS
+	
 2002-11-20 08:30  prahl
 
  Add missing test files to CVS
@@ -1323,8 +1419,8 @@
 
  Revised fonts.cfg, removed Ferdsch, now set the default font correctly
 	and begun the process of eliminating the $Log: ChangeLog,v $
-	and begun the process of eliminating the Revision 1.18  2002/11/21 15:54:00  prahl
-	and begun the process of eliminating the different conventions for calling latex2png under MSDOS
+	and begun the process of eliminating the Revision 1.19  2002/11/28 22:17:32  prahl
+	and begun the process of eliminating the Final set of changes for 1.9.14 release.
 	and begun the process of eliminating the comments in files.
 	
 2001-08-12 14:15  prahl

@@ -359,6 +359,13 @@ globals: fTex, fRtf and all global flags for convert (see above)
 			}
 			break;
 						
+		case '|':
+			if (mode == MODE_MATH || mode == MODE_DISPLAYMATH) 
+				fprintRTF("|");
+			else 
+				fprintRTF("\\emdash ");
+			break;
+
 		case '\'':
 			if (mode == MODE_MATH || mode == MODE_DISPLAYMATH)
 					fprintRTF("'");	

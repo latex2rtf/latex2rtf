@@ -57,7 +57,7 @@ exit 0
 
 version()
 {
-echo "latex2png $VERSION\n"
+echo "latex2png $VERSION"
 exit 0
 }
 

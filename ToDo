@@ -1,7 +1,4 @@
 Fit & Finish:
-
-	Add documentation for -F
-	Improve manpage for latex2png
 	
 	Improve spacing before and after \section etc.
 	Improve font sizes in \section etc.
@@ -9,6 +6,9 @@ Fit & Finish:
 	
 Potential Features:
 
+	Allow macro files to be found in another directory
+	Constrain RTF output so it works with more RTF readers
+	
 	New diagnostic level to replace Warning for expected stuff
 	Support \includegraphics options (both graphics and graphicx)
 
@@ -23,6 +23,7 @@ Potential Features:
 	Add support for \usepackage{fullpage}
 	Add support for \usepackage{doublespace}
 	Add support for \mark commands
+	Add color commands
 	
 	Add autonumbering of equations using fields
 	
