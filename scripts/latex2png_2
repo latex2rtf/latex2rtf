@@ -28,6 +28,7 @@ PNMCROP="pnmcrop"
 PNMCUT="pnmcut"
 PNMTOPNG="pnmtopng"
 PPMTOPGM="ppmtopgm"
+PGMTOPBM="pgmtopbm"
 TEXINPSEP=":"
 
 help()
@@ -136,16 +137,16 @@ fi
 
 # $inline is for images of equations that include an extra dot on the baseline
 #    this dot must be cropped out, and its height must be determined.
-#    The height is determined from $name.pgm --- the first column of the image
+#    The height is determined from $name.pbm --- the first column of the image
 #    The dot is then cropped out of $name.tmp.png and finally extra white space
 #    in $name.tmp.png is removed to create the final image $name.png
 # 
 if [ $inline -eq 1 ] ; then
-	rm -f $name.pgm $name.tmp.$out
+	rm -f $name.pbm $name.tmp.$out
 	
 	$PNMCROP $name.$out > $name.tmp.$out
 
-	$PNMCUT -width 1 $name.tmp.$out | $PPMTOPGM > $name.pgm
+	$PNMCUT -width 1 $name.tmp.$out | $PPMTOPGM | $PGMTOPBM > $name.pbm
 
 	offset=`expr ${opt_d} / 72 + 2`
 	$PNMCUT -left $offset $name.tmp.$out | $PNMCROP | $PNMTOPNG > $name.png
@@ -170,7 +171,7 @@ if [ $opt_k -eq 0 ] ; then
 		rm -f $name.eps
 	fi
 
-	if [ $inline -eq 0 -o $out != "pgm" ] ; then
+	if [ $inline -eq 0 -o $out != "pbm" ] ; then
     		rm -f $name.$out
     fi
 fi
