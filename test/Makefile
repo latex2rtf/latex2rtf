@@ -11,9 +11,7 @@ RTF=accentchars.rtf array.rtf eqns.rtf fonts.rtf fontsize.rtf \
     tabular.rtf percent.rtf essential.rtf misc3.rtf misc4.rtf fancy.rtf \
 	align.rtf box.rtf \
 	babel_german.rtf babel_russian.rtf babel_czech.rtf babel_french.rtf \
-	babel_spanish.rtf babel_frenchb.rtf \
-	bib_simple.rtf bib_apalike.rtf bib_apalike2.rtf bib_natbib1.rtf bib_natbib2.rtf \
-	bib_natbib3.rtf \
+	babel_spanish.rtf babel_frenchb.rtf bib_simple.rtf \
 	enc_applemac.rtf enc_cp437.rtf enc_cp865.rtf    enc_latin2.rtf enc_latin5.rtf \
 	enc_cp1250.rtf   enc_cp850.rtf enc_decmulti.rtf enc_latin3.rtf enc_latin9.rtf\
 	enc_cp1252.rtf   enc_cp852.rtf enc_latin1.rtf   enc_latin4.rtf enc_next.rtf\
@@ -26,7 +24,8 @@ RTF=accentchars.rtf array.rtf eqns.rtf fonts.rtf fontsize.rtf \
 	head_book.rtf head_article.rtf head_report.rtf endnote.rtf report.rtf \
 	bibentry_apalike.rtf bibentry_plain.rtf
 
-RTFX=bib_apacite.rtf bib_apanat.rtf bib_authordate.rtf fig_test3.rtf bib_harvard.rtf 
+RTFX=bib_apacite.rtf bib_apanat.rtf bib_authordate.rtf fig_test3.rtf bib_harvard.rtf \
+     bib_apalike.rtf bib_apalike2.rtf bib_natbib1.rtf bib_natbib2.rtf bib_natbib3.rtf
 
 all:
 	mkdir -p ../tmp
