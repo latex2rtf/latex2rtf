@@ -1,4 +1,4 @@
-/*  $Id: parser.c,v 1.39 2002/02/17 05:12:59 prahl Exp $
+/*  $Id: parser.c,v 1.40 2002/02/17 06:19:56 prahl Exp $
 
    Contains declarations for a generic recursive parser for LaTeX code.
 */
@@ -913,7 +913,9 @@ getSection(char **body, char **header, char **label)
 /* slow... */
 		if (match[0])  	/* do any user defined commands possibly match? */
 			match[0] = maybeDefinition(section_buffer+delta-index+1, index-1);
-			
+		
+		possible_match = match[0];
+		
 		for (i=1; i<ncommands; i++) {	/* test each command for match */
 			if (!match[i]) continue;
 				
@@ -925,7 +927,7 @@ getSection(char **body, char **header, char **label)
 			}
 			possible_match = TRUE;
 		}
-
+		
 		found = FALSE;
 		
 		if (match[0]) {						/* expand user macros */

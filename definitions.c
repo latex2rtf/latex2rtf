@@ -133,13 +133,15 @@ maybeDefinition(char * s, int n)
 {
 	int i;
 	
+	if (n==0) return (int) TRUE;
+	
 	for (i=0; i<iDefinitionCount; i++) {
 		diagnostics(6, "seeking=<%s>, i=%d, current=<%s>", s,i,Definitions[i].name);
 		if (strncmp(s,Definitions[i].name,n) == 0) 
-			return TRUE;
+			return (int) TRUE;
 	}
 
-	return FALSE;
+	return (int) FALSE;
 }
 
 int
