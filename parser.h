@@ -24,7 +24,7 @@ void            CmdIgnoreParameter(int);
 char           *getParam(void);
 char           *getMathParam(void);
 char           *getSimpleCommand(void);
-bool            getBracketParam(char *string, int size);
+char *          getBracketParam(void);
 char           *getTexUntil(char * target, int raw);
 int             getDimension(void);
 void			parseBrace(void);

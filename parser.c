@@ -1,4 +1,4 @@
-/*  $Id: parser.c,v 1.19 2001/10/12 05:45:07 prahl Exp $
+/*  $Id: parser.c,v 1.20 2001/10/13 19:19:10 prahl Exp $
 
    Contains declarations for a generic recursive parser for LaTeX code.
 */
@@ -182,27 +182,58 @@ getSameChar(char c)
 	return count;
 }
 
+static char *
+getDelimitedText(char left, char right)
+/******************************************************************************
+  purpose: general scanning routine that allocates and returns a string
+  		   that is between "left" and "right" that accounts for escaping by '\'
+  		   
+  		   Example for getDelimitedText('{','}') 
+  		   
+  		   "{the \{ is shown {\it by} a\\}" ----> "the \{ is shown {\it by} a\\"
+  		    
+  		    Note the missing opening brace in the example above
+ ******************************************************************************/
+{
+	char            buffer[5000];
+	int				size = -1;
+	int				lefts_needed = 1;
+	char			marker = ' ';
+	char			last_char = ' ';
+		
+	while (lefts_needed && size < 4999) {
+
+		size++;
+		last_char = marker;
+		buffer[size] = getTexChar();
+		marker = buffer[size];
+
+		if (buffer[size] != right || lastChar == '\\') {    	/* avoid \}  */
+			if (buffer[size] == left && lastChar != '\\') 		/* avoid \{ */
+				lefts_needed++;
+			else {
+				if (buffer[size] == '\\' && lastChar == '\\')   /* avoid \\} */
+					marker = ' ';
+			}
+		} else 
+			lefts_needed--;
+	}
+
+	buffer[size] = '\0';		/* overwrite final delimeter */
+	if (size == 4999)
+		diagnostics(ERROR, "Misplaced '%c' (Not found within 5000 chars)");
+		
+	return strdup(buffer);
+}
+
 void
 parseBrace(void)
 /****************************************************************************
   Description: Skip text to balancing close brace                          
  ****************************************************************************/
 {
-	char currentChar;
-	char lastChar = ' ';
-	
-	currentChar = getTexChar();
-
-	while (currentChar != '}' || lastChar == '\\') {    /* avoid \}  */
-		if (currentChar == '{' && lastChar != '\\')		/* avoid \{ */
-			parseBrace();
-		else
-			if (currentChar == '\\' && lastChar == '\\')  /* avoid \\} */
-				lastChar = ' ';
-			else
-				lastChar = currentChar;
-		currentChar = getTexChar();
-	}
+	char *s = getDelimitedText('{','}');	
+	free(s);
 }
 
 void
@@ -211,24 +242,9 @@ parseBracket(void)
   Description: Skip text to balancing close bracket
  ****************************************************************************/
 {
-	while (getTexChar() != ']') {
-		switch (currentChar) {
-/*			case '{':
-
-			parseBrace();
-			break;
-*/
-
-		case '[':
-
-			parseBracket();
-			break;
-
-		default: /* Skip other characters */ ;
-		}
-	}
+	char *s = getDelimitedText('[',']');
+	free(s);
 }
-
 
 void 
 CmdIgnoreParameter(int code)
@@ -285,51 +301,33 @@ CmdIgnoreParameter(int code)
 	return;
 }
 
-bool 
-getBracketParam(char *string, int size)
+char * 
+getBracketParam(void)
 /******************************************************************************
-  purpose: function to get an optional parameter
-parameter: string: returnvalue of optional parameter
-	   size: max. size of returnvalue
-	   returns true if a brackets are found
-	   allows us to figure out if \item[] is found for example
+  purpose: return bracketed parameter
+  			
+  \item[1]   --->  "1"        \item[]   --->  ""        \item the  --->  NULL
+       ^                           ^                         ^
+
+  \item [1]  --->  "1"        \item []  --->  ""        \item  the --->  NULL
+       ^                           ^                         ^
  ******************************************************************************/
 {
-	char            c;
-	int             i = 0;
-	int             bracketlevel = 0;
+	char            c, *text;
 
-	diagnostics(5, "Entering getBracketParam()");
 	c = getNonBlank();
 
-	if (c != '[') {		/* does not start with a bracket, abort */
+	if (c == '[') {
+		text = getDelimitedText('[',']');
+		diagnostics(5, "getBracketParam [%s]", text);
+
+	} else {
 		ungetTexChar(c);
-		string[0] = '\0';
-		return FALSE;
+		text = NULL;
+		diagnostics(5, "getBracketParam []");
 	}
-	for (i = 0;; i++) {
-		c = getTexChar();
-
-		if ((c == ']') && (bracketlevel == 0))
-			break;
-
-		if (c == '[')
-			bracketlevel++;
-
-		if (c == ']')
-			bracketlevel--;
-
-		if (i < size - 1)	/* throw away excess */
-			string[i] = c;
-	}
-
-	if (bracketlevel > 0) {
-		fprintf(stderr, "**Error - Bracketed string is longer than %d characters\n", size - 1);
-		i = size - 1;
-	}
-	string[i] = '\0';
-	diagnostics(5, "Leaving getBracketParam() [%s]", string);
-	return TRUE;
+	
+	return text;
 }
 
 char    *
@@ -366,54 +364,35 @@ getSimpleCommand(void)
 char           *
 getParam(void)
 /**************************************************************************
-     purpose: returns the parameter after the \begin-command
-	      for instance: \begin{environment}
-		    return: -> string = "environment"
-   parameter: string: pointer to string, which returns the parameter
-     returns: success: string
-	      miss : string = ""
+     purpose: allocates and returns the next parameter in the LaTeX file
+              if ^ indicates the current file position then
+              
+     \alpha\beta   --->  "\beta"             \bar \alpha   --->  "\alpha"
+           ^                                     ^
+     \bar{text}    --->  "text"              \bar text     --->  "t"
+         ^                                       ^
  **************************************************************************/
 {
-	char            cThis, buffer[4094];
-	int             closeBracesNeeded, size;
+	char            s[2], *text;
 
-	size = 0;
-	cThis = getNonBlank();
+	s[0] = getNonSpace();			/*skip spaces and one possible newline */
+	if (s[0] == '\n')
+		s[0] = getNonSpace();	
 	
-	if (cThis == '\\') {
-		ungetTexChar(cThis);
-		return getSimpleCommand();
+	if (s[0] == '\\') {
+		ungetTexChar(s[0]);
+		text=getSimpleCommand();
+
+	} else 	if (s[0] == '{') 
+		text = getDelimitedText('{','}');
+	
+	else {
+		s[1] = '\0';
+		text = strdup(s);
 	}
 		
-	if (cThis != '{') {
-		buffer[0] = cThis;
-		size++;
-		
-	} else {
-		
-		closeBracesNeeded = 1;
-		while (closeBracesNeeded > 0 && size < 4094) {
-			buffer[size] = getTexChar();
-	
-			if (buffer[size] == '}')
-				closeBracesNeeded--;
-			
-			if (buffer[size] == '{')
-				closeBracesNeeded++;
-	
-			size++;
-		}
-		
-	size--;   /* overwrite final '}' with '\0' */
-	}
-	
-	buffer[size] = '\0';
-	if (size == 4093)
-		error(" Misplaced brace.  Scanned 4093 chars looking for close brace\n");
-
-	diagnostics(5, "getParam result <%s>", buffer);
-
-	return strdup(buffer);
+	diagnostics(5, "Leaving getBraceParam {%s}", text);
+	return text;
 }
 
 long ftellTex()
@@ -489,8 +468,7 @@ getMathParam(void)
 		buffer[0] = getNonSpace();	
 
 	if (buffer[0] == '{') {
-		ungetTexChar(buffer[0]);
-		return getParam();
+		return getDelimitedText('{','}');
 	} else if (buffer[0] == '\\') {
 		ungetTexChar(buffer[0]);
 		return getSimpleCommand();

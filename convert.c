@@ -1,4 +1,4 @@
-/* $Id: convert.c,v 1.11 2001/10/12 05:45:07 prahl Exp $ 
+/* $Id: convert.c,v 1.12 2001/10/13 19:19:10 prahl Exp $ 
 	purpose: ConvertString(), Convert(), TranslateCommand() 
 	
 TeX has six modes according to the TeX Book:
@@ -439,7 +439,7 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 	char            cCommand[MAXCOMMANDLEN];
 	int             i,mode;
 	int            cThis;
-	char            option_string[100];
+	char            *vertical_space;
 
 	diagnostics(5, "Beginning TranslateCommand()");
 
@@ -482,8 +482,10 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 		if (cThis != '*')
 			ungetTexChar(cThis);
 
-		getBracketParam(option_string, 99);	
-
+		vertical_space = getBracketParam();	
+		if (vertical_space) 				/* ignore for now */
+			free(vertical_space);
+		
 		if (g_processing_eqnarray) {	/* eqnarray */
 
 			if (g_show_equation_number && !g_suppress_equation_number) {

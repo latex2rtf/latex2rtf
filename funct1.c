@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.30 2001/10/12 05:45:07 prahl Exp $ 
+/* $Id: funct1.c,v 1.31 2001/10/13 19:19:10 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -316,14 +316,20 @@ CmdSection(int code)
 parameter: code: type of section-recursion-level
  ******************************************************************************/
 {
-	char            optparam[100] = "";
+	char            *toc_entry;
 	char            *heading;
 /*	char			c;
 	int				DefFont = DefaultFontFamily();
 */	
-	getBracketParam(optparam, 99);
+	toc_entry = getBracketParam();
 	heading = getParam();
-	diagnostics(4,"entering CmdSection [%s]{%s}",optparam,heading);
+	
+	if (toc_entry) {
+		diagnostics(4,"entering CmdSection [%s]{%s}",toc_entry,heading);
+		free(toc_entry);
+	} else
+		diagnostics(4,"entering CmdSection {%s}",heading);
+
 	
 	CmdEndParagraph(0);
 	CmdIndent(INDENT_NONE);
@@ -431,16 +437,20 @@ CmdCaption(int code)
  ******************************************************************************/
 {
 	char           *thecaption;
-	char            lst_entry[300];
+	char           *lst_entry;
 	int				n;
 	char   			old_align;
 	
 	old_align = alignment;
 	alignment = CENTERED;
 
-	getBracketParam(lst_entry,299);  /* discard entry for list of tables or figures */
+	lst_entry = getBracketParam();
 	
-	diagnostics(4, "entering CmdCaption [%s]", lst_entry);
+	if (lst_entry) {
+		diagnostics(4, "entering CmdCaption [%s]", lst_entry);
+		free(lst_entry);
+	} else
+		diagnostics(4, "entering CmdCaption");
 
 	CmdEndParagraph(0);
 	CmdIndent(INDENT_NONE);
@@ -576,15 +586,15 @@ CmdFootNote(int code)
  params : code specifies whether it is a footnote or a thanks-mark
  ******************************************************************************/
 {
-	char            number[255];
+	char           *number;
 	static int      thankno = 1;
 	int             text_ref_upsize, foot_ref_upsize;
 	int				DefFont = DefaultFontFamily();
 	
 	diagnostics(4,"Entering ConvertFootNote");
-	getBracketParam(number, 254);	/* is ignored because of the
-					 * automatic footnumber-generation */
+	number = getBracketParam();	/* ignored by automatic footnumber generation */
 
+	if (number) free(number);
 	text_ref_upsize = (6 * CurrentFontSize()) / 20;
 	foot_ref_upsize = (6 * CurrentFontSize()) / 20;
 
@@ -681,7 +691,7 @@ CmdItem(int code)
            this routine will get called recursively.
  ******************************************************************************/
 {
-	char            itemlabel[100];
+	char           *itemlabel;
 	static int      item_number[4];
 
 	if (code == RESET_ITEM_COUNTER) {
@@ -695,14 +705,15 @@ CmdItem(int code)
 	CmdIndent(INDENT_NONE);
 	CmdStartParagraph(0);
 	
-	if (getBracketParam(itemlabel, 99)) {	/* \item[label] */
+	itemlabel = getBracketParam();
+	if (itemlabel) {	/* \item[label] */
 
 		fprintRTF("{\\b ");	/* bold on */
 		diagnostics(5,"Entering ConvertString from CmdItem");
 		ConvertString(itemlabel);
 		diagnostics(5,"Exiting ConvertString from CmdItem");
 		fprintRTF("}\\tab ");	/* bold off */
-		
+		free(itemlabel);
 	}
 	
 	switch (code) {
@@ -721,8 +732,7 @@ CmdItem(int code)
 			break;
 
 		case 3:
-			roman_item(item_number[g_enumerate_depth], itemlabel);
-			fprintRTF("%s.", itemlabel);
+			fprintRTF("%s.", roman_item(item_number[g_enumerate_depth]));
 			break;
 
 		case 4:
@@ -1259,12 +1269,13 @@ CmdFigure(int code)
   purpose: Process \begin{figure} ... \end{figure} environment
  ******************************************************************************/
 {
-	char            loc[5];
+	char            *loc;
 
 	if (code & ON) {
-		getBracketParam(loc,4);
+		loc = getBracketParam();
 		diagnostics(4, "entering CmdFigure [%s]", loc);
 		g_processing_figure = TRUE;
+		if (loc) free(loc);
 	} else {
 		g_processing_figure = FALSE;
 		diagnostics(4, "exiting CmdFigure");
@@ -1321,7 +1332,7 @@ void
 CmdLink(int code)
 {
 	char           *param2;
-	char            optparam[255] = "";
+	char           *optparam;
 
 	diagnostics(4, "Entering hyperlatex \\link command");
 	Convert();		/* convert routine is called again for
@@ -1329,7 +1340,9 @@ CmdLink(int code)
 				 * parameter */
 	diagnostics(4, "  Converted first parameter");
 
-	getBracketParam(optparam, 255);
+	optparam = getBracketParam();
+	if (optparam) free(optparam);
+	
 	/* LEG190498 now should come processing of the optional parameter */
 	diagnostics(4, "  Converted optional parameter");
 
@@ -1583,7 +1596,7 @@ CmdColsep(int code)
 void 
 CmdGraphics(int code)
 {
-	char            options[255];
+	char           *options;
 	char            fullpath[1023];
 	char           *filename;
 	int             cc, i;
@@ -1592,8 +1605,12 @@ CmdGraphics(int code)
 
 	/* could be \includegraphics*[0,0][5,5]{file.pict} */
 
-	getBracketParam(options, 255);
-	getBracketParam(options, 255);
+	options = getBracketParam();
+	if (options) free(options);
+
+	options = getBracketParam();
+	if (options) free(options);
+	
 	filename = getParam();
 
 	if (strstr(filename, ".pict") || strstr(filename, ".PICT")) {

@@ -1,4 +1,4 @@
-/* $Id: tables.c,v 1.6 2001/10/12 05:45:07 prahl Exp $
+/* $Id: tables.c,v 1.7 2001/10/13 19:19:10 prahl Exp $
 
    Translation of tabbing and tabular environments
 */
@@ -271,7 +271,7 @@ parameter: type of array-environment
 
  ******************************************************************************/
 {
-	char            dummy[51];
+	char           *dummy;
 	int             i, n;
 	static bool     bWarningDisplayed = FALSE;
 	int             openBracesInParam = 1;
@@ -285,8 +285,11 @@ parameter: type of array-environment
 			error(" Nested tabular and array environments not supported! Giving up! \n");
 		g_processing_tabular = TRUE;
 
-		getBracketParam(dummy, 50);	/* throw it away */
-		diagnostics(5, "Discarding bracket string in tabular [%s]\n",dummy); 
+		dummy = getBracketParam();	/* throw it away */
+		if (dummy) {
+			diagnostics(5, "Discarding bracket string in tabular [%s]\n",dummy); 
+			free(dummy);
+		}
 		colParams = getParam();	/* colParams should now the column instructions */
 
 		diagnostics(4, "Entering CmdTabular() with options {%s}\n",colParams); 
@@ -380,7 +383,7 @@ CmdTable(int code)
 parameter: type of array-environment
  ******************************************************************************/
 {
-	char            location[10];
+	char            *location;
 
 	if (code & ON) {	/* on switch */
 		code &= ~(ON);	/* mask MSB */
@@ -391,7 +394,8 @@ parameter: type of array-environment
 		if ((code == FIGURE) || (code == FIGURE_1))
 			g_processing_figure = TRUE;
 
-		getBracketParam(location, 10);
+		location = getBracketParam();
+		if (location) free(location);
 	} else {		/* off switch */
 		code &= ~(OFF);	/* mask MSB */
 		g_processing_figure = FALSE;

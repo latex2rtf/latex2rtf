@@ -235,16 +235,18 @@ CmdRoot(int code)
 ******************************************************************************/
 {
 	char           *root;
-	char           power[50];
+	char           *power;
 
-	getBracketParam(power, 49);
+	power = getBracketParam();
 	root = getParam();
 	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\R(");
-	if (strlen(power)>0)
+	if (power && strlen(power)>0)
 		ConvertString(power);
 	fprintRTF("%c", FORMULASEP);
 	ConvertString(root);
 	fprintRTF(")}{\\fldrslt }}");
+	
+	if (power) free(power);
 	free(root);
 }
 

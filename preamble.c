@@ -1,4 +1,4 @@
-/* $Id: preamble.c,v 1.18 2001/10/12 05:45:07 prahl Exp $
+/* $Id: preamble.c,v 1.19 2001/10/13 19:19:10 prahl Exp $
 
 purpose : Handles LaTeX commands that should only occur in the preamble.
           These are gathered together because the entire preamble must be
@@ -360,12 +360,15 @@ CmdDocumentStyle(int code)
  ******************************************************************************/
 {
 	char            *format;
-	char            optionlist[100];
+	char            *optionlist;
 
-	getBracketParam(optionlist, 99);
+	optionlist = getBracketParam();
 	format = getParam();
 
-	diagnostics(4, "Documentstyle/class[%s]{%s}", optionlist,format);
+	if (optionlist)
+		diagnostics(4, "Documentstyle/class[%s]{%s}", optionlist,format);
+	else
+		diagnostics(4, "Documentstyle/class{%s}",format);
 
 	g_document_type = FORMAT_ARTICLE;
 	if (strcmp(format, "book") == 0)
@@ -386,7 +389,10 @@ CmdDocumentStyle(int code)
 	else
 		fprintf(stderr, "\nDocument format <%s> unknown, using article format", format);
 
-	setDocumentOptions(optionlist);
+	if (optionlist) {
+		setDocumentOptions(optionlist);
+		free(optionlist);
+	}
 	free(format);
 }
 
@@ -397,20 +403,23 @@ CmdUsepackage(int code)
 ******************************************************************************/
 {
 	char            *package;
-	char            optionlist[100];
+	char            *optionlist;
 
-	getBracketParam(optionlist, 99);
+	optionlist = getBracketParam();
 	package=getParam();
 
-	diagnostics(4, "Package {%s} with options [%s] encountered", package, optionlist);
+	if (optionlist)
+		diagnostics(4, "Package {%s} with options [%s]", package, optionlist);
+	else
+		diagnostics(4, "Package {%s} with no options", package);
 
-	if (strcmp(package, "inputenc") == 0)
+	if (strcmp(package, "inputenc") == 0  && optionlist)
 		setPackageInputenc(optionlist);
 		
 	else if (strcmp(package, "isolatin1") == 0)
 		setPackageInputenc("latin1");
 
-	else if (strcmp(package, "babel") == 0)
+	else if (strcmp(package, "babel") == 0 && optionlist)
 		setPackageBabel(optionlist);
 		
 	else if (strcmp(package, "german")  == 0 ||
@@ -430,7 +439,9 @@ CmdUsepackage(int code)
 		
 	else
 		setDocumentOptions(package);
-		
+	
+	if (optionlist)
+		free(optionlist);
 	free(package);
 }
 

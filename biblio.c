@@ -1,4 +1,4 @@
-/* $Id: biblio.c,v 1.5 2001/10/12 05:45:07 prahl Exp $ 
+/* $Id: biblio.c,v 1.6 2001/10/13 19:19:10 prahl Exp $ 
  
 This file contains routines to handle bibliographic and cite commands
 */
@@ -106,8 +106,7 @@ CmdThebibliography(int code)
 void 
 CmdBibitem(int code)
 {
-	char label[256];
-	char *key;
+	char *label, *key;
 	int  old_indent;	
 	
 	/* new paragraph for bib entry */
@@ -117,15 +116,18 @@ CmdBibitem(int code)
 	CmdStartParagraph(0);
 	fprintRTF("\\li350 ");
 	
-	if (!getBracketParam(label, 255)) {
+	label = getBracketParam();
+	if (label) {
+		fprintRTF("[%s]", label);
+		free(label);
+	} else {
 		key = getParam();
 		fprintRTF("[");
 		ScanAux("bibcite", key, 0);
 		fprintRTF("]");
 		free(key);
-	} else 
-		fprintRTF("[%s]", label);
-
+	}
+	
 	fprintRTF("\\tab ");
 	setLength("parindent", old_indent);
 }

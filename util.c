@@ -1,5 +1,5 @@
 /*
- * $Id: util.c,v 1.11 2001/10/12 05:45:07 prahl Exp $ 
+ * $Id: util.c,v 1.12 2001/10/13 19:19:10 prahl Exp $ 
  */
 #include <stdlib.h>
 #include <string.h>
@@ -105,9 +105,10 @@ Fatal(const char *fmt,...)
 
 /* convert integer to roman number --- only works up correctly up to 39 */
 
-void 
-roman_item(int n, char *s)
+char * 
+roman_item(int n)
 {
+	char            s[50];
 	int             i = 0;
 
 	while (n >= 10) {
@@ -122,7 +123,7 @@ roman_item(int n, char *s)
 		s[i] = 'x';
 		i++;
 		s[i] = '\0';
-		return;
+		return strdup(s);
 	}
 	if (n >= 5) {
 		n -= 5;
@@ -135,7 +136,7 @@ roman_item(int n, char *s)
 		s[i] = 'v';
 		i++;
 		s[i] = '\0';
-		return;
+		return strdup(s);
 	}
 	while (n >= 1) {
 		n -= 1;
@@ -144,4 +145,5 @@ roman_item(int n, char *s)
 	}
 
 	s[i] = '\0';
+	return strdup(s);
 }
