@@ -94,9 +94,9 @@ three aligned columns}
 \t{oo} \> \verb|\t{oo}| \> \b{o}  \> \verb|\b{o}|  \\  \"{o} \> \verb|\"{o}| \>
 \u{o}  \> \verb|\u{o}|  \\
 \end{tabbing}
-\caption{This does table does not really work on any RTF reader that I have.  Some
-display the \verb|\H{o}| correctly because they support unicode, but fail with the
-table formatting.  Others (like Word v.X for Macintosh) handle the table correctly,
-but fail to support unicode.  Sigh.}
+\caption{This table only works with with Word 2004 for MacOSX.  Earlier versions fail
+to display the {\tt $\backslash$ H\{o\}} correctly because they do not really support unicode.
+Other RTF readers get the unicode right, but fail with the
+table formatting.}
 \end{table}
 \end{document}
