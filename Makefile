@@ -1,11 +1,11 @@
-# $Id: Makefile,v 1.79 2002/12/31 16:51:38 prahl Exp $
+# $Id: Makefile,v 1.80 2003/01/06 01:26:06 prahl Exp $
 
 CC=gcc
 MKDIR=mkdir -p
 
 CFLAGS:=-DUNIX
 #CFLAGS:=-DMSDOS         #Windows/DOS
-#CFLAGS:=-DMACINTOSH     #MacOS 8/9
+#CFLAGS:=-DMAC_CLASSIC   #MacOS 8/9
 #CFLAGS:=-DOS2           #OS/2
 
 #Uncomment for some windows machines (not needed for djgpp)
@@ -177,7 +177,10 @@ realclean: checkdir clean
 	cd doc && $(MAKE) clean
 	cd test && $(MAKE) clean
 
-.PHONY: all check checkdir clean depend dist doc install install_info realclean latex2rtf
+splint: 
+	splint -weak $(SRCS) $(HDRS)
+	
+.PHONY: all check checkdir clean depend dist doc install install_info realclean latex2rtf splint
 
 # created using "make depend"
 commands.o : cfg.h main.h convert.h chars.h l2r_fonts.h preamble.h funct1.h \

@@ -146,7 +146,7 @@ parameter: searchstring : includes the string to search for
 
 	diagnostics(4, "Entering IgnoreEnvironment <%s>", cCommand);
 	
-	sprintf(unknown_environment, "\\%s%s%s", "end{", cCommand, "}");
+	snprintf(unknown_environment, 100, "\\%s%s%s", "end{", cCommand, "}");
 	font = TexFontNumber("Typewriter");
 	CmdEndParagraph(0);
 	CmdStartParagraph(FIRST_PAR);

@@ -1,6 +1,6 @@
-/* $Id: util.h,v 1.20 2002/11/07 02:06:56 prahl Exp $ */
+/* $Id: util.h,v 1.21 2003/01/06 01:26:06 prahl Exp $ */
 
-char *  my_strndup(char *s, int n);
+char *  my_strndup(char *s, size_t n);
 char *  strdup_together(char *s, char *t);
 char *	strdup_noblanks(char *s);
 char *	strdup_nobadchars(char *s);

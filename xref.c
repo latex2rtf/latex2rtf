@@ -402,7 +402,7 @@ code=1 means \token{reference}{{sect}{line}} -> "sect"
 		return NULL;
 	}
 
-	sprintf(target, "\\%s{%s}", token, reference);
+	snprintf(target, 256, "\\%s{%s}", token, reference);
 	
 	if (fAux == NULL && (fAux = my_fopen(g_aux_name, "r")) == NULL) {
 		diagnostics(WARNING, "No .aux file.  Run LaTeX to create %s\n", g_aux_name);

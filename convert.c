@@ -67,7 +67,7 @@ correctly, as well as vertical and horizontal space.
 #include "counters.h"
 #include "preamble.h"
 
-static bool     TranslateCommand();	/* converts commands */
+static void     TranslateCommand();	/* converts commands */
 
 static int    ret = 0;
 static int g_TeX_mode = MODE_VERTICAL;
@@ -542,7 +542,7 @@ globals: fTex, fRtf and all global flags for convert (see above)
 	diagnostics(5, "Exiting Convert via exhaustion ret = %d", ret);
 }
 
-bool 
+void 
 TranslateCommand()
 /****************************************************************************
 purpose: The function is called on a backslash in input file and
@@ -554,7 +554,7 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 {
 	char            cCommand[MAXCOMMANDLEN];
 	int             i,mode;
-	int            cThis;
+	int             cThis;
 
 
 	cThis = getTexChar();
@@ -566,42 +566,42 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 	case '}':
 		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
 		fprintRTF("\\}");
-		return TRUE;
+		return;
 	case '{':
 		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
 		fprintRTF("\\{");
-		return TRUE;
+		return;
 	case '#':
 		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
 		fprintRTF("#");
-		return TRUE;
+		return;
 	case '$':
 		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
 		fprintRTF("$");
-		return TRUE;
+		return;
 	case '&':
 		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
 		fprintRTF("&");
-		return TRUE;
+		return;
 	case '%':
 		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
 		fprintRTF("%%");
-		return TRUE;
+		return;
 	case '_':
 		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
 		fprintRTF("_");
-		return TRUE;
+		return;
 		
 	case '\\':		/* \\[1mm] or \\*[1mm] possible */
 		CmdSlashSlash(0);
-		return TRUE;
+		return;
 		
 	case ' ':
 	case '\n':
 		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
 		fprintRTF(" ");	/* ordinary interword space */
 		skipSpaces();
-		return TRUE;
+		return;
 
 /* \= \> \< \+ \- \' \` all have different meanings in a tabbing environment */
 
@@ -612,7 +612,7 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 			PushBrace();
 		} else
 			fprintRTF("\\-");
-		return TRUE;
+		return;
 
 	case '+':
 		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
@@ -620,7 +620,7 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 			(void) PopBrace();
 			PushBrace();
 		}
-		return TRUE;
+		return;
 		
 	case '<':
 		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
@@ -628,7 +628,7 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 			(void) PopBrace();
 			PushBrace();
 		}
-		return TRUE;
+		return;
 
 	case '>':
 		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
@@ -638,7 +638,7 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 			PushBrace();
 		} else 
 			CmdSpace(0.50);  /* medium space */
-		return TRUE;
+		return;
 		
 	case '`':
 		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
@@ -647,17 +647,17 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 			PushBrace();
 		} else
 			CmdLApostrophChar(0);
-		return TRUE;
+		return;
 		
 	case '\'':
 		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
 		if (g_processing_tabbing){
 			(void) PopBrace();
 			PushBrace();
-			return TRUE;
+			return;
 		} else
 			CmdRApostrophChar(0);	/* char ' =?= \' */
-		return TRUE;
+		return;
 
 	case '=':
 		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
@@ -668,61 +668,61 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 		}
 		else
 			CmdMacronChar(0);
-		return TRUE;
+		return;
 		
 	case '~':
 		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
 		CmdTildeChar(0);
-		return TRUE;
+		return;
 	case '^':
 		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
 		CmdHatChar(0);
-		return TRUE;
+		return;
 	case '.':
 		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
 		CmdDotChar(0);
-		return TRUE;
+		return;
 	case '\"':
 		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
 		CmdUmlauteChar(0);
-		return TRUE;
+		return;
 	case '(':
 		CmdEquation(EQN_RND_OPEN | ON);
 		/*PushBrace();*/
-		return TRUE;
+		return;
 	case '[':
 		CmdEquation(EQN_BRACKET_OPEN | ON);
 		/*PushBrace();*/
-		return TRUE;
+		return;
 	case ')':
 		CmdEquation(EQN_RND_CLOSE | OFF);
 		/*ret = RecursionLevel - PopBrace();*/
-		return TRUE;
+		return;
 	case ']':
 		CmdEquation(EQN_BRACKET_CLOSE | OFF);
 		/*ret = RecursionLevel - PopBrace();*/
-		return TRUE;
+		return;
 	case '/':
 		CmdIgnore(0);		/* italic correction */
-		return TRUE;
+		return;
 	case '!':
 		CmdIgnore(0);		/* \! negative thin space */
-		return TRUE;
+		return;
 	case ',':
 		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
 		CmdSpace(0.33);	/* \, produces a small space */
-		return TRUE;
+		return;
 	case ';':
 		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
 		CmdSpace(0.75);	/* \; produces a thick space */
-		return TRUE;
+		return;
 	case '@':
 		CmdIgnore(0);	/* \@ produces an "end of sentence" space */
-		return TRUE;
+		return;
 	case '3':
 		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
 		fprintRTF("{\\'df}");	/* german symbol 'á' */
-		return TRUE;
+		return;
 	}
 
 
@@ -755,7 +755,7 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 	diagnostics(5, "TranslateCommand() <%s>", cCommand);
 
 	if (i == 0)
-		return FALSE;
+		return;
 		
 	if (strcmp(cCommand,"begin")==0){
 		fprintRTF("{");
@@ -767,13 +767,12 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 			ret = RecursionLevel - PopBrace();
 			fprintRTF("}");
 		}
-		return TRUE;
+		return;
 	}
-	if (TryDirectConvert(cCommand, fRtf))
-		return TRUE;
-	if (TryVariableIgnore(cCommand))
-		return TRUE;
+	
+	if (TryDirectConvert(cCommand, fRtf)) return;
+	
+	if (TryVariableIgnore(cCommand)) return;
 		
 	diagnostics(WARNING, "Command \\%s not found - ignored", cCommand);
-	return FALSE;
 }

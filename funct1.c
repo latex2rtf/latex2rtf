@@ -388,7 +388,7 @@ CmdSlashSlash(int code)
 			incrementCounter("equation");
 			
 			fprintRTF("\\tab{\\b0 (");
-			sprintf(number,"%d",getCounter("equation"));
+			snprintf(number,20,"%d",getCounter("equation"));
 			InsertBookmark(g_equation_label,number);
 			if (g_equation_label) {
 				free(g_equation_label);
@@ -406,6 +406,7 @@ CmdSlashSlash(int code)
 		return;
 	}
 	
+/* this should only happen for an array environment */
 	if (g_processing_tabular) {	/* tabular or array environment */
 		if (GetTexMode() == MODE_MATH || GetTexMode() == MODE_DISPLAYMATH) {	/* array */
 			fprintRTF("\\par\n\\tab ");
@@ -419,6 +420,7 @@ CmdSlashSlash(int code)
 		return;
 	}
 
+/* I don't think this should happen anymore either! */
 	if (g_processing_tabbing){
 		PopBrace();
 		PushBrace();
@@ -429,8 +431,6 @@ CmdSlashSlash(int code)
 	CmdIndent(INDENT_INHIBIT);
 	
 	tabcounter = 0;
-/*	if (tabbing_on)
-		pos_begin_kill= ftell(fRtf);*/
 }
 
 void 
@@ -592,7 +592,6 @@ void
 CmdLdots( /* @unused@ */ int code)
 /******************************************************************************
  purpose: converts the LaTeX-\ldots-command into "..." in Rtf
- globals : fRtf
  ******************************************************************************/
 {
 	SetTexMode(MODE_HORIZONTAL);
@@ -627,51 +626,51 @@ FormatUnitNumber(char *name)
 
 	label[0]='\0';
 	if (strcmp(name,"part")==0 || strcmp(name,"chapter")==0)
-			sprintf(label, "%d", getCounter(name));
+			snprintf(label, 20, "%d", getCounter(name));
 
 	else if (strcmp(name,"section")==0) {
 		if (g_document_type == FORMAT_ARTICLE)
-			sprintf(label, "%d.", getCounter("section"));
+			snprintf(label, 20, "%d.", getCounter("section"));
 		else
-			sprintf(label, "%d.%d", getCounter("chapter"),getCounter("section"));
+			snprintf(label, 20, "%d.%d", getCounter("chapter"),getCounter("section"));
 	}
 	
 	else if (strcmp(name,"subsection")==0) {
 		if (g_document_type == FORMAT_ARTICLE)
-			sprintf(label, "%d.%d", getCounter("section"),
+			snprintf(label, 20, "%d.%d", getCounter("section"),
 					getCounter("subsection"));
 		else
-			sprintf(label, "%d.%d.%d", getCounter("chapter"),
+			snprintf(label, 20, "%d.%d.%d", getCounter("chapter"),
 					getCounter("section"), getCounter("subsection"));
 	}
 	
 	else if (strcmp(name,"subsubsection")==0) {
 		if (g_document_type == FORMAT_ARTICLE)
-			sprintf(label, "%d.%d.%d", getCounter("section"), 
+			snprintf(label, 20, "%d.%d.%d", getCounter("section"), 
 					getCounter("subsection"), getCounter("subsubsection"));
 		else
-			sprintf(label, "%d.%d.%d.%d", getCounter("chapter"), 
+			snprintf(label, 20, "%d.%d.%d.%d", getCounter("chapter"), 
 					getCounter("section"), getCounter("subsection"), getCounter("subsubsection"));
 	}
 	
 	else if (strcmp(name,"paragraph")==0) {
 		if (g_document_type == FORMAT_ARTICLE)
-			sprintf(label, "%d.%d.%d.%d", getCounter("section"), 
+			snprintf(label, 20, "%d.%d.%d.%d", getCounter("section"), 
 					getCounter("subsection"), getCounter("subsubsection"),
 					getCounter("paragraph"));
 		else
-			sprintf(label, "%d.%d.%d.%d.%d", getCounter("chapter"), 
+			snprintf(label, 20, "%d.%d.%d.%d.%d", getCounter("chapter"), 
 					getCounter("section"), getCounter("subsection"), 
 					getCounter("subsubsection"),getCounter("paragraph"));
 	}
 	
 	else if (strcmp(name,"subparagraph")==0) {
 		if (g_document_type == FORMAT_ARTICLE)
-			sprintf(label, "%d.%d.%d.%d.%d", getCounter("section"), 
+			snprintf(label, 20, "%d.%d.%d.%d.%d", getCounter("section"), 
 					getCounter("subsection"),  getCounter("subsubsection"),
 					getCounter("paragraph"),   getCounter("subparagraph"));
 		else
-			sprintf(label, "%d.%d.%d.%d.%d.%d", getCounter("chapter"), 
+			snprintf(label, 20, "%d.%d.%d.%d.%d.%d", getCounter("chapter"), 
 					getCounter("section"),        getCounter("subsection"), 
 					getCounter("subsubsection"),  getCounter("paragraph"),
 					getCounter("subparagraph"));
@@ -901,9 +900,9 @@ CmdCaption(int code)
 
 	fprintRTF(" ");
 	if (g_document_type != FORMAT_ARTICLE) 
-		sprintf(number, "%d.%d", getCounter("chapter"), n);
+		snprintf(number, 20, "%d.%d", getCounter("chapter"), n);
 	else
-		sprintf(number, "%d", n);
+		snprintf(number, 20, "%d", n);
 	
 	if (g_processing_figure && g_figure_label)
 		InsertBookmark(g_figure_label, number);

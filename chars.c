@@ -524,7 +524,7 @@ CmdUnderdotChar(int code)
 	if (cParam == NULL)
 		return;
 
-	dnsize = (0.4 * CurrentFontSize()) + 0.45;
+	dnsize = (int) ((0.4 * CurrentFontSize()) + 0.45);
 
 	if (!g_processing_fields)
 		fprintRTF("{\\field{\\*\\fldinst EQ ");
@@ -552,7 +552,7 @@ CmdHacekChar(int code)
 	if (cParam == NULL)
 		return;
 
-	upsize = (0.4 * CurrentFontSize()) + 0.45;
+	upsize = (int) ((0.4 * CurrentFontSize()) + 0.45);
 	num = RtfFontNumber("Symbol");
 
 	if (!g_processing_fields)
@@ -778,7 +778,7 @@ TeXlogo()
 	int             dnsize;
 
 	DnSize = 0.3 * CurrentFontSize();
-	dnsize = DnSize + 0.45;
+	dnsize = (int) (DnSize + 0.45);
 	fprintRTF("T{\\dn%d E}X", dnsize);
 }
 
@@ -788,7 +788,6 @@ LaTeXlogo()
  purpose : prints the LaTeX logo in the RTF-File (D Taupin)
  ******************************************************************************/
 {
-	float           UpSize;
 	float           FloatFsize;
 	int             upsize, Asize;
 
@@ -796,10 +795,9 @@ LaTeXlogo()
 		FloatFsize = 0.8 * CurrentFontSize();
 	else
 		FloatFsize = 0.9 * CurrentFontSize();
-	Asize = FloatFsize + 0.45;
+	Asize = (int) (FloatFsize + 0.45);
 
-	UpSize = 0.25 * CurrentFontSize();
-	upsize = UpSize + 0.45;
+	upsize = (int) (0.25 * CurrentFontSize() + 0.45);
 	fprintRTF("L{\\up%d\\fs%d A}", upsize, Asize);
 	TeXlogo();
 }
@@ -812,7 +810,6 @@ CmdLogo(int code)
 {
 	int             font_num, dnsize;
 	float           FloatFsize;
-	float           DnSize;
 
 	SetTexMode(MODE_HORIZONTAL);
 	fprintRTF("{\\plain ");
@@ -841,10 +838,9 @@ CmdLogo(int code)
 		if (CurrentFontSize() > 14) {
 			FloatFsize = 0.75 * CurrentFontSize();
 		} else {
-			FloatFsize = CurrentFontSize();
+			FloatFsize = (float) CurrentFontSize();
 		};
-		DnSize = 0.3 * CurrentFontSize();
-		dnsize = DnSize + 0.45;
+		dnsize = (int) (0.3 * CurrentFontSize() + 0.45);
 		font_num = RtfFontNumber("Symbol");
 		fprintRTF("2{\\dn%d\\f%d e}", dnsize, font_num);
 		break;
@@ -860,8 +856,7 @@ CmdLogo(int code)
 		break;
 		
 	case CMD_LYX:
-		DnSize = 0.3 * CurrentFontSize();
-		dnsize = DnSize + 0.45;
+		dnsize = (int) (0.3 * CurrentFontSize() + 0.45);
 		fprintRTF("L{\\dn%d Y}X", dnsize);
 		break;
 	}
@@ -923,12 +918,12 @@ CmdFrenchAbbrev(int code)
   if (code == TERTIO) fprintRTF("3");
   if (code == QUARTO) fprintRTF("4");
   
-  FloatFsize = CurrentFontSize();
+  FloatFsize = (float) CurrentFontSize();
   
   if(FloatFsize > 14) FloatFsize *= 0.75;
 
-  up = 0.3*FloatFsize+0.45;
-  size = FloatFsize+0.45;
+  up = (int) (0.3*FloatFsize+0.45);
+  size = (int) (FloatFsize+0.45);
   
   fprintRTF("{\\fs%d\\up%d ",size ,up);
   switch(code)

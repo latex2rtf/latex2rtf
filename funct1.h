@@ -167,8 +167,6 @@ void            GetInputParam(char *, int);
 void            CmdBottom(int code);
 void            CmdAbstract(int code);
 void            CmdTitlepage(int code);
-void            CmdHyphenation(int code);
-void            CmdFigure(int code);
 void            CmdAnnotation(int code);
 void            CmdLink(int code);
 void            GetRequiredParam(char *string, int size);

@@ -1,10 +1,10 @@
-int     maybeDefinition(char * s, int n);
+int     maybeDefinition(char * s, size_t n);
 int     existsDefinition(char * s);
 void	newDefinition(char *name, char *def, int params);
 void	renewDefinition(char * name, char * def, int params);
 char *	expandDefinition(int thedef);
 
-int		maybeEnvironment(char * s, int n);
+int		maybeEnvironment(char * s, size_t n);
 int		existsEnvironment(char * s);
 void	newEnvironment(char *name, char *begdef, char *enddef, int params);
 void	renewEnvironment(char *name, char *begdef, char *enddef, int params);

@@ -670,7 +670,7 @@ globals: command-functions have side effects or recursive calls
 }
 
 
-bool 
+void 
 CallParamFunc(char *cCommand, int AddParam)
 /****************************************************************************
 purpose: Try to call the environment-function for the commandname
@@ -687,18 +687,17 @@ globals: command-functions have side effects or recursive calls
 		if (strcmp(params[i].cpCommand, cCommand) == 0) {
 			assert(params[i].func != NULL);
 			(*params[i].func) ((params[i].param) | AddParam);
-			return TRUE;	/* command function found */
+			return;	/* command function found */
 		}
 		++i;
 	}
 
 	/* unknown environment must be ignored */
 	if (AddParam == ON) {
-		sprintf(unknown_environment, "\\%s%s%s", "end{", cCommand, "}");
+		snprintf(unknown_environment, 100, "\\%s%s%s", "end{", cCommand, "}");
 		Ignore_Environment(cCommand);
 		diagnostics(WARNING, "Environment <%s> ignored.  Not defined in commands.c", cCommand);
 	}
-	return FALSE;
 }
 
 int 

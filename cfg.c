@@ -82,7 +82,7 @@ try_path(const char *path, const char *file)
 {
 	char * both;
 	FILE * fp=NULL;
-	int    lastchar;
+	size_t lastchar;
 		
 	diagnostics(4, "trying path=<%s> file=<%s>", path, file);
 	
@@ -292,7 +292,7 @@ search_rtf(const char *theTexCommand, int WhichCfg)
 		);
 }
 
-size_t 
+int 
 SearchRtfIndex(const char *theTexCommand, int WhichCfg)
 /****************************************************************************
  * purpose:  search theTexCommand in a specified config data and return

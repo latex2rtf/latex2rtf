@@ -229,7 +229,7 @@ SaveEquationAsFile(char *pre, char *eq_with_spaces, char *post)
 /* create needed file names */
 	file_number++;
 	tmp_dir = getTmpPath();
-	sprintf(name, "l2r_%04d", file_number);
+	snprintf(name, 15, "l2r_%04d", file_number);
 	fullname = strdup_together(tmp_dir, name);	
 	texname = strdup_together(fullname,".tex");
 
@@ -301,9 +301,9 @@ PrepareRtfEquation(int code, int EQ_Needed)
 	int width,a,b,c;
 		
 	width = getLength("textwidth");
-	a = 0.45 * width;
-	b = 0.50 * width;
-	c = 0.55 * width;
+	a = (int) (0.45 * width);
+	b = (int) (0.50 * width);
+	c = (int) (0.55 * width);
 	
 	switch (code) {
 	
@@ -473,7 +473,7 @@ FinishRtfEquation(int code, int EQ_Needed)
 				for (; g_equation_column < 3; g_equation_column++)
 						fprintRTF("\\tab ");
 				fprintRTF("\\tab{\\b0 (");
-				sprintf(number,"%d",getCounter("equation"));
+				snprintf(number,20,"%d",getCounter("equation"));
 				InsertBookmark(g_equation_label,number);
 				if (g_equation_label) {
 					free(g_equation_label);
@@ -586,14 +586,14 @@ ConvertOverToFrac(char ** equation)
 			s = (char *) malloc(strlen(eq)+sizeof("\\frac{}")+1);
 			t = s;
 
-			strncpy(t, eq, first-eq);			/* everything up to {A\over B} */
+			strncpy(t, eq, (size_t) (first-eq));	/* everything up to {A\over B} */
 			t += first-eq;
 
 			strncpy(t, "\\frac", 5);			/* insert new \frac */
 			t += 5;
 			if (*first!='{') {*t='{'; t++;}		/* add { if missing */
 			
-			strncpy(t, first, last-first);		/* copy A}{B */
+			strncpy(t, first, (size_t) (last-first));		/* copy A}{B */
 			t += last-first;
 			
 			if (*last!='}') {*t='}'; t++;}		/* add } if missing */
@@ -757,7 +757,7 @@ CmdArrows(int code)
  converts: amssymb \leftrightarrows and \rightleftarrows
  ******************************************************************************/
 {
-    int size = CurrentFontSize()/4.5;
+    int size = (int) (CurrentFontSize()/4.5);
 
 	fprintRTF(" \\\\o ({\\up%d ",size);
 
@@ -931,7 +931,7 @@ SubSupWorker (bool big)
 	if (upper_limit && lower_limit) {
 		int size, newsize;
 		size = CurrentFontSize ();
-		newsize = size / 1.2;
+		newsize = (int) (size / 1.2);
 		fprintRTF ("\\\\s\\\\up({\\fs%d ", newsize);
 		ConvertString (upper_limit);
 		if (big)
@@ -946,11 +946,11 @@ SubSupWorker (bool big)
 	} else if (lower_limit) {
 		int size, newsize, upsize;
 		size = CurrentFontSize ();
-		newsize = size / 1.2;
+		newsize = (int) (size / 1.2);
 		if (big)
-			upsize = size / 1.4;
+			upsize = (int) (size / 1.4);
 		else
-			upsize = size / 4;
+			upsize = (int) (size / 4);
 		fprintRTF ("\\\\s\\\\do%d({\\fs%d ", upsize, newsize);
 		ConvertString (lower_limit);
 		fprintRTF ("})");
@@ -959,11 +959,11 @@ SubSupWorker (bool big)
 	} else if (upper_limit) {
 		int size, newsize, upsize;
 		size = CurrentFontSize ();
-		newsize = size / 1.2;
+		newsize = (int) (size / 1.2);
 		if (big)
-			upsize = size / 1.4;
+			upsize = (int) (size / 1.4);
 		else
-			upsize = size / 4;
+			upsize = (int) (size / 4);
 		fprintRTF ("\\\\s\\\\up%d({\\fs%d ", upsize, newsize);
 		ConvertString (upper_limit);
 		fprintRTF ("})");
@@ -994,8 +994,8 @@ CmdSuperscript(int code)
 
 	if ((s = getBraceParam())) {
 		size = CurrentFontSize();
-		newsize = size / 1.2;
-		upsize = size / 3;
+		newsize = (int) (size / 1.2);
+		upsize = (int) (size / 3.0);
 		fprintRTF("{\\up%d\\fs%d ",upsize,newsize);
 		ConvertString(s);
 		fprintRTF("}");
@@ -1014,8 +1014,8 @@ CmdSubscript(int code)
 
 	if ((s = getBraceParam())) {
 		size = CurrentFontSize();
-		newsize = size / 1.2;
-		upsize = size / 3;
+		newsize = (int) (size / 1.2);
+		upsize = (int) (size / 3.0);
 		fprintRTF("{\\dn%d\\fs%d ",upsize,newsize);
 		ConvertString(s);
 		fprintRTF("}");
@@ -1141,7 +1141,7 @@ CmdStackrel(int code)
 char * numer, *denom;
 int size;
 		
-	size = CurrentFontSize()/1.2;
+	size = (int) (CurrentFontSize()/1.2);
 	numer = getBraceParam();
 	denom = getBraceParam();
 	diagnostics(4, "CmdStackrel() ... \\stackrel{%s}{%s}", numer,denom);

@@ -385,11 +385,11 @@ CmdFontSize(int code)
 	               RtfFontInfo[FontInfoDepth].series);
 
 	if (code == F_SMALLER) 
-		scaled_size = CurrentFontSize() / 1.2 + 0.5;
+		scaled_size = (int) (CurrentFontSize() / 1.2 + 0.5);
 	else if (code == F_LARGER) 
-		scaled_size = CurrentFontSize() * 1.2 + 0.5;
+		scaled_size = (int) (CurrentFontSize() * 1.2 + 0.5);
 	else
-		scaled_size = (code * DefaultFontSize()) / 20.0 + 0.5;
+		scaled_size = (int) (code * DefaultFontSize() / 20.0 + 0.5);
 
 	fprintRTF("\\fs%d ", scaled_size);
 

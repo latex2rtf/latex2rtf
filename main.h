@@ -1,36 +1,16 @@
-/* $Id: main.h,v 1.56 2002/11/23 23:35:41 prahl Exp $ */
-#ifndef __MAIN_H
-#define __MAIN_H
+/* $Id: main.h,v 1.57 2003/01/06 01:26:06 prahl Exp $ */
 
 #if defined(UNIX)
-#ifndef ENVSEP
 #define ENVSEP ':'
-#endif
-#ifndef PATHSEP
 #define PATHSEP '/'
-#endif 
 #endif
 
-#if defined(MSDOS)
-#ifndef ENVSEP
+#if defined(MSDOS) || defined(OS2)
 #define ENVSEP ';'
-#endif
-#ifndef PATHSEP
 #define PATHSEP '\\'
 #endif 
-#endif
 
-#if defined(OS2)
-#ifndef ENVSEP
-#define ENVSEP ';'
-#endif
-#ifndef PATHSEP
-#define PATHSEP '\\'
-#endif 
-#endif
-
-#if defined(MACINTOSH) || defined(__MWERKS__)
-#define HAS_NO_GETOPT
+#if defined(MAC_CLASSIC)
 #define ENVSEP '^'
 #define PATHSEP ':'
 #include "MainMain.h"
@@ -143,4 +123,3 @@ char *my_strdup(const char *str);
 FILE *my_fopen(char *path, char *mode);
 
 void debug_malloc(void);
-#endif				/* __MAIN_H */

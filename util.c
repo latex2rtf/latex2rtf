@@ -31,7 +31,7 @@ Authors:
 #include "parser.h"
 
 char *  
-my_strndup(char *src, int n)
+my_strndup(char *src, size_t n)
 /******************************************************************************
  purpose:  returns a new string with n characters from s (with '\0' at the end)
 ******************************************************************************/
@@ -131,7 +131,7 @@ char *p, *t;
 	while (p >= t && (*p == ' ' || *p == '\n')) p--;	/* last non blank char */
 	
 	if (t>p) return strdup("");
-	return my_strndup(t,p-t+1);
+	return my_strndup(t,(size_t) (p-t+1));
 }
 
 char *
@@ -187,7 +187,7 @@ ExtractAndRemoveTag(char *tag, char *text)
     end = strstr(s,contents)+strlen(contents)+1; /* end just after '}' */
 
 	free(contents);
-	contents = my_strndup(start,end-start);
+	contents = my_strndup(start,(size_t) (end-start));
 	
     do *start++=*end++; while (*end);			/* erase "tag{contents}" */
 	*start='\0';

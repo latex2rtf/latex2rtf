@@ -770,9 +770,9 @@ getTexUntil(char * target, int raw)
 	char            buffer[BUFFSIZE+1] = {'\0'};
 	int				last_i = -1;
 	int             i   = 0;       /* size of string that has been read */
-	int             j   = 0;       /* number of found characters */
+	size_t          j   = 0;       /* number of found characters */
 	bool			end_of_file_reached = FALSE;
-	int             len = strlen(target);
+	size_t          len = strlen(target);
 	
 	PushTrackLineNumber(FALSE);
 
@@ -889,35 +889,35 @@ getDimension(void)
 		
 		diagnostics(4,"getDimension() dimension is <%s>", buffer);
 		if (strstr(buffer,"pt"))
-			return num*20;
+			return (int) (num*20);
 		else if (strstr(buffer,"pc"))
-			return num*12*20;
+			return (int) (num*12*20);
 		else if (strstr(buffer,"in"))
-			return num*72.27*20;
+			return (int) (num*72.27*20);
 		else if (strstr(buffer,"bp"))
-			return num*72.27/72*20;
+			return (int) (num*72.27/72*20);
 		else if (strstr(buffer,"cm"))
-			return num*72.27/2.54*20;
+			return (int) (num*72.27/2.54*20);
 		else if (strstr(buffer,"mm"))
-			return num*72.27/25.4*20;
+			return (int) (num*72.27/25.4*20);
 		else if (strstr(buffer,"dd"))
-			return num*1238.0/1157.0*20;
+			return (int) (num*1238.0/1157.0*20);
 		else if (strstr(buffer,"dd"))
-			return num*1238.0/1157*20;
+			return (int) (num*1238.0/1157*20);
 		else if (strstr(buffer,"cc"))
-			return num*1238.0/1157.0*12.0*20;
+			return (int) (num*1238.0/1157.0*12.0*20);
 		else if (strstr(buffer,"sp"))
-			return num/65536.0*20;
+			return (int) (num/65536.0*20);
 		else if (strstr(buffer,"ex")) 
-			return num*CurrentFontSize()*0.5;
+			return (int) (num*CurrentFontSize()*0.5);
 		else if (strstr(buffer,"em")) 
-			return num*CurrentFontSize();
+			return (int) (num*CurrentFontSize());
 		else if (strstr(buffer,"in"))
-			return num*72.27*20;
+			return (int) (num*72.27*20);
 		else {
 			ungetTexChar(buffer[1]);
 			ungetTexChar(buffer[0]);
-			return num;
+			return (int) num;
 		}
 	} else {
 		char * s, *t;
@@ -927,14 +927,14 @@ getDimension(void)
 		diagnostics(4,"getDimension() dimension is <%s>", t);
 		num *= getLength(t);
 		free(s);
-		return num;
+		return (int) num;
 	}
 		
 }
 
 #define SECTION_BUFFER_SIZE 2048
 static char* section_buffer = NULL;
-static long section_buffer_size = SECTION_BUFFER_SIZE;
+static size_t section_buffer_size = SECTION_BUFFER_SIZE;
 
 static void increase_buffer_size(void)
 {
@@ -969,7 +969,7 @@ getSection(char **body, char **header, char **label)
 	int possible_match, found;
 	char cNext, *s,*text,*next_header,*str;
 	int i;
-	long delta;
+	size_t delta;
 	int  match[30];
 	char * command[30] = {"",  /* 0 entry is for user definitions */
 	                      "",  /* 1 entry is for user environments */
@@ -1007,7 +1007,7 @@ getSection(char **body, char **header, char **label)
 	const int renew_item   = 29;
 
 	int bs_count = 0;
-	int index = 0;
+	size_t index = 0;
 	int label_depth = 0;
 	
 	if (section_buffer == NULL) {

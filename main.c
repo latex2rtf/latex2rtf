@@ -314,7 +314,7 @@ SetEndianness(void)
 purpose : Figure out endianness of machine.	 Needed for graphics support
 */
 {
-	unsigned int	endian_test = 0xaabbccdd;
+	unsigned int	endian_test = (unsigned int) 0xaabbccdd;
 	unsigned char	endian_test_char = *(unsigned char *)&endian_test;
 
 	if (endian_test_char == 0xdd)
@@ -452,7 +452,7 @@ purpose : Writes the message to stderr depending on debugging level
 		case 1:
 			fprintf(stderr, "\nWarning line=%d ", linenumber);
 			if (g_RTF_warnings) {
-				vsprintf(buffer, format, apf);
+				vsnprintf(buffer, 512, format, apf);
 				fprintRTF("{\\plain\\cf2 [latex2rtf:");
 				while (*buff_ptr){putRtfChar(*buff_ptr);buff_ptr++;}
 				fprintRTF("]}");
@@ -533,7 +533,7 @@ InitializeLatexLengths(void)
 /* vertical separation lengths */
 	setLength("topsep",			3*20);
 	setLength("partopsep",		2*20);
-	setLength("parsep",			2.5*20);
+	setLength("parsep",			(int) (2.5*20));
 	setLength("itemsep",		0*20);
 	setLength("labelwidth",		0*20);
 	setLength("labelsep",		0*20);
@@ -670,7 +670,7 @@ purpose: output filter to track of brace depth and font settings
 	va_list		  apf;
 
 	va_start(apf, format);
-	vsprintf(buffer, format, apf);
+	vsnprintf(buffer, 1024, format, apf);
 	va_end(apf);
 	text = buffer;
 	

@@ -173,7 +173,7 @@ expandmacro(char *macro, int params)
 }
 
 int
-maybeDefinition(char * s, int n)
+maybeDefinition(char * s, size_t n)
 /**************************************************************************
      purpose: checks to see if a named TeX definition possibly exists
      returns: the array index of the named TeX definition
@@ -301,7 +301,8 @@ existsEnvironment(char * s)
      returns: the array index of the \newenvironment
 **************************************************************************/
 {
-	int n, i=0;
+	int i=0;
+	size_t n;
 	
 	n = strlen(s);
 	while(i < iNewEnvironmentCount && !strequal(s,NewEnvironments[i].name)) {
@@ -316,7 +317,7 @@ existsEnvironment(char * s)
 }
 
 int
-maybeEnvironment(char * s, int n)
+maybeEnvironment(char * s, size_t n)
 /**************************************************************************
      purpose: checks to see if a named TeX environment possibly exists
      returns: the array index of the named TeX definition
@@ -489,15 +490,15 @@ expandTheorem(int i, char *option)
 	if (NewTheorems[i].within) {
 		num = FormatUnitNumber(NewTheorems[i].within);
 		if (option)
-			sprintf(s,"%s %s.%d (%s)", NewTheorems[i].caption, num, ithm, option);
+			snprintf(s,128,"%s %s.%d (%s)", NewTheorems[i].caption, num, ithm, option);
 		else
-			sprintf(s,"%s %s.%d", NewTheorems[i].caption, num, ithm);
+			snprintf(s,128,"%s %s.%d", NewTheorems[i].caption, num, ithm);
 		free(num);
 	} else {
 		if (option)
-			sprintf(s,"%s %d (%s)", NewTheorems[i].caption, ithm, option);
+			snprintf(s,128,"%s %d (%s)", NewTheorems[i].caption, ithm, option);
 		else
-			sprintf(s,"%s %d", NewTheorems[i].caption, ithm);
+			snprintf(s,128,"%s %d", NewTheorems[i].caption, ithm);
 	}
 			
 	return strdup(s);

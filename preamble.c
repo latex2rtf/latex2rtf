@@ -575,9 +575,9 @@ CmdMakeTitle(int code)
 	char            date_begin[10];
 
 	PushTrackLineNumber(FALSE);
-	sprintf(title_begin, "%s%2d", "\\fs", (30 * CurrentFontSize()) / 20);
-	sprintf(author_begin, "%s%2d", "\\fs", (24 * CurrentFontSize()) / 20);
-	sprintf(date_begin, "%s%2d", "\\fs", (24 * CurrentFontSize()) / 20);
+	snprintf(title_begin, 10, "%s%2d", "\\fs", (30 * CurrentFontSize()) / 20);
+	snprintf(author_begin, 10, "%s%2d", "\\fs", (24 * CurrentFontSize()) / 20);
+	snprintf(date_begin, 10, "%s%2d", "\\fs", (24 * CurrentFontSize()) / 20);
 
 	alignment = CENTERED;
 	fprintRTF("\n\\par\\pard\\qc {%s ", title_begin);

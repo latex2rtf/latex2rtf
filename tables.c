@@ -194,7 +194,7 @@ TabularPreamble(char *text, char *width, char *pos, char *cols)
 	int i;
 	
 	colFmt = ConvertFormatString(cols);
-	colCount = strlen(colFmt);
+	colCount = (int) strlen(colFmt);
 	actCol = 0;
 	
 	tab.n = colCount;
@@ -228,8 +228,8 @@ TabularGetRow(char *table, char **row, char **next_row, int *height)
 {
 	char *s,*dimension,*dim_start;
 	int slash=0;
-	int row_chars=0;
-	int dim_chars=0;
+	size_t row_chars=0;
+	size_t dim_chars=0;
 	bool slashslash=FALSE;
 	
 	s=table;
@@ -330,7 +330,7 @@ TabularNextCell(char *cell_start, char **cell_end)
 	end = TabularNextAmpersand(cell_start);
 
 	if (*end=='&') {
-		dup = my_strndup(cell_start,end-cell_start);
+		dup = my_strndup(cell_start, (size_t) (end-cell_start));
 		*cell_end = end+1;
 	} else {
 		dup = strdup(cell_start);
@@ -727,7 +727,7 @@ TabbingNextCell(char *cell_start, char **cell_end)
 	TabbingNextCellEnd(cell_start, &end, &next_cell);
 
 	if (end<cell_start) end=cell_start;
-	dup = my_strndup(cell_start, end-cell_start);
+	dup = my_strndup(cell_start, (size_t) (end-cell_start));
 	
 	if (*next_cell=='\0')
 		*cell_end = NULL;
@@ -806,7 +806,7 @@ TabbingGetRow(char *table, char **row, char **next_row)
   ******************************************************************************/
 {
 	char *s,*arow;
-	int row_chars=0;
+	size_t row_chars=0;
 	bool slash = FALSE;
 	
 	s=table;

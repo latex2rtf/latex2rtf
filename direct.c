@@ -45,9 +45,9 @@ parameter: buffpoint: font and number
 globals:   progname
  ******************************************************************************/
 {
-	char            buffer[MAXFONTLEN + 1];
-	int             i;
-	size_t          fnumber;
+	char	buffer[MAXFONTLEN + 1];
+	int		i;
+	int		fnumber;
 
 	if (**buffpoint == '*') {
 		fprintRTF("*");
