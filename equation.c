@@ -193,7 +193,6 @@ SaveEquationAsFile(char *pre, char *eq, char *post)
 	/* create needed file names */
 	file_number++;
 	tmp_dir = getTmpPath();
-	*tmp_dir ='\0';
 	sprintf(name, "l2r_%04d", file_number);
 	fullname = strdup_together(tmp_dir, name);	
 	texname = strdup_together(fullname,".tex");
@@ -240,8 +239,8 @@ WriteEquationAsBitmap(char *pre, char *eq, char *post)
 	pdf = strdup_together(name,".pdf");
 
 /* create shell commands to convert equations */
-	cmd = (char *) malloc(strlen(name)+16);
-	sprintf(cmd, "tex2png -d %d %s", resolution, name);	
+	cmd = (char *) malloc(strlen(name)+18);
+	sprintf(cmd, "latex2png -d %d %s", resolution, name);	
 	diagnostics(1, "cmd = <%s>", cmd);
 
 	if (system(cmd) == 0)

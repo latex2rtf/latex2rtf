@@ -1,10 +1,11 @@
 /*
- * $Id: mygetopt.c,v 1.10 2001/08/12 21:15:46 prahl Exp $ History: $Log:
+ * $Id: mygetopt.c,v 1.11 2002/03/10 16:19:22 prahl Exp $ History: $Log:
  * mygetopt.c,v $ Revision 1.1  1998/11/12 13:05:43  glehner Initial revision
  * 
  * 
  */
 
+#ifdef HAS_NO_GETOPT
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -99,3 +100,6 @@ my_getopt(int argc, char **argv, char *optstring)
 	}
 	return c;
 }
+#else
+int AVOID_EMPTY_MYGETOPT_SOURCE;
+#endif

@@ -82,16 +82,13 @@ CHMOD_DAT=true
 #
 
 # Nothing to change below this line
-SOURCES=commands.c commands.h chars.c chars.h direct.c direct.h encode.c encode.h l2r_fonts.c \
+
+SRCS=commands.c commands.h chars.c chars.h direct.c direct.h encode.c encode.h l2r_fonts.c \
     l2r_fonts.h funct1.c funct1.h tables.c tables.h ignore.c ignore.h main.c \
     main.h stack.c stack.h version.h cfg.c cfg.h util.c util.h parser.c parser.h \
     lengths.c lengths.h counters.c counters.h letterformat.c letterformat.h \
     preamble.c preamble.h equation.c equation.h convert.c convert.h xref.c xref.h\
-    Makefile README README.DOS README.Mac Copyright\
-    mygetopt.c optind.c version \
-    debian.README debian.control debian.rules ChangeLog l2r.bat\
-    encode_tables.h definitions.c definitions.h graphics.c graphics.h \
-    tex2png_1 tex2png_2 tex2png_3 tex2png_4
+    mygetopt.c optind.c encode_tables.h definitions.c definitions.h graphics.c graphics.h \
 
 SUPPORT=cfg/fonts.cfg     cfg/direct.cfg   cfg/ignore.cfg \
     cfg/afrikaans.cfg cfg/bahasa.cfg cfg/basque.cfg cfg/brazil.cfg cfg/breton.cfg \
@@ -103,12 +100,16 @@ SUPPORT=cfg/fonts.cfg     cfg/direct.cfg   cfg/ignore.cfg \
     cfg/serbian.cfg cfg/slovak.cfg cfg/slovene.cfg cfg/spanish.cfg cfg/swedish.cfg \
     cfg/turkish.cfg cfg/usorbian.cfg cfg/welsh.cfg 
 
-MANUALS=latex2rtf.1
+MANUALS=latex2rtf.1 
 
 MSDOS=l2r.bat l2r.exe
 
-DOCS= doc/latex2rtf.texi doc/latex2rtf.html doc/latex2rtf.pdf doc/latex2rtf.txt \
-	  doc/latex2rtf.info doc/credits doc/copying.txt doc/Makefile
+DOCS= README README.DOS README.Mac Copyright ChangeLog\
+	debian.README debian.control debian.rules \
+	doc/latex2rtf.texi doc/latex2rtf.html doc/latex2rtf.pdf doc/latex2rtf.txt \
+	doc/latex2rtf.info doc/credits doc/copying.txt doc/Makefile
+
+SCRIPTS= Makefile version tex2png_1 tex2png_2 tex2png_3 tex2png_4 l2r.bat
 
 TEST=   test/Makefile test/bracecheck \
 	test/accentchars.tex test/array.tex test/cite.tex test/cite.bib \
@@ -126,8 +127,9 @@ TEST=   test/Makefile test/bracecheck \
 	test/theorem.tex
 
 OBJS=l2r_fonts.o direct.o encode.o commands.o stack.o funct1.o tables.o \
-	chars.o ignore.o cfg.o main.o util.o parser.o mygetopt.o lengths.o counters.o \
-	preamble.o letterformat.o equation.o convert.o xref.o definitions.o graphics.o
+	chars.o ignore.o cfg.o main.o util.o parser.o lengths.o counters.o \
+	preamble.o letterformat.o equation.o convert.o xref.o definitions.o graphics.o \
+	optind.o mygetopt.o
 
 ARCH="`dpkg --print-architecture`"
 
@@ -150,22 +152,27 @@ test: latex2rtf
 	cd test && $(MAKE) 
 
 clean: checkdir
+	rm -f $(OBJS) core
+	rm -f latex2rtf latex2rtf-$(VERSION)
+
+realclean: checkdir
 	rm -f $(OBJS) core latex2rtf.tar.gz \
 	    *~ ./#* stamp-build latex2rtf-$(VERSION).tar.gz __tmp__ \
 	    *.deb
-	rm -rf latex2rtf latex2rtf-$(VERSION)
+	rm -f latex2rtf latex2rtf-$(VERSION)
 	rm -rf debian-tmp
+	rm -f makefile.depend
 	cd doc && $(MAKE) clean
 	cd test && $(MAKE) clean
 
-checkout checkdir: $(SOURCES) $(SUPPORT) $(MANUALS) $(TEST)
+checkout checkdir: $(SRCS) $(SUPPORT) $(SCRIPTS) $(MANUALS) $(TEST)
 
-dist source: $(SOURCES) $(SUPPORT) $(MANUALS) $(DOCS) $(TEST)
+dist source: $(SRCS) $(SUPPORT) $(SCRIPTS) $(MANUALS) $(DOCS) $(TEST)
 	mkdir latex2rtf-$(VERSION)
 	mkdir latex2rtf-$(VERSION)/cfg
 	mkdir latex2rtf-$(VERSION)/doc
 	mkdir latex2rtf-$(VERSION)/test
-	ln $(SOURCES) $(MANUALS) latex2rtf-$(VERSION)
+	ln $(SRCS) $(MANUALS) $(SCRIPTS) latex2rtf-$(VERSION)
 	ln $(SUPPORT) latex2rtf-$(VERSION)/cfg
 	ln $(DOCS) latex2rtf-$(VERSION)/doc
 	ln $(TEST) latex2rtf-$(VERSION)/test
@@ -223,6 +230,9 @@ simple_install: $(MANUALS) latex2rtf
 
 install: complex_install
 
+# build dependency list (need to append to Makefile manually)
+	cc -MM $(SRCS) >makefile.depend
+
 .PHONY: install complex_install simple_install simple_cfg_install \
 	install.man complex_install install_and_delete_old_cfg dist \
 	all clean checkout build checkdir diff checkroot binary source test
@@ -249,42 +259,46 @@ binary: checkroot debian.README install install_and_delete_old_cfg
 	mv debian-tmp.deb latex2rtf-$(VERSION).$(ARCH).deb
 	rm -rf debian-tmp	
 
-# DO NOT DELETE THIS LINE -- make depend depends on it.
-cfg.o: cfg.h convert.h funct1.h main.h util.h
-chars.o: cfg.h chars.h commands.h convert.h encode.h funct1.h ignore.h
-chars.o: l2r_fonts.h main.h parser.h
-commands.o: cfg.h chars.h commands.h convert.h definitions.h equation.h
-commands.o: funct1.h ignore.h l2r_fonts.h lengths.h letterformat.h main.h
-commands.o: parser.h preamble.h tables.h xref.h
-convert.o: cfg.h chars.h commands.h convert.h counters.h direct.h encode.h
-convert.o: equation.h funct1.h ignore.h l2r_fonts.h lengths.h main.h parser.h
-convert.o: preamble.h stack.h tables.h util.h
-counters.o: counters.h main.h util.h
-definitions.o: convert.h definitions.h funct1.h main.h parser.h util.h
-direct.o: cfg.h direct.h l2r_fonts.h main.h
-encode.o: encode.h encode_tables.h funct1.h l2r_fonts.h main.h
-equation.o: cfg.h commands.h convert.h counters.h equation.h funct1.h
-equation.o: ignore.h l2r_fonts.h lengths.h main.h parser.h stack.h
-funct1.o: cfg.h commands.h convert.h counters.h definitions.h encode.h
-funct1.o: funct1.h ignore.h l2r_fonts.h lengths.h main.h parser.h preamble.h
-funct1.o: stack.h util.h
-ignore.o: cfg.h commands.h direct.h funct1.h ignore.h l2r_fonts.h main.h
-ignore.o: parser.h
-l2r_fonts.o: cfg.h commands.h convert.h funct1.h l2r_fonts.h main.h parser.h
-l2r_fonts.o: stack.h
-lengths.o: lengths.h main.h parser.h util.h
-letterformat.o: cfg.h commands.h convert.h funct1.h letterformat.h main.h
-letterformat.o: parser.h
-main.o: cfg.h chars.h commands.h convert.h counters.h direct.h encode.h
-main.o: funct1.h ignore.h l2r_fonts.h lengths.h main.h parser.h preamble.h
-main.o: stack.h version.h xref.h
-mygetopt.o: main.h
-parser.o: cfg.h l2r_fonts.h lengths.h main.h parser.h stack.h util.h
-preamble.o: cfg.h commands.h convert.h counters.h encode.h funct1.h ignore.h
-preamble.o: l2r_fonts.h lengths.h main.h parser.h preamble.h util.h
-stack.o: main.h stack.h
-tables.o: cfg.h commands.h convert.h counters.h funct1.h l2r_fonts.h main.h
-tables.o: parser.h stack.h tables.h util.h
-util.o: main.h parser.h util.h
-xref.o: cfg.h commands.h convert.h funct1.h l2r_fonts.h lengths.h main.h
-xref.o: parser.h preamble.h util.h xref.h
+# created using "make depend"
+commands.o : cfg.h main.h convert.h chars.h l2r_fonts.h preamble.h funct1.h \
+  tables.h equation.h letterformat.h commands.h parser.h xref.h ignore.h \
+  lengths.h definitions.h graphics.h 
+chars.o : main.h commands.h l2r_fonts.h cfg.h ignore.h encode.h parser.h \
+  chars.h funct1.h convert.h 
+direct.o : main.h direct.h l2r_fonts.h cfg.h 
+encode.o : main.h l2r_fonts.h funct1.h encode.h encode_tables.h 
+l2r_fonts.o : main.h convert.h l2r_fonts.h funct1.h commands.h cfg.h \
+  parser.h stack.h 
+funct1.o : main.h convert.h funct1.h commands.h stack.h l2r_fonts.h cfg.h \
+  ignore.h util.h encode.h parser.h counters.h lengths.h definitions.h \
+  preamble.h 
+tables.o : main.h convert.h l2r_fonts.h commands.h funct1.h tables.h \
+  stack.h cfg.h parser.h counters.h util.h 
+ignore.o : main.h direct.h l2r_fonts.h cfg.h ignore.h funct1.h commands.h \
+  parser.h convert.h 
+main.o : main.h convert.h commands.h chars.h l2r_fonts.h stack.h direct.h \
+  ignore.h version.h funct1.h cfg.h encode.h util.h parser.h lengths.h \
+  counters.h preamble.h xref.h 
+stack.o : main.h stack.h 
+cfg.o : main.h convert.h funct1.h cfg.h util.h 
+util.o : main.h util.h parser.h 
+parser.o : main.h commands.h cfg.h stack.h util.h parser.h l2r_fonts.h \
+  lengths.h definitions.h funct1.h 
+lengths.o : main.h util.h lengths.h parser.h 
+counters.o : main.h util.h counters.h 
+letterformat.o : main.h parser.h letterformat.h cfg.h commands.h funct1.h \
+  convert.h 
+preamble.o : main.h convert.h util.h preamble.h l2r_fonts.h cfg.h encode.h \
+  parser.h funct1.h lengths.h ignore.h commands.h counters.h 
+equation.o : main.h convert.h commands.h stack.h l2r_fonts.h cfg.h ignore.h \
+  parser.h equation.h counters.h funct1.h lengths.h util.h graphics.h 
+convert.o : main.h convert.h commands.h chars.h funct1.h l2r_fonts.h \
+  stack.h tables.h equation.h direct.h ignore.h cfg.h encode.h util.h \
+  parser.h lengths.h counters.h preamble.h 
+xref.o : main.h util.h convert.h funct1.h commands.h cfg.h xref.h parser.h \
+  preamble.h lengths.h l2r_fonts.h 
+mygetopt.o : 
+optind.o : 
+definitions.o : main.h convert.h definitions.h parser.h funct1.h util.h \
+  cfg.h counters.h 
+graphics.o : main.h graphics.h parser.h util.h 

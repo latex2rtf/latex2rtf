@@ -6,15 +6,15 @@
 help()
 {
     cat <<HELP
-tex2png -- convert latex file to PNG image
+latex2png -- convert latex file to PNG image
 
-USAGE: tex2png [-d density] [-h] [-k] latex_file
+USAGE: latex2png [-d density] [-h] [-k] latex_file
 
 OPTIONS: -d density in pixels per inch
          -h help text
          -k keep intermediate files
 
-EXAMPLE: tex2png -d 144 eqn
+EXAMPLE: latex2png -d 144 eqn
 
 HELP
     exit 0
@@ -39,7 +39,7 @@ if [ -z "$1" ] ; then
  exit 1
 fi
 
-#process 'tex2png file.tex' and 'tex2png file' equivalently
+#process 'latex2png file.tex' and 'latex2png file' equivalently
 name=`basename "$1" ".tex"`
 dir=`dirname "$1"`
 
