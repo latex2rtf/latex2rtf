@@ -1,4 +1,4 @@
-/*  $Id: parser.c,v 1.42 2002/02/17 22:01:29 prahl Exp $
+/*  $Id: parser.c,v 1.43 2002/02/18 05:43:20 prahl Exp $
 
    Contains declarations for a generic recursive parser for LaTeX code.
 */
@@ -79,7 +79,7 @@ int
 PushSource(char * filename, char * string)
 /***************************************************************************
  purpose:     change the source used by getRawTexChar() to either file or string
- 			  pass NULL for unused argument
+ 			  pass NULL for unused argument (both NULL means use stdin)
 ****************************************************************************/
 {
 	char       s[50];
@@ -109,7 +109,13 @@ PushSource(char * filename, char * string)
 		g_parser_stack[g_parser_depth].string    = g_parser_string;
 	}
 		
-	if (filename) {
+	if (filename==NULL && string == NULL) {
+		g_parser_include_level++;
+		g_parser_line=1;
+		name = strdup("stdin");
+		p = stdin;
+		
+	} else if (filename) {
 		name = strdup(filename);
 		p = fopen(filename, "rb");
 		if (!p) {
@@ -118,6 +124,7 @@ PushSource(char * filename, char * string)
        }
        g_parser_include_level++;
        g_parser_line=1;
+       
     } else {
     	name = CurrentFileName();
     	line = CurrentLineNumber();

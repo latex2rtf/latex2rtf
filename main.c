@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.49 2002/02/17 21:32:21 prahl Exp $ */
+/* $Id: main.c,v 1.50 2002/02/18 05:43:20 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -26,8 +26,8 @@
 #include "xref.h"
 
 FILE           *fRtf = (FILE *) NULL;	/* file pointer to RTF file */
-char           *input = NULL;
-static char    *output = NULL;
+char           *TexName = NULL;
+static char    *RtfName = NULL;
 char           *AuxName = NULL;
 char           *BblName = NULL;
 
@@ -86,7 +86,7 @@ static void     OpenRtfFile(char *filename, FILE ** f);
 static void     CloseRtf(FILE ** f);
 static void     ConvertLatexPreamble(void);
 static void     InitializeLatexLengths(void);
-static void		printhelp(void);
+static void		usage(void);
 
 void           *GetCommandFunc(char *cCommand);
 static void 	ConvertWholeDocument(void);
@@ -95,18 +95,10 @@ extern char *optarg;
 extern int   optind;
 extern int getopt(int ac, char *const av[], const char *optstring);
 
-/****************************************************************************
-purpose: checks parameter and starts convert routine
-params:  command line arguments argc, argv
-globals: initializes in- and outputfile fRtf,
- ****************************************************************************/
-	int
-	                main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 	int             c,x;
-	bool            errflag = FALSE;
-
-	fRtf = stdout;
+	char           *basename = NULL;
 
 	progname = argv[0];
 	optind = 1;
@@ -121,13 +113,10 @@ globals: initializes in- and outputfile fRtf,
 		case 'd':
 			g_verbosity_level = *optarg - '0';
 			if (g_verbosity_level < 0 || g_verbosity_level > 7) {
-				printhelp();
-				diagnostics(ERROR, "debug level must be 0--6");
+				diagnostics(WARNING, "debug level (-d# option) must be 0-7");
+				usage();
 			}
 			break;
-		case 'h':
-			printhelp();
-			return(1);
 		case 'i':
 			setPackageBabel(optarg);
 			break;
@@ -135,7 +124,7 @@ globals: initializes in- and outputfile fRtf,
 			setPackageBabel("latin1");
 			break;
 		case 'o':
-			output = optarg;
+			RtfName = optarg;
 			break;
 		case 'v':
 			fprintf(stderr, "%s: %s\n", progname, Version);
@@ -171,88 +160,63 @@ globals: initializes in- and outputfile fRtf,
 			g_safety_braces = FALSE;
 			g_safety_braces = *optarg - '0';
 			if (g_safety_braces < 0 || g_safety_braces > 9) {
-				printhelp();
-				diagnostics(ERROR, "Added number of braces must be 0--9");
+				diagnostics(WARNING, "Number of safety braces (-Z#) must be 0-9");
+				usage();
 			}
 			break;
+			
+		case 'h':
+		case '?':
 		default:
-			errflag = TRUE;
+			usage();
 		}
 	}
 
-	if (argc > optind + 1 || errflag) {
-		printhelp();
-		return (1);
+ 	argc -= optind;
+    argv += optind;
+	
+	if (argc > 1) {
+		diagnostics(WARNING, "Only a single file can be processed at a time");
+		usage();
 	}
 	
-	if (argc == optind + 1) {
-		char           *s, *newrtf;
+	if (argc == 1) {
+		char           *s, *t;
 
-		/* if filename does not end in .tex then append .tex */
-		if ((s = strrchr(argv[optind], PATHSEP)) == NULL)
-			s = argv[optind];
+		s = strrchr(*argv, PATHSEP);
+		if (s == NULL) s = *argv;
 
-		if ((s = strrchr(s, '.')) == NULL) {
-			if ((input = malloc(strlen(argv[optind]) + 4)) == NULL)
-				diagnostics(ERROR, " malloc error -> out of memory!\n");
-			strcpy(input, argv[optind]);
-			strcat(input, ".tex");
-		} else if (strcmp(s, ".tex"))
-			diagnostics(ERROR, "latex files must end with .tex");
+		t = strstr(s, ".tex");			/* remove .tex if present */
+		if (t != NULL) 
+			*t = '\0';
+			
+		basename = strdup(s);			
+		s = strchr(basename, '.');		/* check for dot in name */
+		
+		if (t == NULL && s != NULL)
+			TexName = strdup(basename);
 		else
-			input = argv[optind];
+			TexName = strdup_together(basename, ".tex");
+			
+		RtfName = strdup_together(basename, ".rtf");
+	} 
+	
+	if (AuxName == NULL && basename != NULL) 
+		AuxName = strdup_together(basename, ".aux");
 
-		diagnostics(3, "latex filename is %s\n", input);
+	if (BblName == NULL && basename != NULL)
+		BblName = strdup_together(basename, ".bbl");
 
-		/* create the .rtf filename */
-		if ((newrtf = malloc(strlen(input) + 5)) == NULL)
-			diagnostics(ERROR, " malloc error -> out of memory!\n");
-		strcpy(newrtf, input);
-		if ((s = strrchr(newrtf, '.')) == NULL || strcmp(s, ".tex") != 0)
-			strcat(newrtf, ".rtf");
-		else
-			strcpy(s, ".rtf");
-		output = newrtf;
-		diagnostics(3, "rtf filename is %s\n", output);
+	if (basename) {
+		diagnostics(3, "latex filename is <%s>", TexName);
+		diagnostics(3, "  rtf filename is <%s>", RtfName);
+		diagnostics(3, "  aux filename is <%s>", AuxName);
+		diagnostics(3, "  bbl filename is <%s>", BblName);
 	}
 	
-	if (AuxName == NULL) {
-		char           *s;
-		if (input != NULL) {
-			if ((AuxName = malloc(strlen(input) + 5)) == NULL)
-				diagnostics(ERROR, " malloc error -> out of memory!\n");
-			strcpy(AuxName, input);
-			if ((s = strrchr(AuxName, '.')) == NULL || strcmp(s, ".tex") != 0)
-				strcat(AuxName, ".aux");
-			else
-				strcpy(s, ".aux");
-		} else {
-			if ((AuxName = malloc(1)) == NULL)
-				diagnostics(ERROR, " malloc error -> out of memory!\n");
-			*AuxName = '\0';
-		}
-	}
-
-	if (BblName == NULL) {
-		char           *s;
-		if (input != NULL) {
-			if ((BblName = malloc(strlen(input) + 5)) == NULL)
-				diagnostics(ERROR, " malloc error -> out of memory!\n");
-			strcpy(BblName, input);
-			if ((s = strrchr(BblName, '.')) == NULL || strcmp(s, ".tex") != 0)
-				strcat(BblName, ".bbl");
-			else
-				strcpy(s, ".bbl");
-		} else {
-			if ((BblName = malloc(1)) == NULL)
-				diagnostics(ERROR, " malloc error -> out of memory!\n");
-			BblName = '\0';
-		}
-	}
-
 	ReadCfg();
-	if (PushSource(input, NULL)) {
-		OpenRtfFile(output, &fRtf);
+	if (PushSource(TexName, NULL)) {
+		OpenRtfFile(RtfName, &fRtf);
 		
 		InitializeStack();
 		InitializeLatexLengths();
@@ -309,7 +273,7 @@ char * body, *sec_head, *sec_head2, *label;
 }
 
 static void
-printhelp(void)
+usage(void)
 {
     	fprintf(stderr, "Usage:\n\t %s [options] input[.tex]\n", progname);
 		fprintf(stderr, "Options:\n");
@@ -322,6 +286,7 @@ printhelp(void)
 		fprintf(stderr, "\t -o outputfile    : RTF output other than input.rtf\n");
 		fprintf(stderr, "\t -v               : version information\n");
 		fprintf(stderr, "\t -C codepage      : input encoding (latin1, cp850, etc.)\n");
+		fprintf(stderr, "\t -M#              : math equation handling\n");
 		fprintf(stderr, "\t -P /path/to/cfg  : directory containing .cfg files\n");
 		fprintf(stderr, "\t -V               : version information\n");
 		fprintf(stderr, "\t -S               : use ';' to separate args in RTF fields\n");
@@ -330,6 +295,7 @@ printhelp(void)
 		fprintf(stderr, "\t -Z#              : add # of '}'s at end of rtf file (# is 0-9)\n\n");
 		fprintf(stderr, "RTFPATH designates the directory for configuration files (*.cfg)\n");
 		fprintf(stderr, "\t RTFPATH = '%s'\n\n", getenv("RTFPATH"));
+		exit(1);
 }
 
 void
@@ -479,18 +445,16 @@ params: filename - name of outputfile, possibly NULL for already open file
 	f - pointer to filepointer to store file ID
  ****************************************************************************/
 {
-	diagnostics(4, "Opening RTF file %s", filename);
-	if (filename != NULL) {
-		/*
-		 * I have replaced "wb" with "w" in the following fopen, for
-		 * correct operation under MS DOS (with the -o option). I
-		 * believe this should make no difference under UNIX.
-		 * --V.Menkov
-		 */
+	if (filename == NULL) {
+		diagnostics(4, "Writing RTF to stdout");
+		*f = stdout;
 
-		if ((*f = fopen(filename, "w")) == NULL) 	/* open file */
+	} else {
+		diagnostics(4, "Opening RTF file %s", filename);
+		*f = fopen(filename, "wb");
+
+		if (*f == NULL) 
 			diagnostics(ERROR,  "Error opening RTF file %s\n", filename);
-		
 	}
 }
 
@@ -499,7 +463,7 @@ CloseRtf(FILE ** f)
 /****************************************************************************
 purpose: closes output file.
 params: f - pointer to filepointer to invalidate
-globals: progname;
+globals: TexName;
  ****************************************************************************/
 {
 	int i;
@@ -508,7 +472,7 @@ globals: progname;
 		diagnostics(WARNING,"Mismatched '{' in RTF file, Conversion may cause problems.");
 
 	if (BraceLevel-1>g_safety_braces) 
-		diagnostics(WARNING,"Try translating with 'latex2rtf -Z%d %s'", BraceLevel-1,input);
+		diagnostics(WARNING,"Try translating with 'latex2rtf -Z%d %s'", BraceLevel-1, TexName);
 	
 	fprintf(*f, "}\n");
 	for (i=0; i<g_safety_braces; i++)
