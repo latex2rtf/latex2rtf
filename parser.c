@@ -1,4 +1,4 @@
-/*  $Id: parser.c,v 1.16 2001/10/11 04:27:12 prahl Exp $
+/*  $Id: parser.c,v 1.17 2001/10/11 05:42:10 prahl Exp $
 
    Contains declarations for a generic recursive parser for LaTeX code.
 */
@@ -376,10 +376,17 @@ getParam(void)
 	int             closeBracesNeeded, size;
 
 	size = 0;
-
-	if ((cThis = getTexChar()) != '{') {
+	cThis = getNonSpace();
+	
+	if (cThis == '\\') {
+		ungetTexChar(cThis);
+		return getSimpleCommand();
+	}
+		
+	if (cThis != '{') {
 		buffer[0] = cThis;
 		size++;
+		
 	} else {
 		
 		closeBracesNeeded = 1;

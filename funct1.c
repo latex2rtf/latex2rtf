@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.27 2001/10/11 04:27:12 prahl Exp $ 
+/* $Id: funct1.c,v 1.28 2001/10/11 05:42:10 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -1135,29 +1135,40 @@ CmdLabel(int code)
   parameter : code  kind of label, passed through  *** BROKEN by SAP ***
  ******************************************************************************/
 {
-	char           *text;
+	char           *label;
 	char            cThis;
 
-	text=getParam();
-	free(text);
+	label=getParam();
+	
+	switch (code) {
+	
+		case REF:	
+			ScanAux("newlabel", label, 1);
+			break;
+		
+		default:
+			break;
+	}
+	
+	free(label);
 	return;
 	
 	if (code < HYPER) {
-		text = getParam();
-		ungetTexChar(text[strlen(text) - 1]);	/* somewhat screwy */
+		label = getParam();
+		ungetTexChar(label[strlen(label) - 1]);	/* somewhat screwy */
 	} else {
-		text = hyperref;
+		label = hyperref;
 	}
 
-	diagnostics(4, "Generating label/bookmark `%s'", text);
+	diagnostics(3, "Generating label/bookmark `%s'", label);
 
 	if (rtf_restrict(1, 1))
-		CmdLabelOld(code, text);
+		CmdLabelOld(code, label);
 	if (rtf_restrict(1, 4))
-		CmdLabel1_4(code, text);
+		CmdLabel1_4(code, label);
 
 	if (code >= HYPER)
-		free(text);
+		free(label);
 
 	cThis = getTexChar();
 

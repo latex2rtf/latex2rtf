@@ -1,4 +1,4 @@
-/* $Id: chars.c,v 1.8 2001/10/07 17:48:39 prahl Exp $
+/* $Id: chars.c,v 1.9 2001/10/11 05:42:10 prahl Exp $
 
    purpose : handles special characters and logos
 */
@@ -226,8 +226,9 @@ CmdMacronChar(int code)
 
 	default:
 		upsize = (0.05 * CurrentFontSize()) + 0.45;
-		fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O");
-		fprintRTF("(%c%c\\\\S\\\\up%d(\\'af))}", cParam[0], FORMULASEP, upsize);
+		fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(");
+		ConvertString(cParam);
+		fprintRTF("%c\\\\S\\\\up%d(\\'af))}", FORMULASEP, upsize);
 		fprintRTF("{\\fldrslt }}");
 	}
 
@@ -279,8 +280,9 @@ CmdHatChar(int code)
 
 	default:
 		num = RtfFontNumber("MT Extra");
-		fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O");
-		fprintRTF("(%c%c\\\\S(\\f%d\\'24))}", cParam[0], FORMULASEP, num);
+		fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(");
+		ConvertString(cParam);
+		fprintRTF("%c\\\\S(\\f%d\\'24))}", FORMULASEP, num);
 		fprintRTF("{\\fldrslt }}");
 		break;
 	}
@@ -360,8 +362,9 @@ CmdTildeChar( int code)
 		break;
 	default:
 		num = RtfFontNumber("MT Extra");
-		fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O");
-		fprintRTF("(%c%c\\\\S(\\f%d\\'25))}", cParam[0], FORMULASEP, num);
+		fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(");
+		ConvertString(cParam);
+		fprintRTF("%c\\\\S(\\f%d\\'25))}", FORMULASEP, num);
 		fprintRTF("{\\fldrslt }}");
 		break;
 	}
@@ -438,8 +441,9 @@ CmdVecChar(int code)
 
 	num = RtfFontNumber("MT Extra");
 
-	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O");
-	fprintRTF("(%c%c\\\\S(\\up%d\\f%d\\'72))}", cParam[0], FORMULASEP, upsize, num);
+	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(");
+	ConvertString(cParam);
+	fprintRTF("%c\\\\S(\\up%d\\f%d\\'72))}", FORMULASEP, upsize, num);
 	fprintRTF("{\\fldrslt }}");
 	free(cParam);
 }
@@ -531,8 +535,9 @@ CmdDotChar(int code)
 
 	num = RtfFontNumber("MT Extra");
 
-	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O");
-	fprintRTF("(%c%c\\\\S(\\f%d\\'26))}", cParam[0], FORMULASEP, num);
+	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(");
+	ConvertString(cParam);
+	fprintRTF("%c\\\\S(\\f%d\\'26))}", FORMULASEP, num);
 	fprintRTF("{\\fldrslt }}");
 
 	free(cParam);
