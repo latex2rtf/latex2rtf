@@ -1,4 +1,4 @@
-/*  $Id: parser.c,v 1.35 2001/11/14 15:57:41 prahl Exp $
+/*  $Id: parser.c,v 1.36 2001/11/16 05:16:27 prahl Exp $
 
    Contains declarations for a generic recursive parser for LaTeX code.
 */
@@ -816,19 +816,20 @@ getSection(char **body, char **header, char **label)
 	char cNext, *s,*text,*next_header;
 	int i;
 	long delta;
-	int  match[16];
-	char * command[16] = {"\\begin{verbatim}", "\\begin{figure}", "\\begin{equation}", 
-						  "\\begin{eqnarray}", "\\begin{table}",
-	                     "\\section", "\\subsection", "\\subsubsection", 
+	int  match[17];
+	char * command[17] = {"\\begin{verbatim}", "\\begin{figure}", "\\begin{equation}", 
+						  "\\begin{eqnarray}", "\\begin{table}", "\\begin{description}",
+	                     "\\part", "\\chapter", "\\section", "\\subsection", "\\subsubsection", 
 	                     "\\section*", "\\subsection*", "\\subsubsection*", 
-	                     "\\chapter", "\\part", "\\verb", "\\url", "\\label"};
+	                     "\\verb", "\\url", "\\label"};
 
 	char * ecommand[6] = {"\\end{verbatim}", "\\end{figure}", "\\end{equation}", 
-						  "\\end{eqnarray}", "\\end{table}"};
-	int ncommands = 16;
-	const int verb = 13;
-	const int url = 14;
-	const int label_item = 15;
+						  "\\end{eqnarray}", "\\end{table}", "\\end{description}"};
+	int ncommands = 17;
+	int ecommands = 6;
+	const int verb = 14;
+	const int url = 15;
+	const int label_item = 16;
 	int bs_count = 0;
 	int index = 0;
 	
@@ -904,7 +905,7 @@ getSection(char **body, char **header, char **label)
 			ungetTexChar(cNext);
 
 			if (!(  (cNext == ' ') || (cNext == '{') || 
-			        (i == verb)    || (i == url) || (i<5)
+			        (i == verb)    || (i == url) || (i<ecommands)
 /*			         || (i==verbatim && !isalpha(cNext)) */
 			        )) {
 				found = FALSE;
@@ -937,16 +938,24 @@ getSection(char **body, char **header, char **label)
 		if (i==label_item) {
 			s = getBraceParam();
 			diagnostics(4,"\\label{%s}",s);
+
+			/* append \label{tag} to the buffer */
+			delta++;
+			*(section_buffer+delta) = '{';
+			while (delta+strlen(s)+1 >= section_buffer_size) increase_buffer_size();
+			strcpy(section_buffer+delta+1,s);
+			delta += strlen(s)+1;
+			*(section_buffer+delta) = '}';
+
 			if (!(*label) && strlen(s)) 
-				*label = s;
-			else
-				free(s);
-			delta -= 6;
+				*label = strdup_nobadchars(s);
+				
+			free(s);
 			index = 0;				/* keep looking */
 			continue;
 		}
 		
-		if (i<5) {			/* slurp environment to avoid \labels within */
+		if (i<ecommands) {			/* slurp environment to avoid \labels within */
 			delta++;
 			s=getTexUntil(ecommand[i],TRUE);
 

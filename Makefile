@@ -119,8 +119,8 @@ TEST=   test/Makefile \
 	test/enc_applemac.tex test/enc_cp437.tex test/enc_cp865.tex test/enc_latin2.tex \
 	test/enc_latin5.tex test/enc_cp1250.tex test/enc_cp850.tex test/enc_decmulti.tex  \
 	test/enc_latin3.tex test/enc_latin9.tex test/enc_cp1252.tex test/enc_cp852.tex \
-	test/enc_latin1.tex test/enc_latin4.tex test/enc_next.tex test/Linux.tex \
-	test/defs.tex
+	test/enc_latin1.tex test/enc_latin4.tex test/enc_next.tex test/ttgfsr7.tex \
+	test/defs.tex test/proffois.tex test/excalibur.tex test/qualisex.tex
 
 OBJS=l2r_fonts.o direct.o encode.o commands.o stack.o funct1.o tables.o \
 	chars.o ignore.o cfg.o main.o util.o parser.o mygetopt.o lengths.o counters.o \

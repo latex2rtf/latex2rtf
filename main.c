@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.42 2001/11/14 15:57:41 prahl Exp $ */
+/* $Id: main.c,v 1.43 2001/11/16 05:16:27 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -18,6 +18,7 @@
 #include "funct1.h"
 #include "cfg.h"
 #include "encode.h"
+#include "util.h"
 #include "parser.h"
 #include "lengths.h"
 #include "counters.h"
@@ -244,7 +245,7 @@ globals: initializes in- and outputfile fRtf,
 static void
 ConvertWholeDocument(void)
 {
-char * text, *sec_head, *sec_head2, *label;
+char * body, *sec_head, *sec_head2, *label;
 
 		PushEnvironment(PREAMBLE);
 		SetTexMode(MODE_VERTICAL);
@@ -252,25 +253,30 @@ char * text, *sec_head, *sec_head2, *label;
 		WriteRtfHeader();
 		
 		g_processing_preamble = FALSE;
-		getSection(&text,&sec_head,&label);
-		diagnostics(2,"*******************\ntext=%s",text);
+		getSection(&body,&sec_head,&label);
+		
+		diagnostics(2,"*******************\nbody=%s",body);
 		diagnostics(2,"*******************\nsec_head=%s",sec_head);
-		diagnostics(2,"*******************\nlabel=%s",label);
-		ConvertString(text);
-		free(text);
+		diagnostics(2,"*******************\nlabel=%s",g_section_label);
+		ConvertString(body);
+		free(body);
 		if (label) free(label);
+		
 		while(sec_head) {
-			getSection(&text,&sec_head2,&label);
+			getSection(&body,&sec_head2,&g_section_label);
+			label = ExtractLabelTag(sec_head);
+			if (label) {
+				if (g_section_label) free(g_section_label);
+				g_section_label = label;
+			} 
 		diagnostics(2,"\n========this section head==========\n%s",sec_head);
-		diagnostics(2,"*******************\nlabel=%s",label);
-		diagnostics(2,"\n==============body=================\n%s\n=========end  body=================",text);
+		diagnostics(2,"\n============ label ================\nlabel=%s",g_section_label);
+		diagnostics(2,"\n==============body=================\n%s\n=========end  body=================",body);
 		diagnostics(2,"\n========next section head==========\n%s",sec_head2);
-/*			g_section_label = getSectionLabel(text); */
 			ConvertString(sec_head);
-			ConvertString(text);
-			free(text);
+			ConvertString(body);
+			free(body);
 			free(sec_head);
-			if (label) free(label);
 			sec_head = sec_head2;
 		}
 }

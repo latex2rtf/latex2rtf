@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.47 2001/11/14 03:52:31 prahl Exp $ 
+/* $Id: funct1.c,v 1.48 2001/11/16 05:16:27 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -500,8 +500,6 @@ parameter: code: type of section-recursion-level
 	CmdIndent(INDENT_NONE);
 	CmdStartParagraph(0);
 	
-	if (g_section_label) free(g_section_label);
-
 	switch (code) {
 	case SECT_PART:
 	case SECT_PART_STAR:
@@ -513,7 +511,6 @@ parameter: code: type of section-recursion-level
 			sprintf(section_label, "%d", getCounter("part"));
 			fprintRTF("%s\\par ", section_label);
 		}
-		g_section_label = strdup(section_label);
 		ConvertString(heading);
 		CmdEndParagraph(0);
 		fprintRTF("}\n\\page");
@@ -523,7 +520,7 @@ parameter: code: type of section-recursion-level
 	case SECT_CHAPTER_STAR:
 		fprintRTF("\\page{\\plain\\b\\fs32\\kerning28 ");
 		ConvertBabelName("CHAPTERNAME");
-		if (code == SECT_CHAPTER && getCounter("secnumdepth")>=0) {
+		if (code == SECT_CHAPTER && getCounter("secnumdepth")>=-1) {
 			incrementCounter("chapter");
 			setCounter("section",0);
 			setCounter("subsection",0);
@@ -531,10 +528,14 @@ parameter: code: type of section-recursion-level
 			setCounter("paragraph",0);
 			setCounter("subparagraph",0);
 			sprintf(section_label, "%d", getCounter("chapter"));
-			fprintRTF(" %s", section_label);
+			fprintRTF(" ");
+			if (g_section_label) fprintRTF("{\\v{\\*\\bkmkstart LBL_%s}",g_section_label);
+			fprintRTF("%s", section_label);
+			if (g_section_label) fprintRTF("{\\*\\bkmkend LBL_%s}}",g_section_label);
+			if (g_section_label) fprintRTF("{\\v{\\*\\bkmkstart PR_%s}",g_section_label);
+			if (g_section_label) fprintRTF("{\\*\\bkmkend PR_%s}}",g_section_label);
 		}
 		fprintRTF("\\par}{\\fi0\\plain\\b\\fs40\\kerning28 ");
-		g_section_label = strdup(section_label);
 		ConvertString(heading);
 		CmdEndParagraph(0);
 		fprintRTF("}");
@@ -544,7 +545,7 @@ parameter: code: type of section-recursion-level
 	case SECT_NORM_STAR:
 		CmdVspace(3);
 		fprintRTF("{\\plain\\b ");
-		if(code == SECT_NORM && getCounter("secnumdepth")>=1) {		
+		if(code == SECT_NORM && getCounter("secnumdepth")>=0) {		
 			incrementCounter("section");
 			setCounter("subsection",0);
 			setCounter("subsubsection",0);
@@ -557,9 +558,13 @@ parameter: code: type of section-recursion-level
 				fprintRTF("\\fs24 ");
 				sprintf(section_label, "%d.%d", getCounter("chapter"),getCounter("section"));
 			}
-			fprintRTF("%s  ", section_label);
+			if (g_section_label) fprintRTF("{\\v{\\*\\bkmkstart LBL_%s}",g_section_label);
+			fprintRTF("%s", section_label);
+			if (g_section_label) fprintRTF("{\\*\\bkmkend LBL_%s}}",g_section_label);
+			if (g_section_label) fprintRTF("{\\v{\\*\\bkmkstart PR_%s}",g_section_label);
+			if (g_section_label) fprintRTF("{\\*\\bkmkend PR_%s}}",g_section_label);
+			fprintRTF("  ");
 		}
-		g_section_label = strdup(section_label);
 		ConvertString(heading);
 		CmdEndParagraph(0);
 		fprintRTF("}");
@@ -570,7 +575,7 @@ parameter: code: type of section-recursion-level
 	case SECT_SUB_STAR:
 		CmdVspace(2);
 		fprintRTF("{\\plain\\b\\fs24 ");
-		if (code == SECT_SUB && getCounter("secnumdepth")>=2) {
+		if (code == SECT_SUB && getCounter("secnumdepth")>=1) {
 			incrementCounter("subsection");
 			setCounter("subsubsection",0);
 			setCounter("paragraph",0);
@@ -581,9 +586,13 @@ parameter: code: type of section-recursion-level
 			else
 				sprintf(section_label, "%d.%d.%d", getCounter("chapter"),
 				        getCounter("section"), getCounter("subsection"));
-			fprintRTF("%s  ", section_label);
+			if (g_section_label) fprintRTF("{\\v{\\*\\bkmkstart LBL_%s}",g_section_label);
+			fprintRTF("%s", section_label);
+			if (g_section_label) fprintRTF("{\\*\\bkmkend LBL_%s}}",g_section_label);
+			if (g_section_label) fprintRTF("{\\v{\\*\\bkmkstart PR_%s}",g_section_label);
+			if (g_section_label) fprintRTF("{\\*\\bkmkend PR_%s}}",g_section_label);
+			fprintRTF("  ");
 		}
-		g_section_label = strdup(section_label);
 		ConvertString(heading);
 		CmdEndParagraph(0);
 		fprintRTF("}");
@@ -594,7 +603,7 @@ parameter: code: type of section-recursion-level
 	case SECT_SUBSUB_STAR:
 		CmdVspace(2);
 		fprintRTF("{\\plain\\b\\fs24 ");
-		if (SECT_SUBSUB && getCounter("secnumdepth")>=3) {
+		if (code == SECT_SUBSUB && getCounter("secnumdepth")>=2) {
 			incrementCounter("subsubsection");
 			setCounter("paragraph",0);
 			setCounter("subparagraph",0);
@@ -604,9 +613,14 @@ parameter: code: type of section-recursion-level
 			else
 				sprintf(section_label, "%d.%d.%d.%d", getCounter("chapter"), 
 				        getCounter("section"), getCounter("subsection"), getCounter("subsubsection"));
-			fprintRTF("%s  ", section_label);
+
+			if (g_section_label) fprintRTF("{{\\*\\bkmkstart LBL_%s}",g_section_label);
+			fprintRTF("%s", section_label);
+			if (g_section_label) fprintRTF("{\\*\\bkmkend LBL_%s}}",g_section_label);
+			if (g_section_label) fprintRTF("{{\\*\\bkmkstart PR_%s}",g_section_label);
+			if (g_section_label) fprintRTF("{\\*\\bkmkend PR_%s}}",g_section_label);
+			fprintRTF("  ");
 		}
-		g_section_label = strdup(section_label);
 		ConvertString(heading);
 		CmdEndParagraph(0);
 		fprintRTF("}");
@@ -617,7 +631,7 @@ parameter: code: type of section-recursion-level
 	case SECT_SUBSUBSUB_STAR:
 		CmdVspace(2);
 		fprintRTF("{\\plain\\b ");
-		if (SECT_SUBSUBSUB && getCounter("secnumdepth")>=4) {
+		if (code == SECT_SUBSUBSUB && getCounter("secnumdepth")>=3) {
 			incrementCounter("paragraph");
 			setCounter("subparagraph",0);
 			if (g_document_type == FORMAT_ARTICLE)
@@ -628,9 +642,13 @@ parameter: code: type of section-recursion-level
 				sprintf(section_label, "%d.%d.%d.%d.%d", getCounter("chapter"), 
 				        getCounter("section"), getCounter("subsection"), 
 				        getCounter("subsubsection"),getCounter("paragraph"));
-			fprintRTF("%s  ", section_label);
+			if (g_section_label) fprintRTF("{{\\*\\bkmkstart LBL_%s}",g_section_label);
+			fprintRTF("%s", section_label);
+			if (g_section_label) fprintRTF("{\\*\\bkmkend LBL_%s}}",g_section_label);
+			if (g_section_label) fprintRTF("{{\\*\\bkmkstart PR_%s}",g_section_label);
+			if (g_section_label) fprintRTF("{\\*\\bkmkend PR_%s}}",g_section_label);
+			fprintRTF("  ");
 		}
-		g_section_label = strdup(section_label);
 		ConvertString(heading);
 		fprintRTF("}  ");
 		break;
@@ -639,7 +657,7 @@ parameter: code: type of section-recursion-level
 	case SECT_SUBSUBSUBSUB_STAR:
 		CmdVspace(2);
 		fprintRTF("{\\plain\\b ");
-		if (SECT_SUBSUBSUBSUB && getCounter("secnumdepth")>=5) {
+		if (code == SECT_SUBSUBSUBSUB && getCounter("secnumdepth")>=4) {
 			incrementCounter("subparagraph");
 			if (g_document_type == FORMAT_ARTICLE)
 				sprintf(section_label, "%d.%d.%d.%d.%d", getCounter("section"), 
@@ -650,15 +668,23 @@ parameter: code: type of section-recursion-level
 				        getCounter("section"),        getCounter("subsection"), 
 				        getCounter("subsubsection"),  getCounter("paragraph"),
 				        getCounter("subparagraph"));
-			fprintRTF("%s  ", section_label);
+			if (g_section_label) fprintRTF("{{\\*\\bkmkstart LBL_%s}",g_section_label);
+			fprintRTF("%s", section_label);
+			if (g_section_label) fprintRTF("{\\*\\bkmkend LBL_%s}}",g_section_label);
+			if (g_section_label) fprintRTF("{{\\*\\bkmkstart PR_%s}",g_section_label);
+			if (g_section_label) fprintRTF("{\\*\\bkmkend PR_%s}}",g_section_label);
+			fprintRTF("  ");
 		}
 		break;
-		g_section_label = strdup(section_label);
 		ConvertString(heading);
 		fprintRTF("}  ");
 	}
 
 	if (heading) free(heading);
+	if (g_section_label) {
+		free(g_section_label); 
+		g_section_label = NULL;
+	}
 	CmdIndent(INDENT_NONE);
 }
 

@@ -1,4 +1,4 @@
-/* $Id: xref.c,v 1.10 2001/11/14 05:00:23 prahl Exp $ 
+/* $Id: xref.c,v 1.11 2001/11/16 05:16:27 prahl Exp $ 
  
 This file contains routines to handle cross references :
 	\label{key}, \ref{key},   \pageref{key}, \bibitem{key},
@@ -226,9 +226,8 @@ purpose: handles \label \ref \pageref \cite
 				diagnostics(3,"equation label is <%s>",signet);
 				break;
 			}
-			fprintRTF("{\\v{\\*\\bkmkstart LBL_%s}",signet);
-			fprintRTF("%s", (g_section_label) ? g_section_label : "?");
-			fprintRTF("{\\*\\bkmkend LBL_%s}}",signet);
+			fprintRTF("{\\v{\\*\\bkmkstart PR_%s}",signet);
+			fprintRTF("{\\*\\bkmkend PR_%s}}",signet);
 			free(signet);
 			break;
 		
@@ -270,7 +269,7 @@ purpose: handles \label \ref \pageref \cite
 		case LABEL_HYPERPAGEREF:
 		case LABEL_PAGEREF:
 			signet = strdup_nobadchars(text);
-			fprintRTF("{\\field{\\*\\fldinst{\\lang1024 PAGEREF LBL_%s}}",signet);
+			fprintRTF("{\\field{\\*\\fldinst{\\lang1024 PAGEREF PR_%s}}",signet);
 			fprintRTF("{\\fldrslt{}}}",signet);
 			free(signet);
 			break;
