@@ -1,4 +1,4 @@
-/* $Id: convert.c,v 1.14 2001/10/17 02:48:31 prahl Exp $ 
+/* $Id: convert.c,v 1.15 2001/10/17 04:43:47 prahl Exp $ 
 	purpose: ConvertString(), Convert(), TranslateCommand() 
 	
 TeX has six modes according to the TeX Book:
@@ -222,6 +222,11 @@ globals: fTex, fRtf and all global flags for convert (see above)
 			break;
 
 		case '&':
+			if (g_processing_arrays) {
+				fprintRTF("%c",FORMULASEP);
+				break;
+			}
+
 			if (GetTexMode() == MODE_MATH || GetTexMode() == MODE_DISPLAYMATH) {	/* in eqnarray */
 				fprintRTF("\\tab ");
 				actCol++;
@@ -413,7 +418,6 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 	char            cCommand[MAXCOMMANDLEN];
 	int             i,mode;
 	int            cThis;
-	char            *vertical_space;
 
 	diagnostics(5, "Beginning TranslateCommand()");
 
@@ -451,57 +455,9 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 		return TRUE;
 		
 	case '\\':		/* \\[1mm] or \\*[1mm] possible */
-
-		cThis = getTexChar();
-		if (cThis != '*')
-			ungetTexChar(cThis);
-
-		vertical_space = getBracketParam();	
-		if (vertical_space) 				/* ignore for now */
-			free(vertical_space);
-		
-		if (g_processing_eqnarray) {	/* eqnarray */
-
-			if (g_show_equation_number && !g_suppress_equation_number) {
-				for (; actCol < 3; actCol++)
-					fprintRTF("\\tab ");
-				incrementCounter("equation");
-				
-				fprintRTF("\\tab {\\i0 (%d)}", getCounter("equation"));
-			}
-			fprintRTF("\\par\n\\tab ");
-			g_suppress_equation_number = FALSE;
-			actCol = 1;
-			return TRUE;
-		}
-		
-		if (g_processing_tabular) {	/* tabular or array environment */
-			if (GetTexMode() == MODE_MATH || GetTexMode() == MODE_DISPLAYMATH) {	/* array */
-				fprintRTF("\\par\n\\tab ");
-				return TRUE;
-			}
-			for (; actCol < colCount; actCol++) {
-				fprintRTF("\\cell\\pard\\intbl");
-			}
-			actCol = 1;
-			fprintRTF("\\cell\\pard\\intbl\\row\n\\pard\\intbl\\q%c ", colFmt[1]);
-			return TRUE;
-		}
-
-		if (tabbing_on){
-			PopBrace();
-			PushBrace();
-		}
-
-		/* simple end of line ... */
-		CmdEndParagraph(0);
-		CmdIndent(INDENT_INHIBIT);
-		
-		tabcounter = 0;
-		if (tabbing_on)
-			pos_begin_kill= ftell(fRtf);
+		CmdSlashSlash(0);
 		return TRUE;
-
+		
 	case ' ':
 		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
 		fprintRTF(" ");	/* ordinary interword space */

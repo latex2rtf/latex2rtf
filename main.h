@@ -1,4 +1,4 @@
-/* $Id: main.h,v 1.24 2001/10/17 02:48:31 prahl Exp $ */
+/* $Id: main.h,v 1.25 2001/10/17 04:43:47 prahl Exp $ */
 
 #undef HAS_NO_GETOPT
 
@@ -105,6 +105,9 @@ extern bool     g_processing_equation;
 extern bool     g_processing_preamble;
 extern bool     g_processing_figure;
 extern bool     g_processing_eqnarray;
+extern int		g_processing_arrays;
+extern int 		g_processing_fields;
+
 extern int      g_equation_number;
 extern bool     g_show_equation_number;
 extern int      g_enumerate_depth;

@@ -54,6 +54,37 @@ CmdSubscript(int code)
 }
 
 void
+CmdArray(int code)
+{
+char * v_align, * col_align, *s;
+int n=0;
+
+	if (code & ON) {
+		v_align = getBracketParam();
+		col_align = getBraceParam();
+		diagnostics(4, "CmdArray() ... \\begin{array}[%s]{%s}", v_align?v_align:"", col_align);
+		if (v_align) free(v_align);
+		
+		s = col_align;
+		while (*s) {
+			if (*s == 'c' || *s == 'l' || *s == 'r' ) n++;
+			s++;
+		}
+		free(col_align);
+		
+		fprintRTF("{\\field{\\*\\fldinst{EQ \\\\a \\\\ac \\\\co%d (", n);
+		g_processing_fields++;
+		g_processing_arrays++;
+		
+	} else {
+		fprintRTF(")}}{\\fldrslt{0}}}");
+		diagnostics(4, "CmdArray() ... \\end{array}");
+		g_processing_fields--;
+		g_processing_arrays--;
+	}
+}
+
+void
 CmdNonumber(int code)
 /******************************************************************************
  purpose   : Handles \nonumber to suppress numbering in equations
@@ -239,12 +270,14 @@ CmdRoot(int code)
 
 	power = getBracketParam();
 	root = getBraceParam();
+	g_processing_fields++;
 	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\R(");
 	if (power && strlen(power)>0)
 		ConvertString(power);
 	fprintRTF("%c", FORMULASEP);
 	ConvertString(root);
 	fprintRTF(")}{\\fldrslt }}");
+	g_processing_fields--;
 	
 	if (power) free(power);
 	free(root);
@@ -265,11 +298,13 @@ CmdFraction(int code)
 	diagnostics(4,"CmdFraction -- numerator   = <%s>", numerator);
 	diagnostics(4,"CmdFraction -- denominator = <%s>", denominator);
 
+	g_processing_fields++;
 	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\F(");
 	ConvertString(numerator);
 	fprintRTF("%c", FORMULASEP);
 	ConvertString(denominator);
 	fprintRTF(")}{\\fldrslt }}");
+	g_processing_fields--;
 
 	free(numerator);
 	free(denominator);
@@ -306,6 +341,7 @@ parameter: type of operand
 			ungetTexChar(cThis);
 	}
 
+	g_processing_fields++;
 	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\I");
 	  switch(code)
 	  {
@@ -321,6 +357,7 @@ parameter: type of operand
 	if (upper_limit)
 		ConvertString(upper_limit);
 	fprintRTF("%c)}{\\fldrslt }}", FORMULASEP);
+	g_processing_fields--;
 
 	if (lower_limit)
 		free(lower_limit);

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.29 2001/10/17 02:48:31 prahl Exp $ */
+/* $Id: main.c,v 1.30 2001/10/17 04:43:47 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -63,6 +63,8 @@ bool            g_aux_file_missing = FALSE;	/* assume that it exists */
 bool            g_processing_equation = FALSE;
 bool            g_document_type = FORMAT_ARTICLE;
 bool            g_processing_tabular = FALSE;
+int				g_processing_arrays = 0;
+int 			g_processing_fields = 0;
 
 int             indent = 0;
 char            alignment = JUSTIFIED;	/* default for justified: */

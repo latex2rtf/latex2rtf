@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.34 2001/10/17 02:48:31 prahl Exp $ 
+/* $Id: funct1.c,v 1.35 2001/10/17 04:43:47 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -162,6 +162,71 @@ CmdIndent(int code)
 	}
 	diagnostics(5,"Noindent is %d", (int) g_paragraph_no_indent);
 	diagnostics(5,"Inhibit  is %d", (int) g_paragraph_inhibit_indent);
+}
+
+void 
+CmdSlashSlash(int code)
+/***************************************************************************
+ purpose: handle \\, \\[1pt], \\*[1pt] 
+ ***************************************************************************/
+{
+	char cThis, *vertical_space;
+		
+	if (g_processing_arrays) {		/* array */
+		cThis=getNonBlank();
+		ungetTexChar(cThis);
+		fprintRTF("%c",FORMULASEP);
+		return;
+	}
+		
+	cThis = getTexChar();
+	if (cThis != '*')
+		ungetTexChar(cThis);
+
+	vertical_space = getBracketParam();	
+	if (vertical_space) 				/* ignore for now */
+		free(vertical_space);
+
+	if (g_processing_eqnarray) {	/* eqnarray */
+
+		if (g_show_equation_number && !g_suppress_equation_number) {
+			for (; actCol < 3; actCol++)
+				fprintRTF("\\tab ");
+			incrementCounter("equation");
+			
+			fprintRTF("\\tab {\\i0 (%d)}", getCounter("equation"));
+		}
+		fprintRTF("\\par\n\\tab ");
+		g_suppress_equation_number = FALSE;
+		actCol = 1;
+		return;
+	}
+	
+	if (g_processing_tabular) {	/* tabular or array environment */
+		if (GetTexMode() == MODE_MATH || GetTexMode() == MODE_DISPLAYMATH) {	/* array */
+			fprintRTF("\\par\n\\tab ");
+			return;
+		}
+		for (; actCol < colCount; actCol++) {
+			fprintRTF("\\cell\\pard\\intbl");
+		}
+		actCol = 1;
+		fprintRTF("\\cell\\pard\\intbl\\row\n\\pard\\intbl\\q%c ", colFmt[1]);
+		return;
+	}
+
+	if (tabbing_on){
+		PopBrace();
+		PushBrace();
+	}
+
+	/* simple end of line ... */
+	CmdEndParagraph(0);
+	CmdIndent(INDENT_INHIBIT);
+	
+	tabcounter = 0;
+	if (tabbing_on)
+		pos_begin_kill= ftell(fRtf);
 }
 
 void 
