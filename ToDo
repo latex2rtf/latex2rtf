@@ -1,7 +1,7 @@
 Bugs:
 	Fix \right. and \left.
- 	Improve spacing before and after \section et al.
-	Improve font sizes in \section et al.
+ 	Improve spacing before and after \section etc.
+	Improve font sizes in \section etc.
 	
 Features:
 	Eliminate need for temporary files to process ConvertString()
@@ -24,6 +24,3 @@ Features:
 
 	add support for hspace
 	add support for \hline
-	
-	replace getBracketParam by something that allocates memory
-	rename getParam to getBraceParam

@@ -1,4 +1,4 @@
-/* $Id: biblio.c,v 1.7 2001/10/13 20:04:56 prahl Exp $ 
+/* $Id: biblio.c,v 1.8 2001/10/13 20:31:53 prahl Exp $ 
  
 This file contains routines to handle bibliographic and cite commands
 */
@@ -112,7 +112,7 @@ CmdBibitem(int code)
 	/* new paragraph for bib entry */
 	CmdEndParagraph(0);
 	old_indent = getLength("parindent");
-	setLength("parindent", -350);
+	setLength("parindent", -450);
 	CmdStartParagraph(0);
 	fprintRTF("\\li350 ");
 	
@@ -130,6 +130,7 @@ CmdBibitem(int code)
 	
 	fprintRTF("\\tab ");
 	setLength("parindent", old_indent);
+	skipSpaces();
 }
 
 void 

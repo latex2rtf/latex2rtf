@@ -1,4 +1,4 @@
-/*  $Id: parser.c,v 1.22 2001/10/13 20:11:52 prahl Exp $
+/*  $Id: parser.c,v 1.23 2001/10/13 20:31:53 prahl Exp $
 
    Contains declarations for a generic recursive parser for LaTeX code.
 */
@@ -288,7 +288,8 @@ CmdIgnoreParameter(int code)
 char    *
 getSimpleCommand(void)
 /**************************************************************************
-     purpose: returns a simple command e.g., \alpha\beta will return "alpha"
+     purpose: returns a simple command e.g., \alpha\beta will return "\beta"
+                                                   ^
  **************************************************************************/
 {
 	char            buffer[128];
