@@ -37,3 +37,4 @@ int 			CurrentLineNumber(void);
 void 			PushTrackLineNumber(int flag);
 void			PopTrackLineNumber(void);
 void 			UpdateLineNumber(char *s);
+void			EndSource(void);

@@ -239,6 +239,17 @@ StillSource(void)
 		return (*g_parser_string != '\0');
 }
 
+void
+EndSource(void) 
+{
+	if (g_parser_file)
+		fseek(g_parser_file,0,SEEK_END);
+	else
+		*g_parser_string = NULL;
+		
+	return;
+}
+
 void 
 PopSource(void)
 /***************************************************************************

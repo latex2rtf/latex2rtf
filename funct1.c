@@ -474,6 +474,12 @@ CmdBeginEnd(int code)
 	else 
 		diagnostics(5, "\\end{%s}", s);
 
+	if (strcmp(s,"document")==0) {
+		free(s); 
+		EndSource();		/* done! */
+		return;
+	}
+
 /* hack to avoid problems with multicols */
 	if (strcmp(s,"multicols")==0) {free(s); return;}
 	
