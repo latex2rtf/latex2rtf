@@ -4,10 +4,10 @@
 
 %latex2rtf: \begin{comment}
 \makeatletter
-\def\@textsubscript#1{%
- {\m@th\ensuremath{_{\mbox{\fontsize\sf@size\z@#1}}}}}
 \DeclareRobustCommand*\textsubscript[1]{%
  \@textsubscript{\selectfont#1}}
+\newcommand{\@textsubscript}[1]{%
+ {\m@th\ensuremath{_{\mbox{\fontsize\sf@size\z@#1}}}}}
 \makeatother
 %latex2rtf: \end{comment}
 
