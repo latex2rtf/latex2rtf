@@ -1,8 +1,12 @@
 #
 # Initial version 28 May 2001 Scott Prahl
 #
+LATEX= latex
+BIBTEX= bibtex
+LATEX2RTF= ../latex2rtf
+OPTIONS  = -Z3 -P ../cfg/:../scripts/ -T ../tmp/
 
-all:accentchars.rtf array.rtf bib_simple.rtf bib_apalike.rtf bib_apalike2.rtf \
+RTF=accentchars.rtf array.rtf bib_simple.rtf bib_apalike.rtf bib_apalike2.rtf \
     bib_apacite.rtf bib_natbib1.rtf bib_natbib2.rtf bib_apanat.rtf \
     eqns.rtf fonts.rtf fontsize.rtf \
     frac.rtf list.rtf logo.rtf misc1.rtf misc2.rtf oddchars.rtf \
@@ -17,10 +21,11 @@ all:accentchars.rtf array.rtf bib_simple.rtf bib_apalike.rtf bib_apalike2.rtf \
 	spago1.rtf theorem.rtf picture.rtf tabbing.rtf figtest.rtf figtest2.rtf\
 	chem.rtf subsup.rtf linux.rtf
 
-LATEX= latex
-BIBTEX= bibtex
-LATEX2RTF= ../latex2rtf
-OPTIONS  = -Z3 -P ../cfg
+all:
+	mkdir -p ../tmp
+	make rtf
+
+rtf: $(RTF)
 
 %.rtf:	%.tex
 	$(LATEX2RTF) $(OPTIONS) $<
@@ -103,5 +108,6 @@ clean:
 	rm -f *.dvi *.rtf *.aux *.blg *.bbl *.log *.pdf *.toc *.lot *.idx *.ilg *.ind
 	rm -f l2r*tex
 	mv figtestb.tmp figtestb.pdf
+	rm -rf ../tmp
 
-.PHONY: clean all
+.PHONY: clean all check
