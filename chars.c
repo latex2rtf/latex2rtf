@@ -1,4 +1,4 @@
-/* $Id: chars.c,v 1.17 2001/11/04 20:39:11 prahl Exp $
+/* $Id: chars.c,v 1.18 2001/11/17 01:09:21 prahl Exp $
 
    purpose : handles special characters and logos
 */
@@ -251,6 +251,10 @@ CmdHatChar(int code)
 		break;
 
 	default:
+		if (strcmp(cParam,"\\i")==0) {
+			fprintRTF("\\'ee");
+			break;
+		}
 		num = RtfFontNumber("MT Extra");
 		fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(");
 		ConvertString(cParam);
