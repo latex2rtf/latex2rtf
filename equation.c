@@ -3,6 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 #include "main.h"
+#include "convert.h"
 #include "commands.h"
 #include "stack.h"
 #include "l2r_fonts.h"

@@ -1,4 +1,4 @@
-/*  $Id: commands.c,v 1.16 2001/08/23 05:35:02 prahl Exp $
+/*  $Id: commands.c,v 1.17 2001/09/06 04:43:04 prahl Exp $
 
     Defines subroutines to translate LaTeX commands to RTF
 */
@@ -8,11 +8,12 @@
 #include <string.h>
 #include "cfg.h"
 #include "main.h"
+#include "convert.h"
 #include "chars.h"
 #include "l2r_fonts.h"
 #include "preamble.h"
 #include "funct1.h"
-#include "funct2.h"
+#include "tables.h"
 #include "equation.h"
 #include "letterformat.h"
 #include "commands.h"
@@ -29,9 +30,6 @@ typedef struct commandtag {
 static int      iEnvCount = 0;			/* number of active environments */
 static CommandArray *Environments[100];	/* list of active environments */
 
-/********************************************************************/
-/* commands for environment document */
-/********************************************************************/
 static CommandArray commands[] = {
 	{"begin", CmdBeginEnd, CMD_BEGIN},
 	{"end", CmdBeginEnd, CMD_END},
@@ -128,12 +126,8 @@ static CommandArray commands[] = {
 	{"r", CmdOaccentChar, 0},
 	{"b", CmdUnderbarChar, 0},
 	{"c", CmdCedillaChar, 0},
-	{"hat", CmdHatChar, 0},
 
 	{"ldots", CmdLdots, 0},
-	{"title", CmdTitle, TITLE_TITLE},
-	{"author", CmdTitle, TITLE_AUTHOR},
-	{"date", CmdTitle, TITLE_DATE},
 	{"maketitle", CmdMakeTitle, 0},
 	{"section", CmdSection, SECT_NORM},
 	{"section*", CmdSection, SECT_NORM},
@@ -163,8 +157,6 @@ static CommandArray commands[] = {
 	{"verb*", CmdVerb, AST_FORM},
 	{"onecolumn", CmdColumn, One_Column},
 	{"twocolumn", CmdColumn, Two_Column},
-	{"flushbottom", CmdBottom, 0},
-	{"raggedbottom", CmdBottom, 0},
 	{"includegraphics", CmdGraphics, 0},
 	{"includegraphics*", CmdGraphics, 0},
 	{"moveleft", CmdLength, 0},
@@ -188,7 +180,6 @@ static CommandArray commands[] = {
 	{"addcontents", CmdIgnoreParameter, No_Opt_Two_NormParam},
 	{"numberline", CmdIgnoreParameter, No_Opt_Two_NormParam},
 	{"stretch", CmdIgnoreParameter, No_Opt_One_NormParam},
-	{"hyphenation", CmdHyphenation, 0},
 	{"typeaout", CmdIgnoreParameter, No_Opt_One_NormParam},
 	{"index", CmdIgnoreParameter, No_Opt_One_NormParam},
 	{"indexentry", CmdIgnoreParameter, No_Opt_Two_NormParam},
@@ -198,7 +189,6 @@ static CommandArray commands[] = {
 	{"Typein", CmdIgnoreParameter, One_Opt_One_NormParam},
 	{"includeonly", CmdIgnoreParameter, No_Opt_One_NormParam},
 	{"nocite", CmdNoCite, No_Opt_One_NormParam},
-	{"bibliography", CmdIgnoreParameter, No_Opt_One_NormParam},
 	{"stepcounter", CmdIgnoreParameter, No_Opt_One_NormParam},
 	{"refstepcounter", CmdIgnoreParameter, No_Opt_One_NormParam},
 	{"fnsymbol", CmdIgnoreParameter, No_Opt_One_NormParam},
@@ -207,12 +197,6 @@ static CommandArray commands[] = {
 	{"Roman", CmdIgnoreParameter, No_Opt_One_NormParam},
 	{"roman", CmdIgnoreParameter, No_Opt_One_NormParam},
 	{"arabic", CmdIgnoreParameter, No_Opt_One_NormParam},
-	{"value", CmdIgnoreParameter, No_Opt_One_NormParam},
-	{"def", CmdIgnoreDef, 0},
-	{"newcommand", IgnoreNewCmd, 0},
-	{"renewcommand", IgnoreNewCmd, 0},
-	{"newtheorem", CmdIgnoreParameter, One_Opt_Two_NormParam},
-	{"renewtheorem", CmdIgnoreParameter, One_Opt_Two_NormParam},
 	{"newcount", CmdIgnoreDef, 0},
 	{"output", CmdIgnoreDef, 0},
 	{"value", CmdCounter, COUNTER_VALUE},
@@ -225,7 +209,6 @@ static CommandArray commands[] = {
 	{"raisebox", CmdIgnoreParameter, Two_Opt_Two_NormParam},
 	{"newfont", CmdIgnoreParameter, No_Opt_Two_NormParam},
 	{"settowidth", CmdIgnoreParameter, No_Opt_Two_NormParam},
-	{"pagebreak", CmdIgnoreParameter, One_Opt_No_NormParam},
 	{"nopagebreak", CmdIgnoreParameter, One_Opt_No_NormParam},
 	{"samepage", CmdIgnore, 0},
 	{"linebreak", CmdIgnoreParameter, One_Opt_No_NormParam},
@@ -237,16 +220,6 @@ static CommandArray commands[] = {
 	{"lineskip", Cmd_OptParam_Without_braces, 0},
 	{"vsize", Cmd_OptParam_Without_braces, 0},
 	{"setbox", Cmd_OptParam_Without_braces, 0},
-	{"pagestyle", CmdIgnoreParameter, No_Opt_One_NormParam},	/* pagestyle is ignored
-									 * because there is a
-									 * variable calculation
-									 * in the RTF-header
-									 * which can't be
-									 * converted by reading
-									 * the LATEX-File. */
-	{"pagenumbering", CmdIgnoreParameter, No_Opt_One_NormParam},
-	{"markboth", CmdIgnoreParameter, No_Opt_Two_NormParam},
-	{"markright", CmdIgnoreParameter, No_Opt_One_NormParam},
 	{"thanks", CmdFootNote, THANKS},
 	{"bibliographystyle", CmdIgnoreParameter, No_Opt_One_NormParam},
 	{"let", CmdIgnoreLet, 0},
@@ -280,8 +253,6 @@ static CommandArray PreambleCommands[] = {
 	{"setcounter", CmdCounter, COUNTER_SET},
 	{"addtocounter", CmdCounter, COUNTER_ADD},
 	{"hyphenation", CmdHyphenation, 0},
-	{"address", CmdAddress, 0},
-	{"signature", CmdSignature, 0},
 	{"def", CmdIgnoreDef, 0},
 	{"newcommand", CmdIgnoreParameter, One_Opt_Three_NormParam},
 	{"renewcommand", CmdIgnoreParameter, One_Opt_Two_NormParam},
@@ -383,7 +354,6 @@ static CommandArray params[] = {
 	{"figure*", CmdFigure, FIGURE_1},
 	{"picture", CmdIgnoreFigure, PICTURE},
 	{"minipage", CmdIgnoreFigure, MINIPAGE},
-	/*  {"thebibliography", CmdIgnoreFigure, THEBIBLIOGRAPHY }, */
 
 	{"quote", CmdQuote, QUOTE},
 	{"quotation", CmdQuote, QUOTATION},
@@ -411,7 +381,6 @@ static CommandArray params[] = {
 	{"table", CmdTable, TABLE},
 	{"table*", CmdTable, TABLE_1},
 	{"thebibliography", CmdConvertBiblio, 0},
-	/*  {"thebibliography", CmdIgnoreEnvironment, BIBLIOGRAPHY }, */
 	{"abstract", CmdAbstract, 0},
 	{"titlepage", CmdTitlepage, 0},
 	{"em", CmdEmphasize, F_EMPHASIZE},

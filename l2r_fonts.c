@@ -1,4 +1,4 @@
-/* $Id: l2r_fonts.c,v 1.12 2001/08/22 05:50:23 prahl Exp $
+/* $Id: l2r_fonts.c,v 1.13 2001/09/06 04:43:04 prahl Exp $
 
 	All changes to font size, font style, and font face are 
 	handled in this file.  Explicit changing of font characteristics
@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "main.h"
+#include "convert.h"
 #include "l2r_fonts.h"
 #include "funct1.h"
 #include "commands.h"
@@ -52,7 +53,7 @@ RtfFontNumber(char *Fname)
 
 	while ((config_handle = CfgNext(FONT_A, config_handle)) != NULL) {
 		if (strcmp((*config_handle)->RtfCommand, Fname) == 0) {
-			return num;
+			return num+3;
 		}
 		num++;
 	}
@@ -66,7 +67,7 @@ TexFontNumber(char *Fname)
   example: TexFontNumber("Roman")
  ****************************************************************************/
 {
-	return SearchRtfIndex(Fname, FONT_A);
+	return SearchRtfIndex(Fname, FONT_A)+3;
 }
 
 void 

@@ -1,4 +1,4 @@
-/* $Id: funct1.h,v 1.14 2001/08/12 23:39:12 prahl Exp $ */
+/* $Id: funct1.h,v 1.15 2001/09/06 04:43:04 prahl Exp $ */
 
 #define AST_FORM 100
 #define EMPHASIZE 1
@@ -16,14 +16,10 @@ void            CmdBeginEnd(int code);
 #define PAR_LEFT 3
 #define PAR_CENTERLINE 4
 void            Paragraph(int code);
-
 void            CmdToday(int code);
-
-
 void            CmdIgnore(int code);
 void            CmdLdots(int code);
 void            CmdEmphasize(int code);
-
 void            Environment(int code);
 
 #define SECT_NORM 1
@@ -99,8 +95,6 @@ void            CmdIgnoreDef(int code);
 
 void            CmdItem(int code);
 
-void            ConvertString(char *string);
-
 /* LEG030598 Start */
 #define RIGHT_SIDE 347
 #define BOTH_SIDES  348
@@ -108,3 +102,65 @@ void            ConvertString(char *string);
 /* LEG030598 End */
 
 int             ScanAux(char *token, char *reference, int code);
+
+#define FIGURE 1
+#define PICTURE 2
+#define MINIPAGE 3
+#define THEBIBLIOGRAPHY 4
+#define FIGURE_1 5
+
+#define No_Opt_One_NormParam 01
+#define No_Opt_Two_NormParam 02
+#define No_Opt_Three_NormParam 03
+#define One_Opt_No_NormParam 10
+#define One_Opt_One_NormParam 11
+#define One_Opt_Two_NormParam 12
+#define One_Opt_Three_NormParam 13
+#define Two_Opt_No_NormParam 20
+#define Two_Opt_One_NormParam 21
+#define Two_Opt_Two_NormParam 22
+#define Two_Opt_Three_NormParam 23
+
+#define One_Column 1
+#define Two_Column 2
+
+#define NewPage 1
+#define NewColumn 2
+
+#define BIBLIOGRAPHY 1
+#define ARRAY 1
+#define TABLE 2
+#define TABLE_1 3
+
+
+void            CmdIgnoreFigure(int code);
+
+void            CmdFigure(int code);
+
+void            Cmd_OptParam_Without_braces(int code);
+
+void            CmdColumn(int code);
+
+void            CmdNewPage(int code);
+
+void            GetInputParam(char *, int);
+
+void            CmdBottom(int code);
+
+void            CmdAbstract(int code);
+void            CmdTitlepage(int code);
+void            CmdHyphenation(int code);
+void            CmdFigure(int code);
+void            CmdMultiCol(int code);
+void            CmdNoCite(int code);
+void            CmdCite(int code);
+void 			WriteRefList(void);
+void            CmdAnnotation(int code);
+void            CmdLink(int code);
+void            CmdConvertBiblio(int code);
+void            CmdGraphics(int code);
+void            GetRequiredParam(char *string, int size);
+void 			CmdQuad(int kk);
+void			CmdColsep(int code);
+void		 	CmdSpace(float kk);
+

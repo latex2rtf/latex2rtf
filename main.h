@@ -1,4 +1,4 @@
-/* $Id: main.h,v 1.14 2001/08/22 05:50:23 prahl Exp $ */
+/* $Id: main.h,v 1.15 2001/09/06 04:43:04 prahl Exp $ */
 
 #undef HAS_NO_GETOPT
 
@@ -48,13 +48,11 @@ typedef long    fpos_t;
 
 typedef int     bool;
 
-void            Convert();	/* main convert routine */
 void            IgnoreTo(char cEnd);
  /* @exits@ */ void numerror(int num);
  /* @exits@ */ void error(char *text);
  /* @dependent@ */ FILE *open_cfg(const char *);
 long            getLinenumber(void);
- /* @only@ */ char *EmptyString(void);
 void            diagnostics(int level, char *format,...);
 /* level values */
 

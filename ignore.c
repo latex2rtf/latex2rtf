@@ -1,47 +1,10 @@
-/*
- * $Id: ignore.c,v 1.13 2001/08/12 21:15:46 prahl Exp $
- * History:
- * $Log: ignore.c,v $
- * Revision 1.13  2001/08/12 21:15:46  prahl
- *         Removed last two // comments
- *         Explicitly cast char to int in isalpha() and isdigit()
- *         Began the process of supporting Babel better
- *
- * Revision 1.7  1998/07/03 06:56:08  glehner
- * adde PARAMETER, PACKAGE, ENVCMD, ENVIRONMENT
- *
- * Revision 1.6  1997/02/15 20:53:46  ralf
- * Removed some global variable redeclarations
- * Other lclint corrections
- *
- * Revision 1.5  1995/05/10 06:37:43  ralf
- * Added own includefile (for consistency checking of decls)
- *
- * Revision 1.4  1995/03/23  15:58:08  ralf
- * Reworked version by Friedrich Polzer and Gerhard Trisko
- *
- *
- * Revision 1.3  1994/06/21  08:14:11  ralf
- * Corrected Bug in keyword search
- *
- * Revision 1.2  1994/06/17  14:19:41  ralf
- * Corrected various bugs, for example interactive read of arguments
- *
- * Revision 1.1  1994/06/17  11:26:29  ralf
- * Initial revision
- *
- */
-/***************************************************************************
-     name : ignore.c
-    autor : DORNER Fernando, GRANZER Andreas
-            POLZER Friedrich,TRISKO Gerhard
- * changed TryVariableIgnore: use search on sorted array
+/* $Id: ignore.c,v 1.14 2001/09/06 04:43:04 prahl Exp $
+
   purpose : ignores variable-name-commands which can't be converted from LaTeX2Rtf
 	    (variable-command-formats must be added by the user in the file
 	     "ignore.cfg")
- *****************************************************************************/
+*/
 
-/****************************  includes *************************************/
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -51,35 +14,32 @@
 #include "l2r_fonts.h"
 #include "cfg.h"
 #include "ignore.h"
-#include "funct2.h"
+#include "funct1.h"
 #include "commands.h"
 #include "util.h"
 #include "parser.h"
-/*****************************************************************************/
 
-/***********************      prototypes   ***********************************/
-static void     IgnoreVar(FILE * fRtf);
-static void     IgnoreCmd(FILE * fTex);
-/*****************************************************************************/
-
+static void     IgnoreVar(void);
+static void     IgnoreCmd(void);
+static void 	Ignore_Environment(char *searchstring);
 
 bool 
-TryVariableIgnore(char *command, FILE * fTex)
+TryVariableIgnore(char *command)
 /****************************************************************************
 purpose : ignores variable-formats shown in file "ignore.cfg"
-params	:    fTex: open Tex-File
-	  command: variable-name-command
-globals : progname
-returns : TRUE if variable was ignored correctly,
-	  else -> FALSE
-LEG190498
-expanded the syntax with PARAMTER, PACKAGE, ENVCMD, ENVIRONMENT:
-PARAMETER	ignores a command with one paramter
-PACKAGE		does not produce a Warning message if PACKAGE is
-		encountered
-ENVCMD		proceses contents of unknown environment as if it were
-		plain latex
-ENVIRONMENT     ignores contentents of that environment
+returns : TRUE if variable was ignored correctly, otherwise FALSE
+
+#  NUMBER        simple numeric value
+#  MEASURE : numeric value with following unit of measure
+#  OTHER: ignores anything to the first character after '='
+#	 and from there to next space. eg. \setbox\bak=\hbox
+#  COMMAND       ignores anything to next '\' and from there to occurence
+#	             of anything but a letter. eg. \newbox\bak
+#  SINGLE        ignore single command. eg. \noindent
+#  PARAMETER	 ignores a command with one paramter
+#  PACKAGE		 does not produce a Warning message if PACKAGE is encountered
+#  ENVCMD		 proceses contents of unknown environment as if it were plain latex
+#  ENVIRONMENT   ignores contentents of that environment
  ****************************************************************************/
 {
 	const char     *RtfCommand;
@@ -98,13 +58,13 @@ ENVIRONMENT     ignores contentents of that environment
 	if (RtfCommand == NULL)
 		result = FALSE;
 	else if (strcmp(RtfCommand, "NUMBER") == 0)
-		IgnoreVar(fTex);
+		IgnoreVar();
 	else if (strcmp(RtfCommand, "MEASURE") == 0)
-		IgnoreVar(fTex);
+		IgnoreVar();
 	else if (strcmp(RtfCommand, "OTHER") == 0)
-		IgnoreVar(fTex);
+		IgnoreVar();
 	else if (strcmp(RtfCommand, "COMMAND") == 0)
-		IgnoreCmd(fTex);
+		IgnoreCmd();
 	else if (strcmp(RtfCommand, "SINGLE") == 0);
 	else if (strcmp(RtfCommand, "PARAMETER") == 0)
 		CmdIgnoreParameter(No_Opt_One_NormParam);
@@ -124,32 +84,92 @@ ENVIRONMENT     ignores contentents of that environment
 	else if (strcmp(RtfCommand, "PACKAGE") == 0);
 	else
 		result = FALSE;
-	/* LEG210698*** lclint ?  free(RtfCommand); */
 	return (result);
 }
 
 
+void 
+IgnoreVar(void)
 /****************************************************************************
 purpose : ignores anything till a space or a newline
-params	: fTex: open Tex-File
  ****************************************************************************/
-void 
-IgnoreVar(FILE * fTex)
 {
 	char            c;
 	while ((c = getTexChar()) && c != '\n' && c != ' ');
 }
 
 
+void 
+IgnoreCmd(void)
 /****************************************************************************
 purpose : ignores anything till an alphanumeric character
-params	: fTex: open Tex-File
  ****************************************************************************/
-void 
-IgnoreCmd(FILE * fTex)
 {
 	char            c;
 	while ((c = getTexChar()) && c != '\\');
 	while ((c = getTexChar()) && !isalpha((int)c));
 	ungetTexChar(c);
 }
+
+void 
+Ignore_Environment(char *searchstring)
+/******************************************************************************
+  purpose: function, which ignores an unconvertable environment in LaTex
+           and writes text unchanged into the Rtf-file.
+parameter: searchstring : includes the string to search for
+	   example: \begin{unknown} ... \end{unknown}
+		    searchstring="end{unknown}"
+ ******************************************************************************/
+{
+	char            thechar;
+	bool            found = FALSE;
+	int             i, j, endstring;
+	endstring = strlen(searchstring) - 1;
+	while ((thechar = getTexChar()) && !found) {
+		if (thechar == '\\') {
+			for (i = 0; i <= endstring; i++) {
+				thechar = getTexChar();
+
+				if (thechar != searchstring[i])
+					break;
+				if (i == endstring)	/* end-environment-found */
+					found = TRUE;
+			}	/* for */
+
+			if (!found) {
+				fprintf(fRtf, "\\\\");
+				for (j = 0; j < i; j++)
+					switch (searchstring[j]) {
+					case '\n':
+						fprintf(fRtf, "\\par \n");
+						break;
+					case '\\':
+					case '{':
+					case '}':
+						fprintf(fRtf, "\\%c",searchstring[j]);
+						break;
+					default:
+						fprintf(fRtf, "%c", searchstring[j]);
+						break;
+					}
+			}
+		}		/* if */
+		
+		if ((thechar != '%') && !found)
+			switch (thechar) {
+			case '\n':
+				fprintf(fRtf, "\\par \n");
+				break;
+			case '\\':
+			case '{':
+			case '}':
+				fprintf(fRtf, "\\%c", thechar);
+				break;
+			default:
+				fprintf(fRtf, "%c", thechar);
+				break;
+			}
+	}
+	return;
+}
+

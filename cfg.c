@@ -1,6 +1,13 @@
-/* $Id: cfg.c,v 1.12 2001/08/22 05:50:23 prahl Exp $
+/* $Id: cfg.c,v 1.13 2001/09/06 04:43:04 prahl Exp $
 
      purpose : Read config files and provide lookup routines
+
+ * LEG200698 I would have prefered to make the reading of the language file
+ * separate, since the language is known some steps after reading the
+ * configuration files. Since the search functions rely on the index into
+ * configinfo this is not trivial. So I reread the language file to the array
+ * at the moment the name is known.
+
 */
 
 #include <stdio.h>
@@ -9,6 +16,7 @@
 #include <ctype.h>
 
 #include "main.h"
+#include "convert.h"
 #include "funct1.h"
 #include "cfg.h"
 #include "util.h"
@@ -29,13 +37,6 @@ static ConfigInfoT configinfo[] =
 
 };
 #define CONFIG_SIZE (sizeof(configinfo) / sizeof(ConfigInfoT))
-/*
- * LEG200698 I would have prefered to make the reading of the language file
- * separate, since the language is known some steps after reading the
- * configuration files. Since the search functions rely on the index into
- * configinfo this is not trivial. So I reread the language file to the array
- * at the moment the name is known.
- */
 
 static int 
 cfg_compare(ConfigEntryT ** el1, ConfigEntryT ** el2)

@@ -1,4 +1,4 @@
-/* $Id: preamble.c,v 1.4 2001/08/22 05:50:23 prahl Exp $
+/* $Id: preamble.c,v 1.5 2001/09/06 04:43:04 prahl Exp $
 
 purpose : Handles LaTeX commands that should only occur in the preamble.
           These are gathered together because the entire preamble must be
@@ -12,13 +12,14 @@ purpose : Handles LaTeX commands that should only occur in the preamble.
 #include <string.h>
 #include <ctype.h>
 #include "main.h"
+#include "convert.h"
+#include "preamble.h"
 #include "l2r_fonts.h"
 #include "cfg.h"
 #include "util.h"
 #include "encode.h"
 #include "parser.h"
 #include "funct1.h"
-#include "funct2.h"
 #include "preamble.h"
 #include "lengths.h"
 #include "ignore.h"
@@ -138,7 +139,7 @@ setDocumentOptions(char *optionlist)
 			fprintf(stderr, "converted into RTF-Commands!\n");
 		} else if (strcmp(option, "hyperlatex") == 0) {
 			PushEnvironment(HYPERLATEX); 
-		} else if (!TryVariableIgnore(option, fTex)) {
+		} else if (!TryVariableIgnore(option)) {
 			diagnostics(WARNING, "Unknown style option %s ignored", option);
 		}
 		option = strtok(NULL, ",");
@@ -428,7 +429,7 @@ WriteFontHeader(void)
  \fcharset3:    PCA coding (implies CodePage 850)
  ****************************************************************************/
 {
-	int                  num = 0;
+	int                  num = 3;
 	ConfigEntryT       **config_handle;
 
 	fprintf(fRtf, "{\\fonttbl\n");
@@ -480,11 +481,11 @@ WriteStyleHeader(void)
  ****************************************************************************/
 {
 	int DefFont = DefaultFontFamily();
-	fprintf(fRtf, "{\\stylesheet{\\fs%d\\lang1031\\snext0 Normal;}", CurrentFontSize());
-	fprintf(fRtf, "{%s%u%s \\sbasedon0\\snext0 heading 1;}\n", HEADER11, DefFont, HEADER12);
-	fprintf(fRtf, "{%s%u%s \\sbasedon0\\snext0 heading 2;}\n", HEADER21, DefFont, HEADER22);
-	fprintf(fRtf, "{%s%u%s \\sbasedon0\\snext0 heading 3;}\n", HEADER31, DefFont, HEADER32);
-	fprintf(fRtf, "{%s%u%s \\sbasedon0\\snext0 heading 4;}\n", HEADER41, DefFont, HEADER42);
+	fprintf(fRtf, "{\\stylesheet{\\fs%d\\lang1031\\snext0 Normal;}\n", CurrentFontSize());
+	fprintf(fRtf, "{%s\\f%d%s \\sbasedon0\\snext0 heading 1;}\n", HEADER11, DefFont, HEADER12);
+	fprintf(fRtf, "{%s\\f%d%s \\sbasedon0\\snext0 heading 2;}\n", HEADER21, DefFont, HEADER22);
+	fprintf(fRtf, "{%s\\f%d%s \\sbasedon0\\snext0 heading 3;}\n", HEADER31, DefFont, HEADER32);
+	fprintf(fRtf, "{%s\\f%d%s \\sbasedon0\\snext0 heading 4;}\n", HEADER41, DefFont, HEADER42);
 
 	fprintf(fRtf, "%s\n", HEADER03);
 	fprintf(fRtf, "%s\n", HEADER13);
@@ -549,26 +550,7 @@ WriteHeadFoot(void)
   \footerf        The footer is on the first page only.
 ****************************************************************************/
 {
-	int n;
-
-	fprintf(fRtf,"\\paperw%d", getLength("pagewidth"));
-	fprintf(fRtf,"\\paperh%d", getLength("pageheight"));
-	if (g_preambleTwoside)
-		fprintf(fRtf,"\\facingp");
-	if (g_preambleLandscape)
-		fprintf(fRtf,"\\landscape");
-		
-	n = getLength("hoffset") + 72*20 + getLength("marginparsep");
-	fprintf(fRtf, "\\margl%d", n);
-	n = getLength("pagewidth") - (n + getLength("textwidth"));
-	fprintf(fRtf, "\\margr%d", n);
-	n = getLength("voffset") + 72*20 + getLength("topmargin") + getLength("headheight")+getLength("headsep");
-	fprintf(fRtf, "\\margt%d", n);
-	n = getLength("pageheight") - (n + getLength("textheight") + getLength("footskip"));
-	fprintf(fRtf, "\\margb%d", n);
-	
-	fprintf(fRtf,"\\pgnstart%d", getCounter("page"));
-	fprintf(fRtf, "\\widowctrl\\ftnbj\\sectd\\linex0\\endnhere\\qj \n");
+	fprintf(fRtf, "\\ftnbj\\sectd\\linex0\\endnhere\\qj\n");
 }
 
 static void
@@ -598,12 +580,13 @@ purpose: writes header info for the RTF file
 {
 	diagnostics(4, "Writing header for RTF file");
 
-	fprintf(fRtf, "{\\rtf1\\PC\\fs%d\\deff0\\deflang1024\n", CurrentFontSize());
+	fprintf(fRtf, "{\\rtf1\\ansi\\fs%d\\deff0\\deflang1024\n", CurrentFontSize());
 	WriteFontHeader();
 	WriteStyleHeader();
 	WriteInfo();
 	WritePageSize();
 	WriteHeadFoot();
+	fprintf(fRtf, "\\f%d\\ansi ", TexFontNumber("Roman"));
 }
 
 

@@ -12,6 +12,7 @@ purpose : Handles LaTeX commands specific to the letter format
 #include "util.h"
 #include "commands.h"
 #include "funct1.h"
+#include "convert.h"
 
 static bool g_letterOpened = FALSE;   /* true after \opening       */
 

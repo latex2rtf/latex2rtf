@@ -1,4 +1,4 @@
-/* $Id: chars.c,v 1.3 2001/08/22 05:50:23 prahl Exp $
+/* $Id: chars.c,v 1.4 2001/09/06 04:43:04 prahl Exp $
 
    purpose : handles special characters and logos
 */
@@ -17,6 +17,7 @@
 #include "parser.h"
 #include "chars.h"
 #include "funct1.h"
+#include "convert.h"
 
 void            TeXlogo();
 void            LaTeXlogo();
@@ -33,39 +34,40 @@ CmdUmlauteChar(int code)
 	if (cParam == NULL)
 		return;
 
+	num = TexFontNumber("Roman");
 	switch (cParam[0]) {
 	case 'o':
-		fprintf(fRtf, "{\\ansi\\'f6}");
+		fprintf(fRtf, "{\\'f6}");
 		break;
 	case 'O':
-		fprintf(fRtf, "{\\ansi\\'d6}");
+		fprintf(fRtf, "{\\'d6}");
 		break;
 	case 'a':
-		fprintf(fRtf, "{\\ansi\\'e4}");
+		fprintf(fRtf, "{\\'e4}");
 		break;
 	case 'A':
-		fprintf(fRtf, "{\\ansi\\'c4}");
+		fprintf(fRtf, "{\\'c4}");
 		break;
 	case 'u':
-		fprintf(fRtf, "{\\ansi\\'fc}");
+		fprintf(fRtf, "{\\'fc}");
 		break;
 	case 'U':
-		fprintf(fRtf, "{\\ansi\\'dc}");
+		fprintf(fRtf, "{\\'dc}");
 		break;
 	case 'E':
-		fprintf(fRtf, "{\\ansi\\'cb}");
+		fprintf(fRtf, "{\\'cb}");
 		break;
 	case 'I':
-		fprintf(fRtf, "{\\ansi\\'cf}");
+		fprintf(fRtf, "{\\'cf}");
 		break;
 	case 'e':
-		fprintf(fRtf, "{\\ansi\\'eb}");
+		fprintf(fRtf, "{\\'eb}");
 		break;
 	case 'i':
-		fprintf(fRtf, "{\\ansi\\'ef}");
+		fprintf(fRtf, "{\\'ef}");
 		break;
 	case 'y':
-		fprintf(fRtf, "{\\ansi\\'ff}");
+		fprintf(fRtf, "{\\'ff}");
 		break;
 
 	default:
@@ -93,34 +95,34 @@ CmdLApostrophChar( /* @unused@ */ int code)
 
 	switch (cParam[0]) {
 	case 'A':
-		fprintf(fRtf, "{\\ansi\\'c0}");
+		fprintf(fRtf, "{\\'c0}");
 		break;
 	case 'E':
-		fprintf(fRtf, "{\\ansi\\'c8}");
+		fprintf(fRtf, "{\\'c8}");
 		break;
 	case 'I':
-		fprintf(fRtf, "{\\ansi\\'cc}");
+		fprintf(fRtf, "{\\'cc}");
 		break;
 	case 'O':
-		fprintf(fRtf, "{\\ansi\\'d2}");
+		fprintf(fRtf, "{\\'d2}");
 		break;
 	case 'U':
-		fprintf(fRtf, "{\\ansi\\'d9}");
+		fprintf(fRtf, "{\\'d9}");
 		break;
 	case 'a':
-		fprintf(fRtf, "{\\ansi\\'e0}");
+		fprintf(fRtf, "{\\'e0}");
 		break;
 	case 'e':
-		fprintf(fRtf, "{\\ansi\\'e8}");
+		fprintf(fRtf, "{\\'e8}");
 		break;
 	case 'i':
-		fprintf(fRtf, "{\\ansi\\'ec}");
+		fprintf(fRtf, "{\\'ec}");
 		break;
 	case 'o':
-		fprintf(fRtf, "{\\ansi\\'f2}");
+		fprintf(fRtf, "{\\'f2}");
 		break;
 	case 'u':
-		fprintf(fRtf, "{\\ansi\\'f9}");
+		fprintf(fRtf, "{\\'f9}");
 		break;
 	default:
 		num = RtfFontNumber("MT Extra");
@@ -144,40 +146,40 @@ CmdRApostrophChar( /* @unused@ */ int code)
 
 	switch (cParam[0]) {
 	case 'A':
-		fprintf(fRtf, "{\\ansi\\'c1}");
+		fprintf(fRtf, "{\\'c1}");
 		break;
 	case 'E':
-		fprintf(fRtf, "{\\ansi\\'c9}");
+		fprintf(fRtf, "{\\'c9}");
 		break;
 	case 'I':
-		fprintf(fRtf, "{\\ansi\\'cd}");
+		fprintf(fRtf, "{\\'cd}");
 		break;
 	case 'O':
-		fprintf(fRtf, "{\\ansi\\'d3}");
+		fprintf(fRtf, "{\\'d3}");
 		break;
 	case 'U':
-		fprintf(fRtf, "{\\ansi\\'da}");
+		fprintf(fRtf, "{\\'da}");
 		break;
 	case 'a':
-		fprintf(fRtf, "{\\ansi\\'e1}");
+		fprintf(fRtf, "{\\'e1}");
 		break;
 	case 'e':
-		fprintf(fRtf, "{\\ansi\\'e9}");
+		fprintf(fRtf, "{\\'e9}");
 		break;
 	case 'i':
-		fprintf(fRtf, "{\\ansi\\'ed}");
+		fprintf(fRtf, "{\\'ed}");
 		break;
 	case 'o':
-		fprintf(fRtf, "{\\ansi\\'f3}");
+		fprintf(fRtf, "{\\'f3}");
 		break;
 	case 'u':
-		fprintf(fRtf, "{\\ansi\\'fa}");
+		fprintf(fRtf, "{\\'fa}");
 		break;
 	case 'y':
-		fprintf(fRtf, "{\\ansi\\'fd}");
+		fprintf(fRtf, "{\\'fd}");
 		break;
 	case 'Y':
-		fprintf(fRtf, "{\\ansi\\'dd}");
+		fprintf(fRtf, "{\\'dd}");
 		break;
 	default:
 		fprintf(fRtf, "{\\field{\\*\\fldinst  EQ \\\\O");
@@ -248,34 +250,34 @@ CmdHatChar(int code)
 
 	switch (cParam[0]) {
 	case 'A':
-		fprintf(fRtf, "{\\ansi\\'c2}");
+		fprintf(fRtf, "{\\'c2}");
 		break;
 	case 'E':
-		fprintf(fRtf, "{\\ansi\\'ca}");
+		fprintf(fRtf, "{\\'ca}");
 		break;
 	case 'I':
-		fprintf(fRtf, "{\\ansi\\'ce}");
+		fprintf(fRtf, "{\\'ce}");
 		break;
 	case 'O':
-		fprintf(fRtf, "{\\ansi\\'d4}");
+		fprintf(fRtf, "{\\'d4}");
 		break;
 	case 'U':
-		fprintf(fRtf, "{\\ansi\\'db}");
+		fprintf(fRtf, "{\\'db}");
 		break;
 	case 'a':
-		fprintf(fRtf, "{\\ansi\\'e2}");
+		fprintf(fRtf, "{\\'e2}");
 		break;
 	case 'e':
-		fprintf(fRtf, "{\\ansi\\'ea}");
+		fprintf(fRtf, "{\\'ea}");
 		break;
 	case 'i':
-		fprintf(fRtf, "{\\ansi\\'ee}");
+		fprintf(fRtf, "{\\'ee}");
 		break;
 	case 'o':
-		fprintf(fRtf, "{\\ansi\\'f4}");
+		fprintf(fRtf, "{\\'f4}");
 		break;
 	case 'u':
-		fprintf(fRtf, "{\\ansi\\'fb}");
+		fprintf(fRtf, "{\\'fb}");
 		break;
 
 	default:
@@ -303,11 +305,11 @@ CmdOaccentChar(int code)
 
 	switch (cParam[0]) {
 	case 'A':
-		fprintf(fRtf, "{\\ansi\\'c5}");
+		fprintf(fRtf, "{\\'c5}");
 		break;
 
 	case 'a':
-		fprintf(fRtf, "{\\ansi\\'e5}");
+		fprintf(fRtf, "{\\'e5}");
 		break;
 
 	case '\\':
@@ -342,22 +344,22 @@ CmdTildeChar( int code)
 
 	switch (cParam[0]) {
 	case 'A':
-		fprintf(fRtf, "{\\ansi\\'c3}");
+		fprintf(fRtf, "{\\'c3}");
 		break;
 	case 'O':
-		fprintf(fRtf, "{\\ansi\\'d5}");
+		fprintf(fRtf, "{\\'d5}");
 		break;
 	case 'a':
-		fprintf(fRtf, "{\\ansi\\'e3}");
+		fprintf(fRtf, "{\\'e3}");
 		break;
 	case 'o':
-		fprintf(fRtf, "{\\ansi\\'f5}");
+		fprintf(fRtf, "{\\'f5}");
 		break;
 	case 'n':
-		fprintf(fRtf, "{\\ansi\\'f1}");
+		fprintf(fRtf, "{\\'f1}");
 		break;
 	case 'N':
-		fprintf(fRtf, "{\\ansi\\'d1}");
+		fprintf(fRtf, "{\\'d1}");
 		break;
 	default:
 		num = RtfFontNumber("MT Extra");
@@ -381,10 +383,10 @@ CmdCedillaChar(int code)
 
 	switch (cParam[0]) {
 	case 'C':
-		fprintf(fRtf, "{\\ansi\\'c7}");
+		fprintf(fRtf, "{\\'c7}");
 		break;
 	case 'c':
-		fprintf(fRtf, "{\\ansi\\'e7}");
+		fprintf(fRtf, "{\\'e7}");
 		break;
 
 	default:

@@ -9,17 +9,23 @@
 #define TITLE_DATE 3
 #define TITLE_TITLEPAGE 4
 
-#define HEADER11 "\\s1\\sb240\\sa60\\keepn{\\*\\pn \\pnlvl1\\pndec\\pnprev1\\pnstart1\\pnsp144 {\\pntxta .}}\\b\\f"
-#define HEADER12 "\\fs32\\lang2057\\kerning28"
+/* 
+   No Lang    = \lang1024
+   US ENGLISH = \lang1033
+   UK ENGLISH = \lang2057
+*/
 
-#define HEADER21 "\\s2\\sb240\\sa60\\keepn{\\*\\pn \\pnlvl2\\pndec\\pnprev1\\pnstart1\\pnsp144 }\\b\\f"
-#define HEADER22 "\\fs24\\lang2057"
+#define HEADER11 "\\s1\\sb240\\sa60\\keepn{\\*\\pn\\pnlvl1\\pndec\\pnprev1\\pnstart1\\pnsp144{\\pntxta .}}\\b"
+#define HEADER12 "\\fs32\\lang1024\\kerning28"
 
-#define HEADER31 "\\s3\\sb240\\sa60\\keepn{\\*\\pn \\pnlvl3\\pndec\\pnprev1\\pnstart1\\pnsp144 {\\pntxtb .}}\\b\\f"
-#define HEADER32 "\\fs24\\lang2057"
+#define HEADER21 "\\s2\\sb240\\sa60\\keepn{\\*\\pn\\pnlvl2\\pndec\\pnprev1\\pnstart1\\pnsp144}\\b"
+#define HEADER22 "\\fs24\\lang1024"
 
-#define HEADER41 "\\s4\\sb240\\sa60\\keepn{\\*\\pn \\pnlvl4\\pndec\\pnprev1\\pnstart1\\pnsp144 {\\pntxtb .}}\\b\\f"
-#define HEADER42 "\\fs24\\lang2057"
+#define HEADER31 "\\s3\\sb240\\sa60\\keepn{\\*\\pn\\pnlvl3\\pndec\\pnprev1\\pnstart1\\pnsp144{\\pntxtb .}}\\b"
+#define HEADER32 "\\fs24\\lang1024"
+
+#define HEADER41 "\\s4\\sb240\\sa60\\keepn{\\*\\pn\\pnlvl4\\pndec\\pnprev1\\pnstart1\\pnsp144{\\pntxtb .}}\\b"
+#define HEADER42 "\\fs24\\lang1024"
 
 #define HEADER03 "{\\*\\cs10 \\additive Default Paragraph Font;}}"
 #define HEADER13 "{\\*\\pnseclvl1\\pnucrm\\pnstart1\\pnindent720\\pnhang{\\pntxta .}}"
