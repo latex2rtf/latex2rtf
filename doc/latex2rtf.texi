@@ -35,6 +35,7 @@ LaTeX2RTF
 @end iftex
 @end macro
 
+@ifinfo
 This file documents @ltor{}, a converter that translates @latex{} to RTF.@*
 Copyright 1998-2002 Georg Lehner, 
 updates Copyright 1999-2004 by Wilfried Hennings and Scott Prahl, 
@@ -61,6 +62,7 @@ Permission is granted to copy and distribute translations of this manual
 into another language, under the above conditions for modified versions,
 except that this permission notice may be stated in a translation
 approved by the Free Software Foundation.
+@end ifinfo
 
 @titlepage 
 @title @ltor{}
@@ -98,8 +100,6 @@ approved by the Free Software Foundation.
 @top LaTeX2RTF
 
 This file documents @ltor{}, a converter that translates @latex{} to RTF.
-
-@c This document applies to version 1.9.15 of @ltor{}.
 @end ifnottex
 
 @menu
@@ -113,6 +113,29 @@ This file documents @ltor{}, a converter that translates @latex{} to RTF.
 * History::                     
 * Index::  
 @end menu
+@ifnottex
+
+Copyright @copyright{} 1998-2004 Georg Lehner, Wilfried Hennings, Scott Prahl
+
+Permission is granted to make and distribute verbatim copies of this
+manual provided the copyright notice and this permission notice are
+preserved on all copies.
+
+Permission is granted to copy and distribute modified versions of this
+manual under the conditions for verbatim copying, provided also that the
+sections entitled ``Copying'' and ``GNU General Public License'' are
+included exactly as in the original, and provided that the entire
+resulting derived work is distributed under the terms of a permission
+notice identical to this one.
+
+Permission is granted to copy and distribute translations of this manual
+into another language, under the above conditions for modified versions,
+except that this permission notice may be stated in a translation
+approved by the Free Software Foundation.
+
+@c This document applies to version 1.9.15 of @ltor{}.
+@end ifnottex
+
 
 @node Introduction, Installation, Top, Top
 @chapter  Introduction
@@ -281,7 +304,7 @@ Just define @env{RTFPATH} to be the path to the new location.
 The @acronym{UNIX} and Mac distributions do not contain an executable for DOS 
 or Windows. Instead, get the DOS port as file @file{latex2rtf-x.x.x_dos.zip}
 or the Windows (Win32 = Win95, Win98, WinME, WinNT, Win2000, WinXP) version as 
-file @file{latex2rtf-x.x.x_win.zip} (where x.x.x is the version number) from  
+file @file{latex2rtf-x.x.x_win.exe} (where x.x.x is the version number) from  
 @uref{http://sourceforge.net/projects/latex2rtf/,SourceForge}@*
 
 The DOS distribution contains a precompiled executable which should run 
@@ -289,8 +312,8 @@ under plain DOS and also in the command prompt (or "console")
 of any MS Windows system.@*
 
 The Win32 version starting from 1.9.14a has the same executable but 
-additionally an optional Win32 GUI interface 
-(LaTeX2RTF Shell) and comes with an automatic installer, @xref{Win32 systems}.@*
+additionally an optional Win32 GUI interface (LaTeX2RTF Shell) 
+and is wrapped in an automatic installer, @xref{Win32 systems}.@*
 
 To install latex2rtf, extract all files from the zip archive to @file{C:\l2r}
 or to another folder (i.e. directory) of your choice,
@@ -397,8 +420,8 @@ variables.
 @section Win32 systems
 
 To install @ltor{} on a Win32 system (Win9x, WinME, WinNT, Win2000, WinXP), 
-unzip the @file{latex2rtf-x.x.x_win.zip}, then execute the 
-@file{latex2rtf-x.x.x_win.exe} and follow the instructions.
+download and execute the @file{latex2rtf-x.x.x_win.exe} 
+(where x.x.x is the version number) and follow the instructions.
 
 To start the program double-click the @ltor{} icon, 
 or drag and drop a @file{.tex} file onto the icon.

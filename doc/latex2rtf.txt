@@ -26,6 +26,24 @@ LaTeX2RTF
    This file documents LaTeX2RTF , a converter that translates LaTeX
 to RTF.
 
+   Copyright (C) 1998-2004 Georg Lehner, Wilfried Hennings, Scott Prahl
+
+   Permission is granted to make and distribute verbatim copies of this
+manual provided the copyright notice and this permission notice are
+preserved on all copies.
+
+   Permission is granted to copy and distribute modified versions of
+this manual under the conditions for verbatim copying, provided also
+that the sections entitled "Copying" and "GNU General Public License"
+are included exactly as in the original, and provided that the entire
+resulting derived work is distributed under the terms of a permission
+notice identical to this one.
+
+   Permission is granted to copy and distribute translations of this
+manual into another language, under the above conditions for modified
+versions, except that this permission notice may be stated in a
+translation approved by the Free Software Foundation.
+
 Introduction
 ************
 
@@ -184,14 +202,14 @@ DOS or Windows
    The UNIX and Mac distributions do not contain an executable for DOS
 or Windows. Instead, get the DOS port as file `latex2rtf-x.x.x_dos.zip'
 or the Windows (Win32 = Win95, Win98, WinME, WinNT, Win2000, WinXP)
-version as file `latex2rtf-x.x.x_win.zip' (where x.x.x is the version
+version as file `latex2rtf-x.x.x_win.exe' (where x.x.x is the version
 number) from SourceForge (http://sourceforge.net/projects/latex2rtf/)
 The DOS distribution contains a precompiled executable which should run
 under plain DOS and also in the command prompt (or "console") of any MS
 Windows system.
 The Win32 version starting from 1.9.14a has the same executable but
-additionally an optional Win32 GUI interface (LaTeX2RTF Shell) and
-comes with an automatic installer, *Note Win32 systems::.
+additionally an optional Win32 GUI interface (LaTeX2RTF Shell) and is
+wrapped in an automatic installer, *Note Win32 systems::.
 To install latex2rtf, extract all files from the zip archive to `C:\l2r'
 or to another folder (i.e. directory) of your choice, preserving the
 folder structure (winzip: check "use folder names").
@@ -290,8 +308,8 @@ Win32 systems
 =============
 
    To install LaTeX2RTF  on a Win32 system (Win9x, WinME, WinNT,
-Win2000, WinXP), unzip the `latex2rtf-x.x.x_win.zip', then execute the
-`latex2rtf-x.x.x_win.exe' and follow the instructions.
+Win2000, WinXP), download and execute the `latex2rtf-x.x.x_win.exe'
+(where x.x.x is the version number) and follow the instructions.
 
    To start the program double-click the LaTeX2RTF  icon, or drag and
 drop a `.tex' file onto the icon.
