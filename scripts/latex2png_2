@@ -112,14 +112,14 @@ if [ $ext = "tex" ] ; then
 
 	inline=`grep -c -E INLINE_DOT_ON_BASELINE $name.$ext`
 
-	LATEX $name > /dev/null
+	$LATEX $name > /dev/null
 	
 	if [ ! -e "$name.dvi" ] ; then
 		echo "error: latex failed to translate $name.tex to $name.dvi"
 		exit 1
 	fi
 	
-	$DVIPS -o $name.eps $name.dvi >& /dev/null
+	$DVIPS -o $name.eps $name.dvi 2> /dev/null
 	
 	if [ ! -e "$name.eps" ] ; then
 		echo "error: dvips failed to translate $name.dvi to $name.eps"
@@ -127,7 +127,7 @@ if [ $ext = "tex" ] ; then
 	fi
 fi
 
-$GHOSTSCRIPT -sDEVICE=$out -r${opt_d} -sOutputFile=$name.$out $name.eps >& /dev/null
+$GHOSTSCRIPT -sDEVICE=$out -r${opt_d} -sOutputFile=$name.$out $name.eps 2> /dev/null
 
 if [ ! -e "$name.$out" ] ; then
 	echo "error: ghostscript failed to translate $name.eps to $name.$out"
