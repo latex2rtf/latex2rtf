@@ -1,6 +1,7 @@
-# $Id: Makefile,v 1.47 2002/03/21 03:43:19 prahl Exp $
+# $Id: Makefile,v 1.48 2002/03/31 17:13:11 prahl Exp $
 
 CC=gcc
+MKDIR=mkdir -p
 LIBS=
 
 CFLAGS:=-DUNIX
@@ -19,17 +20,13 @@ CFLAGS:=$(CFLAGS) -g -Wall -ansi -pedantic
 #Base directory
 PREFIX=/usr/local
 
-# Location of executable
+# Location of binary, man, info, and support files
 BIN_INSTALL=$(PREFIX)/bin
-
-# Location of .cfg files needed by executable
-CFG_INSTALL=$(PREFIX)/lib/latex2rtf
-
-# Location of man files
 MAN_INSTALL=$(PREFIX)/man/man1
-
-# Location of info files
 INFO_INSTALL=$(PREFIX)/info
+SUPPORT_INSTALL=$(PREFIX)/share/latex2rtf
+CFG_INSTALL=$(PREFIX)/share/latex2rtf/cfg
+HTML_INSTALL=$(PREFIX)/share/latex2rtf/html
 
 # Nothing to change below this line
 
@@ -89,7 +86,7 @@ all : checkdir latex2rtf
 latex2rtf: $(OBJS) $(HDRS)
 	$(CC) $(CFLAGS) $(OBJS)	$(LIBS) -o latex2rtf
 
-cfg.o: cfg.c cfg.h util.h
+cfg.o: Makefile
 	$(CC) $(CFLAGS) -DLIBDIR=\"$(CFG_INSTALL)\" -c cfg.c -o cfg.o
 
 check: latex2rtf
@@ -101,16 +98,16 @@ clean: checkdir
 	rm -f $(OBJS) core latex2rtf
 
 depend: $(SRCS)
-	cc -MM $(SRCS) >makefile.depend
+	$(CC) -MM $(SRCS) >makefile.depend
 	@echo "***** Append makefile.depend to Makefile manually ******"
 
 dist: $(SRCS) $(HDRS) $(CFGS) $(README) Makefile $(SCRIPTS) $(DOCS) $(TEST)
-	mkdir latex2rtf-$(VERSION)
-	mkdir latex2rtf-$(VERSION)/cfg
-	mkdir latex2rtf-$(VERSION)/doc
-	mkdir latex2rtf-$(VERSION)/doc/latex2rtf
-	mkdir latex2rtf-$(VERSION)/test
-	mkdir latex2rtf-$(VERSION)/scripts
+	$(MKDIR) latex2rtf-$(VERSION)
+	$(MKDIR) latex2rtf-$(VERSION)/cfg
+	$(MKDIR) latex2rtf-$(VERSION)/doc
+	$(MKDIR) latex2rtf-$(VERSION)/doc/latex2rtf
+	$(MKDIR) latex2rtf-$(VERSION)/test
+	$(MKDIR) latex2rtf-$(VERSION)/scripts
 	ln $(SRCS)         latex2rtf-$(VERSION)
 	ln $(HDRS)         latex2rtf-$(VERSION)
 	ln $(README)       latex2rtf-$(VERSION)
@@ -128,23 +125,32 @@ doc: doc/latex2rtf.texi doc/Makefile
 	cd doc && $(MAKE) -k
 
 install: latex2rtf doc/latex2rtf.1 $(CFGS) scripts/latex2png
-	mkdir -p $(BIN_INSTALL)
-	mkdir -p $(MAN_INSTALL)
-	mkdir -p $(CFG_INSTALL)
+	$(MKDIR) $(BIN_INSTALL)
+	$(MKDIR) $(MAN_INSTALL)
+	$(MKDIR) $(CFG_INSTALL)
+	$(MKDIR) $(HTML_INSTALL)
 	cp latex2rtf         $(BIN_INSTALL)
 	cp scripts/latex2png $(BIN_INSTALL)
 	cp doc/latex2rtf.1   $(MAN_INSTALL)
 	cp $(CFGS)           $(CFG_INSTALL)
+	cp doc/latex2rtf/*   $(HTML_INSTALL)
+	cp doc/latex2rtf.pdf $(SUPPORT_INSTALL)
+	cp doc/latex2rtf.txt $(SUPPORT_INSTALL)
 	@echo "******************************************************************"
-	@echo "** latex2rtf has been compiled to search for its configuration"
-	@echo "** files in \"$(CFG_INSTALL)\" "
-	@echo "** If the configuration files are moved then set the environment"
-	@echo "** variable RTFPATH to this new location (or edit latex2rtf Makefile"
-	@echo "** and recompile. See the README file for more details."
+	@echo "*** latex2rtf successfully installed"
+	@echo "***"
+	@echo "*** \"make install-info\" will install TeXInfo files "
+	@echo "***"
+	@echo "*** latex2rtf was compiled to search for its configuration files in"
+	@echo "***           \"$(CFG_INSTALL)\" "
+	@echo "*** If the configuration files are moved then either"
+	@echo "***   1) set the environment variable RTFPATH to this new location, or"
+	@echo "***   2) use the command line option -P /path/to/cfg, or"
+	@echo "***   3) edit the Makefile and recompile"
 	@echo "******************************************************************"
 
-install_info: doc/latex2rtf.info
-	mkdir -p $(INFO_INSTALL)
+install-info: doc/latex2rtf.info
+	$(MKDIR) $(INFO_INSTALL)
 	cp doc/latex2rtf.info $(BIN_INSTALL)
 	install-info --info-dir=$(INFO_INSTALL) doc/latex2rtf.info
 

@@ -1,4 +1,4 @@
-/* $Id: xref.c,v 1.16 2002/03/15 16:52:09 prahl Exp $ 
+/* $Id: xref.c,v 1.17 2002/03/31 17:13:11 prahl Exp $ 
  
 This file contains routines to handle cross references :
 	\label{key}, \ref{key},   \pageref{key}, \bibitem{key},
@@ -82,13 +82,13 @@ CmdNoCite(int code)
 void 
 CmdBibliography(int code)
 {
-	if (PushSource(BblName, NULL)) {
+	if (PushSource(g_bbl_name, NULL)) {
 		diagnostics(4, "CmdBibliography ... begin Convert()");
 		Convert();
 		diagnostics(4, "CmdBibliography ... done Convert()");
 		PopSource();
 	} else
-		diagnostics(WARNING, "Cannot open bibliography file.  Create %s using BibTeX", BblName);
+		diagnostics(WARNING, "Cannot open bibliography file.  Create %s using BibTeX", g_bbl_name);
 }
 
 void 
@@ -314,8 +314,8 @@ code=1 means \token{reference}{{sect}{line}} -> "sect"
 
 	sprintf(target, "\\%s{%s}", token, reference);
 	
-	if (fAux == NULL && (fAux = fopen(AuxName, "r")) == NULL) {
-		diagnostics(WARNING, "No .aux file.  Run LaTeX to create %s\n", AuxName);
+	if (fAux == NULL && (fAux = fopen(g_aux_name, "r")) == NULL) {
+		diagnostics(WARNING, "No .aux file.  Run LaTeX to create %s\n", g_aux_name);
 		g_aux_file_missing = TRUE;
 		return NULL;
 	}

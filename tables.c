@@ -1,4 +1,4 @@
-/* $Id: tables.c,v 1.13 2001/12/03 04:44:13 prahl Exp $
+/* $Id: tables.c,v 1.14 2002/03/31 17:13:11 prahl Exp $
 
    Translation of tabbing and tabular environments
 */
@@ -151,7 +151,7 @@ CmdTabkill( /* @unused@ */ int code)
 void 
 ConvertTabbing(void)
 /******************************************************************************
- purpose: routine which converts the tabbing-commands from LaTex to Rtf
+ purpose: converts tabbing commands from LaTeX to Rtf
  ******************************************************************************/
 {
 	int             read_end = 1024;
@@ -447,7 +447,7 @@ parameter: type of array-environment
 		CmdIndent(INDENT_NONE);
 
 		g_processing_table = TRUE;
-		table_contents = getTexUntil(endtable, FALSE);
+		table_contents = getTexUntil(endtable, TRUE);
 		g_table_label = ExtractLabelTag(table_contents);
 		ConvertString(table_contents);	
 		ConvertString(endtable);

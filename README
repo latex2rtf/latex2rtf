@@ -1,61 +1,31 @@
 latex2rtf is a translator program that translates LaTeX text into the
-RTF format used by several textprocessors, including Microsoft Word
-and Word for Windows.  
-
-latex2rtf began as a program written by Fernando Dorner and Andreas Granzer 
-in a one-semester course.  This program was later updated in another 
-one-semester course by Friedrich Polzer and Gerhard Trisko.  Ralf Schlatterbeck 
-<ralf@zoo.priv.at> maintained and extended it until 1998.  The current maintainer 
-is Georg Lehner <jorge_lehner@gmx.net>.  Many changes were submitted by Scott
-Prahl <prahl@ece.ogi.edu> during 2001.  
+RTF format used by various text processors, most notably Word.
 
 For the Copyright of the Program see the file Copyright.
 
-The documentation of the program is found in the doc/ directory in the
-file latex2rtf.info in the GNU info format.  For your convenience find
-a HTML and a PDF version of the manual there.
+As of version 1.9.13, latex2rtf supports converting equations to
+bitmaps.  This requires TeX and ImageMagick.  See scripts/README.
 
 To install (on a UNIX system)
-- Edit Makefile for your local configuration. The install part supports
-  multiple directories to install to, you will normally only need one.
-  Be sure to correctly configure the LIBDIR variable to the directory
-  where support files (ending in .cfg) will be found by the program.
-  This is normally the same as the LIBINSTALL variable.
+- Edit Makefile for your local configuration.  The default install
+  is reasonable, but if you do not have root access, then you might
+  need to set $PREFIX to be your home directory.
 - make
 - If this is not your first-time installation, you may want to preserve
   your old configuration (*.cfg) files. Copy them to a safe place before
   installing.
+- make check   (expect warnings but no errors)
 - make install
-- If you have problems with make install (for example if your mkdir
-  doesn't support the -p option) and you do not need multiple install
-  targets, try:
-  make simple_install
-- Define the environment variable RTFPATH this is typically /usr/local/lib/latex2rtf
-- Run make test to test your installation
 
-Reporting bugs:
-Please give the following information and observe the following
-guidelines when reporting a bug in the program to the homepage
-at Sourceforge
+Reporting bugs to the homepage at Sourceforge
+
               http://sourceforge.net/projects/latex2rtf/
 
-* Try the most recent version of the program, this is especially 
-  important when the code is getting updated frequently.
-* Give the version of the program
-  - For the executable you get the version by specifying the -V option
-    to latex2rtf
-  - For the sources the version is the version number of the file
-    version.h
-* The Operating System and version number where you are running or
-  trying to install latex2rtf. Be sure to check the file Makefile for
-  settings that may be specific to your machine, especially for some
-  versions of SunOS there may be settings which are needed to compile
-  successfully. Do this BEFORE submitting the bug reports.
-* If the program produces wrong output or does not work for you, include
-  a SHORT latex file along with a description of the problem. It is 
+* Please verify your bug with the most recent version of the program.
+* Please provide the version of the program you are using
+* Please provide your operating system and version number
+* Provide a short latex file that exhibits the bug.  It is
   imperative that you spend time isolating the problem into a small
   latex file.  This shows that you actually care enough about the 
   problem to spend some of your time trying to help isolate the bug.
-* Be patient.  We maintain the program in our free time and we did
-  not write most of the code.  We will try to fix reported bugs
-  in upcoming releases.
+* Be patient.  Provide patches.  Enjoy.

@@ -1,4 +1,4 @@
-/* $Id: graphics.c,v 1.9 2002/03/21 03:43:19 prahl Exp $ 
+/* $Id: graphics.c,v 1.10 2002/03/31 17:13:11 prahl Exp $ 
 This file contains routines that handle LaTeX graphics commands
 */
 
@@ -453,25 +453,36 @@ PutLatexFile(char *s)
  ******************************************************************************/
 {
 	char *png, *cmd;
-	int err;
+	int err, cmd_len;
 	unsigned long width, height;
 	unsigned long max=32767/20;
-	int resolution = 600; /*points per inch */
+	int resolution = g_dots_per_inch*2; /*points per inch */
 	
 	diagnostics(4, "Entering PutLatexFile");
 
 	png = strdup_together(s,".png");
-	cmd = (char *) malloc(strlen(s)+18);	/* shell commands to convert equations */
+
+	cmd_len = strlen(s)+25;
+	if (g_home_dir)
+		cmd_len += strlen(g_home_dir);
+
+	cmd = (char *) malloc(cmd_len);
 
 	/* iterate until png is small enough for Word */
 	do {
 		resolution /= 2;
-		sprintf(cmd, "latex2png -d %d %s", resolution, s);	
+		if (g_home_dir==NULL)
+			sprintf(cmd, "latex2png -d %d %s", resolution, s);	
+		else
+			sprintf(cmd, "latex2png -d %d -H \"%s\" %s", resolution, g_home_dir, s);	
+
 		err = system(cmd);
-		GetPngSize(png, &width, &height);
 		diagnostics(1, "cmd = <%s>", cmd);
-		diagnostics(4, "png size width=%d height =%d", width, height);
-	} while (!err && resolution>25 && ( (width>max) || (height>max)) );
+		if (err==0){
+			GetPngSize(png, &width, &height);
+			diagnostics(4, "png size width=%d height =%d", width, height);
+		}
+	} while (!err && resolution>10 && ( (width>max) || (height>max)) );
 	
 	if (err==0)
 		PutPngFile(png,72.0/resolution);

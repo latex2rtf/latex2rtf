@@ -1,13 +1,5 @@
 Bugs:
- 	Fix source line numbering
 	Fix equation numbering for eqnarray environments
-	Fix image sizes which are larger than 32767 twips
-	Add command-line density option
-	Fix latex2png -H
-	Add path support to files
-	
-	Add support for a local cfg directory
-	Add support for \includegraphics options (both graphics and graphicx)
 
 Fit & Finish:
 
@@ -17,17 +9,10 @@ Fit & Finish:
 
 	misc4.tex
 		missing references
-		error while processing ?
-		
-	essential.tex
-		error while processing
 		
 	excalibur.tex
 		word disregards \* MERGEFORMAT in some sections
 		
-	cite.tex
-		Fix message about missing refs
-
 	Extra paragraph at
 		- in misc1.tex, near the end, after the italic text before the comma in:
 		{\it missing at random},
@@ -40,6 +25,8 @@ Fit & Finish:
 		cont\"enu et de la mise en page, ma\"is, ma\"\i{}zena, ma\^{\i}zena, b\"ureau, etc.),
 
 Potential Features:
+
+	Support \includegraphics options (both graphics and graphicx)
 
 	Translation when .aux is absent.
 

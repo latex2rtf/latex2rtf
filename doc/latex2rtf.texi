@@ -18,21 +18,21 @@ LaTeX
 @end macro
 
 @macro latexe {}
-@iftex
-@LaTeXe{}
-@end iftex
 @ifnottex
 LaTeX2e
 @end ifnottex
+@iftex
+@LaTeXe{}
+@end iftex
 @end macro
 
 @macro ltor {}
-@iftex
-@LaTeX{}2RTF
-@end iftex
 @ifnottex
 LaTeX2RTF
 @end ifnottex
+@iftex
+@LaTeX{}2RTF
+@end iftex
 @end macro
 
 @ifinfo
@@ -69,7 +69,7 @@ approved by the Free Software Foundation.
 @subtitle 
 A converter from @latex{} to RTF
 
-Edition 0.3
+Edition 0.4
 @author Georg Lehner,
 updated by Wilfried Hennings and Scott Prahl
 
@@ -95,7 +95,7 @@ approved by the Free Software Foundation.
 @end titlepage
 
 @ifnottex
-@node Top, History, (dir), (dir)
+@node Top, History, ,
 @top @ltor{}
 
 This file documents @ltor{}, a converter that translates @latex{} to RTF.
@@ -112,9 +112,9 @@ This file documents @ltor{}, a converter that translates @latex{} to RTF.
 * Using LaTeX2RTF::          
 * Features::                    
 * Configuring LaTeX2RTF ::      
-* Error Messages and Logging of LaTeX2RTF Activity ::  
+* Error Messages and Logging ::  
 * LaTeX2RTF under Development ::  
-* Index of Commandline and Configuration file Options ::  
+* Index for LaTeX2RTF ::  
 @end menu
 
 @node  History, Introduction, Top, Top
@@ -134,6 +134,7 @@ In 1998 @email{jorge_lehner@@gmx.net,Georg Lehner} found the reference to @ltor{
 @uref{http://tug.org/utilities/texconv/index.html, TeX Conversion Webpage}  of
 @email{W.Hennings@@fz-juelich.de,Wilfried Hennings} and added some functionality and took
 over the maintainence of the program.  The last version release by Georg is 1.8aa.
+The bulk of development post 1.8aa was done by Scott Prahl.  
 Wilfried Hennings now coordinates the development of the program and maintains the project
 on @uref{http://sourceforge.net/projects/latex2rtf/,SourceForge} where there are also
 (low volume) mailing lists for users @email{latex2rtf-users@@lists.sourceforge.net}
@@ -144,7 +145,7 @@ For subscription to these lists:
 or
 @email{latex2rtf-developers-request@@lists.sourceforge.net?subject=subscribe}
 
-As of December 2001, version 1.9.12 of @ltor{} is available. 
+As of April 2002, version 1.9.13 of @ltor{} is available. 
 One day there shall be a jump to Version 2.0, but this is not history but future ...
 
 The contents of this manual were composed by copying shamelessly what was
@@ -155,14 +156,14 @@ available in the original sources and documentation.
 
 @ltor{} is a translator program from @latex{} text into ``rich text format'' files.  These
 files are commonly referred to as RTF files.  RTF is a published standard format by
-Microsoft.  This standard is somewhat ambiguous in places and Microsoft ignores various
-parts of the standard that are inconvenient, but RTF is widely used by many WYSIWIG text
-editors and is supported by Microsoft Word and Word for Windows. RTF can be exported
-and/or imported by several textprocessors.
+Microsoft.  This standard can be ambiguous in places and Microsoft ignores
+parts of the standard it finds inconvenient, but RTF is widely used by many WYSIWIG text
+editors and is supported by Microsoft Word and most text processors.
 
-@ltor{} translates the text and much of the formatting information from @latex{} to RTF,
-but the typeset output is not nearly as good as what you would get from using @latex{}
-directly.  So, why bother translating? There are three purposes:
+@ltor{} translates the text and as much of the formatting information from @latex{} to RTF.
+Be forewarned that the typeset output is not nearly as good as what you would get 
+from using @latex{} directly.
+So, why bother translating? Consider,
 
 @enumerate
 @item
@@ -175,14 +176,6 @@ You know somebody who frequently sends you very fine @latex{} documents. Unfortu
 you are ``on the other side'' and need to import her files, steal some part, and then
 desktop publish it in your fine MS-@dots{} environment.
       
-@item
-You maybe have both things, @latex{} and MS-@dots{}, or you don't. But you like the way
-how @latex{} and friends work, and you don't want to type in a letter to your friends with
-about 345 characters and end up with a @file{.doc} file of 32,845 byte. So you edit your
-documents either with @file{edit.com} or @file{edlin} in the structured form that @latex{}
-encourages, and then you use MS-@dots{}, or MS-@dots{}-Viewer or any other RTF-rendering
-software to print out your file.  Yes, this somewhat bizarre, but we are all somewhat
-bizarre, are we not?
 @end enumerate
 
 There are drawbacks to the conversion process. In fact, don't expect any @latex{} file to
@@ -204,8 +197,8 @@ standardized than in RTF, only a small subset of commands has been implemented t
 Some of the capabilities of @ltor{} are restricted in scope or buggy. @xref{Known Bugs}.
 
 RTF is a moving target, because Microsoft does not stop inventing new extensions and
-features for it. So you cannot view newer RTF files with older word Processors.  @ltor{}
-eventually will generate RTF output that is unreadable with your Program.  The syntax and
+features for it. So you cannot view newer RTF files with older word processors.  
+@ltor{} eventually will generate RTF output that is unreadable with your Program.  The syntax and
 semantics of RTF are somewhat artistic, i.e., you can generate a syntactically correct RTF
 file that cannot be displayed by some/most word processors.
 
@@ -224,15 +217,16 @@ an i386 processor or better. The Win32 Version requires
 up) will also run under all MS windows versions, the Win32 version has been discontinued.
 
 Subsequent to 1.8aa, @email{prahl@@ece.ogi.edu,Scott Prahl} has fixed many bugs, improved
-handling of tabular environments, significantly improve handling of
-equations, added macro expansion of @code{\newcommand} definitions, improved handling of
-cross references, and added some support for @code{\includegraphics} files.
+handling of tabular environments, significantly improved handling of
+equations, added macro expansion, improved handling of
+cross references, added bitmap rendering of equations,
+and added some support for @code{\includegraphics} files.
 
 You find the latest version on
 @uref{http://sourceforge.net/projects/latex2rtf/,SourceForge} and -- with some delay -- on
 CTAN sites: e.g., @uref{http://www.dante.de} or @uref{http://www.ctan.org}.
 
-There are a couple of persons working on the @ltor{} revival, coordinated by
+There are a couple of people working on the @ltor{}, coordinated by
 @email{W.Hennings@@fz-juelich.de, Wilfried Hennings}. Contact the mailing_list for the
 latest news.
 
@@ -241,59 +235,70 @@ latest news.
 
 @menu
 * General ::
-* @acronym{UNIX} ::
+* UNIX ::
 * Windows ::
 * Macintosh ::
 * Problems Compiling ::
 * Problems with make test ::
 @end menu
 
-@node General,@acronym{UNIX},Installing LaTeX2RTF,Installing LaTeX2RTF
+@node General,UNIX,Installing LaTeX2RTF,Installing LaTeX2RTF
 @section General
 
-@node @acronym{UNIX},Windows,General,Installing LaTeX2RTF
-@section @acronym{UNIX}
-
 The documentation of the program is found in the @file{doc/} directory in the
-file @file{latex2rtf.info} in the GNU info format.  For your convenience, you
-can find @file{.html} and @file{.pdf} versions of the manual there as well.
+file @file{latex2rtf.texi} in the GNU TeXInfo format.  For your convenience, you
+can find @acronym{HTML} and @acronym{PDF} versions of the manual there as well.
 
-To install (on a @acronym{UNIX} system)
+@node UNIX,Windows,General,Installing LaTeX2RTF
+@section UNIX
+
+To install, 
 @enumerate
 @item
-Edit  @file{Makefile} for your local configuration. The install part supports
-multiple directories to install to, you will normally only need one. Be
-sure to correctly configure the @file{LIBDIR} variable to the directory where
-support files (ending in @file{.cfg}) will be found by the program. This is
-normally the same as the @file{LIBINSTALL} variable.
+Edit @file{Makefile} for your local configuration.  In particular, pay attention
+to the @env{PREFIX} variable.  If you do not have root access you might wish 
+to set the makefile variable @env{PREFIX} to be your home directory.  
+
+@item
+As of version 1.9.13, @ltor{} supports conversion of @latex{} equations to
+bitmaps using the shell script @file{latex2png}, found in @file{scripts/}.  
+@file{latex2png} requires that
+both @latex{} and @file{ImageMagick} are installed. 
+@ltor{} will translate documents without a working @file{latex2png}, but some
+features will be missing.
 
 @item @code{make}
 
-@item If this is not your first time installation, you may want to preserve
+ If this is not your first time installation, you may want to preserve
   your old configuration (@file{*.cfg}) files. Copy them to a safe place before
   installing.
 
+@item @code{make check}
+
+[OPTIONAL] This tests @ltor{} on a variety of @latex{} files.  Expect
+a whole lot of warnings, but no outright errors.
+
 @item @code{make install}
 
-@item If you have problems with make install (for example if your @code{mkdir}
-  doesn't support the @option{-p} option) and you do not need multiple install
-  targets, try:
-  @code{make simple_install}
-  
-@item Define the environment variable @env{RTFPATH}. This is typically 
-@code{/usr/local/lib/latex2rtf}
+If your @code{mkdir} doesn't support the @option{-p} option, then create
+  the necessary directories by hand and remove the option from the @code{$MKDIR} variable.
+  If you have other problems, just copy @file{latex2rtf} and @file{latex2png} to
+  a binary directory, and move the contents of the @file{cfg/} directory to
+  the location specified by @code{$CFG_INSTALL}.
+ 
+@item @code{make install-info}
 
-@item Run @code{make test} to test your installation
+[OPTIONAL] This installs @file{.info} files for use with the @code{info}
+program.
+
 @end enumerate
 
-Open the @file{latex2rtf} directory and type
-@example
-make
-make test
-sudo make install
-@end example
+You no longer need to define the environment variable @env{RTFPATH}. This
+is only necessary if you move the directory containing the @file{.cfg} files.  Just
+define @env{RTFPATH} to be the path to the new location.
 
-@node Windows, Macintosh, @acronym{UNIX},Installing LaTeX2RTF
+
+@node Windows,Macintosh,UNIX,Installing LaTeX2RTF
 @section Windows
 
 The file @file{L2R.BAT} is for use with the @acronym{DJGPP} generated version 
@@ -301,7 +306,9 @@ The file @file{L2R.BAT} is for use with the @acronym{DJGPP} generated version
 
 The @acronym{UNIX} and Mac distributions do not contain an executable for DOS / Windows.
 Instead, get the DOS / Windows port as file @file{latex2rtf-x.xx_dos.zip}
-(where x.xx is the version number) from  @uref{http://sourceforge.net/projects/latex2rtf/}
+(where x.xx is the version number) from  
+@uref{http://sourceforge.net/projects/latex2rtf/,SourceForge}
+
 
 The MSDOS release contains two
 precompiled executables:
@@ -371,13 +378,13 @@ lacks this facility.
 @chapter Using LaTeX2RTF
 
 @menu
-* General assumptions made by LaTeX2RTF ::
+* General Assumptions ::
 * LaTeX2RTF Options ::
 * Debugging::                   
 @end menu
 
-@node General assumptions made by LaTeX2RTF, LaTeX2RTF Options, Using LaTeX2RTF, Using LaTeX2RTF
-@section General assumptions made by LaTeX2RTF
+@node General Assumptions, LaTeX2RTF Options, Using LaTeX2RTF, Using LaTeX2RTF
+@section General Assumptions
 
 @ltor{} assumes that the @file{.tex} file you want to convert is a valid @latex{}
 document.  The chances of a successful @ltor{} conversion are slightly better than the
@@ -388,8 +395,7 @@ To correctly convert font names you must edit the @file{fonts.cfg} configuration
 This file is used to specify the needed font names and how the @latex{} default font names
 should be converted to RTF.  @xref{Font Configuration}. @latex{} variables and user
 defined commands are not evaluated. They will be simply ignored. To let @ltor{} know the
-names of variables you can add them in the @file{ignore.cfg} file.  @xref{Ignore Command
-Configuration}.
+names of variables you can add them in the @file{ignore.cfg} file.  @xref{Ignore Command}.
 
 The environment variable RTFPATH may contain a search path for the support files (all
 files ending in @file{.cfg}). If no file is found during the search in the search-path or
@@ -404,11 +410,11 @@ Make sure that the configuration files are in the correct directory. @ltor{} wil
 least @file{fonts.cfg}, @file{direct.cfg}, @file{ignore.cfg}, @file{english.cfg}. You may
 have to change one ore more of them to suit your needs. @xref{Configuring LaTeX2RTF}.
 
-@xref{Missing and faulty command line options}, for actual implementations irregularities.
+@xref{Missing options}, for actual implementations irregularities.
 
 @xref{Reporting Bugs}, for information on how to reach the maintainer.
 
-@node LaTeX2RTF Options,Debugging,General assumptions made by LaTeX2RTF,Using LaTeX2RTF
+@node LaTeX2RTF Options,Debugging,General Assumptions,Using LaTeX2RTF
 @section LaTeX2RTF Options
 
 The @ltor{} command converts a @latex{} file into RTF text format. The text and
@@ -467,6 +473,12 @@ is not needed if the above command is already in the @latexe{} file.  You may se
 of the following code pages: ansinew, applemac, cp437, cp437de, cp850, cp852, cp865,
 decmulti, cp1250, cp1252, latin1, latin2, latin3, latin4, latin5, latin9, and next.  The
 default behavior is to use ansinew (code page 1252).
+
+@item -D dots_per_inch
+used to specify the number of dots per inch for equations converted to bitmaps.  
+This value is also used when picture environments are converted to bitmaps as well
+as when EPS graphics are converted to png files.  The default value is 300 dots per
+inch.
 
 @item -M#
 where # selects the type of equation conversion.  Use
@@ -703,7 +715,7 @@ Otfried Schwarzkopf has created the ``Hyperlatex Markup Language'' which is a
 ``little package that allows you to use @latex{} to prepare documents in HTML.''
 It brings an Emacs lisp program with it to convert the Hyperlatex file to HTML.
 Hyperlatex can be obtained from the CTAN-sites, @xref{Availability}.
-There are two handsome commands that avoid typing: \link and \xlink that
+There are two convenient commands that avoid typing: \link and \xlink that
 generate an ``internal'' label which then is used in the following \Ref and
 \Pageref commands.
 
@@ -715,14 +727,14 @@ Note that you have to update your @file{.cfg} files if you are upgrading, since
 there are a lot of HTML oriented commands in Hyperlatex that we simply can
 `ignore'.
 
-@node Configuring LaTeX2RTF, Error Messages and Logging of LaTeX2RTF Activity, Features, Top
+@node Configuring LaTeX2RTF, Error Messages and Logging, Features, Top
 @chapter Configuring LaTeX2RTF 
 
 @menu
 * Input processing ::           
 * Output formatting ::          
-* Direct Conversion Configuration ::               
-* Ignore Command Configuration ::               
+* Direct Conversion ::               
+* Ignore Command ::               
 * Font Configuration ::                
 * Language Configuration ::             
 @end menu
@@ -755,7 +767,7 @@ sets.  If the @latex{} lacks the @code{\package[codepage]@{inputenc@}}
 definition, then you may need to use the command line switch to manually
 select the proper code page. @xref{Input Encoding}.
 
-@node Output formatting, Direct Conversion Configuration, Input processing, Configuring LaTeX2RTF
+@node Output formatting, Direct Conversion, Input processing, Configuring LaTeX2RTF
 @section Output formatting 
 
 On writing output, @ltor{} generates @code{\n} as line ending code.
@@ -769,8 +781,8 @@ but it does offer some.  This flexibility resides in four files @file{direct.cfg
 @file{ignore.cfg}, @file{fonts.cfg}, and @file{language.cfg}.  These filese
 are documented in the next four sections.
 
-@node Direct Conversion Configuration, Ignore Command Configuration, Output formatting, Configuring LaTeX2RTF
-@section Direct Conversion Configuration 
+@node Direct Conversion, Ignore Command, Output formatting, Configuring LaTeX2RTF
+@section Direct Conversion 
 
 The file @file{direct.cfg} is used for converting @latex{} commands by simple text
 replacement. The format consists of lines with a @latex{} command with backslash
@@ -785,8 +797,8 @@ To write the @samp{*} character use @samp{**}.
 \copyright,\'a9.
 @end example
 
-@node Ignore Command Configuration, Font Configuration, Direct Conversion Configuration, Configuring LaTeX2RTF
-@section Ignore Command Configuration 
+@node Ignore Command, Font Configuration, Direct Conversion, Configuring LaTeX2RTF
+@section Ignore Command 
 
 The file @file{ignore.cfg} is used for defining how to ignore specific commands. This
 file is used for recognition of @latex{} variables, user defined variables, and
@@ -829,11 +841,11 @@ line. Example:
 \pagelength,MEASURE.
 @end example
 
-@node Font Configuration, Language Configuration, Ignore Command Configuration, Configuring LaTeX2RTF
+@node Font Configuration, Language Configuration, Ignore Command, Configuring LaTeX2RTF
 @section Font Configuration 
 
 The file @file{fonts.cfg} contains the font name mapping.  For example, this
-file determine what font is used to represent @code{\rm} characters in the RTF file.  
+file determines what font is used to represent @code{\rm} characters in the RTF file.  
 
 A line consists of a font name in @latex{} followed by comma and a font
 name in RTF. The end is marked by a @samp{.}. No spaces are allowed. The
@@ -869,8 +881,8 @@ It is unlikely that you will need to create a new @file{language.cfg} file.
 However, just look at one of the existing files and follow the pattern.
 The format is really simple.  
 
-@node Error Messages and Logging of LaTeX2RTF Activity,, Configuring LaTeX2RTF, Top
-@chapter Error Messages and Logging of LaTeX2RTF Activity 
+@node Error Messages and Logging,, Configuring LaTeX2RTF, Top
+@chapter Error Messages and Logging 
 
 As stated in the Debugging section, @ltor{} provides a means to control 
 the amount of debugging information through the @option{-d#} switch.  
@@ -929,32 +941,32 @@ at times.  @xref{Known Bugs}.
 
 @menu
 * Unimplemented Features ::     
-* Missing and faulty command line options ::  
+* Missing options ::  
 * Known Bugs ::                 
 * Reporting Bugs ::             
 * Todo List ::                  
 @end menu
 
-@node Unimplemented Features, Missing and faulty command line options, LaTeX2RTF under Development, LaTeX2RTF under Development
-@section Unimplemented Features 
+@node Unimplemented Features, Missing options, LaTeX2RTF under Development, LaTeX2RTF under Development
+@section Unimplemented Features
 
 @itemize @bullet
 @item @ltor{} ignores some of the optional parameters of @code{\documentstyle} 
-@item Need to finish code page support.  Typically characters that need to be
+@item Need to finish code page support.  Some characters that need to be
 	  constructed using RTF @code{\field} commands are not implemented.
 @item Add the code to produce the corresponding chapter, section,
       and page numbering with headings and myheadings pagestyles. Implement
       @code{\markboth} and @code{\markright}.
 @item To support @code{\tableofcontents} there would be two approaches: Transfer
-      sectioning information, title text and let produce pagenumber by the rtf-
+      sectioning information, title text and then produce page numbers by the rtf-
       reader. Scan and label all of the sectioning commands while reading and
       then construct the sectioning information using these labels. Needs two
       passes on @latex{} input.
 @item Include the GNU gettext package to internationalize @ltor{}'s Messages.
 @end itemize
 
-@node Missing and faulty command line options, Known Bugs, Unimplemented Features, LaTeX2RTF under Development
-@section Missing and faulty command line options 
+@node Missing options, Known Bugs, Unimplemented Features, LaTeX2RTF under Development
+@section Missing options
 
 Missing or buggy command line options.
 
@@ -988,7 +1000,7 @@ getopt package.
 @end table
 
 
-@node Known Bugs, Reporting Bugs, Missing and faulty command line options, LaTeX2RTF under Development
+@node Known Bugs, Reporting Bugs, Missing options, LaTeX2RTF under Development
 @section Known Bugs 
 
 @enumerate
@@ -1007,8 +1019,9 @@ getopt package.
 @node Reporting Bugs, Todo List, Known Bugs, LaTeX2RTF under Development
 @section Reporting Bugs 
 
-Report bugs to @email{Jorge.Lehner@@gmx.net,Georg Lehner}. Ralf Schlatterbeck is no
-longer the maintainer. Please provide the following information and observe the following
+Report bugs to to the bug tracking system at @uref{http://sourceforge.net/projects/latex2rtf/,SourceForge}. 
+Only report bugs for the latest version of @ltor{} that is available.  
+ Please provide the following information and observe the following
 guidelines when reporting a bug in the program:
 @enumerate
 @item State the version of @ltor{} that you are using.  You can get the version by
@@ -1036,8 +1049,10 @@ question. I will, however, try to fix reported bugs in upcoming releases.
 
 Scott's ToDo list
 @itemize @bullet
+@item  Use lex/yacc to implement getSection
+@item  Rewrite table code
 @item  Add support for pagestyle
-@item  Add better graphic/graphicx support
+@item  Improve graphic/graphicx support
 @item  Better support for ignoring commands
 @end itemize
 
@@ -1053,8 +1068,8 @@ Georg's todo list
       partially functional, ...).
 @end itemize
 
-@node Index of Commandline and Configuration file Options,,, Top
-@chapter Index of Commandline and Configuration file Options 
+@node Index for LaTeX2RTF,,, Top
+@chapter Index for LaTeX2RTF 
 
 @printindex cp
 

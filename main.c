@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.65 2002/03/25 15:43:41 prahl Exp $ */
+/* $Id: main.c,v 1.66 2002/03/31 17:13:11 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -26,10 +26,11 @@
 #include "xref.h"
 
 FILE           *fRtf = NULL;			/* file pointer to RTF file */
-char           *TexName = NULL;
-static char    *RtfName = NULL;
-char           *AuxName = NULL;
-char           *BblName = NULL;
+char           *g_tex_name = NULL;
+char    	   *g_rtf_name = NULL;
+char           *g_aux_name = NULL;
+char           *g_bbl_name = NULL;
+char		   *g_home_dir = NULL;
 
 char           *progname;	            /* name of the executable file */
 bool            GermanMode = FALSE;	    /* support germanstyle */
@@ -39,6 +40,7 @@ char            g_encoding[20] = "cp1252";
 bool            twoside = FALSE;
 int      		g_verbosity_level = WARNING;
 bool			g_little_endian = FALSE;  /* set properly in main() */
+int				g_dots_per_inch = 300;
 
 /* Holds the last referenced "link" value, used by \Ref and \Pageref */
 char           *hyperref = NULL;
@@ -104,13 +106,13 @@ int main(int argc, char **argv)
 	SetEndianness();
 	progname = argv[0];
 	optind = 1;
-	while ((c = getopt(argc, argv, "lhvSVWZ:o:a:b:d:i:C:M:P:T:")) != EOF) {
+	while ((c = getopt(argc, argv, "lhvSVWZ:o:a:b:d:i:C:D:M:P:T:")) != EOF) {
 		switch (c) {
 		case 'a':
-			AuxName = optarg;
+			g_aux_name = optarg;
 			break;
 		case 'b':
-			BblName = optarg;
+			g_bbl_name = optarg;
 			break;
 		case 'd':
 			g_verbosity_level = *optarg - '0';
@@ -126,13 +128,18 @@ int main(int argc, char **argv)
 			setPackageBabel("latin1");
 			break;
 		case 'o':
-			RtfName = optarg;
+			g_rtf_name = optarg;
 			break;
 		case 'v':
 			fprintf(stderr, "%s: %s\n", progname, Version);
 			return (0);
 		case 'C':
 			setPackageInputenc(optarg);
+			break;
+		case 'D':
+			sscanf(optarg, "%d", &g_dots_per_inch);
+			if (g_dots_per_inch < 25 || g_dots_per_inch >600)
+				fprintf(stderr, "Dots per inch must be between 25 and 600 dpi\n");
 			break;
 		case 'M':
 			sscanf(optarg, "%d", &x);
@@ -188,44 +195,53 @@ int main(int argc, char **argv)
 		diagnostics(ERROR,   " Type \"latex2rtf -h\" for help");
 	}
 	
-	basename = NULL;
-	
-	if (argc == 1 && strcmp(*argv,"-")!=0) { /* texname exists and != "-" */
+/* Parse filename.  Extract directory if possible.  Beware of stdin cases */
+   	
+	if (argc == 1 && strcmp(*argv,"-")!=0) { 	/* filename exists and != "-" */
 		char           *s, *t;
 
-		basename = strdup(*argv);			/* full path name */
-		s = strrchr(basename, PATHSEP);		/* s points to name */
-		if (s == NULL) s = basename;
+		basename = strdup(*argv);				/* parse filename            */
+		s = strrchr(basename, PATHSEP);
+		if (s != NULL) {						
+			g_home_dir = strdup(basename);		/* parse /tmp/file.tex 		 */
+			t = strdup(s+1);
+			free(basename);
+			basename = t;						/* basename = file.tex 		 */	
+			s = strrchr(g_home_dir, PATHSEP);
+			*(s+1) = '\0';						/* g_home_dir = /tmp/ 		 */
+		}
 
-		t = strstr(s, ".tex");				/* remove .tex if present */
+		t = strstr(basename, ".tex");			/* remove .tex if present 	 */
 		if (t != NULL) 
 			*t = '\0';
 		
-		TexName = strdup_together(basename, ".tex");
-		RtfName = strdup_together(basename, ".rtf");
+		g_tex_name = strdup_together(basename, ".tex");
+		g_rtf_name = strdup_together(basename, ".rtf");
 	} 
 	
-	if (AuxName == NULL && basename != NULL) 
-		AuxName = strdup_together(basename, ".aux");
+	if (g_aux_name == NULL && basename != NULL) 
+		g_aux_name = strdup_together(basename, ".aux");
 
-	if (BblName == NULL && basename != NULL)
-		BblName = strdup_together(basename, ".bbl");
+	if (g_bbl_name == NULL && basename != NULL)
+		g_bbl_name = strdup_together(basename, ".bbl");
 
 	if (basename) {
-		diagnostics(3, "latex filename is <%s>", TexName);
-		diagnostics(3, "  rtf filename is <%s>", RtfName);
-		diagnostics(3, "  aux filename is <%s>", AuxName);
-		diagnostics(3, "  bbl filename is <%s>", BblName);
+		diagnostics(3, "latex filename is <%s>", g_tex_name);
+		diagnostics(3, "  rtf filename is <%s>", g_rtf_name);
+		diagnostics(3, "  aux filename is <%s>", g_aux_name);
+		diagnostics(3, "  bbl filename is <%s>", g_bbl_name);
+		diagnostics(3, "home directory is <%s>", g_home_dir);
 	}
 	
 	ReadCfg();
-	if (PushSource(TexName, NULL)) {
-		OpenRtfFile(RtfName, &fRtf);
+	if (PushSource(g_tex_name, NULL)) {
+		OpenRtfFile(g_rtf_name, &fRtf);
 		
 		InitializeStack();
 		InitializeLatexLengths();
 		InitializeDocumentFont(TexFontNumber("Roman"), 20, F_SHAPE_UPRIGHT, F_SERIES_MEDIUM);
-	
+		PushTrackLineNumber(TRUE);
+
 		ConvertWholeDocument();	
 		PopSource();
 		CloseRtf(&fRtf);
@@ -304,6 +320,7 @@ usage(void)
 		fprintf(stderr, "\t -o outputfile    : RTF output other than input.rtf\n");
 		fprintf(stderr, "\t -v               : version information\n");
 		fprintf(stderr, "\t -C codepage      : input encoding (latin1, cp850, etc.)\n");
+		fprintf(stderr, "\t -D#              : dots per inch for bitmaps\n");
 		fprintf(stderr, "\t -M#              : math equation handling\n");
 		fprintf(stderr, "\t      -M1         :  displayed equations to RTF\n");
 		fprintf(stderr, "\t      -M2         :  inline equations to RTF\n");
@@ -470,16 +487,26 @@ params: filename - name of outputfile, possibly NULL for already open file
 	f - pointer to filepointer to store file ID
  ****************************************************************************/
 {
+	char * name;
+	
 	if (filename == NULL) {
 		diagnostics(4, "Writing RTF to stdout");
 		*f = stdout;
 
 	} else {
-		diagnostics(4, "Opening RTF file %s", filename);
-		*f = fopen(filename, "wb");
+		
+		if (g_home_dir)
+			name = strdup_together(g_home_dir,filename);
+		else
+			name = strdup(filename);
+			
+		diagnostics(3, "Opening RTF file <%s>", name);
+		*f = fopen(name, "w");
 
 		if (*f == NULL) 
-			diagnostics(ERROR,  "Error opening RTF file %s\n", filename);
+			diagnostics(ERROR,  "Error opening RTF file <%s>\n", name);
+		
+		free(name);
 	}
 }
 
@@ -488,7 +515,7 @@ CloseRtf(FILE ** f)
 /****************************************************************************
 purpose: closes output file.
 params: f - pointer to filepointer to invalidate
-globals: TexName;
+globals: g_tex_name;
  ****************************************************************************/
 {
 	int i;
@@ -497,7 +524,7 @@ globals: TexName;
 		diagnostics(WARNING,"Mismatched '{' in RTF file, Conversion may cause problems.");
 
 	if (BraceLevel-1>g_safety_braces) 
-		diagnostics(WARNING,"Try translating with 'latex2rtf -Z%d %s'", BraceLevel-1, TexName);
+		diagnostics(WARNING,"Try translating with 'latex2rtf -Z%d %s'", BraceLevel-1, g_tex_name);
 	
 	fprintf(*f, "}\n");
 	for (i=0; i<g_safety_braces; i++)

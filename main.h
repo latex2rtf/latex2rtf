@@ -1,4 +1,4 @@
-/* $Id: main.h,v 1.40 2002/03/19 16:17:36 prahl Exp $ */
+/* $Id: main.h,v 1.41 2002/03/31 17:13:11 prahl Exp $ */
 #ifndef __MAIN_H
 #define __MAIN_H
 
@@ -59,8 +59,9 @@ typedef int     bool;
 void            diagnostics(int level, char *format,...);
 
 extern /* @dependent@ */ FILE *fRtf;	/* file pointer to RTF file */
-extern			char *AuxName;
-extern			char *BblName;
+extern			char *g_aux_name;
+extern			char *g_bbl_name;
+extern			char *g_home_dir;
 extern 			char *progname;			/* name of the executable file */
 
 extern bool     GermanMode;
@@ -94,6 +95,7 @@ extern bool 	g_processing_table;
 extern bool     g_processing_eqnarray;
 extern int		g_processing_arrays;
 extern int 		g_processing_fields;
+extern int		g_dots_per_inch;
 
 extern int      g_equation_number;
 extern bool     g_show_equation_number;

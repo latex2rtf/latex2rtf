@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.63 2002/03/15 06:00:19 prahl Exp $ 
+/* $Id: funct1.c,v 1.64 2002/03/31 17:13:11 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -162,6 +162,7 @@ CmdNewDef(int code)
 		ungetTexChar('{');
 		
 		def = getBraceParam();
+		UpdateLineNumber(def);
 		newDefinition(name+1,def,param);		
 	}
 	
@@ -169,6 +170,9 @@ CmdNewDef(int code)
 		name = getBraceParam();
 		params = getBracketParam();
 		def = getBraceParam();
+		UpdateLineNumber(name);
+		UpdateLineNumber(params);
+		UpdateLineNumber(def);
 		param = 0;
 		if (params) {
 			if ('0' <= *params && *params <= '9')
@@ -201,6 +205,10 @@ CmdNewEnvironment(int code)
 	params = getBracketParam();
 	begdef = getBraceParam();
 	enddef = getBraceParam();
+	UpdateLineNumber(name);
+	UpdateLineNumber(params);
+	UpdateLineNumber(begdef);
+	UpdateLineNumber(enddef);
 	param = 0;
 	if (params) {
 		if ('0' <= *params && *params <= '9')
@@ -235,6 +243,11 @@ CmdNewTheorem(int code)
 	caption = getBraceParam();
 	within = getBracketParam();
 	
+	UpdateLineNumber(name);
+	UpdateLineNumber(numbered_like);
+	UpdateLineNumber(caption);
+	UpdateLineNumber(within);
+
 	diagnostics(3,"CmdNewTheorem name=<%s>", name);
 	diagnostics(3,"CmdNewTheorem caption=<%s>", caption);
 	diagnostics(3,"CmdNewTheorem like=<%s>", numbered_like);
@@ -1039,6 +1052,7 @@ CmdItem(int code)
 		return;
 	}
 
+/*	PushLevels();*/
 	diagnostics(4, "Entering CmdItem depth=%d item=%d",g_enumerate_depth,item_number[g_enumerate_depth]);
 
 	CmdEndParagraph(0);
@@ -1088,10 +1102,10 @@ CmdItem(int code)
 		break;
 	}
 	
-	Convert();
+/*	Convert();
 	CmdEndParagraph(0);
 	CmdIndent(INDENT_NONE);
-	diagnostics(4, "Exiting Convert() from CmdItem");
+	diagnostics(4, "Exiting Convert() from CmdItem");*/
 }
 
 void 
@@ -1195,8 +1209,9 @@ CmdVerbatim(int code)
 			endtag = strdup("\\end{verbatim}");			
 			
 		verbatim_text = getTexUntil(endtag, 1);
+		UpdateLineNumber(verbatim_text);
 		vptr = verbatim_text;
-				
+			
 		if (true_code == VERBATIM_3)   /* alltt environment */
 
 			ConvertAllttString(verbatim_text);
@@ -1396,7 +1411,7 @@ CmdFigure(int code)
 		diagnostics(4, "entering CmdFigure [%s]", loc);
 		g_processing_figure = TRUE;
 		if (loc) free(loc);
-		figure_contents = getTexUntil(endfigure, FALSE);
+		figure_contents = getTexUntil(endfigure, TRUE);
 		g_figure_label = ExtractLabelTag(figure_contents);
 		ConvertString(figure_contents);	
 		ConvertString(endfigure);	
@@ -1482,6 +1497,7 @@ CmdLink(int code)
 	diagnostics(4, "  Converted first parameter");
 
 	optparam = getBracketParam();
+	UpdateLineNumber(optparam);
 	if (optparam) free(optparam);
 	
 	/* LEG190498 now should come processing of the optional parameter */

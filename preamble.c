@@ -1,4 +1,4 @@
-/* $Id: preamble.c,v 1.29 2002/03/17 21:05:51 prahl Exp $
+/* $Id: preamble.c,v 1.30 2002/03/31 17:13:11 prahl Exp $
 
 purpose : Handles LaTeX commands that should only occur in the preamble.
           These are gathered together because the entire preamble must be
@@ -465,17 +465,17 @@ CmdTitle(int code)
 	switch (code) {
 	case TITLE_TITLE:
 		g_preambleTitle = getBraceParam();
-		AdvanceLineNumber(g_preambleTitle);
+		UpdateLineNumber(g_preambleTitle);
 		break;
 
 	case TITLE_AUTHOR:
 		g_preambleAuthor = getBraceParam();
-		AdvanceLineNumber(g_preambleAuthor);
+		UpdateLineNumber(g_preambleAuthor);
 		break;
 
 	case TITLE_DATE:
 		g_preambleDate = getBraceParam();
-		AdvanceLineNumber(g_preambleDate);
+		UpdateLineNumber(g_preambleDate);
 		break;
 
 	case TITLE_TITLEPAGE:
@@ -494,7 +494,7 @@ CmdMakeTitle(int code)
 	char            author_begin[10];
 	char            date_begin[10];
 
-	SetScanAhead(TRUE);
+	PushTrackLineNumber(FALSE);
 	sprintf(title_begin, "%s%2d", "\\fs", (30 * CurrentFontSize()) / 20);
 	sprintf(author_begin, "%s%2d", "\\fs", (24 * CurrentFontSize()) / 20);
 	sprintf(date_begin, "%s%2d", "\\fs", (24 * CurrentFontSize()) / 20);
@@ -520,7 +520,7 @@ CmdMakeTitle(int code)
 	if (g_preambleTitlepage)
 		fprintRTF("\\page ");
 
-	SetScanAhead(FALSE);
+	PopTrackLineNumber();
 }
 
 void 

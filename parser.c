@@ -1,4 +1,4 @@
-/*  $Id: parser.c,v 1.50 2002/03/19 05:36:08 prahl Exp $
+/*  $Id: parser.c,v 1.51 2002/03/31 17:13:11 prahl Exp $
 
    Contains declarations for a generic recursive parser for LaTeX code.
 */
@@ -28,6 +28,7 @@ typedef struct InputStackType
 } InputStackType;
 
 #define PARSER_SOURCE_MAX 40
+
 static InputStackType   g_parser_stack[PARSER_SOURCE_MAX];
 
 static int              g_parser_depth = -1;
@@ -40,28 +41,38 @@ static char             g_parser_currentChar;	/* Global current character */
 static char             g_parser_lastChar;
 static char             g_parser_penultimateChar;
 static int				g_parser_backslashes;
-static bool				g_parser_scan_ahead = FALSE;
+
+#define TRACK_LINE_NUMBER_MAX 10
+static int				g_track_line_number_stack[TRACK_LINE_NUMBER_MAX];
+static int				g_track_line_number=-1;
 
 static void     parseBracket();
 
-void
-SetScanAhead(int flag)
+void 
+PushTrackLineNumber(int flag)
 /***************************************************************************
- purpose:     allows scanning source without incrementing line number
+ purpose:    set whether or not line numbers should be tracked in LaTeX source file
 ****************************************************************************/
 {
-	g_parser_scan_ahead = flag;
+	if (g_track_line_number>=TRACK_LINE_NUMBER_MAX)
+		diagnostics(ERROR,"scan ahead stack too large! Sorry.");
+	
+	g_track_line_number++;
+	g_track_line_number_stack[g_track_line_number]=flag;
 }
 
-static int
-GetScanAhead(void)
+void
+PopTrackLineNumber(void)
 /***************************************************************************
- purpose:     determine if linenumbers are being incremented or not
- ***************************************************************************/
+ purpose:    restore last state of line numbers tracking in LaTeX source file
+****************************************************************************/
 {
-	return g_parser_scan_ahead;
+	if (g_track_line_number<0)
+		diagnostics(ERROR,"scan ahead stack too small! Sorry.");
+	
+	g_track_line_number--;
 }
-
+	
 int 
 CurrentLineNumber(void) 
 /***************************************************************************
@@ -72,7 +83,7 @@ CurrentLineNumber(void)
 }
 
 void 
-AdvanceLineNumber(char *s) 
+UpdateLineNumber(char *s) 
 /***************************************************************************
  purpose:    advances the line number for each '\n' in s
 ****************************************************************************/
@@ -141,10 +152,13 @@ PushSource(char * filename, char * string)
 	
 	/* if not then try to open a file */	
 	} else if (filename) {
-		name = strdup(filename);
-		p = fopen(filename, "rb");
+		if (g_home_dir==NULL)
+			name = strdup(filename);
+		else
+			name = strdup_together(g_home_dir, filename);
+		p = fopen(name, "rb");
 		if (!p) {
-           diagnostics(WARNING, "Cannot open <%s>", filename);
+           diagnostics(WARNING, "Cannot open <%s>", name);
            free(name);
            return 0;
        }
@@ -323,7 +337,7 @@ getRawTexChar()
 			g_parser_currentChar = '\0';
 	}
 
-	if (g_parser_currentChar == '\n' && !g_parser_scan_ahead) 
+	if (g_parser_currentChar == '\n' && g_track_line_number_stack[g_track_line_number]) 
 			g_parser_line++;
 	
 	g_parser_penultimateChar = g_parser_lastChar;
@@ -354,7 +368,7 @@ purpose: rewind the filepointer in the LaTeX-file by one
 		}
 	}
 	
-	if (c == '\n' && !g_parser_scan_ahead)
+	if (c == '\n' && g_track_line_number_stack[g_track_line_number])
 		g_parser_line--;
 
 	g_parser_currentChar = g_parser_lastChar;
@@ -621,11 +635,9 @@ getBracketParam(void)
  ******************************************************************************/
 {
 	char            c, *text;
-	int				scan_ahead_state;
 	
-	scan_ahead_state = GetScanAhead();
-	SetScanAhead(TRUE);
 	c = getNonBlank();
+	PushTrackLineNumber(FALSE);
 
 	if (c == '[') {
 		text = getDelimitedText('[',']',FALSE);
@@ -637,7 +649,7 @@ getBracketParam(void)
 		diagnostics(5, "getBracketParam []");
 	}
 	
-	SetScanAhead(scan_ahead_state);
+	PopTrackLineNumber();
 	return text;
 }
 
@@ -658,27 +670,26 @@ getBraceParam(void)
  **************************************************************************/
 {
 	char            s[2], *text;
-	int				scan_ahead_state;
 	
-	scan_ahead_state = GetScanAhead();
-	SetScanAhead(TRUE);
 	s[0] = getNonSpace();			/*skip spaces and one possible newline */
 	if (s[0] == '\n')
 		s[0] = getNonSpace();	
+
+	PushTrackLineNumber(FALSE);
 	
 	if (s[0] == '\\') {
 		ungetTexChar(s[0]);
 		text=getSimpleCommand();
 
 	} else 	if (s[0] == '{') 
-		text = getDelimitedText('{','}',FALSE);
+		text = getDelimitedText('{','}',TRUE);
 	
 	else {
 		s[1] = '\0';
 		text = strdup(s);
 	}
 		
-	SetScanAhead(scan_ahead_state);
+	PopTrackLineNumber();
 	diagnostics(5, "Leaving getBraceParam {%s}", text);
 	return text;
 }
@@ -696,10 +707,9 @@ getTexUntil(char * target, int raw)
 	int             j   = 0;       /* number of found characters */
 	bool			end_of_file_reached = FALSE;
 	int             len = strlen(target);
-	int				scan_ahead_state;
 	
-	scan_ahead_state = GetScanAhead();
-	SetScanAhead(TRUE);
+	PushTrackLineNumber(FALSE);
+
 	diagnostics(3, "getTexUntil target = <%s> raw_search = %d ", target, raw);
 
 	while (j < len && i < 4095) {
@@ -731,7 +741,8 @@ getTexUntil(char * target, int raw)
 	if (!end_of_file_reached) /* do not include target in returned string*/
 		buffer[i-len] = '\0';
 	
-	SetScanAhead(scan_ahead_state);
+	PopTrackLineNumber();
+
 	s = strdup(buffer);
 	diagnostics(3,"strdup result = %s",s);
 	return s;
@@ -935,7 +946,7 @@ getSection(char **body, char **header, char **label)
 	*header=NULL;
 	*label=NULL;
 	
-	SetScanAhead(TRUE);
+	PushTrackLineNumber(FALSE);
 	for (delta=0;;delta++) {
 	
 		if (delta+2 >= section_buffer_size) increase_buffer_size();
@@ -1216,5 +1227,5 @@ getSection(char **body, char **header, char **label)
 	text = strdup(section_buffer);
 	*body = text;
 	*header = next_header;
-	SetScanAhead(FALSE);
+	PopTrackLineNumber();
 }

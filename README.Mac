@@ -3,16 +3,13 @@ LaTeX2RTF
 	version 1.8a by Georg Lehner
 	version 1.9 by Scott Prahl
 	
-This is a Classic PPC Mac port of the 1.8a version of latex2rtf.
+There is a Classic PPC Mac port of the 1.9h of latex2rtf.
 There is no reason that a 68K port is impossible, I just accidently
 deleted the 68K project from my Codewarrior project. 
 
-The standard unix distribution compiles and works fine under MacOS X
-Disregard the remainer of this file, since it doesn't apply to the unix port.
-
-I fixed many minor bugs, improved handling of tabular environments, 
-added code to significantly improve handling displayed equations,
-better handling of citations, and including .pict files.
+The standard unix distribution compiles and works fine under MacOS X.
+If you are running Mac OS X, then do not read this file, read the 
+main README.
 
 LaTeX2RTF is not great but it is getting better.
  

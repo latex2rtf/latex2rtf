@@ -1,7 +1,6 @@
-/* $Id: convert.c,v 1.26 2002/02/19 05:43:04 prahl Exp $ 
-	purpose: ConvertString(), Convert(), TranslateCommand() 
+/* $Id: convert.c,v 1.27 2002/03/31 17:13:11 prahl Exp $ 
 	
-TeX has six modes according to the TeX Book:
+TeX has six modes:
 	
 	MODE_VERTICAL              Building the main vertical list, from which the 
 	                           pages of output are derived
@@ -166,9 +165,9 @@ globals: fTex, fRtf and all global flags for convert (see above)
 	while ((cThis = getTexChar()) && cThis != '\0') {
 	
 		if (cThis == '\n')
-			diagnostics(5, "Current character is '\\n' mode = %d", GetTexMode());
+			diagnostics(5, "Current character is '\\n' mode = %d ret = %d level = %d", GetTexMode(), ret, RecursionLevel);
 		else
-			diagnostics(5, "Current character is '%c' mode = %d", cThis, GetTexMode());
+			diagnostics(5, "Current character is '%c' mode = %d ret = %d level = %d", cThis, GetTexMode(), ret, RecursionLevel);
 
 		mode = GetTexMode();
 		
@@ -182,9 +181,9 @@ globals: fTex, fRtf and all global flags for convert (see above)
 			CleanStack();
 
 			if (ret > 0) {
+				diagnostics(5, "Exiting Convert via TranslateCommand ret = %d level = %d", ret, RecursionLevel);
 				ret--;
 				RecursionLevel--;
-				diagnostics(5, "Exiting Convert via TranslateCommand ret = %d", ret);
 				return;
 			}
 			break;
@@ -201,9 +200,9 @@ globals: fTex, fRtf and all global flags for convert (see above)
 			ret = RecursionLevel - PopBrace();
 			fprintRTF("}");
 			if (ret > 0) {
+				diagnostics(5, "Exiting Convert via '}' ret = %d level = %d", ret, RecursionLevel);
 				ret--;
 				RecursionLevel--;
-				diagnostics(5, "Exiting Convert via '}' ret = %d", ret);
 				return;
 			}
 			break;
@@ -732,6 +731,7 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 		return TRUE;
 	if (TryVariableIgnore(cCommand))
 		return TRUE;
+		
 	diagnostics(WARNING, "Command \\%s not found - ignored", cCommand);
 	return FALSE;
 }
