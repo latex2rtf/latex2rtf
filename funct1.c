@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.66 2002/04/01 15:21:10 prahl Exp $ 
+/* $Id: funct1.c,v 1.67 2002/04/04 03:11:24 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -158,7 +158,7 @@ CmdNewDef(int code)
 		
 		/* handle simple parameters (discard delimiters) e.g., #1#2#3*/
 		while ( (cThis=getTexChar()) && cThis != '{' ){
-			if (isdigit(cThis)) param++;
+			if (isdigit((int)cThis)) param++;
 		}		
 		ungetTexChar('{');
 		
@@ -1553,7 +1553,7 @@ Cmd_OptParam_Without_braces( /* @unused@ */ int code)
 		 (cNext != '{') &&
 		 (cNext != '\n') &&
 		 (cNext != ',') &&
-		 ((cNext != '.') || (isdigit((unsigned char) cLast))) &&
+		 ((cNext != '.') || (isdigit((int) cLast))) &&
 	/*
 	 * . doesn't mean the end of an command inside an number of the type
 	 * real
@@ -1752,7 +1752,7 @@ CmdInclude(int code)
 		name[0] = cNext;
 		for (i=1; i<50; i++){
 			name[i] = getTexChar();
-			if (isspace(name[i])) {name[i]='\0';break;}
+			if (isspace((int)name[i])) {name[i]='\0';break;}
 		}
 		s = strdup(name);
 	}

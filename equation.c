@@ -167,6 +167,7 @@ EquationNeedsFields(char *eq)
 	if (strstr(eq,"\\sqrt")) return 1;
 	if (strstr(eq,"\\over")) return 1;
 	if (strstr(eq,"\\stackrel")) return 1;
+	if (strstr(eq,"\\dfrac")) return 1;
 	return 0;
 }
 
@@ -616,11 +617,11 @@ CmdEquation(int code)
 			} else {
 				char *s, *t;
 				s=eq;
-				diagnostics(1,"eqnarray whole = <%s>",s);
+				diagnostics(4,"eqnarray whole = <%s>",s);
 				do {
 					t=strstr(s,"\\\\");
 					if (t) *t = '\0';
-					diagnostics(1,"eqnarray piece = <%s>",s);
+					diagnostics(4,"eqnarray piece = <%s>",s);
 					if (strstr(s,"\\nonumber"))
 						g_suppress_equation_number = TRUE;
 					else

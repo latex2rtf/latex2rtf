@@ -1,4 +1,4 @@
-/* $Id: xref.c,v 1.19 2002/04/01 04:41:17 prahl Exp $ 
+/* $Id: xref.c,v 1.20 2002/04/04 03:11:24 prahl Exp $ 
  
 This file contains routines to handle cross references :
 	\label{key}, \ref{key},   \pageref{key}, \bibitem{key},
@@ -275,7 +275,7 @@ purpose: handles \label \ref \pageref \cite
 			if (g_processing_figure || g_processing_table) break;
 			if (mode == MODE_DISPLAYMATH) {
 				g_equation_label = strdup_nobadchars(text);
-				diagnostics(1,"equation label is <%s>",text);
+				diagnostics(3,"equation label is <%s>",text);
 			} else 
 				InsertBookmark(text,"");
 			break;

@@ -1,3 +1,22 @@
+2002-04-03 07:44  prahl
+
+ By default use our own strdup.  Simplifies porting.
+	
+2002-04-03 07:30  prahl
+
+ Finishing last CVS checkin
+	
+2002-04-03 07:28  prahl
+
+ Fixes by Wilfried for latex2rtf.bat
+	Fixes by Wilfried for documentation
+	Explictly request single .html file from makeinfo
+	Update Makefile for single .html file
+	
+2002-04-01 22:37  prahl
+
+ More updates before 1.9.13 release
+	
 2002-04-01 22:16  prahl
 
  Split bitmap version of eqnarray environment into pieces so that each equation
@@ -959,8 +978,11 @@
 
  Revised fonts.cfg, removed Ferdsch, now set the default font correctly
 	and begun the process of eliminating the $Log: ChangeLog,v $
-	and begun the process of eliminating the Revision 1.14  2002/04/02 06:37:53  prahl
-	and begun the process of eliminating the More updates before 1.9.13 release
+	and begun the process of eliminating the Revision 1.15  2002/04/04 03:11:24  prahl
+	and begun the process of eliminating the Remove diagnostic label warning
+	and begun the process of eliminating the support \dfrac (mostly)
+	and begun the process of eliminating the Eliminate spurious make problem #define in main.h
+	and begun the process of eliminating the Fix warnings for gcc 2.95.2 on solaris
 	and begun the process of eliminating the comments in files.
 	
 2001-08-12 14:15  prahl

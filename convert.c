@@ -1,4 +1,4 @@
-/* $Id: convert.c,v 1.27 2002/03/31 17:13:11 prahl Exp $ 
+/* $Id: convert.c,v 1.28 2002/04/04 03:11:24 prahl Exp $ 
 	
 TeX has six modes:
 	
@@ -430,7 +430,7 @@ globals: fTex, fRtf and all global flags for convert (see above)
 	
 				/* try to simulate double spaces after sentences */
 				cNext = getTexChar();
-				if (cNext == ' ' && (isalpha(cLast) && !isupper(cLast)))
+				if (cNext == ' ' && (isalpha((int)cLast) && !isupper((int) cLast)))
 					fprintRTF(" ");
 				ungetTexChar(cNext);
 			}
@@ -686,7 +686,7 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 
 	/* LEG180498 Commands consist of letters and can have an optional * at the end */
 	for (i = 0; i < MAXCOMMANDLEN; i++) {
-		if (!isalpha(cThis) && (cThis != '*')) {
+		if (!isalpha((int)cThis) && (cThis != '*')) {
 			bool            found_nl = FALSE;
 
 			if (cThis == '%'){			/* put the % back and get the next char */

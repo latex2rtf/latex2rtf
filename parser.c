@@ -1,4 +1,4 @@
-/*  $Id: parser.c,v 1.52 2002/04/01 15:21:11 prahl Exp $
+/*  $Id: parser.c,v 1.53 2002/04/04 03:11:24 prahl Exp $
 
    Contains declarations for a generic recursive parser for LaTeX code.
 */
@@ -1018,7 +1018,7 @@ getSection(char **body, char **header, char **label)
 		if (match[0]) {						/* expand user macros */
 			cNext = getRawTexChar();		/* wrong when cNext == '%' */
 			ungetTexChar(cNext);
-			if (!isalpha(cNext) && index>1) {	/* is macro name complete? */
+			if (!isalpha((int)cNext) && index>1) {	/* is macro name complete? */
 					
 				*(section_buffer+delta+1) = '\0';
 				i=existsDefinition(section_buffer+delta-index+1);
@@ -1158,7 +1158,7 @@ getSection(char **body, char **header, char **label)
 		if (i==def_item || i==new_item || i==renew_item){
 			cNext = getRawTexChar();		/* wrong when cNext == '%' */
 			ungetTexChar(cNext);
-			if (isalpha(cNext)) 			/* is macro name complete? */
+			if (isalpha((int)cNext)) 			/* is macro name complete? */
 				continue;
 				
 			delta -= strlen(command[i]);    /* do not include in buffer */

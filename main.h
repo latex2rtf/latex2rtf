@@ -1,4 +1,4 @@
-/* $Id: main.h,v 1.42 2002/04/03 15:44:19 prahl Exp $ */
+/* $Id: main.h,v 1.43 2002/04/04 03:11:24 prahl Exp $ */
 #ifndef __MAIN_H
 #define __MAIN_H
 
@@ -31,7 +31,8 @@
 #define getopt my_getopt
 #endif
 
-#ifdef !defined(HAS_STRDUP)
+#ifdef HAS_STRDUP
+#else
 #define strdup my_strdup
 #endif
 
