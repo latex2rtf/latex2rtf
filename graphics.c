@@ -139,19 +139,17 @@ typedef struct _GdiCommentMultiFormats {
     EMRFORMAT *Data;            /* Array of comment data */
 } GDICOMMENTMULTIFORMATS;
 
-static void my_unlink(char *filename)
-
 /******************************************************************************
      purpose : portable routine to delete filename
  ******************************************************************************/
+static void my_unlink(char *filename)
 {
 #ifdef UNIX
     unlink(filename);
 #endif
 }
 
-static
-void PicComment(short label, short size, FILE * fp)
+static void PicComment(short label, short size, FILE * fp)
 {
     short long_comment = 0x00A1;
     short short_comment = 0x00A0;
@@ -189,11 +187,10 @@ static char *strdup_new_extension(char *s, char *old_ext, char *new_ext)
     return new_name;
 }
 
-static char *strdup_absolute_path(char *s)
-
 /******************************************************************************
      purpose : return a string containing an absolute path
  ******************************************************************************/
+static char *strdup_absolute_path(char *s)
 {
     char c = PATHSEP;
     char *abs_path = NULL;
@@ -208,12 +205,10 @@ static char *strdup_absolute_path(char *s)
     return abs_path;
 }
 
-
-static char *strdup_tmp_path(char *s)
-
 /******************************************************************************
      purpose : create a tmp file name using only the end of the filename
  ******************************************************************************/
+static char *strdup_tmp_path(char *s)
 {
     char *tmp, *p, *fullname, c;
 
@@ -234,9 +229,6 @@ static char *strdup_tmp_path(char *s)
     return fullname;
 }
 
-
-static char *eps_to_pict(char *s)
-
 /******************************************************************************
      purpose : create a pict file from an EPS file and return file name for
                the pict file.  Ideally this file will contain both the bitmap
@@ -244,6 +236,7 @@ static char *eps_to_pict(char *s)
                bitmap cannot be created, then the EPS is still embedded in the PICT
                file so that at least the printed version will be good.
  ******************************************************************************/
+static char *eps_to_pict(char *s)
 {
     char *cmd, *p, buffer[560];
     size_t cmd_len;
@@ -387,11 +380,10 @@ static char *eps_to_pict(char *s)
     return return_value;
 }
 
-static char *eps_to_png(char *eps)
-
 /******************************************************************************
      purpose : create a png file from an EPS or PS file and return file name
  ******************************************************************************/
+static char *eps_to_png(char *eps)
 {
     char *cmd, *s1, *p, *png;
     size_t cmd_len;
@@ -419,11 +411,10 @@ static char *eps_to_png(char *eps)
     return png;
 }
 
-static char *pdf_to_png(char *pdf)
-
 /******************************************************************************
      purpose : create a png file from an PDF file and return file name
  ******************************************************************************/
+static char *pdf_to_png(char *pdf)
 {
     char *cmd, *s1, *p, *png;
     size_t cmd_len;
@@ -450,11 +441,10 @@ static char *pdf_to_png(char *pdf)
     return png;
 }
 
-static char *eps_to_emf(char *eps)
-
 /******************************************************************************
      purpose : create a wmf file from an EPS file and return file name
  ******************************************************************************/
+static char *eps_to_emf(char *eps)
 {
     FILE *fp;
     char *cmd, *s1, *p, *emf;
@@ -498,11 +488,12 @@ static char *eps_to_emf(char *eps)
     return emf;
 }
 
-/* figure out appropriate scaling
-here h and w are the actual height and width of the image in twips
-     target_h and target_w are the desired size of the image in twips
-     s                     is the scaling desired as a fraction
-*/
+/******************************************************************************
+     purpose : figure out appropriate x and y scaling
+		h        and w        are the actual height and width of the image in twips
+        target_h and target_w are the desired height and width of the image in twips
+        s                     is the scaling desired as a fraction
+ ******************************************************************************/
 static void AdjustScaling(double h, double w, double target_h, double target_w, double s, int *sx, int *sy)
 {
 	*sx=100;
@@ -517,18 +508,23 @@ static void AdjustScaling(double h, double w, double target_h, double target_w, 
 
 	if (target_h != 0 && h != 0) 
 		*sy = (int) (100.0 * target_h / h);
+	
+	if (target_w == 0 || w == 0)
+		*sx = *sy;
 		
 	if (target_w != 0 && w != 0) 
 		*sx = (int) (100.0 * target_w / w);
 		
+	if (target_h == 0 || h == 0)
+		*sy = *sx;
+
 	diagnostics(1,"AdjustScaling xscale=%d yscale=%d", *sx, *sy);
 }
-
-static void PutHexFile(FILE * fp)
 
 /******************************************************************************
      purpose : write entire file to RTF as hex
  ******************************************************************************/
+static void PutHexFile(FILE * fp)
 {
     int i, c;
 
@@ -542,11 +538,10 @@ static void PutHexFile(FILE * fp)
     }
 }
 
-static void PutPictFile(char *s, double height0, double width0, double scale, double baseline, int full_path)
-
 /******************************************************************************
      purpose : Include .pict file in RTF
  ******************************************************************************/
+static void PutPictFile(char *s, double height0, double width0, double scale, double baseline, int full_path)
 {
     FILE *fp;
     char *pict;
@@ -602,11 +597,10 @@ static void PutPictFile(char *s, double height0, double width0, double scale, do
     fclose(fp);
 }
 
-static void GetPngSize(char *s, unsigned long *w, unsigned long *h)
-
 /******************************************************************************
      purpose : determine height and width of file
  ******************************************************************************/
+static void GetPngSize(char *s, unsigned long *w, unsigned long *h)
 {
     FILE *fp;
     unsigned char buffer[16];
@@ -648,11 +642,10 @@ static void GetPngSize(char *s, unsigned long *w, unsigned long *h)
     fclose(fp);
 }
 
-void PutPngFile(char *s, double height0, double width0, double scale, double baseline, int full_path)
-
 /******************************************************************************
      purpose : Include .png file in RTF
  ******************************************************************************/
+void PutPngFile(char *s, double height0, double width0, double scale, double baseline, int full_path)
 {
     FILE *fp;
     char *png;
@@ -700,11 +693,10 @@ void PutPngFile(char *s, double height0, double width0, double scale, double bas
     fclose(fp);
 }
 
-static void PutJpegFile(char *s, double height0, double width0, double scale, double baseline, int full_path)
-
 /******************************************************************************
      purpose : Include .jpeg file in RTF
  ******************************************************************************/
+static void PutJpegFile(char *s, double height0, double width0, double scale, double baseline, int full_path)
 {
     FILE *fp;
     char *jpg;
@@ -861,11 +853,10 @@ static void PutEmfFile(char *s, double height0, double width0, double scale, dou
     fclose(fp);
 }
 
-static void PutWmfFile(char *s, double height0, double width0, double scale, double baseline, int full_path)
-
 /******************************************************************************
  purpose   : Insert WMF file (from g_home_dir) into RTF file
  ******************************************************************************/
+static void PutWmfFile(char *s, double height0, double width0, double scale, double baseline, int full_path)
 {
     FILE *fp;
     char *wmf;
@@ -957,6 +948,9 @@ static void PutWmfFile(char *s, double height0, double width0, double scale, dou
     fclose(fp);
 }
 
+/******************************************************************************
+ purpose   : convert pdf to png and insert in RTF file
+ ******************************************************************************/
 static void PutPdfFile(char *s, double height0, double width0, double scale, double baseline, int full_path)
 {
     char *png;
@@ -972,6 +966,9 @@ static void PutPdfFile(char *s, double height0, double width0, double scale, dou
     }
 }
 
+/******************************************************************************
+ purpose   : convert eps to png and insert in RTF file
+ ******************************************************************************/
 static void PutEpsFile(char *s, double height0, double width0, double scale, double baseline, int full_path)
 {
     char *png, *emf, *pict;
@@ -1007,11 +1004,10 @@ static void PutEpsFile(char *s, double height0, double width0, double scale, dou
     }
 }
 
-static void PutTiffFile(char *s, double height0, double width0, double scale, double baseline, int full_path)
-
 /******************************************************************************
  purpose   : Insert TIFF file (from g_home_dir) into RTF file as a PNG image
  ******************************************************************************/
+static void PutTiffFile(char *s, double height0, double width0, double scale, double baseline, int full_path)
 {
     char *cmd, *tiff, *png, *tmp_png;
     size_t cmd_len;
@@ -1042,11 +1038,10 @@ static void PutTiffFile(char *s, double height0, double width0, double scale, do
     free(png);
 }
 
-static void PutGifFile(char *s, double height0, double width0, double scale, double baseline, int full_path)
-
 /******************************************************************************
  purpose   : Insert GIF file (from g_home_dir) into RTF file as a PNG image
  ******************************************************************************/
+static void PutGifFile(char *s, double height0, double width0, double scale, double baseline, int full_path)
 {
     char *cmd, *gif, *png, *tmp_png;
     size_t cmd_len;
@@ -1077,11 +1072,10 @@ static void PutGifFile(char *s, double height0, double width0, double scale, dou
     free(png);
 }
 
-static int ReadLine(FILE * fp)
-
 /****************************************************************************
 purpose: reads up to and and including a line ending (CR, CRLF, or LF)
  ****************************************************************************/
+static int ReadLine(FILE * fp)
 {
     int thechar;
 
@@ -1107,12 +1101,11 @@ purpose: reads up to and and including a line ending (CR, CRLF, or LF)
     }
 }
 
-long GetBaseline(char *s, char *pre)
-
 /****************************************************************************
 purpose: reads a .pbm file to determine the baseline for an equation
 		 the .pbm file should have dimensions of 1xheight
  ****************************************************************************/
+long GetBaseline(char *s, char *pre)
 {
     FILE *fp;
     int thechar;
@@ -1194,11 +1187,10 @@ static char *get_latex2png_name()
 #endif
 }
 
-void PutLatexFile(char *s, double height0, double width0, double scale, char *pre)
-
 /******************************************************************************
  purpose   : Convert LaTeX to Bitmap and insert in RTF file
  ******************************************************************************/
+void PutLatexFile(char *s, double height0, double width0, double scale, char *pre)
 {
     char *png, *cmd, *l2p;
     int err, baseline, second_pass;
@@ -1269,11 +1261,10 @@ char *upper_case_string(char *s)
     return t;
 }
 
-char *exists_with_extension(char *s, char *ext)
-
 /******************************************************************************
  purpose   : return s.ext or s.EXT if it exists otherwise return NULL
  ******************************************************************************/
+char *exists_with_extension(char *s, char *ext)
 {
     char *t, *x;
     FILE *fp;
@@ -1302,11 +1293,10 @@ char *exists_with_extension(char *s, char *ext)
     return NULL;
 }
 
-int has_extension(char *s, char *ext)
-
 /******************************************************************************
  purpose   : return true if ext is at end of s (case insensitively)
  ******************************************************************************/
+int has_extension(char *s, char *ext)
 {
     char *t;
 
@@ -1398,11 +1388,12 @@ static void free_strings(int n, char *strings[])
 	strings=NULL;
 }
 
-/* splits a string into pieces ... the original string remains intact 
-   example "key1=value1,key2=value2" becomes
-	   piece[0]="key1=value1"
-	   piece[1]="key2=value2"   
-*/
+/******************************************************************************
+ purpose   : splits a string into pieces ... the original string remains intact 
+             "key1=value1,key2=value2" becomes
+	               piece[0]="key1=value1"
+	               piece[1]="key2=value2"   
+ ******************************************************************************/
 static void split_string(char *s, char delim, int *n, char ***strings)
 {
 	char *t, *p;
@@ -1437,6 +1428,17 @@ static void split_string(char *s, char delim, int *n, char ***strings)
 	diagnostics(6,"piece[%d]=<%s>",i,(*strings)[i]);
 }
 
+/******************************************************************************
+  purpose: handle Includegraphics options 
+
+		bb=llx lly urx ury (bounding box),
+		width=h_length,
+		height=v_length,
+		angle=angle,
+		scale=factor,
+		clip=true/false,
+		draft=true/false.
+ ******************************************************************************/
 static void HandleGraphicsOptions(char *opt, char *opt2, double *h, double *w, double *s)
 {
 	double llx=0;
@@ -1569,27 +1571,63 @@ static void HandleGraphicsOptions(char *opt, char *opt2, double *h, double *w, d
 		*h=ury-lly;
 }
 
+/******************************************************************************
+  purpose: handle psfig options \psfig{figure=filename.ps,height=1in,width=3mm}
+ ******************************************************************************/
+static void HandlePsfigOptions(char *opt, char *filename, double *h, double *w, double *s)
+{
+	char **part, *value;
+	int count,i;
 
+	*s=0.0;
+	*h=0;
+	*w=0;
+
+	diagnostics(1,"HandlePsfigOptions <%s>",opt);
+	
+	if (opt==NULL) return;
+	
+	split_string(opt, ',', &count, &part);
+	
+	for (i=0; i<count; i++) {
+		
+		diagnostics(1,"part[%d]=<%s>", i, part[i]);
+		
+		value=strchr(part[i],'=');
+		if (value==NULL) continue;
+		value++;
+		
+		diagnostics(1,"value=<%s>",value);
+				
+		if (strstr(part[i],"filename"))
+			filename=strdup(value);
+
+		else if (strstr(part[i],"height")) {
+			PushSource(NULL,value);
+			*h = getDimension();
+			PopSource();
+		}
+
+		else if (strstr(part[i],"width")) {
+			PushSource(NULL,value);
+			*w = getDimension();
+			PopSource();
+		}
+	}
+	free_strings(count,part);
+}
+
+
+/******************************************************************************
+  purpose: handle various methods for importing graphics
+           usually by converting to png image and inserting
+			   \includegraphics*[0,0][5,5]{file.pict}
+			   \epsffile{filename.eps}
+			   \epsfbox[0 0 30 50]{filename.ps}
+			   \BoxedEPSF{filename [scaled nnn]}
+			   \psfig{figure=filename,height=hhh,width=www}
+ ******************************************************************************/
 void CmdGraphics(int code)
-
-/*
-\includegraphics[parameters]{filename}
-
-where parameters is a comma-separated list of any of the following: 
-bb=llx lly urx ury (bounding box),
-width=h_length,
-height=v_length,
-angle=angle,
-scale=factor,
-clip=true/false,
-draft=true/false.
-
-code=0 => includegraphics
-code=1 => epsffile
-code=2 => epsfbox
-code=3 => \BoxedSPSF
-code=4 => psfig
-*/
 {
     char *options, *options2;
     char *filename=NULL, *fullpathname, *fullname;
@@ -1598,7 +1636,7 @@ code=4 => psfig
     double height =0;
     double width = 0;
 
-    if (code == 0) {            /* could be \includegraphics*[0,0][5,5]{file.pict} */
+    if (code == FIGURE_INCLUDEGRAPHICS) {
         options = getBracketParam();
         options2 = getBracketParam();
         filename = getBraceParam();
@@ -1609,18 +1647,23 @@ code=4 => psfig
         if (options2)free(options2);
     }
 
-    if (code == 1) {            /* \epsffile{filename.eps} */
+    if (code == FIGURE_EPSFFILE) {
         filename = getBraceParam();
     }
 
-    if (code == 2) {            /* \epsfbox[0 0 30 50]{filename.ps} */
+    if (code == FIGURE_EPSFBOX) { 
+        int n,llx,lly,urx,ury;
         options = getBracketParam();
-        if (options)
-            free(options);
+        n = sscanf(options,"%d %d %d %d", &llx,&lly,&urx,&ury);
+        if (n==4) {
+        	width  = (urx - llx) * 20;
+        	height = (ury - lly) * 20;
+        }
+        if (options) free(options);
         filename = getBraceParam();
     }
 
-    if (code == 3) {            /* \BoxedEPSF{filename [scaled nnn]} */
+    if (code == FIGURE_BOXEDEPSF) { 
         char *s;
 
         filename = getBraceParam();
@@ -1629,20 +1672,10 @@ code=4 => psfig
             *s = '\0';
     }
 
-    if (code == 4) {            /* \psfig{figure=filename,height=hhh,width=www} */
-        char *s, *t;
-
-        filename = getBraceParam();
-        s = strstr(filename, "figure=");
-        if (!s)
-            return;
-        s += strlen("figure=");
-        t = strchr(s, ',');
-        if (t)
-            *t = '\0';
-        t = strdup(s);
-        free(filename);
-        filename = t;
+    if (code == FIGURE_PSFIG) { 
+        options = getBraceParam();
+        HandlePsfigOptions(options,filename,&height,&width,&scale);
+        free(options);
     }
 
     SetTexMode(MODE_HORIZONTAL);
@@ -1694,12 +1727,11 @@ code=4 => psfig
     free(fullpathname);
 }
 
-void CmdPicture(int code)
-
 /******************************************************************************
   purpose: handle \begin{picture} ... \end{picture}
            by converting to png image and inserting
  ******************************************************************************/
+void CmdPicture(int code)
 {
     char *pre, *post, *picture;
 
@@ -1715,11 +1747,10 @@ void CmdPicture(int code)
     }
 }
 
-void CmdMusic(int code)
-
 /******************************************************************************
   purpose: Process \begin{music} ... \end{music} environment
  ******************************************************************************/
+void CmdMusic(int code)
 {
     char *contents;
     char endmusic[] = "\\end{music}";
