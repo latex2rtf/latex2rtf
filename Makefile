@@ -130,7 +130,7 @@ TEST=   test/Makefile \
 	test/eqns.tex test/fonts.tex test/fontsize.tex test/frac.tex \
 	test/list.tex test/logo.tex test/misc1.tex test/misc2.tex \
 	test/oddchars.tex test/tabular.tex test/percent.tex test/essential.tex test/hndout.sty \
-	test/misc3.tex test/misc4.tex
+	test/misc3.tex test/misc4.tex test/fancy.tex
 OBJS=l2r_fonts.o direct.o encode.o commands.o stack.o funct1.o tables.o \
 	chars.o ignore.o cfg.o main.o util.o parser.o mygetopt.o lengths.o counters.o \
 	preamble.o letterformat.o equation.o convert.o biblio.o

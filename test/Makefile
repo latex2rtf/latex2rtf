@@ -4,7 +4,7 @@
 
 all:	accentchars.rtf array.rtf cite.rtf eqns.rtf fonts.rtf fontsize.rtf \
         frac.rtf list.rtf logo.rtf misc1.rtf misc2.rtf oddchars.rtf \
-        tabular.rtf percent.rtf essential.rtf misc3.rtf misc4.rtf
+        tabular.rtf percent.rtf essential.rtf misc3.rtf misc4.rtf fancy.rtf
 
 LATEX= latex
 BIBTEX= bibtex
