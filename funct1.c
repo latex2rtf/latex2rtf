@@ -1312,18 +1312,30 @@ CmdVerbatim(int code)
 	if (code & ON) {
 		
 		diagnostics(4, "Entering CmdVerbatim");
-		CmdEndParagraph(0);
-		CmdIndent(INDENT_NONE);
-		CmdStartParagraph(FIRST_PAR);
-		num = TexFontNumber("Typewriter");
-		fprintRTF("\\pard\\ql\\b0\\i0\\scaps0\\f%d ", num);
 		
-		if (true_code == VERBATIM_2) 
-			endtag = strdup("\\end{Verbatim}");
-		else if (true_code == VERBATIM_3) 
-			endtag = strdup("\\end{alltt}");			
-		else
-			endtag = strdup("\\end{verbatim}");			
+		if (true_code != VERBATIM_4) {
+			
+			CmdEndParagraph(0);
+			CmdIndent(INDENT_NONE);
+			CmdStartParagraph(FIRST_PAR);
+			num = TexFontNumber("Typewriter");
+			fprintRTF("\\pard\\ql\\b0\\i0\\scaps0\\f%d ", num);
+		}
+		
+		switch (true_code) {
+			case VERBATIM_1 :
+				endtag = strdup("\\end{verbatim}");
+				break;
+			case VERBATIM_2 :
+				endtag = strdup("\\end{Verbatim}");
+				break;
+			case VERBATIM_3 :
+				endtag = strdup("\\end{alltt}");
+				break;
+			case VERBATIM_4 :
+				endtag = strdup("\\end{comment}");
+				break;
+		}
 			
 		verbatim_text = getTexUntil(endtag, 1);
 		UpdateLineNumber(verbatim_text);
@@ -1333,7 +1345,7 @@ CmdVerbatim(int code)
 
 			ConvertAllttString(verbatim_text);
 
-		else {
+		else if (true_code == VERBATIM_1 || true_code == VERBATIM_2) {
 		
 			while (*vptr) {
 				diagnostics(5, "Verbatim character <%c>", *vptr);
@@ -1347,7 +1359,8 @@ CmdVerbatim(int code)
 
 	} else {
 		diagnostics(4, "Exiting CmdVerbatim");
-		CmdEndParagraph(0);
+		
+		if (true_code != VERBATIM_4) CmdEndParagraph(0);
 	}
 		
 }

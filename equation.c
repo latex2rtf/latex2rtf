@@ -1048,12 +1048,13 @@ SubSupWorker (bool big)
 void
 CmdSuperscript(int code)
 /******************************************************************************
- purpose   : Handles superscripts ^\alpha, ^a, ^{a} and \textsuperscript{a}
+ purpose   : Handles superscripts ^\alpha, ^a, ^{a}       code=0
+                                  \textsuperscript{a}     code=1
  ******************************************************************************/
 {
 	char           *s = NULL;
 
-	if (g_fields_use_EQ){
+	if (code==0 && g_fields_use_EQ){
 		ungetTexChar('^');
 		SubSupWorker(FALSE);
 		return;
@@ -1070,12 +1071,13 @@ CmdSuperscript(int code)
 void
 CmdSubscript(int code)
 /******************************************************************************
- purpose   : Handles superscripts ^\alpha, ^a, ^{a}
+ purpose   : Handles subscripts _\alpha, _a, _{a},           code=0
+                                \textsubscript{script}       code=1
  ******************************************************************************/
 {
 	char           *s = NULL;
 
-	if (g_fields_use_EQ){
+	if (code==0 && g_fields_use_EQ){
 		ungetTexChar('_');
 		SubSupWorker (FALSE);
 		return;
