@@ -113,7 +113,7 @@ fi
 
 if [ $ext = "tex" ] ; then
 
-	inline=`grep -c -E INLINE_DOT_ON_BASELINE $name.$ext`
+	inline=`grep -c INLINE_DOT_ON_BASELINE $name.$ext`
 
 	$LATEX $name > /dev/null
 	
