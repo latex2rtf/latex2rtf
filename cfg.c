@@ -1,4 +1,4 @@
-/* $Id: cfg.c,v 1.18 2001/10/23 14:35:34 prahl Exp $
+/* $Id: cfg.c,v 1.19 2001/11/21 05:10:26 prahl Exp $
 
      purpose : Read config files and provide lookup routines
 
@@ -348,7 +348,7 @@ ReadLanguage(char *lang)
 	FILE           *fp;
 	char           *langfn;
 
-	langfn = malloc(strlen(lang) + strlen(".cfg"));
+	langfn = malloc(strlen(lang) + strlen(".cfg") + 1);
 	if (langfn == NULL)
 		diagnostics(ERROR, "Could not allocate memory for language filename.");
 
