@@ -1,4 +1,4 @@
-/* $Id: chars.c,v 1.9 2001/10/11 05:42:10 prahl Exp $
+/* $Id: chars.c,v 1.10 2001/10/11 14:06:10 prahl Exp $
 
    purpose : handles special characters and logos
 */
@@ -225,10 +225,11 @@ CmdMacronChar(int code)
 		break;
 
 	default:
-		upsize = (0.05 * CurrentFontSize()) + 0.45;
+		upsize = (0.1 * CurrentFontSize()) + 0.45;
 		fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(");
 		ConvertString(cParam);
-		fprintRTF("%c\\\\S\\\\up%d(\\'af))}", FORMULASEP, upsize);
+/*		fprintRTF("%c\\\\S\\\\up%d(\\'af))}", FORMULASEP, upsize); */
+		fprintRTF("%c\\\\S(\\'af))}", FORMULASEP);
 		fprintRTF("{\\fldrslt }}");
 	}
 

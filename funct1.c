@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.28 2001/10/11 05:42:10 prahl Exp $ 
+/* $Id: funct1.c,v 1.29 2001/10/11 14:06:10 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -27,6 +27,7 @@ Authors:  Dorner, Granzer, Polzer, Trisko, Schlatterbeck, Lehner, Prahl
 extern bool     twocolumn;	/* true if twocolumn-mode is enabled */
 extern int      indent;		/* includes the left margin e.g. for itemize-commands */
 extern enum     TexCharSetKind TexCharSet;
+int 			indent_right;
 
 static void     CmdLabel1_4(int code, char *text);
 static void     CmdLabelOld(int code, char *text);
@@ -52,6 +53,10 @@ CmdStartParagraph(int code)
 	diagnostics(4,"parindent  is %d", getLength("parindent"));
 
 	fprintRTF("\\q%c\\li%d ", alignment, indent);
+	if (indent!=0)
+		fprintRTF("\\li%d ", indent);
+	if (indent_right!=0)
+		fprintRTF("\\ri%d ", indent_right);
 
 	if (g_paragraph_no_indent || g_paragraph_inhibit_indent) 
 		parindent = 0;
@@ -122,6 +127,7 @@ CmdVspace(int code)
 
 	diagnostics(4,"CmdVspace mode = %d, vspace=%d", GetTexMode(), vspace);
 
+	if (vspace<0) vspace =0;
 	fprintRTF("\\sa%d ", vspace);
 	if (mode == MODE_VERTICAL) 			
 		fprintRTF("\\par ");		/* forces \sa to take effect */
@@ -1462,21 +1468,26 @@ CmdAbstract(int code)
 {
 	static char     oldalignment;
 
-	fprintRTF("\n\\par\n\\par\\pard ");
+	CmdEndParagraph(0);
 	if (code == ON) {
-		if (!(g_document_type == FORMAT_ARTICLE) || !titlepage) 
-			fprintRTF("\\page");
+		if (g_document_type == FORMAT_REPORT || titlepage) 
+			fprintRTF("\\page ");
 
-		fprintRTF("\\pard\\qj ");
-		fprintRTF("{\\b\\fs%d ", CurrentFontSize());
+		CmdStartParagraph(0);
+		fprintRTF("\\qc{\\b ");
 		ConvertBabelName("ABSTRACTNAME");
-		fprintRTF("}\\par ");
+		fprintRTF("}");
+		CmdEndParagraph(0);
+		indent += 1024;
+		indent_right +=1024;
 		oldalignment = alignment;
 		alignment = JUSTIFIED;
 	} else {
-		fprintRTF("\\pard ");
+		CmdEndParagraph(0);
+		indent -= 1024;
+		indent_right -=1024;
 		alignment = oldalignment;
-		fprintRTF("\n\\par\\q%c ", alignment);
+		CmdVspace(2);				/* put \medskip after abstract */
 	}
 }
 
