@@ -752,7 +752,7 @@ TabbingNextCellEnd(char *t, char **cell_end, char **next_cell)
 		if (*s == '\\') {
 			s++;
 			if (*s=='=' || *s=='>' || *s=='<' || *s=='\'' || *s=='`') {
-				*cell_end = s-2;
+				*cell_end = s-1;
 				*next_cell = s+1;
 				return;
 			}
@@ -792,7 +792,7 @@ TabbingNextCell(char *cell_start, char **cell_end)
 }
 
 static void
-TabbingBeginRow(int n, char *align)
+TabbingBeginRow(int n, int n_total, char *align)
 /******************************************************************************
  purpose:  emit RTF to start one row of a tabbing environment           
  ******************************************************************************/
@@ -804,7 +804,7 @@ TabbingBeginRow(int n, char *align)
 	fprintRTF("\\trowd");
 
 	for(i=0; i<n; i++)
-		fprintRTF("\\cellx%d", TabbingColumnPosition(i,n));
+		fprintRTF("\\cellx%d", TabbingColumnPosition(i,n_total));
 		
 	fprintRTF("\n");
 	for(i=0; i<g_tabbing_left_position; i++) {
@@ -815,7 +815,7 @@ TabbingBeginRow(int n, char *align)
 }
 
 static void
-TabbingWriteRow(char *this_row, int n, char *align)
+TabbingWriteRow(char *this_row, int n, int n_total, char *align)
 {
 	char *start, *end, *cell;
 	int i;
@@ -825,7 +825,7 @@ TabbingWriteRow(char *this_row, int n, char *align)
 	diagnostics(4, "TabbingWriteRow n=%d <%s> [%s]",n, align, this_row); 
 	if (strstr(this_row,"\\kill")) return;
 	
-	TabbingBeginRow(n,align);
+	TabbingBeginRow(n, n_total, align);
 	
 	start=this_row;
 	end=this_row+strlen(this_row);
@@ -886,6 +886,9 @@ TabbingGetRow(char *table, char **row, char **next_row)
 
 static void
 TabbingGetColumnAlignments(char* row, char *align, int *n, int *next_left)
+/******************************************************************************
+ purpose: 	scan one row of tabbing environment to obtain column alignments
+ ******************************************************************************/
 {
 	int i;
 	
@@ -939,7 +942,7 @@ CmdTabbing(int code)
  purpose: 	\begin{tabbing} ... \end{tabbing}
  ******************************************************************************/
 {
-	int             n,next_left;
+	int             n,n_total,next_left;
 	char           *end,*this_row, *next_row_start, *row_start;
 	char   		   *table=NULL;
 	char		   align[31];
@@ -973,13 +976,16 @@ CmdTabbing(int code)
 	
 	fprintRTF("\\par\n");
 	
+	n_total=0;
 	while (this_row && strlen(this_row)>0) {
 		diagnostics(4,"row=<%s>",this_row);
 		
 		TabbingGetColumnAlignments(this_row, align, &n, &next_left);
+		if (n>n_total) n_total=n;
+		
 		diagnostics(4,"this row n=%d <%s> left_tab=%d",n,align,g_tabbing_left_position);
 		
-		TabbingWriteRow(this_row, n, align);
+		TabbingWriteRow(this_row, n, n_total, align);
 
 		g_tabbing_left_position=next_left;		
 		row_start=next_row_start;

@@ -30,6 +30,12 @@ This file is available from http://sourceforge.net/projects/latex2rtf/
 #define PAR_CENTERLINE 4
 #define PAR_VCENTER    5
 
+#define BOX_HBOX       1
+#define BOX_VBOX       2
+#define BOX_MBOX 	   3
+#define BOX_FBOX       4
+#define BOX_PARBOX     5
+
 #define FIRST_PAR      1
 #define ANY_PAR        2
 #define TITLE_PAR      3
