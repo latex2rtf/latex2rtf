@@ -185,6 +185,7 @@ int PushSource(char *filename, char *string)
             return 1;
         g_parser_include_level++;
         g_parser_line = 1;
+        name = strdup(filename);
 
     } else {
         name = CurrentFileName();

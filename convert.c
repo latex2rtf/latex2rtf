@@ -192,7 +192,7 @@ globals: fTex, fRtf and all global flags for convert (see above)
     char cNext;
     int mode, count, pending_new_paragraph;
 
-    diagnostics(3, "Entering Convert ret = %d", ret);
+    diagnostics(4, "Entering Convert ret = %d", ret);
     RecursionLevel++;
     PushLevels();
 

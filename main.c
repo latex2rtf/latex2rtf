@@ -511,12 +511,12 @@ purpose: Writes the message to stderr depending on debugging level
         input = CurrentFileName();
         iEnvCount = CurrentEnvironmentCount();
 
+        fprintf(stderr, "\n%s:%d ",input,linenumber);
         switch (level) {
             case 0:
-                fprintf(stderr, "\nError! line=%d ", linenumber);
+                fprintf(stderr, "Error! ");
                 break;
             case 1:
-                fprintf(stderr, "\nWarning line=%d ", linenumber);
                 if (g_RTF_warnings) {
                     vsnprintf(buffer, 512, format, apf);
                     fprintRTF("{\\plain\\cf2 [latex2rtf:");
@@ -527,12 +527,13 @@ purpose: Writes the message to stderr depending on debugging level
                     fprintRTF("]}");
                 }
                 break;
+            case 5:
+            case 6:
+                fprintf(stderr, " rec=%d ", RecursionLevel);
+                /*fall through */
             case 2:
             case 3:
             case 4:
-            case 5:
-            case 6:
-                fprintf(stderr, "\n%s %4d rec=%d ", input, linenumber, RecursionLevel);
                 for (i = 0; i < BraceLevel; i++)
                     fprintf(stderr, "{");
                 for (i = 8; i > BraceLevel; i--)
@@ -542,7 +543,6 @@ purpose: Writes the message to stderr depending on debugging level
                     fprintf(stderr, "  ");
                 break;
             default:
-                fprintf(stderr, "\nline=%d ", linenumber);
                 break;
         }
         vfprintf(stderr, format, apf);
