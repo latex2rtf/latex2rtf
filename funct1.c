@@ -1075,8 +1075,10 @@ CmdItem(int code)
 	
 	switch (code) {
 	case ITEMIZE:
-		if (itemlabel) break;
-		fprintRTF("\\bullet\\tab ");
+		if (FrenchMode) 
+			fprintRTF("\\endash\\tab ");
+		else
+			fprintRTF("\\bullet\\tab ");
 		break;
 
 	case ENUMERATE:
