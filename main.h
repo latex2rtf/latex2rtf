@@ -1,4 +1,6 @@
-/* $Id: main.h,v 1.25 2001/10/17 04:43:47 prahl Exp $ */
+/* $Id: main.h,v 1.26 2001/10/25 05:53:46 prahl Exp $ */
+#ifndef __MAIN_H
+#define __MAIN_H
 
 #undef HAS_NO_GETOPT
 
@@ -7,8 +9,11 @@
 #define HAS_NO_STRDUP
 #define ENVSEP '^'
 #define PATHSEP ':'
-char           *strdup(const char *str);
 #include "MainMain.h"
+#endif
+
+#ifdef HAS_NO_STRDUP
+char           *strdup(const char *str);
 #endif
 
 #ifndef ENVSEP
@@ -21,9 +26,6 @@ char           *strdup(const char *str);
 
 #include <assert.h>
 #include <stdio.h>
-
-#ifndef __MAIN_H
-#define __MAIN_H
 
 #ifndef SEEK_SET
 #define SEEK_SET 0

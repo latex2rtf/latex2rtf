@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.37 2001/10/22 04:33:03 prahl Exp $ 
+/* $Id: funct1.c,v 1.38 2001/10/25 05:53:46 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -1097,16 +1097,25 @@ purpose: called on active german-mode and " character in input file to
 
 	switch (cThis) {
 	case 'a':
-		fprintRTF("{\\'e4}");
+		fprintRTF("\\'e4");
 		break;
 	case 'o':
-		fprintRTF("{\\'f6}");
+		fprintRTF("\\'f6");
 		break;
 	case 'u':
-		fprintRTF("{\\'fc}");
+		fprintRTF("\\'fc");
 		break;
 	case 's':
-		fprintRTF("{\\'df}");
+		fprintRTF("\\'df");
+		break;
+	case 'A':
+		fprintRTF("\\'c4");
+		break;
+	case 'O':
+		fprintRTF("\\'d6");
+		break;
+	case 'U':
+		fprintRTF("\\'dc");
 		break;
 	case '|':
 		break;		/* ignore */
