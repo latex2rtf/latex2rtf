@@ -47,8 +47,8 @@ Authors:
 #include "equation.h"
 
 extern bool     twocolumn;	/* true if twocolumn-mode is enabled */
-extern int      indent;		/* includes the left margin e.g. for itemize-commands */
-int 			indent_right;
+int				g_right_margin_indent;
+int         	g_left_margin_indent;
 
 void            CmdPagestyle( /* @unused@ */ int code);
 void            CmdHeader(int code);
@@ -100,8 +100,8 @@ CmdStartParagraph(int code)
 	diagnostics(5,"CmdStartParagraph mode = %s", TexModeName[GetTexMode()]);
 	diagnostics(5,"Noindent is         %s", (g_paragraph_no_indent) ? "TRUE" : "FALSE");
 	diagnostics(5,"Inhibit is          %s", (g_paragraph_inhibit_indent) ? "TRUE" : "FALSE");
-	diagnostics(5,"indent is           %d", indent);
-	diagnostics(5,"right indent is     %d", indent_right);
+	diagnostics(5,"indent is           %d", g_left_margin_indent);
+	diagnostics(5,"right indent is     %d", g_right_margin_indent);
 	diagnostics(5,"paragraph indent is %d", getLength("parindent"));
 
 	fprintRTF("\\q%c", alignment);
@@ -110,11 +110,11 @@ CmdStartParagraph(int code)
 		fprintRTF("\\sb%d ", g_vertical_space_to_add);
 	g_vertical_space_to_add = 0;
 
-	if (indent!=0)
-		fprintRTF("\\li%d", indent);
+	if (g_left_margin_indent!=0)
+		fprintRTF("\\li%d", g_left_margin_indent);
 
-	if (indent_right!=0)
-		fprintRTF("\\ri%d", indent_right);
+	if (g_right_margin_indent!=0)
+		fprintRTF("\\ri%d", g_right_margin_indent);
 
 	/*titles are never indented */
 	if (status==2)
@@ -1042,27 +1042,29 @@ CmdQuote(int code)
 
 	switch (code) {
 	case (QUOTATION | ON):
+		PushEnvironment(GENERIC_ENV);
 		diagnostics(4,"Entering \\begin{quotation}");
 		CmdVspace(VSPACE_SMALL_SKIP);
-		indent += 512;
-		indent_right += 512;
+		g_left_margin_indent += 512;
+		g_right_margin_indent += 512;
 		CmdIndent(INDENT_USUAL);
 		break;
 
 	case (QUOTE     | ON):
-		diagnostics(4,"Entering CmdQuote");
+		PushEnvironment(GENERIC_ENV);
+		diagnostics(4,"Entering \\begin{quote}");
 		CmdVspace(VSPACE_SMALL_SKIP);
-		indent += 512;
-		indent_right += 512;
+		g_left_margin_indent += 512;
+		g_right_margin_indent += 512;
 		setLength("parindent",0);
 		CmdIndent(INDENT_USUAL);
 		break;
 		
 	case (QUOTATION | OFF):
 	case (QUOTE | OFF):
-		diagnostics(4,"Exiting CmdQuote");
-		indent -= 512;
-		indent_right -= 512;
+		PopEnvironment();
+		diagnostics(4,"Exiting \\end{quote} or \\end{quotation}");
+		CmdIndent(INDENT_INHIBIT);
 		CmdVspace(VSPACE_SMALL_SKIP);
 	}
 }
@@ -1089,7 +1091,7 @@ CmdList(int code)
 		DirectVspace(vspace);
 		PushEnvironment(ITEMIZE);
 		setLength("parindent", -amount);
-		indent += 2*amount;
+		g_left_margin_indent += 2*amount;
 		CmdIndent(INDENT_USUAL);
 		break;
 
@@ -1099,7 +1101,7 @@ CmdList(int code)
 		g_enumerate_depth++;
 		CmdItem(RESET_ITEM_COUNTER);
 		setLength("parindent", -amount);
-		indent += 2*amount;
+		g_left_margin_indent += 2*amount;
 		CmdIndent(INDENT_USUAL);
 		break;
 
@@ -1107,7 +1109,7 @@ CmdList(int code)
 		DirectVspace(vspace);
 		PushEnvironment(DESCRIPTION);
 		setLength("parindent", -amount);
-		indent += amount;
+		g_left_margin_indent += amount;
 		CmdIndent(INDENT_USUAL);
 		break;
 		
@@ -1234,7 +1236,14 @@ CmdBox(int code)
 	
 	if (g_processing_fields) g_processing_fields--;	
 
-	SetTexMode(mode);
+	if (code==BOX_VBOX) {
+		CmdEndParagraph(0);
+		CmdIndent(INDENT_INHIBIT);
+		
+	} else {
+		SetTexMode(mode);
+	}
+	
 	diagnostics(2, "Exited CmdBox() [%s]", BoxName[code-1]);
 }
 
@@ -1348,26 +1357,21 @@ CmdVerse(int code)
 /******************************************************************************
   purpose: converts the LaTeX-Verse-environment to a similar Rtf-style
  ******************************************************************************/
-{
-	static int previous_indentation;
-	static int previous_parindent;
-	
+{	
 	CmdEndParagraph(0);
 	switch (code) {
 		case ON:
-		CmdIndent(INDENT_USUAL);
-		previous_indentation = indent;
-		previous_parindent = getLength("parindent");
-		indent = 1134;
-		setLength("parindent", -567);
-		CmdStartParagraph(FIRST_PAR);
-		fprintRTF("\\ri1134\\keep ");
-		break;
-	case OFF:
-		setLength("parindent", previous_parindent);
-		indent = previous_indentation;
-		CmdIndent(INDENT_INHIBIT);
-		break;
+			PushEnvironment(GENERIC_ENV);
+			CmdIndent(INDENT_USUAL);
+			g_left_margin_indent += 1134;
+			setLength("parindent",0);
+			break;
+		case OFF:
+			PopEnvironment();
+			diagnostics(4,"Exiting \\end{verse}");
+			CmdIndent(INDENT_INHIBIT);
+			CmdVspace(VSPACE_SMALL_SKIP);
+			break;
 	}
 }
 
@@ -1706,8 +1710,9 @@ CmdAbstract(int code)
 {
 	static char     oldalignment;
 
-	if (code == ON || code == 1) {
-		CmdEndParagraph(0);
+	CmdEndParagraph(0);
+	
+	if (code == ON) {
 		if (g_document_type == FORMAT_REPORT || titlepage) 
 			fprintRTF("\\page ");
 
@@ -1716,16 +1721,14 @@ CmdAbstract(int code)
 		ConvertBabelName("ABSTRACTNAME");
 		fprintRTF("}");
 		CmdEndParagraph(0);
-		indent += 1024;
-		indent_right +=1024;
+		g_left_margin_indent += 1024;
+		g_right_margin_indent +=1024;
 		oldalignment = alignment;
 		alignment = JUSTIFIED;
-	} 
-	
-	if (code != ON || code == 1) {
-		CmdEndParagraph(0);
-		indent -= 1024;
-		indent_right -=1024;
+
+	} else {
+		g_left_margin_indent -= 1024;
+		g_right_margin_indent -=1024;
 		alignment = oldalignment;
 		CmdVspace(VSPACE_MEDIUM_SKIP);				/* put \medskip after abstract */
 	}

@@ -1,4 +1,4 @@
-/* $Id: main.h,v 1.58 2003/03/08 15:48:10 prahl Exp $ */
+/* $Id: main.h,v 1.59 2003/03/23 18:02:42 prahl Exp $ */
 
 #if defined(UNIX)
 #define ENVSEP ':'
@@ -62,7 +62,8 @@ extern int		headings;
 
 extern int		g_verbosity_level;
 extern int		RecursionLevel;
-extern int		indent;
+extern int		g_left_margin_indent;
+extern int		g_right_margin_indent;
 extern char		alignment;
 
 /* table  & tabbing variables */

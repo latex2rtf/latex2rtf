@@ -52,8 +52,9 @@ typedef struct commandtag {
 
 static int      iEnvCount = 0;			/* number of active environments */
 static CommandArray *Environments[100];	/* list of active environments */
-static int parindentArray[100];
-static int indentArray[100];
+static int g_par_indent_array[100];
+static int g_left_indent_array[100];
+static int g_right_indent_array[100];
 
 static CommandArray commands[] = {
 	{"begin", CmdBeginEnd, CMD_BEGIN},
@@ -725,8 +726,9 @@ globals: changes Environment - array of active environments
 {
 	char           *diag = "";
 
-	parindentArray[iEnvCount] = getLength("parindent");
-	indentArray[iEnvCount] = indent;
+	g_par_indent_array[iEnvCount] = getLength("parindent");
+	g_left_indent_array[iEnvCount] = g_left_margin_indent;
+	g_right_indent_array[iEnvCount] = g_right_margin_indent;
 	
 	switch (code) {
 	case PREAMBLE:
@@ -806,8 +808,9 @@ globals: changes Environment - array of active environments
 	--iEnvCount;
 	Environments[iEnvCount] = NULL;
 
-	setLength("parindent",parindentArray[iEnvCount]);
-	indent=indentArray[iEnvCount];
+	setLength("parindent",g_par_indent_array[iEnvCount]);
+	g_left_margin_indent=g_left_indent_array[iEnvCount];
+	g_right_margin_indent=g_right_indent_array[iEnvCount];
 
 	/*
 	 * overlapping environments are not allowed !!! example:
