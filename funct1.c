@@ -758,6 +758,7 @@ parameter: code: type of section-recursion-level
     char *toc_entry;
     char *heading;
     char *unit_label;
+    char *chapter_name=NULL;
 
     toc_entry = getBracketParam();
     heading = getBraceParam();
@@ -793,12 +794,14 @@ parameter: code: type of section-recursion-level
 
         case SECT_CHAPTER:
         case SECT_CHAPTER_STAR:
+            unit_label = NULL;
             if (getCounter("chapter") > 0) CmdNewPage(NewPage);
             CmdStartParagraph(TITLE_PAR);
             fprintRTF("{");
             InsertStyle("chapter");
             fprintRTF(" ");
-            ConvertBabelName("CHAPTERNAME");
+            chapter_name=GetBabelName("CHAPTERNAME");
+            ConvertString(chapter_name);
             if (code == SECT_CHAPTER && getCounter("secnumdepth") >= -1) {
                 incrementCounter("chapter");
                 setCounter("section", 0);
@@ -812,7 +815,6 @@ parameter: code: type of section-recursion-level
                 unit_label = FormatUnitNumber("chapter");
                 fprintRTF(" ");
                 InsertBookmark(g_section_label, unit_label);
-                free(unit_label);
             }
             CmdEndParagraph(0);
             CmdVspace(VSPACE_BIG_SKIP);
@@ -820,7 +822,9 @@ parameter: code: type of section-recursion-level
             ConvertString(heading);
             CmdEndParagraph(0);
             fprintRTF("\\par\\par}");
+/*            InsertContentMark('c', chapter_name, " ", unit_label, " ", heading);*/
             CmdVspace(VSPACE_SMALL_SKIP);
+            if (unit_label) free(unit_label);
             break;
 
         case SECT_NORM:
@@ -948,12 +952,10 @@ parameter: code: type of section-recursion-level
     }
 }
 
-
-void CmdCaption(int code)
-
 /******************************************************************************
  purpose: converts \caption from LaTeX to Rtf
  ******************************************************************************/
+void CmdCaption(int code)
 {
     char *thecaption;
     char *lst_entry;
@@ -966,12 +968,14 @@ void CmdCaption(int code)
     alignment = CENTERED;
 
     lst_entry = getBracketParam();
+    thecaption = getBraceParam();
+    diagnostics(4, "in CmdCaption [%s]", thecaption);
 
     if (lst_entry) {
-        diagnostics(4, "entering CmdCaption [%s]", lst_entry);
+        diagnostics(4, "entering CmdCaption [%s]{%20s ...}", lst_entry,thecaption);
         free(lst_entry);
     } else
-        diagnostics(4, "entering CmdCaption");
+        diagnostics(4, "entering CmdCaption {%20s ...}",thecaption);
 
     if (GetTexMode() != MODE_VERTICAL)
         CmdEndParagraph(0);
@@ -983,16 +987,17 @@ void CmdCaption(int code)
     if (g_processing_figure) {
         incrementCounter("figure");
         ConvertBabelName("FIGURENAME");
+	    fprintRTF(" ");
         n = getCounter("figure");
         c = 'f';
     } else {
         incrementCounter("table");
         ConvertBabelName("TABLENAME");
+        fprintRTF(" ");
         n = getCounter("table");
         c = 't';
     }
 
-    fprintRTF(" ");
     if (g_document_type != FORMAT_ARTICLE)
         snprintf(number, 20, "%d.%d", getCounter("chapter"), n);
     else
@@ -1007,16 +1012,12 @@ void CmdCaption(int code)
     else
         fprintRTF("%s", number);
 
-    thecaption = getBraceParam();
-    diagnostics(4, "in CmdCaption [%s]", thecaption);
 	fprintRTF(": ");
     ConvertString(thecaption);
     fprintRTF("}");
 
-    fprintRTF("{\\field{\\*\\fldinst TC \"");
-	fprintRTF("%s  ",number);
-    ConvertString(thecaption);
-    fprintRTF("\" \\\\f %c}{\\fldrslt }}", c);
+	InsertContentMark(c, number, "  ", thecaption);
+
     free(thecaption);
 
     CmdEndParagraph(0);

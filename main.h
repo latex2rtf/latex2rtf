@@ -1,4 +1,4 @@
-/* $Id: main.h,v 1.67 2004/12/07 03:17:54 prahl Exp $ */
+/* $Id: main.h,v 1.68 2005/01/07 05:10:13 prahl Exp $ */
 
 #if defined(UNIX)
 #define ENVSEP ':'
@@ -112,6 +112,7 @@ extern bool		g_show_equation_number;
 extern int		g_enumerate_depth;
 extern bool		g_suppress_equation_number;
 extern bool		g_aux_file_missing;
+extern bool		g_bbl_file_missing;
 extern char		g_charset_encoding_name[20];
 extern int		g_fcharset_number;
 extern int      g_graphics_package;

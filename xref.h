@@ -77,6 +77,7 @@ void CmdIndex(int code);
 void CmdPrintIndex(int code);
 void CmdHtml(int code);
 void InsertBookmark(char *name, char *text);
+void InsertContentMark(char marker, char *s1, char *s2, char *s3);
 void CmdCite(int code);
 void CmdHarvardCite(int code);
 void CmdBCAY(int code);
@@ -97,3 +98,5 @@ void CmdListOf(int code);
 void CmdHarvard(int code);
 void CmdNatbibCite(int code);
 void CmdBibpunct(int code);
+void CmdBibEntry(int code);
+

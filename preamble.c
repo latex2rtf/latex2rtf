@@ -419,6 +419,8 @@ static void setDocumentOptions(char *optionlist)
             g_document_bibstyle = BIBSTYLE_APALIKE;
         else if (strcmp(option, "apanat1b") == 0)
             PushEnvironment(APACITE_MODE);
+        else if (strcmp(option, "bibentry") == 0)
+            /* do nothing */;
         else if (strcmp(option, "harvard") == 0) {
             PushEnvironment(HARVARD_MODE);
             g_document_bibstyle = BIBSTYLE_HARVARD;

@@ -29,8 +29,9 @@ typedef struct ConfigEntryT
    const char  *RtfCommand;
 } ConfigEntryT;
 
-void 			ReadLanguage(char *lang);
-void 			ConvertBabelName(char *name);
+void ReadLanguage(char *lang);
+void ConvertBabelName(char *name);
+char *GetBabelName(char *name);
 
 void 			ReadCfg (void);
 int 			SearchRtfIndex (const char *theCommand, int WhichArray);

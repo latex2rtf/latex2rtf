@@ -411,6 +411,14 @@ void ConvertBabelName(char *name)
         ConvertString(s);
 }
 
+char *GetBabelName(char *name)
+{
+    char *s = NULL;  
+    s = SearchRtfCmd(name, LANGUAGE_A);
+    return s;
+}
+
+
 static char *buffer = NULL;
 static size_t bufsize = 0;
 

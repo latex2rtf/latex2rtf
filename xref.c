@@ -219,6 +219,62 @@ static char *ScanAux(char *token, char *reference, int code)
     return NULL;
 }
 
+/*************************************************************************
+purpose: obtains a \bibentry{reference} from the .bbl file
+         this consists of all lines after \bibentry{reference} until two
+         newlines in a row are found.
+ ************************************************************************/
+static char *ScanBbl(char *reference)
+{
+    static FILE *f_bbl = NULL;
+    char buffer[4096];
+    char target[512];
+    char *s;
+	char last_c;
+	int  i=1;
+	
+    if (g_bbl_file_missing || strlen(reference) == 0) {
+        return NULL;
+    }
+    diagnostics(4, "seeking '\\bibitem{%s}' in .bbl", reference);
+
+    snprintf(target, 512, "\\bibitem{%s}", reference);
+	
+    if (f_bbl == NULL && (f_bbl = my_fopen(g_bbl_name, "r")) == NULL) {
+        diagnostics(WARNING, "No .bbl file.  Run LaTeX to create %s\n", g_bbl_name);
+        g_bbl_file_missing = TRUE;
+        return NULL;
+    }
+    rewind(f_bbl);
+
+	/* scan each line for \bibentry{reference} */
+    while (fgets(buffer, 4095, f_bbl) != NULL) {
+        s = strstr(buffer, target);
+        if (s) break;
+    }
+
+	if (!s) return NULL;
+		
+	/* scan bbl file until we encounter \n\n */
+	s = buffer;
+	last_c = '\0';
+	*s = getc(f_bbl);
+	while ( !feof(f_bbl) && !(last_c == '\n' && *s == '\n') && i< 4095) {
+		last_c = *s;
+		s++;
+		*s = getc(f_bbl);
+		i++;
+	}
+	
+	if (last_c == '\n' && *s == '\n')
+		s--;
+	else
+		s++;
+	*s = '\0';
+	
+	return strdup(buffer);
+}
+
 /******************************************************************************
  purpose: creates RTF so that endnotes will be emitted at this point
  ******************************************************************************/
@@ -417,6 +473,22 @@ void CmdBibitem(int code)
     ungetTexChar(c);
 }
 
+/******************************************************************************
+ purpose: handle the \bibentry
+ ******************************************************************************/
+void CmdBibEntry(int code)
+{
+    char *key, *s;
+
+    key = getBraceParam();
+    s = ScanBbl(key);
+    if (s) {
+		ConvertString(s);
+        free(s);
+    }
+    free(key);
+}
+
 void CmdNewblock(int code)
 {
     /* 
@@ -516,6 +588,15 @@ void InsertBookmark(char *name, char *text)
     }
 
     free(signet);
+}
+
+void InsertContentMark(char marker, char *s1, char *s2, char *s3)
+{
+    fprintRTF("{\\field{\\*\\fldinst TC \"");
+	ConvertString(s1);
+	ConvertString(s2);
+	ConvertString(s3);
+    fprintRTF("\" \\\\f %c}{\\fldrslt }}", marker);
 }
 
 /******************************************************************************
@@ -1834,9 +1915,7 @@ purpose: handles \listoffigures \listoftables
 ******************************************************************************/
 void CmdListOf(int code)
 {
-	char c = 't';
-	
-	if (code == LIST_OF_FIGURES) c = 'f';
+	char c;
 	
     diagnostics(4, "Entering CmdListOf");
 
@@ -1844,10 +1923,24 @@ void CmdListOf(int code)
 	fprintRTF("{");
 	InsertStyle("contents_no_style");
 	fprintRTF(" ");
-	if (code == LIST_OF_FIGURES)
-		ConvertBabelName("LISTFIGURENAME");
-	else
-		ConvertBabelName("LISTTABLENAME");
+	
+	switch (code) {
+	
+		case LIST_OF_FIGURES:
+			ConvertBabelName("LISTFIGURENAME");
+			c = 'f';
+			break;
+			
+		case LIST_OF_TABLES:
+			ConvertBabelName("LISTTABLENAME");
+			c = 't';
+			break;
+	
+		case TABLE_OF_CONTENTS:
+			ConvertBabelName("CONTENTSNAME");
+			c = 'c';
+			break;
+	}
 	
 	CmdEndParagraph(0);
 	fprintRTF("}");
