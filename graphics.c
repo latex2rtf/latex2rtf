@@ -609,7 +609,7 @@ PutPngFile(char * s, double scale, double baseline, int full_path)
 		png = strdup(s);
 	else
 		png = strdup_together(g_home_dir, s);		
-	diagnostics(1, "PutPngFile <%s>",png);
+	diagnostics(2, "PutPngFile <%s>",png);
 
 	GetPngSize(png, &width, &height);
 
@@ -1082,7 +1082,7 @@ get_latex2png_name()
 #ifdef MSDOS
 	return strdup("command.com /e:2048 /c latex2pn");
 #else
-	return strdup("latex2png");
+	return strdup_together(g_script_path, "latex2png");
 #endif
 }
 

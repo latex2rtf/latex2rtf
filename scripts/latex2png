@@ -2,7 +2,7 @@
 # Part of latex2rtf by Scott Prahl (Nov 2002)
 #
 # This version uses latex and dvips
-#			   with ps2ps (part of Ghostscript)
+#              with ps2ps (part of Ghostscript)
 #              with convert (Part of ImageMagick)
 #
 # This script file will convert a latex file into a PNG image.
@@ -26,7 +26,7 @@ LATEX="latex --interaction batchmode"
 CONVERT="convert"
 EPS2EPS="eps2eps"
 TEXINPSEP=":"
-VERSION="1.1"
+VERSION="1.2"
 
 help()
 {
@@ -41,14 +41,14 @@ OPTIONS:
          -m monochrome  (default)
 
          -d density     (default 144 dpi)
-         -h help        (default '.')
-         -H /home/dir	directory to be included in search path
-         -k         	keep intermediate files (for debugging)
+         -h             help
+         -H /home/dir   directory to be included in search path (default '.')
+         -k             keep intermediate files (for debugging)
 
-EXAMPLE: 
-		 latex2png -d 144 /tmp/file   #create /tmp/file.png at 144 dpi
-		 latex2png file.eps           #create file.png
-		 latex2png file.tex           #create file.png via latex
+EXAMPLES: 
+         latex2png -d 144 /tmp/file   #create /tmp/file.png at 144 dpi
+         latex2png file.eps           #create file.png
+         latex2png file.tex           #create file.png via latex
          latex2png -H . /tmp/file     #search the cwd for image files
 
 HELP
@@ -61,12 +61,12 @@ echo "latex2png $VERSION"
 exit 0
 }
 
-opt_d=144		# default to 144 dpi
-opt_k=0			# default to killing intermediate files
-home_dir="."	# default to current directory
-ext="tex"		# default to latex input
-out="-depth 24"	# default to color output
-inline=0		# default to no special equation processing
+opt_d=144       # default to 144 dpi
+opt_k=0         # default to killing intermediate files
+home_dir="."    # default to current directory
+ext="tex"       # default to latex input
+out="-depth 24" # default to color output
+inline=0        # default to no special equation processing
 
 while [ -n "$1" ]; do
 case $1 in
@@ -86,13 +86,13 @@ done
 
 # is there an input file?
 if [ -z "$1" ] ; then
-	error "no input file specified"
-	exit 1
+    error "no input file specified"
+    exit 1
 fi
 
 # is it an eps file?
 if [ `echo $1 | grep -c eps$` -eq 1 ] ; then
-	ext="eps"
+    ext="eps"
 fi
 
 #process 'latex2png file.tex' and 'latex2png file' equivalently
@@ -104,7 +104,7 @@ cd $home_dir
 TEXINPUTS=`pwd`${TEXINPSEP}
 export TEXINPUTS
 cd $dir
-	
+    
 # does the input file exist?
 if [ ! -f "$name.$ext" ] ; then
  echo "error: input file $name.$ext does not exist in directory $dir"
@@ -113,35 +113,35 @@ fi
 
 if [ $ext = "tex" ] ; then
 
-	inline=`grep -c INLINE_DOT_ON_BASELINE $name.$ext`
+    inline=`grep -c INLINE_DOT_ON_BASELINE $name.$ext`
 
-	$LATEX $name > /dev/null
-	
-	if [ ! -e "$name.dvi" ] ; then
-		echo "error: latex failed to translate $name.tex to $name.dvi"
-		exit 1
-	fi
-	
-	$DVIPS -o $name.tmp.eps $name.dvi >& /dev/null
-	
-	if [ ! -e "$name.tmp.eps" ] ; then
-		echo "error: dvips failed to translate $name.dvi to $name.tmp.eps"
-		exit 1
-	fi
-	
-	#helps convert work with eps figures
-	$EPS2EPS $name.tmp.eps $name.eps
-	if [ ! -e "$name.eps" ] ; then
-		echo "error: eps2eps (Ghostscript) failed to translate $name.tmp.eps from $name.eps"
-		exit 1
-	fi
+    $LATEX $name > /dev/null
+    
+    if [ ! -e "$name.dvi" ] ; then
+        echo "error: latex failed to translate $name.tex to $name.dvi"
+        exit 1
+    fi
+    
+    $DVIPS -o $name.tmp.eps $name.dvi >& /dev/null
+    
+    if [ ! -e "$name.tmp.eps" ] ; then
+        echo "error: dvips failed to translate $name.dvi to $name.tmp.eps"
+        exit 1
+    fi
+    
+    #helps convert work with eps figures
+    $EPS2EPS $name.tmp.eps $name.eps
+    if [ ! -e "$name.eps" ] ; then
+        echo "error: eps2eps (Ghostscript) failed to translate $name.tmp.eps from $name.eps"
+        exit 1
+    fi
 fi
 
 $CONVERT -crop 0x0 $out -density ${opt_d}x${opt_d} $name.eps $name.png
 
 if [ ! -e "$name.png" ] ; then
- 	echo "error: convert (ImageMagick) failed to translate $name.eps from $name.png"
- 	exit 1
+    echo "error: convert (ImageMagick) failed to translate $name.eps from $name.png"
+    exit 1
 fi
 
 # -i is for images of equations that include an extra dot on the baseline
@@ -151,25 +151,25 @@ fi
 #    in $name.tmp.png is removed to create the final image $name.png
 # 
 if [ $inline -eq 1 ] ; then
-	rm -f $name.ppm $name.pbm
+    rm -f $name.ppm $name.pbm
 
-	pngtopnm $name.png > $name.ppm
-	
-	pnmcut -width 1 $name.ppm | ppmtopgm | pgmtopbm > $name.pbm
+    pngtopnm $name.png > $name.ppm
+    
+    pnmcut -width 1 $name.ppm | ppmtopgm | pgmtopbm > $name.pbm
 
-	offset=`expr ${opt_d} / 72 + 2`
-	pnmcut -left $offset $name.ppm | pnmcrop -left | pnmtopng > $name.png 2> /dev/null
+    offset=`expr ${opt_d} / 72 + 2`
+    pnmcut -left $offset $name.ppm | pnmcrop -left | pnmtopng > $name.png 2> /dev/null
 
-	if [ $opt_k -eq 0 ] ; then
-		rm -f $name.ppm
-	fi
+    if [ $opt_k -eq 0 ] ; then
+        rm -f $name.ppm
+    fi
 fi
 
 if [ $opt_k -eq 0 ] ; then
-	rm -f $name.dvi $name.aux $name.log $name.tmp.eps
-	if [ $ext = "tex" ] ; then
-		rm -f $name.eps
-	fi
+    rm -f $name.dvi $name.aux $name.log $name.tmp.eps
+    if [ $ext = "tex" ] ; then
+        rm -f $name.eps
+    fi
 fi
 
 exit 0

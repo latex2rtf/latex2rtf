@@ -92,6 +92,7 @@ int				g_safety_braces = 0;
 bool			g_processing_equation = FALSE;
 bool			g_RTF_warnings = FALSE;
 char		   *g_config_path = NULL;
+char		   *g_script_path = NULL;
 char		   *g_tmp_path = NULL;
 char		   *g_preamble = NULL;
 char			g_field_separator = ',';
@@ -130,6 +131,7 @@ extern int	 optind;
 int main(int argc, char **argv)
 {
 	int				c,x;
+	char            *p;
 	char		   *basename = NULL;
 	double			xx;
 		
@@ -198,8 +200,12 @@ int main(int argc, char **argv)
 			if (!g_equation_comment && !g_equation_display_rtf && !g_equation_display_bitmap)
 				g_equation_display_rtf=TRUE;
 			break;
-		case 'P':
-			g_config_path = strdup(optarg);
+			
+		case 'P':   /* -P path/to/cfg:path/to/script or -P path/to/cfg or -P :path/to/script */
+			p=strchr(optarg,':');
+			if (p) {*p='\0';g_script_path = strdup(p+1);}
+			if (p!=optarg) g_config_path = strdup(optarg);
+			diagnostics(2, "cfg=%s, script=%s",g_config_path,g_script_path);			
 			break;
 		case 's': 
 			if (optarg && optarg[0]=='e') {

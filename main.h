@@ -1,4 +1,4 @@
-/* $Id: main.h,v 1.59 2003/03/23 18:02:42 prahl Exp $ */
+/* $Id: main.h,v 1.60 2003/06/08 02:47:35 prahl Exp $ */
 
 #if defined(UNIX)
 #define ENVSEP ':'
@@ -104,6 +104,7 @@ extern char		*g_table_label;
 extern char		*g_equation_label;
 extern char		*g_section_label;
 extern char		*g_config_path;
+extern char		*g_script_path;
 extern char		g_field_separator;
 extern char		*g_preamble;
 
