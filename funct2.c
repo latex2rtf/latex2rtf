@@ -1,61 +1,8 @@
-/*
- * $Id: funct2.c,v 1.13 2001/08/12 21:15:46 prahl Exp $
- * History:
- * $Log: funct2.c,v $
- * Revision 1.13  2001/08/12 21:15:46  prahl
- *         Removed last two // comments
- *         Explicitly cast char to int in isalpha() and isdigit()
- *         Began the process of supporting Babel better
- *
- * Revision 1.10  1998/11/05 13:21:49  glehner
- * *** empty log message ***
- *
- * Revision 1.9  1998/10/28 06:04:51  glehner
- * (CmdIgnoreParameter) now put in Frank Barnes parser.c
- * Factored out WriteRefList into Open BblFile and MakeBiblio
- * CmdConvertBiblio added: makes bibliography from
- * \thebibliograpy environment.
- * Removed #include <malloc.h>
- * Internationalized Title in (CmdAbstract).
- * Changed all output eol-codes to \n
- *
- * Revision 1.8  1998/07/03 07:00:13  glehner
- * added hyperlatex-support, CmdColsep
- *
- * Revision 1.7  1997/02/15 20:59:16  ralf
- * Corrected core-dump bug in tabular environment (gcc only)
- * Some lclint changes
- *
- * Revision 1.6  1995/05/24  17:11:43  ralf
- * Corrected bug with variable input being NULL
- *
- * Revision 1.5  1995/05/24  14:48:00  ralf
- * Added checks for malloc failures
- * Corrected parsing of bbl
- * Corrected searching for citations in .aux
- *
- * Revision 1.4  1995/05/24  11:51:47  ralf
- * Removed 2 off-by-one malloc errors
- *
- * Revision 1.3  1995/03/23  15:58:08  ralf
- * Reworked version by Friedrich Polzer and Gerhard Trisko
- *
- *
- * Revision 1.2  1994/06/21  08:14:11  ralf
- * Corrected Bug in keyword search
- *
- * Revision 1.1  1994/06/17  11:26:29  ralf
- * Initial revision
- *
- *
- ***************************************************************************
-   name : funct2.c
- author : DORNER Fernando, GRANZER Andreas
-          POLZER Friedrich,TRISKO Gerhard
- * CmdTabular & CommandTable changed
- * added CmdCite and WriteRefTable for creating correct citations
- purpose : includes besides funct1.c all functions which are called from the programm commands.c;
- ****************************************************************************/
+/* $Id: funct2.c,v 1.14 2001/08/23 14:26:07 prahl Exp $
+
+   together with funct1.c contains code to translate various LaTeX
+   commands that have not been put in separate files e.g., lengths.c
+*/
 
 #include <stdio.h>
 #include <string.h>
