@@ -1,22 +1,34 @@
 /*
- * $Id: parser.c,v 1.6 2001/08/12 19:00:04 prahl Exp $
+ * $Id: parser.c,v 1.7 2001/08/12 19:32:24 prahl Exp $
  * History:
  * $Log: parser.c,v $
- * Revision 1.6  2001/08/12 19:00:04  prahl
- * 1.9e
- *         Revised all the accented character code using ideas borrowed from ltx2rtf.
- *         Comparing ltx2rtf and latex2rtf indicates that Taupin and Lehner tended to work on
- *         different areas of the latex->rtf conversion process.  Adding
- *         accented characters is the first step in the merging process.
+ * Revision 1.7  2001/08/12 19:32:24  prahl
+ * 1.9f
+ * 	Reformatted all source files ---
+ * 	    previous hodge-podge replaced by standard GNU style
+ * 	Compiles cleanly using -Wall under gcc
  *
- *         Added MacRoman font handling (primarily to get the breve accent)
- *         Now supports a wide variety of accented characters.
- *         (compound characters only work under more recent versions of word)
- *         Reworked the code to change font sizes.
- *         Added latex logo code from ltx2rtf
- *         Extracted character code into separate file chars.c
- *         Fixed bug with \sf reverting to roman
- *         Added two new testing files fontsize.tex and accentchars.tex
+ * 	added better translation of \frac, \sqrt, and \int
+ * 	forced all access to the LaTeX file to use getTexChar() or ungetTexChar()
+ * 	    allows better handling of %
+ * 	    simplified and improved error checking
+ * 	    eliminates the need for WriteTemp
+ * 	    potentially allows elimination of getLineNumber()
+ *
+ * 	added new verbosity level -v5 for more detail
+ * 	fixed bug with in handling documentclass options
+ * 	consolidated package and documentclass options
+ * 	fixed several memory leaks
+ * 	enabled the use of the babel package *needs testing*
+ * 	fixed bug in font used in header and footers
+ * 	minuscule better support for french
+ * 	Added testing file for % comment support
+ * 	Enhanced frac.tex to include \sqrt and \int tests also
+ * 	Fixed bugs associated with containing font changes in
+ * 	    equations, tabbing, and quote environments
+ * 	Added essential.tex to the testing suite --- pretty comprehensive test.
+ * 	Perhaps fix missing .bbl crashing bug
+ * 	Fixed ?` and !`
  *
  * Revision 1.2  1998/10/27 04:51:38  glehner
  * Changed function prototype of parseBrace & parseBracket to
@@ -39,31 +51,37 @@
 /* Revision history                                                         */
 /* ================                                                         */
 /* 26th June 1998 - Created initial version - fb                            */
-/* 24th May  2001 - Now includes getparam, getbrackeparam, getbraceparam    */
+/* 24th May  2001 - Now includes getParam, getbrackeparam, getbraceparam    */
 /*                - which really should be rewritten -sap                   */
 /****************************************************************************/
 
 /*------------------- includes ----------------------*/
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+
 #include "main.h"
 #include "cfg.h"
 #include "stack.h"
+#include "util.h"
 #include "parser.h"
 
 
 #define POSSTACKSIZE   256  /* Size of stack to save positions              */
 
 /*------------------- globals ----------------------*/
-char currentChar;      /* Global current character                          */
+static char currentChar;      /* Global current character                          */
+static char lastChar;
+static char penultimateChar;
 
 long posStack[POSSTACKSIZE];
 int  stackIndex = 0;
+
+
 /*------------------- externals -----------------------*/
 extern FILE *fTex;
 /*------------------- prototypes ----------------------*/
-static char getTexChar();     /* Get next none - comment character                 */
-static char getNoBlank();     /* get next none - whitespace character              */
 static void parseBrace();     /* parse an open/close brace sequence                */
 static void parseBracket();   /* parse an open/close bracket sequence              */
 
@@ -87,31 +105,58 @@ static void resetPos();       /* Pop and restore previously pushed position     
 /****************************************************************************/
 
 
-/****************************************************************************/
-/* function: getTexChar()                                                        */
-/*                                                                          */
-/* Description: get the next character from the input stream                */
-/****************************************************************************/
-char getTexChar()
-{
-    if ( (fTexRead(&currentChar,1,1,fTex) < 1))
-    {	
-    	currentChar ='\0';	 /* SAP - hack to allow include files to work */
-    	numerror(ERR_EOF_INPUT); /* numerror will not exit if processing an include file */  
-    }
 
-    return currentChar;
-}
-/****************************************************************************/
-/* function: getNoBlank                                                     */
-/*                                                                          */
-/* Description: get the next none blank character from the input stream     */
-/****************************************************************************/
-char getNoBlank()
+void skipToEOL(void)
+/****************************************************************************
+purpose: ignores anything from inputfile until the end of line.  Uses the fact
+         that linenumber changes in getTexChar when a '\n' is read.
+ ****************************************************************************/
 {
-  while((getTexChar() == ' ')||(currentChar == '\n'));
+  long line = linenumber;
+  while (line==linenumber)
+     (void) getTexChar();
+}
+
+char getNonBlank(void)
+/***************************************************************************
+ Description: get the next non-blank character from the input stream     
+****************************************************************************/
+{
+  char currentChar;
+  
+  do
+  {
+    currentChar = getTexChar();
+  } while (currentChar == ' ' || currentChar =='\n');
+
   return currentChar;
 }
+
+char getNonSpace(void)
+/***************************************************************************
+ Description: get the next non-space character from the input stream     
+****************************************************************************/
+{
+  char currentChar;
+  
+  do
+  {
+    currentChar = getTexChar();
+  } while (currentChar == ' ');
+
+  return currentChar;
+}
+
+void skipSpaces(void)
+/***************************************************************************
+ Description: get the next non-space character from the input stream     
+****************************************************************************/
+{
+  char c;
+  while ((c = getTexChar()) && c == ' ');
+  rewind_one(c);
+}
+
 /****************************************************************************/
 /* function: pushPos                                                        */
 /*                                                                          */
@@ -211,17 +256,6 @@ parseBracket()
 }
 
 
-/*********************************************************
- * LEG210698
- * rewind the filepointer in the LaTeX-file by one
- * globals: fTex, LaTeX-filepointer
- *********************************************************/
-void rewind_one(void)
-{
-  if(fseek(fTex,-1L,SEEK_CUR) != 0)
-    diagnostics(ERROR, "Seek failed in LaTeX-file");
-}
-
 /****************************************************************************/
 /* function: CmdIgnoreParameter                                             */
 /*                                                                          */
@@ -269,7 +303,7 @@ void CmdIgnoreParameter(int code)
   if (optParmCount > 0)
     {
       pushPos();
-      if (getNoBlank() == '[')
+      if (getNonBlank() == '[')
 	{
 	  parseBracket();
 	  popPos();
@@ -284,7 +318,7 @@ void CmdIgnoreParameter(int code)
 }
 
 /******************************************************************************/
-bool GetBracketParam(char *string, int size)
+bool getBracketParam(char *string, int size)
 /******************************************************************************
   purpose: function to get an optional parameter
 parameter: string: returnvalue of optional parameter
@@ -297,44 +331,43 @@ char c;
 int i=0;
 int bracketlevel=0;
 
-  *string = '\0';
+  diagnostics(5,"Entering getBracketParam()");
+  c = getNonBlank();
 
-  while (c == getTexChar())  /* skip initial spaces */
+  if ( c != '[' )		/* does not start with a bracket, abort */
   {
-  	if ((c != ' ') && (c != '\n')) break;
-  }
-
-  if ( c != '[' )		/* does not start with a brace, abort */
-  {
-    rewind_one();
+    rewind_one(c);
+    string[0] = '\0';
     return FALSE;
   }
 
-  while (c == getTexChar())
+  for(i=0; ; i++)
   {
+    c = getTexChar();
     
     if ((c == ']') && (bracketlevel == 0)) break;
-  		 
-    if (c == '%')
-    {
-       IgnoreTo('\n');
-       continue;
-    }
-    
+
     if (c == '[') bracketlevel++;
 
-  	if (c == ']') bracketlevel--;
+    if (c == ']') bracketlevel--;
     
     if (i < size-1)				/* throw away excess */
-      string[i++] = c;
+      string[i] = c;
   }
+
+  if (bracketlevel > 0)
+    {
+        fprintf(stderr,"**Error - Bracketed string is longer than %d characters\n", size-1);
+        i = size -1;
+    }
+
   string[i] = '\0';
+  diagnostics(5,"Leaving getBracketParam() [%s]",string);
   return TRUE;
-/* fprintf(stderr, "\nthe bracketed string is %s\n", string); */
 }
 
 /******************************************************************************/
-void GetBraceParam(char *string, int size)
+void getBraceParam(char *string, int size)
 /******************************************************************************
   purpose: function to get a parameter between {}
 parameter: string: returnvalue of optional parameter
@@ -342,25 +375,19 @@ parameter: string: returnvalue of optional parameter
 
 If it a {} expression does not follow, then return an empty expression
 with fTex pointing to the first non-space character
-
  ******************************************************************************/
 {
 char c;
 int i=0;
 int bracelevel=0;
-bool read_one = FALSE;
 
   *string = '\0';
 
-  while (c = getTexChar())  /* skip initial spaces */
-  {
-  	read_one = TRUE;
-  	if ((c != ' ') && (c != '\n')) break;
-  }
+  c = getNonBlank();
 
   if ( c != '{' )		/* does not start with a brace, abort */
   {
-    if (read_one) rewind_one();
+    rewind_one(c);
     return;
   }
 
@@ -369,27 +396,53 @@ bool read_one = FALSE;
     
     if ((c == '}') && (bracelevel == 0)) break;
   		 
-    if (c == '%')
-{
-       IgnoreTo('\n');
-       continue;
-    }
-    
     if (c == '{') bracelevel++;
 
-  	if (c == '}') bracelevel--;
+    if (c == '}') bracelevel--;
     
     if (i < size-1)				/* throw away excess */
       string[i++] = c;
   }
   string[i] = '\0';
 
-/* fprintf(stderr, "\nthe braced string is %s\n", string); */
+/* fprintf(stderr, "\nthe string in braces is %s\n", string); */
 }
 
-/******************       helping function for CmdBegin               ***/
-/**************************************************************************/
-/*@only@*/ char *GetParam(void)
+/**************************************************************************
+     purpose: returns a simple command.  
+     
+     For example \alpha\beta will return "alpha"
+ **************************************************************************/
+static char * getSimpleCommand(void)
+{
+  char buffer[128];
+  int size;
+
+  buffer[0] = getTexChar();
+  
+  if ( buffer[0] != '\\' )
+    return NULL;
+    
+    for(size=1; size < 127; size++)
+    {
+        buffer[size] = getTexChar();
+        
+        if (!isalpha(buffer[size]))
+        {
+        rewind_one(buffer[size]);
+        break;
+        }
+    }
+  
+  buffer[size] = '\0';
+  if (size == 127) 
+     error(" Misplaced brace in command.  Scanned 127 chars looking for end\n");
+      
+  diagnostics(5,"getSimpleCommand result <%s>", buffer);
+  return strdup(buffer);
+}
+
+char *getParam(void)
 /**************************************************************************
      purpose: returns the parameter after the \begin-command
 	      for instance: \begin{environment}
@@ -401,40 +454,26 @@ bool read_one = FALSE;
 	      miss : string = ""
  **************************************************************************/
 {
-  char cThis;
-  int i,PopLevel,PopBrack;
-  int bracket=0;
-  int size = 0;
-  long oldpos;
-  char *string;
+  char cThis, buffer[512];
+  int PopLevel,PopBrack,bracket,size;
 
-  oldpos = ftell (fTex);
-  /* read Param to get needed length, allocate it and position
-     the file-pointer back to the beginning of the param in the TeX-file */
-  if ( (fread(&cThis,1,1,fTex) < 1))
-    numerror(ERR_EOF_INPUT);
-  if ( cThis != '{' )
+  if ( (cThis=getTexChar()) != '{' )
   {
-    string = malloc (2*sizeof(char));
-    if (string == NULL)
-       error(" malloc error -> out of memory!\n");
-    string[0] = cThis;
-    string[1] = '\0';
-    return string;
+    buffer[0]=cThis;
+    buffer[1]='\0';
+    return strdup(buffer);
   }
-  else
+
+  ++BracketLevel;
+  (void)Push(RecursLevel,BracketLevel);
+  
+  size=0;
+  bracket=1;
+  while (bracket > 0 && size < 511)   
   {
-    bracket++;
-    ++BracketLevel;
-    (void)Push(RecursLevel,BracketLevel);
-  }
-  /* Varibale Bracket is 1 here */
-  for (i = 0; ;i++)   /* get param from input stream */
-  {
-    if (fread(&cThis,1,1,fTex) < 1)
-       numerror(ERR_EOF_INPUT);
-    size++;
-    if (cThis == '}')
+    buffer[size] = getTexChar();
+    
+    if (buffer[size] == '}')
     {
       bracket--;
       if (bracket == 0)
@@ -444,87 +483,104 @@ bool read_one = FALSE;
        break;
       }
     }
-    if (cThis == '{')
-    {
+
+    if (buffer[size] == '{')
       bracket++;
-    }
 
-    if (cThis == '%')
-	{
-	IgnoreTo('\n');
-	i--;
-	continue;
-	}
-
-  } /* for */
-  string = malloc ( (size+1) * sizeof(char) );
-  if (string == NULL)
-     error(" malloc error -> out of memory!\n");
-
-  if(fseek(fTex, oldpos, SEEK_SET) != 0)
-    diagnostics(ERROR, "Could not seek in LaTeX file");
-  /*LEG210698*** this is a very poor error message */
-
-
-
-
-  if ( (fTexRead(&cThis,1,1,fTex) < 1))
-    numerror(ERR_EOF_INPUT);
-  else
-  {
-    bracket++;
-    ++BracketLevel;
-    (void)Push(RecursLevel,BracketLevel);
+    size++;
   }
-  /* Varibale Bracket is 1 here */
-  for (i = 0; i<=size; i++)   /* get param from input stream */
-  {
-    if (fTexRead(&cThis,1,1,fTex) < 1)
-       numerror(ERR_EOF_INPUT);
-    if (cThis == '}')
-    {
-      bracket--;
-      if (bracket == 0)
-      {
-        --BracketLevel;
-        (void)Pop(&PopLevel,&PopBrack);
-        break;
-      }
-    }
-    if (cThis == '{')
-    {
-      bracket++;
-    }
+  
+  buffer[size] = '\0';
+  if (size == 511) 
+     error(" Misplaced brace in command.  Scanned 511 chars looking for end\n");
+      
+  diagnostics(5,"getParam result <%s>", buffer);
 
-# ifdef no_longer_needed
-    /* \and-command handling routine */
-    if (cThis == '\\')
-    {
-       /* command is overread ! */
-        for(;;)
-        {
-           if (fread(&cThis,1,1,fTex) < 1)
-              numerror(ERR_EOF_INPUT);
-           if (!isalpha(cThis))
-              break;
-        }
-       fseek(fTex,-1L,SEEK_CUR); /* reread last character */
-       continue;
-    }
-# endif /*  no_longer_needed  */
-
-    if (cThis == '%')
-    {
-        IgnoreTo('\n');
-        i--;
-        continue;
-    }
-
-    string[i] = cThis;
-  }
-
-  string[i] = '\0';
-  return string;
+  return strdup(buffer);
 }
 
+char *getMathParam(void)
+/**************************************************************************
+     purpose: returns the parameter after ^ or _
+     example  ^\alpha and ^{\alpha} both return \alpha 
+              ^2      and ^{2} both return 2
+**************************************************************************/
+{
+  char buffer[2];
+  
+  buffer[0]=getTexChar();
+  
+  if (buffer[0] == '{')
+  {
+    rewind_one(buffer[0]);
+    return getParam();
+  }
+  else if (buffer[0] == '\\')
+  {
+    if (buffer[0]!= ' ')         /* TeX eats the space after control words */
+      rewind_one(buffer[0]);
+    return getSimpleCommand();
+  }
+  else 
+  {
+    buffer[1] = '\0';
+    return strdup(buffer);
+  }
+    
+}
+
+/***************************************************************************
+ function: getTexChar()                                                   
+ Description: get the next character from the input stream  
+              This should be the only place that characters are read from!              
+****************************************************************************/
+char getTexChar()
+{
+    int thechar;
+    
+    thechar = getc(fTex);
+    if (thechar == EOF  && !feof(fTex))
+    {
+        error("Unknown error reading latex file\n");
+    }
+    
+    if (thechar == '\r')
+    {
+        thechar = getc(fTex);
+        if (thechar != '\n' && !feof(fTex))
+            ungetc(thechar, fTex);
+        thechar = '\n';
+    }
+    else if (thechar == '\t')
+        thechar = ' ';
+        
+    currentChar = (char) thechar;    
+
+    if (currentChar=='\n') 
+       linenumber++;
+    
+    if (currentChar=='%' && lastChar != '\\')
+    {
+       skipToEOL();
+       currentChar=getTexChar();
+    }
+    
+    penultimateChar = lastChar;
+    lastChar = currentChar;
+    return currentChar;
+}
+
+/*********************************************************
+ * rewind the filepointer in the LaTeX-file by one
+ * globals: fTex
+*********************************************************/
+void rewind_one(char c)
+{
+  ungetc(c,fTex);
+  
+  if (c=='\n') linenumber--;
+    
+  lastChar = penultimateChar;
+  penultimateChar = '\0';         /* no longer know what that it was */
+}
 

@@ -1,22 +1,34 @@
 /*
- * $Id: funct2.c,v 1.9 2001/08/12 19:00:04 prahl Exp $
+ * $Id: funct2.c,v 1.10 2001/08/12 19:32:24 prahl Exp $
  * History:
  * $Log: funct2.c,v $
- * Revision 1.9  2001/08/12 19:00:04  prahl
- * 1.9e
- *         Revised all the accented character code using ideas borrowed from ltx2rtf.
- *         Comparing ltx2rtf and latex2rtf indicates that Taupin and Lehner tended to work on
- *         different areas of the latex->rtf conversion process.  Adding
- *         accented characters is the first step in the merging process.
+ * Revision 1.10  2001/08/12 19:32:24  prahl
+ * 1.9f
+ * 	Reformatted all source files ---
+ * 	    previous hodge-podge replaced by standard GNU style
+ * 	Compiles cleanly using -Wall under gcc
  *
- *         Added MacRoman font handling (primarily to get the breve accent)
- *         Now supports a wide variety of accented characters.
- *         (compound characters only work under more recent versions of word)
- *         Reworked the code to change font sizes.
- *         Added latex logo code from ltx2rtf
- *         Extracted character code into separate file chars.c
- *         Fixed bug with \sf reverting to roman
- *         Added two new testing files fontsize.tex and accentchars.tex
+ * 	added better translation of \frac, \sqrt, and \int
+ * 	forced all access to the LaTeX file to use getTexChar() or ungetTexChar()
+ * 	    allows better handling of %
+ * 	    simplified and improved error checking
+ * 	    eliminates the need for WriteTemp
+ * 	    potentially allows elimination of getLineNumber()
+ *
+ * 	added new verbosity level -v5 for more detail
+ * 	fixed bug with in handling documentclass options
+ * 	consolidated package and documentclass options
+ * 	fixed several memory leaks
+ * 	enabled the use of the babel package *needs testing*
+ * 	fixed bug in font used in header and footers
+ * 	minuscule better support for french
+ * 	Added testing file for % comment support
+ * 	Enhanced frac.tex to include \sqrt and \int tests also
+ * 	Fixed bugs associated with containing font changes in
+ * 	    equations, tabbing, and quote environments
+ * 	Added essential.tex to the testing suite --- pretty comprehensive test.
+ * 	Perhaps fix missing .bbl crashing bug
+ * 	Fixed ?` and !`
  *
  * Revision 1.10  1998/11/05 13:21:49  glehner
  * *** empty log message ***
@@ -188,7 +200,7 @@ parameter: code: which environment to ignore
  ******************************************************************************/
 {
  char endfigure[30];
- char zeichen;
+ char thechar;
  bool found = FALSE;
  int i, endstring=0;
 
@@ -224,143 +236,45 @@ parameter: code: which environment to ignore
 
     } /* end switch */
 
-    while (fread(&zeichen,1,1,fTex) >=1)
+    while (thechar = getTexChar())
     {
-       if (zeichen == '\\')
+       if (thechar == '\\')
        {
 	  bool found_space = FALSE;
 	  for (i=0; i<=endstring; i++)
 	    {
 	    bool is_nl = FALSE;
-	    if (fread(&zeichen,1,1,fTex) < 1)
-		numerror(ERR_EOF_INPUT);
-	    while(zeichen == ' ' || zeichen == '\t' || zeichen == '\n' && !is_nl)
+	    thechar = getTexChar();
+            while(thechar == ' ' || thechar == '\n' && !is_nl)
 	    {
-		if(zeichen == '\n')
+		if(thechar == '\n')
                 {
 		    is_nl = TRUE;
                     linenumber++;
                 }
-		if(fread(&zeichen,1,1,fTex) !=1)
-		    numerror(ERR_EOF_INPUT);
-		found_space = TRUE;
+                thechar = getTexChar();
+                found_space = TRUE;
 	    }
-	    if(found_space && zeichen != '{') /* for vi } */
+	    if(found_space && thechar != '{') /* for vi } */
 		break;
 	    found_space = FALSE;
-	    if (zeichen != endfigure[i])
+	    if (thechar != endfigure[i])
 		break;
 	    if (i == endstring)                 /* end-figure-found */
 		found = TRUE;
 	    } /* for */
        } /* if */
-       if (zeichen == '%')
-	  IgnoreTo('\n');
-       if (zeichen == '\n')
-	  linenumber++;                         /* count lines */
+       if (thechar == '%')
+	  {
+               fprintf(stderr," percent encountered in IgnoreFigure alert\n");
+         skipToEOL();
+         }
+
        if (found)
 	   return;
     } /* while */
     numerror(ERR_EOF_INPUT);
 }
-/*------------------------------------------------------------------------*/
-
-#if 0
-/* This is replaced by Frank Barnes CmdIgnoreParameter in parser.c */
-
-/******************************************************************************/
-void CmdIgnoreParameter(int code)
-/******************************************************************************
-  purpose: function, which ignores both: optional and normal parameters
-parameter: code: number of optional/normal parameters to ignore
- ******************************************************************************/
-{int count_opt_param_close = 0;
- int count_norm_param = 0;
- int count_opt_param_open = 0;
- char cThis = ' ';
- char cNext = ' ';
- bool firstloop = TRUE;
- int bracket_open = 0;
-
-    for(;;)  /* forever */
-    {
-       if ( (fTexRead(&cThis,1,1,fTex) < 1))
-	  numerror(ERR_EOF_INPUT);
-       switch(cThis)
-       {
-	 case '{':
-	  {
-	   bracket_open++ ;
-	  } break;
-	 case '}':
-	 {
-	   bracket_open--;
-	   if (bracket_open == 0)
-	      count_norm_param++;
-	   if ( (fread(&cNext,1,1,fTex) < 1))
-		{
-		     numerror(ERR_EOF_INPUT);
-		}
-	   rewind_one(); /* reread last character */
-	   if (cNext == '[')         /* count open braces */
-	       count_opt_param_open++;
-	 } break;
-       case ']':
-	 {
-	   count_opt_param_close++;
-	   if ( (fread(&cNext,1,1,fTex) < 1))
-	       numerror(ERR_EOF_INPUT);
-	   rewind_one(); /* reread last character */
-	   if (cNext == '[')         /* count open braces */
-	       count_opt_param_open++;
-	 } break;
-       case '%':
-	 {
-	 IgnoreTo('\n');
-	 } break;
-       } /* end switch */
-       if ((firstloop) && (cThis == '['))
-	   count_opt_param_open++;
-       switch (code)
-       {
-	  case Two_Opt_One_NormParam :
-	  case One_Opt_One_NormParam :
-	  case No_Opt_One_NormParam  : if ((count_opt_param_close ==
-					    count_opt_param_open) &&
-					   (count_norm_param == 1))
-					   return;
-				       break;
-	  case Two_Opt_Two_NormParam :
-	  case One_Opt_Two_NormParam :
-	  case No_Opt_Two_NormParam  :if ((count_opt_param_close ==
-					   count_opt_param_open) &&
-					   (count_norm_param == 2))
-					   return;
-				      break;
-	  case Two_Opt_Three_NormParam:
-	  case One_Opt_Three_NormParam:
-	  case No_Opt_Three_NormParam:if ((count_opt_param_close ==
-					   count_opt_param_open) &&
-					   (count_norm_param == 3))
-					   return;
-				      break;
-	  case Two_Opt_No_NormParam  :
-	  case One_Opt_No_NormParam  :if ((count_opt_param_close ==
-					   count_opt_param_open) &&
-					   (count_norm_param == 0))
-					   {
-					    if (firstloop)
-						rewind_one(); /* reread last character */
-					    return;
-					   }
-				      break;
-       } /* switch */
-       firstloop = FALSE;
-    } /* for */
-}
-/*------------------------------------------------------------------------*/
-
-#endif /* FALSE */
 
 /******************************************************************************
 CmdLink:
@@ -399,13 +313,11 @@ CmdLink(int code)
 		   contents of the first parameter */
      diagnostics(4, "  Converted first parameter");
 
-     GetBracketParam(optparam, 255);
+     getBracketParam(optparam, 255);
      /**/ /*LEG190498 now should come processing of the optional parameter */
-     if(optparam[0] == '\0') 
-       rewind_one(); /* rewind to get the '{' back to: */
      diagnostics(4, "  Converted optional parameter");
      
-     param2 = GetParam();
+     param2 = getParam();
      diagnostics(4, "  Converted second parameter");
 
      if(hyperref != NULL)
@@ -430,19 +342,19 @@ parameter: searchstring : includes the string to search for
 		    searchstring="end{unknown}"
  ******************************************************************************/
 {
- char zeichen;
+ char thechar;
  bool found = FALSE;
  int i, j, endstring;
     endstring = strlen(searchstring) - 1;
-    while (fTexRead(&zeichen,1,1,fTex) >=1)
+    while (thechar = getTexChar())
     {
-       if (zeichen == '\\')
+       if (thechar == '\\')
        {
 	  for (i=0; i<=endstring; i++)
 	  {
-	    if (fTexRead(&zeichen,1,1,fTex) < 1)
-		numerror(ERR_EOF_INPUT);
-	    if (zeichen != searchstring[i])
+            thechar = getTexChar();
+
+	    if (thechar != searchstring[i])
 		break;
 	    if (i == endstring)                 /* end-environment-found */
 		found = TRUE;
@@ -471,8 +383,8 @@ parameter: searchstring : includes the string to search for
 	} /* if */
 
   
-       if ((zeichen != '%') && !found)
-          switch (zeichen)
+       if ((thechar != '%') && !found)
+          switch (thechar)
           {
              case '\n':
                   fprintf (fRtf, "\\par \n"); 
@@ -483,12 +395,15 @@ parameter: searchstring : includes the string to search for
                   fprintf (fRtf, "\\"); 
 	     /*@fallthrough@*/
              default:
-                  fprintf (fRtf, "%c", zeichen); 
+                  fprintf (fRtf, "%c", thechar); 
                   break;
           }
 
-       if (zeichen == '%')
-	  IgnoreTo('\n');
+       if (thechar == '%')
+	  {
+               fprintf(stderr," percent encountered in IgnoreEnvironment alert\n");
+         skipToEOL();
+         }
 
        if (found)
 	   return;
@@ -540,46 +455,6 @@ parameter: number of columns
 }
 
 /******************************************************************************/
-char *GetSubString(char *s, char terminatesymbol)
-/******************************************************************************
-purpose:
------------------------------------------------------------------------------
- GetString is a function which returns the substrings of the string s
-   seperated by the terminatesymbol 
- after calling this funtion the first substring to the terminatesymbol
-   is cut off the string s 
------------------------------------------------------------------------------*/
-{char *substring;
- char *hilfstring;
- int i=0;
-
-      substring =(char*) malloc((strlen(s)+1) * sizeof(char)); /* get heap-memory */
-      if (substring == NULL)
-	  error(" malloc error -> out of memory!\n");
-      strcpy(substring,"");
-
-      for(i=0; (int)i<=(int)strlen(s); i++)  /* if *s == "" -> for won't be executed */
-      {                            /* <= is used for recognising the endmark of the string */
-	if (s[i] == '\0')
-	{
-	   strcpy(s,"");
-	   break;
-	}
-	if (s[i] == terminatesymbol)
-	{
-	   hilfstring = &s[i+1];
-	   strcpy(s,hilfstring);    /* is also replaced in the calling-function */
-	   break;
-	}
-	substring[i] = s[i];
-      }  /* for */
-
-      substring[i] = '\0'; /* end-mark */
-      return substring;
-}
-/*-----------------------------------------------------------------------------*/
-
-/******************************************************************************/
 void CmdNewPage(int code)
 /******************************************************************************
   purpose: starts a new page
@@ -611,9 +486,7 @@ void Cmd_OptParam_Without_braces(/*@unused@*/ int code)
     do
     {
        cLast = cNext;
-       if (fread(&cNext,1,1,fTex) < 1)
-	   numerror(ERR_EOF_INPUT);
-
+       cNext = getTexChar();
     } while ((cNext != ' ') &&
 	     (cNext != '\\') &&
 	     (cNext != '{') &&
@@ -626,7 +499,7 @@ void Cmd_OptParam_Without_braces(/*@unused@*/ int code)
 	     (cNext != '[') &&
 	     (cNext != '$'));
 
-    rewind_one();
+    rewind_one(cNext);
 }
 
 
@@ -643,23 +516,22 @@ parameter: string: returnvalue of the input/include-parameter
   int i,PopLevel,PopBrack;
   bool readuntilnewline = FALSE;
 
-  if ( (fread(&cThis,1,1,fTex) < 1))
-    numerror(ERR_EOF_INPUT);
+  cThis = getTexChar();
+  
   if ( cThis == '{' )
   {
     ++BracketLevel;
     (void)Push(RecursLevel,BracketLevel);
-
   }
   else
   {
     readuntilnewline = TRUE;
-    rewind_one(); /* reread last character */
+    rewind_one(cThis); /* reread last character */
   }
+  
   for (i = 0; ;i++)   /* get param from input stream */
   {
-    if (fTexRead(&cThis,1,1,fTex) < 1)
-       numerror(ERR_EOF_INPUT);
+    cThis = getTexChar();
     if (cThis == '}')
     {
       --BracketLevel;
@@ -667,8 +539,7 @@ parameter: string: returnvalue of the input/include-parameter
       break;
     }
 
-    if ((readuntilnewline) &&
-	((cThis == ' ') || (cThis == '\n')))
+    if ((readuntilnewline) && ((cThis == ' ') || (cThis == '\n')))
 	{
 /*	if (cThis == '\n')
 	    linenumber++; */
@@ -705,9 +576,8 @@ while (command_end_line_found)
   for (;;) /* do forever */
   {
     getcommand=FALSE;
-    if (fread(&cThis,1,1,fTex) < 1)
-       numerror(ERR_EOF_INPUT);
-    j++;
+    cThis = getTexChar();
+    j++; 
 
     if (cThis == '\\')
        {
@@ -716,8 +586,7 @@ while (command_end_line_found)
 
        for (i = 0; ;i++)   /* get command from input stream */
 	   {
-	   if (fread(&cThis,1,1,fTex) < 1)
-	      numerror(ERR_EOF_INPUT);
+           cThis = getTexChar();
 	   j++;
 
 	   if (i == 0) /* test for special characters */
@@ -733,12 +602,11 @@ while (command_end_line_found)
 	       {
 	       while (cThis == ' ')   /* all spaces after commands are ignored */
 	       {
-	       if (fread(&cThis,1,1,fTex) < 1)
-		   numerror(ERR_EOF_INPUT);
-	       j++;
+	         cThis = getTexChar();
+	         j++;
 	       }
 
-	       rewind_one(); /* position of next character after command
+	       rewind_one(cThis); /* position of next character after command
 					    except space */
 	       j--;
 	       break; /* for */
@@ -768,7 +636,7 @@ while (command_end_line_found)
   } /* for */
   } /* while command_end_line_found */
 
-  rewind_one(); /* re_read line */
+  rewind_one(cThis); /* re_read line  PROBABLY WRONG!*/
   if (command_kill_found)
     Convert_Tabbing_with_kill();
   else
@@ -794,8 +662,7 @@ tabcounter=0;
 
 while (command_kill_found)
    {
-    if (fTexRead(&cThis,1,1,fTex) < 1)
-       numerror(ERR_EOF_INPUT);
+    cThis = getTexChar();
 
     strcpy(cCommand,"");
 
@@ -804,9 +671,8 @@ while (command_kill_found)
 
        for (i = 0; ;i++)   /* get command from input stream */
 	   {
-	   if (fread(&cThis,1,1,fTex) < 1)
-	      numerror(ERR_EOF_INPUT);
-
+	   cThis=getTexChar();
+           
 	   if (i == 0) /* test for special characters */
 	      {
 	      switch(cThis)
@@ -821,12 +687,9 @@ while (command_kill_found)
 	   if (!isalpha((unsigned char) cThis))
 	       {
 	       while (cThis == ' ')   /* all spaces after commands are ignored */
-	       {
-	       if (fread(&cThis,1,1,fTex) < 1)
-		   numerror(ERR_EOF_INPUT);
-	       }
+                cThis = getTexChar();
 
-	       rewind_one(); /* position of next character after command
+	       rewind_one(cThis); /* position of next character after command
 					    except space */
 	       break; /* for */
 	       }
@@ -927,7 +790,7 @@ void CmdHyphenation(/*@unused@*/ int code)
 {
     char *hyphenparameter;
 
-    hyphenparameter = GetParam();
+    hyphenparameter = getParam();
 
 /* In a future version we may correctly hyphenate all occurencies of
  * hyphenation-words
@@ -1151,8 +1014,7 @@ parameter: unused
   i = 0;
   do
   {
-     if ( (fTexRead(&inchar,1,1,fTex) < 1))
-       numerror(ERR_EOF_INPUT);
+     inchar[0] = getTexChar();
      if (isdigit((unsigned char) inchar[0]))
         numColStr[i++] = inchar[0];     
   }
@@ -1165,8 +1027,7 @@ parameter: unused
 
   do
   {
-     if ( (fTexRead(&inchar,1,1,fTex) < 1))
-        numerror(ERR_EOF_INPUT);
+     inchar[0] = getTexChar();
      switch(inchar[0])
      {
           case 'c':
@@ -1244,9 +1105,9 @@ parameter: type of array-environment
     if (g_processing_tabular) error(" Nested tabular and array environments not supported! Giving up! \n");
     g_processing_tabular = TRUE;
     
-    GetBracketParam(dummy, 50);	  /* throw it away */
+    getBracketParam(dummy, 50);	  /* throw it away */
 /*	fprintf(stderr, "the bracket string is '%s'\n",dummy);*/
-    GetBraceParam(dummy, 50);	  /* dummy should now have all the column instructions */
+    getBraceParam(dummy, 50);	  /* dummy should now have all the column instructions */
     
 /*	fprintf(stderr, "the brace string is '%s'\n",dummy);*/
 	
@@ -1388,7 +1249,7 @@ parameter: type of array-environment
     if ((code == FIGURE) || (code == FIGURE_1))
     	g_processing_figure=TRUE;
 
-    GetBracketParam(location, 10);
+    getBracketParam(location, 10);
   }
   else /* off switch */
   {
@@ -1407,7 +1268,7 @@ void CmdNoCite(/*@unused@*/ int code)
  ******************************************************************************/
 {
   bCite = TRUE;
-  free(GetParam ()); /* just skip the parameter */
+  free(getParam ()); /* just skip the parameter */
 }
 
 void CmdGraphics(int code)
@@ -1421,9 +1282,9 @@ void CmdGraphics(int code)
 	
 	/* could be \includegraphics*[0,0][5,5]{file.pict} */
 	
-	GetBracketParam(options, 255);
-	GetBracketParam(options, 255);
-	GetBraceParam(filename, 255);
+	getBracketParam(options, 255);
+	getBracketParam(options, 255);
+	getBraceParam(filename, 255);
 	
     if (strstr(filename,".pict")||strstr(filename,".PICT"))
     {
@@ -1458,11 +1319,83 @@ void CmdGraphics(int code)
     }
 }
 
-void CmdFraction(int code)
+#undef FORMULASEP
+#define FORMULASEP ','
+
+void CmdRoot(int code)
+/******************************************************************************
+ purpose: converts \sqrt{x}
+******************************************************************************/
 {
-	Convert();
-	fprintf (fRtf, " / ");
-	Convert();
+  char * root;
+ 
+  root = getParam();
+  fprintf(fRtf, "{\\field{\\*\\fldinst  EQ \\\\R(%c", FORMULASEP);
+  ConvertString(root);
+  fprintf(fRtf,")}{\\fldrslt }}");
+
+  free(root);
+}
+
+void CmdFraction(int code)
+/******************************************************************************
+ purpose: converts \frac{x}{y} (following Taupin's implementation in ltx2rtf)
+******************************************************************************/
+{
+  char * denominator, *numerator;
+ 
+  numerator = getParam();
+  denominator = getParam();
+  
+  fprintf(fRtf, "{\\field{\\*\\fldinst  EQ \\\\F(");
+  ConvertString(numerator);
+  fprintf(fRtf,"%c", FORMULASEP);
+  ConvertString(denominator);
+  fprintf(fRtf,")}{\\fldrslt }}");
+
+  free(numerator);
+  free(denominator);
+}
+
+void CmdIntegral(int code)
+/******************************************************************************
+ purpose: converts integral symbol + the "exponent" and "subscript" fields
+parameter: type of operand
+ ******************************************************************************/
+{
+  char *upper_limit = NULL;
+  char *lower_limit = NULL;
+  char cThis;
+
+  /* is there an exponent/subscript ? */
+  cThis = getNonBlank();
+
+  if(cThis == '_')
+    lower_limit = getMathParam();
+  else if (cThis == '^')
+    upper_limit = getMathParam();
+  else 
+    rewind_one(cThis);
+    
+  if (upper_limit || lower_limit)
+  {
+    cThis = getNonBlank();
+    if(cThis == '_')
+        lower_limit = getMathParam();
+    else if (cThis == '^')
+        upper_limit = getMathParam();
+    else 
+        rewind_one(cThis);
+   }
+
+  fprintf(fRtf, "{\\field{\\*\\fldinst  EQ \\\\I(");
+  if (lower_limit) ConvertString(lower_limit);
+  fprintf(fRtf,"%c", FORMULASEP);
+  if (upper_limit) ConvertString(upper_limit);
+  fprintf(fRtf,"%c)}{\\fldrslt }}", FORMULASEP);
+
+  if (lower_limit) free(lower_limit);
+  if (upper_limit) free(upper_limit);
 }
 
 /******************************************************************************/
@@ -1499,7 +1432,7 @@ parameter: if FALSE (0) work as normal
      strcpy(reference,hyperref);
   }
   else
-    GetBraceParam(reference, 255);
+    getBraceParam(reference, 255);
 
   str1 = reference;
   while ( (str2 = strchr(str1, ',')) != NULL )

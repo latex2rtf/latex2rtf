@@ -1,22 +1,34 @@
 /*
- * $Id: main.c,v 1.9 2001/08/12 19:00:04 prahl Exp $
+ * $Id: main.c,v 1.10 2001/08/12 19:32:24 prahl Exp $
  * History:
  * $Log: main.c,v $
- * Revision 1.9  2001/08/12 19:00:04  prahl
- * 1.9e
- *         Revised all the accented character code using ideas borrowed from ltx2rtf.
- *         Comparing ltx2rtf and latex2rtf indicates that Taupin and Lehner tended to work on
- *         different areas of the latex->rtf conversion process.  Adding
- *         accented characters is the first step in the merging process.
+ * Revision 1.10  2001/08/12 19:32:24  prahl
+ * 1.9f
+ * 	Reformatted all source files ---
+ * 	    previous hodge-podge replaced by standard GNU style
+ * 	Compiles cleanly using -Wall under gcc
  *
- *         Added MacRoman font handling (primarily to get the breve accent)
- *         Now supports a wide variety of accented characters.
- *         (compound characters only work under more recent versions of word)
- *         Reworked the code to change font sizes.
- *         Added latex logo code from ltx2rtf
- *         Extracted character code into separate file chars.c
- *         Fixed bug with \sf reverting to roman
- *         Added two new testing files fontsize.tex and accentchars.tex
+ * 	added better translation of \frac, \sqrt, and \int
+ * 	forced all access to the LaTeX file to use getTexChar() or ungetTexChar()
+ * 	    allows better handling of %
+ * 	    simplified and improved error checking
+ * 	    eliminates the need for WriteTemp
+ * 	    potentially allows elimination of getLineNumber()
+ *
+ * 	added new verbosity level -v5 for more detail
+ * 	fixed bug with in handling documentclass options
+ * 	consolidated package and documentclass options
+ * 	fixed several memory leaks
+ * 	enabled the use of the babel package *needs testing*
+ * 	fixed bug in font used in header and footers
+ * 	minuscule better support for french
+ * 	Added testing file for % comment support
+ * 	Enhanced frac.tex to include \sqrt and \int tests also
+ * 	Fixed bugs associated with containing font changes in
+ * 	    equations, tabbing, and quote environments
+ * 	Added essential.tex to the testing suite --- pretty comprehensive test.
+ * 	Perhaps fix missing .bbl crashing bug
+ * 	Fixed ?` and !`
  *
  * Revision 1.11  1998/10/28 06:10:25  glehner
  * Added "errno.h"
@@ -315,7 +327,7 @@ main(int argc, char **argv)
 
   ReadCfg();
   PrepareTex(input,&fTex);
-  WriteTemp(fTex);         /* Normalize eol of inputfile */
+//  WriteTemp(fTex);         /* Normalize eol of inputfile */
   PrepareRtf(output,&fRtf);
 
   (void)Push(1,0);
@@ -354,6 +366,7 @@ bool tabbing_return = FALSE;
 bool tabbing_on_itself = FALSE;
 bool TITLE_AUTHOR_ON = FALSE;
 bool g_processing_tabular = FALSE;
+bool g_preprocessing = FALSE;
 bool bBlankLine=TRUE;  /* to handle pseudo-blank lines (contains spaces)
                           correctly					    */
 int colCount;     /* number of columns in a tabular environment             */
@@ -374,18 +387,17 @@ globals: fTex, fRtf and all global flags for convert (see above)
   char cThis = '\n';
   char cLast = '\n';
   char cLast2 = '\n';
-  char cLastNoSpace = 'a';
   char cNext;
   int PopLevel=0,PopBrack,PPopLevel,PPopBrack,size,retlevel;
   int count = 0;
   int i;
-  char cThishilf;
 
   RecursLevel++;
   (void)Push(RecursLevel,BracketLevel);
   ++ConvertFlag;
-  while (fread(&cThis, 1,1,fTex) == 1)
+  while ((cThis=getTexChar()) && cThis != EOF && cThis != '\0')
   {
+    diagnostics(5,"Current character in Convert() is %c", cThis);
     switch(cThis)
     {
     case '\\':{
@@ -464,8 +476,9 @@ globals: fTex, fRtf and all global flags for convert (see above)
 	      }
 	      break;
 	      }
-    case '%': bBlankLine=FALSE;
-              IgnoreTo('\n');
+    case '%': bBlankLine=FALSE;   /* should not happen now! */
+              fprintf(stderr," percent encountered! alert\n");
+              skipToEOL();
 	      cThis = ' ';
 	      break;
     case '{': bBlankLine=FALSE;
@@ -522,14 +535,10 @@ globals: fTex, fRtf and all global flags for convert (see above)
 	      break;
     case '\n':
 	      tabcounter=0;
-	      linenumber++;
 	      if (!bInDocument) continue;
 
-/*SAP Fix to allow blank lines with spaces*/
-	       cNext = '\0';
-	       while((fread(&cNext,1,1,fTex) == 1) && (cNext==' '));
-	       if (cNext != '\0') rewind_one();
-/*SAP end fix */
+	       while((cNext=getTexChar()) == ' ');   /*blank line with spaces*/
+ 	       rewind_one(cNext);
 		
 	      if (cLast != '\n')
 	      {
@@ -557,79 +566,44 @@ globals: fTex, fRtf and all global flags for convert (see above)
     case '^': bBlankLine=FALSE;
               if (!bInDocument) numerror(ERR_NOT_IN_DOCUMENT);
 
-	      fprintf(fRtf,"{\\up6 \\fs20 ");
-              if (fTexRead (&cNext,1,1,fTex) == 1)
               {
-                 if (cNext == '{')
-                 {
-	            rewind_one(); /* reread last character */
-  	            (void)Push(RecursLevel,BracketLevel);
-	            Convert();
-	            if (ret > 0)
-	            {
-		       --ret;
-		       --RecursLevel;
-	               return;
-	            }
-	            fprintf(fRtf,"}");
-                 }
-/* SAP fix ^\alpha */
-                 else if (cNext == '\\') 
-                 {
-	            TranslateCommand();
-	            fprintf(fRtf,"}");
-                 }
-/* SAP end of fix */
-                 else
-                    fprintf(fRtf,"%c}",cNext);
+                char *s = NULL;
+                if (s = getMathParam())
+                {
+                    fprintf(fRtf,"{\\up6 \\fs20 ");
+                    ConvertString(s);
+                    fprintf(fRtf,"}");
+                    free(s);
+                }
               }
-              else
-	         error("Error reading Latex-File");
 	      break;
+              
     case '_': bBlankLine=FALSE;
               if (!bInDocument) numerror(ERR_NOT_IN_DOCUMENT);
-	      fprintf(fRtf,"{\\dn6 \\fs20 ");
-              if (fTexRead (&cNext,1,1,fTex) == 1)
               {
-                 if (cNext == '{')
-                 {
-	            rewind_one(); /* reread last character */
-  	            (void)Push(RecursLevel,BracketLevel);
-	            Convert();
-	            if (ret > 0)
-	            {
-		       --ret;
-		       --RecursLevel;
-	               return;
-	            }
-	            fprintf(fRtf,"}");
-                 }
-/* SAP fix _\alpha */
-                 else if (cNext == '\\') 
-                 {
-	            TranslateCommand();
-	            fprintf(fRtf,"}");
-                 }
-/* SAP end of fix */
-                 else
-                    fprintf(fRtf,"%c}",cNext);
+                char *s = NULL;
+                if (s = getMathParam())
+                {
+                    fprintf(fRtf,"{\\dn6 \\fs20 ");
+                    ConvertString(s);
+                    fprintf(fRtf,"}");
+                    free(s);
+                }
               }
-              else
-	         error("Error reading Latex-File");
 	      break;
+              
     case '$': 
-             bBlankLine=FALSE;
-             if (fTexRead (&cNext,1,1,fTex) == 1)
-              {
-                 if (cNext == '$')
-                 {
-                 	CmdFormula2(FORM_DOLLAR);
-                 	break;
-                 }
-	         rewind_one(); /* reread last character */
-    	      }
-              CmdFormula(FORM_DOLLAR);
-	      break;
+             bBlankLine = FALSE;
+             cNext = getTexChar();
+             if (cNext == '$')                /*check for $$ */
+                 CmdFormula2(FORM_DOLLAR);
+	     else
+             {
+                 rewind_one(cNext); /* reread last character */
+                 CmdFormula(FORM_DOLLAR);
+             }
+             break;
+              
     case '&': 
     
     	      if (g_processing_tabular && g_processing_equation)   /* in an eqnarray */
@@ -651,8 +625,9 @@ globals: fTex, fRtf and all global flags for convert (see above)
 	      
     case '-' : bBlankLine=FALSE;
                count++;
-	       while ((fread(&cThishilf,1,1,fTex) >= 1) && (cThishilf == '-'))
+	       while ((cNext=getTexChar()) && cNext == '-' )
 		   count++;
+	       rewind_one(cNext); /* reread last character */
 	       switch (count)
 	       {
 		 case 1: fprintf(fRtf,"-");
@@ -666,25 +641,24 @@ globals: fTex, fRtf and all global flags for convert (see above)
 		   fprintf(fRtf,"-");
 		 }
 	       }
-	       rewind_one(); /* reread last character */
 	       count = 0;
 		break;
     case '\'' :bBlankLine=FALSE;
                count++;
-	       while ((fread(&cThishilf,1,1,fTex) >= 1) && (cThishilf == '\''))
+	       while ( (cNext=getTexChar() ) && cNext == '\'')
 		   count++;
+	       rewind_one(cNext); /* reread last character */
 	       if (count != 2)
 		 { for (i = count-1; i >= 0; i--)
 		   fprintf(fRtf,"\\rquote ");
 		 }
 	       else
 		   fprintf(fRtf,"\\rdblquote ");
-	       rewind_one(); /* reread last character */
 	       count = 0;
 	       break;
     case '`' : bBlankLine=FALSE;
                count++;
-	       while ((fread(&cThishilf,1,1,fTex) >= 1) && (cThishilf == '`'))
+	       while ( (cNext=getTexChar() ) && cNext == '`')
 		   count++;
 	       if (count != 2)
 		 { for (i = count-1; i >= 0; i--)
@@ -692,7 +666,7 @@ globals: fTex, fRtf and all global flags for convert (see above)
 		 }
 	       else
 		   fprintf(fRtf,"\\ldblquote ");
-	       rewind_one(); /* reread last character */
+	       rewind_one(cNext); /* reread last character */
 	       count = 0;
 	       break;
     case '\"': bBlankLine=FALSE;
@@ -710,7 +684,7 @@ globals: fTex, fRtf and all global flags for convert (see above)
 	    char ch;
 
 	    bBlankLine=FALSE;
-	    if (fread (&ch, 1, 1, fTex) == 1)
+	    if (ch = getTexChar())
 	    {
 		if (ch == '`')
 		{
@@ -720,7 +694,7 @@ globals: fTex, fRtf and all global flags for convert (see above)
 		{
 		    if(putc (cThis, fRtf) == EOF)
 		      diagnostics(ERROR, "Failed putc; main.c (Convert)");
-		    rewind_one();
+		    rewind_one(ch);
 		}
 	    }
 	}
@@ -745,8 +719,6 @@ globals: fTex, fRtf and all global flags for convert (see above)
   tabcounter++;
   cLast2 = cLast;
   cLast = cThis;
-  if (cThis != ' ')
-    cLastNoSpace = cThis;
   }
   RecursLevel--;
 }
@@ -789,7 +761,7 @@ globals: progname; latexname; linenumber;
   switch(num)
   {
     case ERR_EOF_INPUT:
-      if (g_processing_include) return;  /*SAP - HACK end of file ok in include files */
+      if (g_processing_include || g_preprocessing) return;  /*SAP - HACK end of file ok in include files */
       sprintf(text,"%s%s%s%ld%s","unexpected end of input file in: ",latexname," at linenumber: ",getLinenumber(),"\n");
       error(text);
       /*@notreached@*/
@@ -869,7 +841,8 @@ diagnostics(int level, char *format, ...)
 
   if((level <= verbosity) && (level > 1))
     {
-      fprintf(errfile, "\n%s:%ld: ", latexname, getLinenumber());
+      fprintf(stderr, "\n%s%ld=%ld {%d} (%d) ", latexname, getLinenumber(), linenumber, BracketLevel, RecursLevel);
+//      fprintf(errfile, "\n%s:%ld: ", latexname, getLinenumber());
       switch(level)
 	{
 	case 0: 
@@ -902,6 +875,7 @@ params: filename - name of outputfile, possibly NULL for already open file
 	f - pointer to filepointer to store file ID
  ****************************************************************************/
 {
+  diagnostics(4,"Opening RTF file %s",filename);
   if(filename != NULL)
   {
       /* I have replaced "wb" with "w" in the following
@@ -918,6 +892,7 @@ params: filename - name of outputfile, possibly NULL for already open file
   }
   
   /* write header */
+  diagnostics(4,"Writing header for RTF file %s",filename);
 #ifdef DEFAULT_MAC_ENCODING
   fprintf(*f,"{\\rtf1\\mac\\fs%d\\deff0\\deflang1024\n",CurrentFontSize());
 #else
@@ -945,54 +920,6 @@ params: filename - name of inputfile, possibly NULL
         exit(EXIT_FAILURE);
       }
   }
-}
-
-/*************************************************************************
-WriteTemp:    Reads the original inputfile, and normalizes all end-of-lines
-              to \n writing it to a temporary file. Then feeds this tempfile
-              to l2r.
-
-	      also changes all tabs to a single space
-	      
-globals:f - pointer to inputfile
-*************************************************************************/
-void
-WriteTemp(FILE *f)
-{
-  FILE *tout;
-  char cThis;
-
-  tout = tmpfile();
-  
-  while (fread(&cThis, 1, 1, f) == 1)
-  {
-      if (cThis =='\r')
-      {
-	  if (fread(&cThis, 1, 1, f) == 1)
-	    {
-	      if (cThis == '\n')
-		fprintf(tout, "%c", '\n');
-	      else
-		{
-		  fprintf(tout, "%c", '\n');
-      		  if (cThis =='\r')
-		  	fprintf(tout, "%c", '\n');
-	          else if (cThis == '\t')
-	      	        fprintf(tout, "%c", ' ');
-		  else
-		  	fprintf(tout, "%c", cThis);
-		}
-	    }
-      }
-      else if (cThis == '\t')
-      	fprintf(tout, "%c", ' ');
-      else
-	fprintf(tout, "%c", cThis);
-  }
-  
-  fclose(f);
-  rewind(tout);
-  fTex = tout;
 }
 
 /****************************************************************************/
@@ -1043,14 +970,12 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
   char cThis;
   char option_string[100];
   
-  for (i = 0; ;i++)   /* get command from input stream */
+  diagnostics(5,"Beginning TranslateCommand()");
+    
+  cThis=getTexChar();
+
+  switch(cThis)
   {
-    if (fread(&cThis,1,1,fTex) < 1)
-       break;
-    if (i == 0) /* test for special characters */
-    {
-      switch(cThis)
-      {
 	case '}': fprintf(fRtf,"\\}"); return TRUE;
 	case '{': fprintf(fRtf,"\\{"); return TRUE;
 	case '#': fprintf(fRtf,"#"); return TRUE;
@@ -1062,16 +987,14 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 		      					/* no new paragraph    */
 
 /* skip one * and any spaces that follow */
-		if (fread(&cThis,1,1,fTex) == 1)
-		{
-		     if ((cThis == ' ') || (cThis == '*'))  /* ignore initial * and spaces */
-		     {
-		        while((fread(&cThis,1,1,fTex) == 1) && (cThis == ' ')); /*space  ignore */
-		     }
-		     rewind_one();
-		}
+		cThis = getTexChar();
 
-		GetBracketParam(option_string,99);       /* skip spacing info e.g., \\[1mm] */
+                if (cThis == ' ' || cThis == '*')    /* ignore initial * and spaces */
+                    skipSpaces();
+                else
+                    rewind_one(cThis);
+
+		getBracketParam(option_string,99);       /* skip spacing info e.g., \\[1mm] */
 		
 		if (g_processing_eqnarray) /* eqnarray */
 		{
@@ -1120,16 +1043,9 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 		return TRUE;
 
 	case ' ': fprintf(fRtf," ");	/* ordinary interword space */
-		  while (cThis == ' ') /* all spaces after commands are ignored */
-		  {
-		     if (fread(&cThis,1,1,fTex) < 1)
-			numerror(ERR_EOF_INPUT);
-		  }
-
-		  rewind_one();
+                  skipSpaces();
 		  return TRUE;
-		  /*@notreached@*/
-		  break;
+
 	case '-': /* hyphen */
 		  /* caution: this character has another effect in the tabbing-environment */
 		  if (!tabbing_on)
@@ -1177,32 +1093,34 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 		  return TRUE;
 	case '3': fprintf(fRtf, "{\\ansi\\'df}");   /* german symbol 'á' */
 		  return TRUE;
-      }
     }
+    
+    
     /*LEG180498 Commands consist of letters and can have an optional * at the end*/
-    if (!isalpha((unsigned char) cThis) && (cThis != '*'))
+    for (i=0; i < MAXCOMMANDLEN; i++)
     {
-      bool found_nl = FALSE;
-      /* all spaces after commands are ignored, a single \n may occur */
-//      while (cThis == ' ' || cThis == '\t' || cThis == '\n' && !found_nl)
-      while (cThis == ' ' || cThis == '\n' && !found_nl)
-	{
-	if(cThis == '\n')
-	{
-           found_nl = TRUE;
+        if (!isalpha(cThis) && (cThis != '*'))
+        {
+            bool found_nl = FALSE;
+            /* all spaces after commands are ignored, a single \n may occur */
+            while (cThis == ' ' || (cThis == '\n' && !found_nl))
+            {
+                if(cThis == '\n')
+                    found_nl = TRUE;
+                cThis=getTexChar();	
+            }
+        
+            rewind_one(cThis); /* position of next character after command and optional space */
+            break;
         }
-	if (fread(&cThis,1,1,fTex) < 1)
-	    break;
-	}
+        else
+            cCommand[i] = cThis;
 
-      rewind_one(); /* position of next character after command
-				   except space */
-      break;
-    }
-    cCommand[i] = cThis;
+        cThis = getTexChar();
   }
 
   cCommand[i] = '\0';  /* mark end of string with zero */
+  diagnostics(5,"TranslateCommand() <%s>",cCommand);
 
   if ( i == 0)
     return FALSE;
@@ -1215,57 +1133,6 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
   fprintf(stderr,"\n%s: WARNING: command: %s not found - ignored\n",progname,cCommand);
   return FALSE;
 }
-/****************************************************************************/
-
-/****************************************************************************/
-void IgnoreTo(char cEnd)
-/****************************************************************************
-purpose: ignores anything from inputfile till character cEnd
-params:  charcter to stop ignoring
-globals: changes inputfile fTex
-         linenumber;
- ****************************************************************************/
-{
-  char c;
-  while (fread(&c, 1,1,fTex) >= 1)
-  {
-    if (c == cEnd)
-    {
-      if (cEnd == '\n')
-	rewind_one();   /*linenumber is set in convert-routine */
-	/*linenumber++;*/
-      return;
-    }
-    else
-    {
-     if (c == '\n')
-       linenumber++;
-    }
-  }
-  numerror(ERR_EOF_INPUT);
-}
-/****************************************************************************/
-
-
-/****************************************************************************/
-size_t fTexRead (void *ptr, size_t size, size_t nitems, FILE *stream)
-/****************************************************************************
-purpose: performs fread and increments linenumber if '\n' is read...
-         errors are checked after calling fTexRead!
-params:  same as needed  for fread(3)
- ****************************************************************************/
-{
-   size_t val;
-
-   val = fread (ptr, size, nitems, stream);
-
-   if ( *((char*)ptr) == '\n' )
-      linenumber++;
-
-   return val;
-}
-
-
 
 /****************************************************************************
 purpose: get number of actual line (do not use global linenumber, because

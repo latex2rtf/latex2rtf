@@ -1,22 +1,34 @@
 /*
- * $Id: main.h,v 1.9 2001/08/12 19:00:04 prahl Exp $
+ * $Id: main.h,v 1.10 2001/08/12 19:32:24 prahl Exp $
  * History:
  * $Log: main.h,v $
- * Revision 1.9  2001/08/12 19:00:04  prahl
- * 1.9e
- *         Revised all the accented character code using ideas borrowed from ltx2rtf.
- *         Comparing ltx2rtf and latex2rtf indicates that Taupin and Lehner tended to work on
- *         different areas of the latex->rtf conversion process.  Adding
- *         accented characters is the first step in the merging process.
+ * Revision 1.10  2001/08/12 19:32:24  prahl
+ * 1.9f
+ * 	Reformatted all source files ---
+ * 	    previous hodge-podge replaced by standard GNU style
+ * 	Compiles cleanly using -Wall under gcc
  *
- *         Added MacRoman font handling (primarily to get the breve accent)
- *         Now supports a wide variety of accented characters.
- *         (compound characters only work under more recent versions of word)
- *         Reworked the code to change font sizes.
- *         Added latex logo code from ltx2rtf
- *         Extracted character code into separate file chars.c
- *         Fixed bug with \sf reverting to roman
- *         Added two new testing files fontsize.tex and accentchars.tex
+ * 	added better translation of \frac, \sqrt, and \int
+ * 	forced all access to the LaTeX file to use getTexChar() or ungetTexChar()
+ * 	    allows better handling of %
+ * 	    simplified and improved error checking
+ * 	    eliminates the need for WriteTemp
+ * 	    potentially allows elimination of getLineNumber()
+ *
+ * 	added new verbosity level -v5 for more detail
+ * 	fixed bug with in handling documentclass options
+ * 	consolidated package and documentclass options
+ * 	fixed several memory leaks
+ * 	enabled the use of the babel package *needs testing*
+ * 	fixed bug in font used in header and footers
+ * 	minuscule better support for french
+ * 	Added testing file for % comment support
+ * 	Enhanced frac.tex to include \sqrt and \int tests also
+ * 	Fixed bugs associated with containing font changes in
+ * 	    equations, tabbing, and quote environments
+ * 	Added essential.tex to the testing suite --- pretty comprehensive test.
+ * 	Perhaps fix missing .bbl crashing bug
+ * 	Fixed ?` and !`
  *
  * Revision 1.7  1998/11/04 13:40:57  glehner
  * Added HAS_NO_GETOPT preprocessor flag
@@ -72,6 +84,12 @@ typedef long fpos_t;
 #define getopt my_getopt
 #endif
 
+#ifdef SEMICOLONSEP
+#define FORMULASEP ';'
+#else
+#define FORMULASEP ','
+#endif
+
 typedef int bool;
 
 void Convert();  /* main convert routine */
@@ -85,12 +103,9 @@ long getLinenumber(void);
 void diagnostics(int level, char *format, ...);
 /* level values */
 
-/* write temp data */
-void WriteTemp(FILE *f);
-
 #define ERROR 0
 #define WARNING 1
-#define MAX_VERBOSITY 4
+#define MAX_VERBOSITY 5
 
 bool rtf_restrict(int major, int minor);
 

@@ -1,22 +1,34 @@
 /*
- * $Id: funct1.c,v 1.9 2001/08/12 19:00:04 prahl Exp $
+ * $Id: funct1.c,v 1.10 2001/08/12 19:32:24 prahl Exp $
  * History:
  * $Log: funct1.c,v $
- * Revision 1.9  2001/08/12 19:00:04  prahl
- * 1.9e
- *         Revised all the accented character code using ideas borrowed from ltx2rtf.
- *         Comparing ltx2rtf and latex2rtf indicates that Taupin and Lehner tended to work on
- *         different areas of the latex->rtf conversion process.  Adding
- *         accented characters is the first step in the merging process.
+ * Revision 1.10  2001/08/12 19:32:24  prahl
+ * 1.9f
+ * 	Reformatted all source files ---
+ * 	    previous hodge-podge replaced by standard GNU style
+ * 	Compiles cleanly using -Wall under gcc
  *
- *         Added MacRoman font handling (primarily to get the breve accent)
- *         Now supports a wide variety of accented characters.
- *         (compound characters only work under more recent versions of word)
- *         Reworked the code to change font sizes.
- *         Added latex logo code from ltx2rtf
- *         Extracted character code into separate file chars.c
- *         Fixed bug with \sf reverting to roman
- *         Added two new testing files fontsize.tex and accentchars.tex
+ * 	added better translation of \frac, \sqrt, and \int
+ * 	forced all access to the LaTeX file to use getTexChar() or ungetTexChar()
+ * 	    allows better handling of %
+ * 	    simplified and improved error checking
+ * 	    eliminates the need for WriteTemp
+ * 	    potentially allows elimination of getLineNumber()
+ *
+ * 	added new verbosity level -v5 for more detail
+ * 	fixed bug with in handling documentclass options
+ * 	consolidated package and documentclass options
+ * 	fixed several memory leaks
+ * 	enabled the use of the babel package *needs testing*
+ * 	fixed bug in font used in header and footers
+ * 	minuscule better support for french
+ * 	Added testing file for % comment support
+ * 	Enhanced frac.tex to include \sqrt and \int tests also
+ * 	Fixed bugs associated with containing font changes in
+ * 	    equations, tabbing, and quote environments
+ * 	Added essential.tex to the testing suite --- pretty comprehensive test.
+ * 	Perhaps fix missing .bbl crashing bug
+ * 	Fixed ?` and !`
  *
  * Revision 1.9  1998/10/28 06:19:38  glehner
  * Changed all occurences of eol-output to "\r\n" to allow
@@ -62,7 +74,7 @@
           POLZER Friedrich,TRISKO Gerhard
  * in footnote: special characters treated correctly
  * now produces section-numbers
- * GetParam allocates only the needed amount of memory
+ * getParam allocates only the needed amount of memory
  * \c
  * footnotes treats \"o etc correctly
  * paragraph formatting properties of itemize/liste environment corrected
@@ -112,7 +124,6 @@ extern int curr_fontnumb[MAXENVIRONS];
 
 /***************************  prototypes     ********************************/
 void ConvertFormula();
-/*@out@*/ static char *stralloc(size_t len);
 static void CmdLabel1_4(int code, char *text);
 static void CmdLabelOld(int code, char *text);
 static void RtfHeader(int where, /*@null@*/ char *what);
@@ -124,14 +135,14 @@ void CmdHeader(int code);
 /***************************************************************************/
 void CmdBeginEnd(int code)
 /***************************************************************************
-   purpose: reads the parameter after the \begin or \end-command; ( see also GetParam )
+   purpose: reads the parameter after the \begin or \end-command; ( see also getParam )
 	    after reading the parameter the CallParamFunc-function calls the
 	    handling-routine for that special environment
  parameter: code: CMD_BEGIN: start of environment
 		  CMD_END:   end of environment
  ***************************************************************************/
 {
-  char *cParam = GetParam();
+  char *cParam = getParam();
   switch(code)
   {
     case CMD_BEGIN:
@@ -422,13 +433,13 @@ CmdTitle(/*@unused@*/ int code)
   
   switch (code)
   {
-    case TITLE_TITLE: title = GetParam();
+    case TITLE_TITLE: title = getParam();
 		      break;
     case TITLE_AUTHOR: TITLE_AUTHOR_ON = TRUE; /* is used for the \and command */
-		       author = GetParam();
+		       author = getParam();
 		       TITLE_AUTHOR_ON = FALSE;
 		       break;
-    case TITLE_DATE: date = GetParam();
+    case TITLE_DATE: date = getParam();
 		     break;
     case TITLE_MAKE:
       sprintf(title_begin,"%s%2d", "\\fs", (30*CurrentFontSize())/20);
@@ -453,7 +464,64 @@ CmdTitle(/*@unused@*/ int code)
   }
 }
 
-/******************************************************************************/
+static void setDocumentOptions(char *optionlist)
+{
+    char *option;
+
+    option = strtok(optionlist, ",");
+    
+    while (option)
+    {               
+        diagnostics(4, "                    option   %s", option);
+       if (strcmp(option,"11pt") == 0)
+            SetDocumentFontSize(22);
+        else if (strcmp(option,"12pt") == 0)
+            SetDocumentFontSize(24);
+        else if (strcmp(option,"german") == 0)
+        { 
+            GermanMode = TRUE; 
+            PushEnvironment(GERMANMODE);
+            language = strdup(option);
+        }
+        else if (strcmp(option,"spanish") == 0 || strcmp(option,"french") == 0)
+        {
+            language = strdup(option);
+        }
+        else if (strcmp(option,"twoside") == 0)
+        { 
+            twoside = TRUE;
+            fprintf(stderr, "\n  rtf1.5 token `\\facingp' used");          /*LEG diag(1,)*/
+            fprintf(fRtf,"\\facingp");
+        }
+        else if (strcmp(option,"twocolumn") == 0)
+        {
+            fprintf(fRtf,"\\cols2\\colsx709 "); /* two columns -- space between columns 709 */
+            twocolumn = TRUE;
+        }
+        else if (strcmp(option,"titlepage") == 0)
+        {
+            titlepage = TRUE;
+        }
+        else if (strcmp(option,"isolatin1") == 0)
+        {
+            TexCharSet = ISO_8859_1;
+            fprintf(stderr,"\nisolatin1 style option encountered.");
+            fprintf(stderr,"\nLatin-1 (= ISO 8859-1) special characters will be ");
+            fprintf(stderr,"converted into RTF-Commands!\n");
+        }
+        else if (strcmp(option, "hyperlatex") == 0)
+        {
+            PushEnvironment(HYPERLATEX);
+        }
+        else if (!TryVariableIgnore(option, fTex))
+        {
+            fprintf(stderr,"\n%s: WARNING: unknown style option %s ignored", progname, option);
+        }
+        
+        option = strtok(NULL, ",");
+    }
+}
+
 void CmdDocumentStyle(/*@unused@*/ int code)
 /******************************************************************************
  purpose: reads the information from the LaTeX \documentstyle command and
@@ -464,137 +532,22 @@ void CmdDocumentStyle(/*@unused@*/ int code)
            twocolumn; titlepage
  ******************************************************************************/
 {
-  /*@owned@*//*@null@*/ static char *style = NULL;
-  char cThis = ' ';
-  char optstring[30] = { '\0' };
-  bool has_optparam = FALSE;
-
-
-     for(;;) /* do forever */
-     {
-        while ( cThis == ' ')
-        {
-   	   if ( (fread(&cThis,1,1,fTex) < 1))
-	      numerror(ERR_EOF_INPUT);
-        }
-	if(fseek(fTex,-1L,SEEK_CUR) != 0) /* reread last character */
-	  diagnostics(ERROR, "Seek failed in LaTeX-file");
-
-	switch (cThis)
-	{
-	   case '{' : style = GetParam();  
-		      if (strcmp(style,"article") == 0)
-                      {
-			  article = TRUE;
-                      }
-		      else
-                      {
-			  article = FALSE;
-                      }
-		      diagnostics(4, "Documentstyle/class `%s' encountered", style);
-
-		      break;
-	   case '[' : 
-	   			style = (char*) malloc (100*sizeof(char));
-                if (style == NULL)
-                     error(" malloc error -> out of memory!\n");
-                rewind_one();
-                GetBracketParam(style,99);
-		      has_optparam = TRUE;
-		      diagnostics(4,"Documentstyle/classoptions: `%s'", style);
-		      break;
-	   default :  /* last character was read again above.
-			 this character will be written in the rtf-file in the
-			 convert-routine (main.c) */
-
-		      fprintf(fRtf,"\\fs%d ",CurrentFontSize()); /* default or new fontsize */
-		      return;
-		      /*@notreached@*/
-		      break;
-	} /* switch */
-
-	if (has_optparam)
-	{
-	    /* returnstring of GetOptParam will be separated in its components */
-	    do
-	    {
-		 strcpy(optstring,GetSubString
-		                            (style == NULL ? "" : style,','));
-
-		 if (strcmp(optstring,"11pt") == 0)
-                   SetDocumentFontSize(22);
-		 else if (strcmp(optstring,"12pt") == 0)
-        	       SetDocumentFontSize(24);
-		 else if (strcmp(optstring,"german") == 0)
-		    { GermanMode = TRUE; PushEnvironment(GERMANMODE);
-		      language = stralloc(strlen(optstring));
-		      strcpy(language,optstring);
-		    }
-		 else if (strcmp(optstring,"spanish") == 0)
-		   {
-		     language = stralloc(strlen(optstring));
-		     strcpy(language,optstring);
-		   }
-		 else if (strcmp(optstring,"twoside") == 0)
-		   { twoside = TRUE;
-		   /*LEG diag(1,)*/
-		   fprintf(stderr, "\n  rtf1.5 token `\\facingp' used");
-		   fprintf(fRtf,"\\facingp");
-		   }
-		 
-		 else if (strcmp(optstring,"twocolumn") == 0)
-		    {
-		    fprintf(fRtf,"\\cols2\\colsx709 "); /* two columns */
-						     /* space between columns 709 */
-		    twocolumn = TRUE;
-		    }
-		else if (strcmp(optstring,"titlepage") == 0)
-		    {
-		    titlepage = TRUE;
-		    }
-		 else if (strcmp(optstring,"isolatin1") == 0)
-		   {
-		     TexCharSet = ISO_8859_1;
-		     fprintf(stderr,"\nisolatin1 style option encountered.");
-                     fprintf(stderr,"\nLatin-1 (= ISO 8859-1) special characters will be ");
-                     fprintf(stderr,"converted into RTF-Commands!\n");
-                   }
-		 else if (strcmp(optstring, "hyperlatex") == 0)
-		   {
-		     PushEnvironment(HYPERLATEX);
-		   }
-		 else if (!TryVariableIgnore(optstring, fTex))
-		   {
-		     fprintf(stderr,"\n%s: WARNING: unknown style option %s ignored",
-			     progname, optstring);
-		   }
-	    }
-	     while (strcmp(style,"") != 0);
-      } /* if */
-
-      if ( (fread(&cThis,1,1,fTex) < 1)) 
-	   numerror(ERR_EOF_INPUT); 
-
-    } /* for */
-}
-
-
-/******************************************************************************/
-/*LEG030598*/
-char *stralloc(size_t len)
-/******************************************************************************
- purpose: allocates memory for a string, asserts that there is memory
- ******************************************************************************/
-{
-  char *str = NULL;
-  str = malloc(len);
-  if (str == NULL)
-    error(" malloc error -> out of memory!\n");
-  return(str);
-}
-
-/******************************************************************************/
-/*LEG190498*/
+    char format[100];
+    char optionlist[100]; 
+    
+    getBracketParam(optionlist,99);
+    getBraceParam(format,99);
+  
+    diagnostics(4, "Documentstyle/class options [%s]", optionlist);
+    diagnostics(4, "Documentstyle/class format  {%s}", format);
+    
+    setDocumentOptions(optionlist);
+        
+    if (strcmp(format,"article") == 0)
+        article = TRUE;
+    else
+        article = FALSE;
+ }
 
 /******************************************************************************
  CmdUsepackage:
@@ -609,94 +562,19 @@ char *stralloc(size_t len)
 void CmdUsepackage(/*@unused@*/ int code)
 {
   char package[100];
-  char options[100]; 
+  char optionlist[100]; 
  
-  GetBracketParam(options,99);
-  GetBraceParam(package,99);
+  getBracketParam(optionlist,99);
+  getBraceParam(package,99);
   
-  diagnostics(4, "Package {%s} with options [%s] encountered", package, options);
+  diagnostics(4, "Package {%s} with options [%s] encountered", package, optionlist);
   
-  if (strcmp(package,"11pt") == 0)
-    SetDocumentFontSize(22);
-  else if (strcmp(package,"12pt") == 0)
-    SetDocumentFontSize(24);
-  else if (strcmp(package,"german") == 0)
-    {
-      GermanMode = TRUE;
-      PushEnvironment(GERMANMODE);
-      language = stralloc(strlen(package));
-      strcpy(language,package);
-    }
-  else if (strcmp(package,"spanish") == 0) {
-    language = stralloc(strlen(package));
-    strcpy(language,package);
-  }
-  else if (strcmp(package,"twoside") == 0)
-    {
-      twoside = TRUE;
-      /*LEG diag(1,)*/
-      fprintf(stderr, "\n  rtf1.5 token `\\facingp' used");
-      fprintf(fRtf,"\\facingp");
-    }
-  else if (strcmp(package,"twocolumn") == 0)
-    {
-      fprintf(fRtf,"\\cols2\\colsx709 "); /* two columns */
-      /* space between columns 709 */
-      twocolumn = TRUE;
-    }
-  else if (strcmp(package,"titlepage") == 0)
-    {
-      titlepage = TRUE;
-    }
-/*LEG190498*/
-  else if (strcmp(package,"isolatin1") == 0)
-    {	
-      TexCharSet = ISO_8859_1;
-      fprintf(stderr,"\nisolatin1 package encountered.");
-      fprintf(stderr,"\nLatin-1 (= ISO 8859-1) special characters will be ");
-      fprintf(stderr,"converted into RTF-Commands!\n");
-    }
-  else if (strcmp(package, "inputenc") == 0)
-    {
-      diagnostics(WARNING, "inputenc package with parameter(s) `%s' encountered.",
-		  options);
-
-      if (strcmp(options,"latin1") == 0)
-	{
-	  TexCharSet = ISO_8859_1;
-	  fprintf(stderr,"\nLatin-1 (= ISO 8859-1) special characters will be ");
-	  fprintf(stderr,"converted into RTF-Commands!\n");
-	}
-    }
-  /*  would be nice, but needs language option from documentclass
-  else if (strcmp(package, "babel") == 0)
-    {
-      if (strcmp(options, "german") == 0 || 
-	  strcmp(options, "spanish") == 0)
-	{
-	  language = options; <-- dumps core
-	  optparam = FALSE;
-	}
-      else
-	{
-	  diagnostics(WARNING,
-		      "unknown language `%s' as option to babel package",
-		      options);
-	}
-    }
-    */
-  else if (strcmp(package, "hyperlatex") == 0)
-    {
-      PushEnvironment(HYPERLATEX);
-    }
-  else if (!TryVariableIgnore(package, fTex))
-    {
-      fprintf(stderr,"\n%s: WARNING: unknown \\usepackage{%s} ignored",
-	      progname, package);
-    }
-  }
+  if (strcmp(package, "inputenc") == 0 || strcmp(package, "babel") == 0)
+      setDocumentOptions(optionlist);
+  else
+      setDocumentOptions(package);
+}
      
-
 /******************************************************************************/
 void CmdSection(int code)
 /******************************************************************************
@@ -718,7 +596,7 @@ parameter: code: type of section-recursion-level
   char optparam[100] = "";
   char cNext = ' ';
 
-  GetBracketParam(optparam,99);
+  getBracketParam(optparam,99);
   switch (code)
   {
   case SECT_PART:
@@ -741,13 +619,10 @@ parameter: code: type of section-recursion-level
     Convert();
     fprintf( fRtf,"}\n\\par \\pard\\plain\\f%u\\q%c\n"
            , (unsigned int)DefFont,alignment);
-    do 
-    {
-       if ( (fread(&cNext,1,1,fTex) < 1))
-          numerror(ERR_EOF_INPUT);
-    }
-    while ((cNext == ' ') || (cNext == '\n'));
-    rewind_one();
+    
+    cNext=getTexChar();
+    cNext=getNonBlank();
+    rewind_one(cNext);
     bNewPar = FALSE;
     bBlankLine = TRUE;
     break;
@@ -763,13 +638,9 @@ parameter: code: type of section-recursion-level
        Convert();
        fprintf(fRtf,"}\n\\par \\pard\\plain\\f%u\\q%c\n"
               , (unsigned int)DefFont,alignment);
-       do 
-       {
-          if ( (fread(&cNext,1,1,fTex) < 1))
-             numerror(ERR_EOF_INPUT);
-       }
-       while ((cNext == ' ') || (cNext == '\n'));
-       rewind_one(); /* reread last character */
+
+       cNext=getTexChar();
+       skipSpaces();
        bNewPar = FALSE;
        bBlankLine = TRUE;
     }
@@ -782,13 +653,8 @@ parameter: code: type of section-recursion-level
        Convert();
        fprintf( fRtf,"}\n\\par \\pard\\plain\\f%u\\q%c\n"
               , (unsigned int)DefFont,alignment);
-       do 
-       {
-          if ( (fread(&cNext,1,1,fTex) < 1))
-             numerror(ERR_EOF_INPUT);
-       }
-       while ((cNext == ' ') || (cNext == '\n'));
-       rewind_one(); /* reread last character */
+       cNext=getTexChar();
+       skipSpaces();
        bNewPar = FALSE;
        bBlankLine = TRUE;
     }
@@ -804,13 +670,8 @@ parameter: code: type of section-recursion-level
        Convert();
        fprintf( fRtf,"}\n\\par \\pard\\plain\\f%u\\q%c\n"
               , (unsigned int)DefFont,alignment);
-       do 
-       {
-          if ( (fread(&cNext,1,1,fTex) < 1))
-             numerror(ERR_EOF_INPUT);
-       }
-       while ((cNext == ' ') || (cNext == '\n'));
-       rewind_one(); /* reread last character */
+       cNext=getTexChar();
+       skipSpaces();
        bNewPar = FALSE;
        bBlankLine = TRUE;
     }
@@ -822,13 +683,8 @@ parameter: code: type of section-recursion-level
        Convert();
        fprintf( fRtf,"}\n\\par \\pard\\plain\\f%u\\q%c\n"
               , (unsigned int)DefFont,alignment);
-       do 
-       {
-          if ( (fread(&cNext,1,1,fTex) < 1))
-             numerror(ERR_EOF_INPUT);
-       }
-       while ((cNext == ' ') || (cNext == '\n'));
-       rewind_one(); /* reread last character */
+       cNext=getTexChar();
+       skipSpaces();
        bNewPar = FALSE;
        bBlankLine = TRUE;
     }
@@ -843,13 +699,8 @@ parameter: code: type of section-recursion-level
        Convert();
        fprintf( fRtf,"}\n\\par \\pard\\plain\\f%u\\q%c\n"
               , (unsigned int)DefFont,alignment);
-       do 
-       {
-          if ( (fread(&cNext,1,1,fTex) < 1))
-             numerror(ERR_EOF_INPUT);
-       }
-       while ((cNext == ' ') || (cNext == '\n'));
-       rewind_one(); /* reread last character */
+       cNext=getTexChar();
+       skipSpaces();
        bNewPar = FALSE;
        bBlankLine = TRUE;
     }
@@ -861,13 +712,8 @@ parameter: code: type of section-recursion-level
        Convert();
        fprintf( fRtf,"}\n\\par \\pard\\plain\\f%u\\q%c\n"
               , (unsigned int)DefFont,alignment);
-       do 
-       {
-          if ( (fread(&cNext,1,1,fTex) < 1))
-             numerror(ERR_EOF_INPUT);
-       }
-       while ((cNext == ' ') || (cNext == '\n'));
-       rewind_one(); /* reread last character */
+       cNext=getTexChar();
+       skipSpaces();
        bNewPar = FALSE;
        bBlankLine = TRUE;
     }
@@ -912,7 +758,7 @@ void CmdFootNote(int code)
   static int thankno = 1;
   int text_ref_upsize, foot_ref_upsize;
   
-  GetBracketParam(number,254); /* is ignored because of the automatic footnumber-generation */
+  getBracketParam(number,254); /* is ignored because of the automatic footnumber-generation */
 
   text_ref_upsize = (6*CurrentFontSize())/20;
   foot_ref_upsize = (6*CurrentFontSize())/20;
@@ -980,7 +826,7 @@ CmdPagestyle(/*@unused@*/ int code)
   static char *style = "";
 
   pagestyledefined = TRUE;
-  style = GetParam();
+  style = getParam();
   if(strcmp(style,"empty") == 0)
     {
       if(pagenumbering) {
@@ -1181,7 +1027,7 @@ parameter : code : type of environment and on/off-state
   
   fprintf(fRtf,"\n\\par\\fi0\\li%d ",indent); 
   
-  if (GetBracketParam(itemlabel,99)) /* \item[label] */
+  if (getBracketParam(itemlabel,99)) /* \item[label] */
   {
     int i;
  	fprintf(fRtf,"{\\b "); /*bold on */
@@ -1299,24 +1145,6 @@ CmdInclude(/*@unused@*/ int code)
 
   strcpy(fname, "");
 
-
-# ifdef no_longer_needed
-
-  fgetpos(fTex,&aktpos);
-  if ( (n=(fread(fname,99,1,fTex)) < 1))
-    numerror(ERR_EOF_INPUT);
-  fname[n+1] = '\0';
-
-  if (strstr(fname,"german.sty")!=NULL)
-  {
-    GermanMode = TRUE;
-    PushEnvironment(GERMANMODE);
-    return;
-  }
-  fsetpos(fTex,&aktpos);
-
-# endif /* no_longer_needed */
-
   GetInputParam(fname,99);
   if (strstr(fname,"german.sty")!=NULL)
   {
@@ -1362,7 +1190,7 @@ CmdInclude(/*@unused@*/ int code)
   fprintf(stderr,"\nProcessing include file: %s\n",fullpath);
     
   LatexFile = fTex;					/* Save current file pointer */
-  WriteTemp(fp);         			/* Normalize eol in fp, close fp, and make fTex = tmpfile() */
+  fTex = fp;         		
   oldlinenumber = linenumber;
   linenumber = 1;
   olatexname = latexname;
@@ -1392,7 +1220,7 @@ void CmdVerb(int code)
   size_t num;
 
 
-  while (fTexRead(&cThis, 1,1,fTex) == 1)
+  while (cThis=getTexChar())
   {
     if ((cThis != ' ') && (cThis != '*') && !isalpha((unsigned char) cThis))
     {
@@ -1406,7 +1234,7 @@ void CmdVerb(int code)
   num = GetTexFontNumber("Typewriter");
   fprintf(fRtf,"{\\f%u ", (unsigned int)num);
 
-  while (fTexRead(&cThis, 1,1,fTex) == 1)
+  while (cThis=getTexChar())
   {
     if (cThis == markingchar)
       break;
@@ -1440,8 +1268,7 @@ void CmdVerbatim(/*@unused@*/ int code)  /* write anything till \end{verbatim} *
   char cThis;
   for(;;)
   {
-    if (fread(&cThis, 1,1,fTex) != 1)
-      numerror(ERR_EOF_INPUT);
+    cThis=getTexChar();
     if ( (cThis != endstring[i]) || ( (i>0) && (cThis == ' ') ) )
     {
       if (i > 0)
@@ -1514,7 +1341,7 @@ void CmdIgnoreDef(/*@unused@*/ int code)
   char cThis;
   int bracket;
   /* ignore till '{'  */
-  while (fTexRead(&cThis, 1,1,fTex) == 1)
+  while (cThis=getTexChar())
   {
     if (cThis == '{')
       break;
@@ -1522,7 +1349,7 @@ void CmdIgnoreDef(/*@unused@*/ int code)
   if (cThis != '{')
     numerror(ERR_EOF_INPUT);
   bracket = 1;
-  while (fread(&cThis, 1,1,fTex) == 1)
+  while (cThis=getTexChar())
   {
     if (cThis == '{')
       bracket++;
@@ -1550,8 +1377,7 @@ globals: reads from fTex and writes to fRtf
  ***************************************************************************/
 {
   char cThis;
-  if (fTexRead(&cThis, 1,1,fTex) != 1)
-    numerror(ERR_EOF_INPUT);
+  cThis=getTexChar();
 
   switch(cThis)
   {
@@ -1617,7 +1443,7 @@ void CmdIgnoreLet(/*@unused@*/ int code)
   /* Format: \let\XXXXX = \YYYYYY or \let\XXXXX\YYYYYY
   /* ignore till 2x '\' */
 
-  while (fread(&cThis, 1,1,fTex) == 1)
+  while (cThis=getTexChar())
   {
     if (cThis == '\\')
       count++;
@@ -1628,49 +1454,13 @@ void CmdIgnoreLet(/*@unused@*/ int code)
   }
   if (cThis != '\\')
     numerror(ERR_EOF_INPUT);
-  /* ignore all following spaces */
- while (fTexRead(&cThis, 1,1,fTex) == 1)
-  {
-    if (cThis != ' ')
-      break;
-  }
-  if (cThis == ' ')
-    numerror(ERR_EOF_INPUT);
-  /* ignore till next space */
-  while (fread(&cThis, 1,1,fTex) == 1)
-  {
-    if (cThis == ' ')
-      break;
-  }
-  if ((cThis != ' ') && (cThis != '\n'))
-    numerror(ERR_EOF_INPUT);
-  /* seek back 1 */
-  rewind_one(); /* reread last character */
-}
-
-
-
-
-
-
-
-/******************************************************************************/
-void IgnoreNewCmd(/*@unused@*/ int code)
-/******************************************************************************
-     purpose : ignore \newcmd
-   parameter : code  not used 
-     globals : fTex
- ******************************************************************************/
-{
-  char cThis;
-  /* ignore till '{' */
-  if (fread(&cThis, 1,1,fTex) != 1)
-    numerror(ERR_EOF_INPUT);
-  rewind_one(); /* reread last character */
-  if (cThis == '\\')
-    CmdIgnoreDef(0);
-  else
-    CmdIgnoreParameter(No_Opt_Two_NormParam );
+    
+  skipSpaces();
+    
+  /* skip non-space characters */
+  while ((cThis=getTexChar()) && cThis != ' ');
+  
+  skipSpaces();
 }
 
 /*************************************************************************
@@ -1758,8 +1548,8 @@ CmdLabel(int code)
   char cThis;
 
   if (code < HYPER) {
-    text = GetParam();
-    rewind_one();
+    text = getParam();
+    rewind_one(text[strlen(text)-1]);   /*somewhat screwy */
   }
   else {
     text = hyperref;
@@ -1774,19 +1564,15 @@ CmdLabel(int code)
   
   if (code >= HYPER) free(text);
 
-  if ( (fread(&cThis,1,1,fTex) < 1))
-    numerror(ERR_EOF_INPUT);
-  while (cThis == ' ')
-    {
-      if ( (fread(&cThis,1,1,fTex) < 1))
-	numerror(ERR_EOF_INPUT);
-    }
-  if ( (fread(&cThis,1,1,fTex) < 1))
-    numerror(ERR_EOF_INPUT);
+  cThis = getTexChar();
+
+  cThis = getNonSpace();
+  
+  cThis = getTexChar();
+
   if (cThis != '\n')
-    rewind_one();
-  else
-    ++linenumber;
+    rewind_one(cThis);
+
   /*LEG190498*/
 }
 
@@ -1906,5 +1692,24 @@ void ConvertString(char *string)
 //  free(tmpname);
 }
 
+/******************************************************************************/
+void IgnoreNewCmd(/*@unused@*/ int code)
+/******************************************************************************
+     purpose : ignore \newcmd
+   parameter : code  not used 
+     globals : fTex
+ ******************************************************************************/
+{
+  char cThis;
+  
+/* ignore first '{' */
+  cThis = getTexChar();
+  rewind_one(cThis);
+  
+  if (cThis == '\\')
+    CmdIgnoreDef(0);
+  else
+    CmdIgnoreParameter(No_Opt_Two_NormParam );
+}
 
 

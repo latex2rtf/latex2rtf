@@ -1,22 +1,34 @@
 /*
- * $Id: ignore.c,v 1.9 2001/08/12 19:00:04 prahl Exp $
+ * $Id: ignore.c,v 1.10 2001/08/12 19:32:24 prahl Exp $
  * History:
  * $Log: ignore.c,v $
- * Revision 1.9  2001/08/12 19:00:04  prahl
- * 1.9e
- *         Revised all the accented character code using ideas borrowed from ltx2rtf.
- *         Comparing ltx2rtf and latex2rtf indicates that Taupin and Lehner tended to work on
- *         different areas of the latex->rtf conversion process.  Adding
- *         accented characters is the first step in the merging process.
+ * Revision 1.10  2001/08/12 19:32:24  prahl
+ * 1.9f
+ * 	Reformatted all source files ---
+ * 	    previous hodge-podge replaced by standard GNU style
+ * 	Compiles cleanly using -Wall under gcc
  *
- *         Added MacRoman font handling (primarily to get the breve accent)
- *         Now supports a wide variety of accented characters.
- *         (compound characters only work under more recent versions of word)
- *         Reworked the code to change font sizes.
- *         Added latex logo code from ltx2rtf
- *         Extracted character code into separate file chars.c
- *         Fixed bug with \sf reverting to roman
- *         Added two new testing files fontsize.tex and accentchars.tex
+ * 	added better translation of \frac, \sqrt, and \int
+ * 	forced all access to the LaTeX file to use getTexChar() or ungetTexChar()
+ * 	    allows better handling of %
+ * 	    simplified and improved error checking
+ * 	    eliminates the need for WriteTemp
+ * 	    potentially allows elimination of getLineNumber()
+ *
+ * 	added new verbosity level -v5 for more detail
+ * 	fixed bug with in handling documentclass options
+ * 	consolidated package and documentclass options
+ * 	fixed several memory leaks
+ * 	enabled the use of the babel package *needs testing*
+ * 	fixed bug in font used in header and footers
+ * 	minuscule better support for french
+ * 	Added testing file for % comment support
+ * 	Enhanced frac.tex to include \sqrt and \int tests also
+ * 	Fixed bugs associated with containing font changes in
+ * 	    equations, tabbing, and quote environments
+ * 	Added essential.tex to the testing suite --- pretty comprehensive test.
+ * 	Perhaps fix missing .bbl crashing bug
+ * 	Fixed ?` and !`
  *
  * Revision 1.7  1998/07/03 06:56:08  glehner
  * adde PARAMETER, PACKAGE, ENVCMD, ENVIRONMENT
@@ -122,8 +134,8 @@ ENVIRONMENT     ignores contentents of that environment
       ;
   else if (strcmp(RtfCommand,"PARAMETER")==0)
     CmdIgnoreParameter(No_Opt_One_NormParam);
-  else if (strcmp(RtfCommand,"LINE")==0)
-    IgnoreTo('\n');
+//  else if (strcmp(RtfCommand,"LINE")==0)
+//    skipToEOL();
   else if (strcmp(RtfCommand,"ENVIRONMENT")==0)
     {
       char *str;
@@ -154,20 +166,8 @@ globals : linenumber
  ****************************************************************************/
 void IgnoreVar(FILE *fTex)
 {
-  char dummy;
-  if(fread(&dummy,1,1,fTex) != 1)
-    diagnostics(ERROR,
-		"fread; ignore.c (IgnoreVar): unexpected EOF in LaTeX-file or read error");
-  if (dummy == '\n')
-      linenumber++;
-  do
-  {
-    if(fread(&dummy,1,1,fTex) != 1)
-      diagnostics(ERROR,
-		  "fread; ignore.c (IgnoreVar): unexpected EOF in LaTeX-file or read error");
-    if (dummy == '\n')
-	linenumber++;
-  } while ((dummy != ' ') && (dummy != '\n'));
+  char c;
+  while ( (c=getTexChar()) && c != '\n' && c != ' ') ;
 }
 
 
@@ -178,30 +178,8 @@ globals : linenumber
  ****************************************************************************/
 void IgnoreCmd(FILE *fTex)
 {
-  char dummy;
-  if(fread(&dummy,1,1,fTex) != 1)
-    diagnostics(ERROR,
-		"fread; ignore.c (IgnoreCmd): unexpected EOF in LaTeX-file or read error");
-  if (dummy == '\n')
-    linenumber++;
-  do
-  {
-    if(fread(&dummy,1,1,fTex) != 1)
-      diagnostics(ERROR,
-		  "fread; ignore.c (IgnoreCmd): unexpected EOF in LaTeX-file or read error");
-    if (dummy == '\n')
-      linenumber++;
-  } while (dummy != '\\');
-  do
-    {
-      if(fread(&dummy,1,1,fTex) != 1)
-	diagnostics(ERROR,
-		    "fread; ignore.c (IgnoreCmd): unexpected EOF in LaTeX-file or read error");
-      if (dummy == '\n')
-	linenumber++;
-    }
-  while (!isalpha((unsigned char) dummy));
-  if (dummy == '\n')
-    linenumber--;
-  rewind_one();
+  char c;
+  while ( (c=getTexChar()) && c != '\\') ;
+  while ( (c=getTexChar()) && !isalpha(c) ) ;
+  rewind_one(c);
 }

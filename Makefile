@@ -3,24 +3,36 @@
 # now use $(MAKE) instead of make
 # added test target
 # incorporated test directory into make process
-# $Id: Makefile,v 1.7 2001/08/12 19:00:04 prahl Exp $
+# $Id: Makefile,v 1.8 2001/08/12 19:32:24 prahl Exp $
 # History:
 # $Log: Makefile,v $
-# Revision 1.7  2001/08/12 19:00:04  prahl
-# 1.9e
-#         Revised all the accented character code using ideas borrowed from ltx2rtf.
-#         Comparing ltx2rtf and latex2rtf indicates that Taupin and Lehner tended to work on
-#         different areas of the latex->rtf conversion process.  Adding
-#         accented characters is the first step in the merging process.
+# Revision 1.8  2001/08/12 19:32:24  prahl
+# 1.9f
+# 	Reformatted all source files ---
+# 	    previous hodge-podge replaced by standard GNU style
+# 	Compiles cleanly using -Wall under gcc
 #
-#         Added MacRoman font handling (primarily to get the breve accent)
-#         Now supports a wide variety of accented characters.
-#         (compound characters only work under more recent versions of word)
-#         Reworked the code to change font sizes.
-#         Added latex logo code from ltx2rtf
-#         Extracted character code into separate file chars.c
-#         Fixed bug with \sf reverting to roman
-#         Added two new testing files fontsize.tex and accentchars.tex
+# 	added better translation of \frac, \sqrt, and \int
+# 	forced all access to the LaTeX file to use getTexChar() or ungetTexChar()
+# 	    allows better handling of %
+# 	    simplified and improved error checking
+# 	    eliminates the need for WriteTemp
+# 	    potentially allows elimination of getLineNumber()
+#
+# 	added new verbosity level -v5 for more detail
+# 	fixed bug with in handling documentclass options
+# 	consolidated package and documentclass options
+# 	fixed several memory leaks
+# 	enabled the use of the babel package *needs testing*
+# 	fixed bug in font used in header and footers
+# 	minuscule better support for french
+# 	Added testing file for % comment support
+# 	Enhanced frac.tex to include \sqrt and \int tests also
+# 	Fixed bugs associated with containing font changes in
+# 	    equations, tabbing, and quote environments
+# 	Added essential.tex to the testing suite --- pretty comprehensive test.
+# 	Perhaps fix missing .bbl crashing bug
+# 	Fixed ?` and !`
 #
 # Revision 1.21  1998/07/03 06:49:36  glehner
 # updated dependencies of multiple .o files
@@ -94,7 +106,7 @@
 # The Debian-specific parts of this Makefile are created by 
 # Erick Branderhorst. Parts are written by Ian Jackson and Ian Murdock.
 # TODO: add target "changes". 
-CC=cc    # C-Compiler 
+CC=gcc    # C-Compiler 
 CFLAGS=-g $(XCFLAGS) # Use -O here if you want it optimized
 COPY=cp
 INSTALL=install
@@ -153,6 +165,11 @@ LIBINSTALL=$(LIBDIR)
 BININSTALL=$(prefix)/bin
 MANINSTALL=$(prefix)/man/man1
 
+# It seems that MS Word allows different forms for the separator
+# used in the formula commands.  For US systems the default is
+# for FORMULASEP should be ',' in Germany and in perhaps other
+# European systems, it should be ';' 
+
 # The following should fix compatibility problems on some machines, you
 # may add the following option to XCFLAGS
 # -DHAS_NO_FPOS for SunOs 4.1.3 (Thanks to Ulrich Schmid schmid@dkrz.d400.de)
@@ -160,18 +177,27 @@ MANINSTALL=$(prefix)/man/man1
 # If you are using MSDOS, the environment separator ENVSEP shoud be
 # ';' and PATHSEP '\'.
 # If not specified it defaults to ':' and '/' (UNIX standard)
+#
+# It seems that MS Word allows different forms for the separator
+# used in the formula commands.  For US systems the default is
+# The default for FORMULASEP is ',' 
+# In Germany at least SEMICOLONSEP should be defined so that 
+# FORMULASEP becomes ';'
 
 # If your target/system has no getopt() function, use Vladimir Menkov's
 # instead, found in mygetopt.c.
 # Add -DHAS_NO_FPOS
 
+# If your system does not have strdup() defined in string.h
+# then you should add -DHAS_NO_STRDUP
+
 XCFLAGS=
-#XCFLAGS=-DENVSEP="':'"
-#XCFLAGS=-DPATHSEP="'/'"
 #XCFLAGS=-DENVSEP="';'"
 #XCFLAGS=-DPATHSEP="'\'"
+#XCFLAGS=-DSEMICOLONSEP
 #XCFLAGS=-DHAS_NO_FPOS
 #XCFLAGS=-DHAS_NO_GETOPT
+#XCFLAGS=-DHAS_NO_STRDUP
 
 # Sometimes additional system libraries are needed, they can be defined
 # here
@@ -193,7 +219,7 @@ TEST=   test/Makefile \
 	test/accentchars.tex test/array.tex test/cite.tex test/cite.bib \
 	test/eqns.tex test/fonts.tex test/fontsize.tex test/frac.tex \
 	test/list.tex test/logo.tex test/misc1.tex test/misc2.tex \
-	test/oddchars.tex test/tabular.tex
+	test/oddchars.tex test/tabular.tex test/percent.tex
 
 ARCH="`dpkg --print-architecture`"
 
