@@ -1,46 +1,40 @@
-\def\LaTeX{L\kern-.36em\raise.3ex\hbox{\textsc{a}}\kern-.15em\TeX}
-\def\LaTeXe{\LaTeX\kern.15em 2\boldmath${}_{\textstyle\varepsilon}$}
-\input texinfo	@c -*-texinfo-*-
+\input texinfo	
+@c -*-texinfo-*-
 @c %**start of header
 @setfilename latex2rtf.info
 @settitle LaTeX2rtf
 @setchapternewpage odd
+@tex
+\def\LaTeX{L\kern-.36em\raise.3ex\hbox{\textsc{a}}\kern-.15em\TeX}
+\def\LaTeXe{\LaTeX\kern.15em 2\boldmath${}_{\textstyle\varepsilon}$}
+@end tex
 @c %**end of header
 
-@macro latex{}
-@ifinfo
-LaTeX
-@end ifinfo
+@macro latex {}
 @iftex
-\LaTeX{}
+LaTeX{}
 @end iftex
-@ifhtml
+@ifnottex
 LaTeX
-@end ifhtml
+@end ifnottex
 @end macro
 
-@macro latexe{}
-@ifinfo
-LaTeX2e
-@end ifinfo
+@macro latexe {}
 @iftex
-\LaTeXe{}
+LaTeXe{}
 @end iftex
-@ifhtml
+@ifnottex
 LaTeX2e
-@end ifhtml
+@end ifnottex
 @end macro
 
-@macro l2r{}
-@ifinfo
-LaTeX2rtf
-@end ifinfo
+@macro l2r {}
 @iftex
-\LaTeX{}2RTF
+LaTeX{}2RTF
 @end iftex
-@ifhtml
-LaTeX2rtf
-@end ifhtml
+@ifnottex
+LaTeX2RTF
+@end ifnottex
 @end macro
 
 @ifinfo
@@ -112,8 +106,7 @@ This file documents @l2r{}, a converter from the @latex{} markup
 language for document typesetting into rtf, which does the same thing,
 but in another way and mood.
 
-@c This document applies to version ... of the program named
-@c @file{latex2rtf}
+@c This document applies to version 1.9j of latex2rf
 
 @end ifnottex
 
@@ -121,62 +114,45 @@ but in another way and mood.
 * History::                     
 * Introduction::                
 * Availability::                
-* Invoking_LaTeX2rtf::          
+* Invoking LaTeX2RTF::          
 * Features::                    
-* Configuring_LaTeX2rtf ::      
-* Error Messages and Logging of @l2r{}'s Activity ::  
-* @l2r{} under Development ::  
-* Index of Commandline and Configurationfile Options ::  
+* Configuring LaTeX2RTF ::      
+* Error Messages and Logging of LaTeX2RTF Activity ::  
+* LaTeX2RTF under Development ::  
+* Index of Commandline and Configuration file Options ::  
 * Concept Index    ::           
 @end menu
 
-@node     History, Introduction, Top, Top
+@node  History, Introduction, Top, Top
 @chapter History & Copyright
 @cindex History of the programm
 @cindex Copyright issues
 
 In 1994 the first Version of @l2r{} was written by a group of students of
-the Viena University supervised by Ralf Schlatterbeck. They took up a @latex{}
-parser and added most of the functionality to the program. In 1995 work
-continued with a second group of students. The result was @l2r{} Version
+the Viena University supervised by Ralf Schlatterbeck. They created a simple
+@latex{} parser and added most of the infrastructure for the program. This
+was version 1.0 of @l2r{}.  In 1995, work on @l2r{} was
+continued with a second group of students. The result was @l2r{} version
 1.5.
 
-In 1998 Georg Lehner jorge_lehner@@gmx.net found the reference to @l2r{} on
-the Textconversion webpage http://www.fz-juelich.de/isr/1/texconv.htm of
-Wilfried Hennings W.Hennings@@fz-juelich.de, added some functionality and took
+In 1998 @email{jorge_lehner@@gmx.net,Georg Lehner} found the reference to @l2r{} on
+the @uref{http://www.fz-juelich.de/isr/1/texconv.htm, TeX Conversion Webpage}  of
+@email{W.Hennings@@fz-juelich.de,Wilfried Hennings} and added some functionality and took
 over the maintainence of the program. Wilfried Hennings actually coordinates
-the development of the program and maintains the project on sourceforge http://
-sourceforge.net/projects/latex2rtf/ where there are also
+the development of the program and maintains the project on 
+@uref{http://sourceforge.net/projects/latex2rtf/,SourceForge} where there are also
 mailing lists for users
-latex2rtf-users@@lists.sourceforge.net
+@email{latex2rtf-users@@lists.sourceforge.net}
 and developers
-latex2rtf-developers@@lists.sourceforge.net.
+@email{latex2rtf-developers@@lists.sourceforge.net}.
 For subscription to these lists:
-mail_to_latex2rtf-users-request@@lists.sourceforge.net?subject=subscribe
+@email{mail_to_latex2rtf-users-request@@lists.sourceforge.net?subject=subscribe}
 or
-mail_to_latex2rtf-developers-request@@lists.sourceforge.net?subject=subscribe
+@email{mail_to_latex2rtf-developers-request@@lists.sourceforge.net?subject=subscribe}
 
-Meanwhile, version 1.9k is available, with a couple of bug-fixes and some
-enhancements for several document-classes/styles.
-
+As of October 2001, version 1.9k of @l2r{} is available. 
 Afterwards there shall be a jump to Version 2.0 with a complete redesign, but
 this is not history but future ...
-
-Copyright (C) 1994, Andreas Granzer & Fernando Dorner,
-1995 Friedrich Polzer & Gerhard Trisko,
-1998 Georg Lehner,
-2001 Georg Lehner & Scott Prahl
-This program is free software; you can redistribute it and/or modify it under
-the terms of the GNU General Public License as published by the Free Software
-Foundation; either version 2 of the License, or (at your option) any later
-version.
-
-This program is distributed in the hope that it will be useful, but WITHOUT ANY
-WARRANTY; without even the implied warranty of MERCHANT-ABILITY or FITNESS FOR
-A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-Note that this Copyright note only applies to the changes made to get the
-actual version. The older versions have their own Copyright policy stated in
-their distribution.
 
 The contents of this manual is composed by copying shamelessly what was
 available in the original sources and documentation.
@@ -185,39 +161,47 @@ available in the original sources and documentation.
 @node Introduction, Availability, History, Top
 @chapter  Introduction
 
-@l2r{} is a translator program from @latex{} text into the RTF format which is
-native to Microsoft Word and Word for Windows. RTF can be exported and/or
+@l2r{} is a translator program from @latex{} text into ``rich text format''
+files.  These files are commonly referred to  as RTF files and are published
+standard format by Microsoft.  This standard is somewhat ambiguous in places
+and Microsoft ignores various parts of the standard that are inconvenient, but
+RTF widely used by many WYSIWIG text editors and is supported by
+Microsoft Word and Word for Windows. RTF can be exported and/or
 imported by several textprocessors.
 
-The text and much of the formatting information is translated to RTF, making
-the new file look very similar to the original.
+@l2r{} translates the text and much of the formatting information from @latex{}
+to RTF, but the typeset output is not nearly as good as what you would get from
+using @latex{} directly.  So, why bother translating? There are three purposes:
 
-Now, for what do we need such a thing? There are three purposes:
 @enumerate
 @item
-      You use @latex{} and hate everything beginning with MS-... But you have to
-      send your documents to people which don't even now that there exist other
-      things than MS-...
+      You use @latex{} and hate everything beginning with MS-@enddots{} But you have to
+      share your documents to people which don't even now that there exist other
+      things than MS-@enddots{}
+      
 @item
-      You know somebody who sends you frecuently very fine @latex{}-documents. But
-      you are "on the other side" and need to import her files, steal some part
-      of them and Desktop-publish it with your fine MS-... environment.
+      You know somebody who frequently sends you very fine @latex{} documents. 
+      Unfortunately, you are ``on the other side'' and need to import her files, 
+      steal some part and then desktop publish it in your fine MS-@dots{} environment.
+      
 @item
-      You maybe have both things, @latex{} and MS-..., or you don't. But you like
+      You maybe have both things, @latex{} and MS-@dots{}, or you don't. But you like
       the way how @latex{} and friends work, and you don't want to type in a
-      letter to your friends with about 345 characters and end up with a `.doc'
-      file of 32,845 Byte. So you edit your documents either with edit.com or
-      edlin in the structured form that @latex{} encourages, and then you use
-      MS-..., or MS-...-Viewer or any other rtf-rendering Software to print out
-      your file.
+      letter to your friends with about 345 characters and end up with a @file{.doc}
+      file of 32,845 byte. So you edit your documents either with @file{edit.com} or
+      @file{edlin} in the structured form that @latex{} encourages, and then you use
+      MS-@dots{}, or MS-@dots{}-Viewer or any other RTF-rendering software to print out
+      your file.  Yes, this somewhat bizarre, but we are all somewhat bizarre, are
+      we not?
+      
 @end enumerate
 
-Nevertheless there are drawbacks in the conversion. In fact, don't expect any
-@latex{}-file to be converted like you want, don't expect it to be converted
-without errors or warnings, and: don't even expect it to be converted at all,
-since @l2r{} is at most at a very experimental stage. @l2r{} is known to
-have a lot of bugs. And they grow more and more each day. In fact we could
-state that there are some special cases, where a @latex{}-file can be translated
+There are drawbacks to the conversion process. In fact, don't expect any
+@latex{} file to be converted like you want, don't expect it to be converted
+without errors or warnings, and don't be especially surprised if it doesn't
+convert at all.  @l2r{} is known to have many bugs and many missing features.
+The number seems to grow more and more each day.  Nevertheless, we can categorically
+state that there are some special cases,  in which a @latex{} file will be translated
 to RTF satisfactorily by @l2r{} --- This was sort of disclaimer, ok? Ok!
 
 @latex{} is a system for typesetting text and therefore it focuses on the logical
@@ -225,79 +209,105 @@ structure of a document, whilst RTF is meant to be a transport format for a
 family of Desktop Publishing Software, dealing mostly with the design of a
 text.
 
-Although the posible different commands and styles in @latex{} are much more
-delimited and better standardized than in RTF, only a small subset of them is
-(yet) implemented. Look at See section Unimplemented_Features for more details.
+Although the possible different commands and styles in @latex{} are much more
+flexible and standardized than in RTF, only a small subset of commands has been
+implemented to date.  @xref{Unimplemented Features}.
 
-Some of the capabilities are restricted or buggy, see also See section Known
-Bugs.
+Some of the capabilities of @l2r{} are restricted in scope 
+or buggy.  @xref{Known Bugs}.
 
-RTF is a moving target, i.e. Microsoft(tm) does not stop to invent new
+RTF is a moving target, i.e., Microsoft does not stop inventing new
 extensions and features for it. So you cannot view newer RTF files with older
-word Processors. @l2r{} eventually will generate RTF-output that is
-unreadable with your Programm.
-
-Also the syntax and semantics are somewhat deliberate, i.e. you can generate a
-syntactically correct RTF file that cannot be displayed by some word
+word Processors.  @l2r{} eventually will generate RTF output that is
+unreadable with your Program.  The syntax and semantics of RTF are 
+somewhat artistic, i.e., you can generate a
+syntactically correct RTF file that cannot be displayed by some/most word
 processors.
 
 For more details on RTF look at the RTF-Tools by Paul DuBois, and the
-corresponding newsgroups, etc. http://www.primate.wisc.edu/
+corresponding newsgroups, etc. @uref{http://www.primate.wisc.edu/}
 
-@node Availability, Invoking_LaTeX2rtf, Introduction, Top
+@node Availability, Invoking LaTeX2RTF, Introduction, Top
 @chapter Availability
 
-@l2r{} is available for a lot of Unix Platforms, for Macintosh, and for MS-DOS, 
+@l2r{} is available for many Unix Platforms, for the Macintosh, and for MS-DOS, 
 including all versions of MS Windows 95.
 
-The MSDOS version (1.8aa and up) will also run under all MS Windows versions.
+The MS-DOS version (1.8aa and up) will also run under all MS Windows versions.
 It requires an i386 processor or better.
-The Win32 Version requires Cygnus-Cygwin32 (See http://sources.redhat.com/
-cygwin/). As the MSDOS version (1.8aa and up) will also run under all MS
-windows versions, the Win32 version is discontinued.
+The Win32 Version requires @uref{http://sources.redhat.com/cygwin/,Cygnus-Cygwin32}. 
+As the MS-DOS version (1.8aa and up) will also run under all MS
+windows versions, the Win32 version has been discontinued.
 
-You find the latest version on sourceforge http://sourceforge.net/projects/
-latex2rtf/ and -- with some delay -- on CTAN sites: e.g. http://www.dante.de or
-http://www.ctan.org.
+You find the latest version on @uref{http://sourceforge.net/projects/latex2rtf/,SourceForge}
+and -- with some delay -- on CTAN sites: e.g., @uref{http://www.dante.de} or
+@uref{http://www.ctan.org}.
 
 There are a couple of persons working on the @l2r{}-revival, coordinated by
-Wilfried Hennings W.Hennings@@fz-juelich.de.
+@email{W.Hennings@@fz-juelich.de, Wilfried Hennings}.
 Contact the mailing_list for the latest news.
 
-@node Invoking_LaTeX2rtf, Features, Availability, Top
-@chapter Invoking_LaTeX2rtf
+@node Invoking LaTeX2RTF, Features, Availability, Top
+@chapter Invoking LaTeX2RTF
 
 The @l2r{} command converts a @latex{} file into RTF text format. The text and
 much of the formatting information is translated to RTF making the new file
-look very similar to the original.
+look similar to the original.  The command line syntax is:
 
-The command line syntax is:
-latex2rtf [-options] [inputfile].tex
+@example
+latex2rtf [-options] inputfile.[tex]
+@end example
 
-See section Missing_and_Faulty_command_line_options for actual implementations
-irregularities.
+The @code{-options} may consist of one or more of the following
 
-The `-V' option prints version information on standard output and exits.
+@table @code
+@item -a auxfile
+specify an @file{.aux} file (for table and figure references) that differs from
+@file{inputfile.aux}. If this is
+omitted, the name of the inputfile with the suffix replaced `.aux' will be
+taken.
 
-The `-l' option enables you to convert ISO 8859-1 (Latin-1) special characters
-in the @latex{} source.
+@item -V 
+prints version information on standard output and exits.
 
-The `-l' option requires a language as an option.  All languages listed in the
+@item -C codepage
+used to specify the character set (code page) used in the @latex{} document. 
+This is only important when non-ansi characters are included in the @latex{}
+document.
+Typically this is done in a @latexe{} file by using
+@example
+\usepackage[codepage]@{inputenc@}
+@end example
+This command is not needed if the above command is already in the @latexe{}
+file.  You may select any of the following code pages:
+ansinew, applemac, cp437, cp437de, cp850, cp852, cp865, decmulti, cp1250, 
+cp1252, latin1, latin2, latin3, latin4, latin5, latin9, and next.  Support
+for the Eastern European codepages is pretty weak at the moment.  The default
+behavior is to use ansinew (code page 1252).
+
+@item -l language
+used to set the language used by the @latex{} document.  Typically, this is 
+specified in a @latexe{} document by including
+@example
+\usepackage[language]@{babel@}
+@end example
+where @code{language} is one of the languages supported by the @code{babel}
+package.   THis All languages listed in the
 babel system are supported so far as translations for ``Chapter,'' ``References,''
 and the like.  Specific support for specific options of the german style
 package are explictly supported.  The french translated names are found in the
-@file(french.cfg) file in the @file(cfg/) directory.
+@file{french.cfg} file in the @file{cfg/} directory.
 
+@item -d
 The `-d' option determines the amount of debugging information to send to
 stderr while translating. `0' means only Errors, `1' Warning Messages
 (default) also.  These numbers can go as high as `7'.
+@end table
 
 Unless an outputfile is specified with the `-o' option, the resulting RTF is
 produced on standard output.
 
-You can specify an auxfile (for citations) with the `-a' option. If this is
-omitted, the name of the inputfile with the suffix replaced `.aux' will be
-taken.
+
 
 The `.aux'-file is needed for cross-references and citations. You have to
 provide both, the `.tex'- and the `.aux'-file to be able to convert @latex{}-files
@@ -311,22 +321,22 @@ If inputfile is not specified, standard input is read.
 
 User defined @latex{} commands are ignored. If you are familiar with the RTF
 format and the commands can be translated by simply inserting a format string
-into the RTF file you can add these commands to the direct.cfg configuration
-file. See section `direct.cfg' for a format description.
+into the RTF file you can add these commands to the @file{direct.cfg} configuration
+file.  @xref{Direct Conversion Configuration}.
 
 To correctly convert font names you must edit the fonts.cfg configuration file.
 
 You have to specify the font names you use and how the @latex{} default font names
-should be converted to RTF. See format description inf section `fonts.cfg'.
+should be converted to RTF.  @xref{Font Configuration}.
 @latex{} variables and user defined commands are not evaluated. They will be
 simply ignored. To let @l2r{} know the names of variables you can add them
-in the ignore.cfg file. See section `ignore.cfg' for a format description.
+in the @file{ignore.cfg} file.  @xref{Ignore Command Configuration}.
 
 The language dependent sectioning names can be redefined to meet the idiom of
-the @latex{} document. See See section `language.cfg' for a description.
+the @latex{} document.  @xref{Language Configuration}.
 
 The environment variable RTFPATH may contain a search path for the support
-files (all files ending in .cfg). If no file is found during the search in the
+files (all files ending in @file{.cfg}). If no file is found during the search in the
 search-path or if the environment variable is not set, the compiled-in default
 for the configuration-file directory is used. If the files are not found at all
 the program aborts.
@@ -340,9 +350,12 @@ CAUTION: Please make sure that the input file is a correct @latex{} file. Use
 does not properly handle all errors caused by corrupt input files.
 
 Make sure that the configuration files are in the correct directory. @l2r{}
-will need at least `fonts.cfg', `direct.cfg', `ignore.cfg', `english.cfg'.
-You may have to change one ore more of them to suit your needs, see section
-Configuring_LaTeX2rtf for details.
+will need at least @file{fonts.cfg}, @file{direct.cfg}, @file{ignore.cfg}, @file{english.cfg}.
+You may have to change one ore more of them to suit your needs.
+@xref{Configuring LaTeX2RTF}.
+
+@xref{Missing and faulty command line options}, for actual implementations
+irregularities.
 
 See See section Reporting_Bugs on how to reach the maintainer.
 
@@ -352,7 +365,7 @@ See See section Reporting_Bugs on how to reach the maintainer.
 * Languages::                   
 @end menu
 
-@node Verbosity, Isolatin, Invoking_LaTeX2rtf, Invoking_LaTeX2rtf
+@node Verbosity, Isolatin, Invoking LaTeX2RTF, Invoking LaTeX2RTF
 @section Verbosity
 
 
@@ -380,14 +393,14 @@ Warnings and Errors are logged to stderr always.
 	  Show processing of characters as they are output as well
 @end enumerate
 
-@node Isolatin, Languages, Verbosity, Invoking_LaTeX2rtf
+@node Isolatin, Languages, Verbosity, Invoking LaTeX2RTF
 @section Isolatin
 
 It is not necesary to specify the -l option if you use \usepackage@{isolatin1@}
 or \documentstyle[isolatin1]@{...@}. @l2r{} automagically detects this
 packages/style options and switches to processing of ISO-Latin1 codes.
 
-@node Languages,  , Isolatin, Invoking_LaTeX2rtf
+@node Languages,  , Isolatin, Invoking LaTeX2RTF
 @section Languages
 
 Do not append the `.cfg' suffix to the idiom parameter to -i switch. If you
@@ -399,10 +412,10 @@ german, spanish. If you specify \usepackage or a documentstyle option with one
 of these idioms @l2r{} automagically loads the correct language file and you
 can omit the -l switch.
 
-See See section `language.cfg' for details on how to write a `idiom.cfg' file
+@xref{Language Configuration}, for details on how to write a `idiom.cfg' file
 for your language by yourself.
 
-@node Features, Configuring_LaTeX2rtf , Invoking_LaTeX2rtf, Top
+@node Features, Configuring LaTeX2RTF , Invoking LaTeX2RTF, Top
 @chapter Features
 
 
@@ -422,18 +435,17 @@ correctly to RTF.
 @node  Support for the Hyperlatex Style, LaTeX2e, Features, Features
 @section Support for the Hyperlatex Style
 
-Otfried Schwarzkopf has created the "Hyperlatex Markup Language" which is a
-"little package that allows you to use @latex{} to prepare documents in HTML."\/.
+Otfried Schwarzkopf has created the ``Hyperlatex Markup Language'' which is a
+``little package that allows you to use @latex{} to prepare documents in HTML.''
 It brings an Emacs lisp program with it to convert the Hyperlatex file to HTML.
 Hyperlatex can be obtained from the CTAN-sites, see section Availability.
 There are two handsome commands that avoid typing: \link and \xlink that
-generate an "internal" label which then is used in the following \Ref and
+generate an ``internal'' label which then is used in the following \Ref and
 \Pageref commands.
 
 @latex{} makes it possible to write `\link@{anchor@}[ltx]@{label@}', which typesets:
 `anchor ltx'. @l2r{} does NOT support this aproach since the optional
-parameter is thrown away right now, see section LaTeX2rtf_under_Development for
-details.
+parameter is thrown away right now, @xref{LaTeX2RTF under Development}.
 
 Note that you have to update your `.cfg' files if you are upgrading, since
 there are a lot of HTML oriented commands in Hyperlatex that we simply can
@@ -460,9 +472,8 @@ please notify us (section Reporting_Bugs), to include support for it.
 @node Cross References, Pagestyles, Character encoding, Features
 @section Cross References
 
-If RTF version 1.1 is chosen (see section Missing_and_Faulty_command_line
-options) \label, \ref, and \pageref commands from @latex{} are translated to
-hidden text in the RTF file. This makes it possible to correctly edit the
+If RTF version 1.1 is chosen  \label, \ref, and \pageref commands from @latex{} are translated to
+hidden text in the RTF file.  (@xref{Missing and faulty command line options}.) This makes it possible to correctly edit the
 resulting file in the target word processor. If RTF version 1.4 (or higher) is
 chosen, crossreference updating is automated by the RTF reader.
 
@@ -486,41 +497,41 @@ Note that these features require RTF Version 1.4.
 `References', `Bibliography' and `Abstract' if it encounters a `german' or
 `spanish' package or documentstyle option.
 
-The other fixed sectioning titles ("Table of Contents" and the like) are not
+The other fixed sectioning titles (``Table of Contents'' and the like) are not
 yet needed, because @l2r{} does not handle these @latex{} features.
 
-See See section Missing_and_Faulty_command_line_options for information on
+@xref{Missing and faulty command line options}, for information on
 other languages.
 
 Encountering the `german' package or documentstyle option (by H.Partl of the
 Viena University) makes @l2r{} behave like that: German Quotes, German
 Umlauts by `"a', etc. ...
 
-@node Configuring_LaTeX2rtf , Error Messages and Logging of LaTeX2rtf's Activity , Features, Top
-@chapter Configuring_LaTeX2rtf 
+@node Configuring LaTeX2RTF , Error Messages and Logging of LaTeX2RTF Activity , Features, Top
+@chapter Configuring LaTeX2RTF 
 
 @menu
 * Input_processing ::           
 * Output_formatting ::          
-* `direct.cfg' ::               
-* `ignore.cfg' ::               
-* `fonts.cfg' ::                
-* `language.cfg' ::             
+* Direct Conversion Configuration ::               
+* Ignore Command Configuration ::               
+* Font Configuration ::                
+* Language Configuration ::             
 @end menu
 
-@node Input_processing , Output_formatting , Configuring_LaTeX2rtf , Configuring_LaTeX2rtf
+@node Input_processing , Output_formatting , Configuring LaTeX2RTF , Configuring LaTeX2RTF
 @section Input_processing 
 
 On processing input @l2r{} first converts the @latex{} special characters. If
 it encounters one of the standard commands it is converted internally. If a
 command is not known to @l2r{} it is first looked up in the section
-`direct.cfg' and the RTF code specified there is output. If not found there it
-is looked up in the section `ignore.cfg', since there are a lot of @latex{}
+@file{direct.cfg} and the RTF code specified there is output. If not found there it
+is looked up in the section @file{ignore.cfg}, since there are a lot of @latex{}
 commands that do not show up in the .dvi output (cross reference information
 and the like), or that we are not able or willing to convert to rtf.
 
-You can use `ignore.cfg' if you get bored to see "WARNING: command: foo not
-found - ignored" and you don't need `foo' in your Word(R) document, but it
+You can use @file{ignore.cfg} if you get bored to see ``WARNING: command: foo not
+found - ignored'' and you don't need `foo' in your Word(R) document, but it
 would be nice to send me the offending command to include it in the
 distributions configuration files.
 
@@ -530,12 +541,11 @@ and \r).
 Optionally the input is interpreted as iso-latin1 encoded, section Character
 encoding.
 
-@node Output_formatting , `direct.cfg' , Input_processing , Configuring_LaTeX2rtf
+@node Output_formatting , Direct Conversion Configuration , Input_processing , Configuring LaTeX2RTF
 @section Output_formatting 
 
 Since the RTF-Readers normally have their own mood of typesetting and font
-handling we have to convert the @latex{} fonts to RTF fontnames. This is handled
-by the file section `fonts.cfg'.
+handling we have to convert the @latex{} fonts to RTF fontnames.   @xref{Font Configuration}.
 
 If you have information about adequate font mappings from Metafont to TrueType
 fonts please send me a note, so I can improve the resemblence beetween @latex{}
@@ -549,8 +559,8 @@ The standard @latex{} styles have some fixed Title names like `Part', `Reference
 or `Bibliography' that appeared in English or German in the output with the
 original versions of @l2r{}.
 
-Now you can determine what should appear at this places with an appropiate
-section `language.cfg' file.
+Now you can determine what should appear at this places with an appropriate
+section @file{language.cfg} file.
 Actually I grep-ed the descriptions out of the `babel' files from teTeX to
 supply english, german and spanish translations.
 
@@ -560,8 +570,8 @@ from or to MSDOS platforms the line ending code can be converted to \r\n. As
 this should also be legal to any RTf-Reader the resulting RTF-rendering should
 not be affected.
 
-@node `direct.cfg' , `ignore.cfg' , Output_formatting , Configuring_LaTeX2rtf
-@section `direct.cfg' 
+@node Direct Conversion Configuration , Ignore Command Configuration , Output_formatting , Configuring LaTeX2RTF
+@section Direct Conversion Configuration 
 
 The file direct.cfg is used for converting @latex{} commands by simple text
 replacement. The format consists of lines with a @latex{} command with backslash
@@ -571,12 +581,12 @@ starting with a '#' character are ignored. After the '.' everything is ignored
 to end of line. To select a specific font use *fontname*. Make sure that the
 font name fontname is listed in the fonts configuration file at least as dummy.
 
-To write the '*' character use "**". example:
+To write the '*' character use ``**''. example:
 `\alpha,@{\f*Symbol* a@}. #alpha under Windows Symbol Font'
 `\copyright,@{\ansi\'a9\pc@}.'
 
-@node `ignore.cfg' , `fonts.cfg' , `direct.cfg' , Configuring_LaTeX2rtf
-@section `ignore.cfg' 
+@node Ignore Command Configuration , Font Configuration , Direct Conversion Configuration , Configuring LaTeX2RTF
+@section Ignore Command Configuration 
 
 The file ignore.cfg is used for defining how to ignore certain commands. This
 file is used for recognition of @latex{}-variables, user defined variables, and
@@ -617,10 +627,10 @@ with a '#' character are ignored. After the '.' everything is ignored to end of
 line. Example:
 `\pagelength,MEASURE.'
 
-@node `fonts.cfg' , `language.cfg' , `ignore.cfg' , Configuring_LaTeX2rtf
-@section `fonts.cfg' 
+@node Font Configuration , Language Configuration , Ignore Command Configuration , Configuring LaTeX2RTF
+@section Font Configuration 
 
-The file `fonts.cfg' contains the fonts conversion table. A line consists of a
+The file @file{fonts.cfg} contains the fonts conversion table. A line consists of a
 font name in @latex{} followed by comma and a font name in RTF. The end is marked
 by a '.'. No spaces are allowed. The @latex{} font will be converted to the RTF
 font if encountered in the @latex{} file. If multi- ple translations for a @latex{}
@@ -637,14 +647,14 @@ Make sure you use the correct font name. Take care of spaces in font names. The
 default fonts are named Roman (command \rm), Slanted (command \sl), Sans Serif
 (command \sf), Typewriter (command \tt).
 
-@node `language.cfg' ,  , `fonts.cfg' , Configuring_LaTeX2rtf
-@section `language.cfg' 
+@node Language Configuration , Error Messages and Logging of LaTeX2RTF Activity , Font Configuration , Configuring LaTeX2RTF
+@section Language Configuration 
 
-The file(s) `language.cfg' control the traduction of @latex{}'s "hardcoded"
+The file(s) @file{language.cfg} control the traduction of @latex{}'s ``hardcoded''
 sectioning names.
 
-I have put in what I found whith grep "\renewcommand" * in the @latex{} style
-directory (teTex, babel), the tokens have the "name" stripped of and are all
+I have put in what I found whith grep ``\renewcommand'' * in the @latex{} style
+directory (teTex, babel), the tokens have the ``name'' stripped of and are all
 uppercase i.e. `\contentsname' mutes to `CONTENTS'. Actually @l2r{} uses
 only REF and PART.
   CONTENTS
@@ -671,12 +681,11 @@ only REF and PART.
        Abstract.
 
 Actually there is an english, a french, a german and a spanish Version. You are
-welcome contribute with `language.cfg' files in other idioms to include them in
-the distribution. Send them to Jorge.Lehner@@gmx.net or W.Hennings@@fz-
-juelich.de.
+welcome contribute with @file{language.cfg} files in other idioms to include them in
+the distribution. Send them to @email{Jorge.Lehner@@gmx.net} or @email{W.Hennings@@fz-juelich.de}.
 
-@node Error Messages and Logging of @l2r{}'s Activity , LaTeX2rtf under Development , Configuring_LaTeX2rtf , Top
-@chapter Error Messages and Logging of @l2r{}'s Activity 
+@node Error Messages and Logging of LaTeX2RTF Activity , LaTeX2RTF under Development , Configuring LaTeX2RTF , Top
+@chapter Error Messages and Logging of LaTeX2RTF Activity 
 
 Note: Error reporting and logging is one of the most chaotic aspects of the
 program. There are a lot of inconsistencies, but I hope to get it cleaner with
@@ -702,27 +711,27 @@ Error and Warning messages should follow the GNU Coding standards, i.e. they
 have the format:
 ``inputfile':line: Error|Warning: message'
 
-Note: Neither the inputfile may be correctly announced if @code(\input)ing it, nor
+Note: Neither the inputfile may be correctly announced if @code{\input}ing it, nor
 can you rely on the linenumber, see section Known_Bugs.
 
 The other messages only indicate `filename' (sometimes wrong) and linenumber
 (also sometimes wrong) and some more or less usefull or interesting message.
 
-Don't try to encounter any sense in Verbosity levels above 3, these are for my
+Don't try to encounter any sense in debugging levels above 3, these are for my
 own delight only and can change significantly between versions.
 
-@node @l2r{} under Development , Index of Commandline and Configurationfile Options , Error Messages and Logging of @l2r{}'s Activity , Top
-@chapter @l2r{} under Development 
+@node LaTeX2RTF under Development , Index of Commandline and Configuration file Options , Error Messages and Logging of LaTeX2RTF's Activity , Top
+@chapter LaTeX2RTF under Development 
 
 @menu
 * Unimplemented Features ::     
-* Missing and Faulty command line options ::  
+* Missing and faulty command line options ::  
 * Known Bugs ::                 
 * Reporting Bugs ::             
 * Todo List ::                  
 @end menu
 
-@node Unimplemented Features , Missing and Faulty command line options , LaTeX2rtf under Development , LaTeX2rtf under Development
+@node Unimplemented Features, Missing and faulty command line options , LaTeX2RTF under Development , LaTeX2RTF under Development
 @section Unimplemented Features 
 
 @itemize @bullet
@@ -733,7 +742,7 @@ own delight only and can change significantly between versions.
       codepages,...).
 @item Add the code to produce the corresponding chapter, section informations
       and page numbering with headings and myheadings pagestyles. Implement
-      @code(\markboth) and @code(\markright).
+		  @code{\markboth} and @code{\markright}.
 @item To include the tableofcontents there would be two approaches: Transfer
       sectioning information, title text and let produce pagenumber by the rtf-
       reader. Scan and label all of the sectioning commands while reading and
@@ -752,14 +761,15 @@ Here comes a list of @latex{}-commands that are not implemented:
 `setlength, bigcap, dag, ddag, sharp, clubsuit, sim, nobreak, vspace, today,
 left-((, right-))'
 
-@node Missing and Faulty command line options , Known Bugs , Unimplemented Features , LaTeX2rtf under Development
-@section Missing and Faulty command line options 
+@node Missing and faulty command line options, Known Bugs, Unimplemented Features , LaTeX2RTF under Development
+@section Missing and faulty command line options 
 
 In this section you find comments about missing and buggy command line options.
   `-V'
        The Version information output is not compatible with the GNU Coding
       Standards.
-  `-v'
+
+  `-d'
        Information logging and Error reporting is not implemented consistently.
       So do expect confusing Messages and inconsistent format. The linenumber
       and filename of the offending spot in the input in the most cases is not
@@ -767,21 +777,23 @@ In this section you find comments about missing and buggy command line options.
   `'
        There should be an option to intersperse RTF-Output with the @latex{}-input
       that produced it to have a better hand for debugging.
+      
   `-o'
        Actually you must specify an output filename. Maybe further on the
       meaning of this option changes, as writing `-o filename' takes more
       typework then `> filename'. Either you may specify the name, or you must
       not do it, depending on whether we choose to use GNU getopt or not.
-  `-l'
-       There is only one coding scheme for the input file, ISO-Latin1.
+
   `-q'
        There should be a `-q' (quiet) option, to suppress Warning Messages. By
-      now this can be achieved by the -v 0 option.
+      now this can be achieved by the -d0 option.
+      
   `-rmajor.minor'
        There should be an option that restrict the generation of RTF code with
       version greater than major,minor. Actually this is done at compile time.
-      There are some Warning messages if "newer" RTF Code is generated, but it
+      There are some Warning messages if ``newer'' RTF Code is generated, but it
       is not consistent at all.
+      
   `-h'
        The default values for search pathes and switches changeable by
       commandlineoptions should be shown.
@@ -794,10 +806,11 @@ formatting.
 It would be useful to implement the GNU long option names, e.g.: `--verbosity',
 `--output_file', `--quiet', etc.
 
-@node Known Bugs , Reporting Bugs , Missing and Faulty command line options , LaTeX2rtf under Development
+@node Known Bugs , Reporting Bugs , Missing and faulty command line options , LaTeX2RTF under Development
 @section Known Bugs 
 
-   1. The first parameter of a \link@{anchor@}[ltx]@{label@} is converted to the
+@enumerate
+@item The first parameter of a \link@{anchor@}[ltx]@{label@} is converted to the
       rtf-output. Label is stored to hyperref for later use, the optional
       parameter is ignored. [ltx] should be processed as Otfried recommends it,
       to use for exclusive @latex{} output.e.g: \link@{readhere@}[~\Ref]@{explaining:
@@ -805,29 +818,30 @@ It would be useful to implement the GNU long option names, e.g.: `--verbosity',
       when [...] is evaluated it produces the correct reference. @l2r{} is
       only strolling from left to right through the text and can't remember
       what she will see in the future.
-   2. The optional argument of \item[...] in the description environment is
+@item The optional argument of \item[...] in the description environment is
       converted to isolatin1 if applicable, but not @latex{} converted. Try `\item
       [Best~Friends]'.
-   3. The \section* command is accepted, but as I don't know how to produce a
+@item The \section* command is accepted, but as I don't know how to produce a
       section without numbering it in rtf it does precisly this: print a
       section number.
-   4. CmdLabel can generate rtf1.4 Page references and Bookmarks, but Section
+@item CmdLabel can generate rtf1.4 Page references and Bookmarks, but Section
       References only with restrictions: The section reference copies the
       information of the `.aux' file to a locked rtf field. The better way
       would be, to include the section text in a bookmark if there is a label
       following, and write the bookmark with the label name, since then Word
       could update the section information.
-   5. The diagnostics routine does not output the correct (actual)
-      inputfilename. (`.aux', `.bbl', @code(\input)).
-   6. The @@l2r@{@} macro of this document does NOT produce the correct @latex{}-
+@item The diagnostics routine does not output the correct (actual)
+      inputfilename. (`.aux', `.bbl', @code{\input}).
+@item The @@l2r@{@} macro of this document does NOT produce the correct @latex{}-
       Logo. Somebody can send me a correct version, and for @latexe{} also?!
-   7. To provide the end-of-line-code features a "cleaned up" temporary file is
+@item To provide the end-of-line-code features a ``cleaned up'' temporary file is
       written and then read in as inputfile. This gets us into other troubles
-      with input redirection and @code(\input) or @code(\include)ed @latex{}-files. This
+      with input redirection and @code{\input} or @code{\include}ed @latex{}-files. This
       procedure is meant as a temporary means to provide this functionality and
       will be removed in the future.
+@end enumerate
 
-@node Reporting Bugs , Todo List , Known Bugs , LaTeX2rtf under Development
+@node Reporting Bugs , Todo List , Known Bugs , LaTeX2RTF under Development
 @section Reporting Bugs 
 
 Report bugs to Jorge.Lehner@@gmx.net (Georg Lehner). Ralf Schlatterbeck is no
@@ -856,7 +870,7 @@ Be patient with me. I am maintaining the program in my free time. I did not
 write most of the code. Often I do not have the time to answer to your
 question. I will, however, try to fix reported bugs in upcoming releases.
 
-@node Todo List ,  , Reporting Bugs , LaTeX2rtf under Development
+@node Todo List ,  , Reporting Bugs , LaTeX2RTF under Development
 @section Todo List 
 
     * Make this Manual more consistent, the Todo and Known Bug List shorter and
@@ -881,8 +895,8 @@ question. I will, however, try to fix reported bugs in upcoming releases.
       this should change to a CVS (or RCS) version tag from which a version.h
       file should automatically be generated).
 
-@node Index of Commandline and Configuration file Options, Concept Index, LaTeX2rtf under Development , Top
-@chapter Index of Commandline and Configurationfile Options 
+@node Index of Commandline and Configuration file Options, Concept Index, LaTeX2RTF under Development , Top
+@chapter Index of Commandline and Configuration file Options 
 
 Jump to:  - - - a - c - e - f - i - l - m - n - o - p - r - s - t - v
 ***** - *****
@@ -929,7 +943,7 @@ Jump to:  - - - a - c - e - f - i - l - m - n - o - p - r - s - t - v
 ***** v *****
     * Verbosity levels
 
-@node Concept Index    ,  , Index of Commandline and Configurationfile Options , Top
+@node Concept Index    ,  , Index of Commandline and Configuration file Options , Top
 @unnumbered Concept Index
 
 @printindex cp
