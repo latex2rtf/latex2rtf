@@ -61,10 +61,8 @@ CmdNonumber(int code)
 /******************************************************************************
  purpose   : Handles \nonumber to suppress numbering in equations
  ******************************************************************************/
-{
-	int mode = GetTexMode();
-	
-	if (mode == MODE_MATH || mode == MODE_DISPLAYMATH)
+{	
+	if (g_processing_eqnarray || !g_processing_tabular)
 		g_suppress_equation_number = TRUE;
 }
 
