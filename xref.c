@@ -54,13 +54,14 @@ CmdFootNote(int code)
  params : code specifies whether it is a footnote or a thanks-mark
  ******************************************************************************/
 {
-	char           *number;
+	char           *number, *text;
 	static int      thankno = 1;
 	int             text_ref_upsize, foot_ref_upsize;
 	int				DefFont = DefaultFontFamily();
 	
 	diagnostics(4,"Entering ConvertFootNote");
 	number = getBracketParam();	/* ignored by automatic footnumber generation */
+	text = getBraceParam();
 
 	if (number) free(number);
 	text_ref_upsize = (int) (0.8 * CurrentFontSize());
@@ -86,9 +87,10 @@ CmdFootNote(int code)
 			break;
 	}
 
-	Convert();
-	diagnostics(4,"Exiting CmdFootNote");
+	ConvertString(text);
 	fprintRTF("}\n ");
+	diagnostics(4,"Exiting CmdFootNote");
+	free(text);
 }
 
 void 
