@@ -394,6 +394,12 @@ The other fix is now hardcoded in latex2rt.exe, making sure the DOS environment
 space in which latex2pn.bat is executed is large enough to store the needed 
 variables.
 
+If you get the message "Out of environment space" (should occur only under plain
+DOS, Windows 3.1, Windows 95, Windows 98 or Windows ME) then@*
+add to your config.sys a line like the following@*
+@code{SHELL=C:\COMMAND.COM C:\ /E:4096 /P}@*
+or, if there already is such a line, modify it so that it supplies a 
+sufficiently large environment space @code{/E:}
 
 @node Win32 systems, Macintosh, DOS or Windows, Installation
 @section Win32 systems
