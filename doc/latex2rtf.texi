@@ -120,7 +120,6 @@ but in another way and mood.
 * Error Messages and Logging of LaTeX2RTF Activity ::  
 * LaTeX2RTF under Development ::  
 * Index of Commandline and Configuration file Options ::  
-* Concept Index    ::           
 @end menu
 
 @node  History, Introduction, Top, Top
@@ -324,7 +323,7 @@ format and the commands can be translated by simply inserting a format string
 into the RTF file you can add these commands to the @file{direct.cfg} configuration
 file.  @xref{Direct Conversion Configuration}.
 
-To correctly convert font names you must edit the fonts.cfg configuration file.
+To correctly convert font names you must edit the @file{fonts.cfg} configuration file.
 
 You have to specify the font names you use and how the @latex{} default font names
 should be converted to RTF.  @xref{Font Configuration}.
@@ -403,7 +402,7 @@ packages/style options and switches to processing of ISO-Latin1 codes.
 @node Languages,  , Isolatin, Invoking LaTeX2RTF
 @section Languages
 
-Do not append the `.cfg' suffix to the idiom parameter to -i switch. If you
+Do not append the @file{.cfg} suffix to the idiom parameter to -i switch. If you
 specify an idiom that does not exist in the search path for configuration files
 as described above the program aborts.
 
@@ -412,7 +411,7 @@ german, spanish. If you specify \usepackage or a documentstyle option with one
 of these idioms @l2r{} automagically loads the correct language file and you
 can omit the -l switch.
 
-@xref{Language Configuration}, for details on how to write a `idiom.cfg' file
+@xref{Language Configuration}, for details on how to write a @file{language.cfg} file
 for your language by yourself.
 
 @node Features, Configuring LaTeX2RTF , Invoking LaTeX2RTF, Top
@@ -447,7 +446,7 @@ generate an ``internal'' label which then is used in the following \Ref and
 `anchor ltx'. @l2r{} does NOT support this aproach since the optional
 parameter is thrown away right now, @xref{LaTeX2RTF under Development}.
 
-Note that you have to update your `.cfg' files if you are upgrading, since
+Note that you have to update your @file{.cfg} files if you are upgrading, since
 there are a lot of HTML oriented commands in Hyperlatex that we simply can
 `ignore'.
 
@@ -573,7 +572,7 @@ not be affected.
 @node Direct Conversion Configuration , Ignore Command Configuration , Output_formatting , Configuring LaTeX2RTF
 @section Direct Conversion Configuration 
 
-The file direct.cfg is used for converting @latex{} commands by simple text
+The file @file{direct.cfg} is used for converting @latex{} commands by simple text
 replacement. The format consists of lines with a @latex{} command with backslash
 followed by comma. The rest of the line until a '.' character will be written
 to the RTF file when the command is recognized in the @latex{} file. Lines
@@ -588,7 +587,7 @@ To write the '*' character use ``**''. example:
 @node Ignore Command Configuration , Font Configuration , Direct Conversion Configuration , Configuring LaTeX2RTF
 @section Ignore Command Configuration 
 
-The file ignore.cfg is used for defining how to ignore certain commands. This
+The file @file{ignore.cfg} is used for defining how to ignore certain commands. This
 file is used for recognition of @latex{}-variables, user defined variables, and
 some simple commands. All variables are ignored but the converter must know the
 names to correctly ignore assignments to variables. Lines in this file consist
@@ -602,30 +601,32 @@ variable followed by '.'. Possible Types are:
        numeric value with following unit of measure
 @item OTHER
        ignores anything to the first character after '=' and from there to next
-      space. eg. \setbox\bak=\hbox
+      space. e.g., @code{\setbox\bak=\hbox}
 @item COMMAND
        ignores anything to next '\' and from there to the occurence of anything
-      but a letter. eg. \newbox\bak
+      but a letter e.g., @code{\newbox\bak}
 @item  SINGLE
-       ignore single command. eg. \noindent
+       ignore single command e.g., @code{\noindent}
 @item  PARAMETER
-       ignores a command with one paramter, eg. \foo@{bar@}
+       ignores a command with one parameter e.g., @code{\foo@{bar@}}
 @item PACKAGE
-       does not produce a Warning message if PACKAGE is encountered, eg.
+       does not produce a Warning message if PACKAGE is encountered, e.g.,
       `PACKAGE,kleenex.'
 @item ENVCMD
        proceses contents of unknown environment as if it were plain @latex{} eg.
-      `ENVCMD,iflatex.' treats: `\begin@{iflatex@} text \end@{iflatex@} ' as
+      `ENVCMD,environ.' Therefore @code{\begin@{environ@} text \end@{environ@}}' as
       `text'.
 @item ENVIRONMENT
        ignores contents of that environment, e.g., with `ENVIRONMENT,ifhtml.'
-      `\begin@{ifhtml@} text \end@{ifhtml@} ' ignores `text'.
+      @code{\begin@{ifhtml@} text \end@{ifhtml@}} ignores `text'.
 @end table
 
 The types are in upper case exactly as above. Do not use spaces. Lines starting
 with a '#' character are ignored. After the '.' everything is ignored to end of
 line. Example:
-`\pagelength,MEASURE.'
+@example
+\pagelength,MEASURE.'
+@end example
 
 @node Font Configuration , Language Configuration , Ignore Command Configuration , Configuring LaTeX2RTF
 @section Font Configuration 
@@ -639,7 +640,7 @@ not in this file will be mapped to the default font. All RTF fonts listed in
 this file will be in every RTF file header whether used or not. Lines starting
 with a '#' character are ignored. After the '.' everything is ignored to end of
 line. To add a RTF font not used as substitute for a @latex{} font - for example a
-Symbol font used in direct.cfg - use a dummy @latex{} name like in the following
+Symbol font used in @file{direct.cfg} --- use a dummy @latex{} name like in the following
 example:
 `Dummy3,MathematicalSymbols.'
 
@@ -647,7 +648,7 @@ Make sure you use the correct font name. Take care of spaces in font names. The
 default fonts are named Roman (command \rm), Slanted (command \sl), Sans Serif
 (command \sf), Typewriter (command \tt).
 
-@node Language Configuration , Error Messages and Logging of LaTeX2RTF Activity , Font Configuration , Configuring LaTeX2RTF
+@node Language Configuration ,  , Font Configuration , Configuring LaTeX2RTF
 @section Language Configuration 
 
 The file(s) @file{language.cfg} control the traduction of @latex{}'s ``hardcoded''
@@ -684,7 +685,7 @@ Actually there is an english, a french, a german and a spanish Version. You are
 welcome contribute with @file{language.cfg} files in other idioms to include them in
 the distribution. Send them to @email{Jorge.Lehner@@gmx.net} or @email{W.Hennings@@fz-juelich.de}.
 
-@node Error Messages and Logging of LaTeX2RTF Activity , LaTeX2RTF under Development , Configuring LaTeX2RTF , Top
+@node Error Messages and Logging of LaTeX2RTF Activity ,  , Configuring LaTeX2RTF , Top
 @chapter Error Messages and Logging of LaTeX2RTF Activity 
 
 Note: Error reporting and logging is one of the most chaotic aspects of the
@@ -702,7 +703,7 @@ of information it put's out on stderr.
       always abort the program. They are thrown on conditions that do not allow
       further converting of the input file, but should be either documented as
       missing or unimplemented feature, or should be able to be corrected by
-      the user (e.g. missing `.cfg' files).
+      the user (e.g. missing @file{.cfg} files).
   Warning messages
       inform you, that there is some conversion loss from @latex{} to RTF, or that
       the output file has some restrictions on some RTF Readers.
@@ -720,7 +721,7 @@ The other messages only indicate `filename' (sometimes wrong) and linenumber
 Don't try to encounter any sense in debugging levels above 3, these are for my
 own delight only and can change significantly between versions.
 
-@node LaTeX2RTF under Development , Index of Commandline and Configuration file Options , Error Messages and Logging of LaTeX2RTF's Activity , Top
+@node LaTeX2RTF under Development ,  ,  , Top
 @chapter LaTeX2RTF under Development 
 
 @menu
@@ -844,7 +845,7 @@ It would be useful to implement the GNU long option names, e.g.: `--verbosity',
 @node Reporting Bugs , Todo List , Known Bugs , LaTeX2RTF under Development
 @section Reporting Bugs 
 
-Report bugs to Jorge.Lehner@@gmx.net (Georg Lehner). Ralf Schlatterbeck is no
+Report bugs to @email{Jorge.Lehner@@gmx.net,Georg Lehner)}. Ralf Schlatterbeck is no
 longer the maintainer and will forward all mails refering @l2r{} to me.
 
 Please give the following information and observe the following guidelines when
@@ -873,29 +874,40 @@ question. I will, however, try to fix reported bugs in upcoming releases.
 @node Todo List ,  , Reporting Bugs , LaTeX2RTF under Development
 @section Todo List 
 
-    * Make this Manual more consistent, the Todo and Known Bug List shorter and
+@itemize @bullet
+@item  Make this Manual more consistent, the Todo and Known Bug List shorter and
       the Features List longer.
-    * Harmonize all of the error and warning messages.
-    * Put warnings everwhere aplicable about producing RTF 1.4 tokens.
-    * Provide a Testsuite.
-    * Be more specific about implementing on Unix Platforms.
-    * Provide an Error and Warning recovery guide to the user.
-    * Explain details of the MSDOS executable in a separate chapter.
-    * Add a chapter with lists of all @latex{} commands that convert, and that do
+@item  Harmonize all of the error and warning messages.
+@item  Put warnings everwhere aplicable about producing RTF 1.4 tokens.
+@item  Provide a Testsuite.
+@item  Be more specific about implementing on Unix Platforms.
+@item  Provide an Error and Warning recovery guide to the user.
+@item  Explain details of the MS-DOS executable in a separate chapter.
+@item  Add a chapter with lists of all @latex{} commands that convert, and that do
       not convert to RTF, including their status (for future releases, never,
       partially functional, ...).
-    * The following comes from Ralf: - Redesign the input routines -> do not
-      use lseek -> then the program can read from pipes. - Change the Makefile
-      to use default rules for generating .o files. Also use generic rules in
-      some other places (clean target) - For ignored commands the number of
-      arguments to ignore should also be given - Environment definition
-      produced with \newtheorem should be supported - Move version control
-      archive (currently RCS) to CVS. - Change how the current version is
+@item  The following comes from Ralf: 
+		@enumerate 
+		@item Redesign the input routines to not
+      use lseek so that @l2r{} can read from pipes. 
+      @item Change the Makefile
+      to use default rules for generating .o files. 
+      @item Also use generic rules in
+      some other places (clean target) 
+      @item For ignored commands the number of
+      arguments to ignore should also be given 
+      @item Environment definition
+      produced with @code{\newtheorem} should be supported 
+      @item Move version control
+      archive (currently RCS) to CVS. 
+      @item  Change how the current version is
       computed (currently version.h defines the version of the whole package
       this should change to a CVS (or RCS) version tag from which a version.h
       file should automatically be generated).
+      @end enumerate
+@end itemize
 
-@node Index of Commandline and Configuration file Options, Concept Index, LaTeX2RTF under Development , Top
+@node Index of Commandline and Configuration file Options, , , Top
 @chapter Index of Commandline and Configuration file Options 
 
 Jump to:  - - - a - c - e - f - i - l - m - n - o - p - r - s - t - v
@@ -942,9 +954,6 @@ Jump to:  - - - a - c - e - f - i - l - m - n - o - p - r - s - t - v
     * TABLE
 ***** v *****
     * Verbosity levels
-
-@node Concept Index    ,  , Index of Commandline and Configuration file Options , Top
-@unnumbered Concept Index
 
 @printindex cp
 
