@@ -555,12 +555,12 @@ CmdAlign(int code)
 }
 
 void 
-CmdToday( /* @unused@ */ int code)
+CmdToday(int code)
 /******************************************************************************
-    purpose: converts the LaTeX-date-command into a Rtf-chdate-command which
-	     prints the current date into an document
+    purpose: converts LaTeX \today into RTF \chdate
  ******************************************************************************/
 {
+	SetTexMode(MODE_HORIZONTAL);
 	fprintRTF("\\chdate ");
 }
 
@@ -580,6 +580,7 @@ CmdLdots( /* @unused@ */ int code)
  globals : fRtf
  ******************************************************************************/
 {
+	SetTexMode(MODE_HORIZONTAL);
 	fprintRTF("...");
 }
 
