@@ -427,6 +427,8 @@ static CommandArray PreambleCommands[] = {
     {"theendnotes", CmdTheEndNotes, 0},
     {"euro", CmdEuro, 0},
     {"EUR", CmdEuro, 1},
+    {"celsius", CmdDegreeCelsius},
+    {"degreecelsius", CmdDegreeCelsius},
     {"resizebox", CmdResizeBox, 0},
     {"resizebox*", CmdResizeBox, 1},    
     {"", NULL, 0}

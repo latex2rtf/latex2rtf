@@ -1251,11 +1251,10 @@ void CmdCyrillicChar(int code)
         fprintRTF("\\\'%.2X", code);
 }
 
-void CmdCyrillicStrChar(char *s)
-
 /******************************************************************************
  * purpose : insert cyrillic character into RTF stream
  * ******************************************************************************/
+void CmdCyrillicStrChar(char *s)
 {
     int n;
 
@@ -1268,4 +1267,12 @@ void CmdCyrillicStrChar(char *s)
         fprintRTF("{\\f%d\\\'%s}", n, s);
     else                        /* already using Cyrillic Font */
         fprintRTF("\\\'%s", s);
+}
+
+/******************************************************************************
+ * purpose : \celcius and \degreecelsius from SIUnits.sty
+ * ******************************************************************************/
+void CmdDegreeCelsius(int code) 
+{
+  fprintRTF("\\'b0C");
 }
