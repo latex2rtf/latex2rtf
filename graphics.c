@@ -1,4 +1,4 @@
-/* $Id: graphics.c,v 1.13 2002/05/05 18:11:41 prahl Exp $ 
+/* $Id: graphics.c,v 1.14 2002/05/05 19:37:30 prahl Exp $ 
 This file contains routines that handle LaTeX graphics commands
 */
 
@@ -76,12 +76,12 @@ typedef struct _EnhancedMetaHeader
 	unsigned long	RecordType;		/* Record type (always 0x00000001)*/
 	unsigned long	RecordSize;		/* Size of the record in bytes */
 	long			BoundsLeft;		/* Left inclusive bounds */
-	long			BoundsRight;	/* Right inclusive bounds */
 	long			BoundsTop;		/* Top inclusive bounds */
+	long			BoundsRight;	/* Right inclusive bounds */
 	long			BoundsBottom;	/* Bottom inclusive bounds */
 	long			FrameLeft;		/* Left side of inclusive picture frame */
-	long			FrameRight;		/* Right side of inclusive picture frame */
 	long			FrameTop;		/* Top side of inclusive picture frame */
+	long			FrameRight;		/* Right side of inclusive picture frame */
 	long			FrameBottom;	/* Bottom side of inclusive picture frame */
 	unsigned long	Signature;		/* Signature ID (always 0x464D4520) */
 	unsigned long	Version;		/* Version of the metafile */
@@ -365,10 +365,11 @@ PutEmfFile(char *s)
 	if (fp == NULL) return;
 
 /* extract size information*/
+	if (fread(&RecordType,4,1,fp)  != 1) goto out;
 	if (fread(&RecordSize,4,1,fp)  != 1) goto out;
 	if (fread(&BoundsLeft,4,1,fp)  != 1) goto out;
-	if (fread(&BoundsRight,4,1,fp) != 1) goto out;
 	if (fread(&BoundsTop,4,1,fp)   != 1) goto out;
+	if (fread(&BoundsRight,4,1,fp) != 1) goto out;
 	if (fread(&BoundsBottom,4,1,fp)!= 1) goto out;
 	if (fread(&FrameLeft,4,1,fp)   != 1) goto out;
 	if (fread(&FrameRight,4,1,fp)  != 1) goto out;
@@ -378,20 +379,21 @@ PutEmfFile(char *s)
 
 	if (!g_little_endian) {
 		RecordType   = LETONL(RecordType);
-		BoundsLeft   = LETONS(BoundsLeft);
-		BoundsRight  = LETONS(BoundsRight);
-		BoundsTop    = LETONS(BoundsTop);
-		BoundsBottom = LETONS(BoundsBottom);
-		FrameLeft    = LETONS(FrameLeft);
-		FrameRight   = LETONS(FrameRight);
-		FrameTop     = LETONS(FrameTop);
-		FrameBottom  = LETONS(FrameBottom);
-		Signature    = LETONS(Signature);
+		RecordSize   = LETONL(RecordSize);
+		BoundsLeft   = LETONL(BoundsLeft);
+		BoundsTop    = LETONL(BoundsTop);
+		BoundsRight  = LETONL(BoundsRight);
+		BoundsBottom = LETONL(BoundsBottom);
+		FrameLeft    = LETONL(FrameLeft);
+		FrameRight   = LETONL(FrameRight);
+		FrameTop     = LETONL(FrameTop);
+		FrameBottom  = LETONL(FrameBottom);
+		Signature    = LETONL(Signature);
 	}
 
 	if (RecordType != 1 || Signature != 0x464D4520) goto out;
-	height = abs(BoundsTop-BoundsBottom);
-	width = abs(BoundsLeft-BoundsRight);
+	height = BoundsBottom-BoundsTop;
+	width  = BoundsRight-BoundsLeft;
 	
 	w = (unsigned long)( 100000.0*width  )/ ( 20* POINTS_PER_M );
 	h = (unsigned long)( 100000.0*height )/ ( 20* POINTS_PER_M );
@@ -407,7 +409,7 @@ PutEmfFile(char *s)
 	return;
 
 out:
-	diagnostics(WARNING,"Problem with file %s --- not included");
+	diagnostics(WARNING,"Problem with file %s --- not included",s);
 	fclose(fp);
 }
 
@@ -480,7 +482,7 @@ PutWmfFile(char *s)
 	return;
 
 out:
-	diagnostics(WARNING,"Problem with file %s --- not included");
+	diagnostics(WARNING,"Problem with file %s --- not included",s);
 	fclose(fp);
 }
 
