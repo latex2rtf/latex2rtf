@@ -1,6 +1,3 @@
-Bugs:
-	Fix equation numbering for eqnarray environments
-
 Fit & Finish:
 
 	Improve spacing before and after \section etc.

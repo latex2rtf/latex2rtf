@@ -1,3 +1,209 @@
+2002-04-01 22:16  prahl
+
+ Split bitmap version of eqnarray environment into pieces so that each equation
+	numbering would be correct
+	
+2002-04-01 07:21  prahl
+
+ Fix regression in figure and table numbering
+	Expand font and source depths
+	
+2002-03-31 20:54  prahl
+
+ Updating ToDo
+	
+2002-03-31 20:41  prahl
+
+ More cross-referencing fixes
+	
+2002-03-31 12:17  prahl
+
+ Fixes to cross referencing.
+	
+2002-03-31 09:13  prahl
+
+ Updated documentation
+	Fixed a subtle bug in handling of \item
+	Improved line number reporting
+	Improved handling of latex2rtf dir/before/file.tex
+	
+2002-03-25 07:45  prahl
+
+ Adding batch file to convert latex to png.  Written by Wilfried.
+	
+2002-03-25 07:43  prahl
+
+ Changes to getTmpPath for DOS/MACOS
+	
+2002-03-25 07:35  prahl
+
+ Wilfried's changes to README.DOS
+	
+2002-03-20 20:56  prahl
+
+ Added -H option to latex2png.  Removed -t option
+	
+2002-03-20 19:43  prahl
+
+ Update ToDo
+	Downsize equations so that width and height do not exceed 32767 twips
+	This is a Word bug.
+	Move some equation graphics stuff to graphics.c
+	remove legacy l2r.bat
+	remove l2r.bat from Makefile
+	Start of fix for eqnarray's with referenced equation numbers
+	
+2002-03-19 08:17  prahl
+
+ Portability enhancements for DOS.
+	Removing SEMICOLONSEP stuff
+	
+2002-03-19 07:23  prahl
+
+ Add script/latex2png to the Makefile
+	
+2002-03-18 21:36  prahl
+
+ Added some comments to main Makefile
+	Remove proffois.tex from routine tests ... awaiting multicol implementation
+	Removed some debugging comments from parser.c
+	Changed test/Makefile to use cfg files in current distribution
+	
+2002-03-17 22:45  prahl
+
+ Quick change to misc4.tex to make the error go away.  Need to add
+	item to ToDo list to make getTexUtil handle % correctly when raw
+	characters are being read
+	
+2002-03-17 22:31  prahl
+
+ Previous fix for getSection was to severe.  This allows sections to be
+	slurped one-at-a-time again.  Still have a parsing problem with misc4
+	
+2002-03-17 17:38  prahl
+
+ Yet more portability fixes to the Makefile
+	We no longer rely on install
+	
+2002-03-17 13:05  prahl
+
+ Yet more fixes to get reported linenumbers in synch
+	
+2002-03-17 11:05  prahl
+
+ Separate .c and .h files in Makefile
+	
+2002-03-17 10:42  prahl
+
+ Fixes to improve reporting line numbers
+	Major overhaul of main Makefile
+	Move latex2rtf.1 to doc directory
+	Create latex2png in scripts directory (will be standard script installed)
+	Various fixes to the texinfo documentation
+	Newest makeinfo --html creates directory and Makefile needed to adapt
+	New target in Makefile to install info file
+	New Makefile permits non-root installations
+	
+2002-03-16 21:09  prahl
+
+ removing debian files per Chris Lawrence the current debian maintainer
+	who says they are in "the ancient 1.0 packaging format"
+	Updates to the man page to describe new functionality
+	
+2002-03-16 08:08  prahl
+
+ LaTeX fixes to encoding files so that they are processed correctly by
+	pdflatex.  Thanks to Peter Dyballa for figuring out the correct preamble
+	
+2002-03-15 21:12  prahl
+
+ Fix so that png files get processed correctly.
+	
+2002-03-15 08:52  prahl
+
+ Fix bug in cross-references
+	Improve error handling in the latex2png scripts so that old .png
+	files are not inserted erroneously
+	
+2002-03-14 22:00  prahl
+
+ Fix for \input in preamble with filename ending in .tex
+	added hsize and lettersize to length commands
+	expanded getdimension to handle to80pt or spread50in
+	
+2002-03-14 08:39  prahl
+
+ Fix errors when parsing test/essential.tex and test/misc4.tex
+	
+2002-03-13 23:21  prahl
+
+ Improvements to the way that temporary directories are used.
+	latex2rtf now uses the directory specified on the command line
+	if that is absent, then the directory specified by TMPDIR is used,
+	if that is absent, the directory "/tmp" is used.
+	
+2002-03-13 22:50  prahl
+
+ Eliminate unnecessary subshell in shell script
+	
+2002-03-13 22:42  prahl
+
+ Added function to determine endianness of machine
+	Added macros to convert little endian ints to network order
+	Added code to convert sizes of graphics files on little endian machines
+	Fixed typo in error message in cfg.c
+	Added font encoding to enc_applemac.tex
+	Added \textunderscore to direct.cfg
+	Fixed stderr to allow redirection.
+	Removed logfile stuff
+	Removed errfile
+	
+2002-03-11 22:42  prahl
+
+ Fixed bus error when RTFPATH is not defined
+	Fixed bug in diagnostics() when an error was reported
+	Fixed bug in diagnostics() when closing an unopened file
+	Improved error message when latex2rtf cannot open .cfg files
+	Added verbage to latex2rtf.texi about stdin/stdout redirection
+	
+2002-03-11 07:58  prahl
+
+ Fixes for -h option
+	
+2002-03-11 07:45  prahl
+
+ Documentation updates.
+	Updated help using -h
+	
+2002-03-10 21:40  prahl
+
+ Update ToDo
+	
+2002-03-10 21:28  prahl
+
+ Support for \begin{picture} ... \end{picture}
+	New test file
+	
+2002-03-10 20:41  prahl
+
+ More equation to bitmap improvements.
+	Added global flags for inline_rtf and display_rtf for equation conversion.
+	Fixed bugs in handling of \over
+	
+2002-03-10 11:08  prahl
+
+ adding these files to scripts directory
+	
+2002-03-10 11:05  prahl
+
+ Adding imaging scripts to scripts directory
+	
+2002-03-10 11:02  prahl
+
+ Update version.h to 1.9.13
+	Updated ChangeLog
+	Fixes to equation number for bitmap equations
+	
 2002-03-10 08:36  prahl
 
  Moving scripts to script directory
@@ -753,10 +959,8 @@
 
  Revised fonts.cfg, removed Ferdsch, now set the default font correctly
 	and begun the process of eliminating the $Log: ChangeLog,v $
-	and begun the process of eliminating the Revision 1.13  2002/03/10 19:02:12  prahl
-	and begun the process of eliminating the Update version.h to 1.9.13
-	and begun the process of eliminating the Updated ChangeLog
-	and begun the process of eliminating the Fixes to equation number for bitmap equations
+	and begun the process of eliminating the Revision 1.14  2002/04/02 06:37:53  prahl
+	and begun the process of eliminating the More updates before 1.9.13 release
 	and begun the process of eliminating the comments in files.
 	
 2001-08-12 14:15  prahl
