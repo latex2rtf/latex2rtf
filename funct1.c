@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.61 2002/03/02 20:16:28 prahl Exp $ 
+/* $Id: funct1.c,v 1.62 2002/03/11 15:58:37 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -1420,9 +1420,6 @@ CmdIgnoreEnviron(int code)
 	if (code & ON) {
 	
 		switch (code & ~(ON)) {
-			case IGNORE_PICTURE:
-				endtag = strdup("\\end{picture}");
-				break;
 			
 			case IGNORE_MINIPAGE:
 				endtag = strdup("\\end{minipage}");
