@@ -816,6 +816,9 @@ purpose: opens "g_home_dir/path"  and
 
 	diagnostics(3,"Opening <%s>, mode=[%s]",path,mode);
 	
+	if (path == NULL || mode == NULL)
+		return(NULL);
+
 	if (g_home_dir==NULL)
 		name = strdup(path);
 	else
