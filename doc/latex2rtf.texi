@@ -462,8 +462,8 @@ The @option{-d} option determines the amount of debugging information to send to
 stderr while translating. `0' means only Errors, `1' Warning Messages
 (default) also.  These numbers can go as high as `7'.
 
-@item -l language
-used to set the language used by the @latex{} document.  Typically, this
+@item -i language
+used to set the idiom or language used by the @latex{} document.  Typically, this
 is specified in a @latexe{} document by including
 @code{\usepackage[language]@{babel@}} where @code{language} is one of
 the languages supported by the @code{babel} package.   All languages
@@ -472,6 +472,11 @@ listed in the babel system are supported so far as translations for
 specific options of the german style package are explictly supported. 
 The french translated names are found in the @file{french.cfg} file in
 the @file{cfg/} directory.  @xref{Language Configuration}.
+
+@item -l
+same as @option{-i latin1} (Note that the default behavior is to use @option{ansinew}
+which is a superset of @option{latin1}). Included for
+backwards compatibility.
 
 @item -o outputfile
 Unless an @file{outputfile} is specified with the @code{-o} option, the resulting RTF 
@@ -487,12 +492,17 @@ Typically this is done in a @latexe{} file by using
 This command is not needed if the above command is already in the @latexe{}
 file.  You may select any of the following code pages:
 ansinew, applemac, cp437, cp437de, cp850, cp852, cp865, decmulti, cp1250, 
-cp1252, latin1, latin2, latin3, latin4, latin5, latin9, and next.  Support
-for the Eastern European codepages is pretty weak at the moment.  The default
+cp1252, latin1, latin2, latin3, latin4, latin5, latin9, and next.  The default
 behavior is to use ansinew (code page 1252).
 
 @item -V 
 prints version information on standard output and exits.
+
+@item -W
+includes warnings directly in the RTF file
+
+@item -Z
+suppresses the extra @code{@}@}@}@}@}} added at the end of the RTF file
 
 @end table
 
