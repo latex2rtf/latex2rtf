@@ -801,7 +801,11 @@ parameter: code: type of section-recursion-level
 		free(g_section_label); 
 		g_section_label = NULL;
 	}
-	CmdIndent(INDENT_NONE);
+	
+	if (FrenchMode)
+		CmdIndent(INDENT_USUAL);
+	else
+		CmdIndent(INDENT_NONE);
 }
 
 
