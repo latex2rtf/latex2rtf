@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.48 2002/02/17 17:08:30 prahl Exp $ */
+/* $Id: main.c,v 1.49 2002/02/17 21:32:21 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -110,7 +110,7 @@ globals: initializes in- and outputfile fRtf,
 
 	progname = argv[0];
 	optind = 1;
-	while ((c = getopt(argc, argv, "lhSvVWZ:o:a:b:d:i:M:P:T:")) != EOF) {
+	while ((c = getopt(argc, argv, "lhvSVWZ:o:a:b:d:i:C:M:P:T:")) != EOF) {
 		switch (c) {
 		case 'a':
 			AuxName = optarg;
