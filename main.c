@@ -188,6 +188,10 @@ int main(int argc, char **argv)
 			diagnostics(WARNING, "Math option g_equation_display_bitmap= %d",g_equation_display_bitmap);
 			diagnostics(WARNING, "Math option g_equation_inline_bitmap = %d",g_equation_inline_bitmap);
 			diagnostics(WARNING, "Math option g_equation_comment	   = %d",g_equation_comment);
+			if (!g_equation_comment && !g_equation_inline_rtf && !g_equation_inline_bitmap)
+				g_equation_inline_rtf=TRUE;
+			if (!g_equation_comment && !g_equation_display_rtf && !g_equation_display_bitmap)
+				g_equation_display_rtf=TRUE;
 			break;
 		case 'P':
 			g_config_path = strdup(optarg);
