@@ -1,3 +1,4 @@
+
 /* direct.c - Convert simple LaTeX commands using direct.cfg 
 
 Copyright (C) 1995-2002 The Free Software Foundation
@@ -35,72 +36,72 @@ Authors:
 #define MAXFONTLEN 100
 
 void WriteFontName(const char **buffpoint)
+
 /******************************************************************************
   purpose: reads the fontname at buffpoint and writes the appropriate font
            number into the RTF stream.  This supports the *FONTNAME* syntax
            found in direct.cfg and in style.cfg
  ******************************************************************************/
 {
-	char	fontname[MAXFONTLEN + 1];
-	int		i;
-	int		fnumber;
-	const char    *buff;
-	
-	(*buffpoint)++; /* move past initial '*' */
-	
-	buff = *buffpoint;
-	if (**buffpoint == '*') {
-		fprintRTF("*");
-		return;
-	}
-	
-	i = 0;
-	while (**buffpoint != '*') {
-		if ((i >= MAXFONTLEN) || (**buffpoint == '\0')) 
-			diagnostics(ERROR, "No terminating '*' in font name\nFound in cfg file command <%s>",buff);
-		
-		fontname[i] = **buffpoint;
-		i++;
-		(*buffpoint)++;
-	}
-	
-	fontname[i] = '\0';
-	fnumber = RtfFontNumber(fontname);
-	
-	if (fnumber< 0) 
-		diagnostics(ERROR,"Unknown font <%s>\nFound in cfg file command <%s>",fontname,buff);
-	else
-		fprintRTF("%u", (unsigned int) fnumber);
+    char fontname[MAXFONTLEN + 1];
+    int i;
+    int fnumber;
+    const char *buff;
+
+    (*buffpoint)++;             /* move past initial '*' */
+
+    buff = *buffpoint;
+    if (**buffpoint == '*') {
+        fprintRTF("*");
+        return;
+    }
+
+    i = 0;
+    while (**buffpoint != '*') {
+        if ((i >= MAXFONTLEN) || (**buffpoint == '\0'))
+            diagnostics(ERROR, "No terminating '*' in font name\nFound in cfg file command <%s>", buff);
+
+        fontname[i] = **buffpoint;
+        i++;
+        (*buffpoint)++;
+    }
+
+    fontname[i] = '\0';
+    fnumber = RtfFontNumber(fontname);
+
+    if (fnumber < 0)
+        diagnostics(ERROR, "Unknown font <%s>\nFound in cfg file command <%s>", fontname, buff);
+    else
+        fprintRTF("%u", (unsigned int) fnumber);
 }
 
-bool
-TryDirectConvert(char *command)
+bool TryDirectConvert(char *command)
+
 /******************************************************************************
   purpose: uses data from direct.cfg to try and immediately convert some
            LaTeX commands into RTF commands.  
  ******************************************************************************/
 {
-	const char     *buffpoint;
-	const char     *RtfCommand;
-	char           *TexCommand;
+    const char *buffpoint;
+    const char *RtfCommand;
+    char *TexCommand;
 
-	TexCommand = strdup_together("\\",command);
-	RtfCommand = SearchRtfCmd(TexCommand, DIRECT_A);
-	if (RtfCommand == NULL)
-		return FALSE;
+    TexCommand = strdup_together("\\", command);
+    RtfCommand = SearchRtfCmd(TexCommand, DIRECT_A);
+    if (RtfCommand == NULL)
+        return FALSE;
 
-	buffpoint = RtfCommand;
-	diagnostics(4, "Directly converting %s to %s", TexCommand, RtfCommand);
-	while (buffpoint[0] != '\0') {
-		if (buffpoint[0] == '*') 
-			WriteFontName(&buffpoint);
-		else
-			fprintRTF("%c", *buffpoint);
+    buffpoint = RtfCommand;
+    diagnostics(4, "Directly converting %s to %s", TexCommand, RtfCommand);
+    while (buffpoint[0] != '\0') {
+        if (buffpoint[0] == '*')
+            WriteFontName(&buffpoint);
+        else
+            fprintRTF("%c", *buffpoint);
 
-		++buffpoint;
+        ++buffpoint;
 
-	}
-	free(TexCommand);
-	return TRUE;
+    }
+    free(TexCommand);
+    return TRUE;
 }
-

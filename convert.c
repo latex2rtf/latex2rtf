@@ -1,3 +1,4 @@
+
 /* convert.c - high level routines for LaTeX to RTF conversion
 
 Copyright (C) 2002 The Free Software Foundation
@@ -67,499 +68,498 @@ correctly, as well as vertical and horizontal space.
 #include "counters.h"
 #include "preamble.h"
 
-static void     TranslateCommand();	/* converts commands */
+static void TranslateCommand(); /* converts commands */
 
-static int    ret = 0;
+static int ret = 0;
 static int g_TeX_mode = MODE_VERTICAL;
 
-char TexModeName[7][25] = {"bad", "internal vertical", "horizontal", 
-                        "restricted horizontal", "math", "displaymath","vertical"};
+char TexModeName[7][25] = { "bad", "internal vertical", "horizontal",
+    "restricted horizontal", "math", "displaymath", "vertical"
+};
 
 void SetTexMode(int mode)
 {
-	if (abs(mode) != g_TeX_mode) 
-		diagnostics(4, "TeX mode changing from [%s] -> [%s]", TexModeName[g_TeX_mode], TexModeName[abs(mode)]);
-		
-	if (mode < 0) {         /* hack to allow CmdStartParagraph to set mode directly */
-		g_TeX_mode = -mode;
-		return;
-	}
+    if (abs(mode) != g_TeX_mode)
+        diagnostics(4, "TeX mode changing from [%s] -> [%s]", TexModeName[g_TeX_mode], TexModeName[abs(mode)]);
 
-	if (g_TeX_mode == MODE_VERTICAL && mode == MODE_HORIZONTAL) 
-		CmdStartParagraph(ANY_PAR);
-	
-	if (g_TeX_mode == MODE_HORIZONTAL && mode == MODE_VERTICAL)
-		CmdEndParagraph(0);
+    if (mode < 0) {             /* hack to allow CmdStartParagraph to set mode directly */
+        g_TeX_mode = -mode;
+        return;
+    }
 
-	g_TeX_mode = mode;
+    if (g_TeX_mode == MODE_VERTICAL && mode == MODE_HORIZONTAL)
+        CmdStartParagraph(ANY_PAR);
+
+    if (g_TeX_mode == MODE_HORIZONTAL && mode == MODE_VERTICAL)
+        CmdEndParagraph(0);
+
+    g_TeX_mode = mode;
 }
 
 int GetTexMode(void)
 {
-	return g_TeX_mode;
+    return g_TeX_mode;
 }
 
-void 
-ConvertString(char *string)
+void ConvertString(char *string)
+
 /******************************************************************************
      purpose : converts string in TeX-format to Rtf-format
  ******************************************************************************/
 {
-	char            temp[256];
-	
-	if (string==NULL) return;
-	
-	if (strlen(string)<250)
-		strncpy(temp,string,250);
-	else {
-		strncpy(temp,string,125);
-		strncpy(temp+125,"\n...\n", 5);
-		strncpy(temp+130,string+strlen(string)-125,125);
-		temp[255] = '\0';
-	}
-	
-	if (PushSource(NULL, string) == 0) {
-		diagnostics(4, "Entering Convert() from StringConvert()\n******\n%s\n*****",temp);
-	
-		while (StillSource())
-			Convert();
-			
-		PopSource();
-		diagnostics(4, "Exiting Convert() from StringConvert()");
-	}
+    char temp[256];
+
+    if (string == NULL)
+        return;
+
+    if (strlen(string) < 250)
+        strncpy(temp, string, 250);
+    else {
+        strncpy(temp, string, 125);
+        strncpy(temp + 125, "\n...\n", 5);
+        strncpy(temp + 130, string + strlen(string) - 125, 125);
+        temp[255] = '\0';
+    }
+
+    if (PushSource(NULL, string) == 0) {
+        diagnostics(4, "Entering Convert() from StringConvert()\n******\n%s\n*****", temp);
+
+        while (StillSource())
+            Convert();
+
+        PopSource();
+        diagnostics(4, "Exiting Convert() from StringConvert()");
+    }
 }
 
-void 
-ConvertAllttString(char *s)
+void ConvertAllttString(char *s)
+
 /******************************************************************************
      purpose : converts string in TeX-format to Rtf-format
 			   according to the alltt environment, which is like
 			   verbatim environment except that \, {, and } have
 			   their usual meanings
 ******************************************************************************/
-{	
-	char cThis;
+{
+    char cThis;
 
-	if (s==NULL) return;
-	diagnostics(4, "Entering Convert() from StringAllttConvert()");
+    if (s == NULL)
+        return;
+    diagnostics(4, "Entering Convert() from StringAllttConvert()");
 
-	if(PushSource(NULL, s)==0) {
+    if (PushSource(NULL, s) == 0) {
 
-		while (StillSource()) {
-	
-			cThis = getRawTexChar();   /* it is a verbatim like environment */
-			switch (cThis) {
-			
-				case '\\':
-					PushLevels();	
-					TranslateCommand();
-					CleanStack();
-					break;
-					
-				case '{':
-					PushBrace();
-					fprintRTF("{");
-					break;
-				
-				case '}':			
-					ret = RecursionLevel - PopBrace();
-					fprintRTF("}");
-					break;
-				
-				default:
-					putRtfChar(cThis);
-					break;
-			}
-		}
-		PopSource();
-	}
-	diagnostics(4, "Exiting Convert() from StringAllttConvert()");
+        while (StillSource()) {
+
+            cThis = getRawTexChar();    /* it is a verbatim like environment */
+            switch (cThis) {
+
+                case '\\':
+                    PushLevels();
+                    TranslateCommand();
+                    CleanStack();
+                    break;
+
+                case '{':
+                    PushBrace();
+                    fprintRTF("{");
+                    break;
+
+                case '}':
+                    ret = RecursionLevel - PopBrace();
+                    fprintRTF("}");
+                    break;
+
+                default:
+                    putRtfChar(cThis);
+                    break;
+            }
+        }
+        PopSource();
+    }
+    diagnostics(4, "Exiting Convert() from StringAllttConvert()");
 }
 
-void 
-Convert()
+void Convert()
+
 /****************************************************************************
 purpose: converts inputfile and writes result to outputfile
 globals: fTex, fRtf and all global flags for convert (see above)
  ****************************************************************************/
 {
-	char            cThis = '\n';
-	char            cLast = '\0';
-	char            cNext;
-	int				mode, count,pending_new_paragraph;
-	
-	diagnostics(3, "Entering Convert ret = %d", ret);
-	RecursionLevel++;
-	PushLevels();
+    char cThis = '\n';
+    char cLast = '\0';
+    char cNext;
+    int mode, count, pending_new_paragraph;
 
-	while ((cThis = getTexChar()) && cThis != '\0') {
-	
-		if (cThis == '\n')
-			diagnostics(5, "Current character is '\\n' mode = %d ret = %d level = %d", GetTexMode(), ret, RecursionLevel);
-		else
-			diagnostics(5, "Current character is '%c' mode = %d ret = %d level = %d", cThis, GetTexMode(), ret, RecursionLevel);
+    diagnostics(3, "Entering Convert ret = %d", ret);
+    RecursionLevel++;
+    PushLevels();
 
-		mode = GetTexMode();
-		
-		pending_new_paragraph--;
-		
-		switch (cThis) {
+    while ((cThis = getTexChar()) && cThis != '\0') {
 
-		case '\\':
-			PushLevels();
-			
-			TranslateCommand();
+        if (cThis == '\n')
+            diagnostics(5, "Current character is '\\n' mode = %d ret = %d level = %d", GetTexMode(), ret,
+              RecursionLevel);
+        else
+            diagnostics(5, "Current character is '%c' mode = %d ret = %d level = %d", cThis, GetTexMode(), ret,
+              RecursionLevel);
 
-			CleanStack();
+        mode = GetTexMode();
 
-			if (ret > 0) {
-				diagnostics(5, "Exiting Convert via TranslateCommand ret = %d level = %d", ret, RecursionLevel);
-				ret--;
-				RecursionLevel--;
-				return;
-			}
-			break;
-			
-			
-		case '{':
-			if (mode==MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
-				
-			CleanStack();
-			PushBrace();
-			fprintRTF("{");
-			break;
-			
-		case '}':
-			CleanStack();
-			ret = RecursionLevel - PopBrace();
-			fprintRTF("}");
-			if (ret > 0) {
-				diagnostics(5, "Exiting Convert via '}' ret = %d level = %d", ret, RecursionLevel);
-				ret--;
-				RecursionLevel--;
-				return;
-			}
-			break;
+        pending_new_paragraph--;
 
-		case ' ':
-			if (mode==MODE_VERTICAL || mode==MODE_MATH || mode==MODE_DISPLAYMATH) 
-			    	cThis = cLast;
-			    						
-			else if ( cLast != ' ' && cLast != '\n' ) { 
+        switch (cThis) {
 
-				if (GetTexMode()==MODE_RESTRICTED_HORIZONTAL)
-					fprintRTF("\\~");
-				else
-					fprintRTF(" ");
-			}
-			
-			break;
-			
-		case '\n': 
-			tabcounter = 0;
-			
-			if (mode==MODE_MATH || mode==MODE_DISPLAYMATH) {
-			
-				cNext = getNonBlank();  	
-				ungetTexChar(cNext);
-			
-			} else {
-				cNext = getNonSpace(); 
-				
-				if (cNext == '\n') {			/* new paragraph ... skip all ' ' and '\n' */
-					pending_new_paragraph=2;
-					CmdEndParagraph(0);
-					cNext = getNonBlank();  	
-					ungetTexChar(cNext);
-					
-				} else {						/* add a space if needed */
-					ungetTexChar(cNext);
-					if (mode != MODE_VERTICAL && cLast != ' ')			
-						fprintRTF(" ");  
-				}               
-			}
-			break;
+            case '\\':
+                PushLevels();
+
+                TranslateCommand();
+
+                CleanStack();
+
+                if (ret > 0) {
+                    diagnostics(5, "Exiting Convert via TranslateCommand ret = %d level = %d", ret, RecursionLevel);
+                    ret--;
+                    RecursionLevel--;
+                    return;
+                }
+                break;
 
 
-		case '$':
-			cNext = getTexChar();
-			diagnostics(5,"Processing $, next char <%c>",cNext);
+            case '{':
+                if (mode == MODE_VERTICAL)
+                    SetTexMode(MODE_HORIZONTAL);
 
-			if (cNext == '$' && GetTexMode() != MODE_MATH)
-				CmdEquation(EQN_DOLLAR_DOLLAR | ON);
-			else {
-				ungetTexChar(cNext);
-				CmdEquation(EQN_DOLLAR | ON);
-			}
+                CleanStack();
+                PushBrace();
+                fprintRTF("{");
+                break;
 
-			/* 
-			   Formulas need to close all Convert() operations when they end 
-			   This works for \begin{equation} but not $$ since the BraceLevel
-			   and environments don't get pushed properly.  We do it explicitly here.
-			*/
-			/*
-			if (GetTexMode() == MODE_MATH || GetTexMode() == MODE_DISPLAYMATH)
-				PushBrace();
-			else {
-				ret = RecursionLevel - PopBrace();
-				if (ret > 0) {
-					ret--;
-					RecursionLevel--;
-					diagnostics(5, "Exiting Convert via Math ret = %d", ret);
-					return;
-				}
-			}
-			*/
-			break;
+            case '}':
+                CleanStack();
+                ret = RecursionLevel - PopBrace();
+                fprintRTF("}");
+                if (ret > 0) {
+                    diagnostics(5, "Exiting Convert via '}' ret = %d level = %d", ret, RecursionLevel);
+                    ret--;
+                    RecursionLevel--;
+                    return;
+                }
+                break;
 
-		case '&':
-			if (g_processing_arrays) {
-				fprintRTF("%c",g_field_separator);
-				break;
-			}
+            case ' ':
+                if (mode == MODE_VERTICAL || mode == MODE_MATH || mode == MODE_DISPLAYMATH)
+                    cThis = cLast;
 
-			if (GetTexMode() == MODE_MATH || GetTexMode() == MODE_DISPLAYMATH) {	/* in eqnarray */
-				fprintRTF("\\tab ");
-				g_equation_column++;
-				break;
-			}
-			
-			if (g_processing_tabular) {	/* in tabular */
-				actCol++;
-				fprintRTF("\\cell\\pard\\intbl\\q%c ", colFmt[actCol]);
-				break;
-			}
-			fprintRTF("&");
-			break;
+                else if (cLast != ' ' && cLast != '\n') {
 
-		case '~':
-			fprintRTF("\\~");
-			break;			
-			
-		case '^':		
-			CmdSuperscript(0);
-			break;
+                    if (GetTexMode() == MODE_RESTRICTED_HORIZONTAL)
+                        fprintRTF("\\~");
+                    else
+                        fprintRTF(" ");
+                }
 
-		case '_':		
-			CmdSubscript(0);
-			break;
+                break;
 
-		case '-':
-			if (mode == MODE_MATH || mode == MODE_DISPLAYMATH) 
-				fprintRTF("-");
-			else {
-				SetTexMode(MODE_HORIZONTAL);
-				
-				count = getSameChar('-')+1;
-				
-				if (count == 1) 
-					fprintRTF("-");
-				else if (count == 2)
-					fprintRTF("\\endash ");
-				else if (count == 3)
-					fprintRTF("\\emdash ");
-				else 
-					while (count--) fprintRTF("-");
-			}
-			break;
-						
-		case '|':
-			if (mode == MODE_MATH || mode == MODE_DISPLAYMATH) 
-				fprintRTF("|");
-			else 
-				fprintRTF("\\emdash ");
-			break;
+            case '\n':
+                tabcounter = 0;
 
-		case '\'':
-			if (mode == MODE_MATH || mode == MODE_DISPLAYMATH)
-					fprintRTF("'");	
-			else {
-				SetTexMode(MODE_HORIZONTAL);
-				count = getSameChar('\'')+1;
-				if (count == 2) 
-					fprintRTF("\\rdblquote ");
-				else
-					while (count--) fprintRTF("\\rquote ");
-			}
-			break;
-			
-		case '`':
-			SetTexMode(MODE_HORIZONTAL);
-			count = getSameChar('`')+1;
-			if (count == 2) 
-				fprintRTF("\\ldblquote ");
-			else
-				while (count--) fprintRTF("\\lquote ");
-			break;
-			
-		case '\"':
-			SetTexMode(MODE_HORIZONTAL);
-			if (GermanMode)
-				TranslateGerman();
-			else
-				fprintRTF("\"");
-			break;
+                if (mode == MODE_MATH || mode == MODE_DISPLAYMATH) {
 
-		case '<':
-			if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
-			if (GetTexMode() == MODE_HORIZONTAL){
-				cNext = getTexChar();
-				if (cNext == '<') {
-					if (FrenchMode) {			/* not quite right */
-						skipSpaces();
-						cNext = getTexChar();
-						if (cNext == '~') 
-							skipSpaces();
-						else
-							ungetTexChar(cNext);
-						fprintRTF("\\'ab\\~");
-					
-					} else
-						fprintRTF("\\'ab");
-				} else {
-					ungetTexChar(cNext);
-					fprintRTF("<");
-				}
-			} else
-				fprintRTF("<");
+                    cNext = getNonBlank();
+                    ungetTexChar(cNext);
 
-			break;
+                } else {
+                    cNext = getNonSpace();
 
-		case '>':
-			if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
-			if (GetTexMode() == MODE_HORIZONTAL){
-				cNext = getTexChar();
-				if (cNext == '>')
-					fprintRTF("\\'bb");
-				else {
-					ungetTexChar(cNext);
-					fprintRTF(">");
-				}
-			} else
-				fprintRTF(">");
-			break;
+                    if (cNext == '\n') {    /* new paragraph ... skip all ' ' and '\n' */
+                        pending_new_paragraph = 2;
+                        CmdEndParagraph(0);
+                        cNext = getNonBlank();
+                        ungetTexChar(cNext);
 
-		case '!':
-			if (mode == MODE_MATH || mode == MODE_DISPLAYMATH)
-				fprintRTF("!");	
-			else {
-				SetTexMode(MODE_HORIZONTAL);
-				if ((cNext = getTexChar()) && cNext == '`') {
-					fprintRTF("\\'a1 ");
-				} else {
-					fprintRTF("! ");
-					ungetTexChar(cNext);
-				}
-			}
-			break;	
-			
-		case '?':
-			SetTexMode(MODE_HORIZONTAL);
-			if ((cNext = getTexChar()) && cNext == '`') {
-				fprintRTF("\\'bf ");
-			} else {
-				fprintRTF("? ");
-				ungetTexChar(cNext);
-			}
-			break;
-			
-		case ':':
-			if (mode == MODE_MATH || mode == MODE_DISPLAYMATH)
-				fprintRTF(":");	
-			else {
-				SetTexMode(MODE_HORIZONTAL);
-				if (FrenchMode) 
-					fprintRTF("\\~:");
-  				else
-					fprintRTF(":");
-			}
-			break;	
+                    } else {    /* add a space if needed */
+                        ungetTexChar(cNext);
+                        if (mode != MODE_VERTICAL && cLast != ' ')
+                            fprintRTF(" ");
+                    }
+                }
+                break;
 
-		case '.':
-			if (mode == MODE_MATH || mode == MODE_DISPLAYMATH)
-				fprintRTF(".");	
-			else {
-				SetTexMode(MODE_HORIZONTAL);
-				fprintRTF(".");
-	
-				/* try to simulate double spaces after sentences */
-				cNext = getTexChar();
-				if (0 && cNext == ' ' && (isalpha((int)cLast) && !isupper((int) cLast)))
-					fprintRTF(" ");
-				ungetTexChar(cNext);
-			}
-			break;
-			
-		case '\t':
-			diagnostics(WARNING, "This should not happen, ignoring \\t");
-			cThis = ' ';
-			break;
-			
-		case '\r':
-			diagnostics(WARNING, "This should not happen, ignoring \\r");
-			cThis = ' ';
-			break;
-			
-		case '%':
-			diagnostics(WARNING, "This should not happen, ignoring %%");
-			cThis = ' ';
-			break;
 
-		case '(':
-			if (g_processing_fields&&g_escape_parent)
-				fprintRTF("\\\\(");
-			else
-				fprintRTF("(");
-			break;
-			
-		case ')':
-			if (g_processing_fields&&g_escape_parent)
-				fprintRTF("\\\\)");
-			else
-				fprintRTF(")");
-			break;
+            case '$':
+                cNext = getTexChar();
+                diagnostics(5, "Processing $, next char <%c>", cNext);
 
-		case ';':
-			if (g_field_separator == ';' && g_processing_fields)
-				fprintRTF("\\\\;");
-			else
-				if (FrenchMode) 
-					fprintRTF("\\~;");
-  				else
-					fprintRTF(";");
-		break;
+                if (cNext == '$' && GetTexMode() != MODE_MATH)
+                    CmdEquation(EQN_DOLLAR_DOLLAR | ON);
+                else {
+                    ungetTexChar(cNext);
+                    CmdEquation(EQN_DOLLAR | ON);
+                }
 
-		case ',':
-			if (g_field_separator == ',' && g_processing_fields)
-				fprintRTF("\\\\,");
-			else
-				fprintRTF(",");
-			break;
-			
-		default:
-			if (mode == MODE_MATH || mode == MODE_DISPLAYMATH) {
-				if (('a' <= cThis && cThis <= 'z') || ('A' <= cThis && cThis <= 'Z'))
-					fprintRTF("{\\i %c}", cThis);	
-				else
-					fprintRTF("%c", cThis);	
+                /* 
+                   Formulas need to close all Convert() operations when they end This works for \begin{equation} but
+                   not $$ since the BraceLevel and environments don't get pushed properly.  We do it explicitly here. */
+                /* 
+                   if (GetTexMode() == MODE_MATH || GetTexMode() == MODE_DISPLAYMATH) PushBrace(); else { ret =
+                   RecursionLevel - PopBrace(); if (ret > 0) { ret--; RecursionLevel--; diagnostics(5, "Exiting Convert 
+                   via Math ret = %d", ret); return; } } */
+                break;
 
-			} else {
-			
-				SetTexMode(MODE_HORIZONTAL);
-				fprintRTF("%c", cThis);
-			}
-			break;
-		}
+            case '&':
+                if (g_processing_arrays) {
+                    fprintRTF("%c", g_field_separator);
+                    break;
+                }
 
-		tabcounter++;
-		cLast = cThis;
-	}
-	RecursionLevel--;
-	diagnostics(5, "Exiting Convert via exhaustion ret = %d", ret);
+                if (GetTexMode() == MODE_MATH || GetTexMode() == MODE_DISPLAYMATH) {    /* in eqnarray */
+                    fprintRTF("\\tab ");
+                    g_equation_column++;
+                    break;
+                }
+
+                if (g_processing_tabular) { /* in tabular */
+                    actCol++;
+                    fprintRTF("\\cell\\pard\\intbl\\q%c ", colFmt[actCol]);
+                    break;
+                }
+                fprintRTF("&");
+                break;
+
+            case '~':
+                fprintRTF("\\~");
+                break;
+
+            case '^':
+                CmdSuperscript(0);
+                break;
+
+            case '_':
+                CmdSubscript(0);
+                break;
+
+            case '-':
+                if (mode == MODE_MATH || mode == MODE_DISPLAYMATH)
+                    fprintRTF("-");
+                else {
+                    SetTexMode(MODE_HORIZONTAL);
+
+                    count = getSameChar('-') + 1;
+
+                    if (count == 1)
+                        fprintRTF("-");
+                    else if (count == 2)
+                        fprintRTF("\\endash ");
+                    else if (count == 3)
+                        fprintRTF("\\emdash ");
+                    else
+                        while (count--)
+                            fprintRTF("-");
+                }
+                break;
+
+            case '|':
+                if (mode == MODE_MATH || mode == MODE_DISPLAYMATH)
+                    fprintRTF("|");
+                else
+                    fprintRTF("\\emdash ");
+                break;
+
+            case '\'':
+                if (mode == MODE_MATH || mode == MODE_DISPLAYMATH)
+                    fprintRTF("'");
+                else {
+                    SetTexMode(MODE_HORIZONTAL);
+                    count = getSameChar('\'') + 1;
+                    if (count == 2)
+                        fprintRTF("\\rdblquote ");
+                    else
+                        while (count--)
+                            fprintRTF("\\rquote ");
+                }
+                break;
+
+            case '`':
+                SetTexMode(MODE_HORIZONTAL);
+                count = getSameChar('`') + 1;
+                if (count == 2)
+                    fprintRTF("\\ldblquote ");
+                else
+                    while (count--)
+                        fprintRTF("\\lquote ");
+                break;
+
+            case '\"':
+                SetTexMode(MODE_HORIZONTAL);
+                if (GermanMode)
+                    TranslateGerman();
+                else
+                    fprintRTF("\"");
+                break;
+
+            case '<':
+                if (mode == MODE_VERTICAL)
+                    SetTexMode(MODE_HORIZONTAL);
+                if (GetTexMode() == MODE_HORIZONTAL) {
+                    cNext = getTexChar();
+                    if (cNext == '<') {
+                        if (FrenchMode) {   /* not quite right */
+                            skipSpaces();
+                            cNext = getTexChar();
+                            if (cNext == '~')
+                                skipSpaces();
+                            else
+                                ungetTexChar(cNext);
+                            fprintRTF("\\'ab\\~");
+
+                        } else
+                            fprintRTF("\\'ab");
+                    } else {
+                        ungetTexChar(cNext);
+                        fprintRTF("<");
+                    }
+                } else
+                    fprintRTF("<");
+
+                break;
+
+            case '>':
+                if (mode == MODE_VERTICAL)
+                    SetTexMode(MODE_HORIZONTAL);
+                if (GetTexMode() == MODE_HORIZONTAL) {
+                    cNext = getTexChar();
+                    if (cNext == '>')
+                        fprintRTF("\\'bb");
+                    else {
+                        ungetTexChar(cNext);
+                        fprintRTF(">");
+                    }
+                } else
+                    fprintRTF(">");
+                break;
+
+            case '!':
+                if (mode == MODE_MATH || mode == MODE_DISPLAYMATH)
+                    fprintRTF("!");
+                else {
+                    SetTexMode(MODE_HORIZONTAL);
+                    if ((cNext = getTexChar()) && cNext == '`') {
+                        fprintRTF("\\'a1 ");
+                    } else {
+                        fprintRTF("! ");
+                        ungetTexChar(cNext);
+                    }
+                }
+                break;
+
+            case '?':
+                SetTexMode(MODE_HORIZONTAL);
+                if ((cNext = getTexChar()) && cNext == '`') {
+                    fprintRTF("\\'bf ");
+                } else {
+                    fprintRTF("? ");
+                    ungetTexChar(cNext);
+                }
+                break;
+
+            case ':':
+                if (mode == MODE_MATH || mode == MODE_DISPLAYMATH)
+                    fprintRTF(":");
+                else {
+                    SetTexMode(MODE_HORIZONTAL);
+                    if (FrenchMode)
+                        fprintRTF("\\~:");
+                    else
+                        fprintRTF(":");
+                }
+                break;
+
+            case '.':
+                if (mode == MODE_MATH || mode == MODE_DISPLAYMATH)
+                    fprintRTF(".");
+                else {
+                    SetTexMode(MODE_HORIZONTAL);
+                    fprintRTF(".");
+
+                    /* try to simulate double spaces after sentences */
+                    cNext = getTexChar();
+                    if (0 && cNext == ' ' && (isalpha((int) cLast) && !isupper((int) cLast)))
+                        fprintRTF(" ");
+                    ungetTexChar(cNext);
+                }
+                break;
+
+            case '\t':
+                diagnostics(WARNING, "This should not happen, ignoring \\t");
+                cThis = ' ';
+                break;
+
+            case '\r':
+                diagnostics(WARNING, "This should not happen, ignoring \\r");
+                cThis = ' ';
+                break;
+
+            case '%':
+                diagnostics(WARNING, "This should not happen, ignoring %%");
+                cThis = ' ';
+                break;
+
+            case '(':
+                if (g_processing_fields && g_escape_parent)
+                    fprintRTF("\\\\(");
+                else
+                    fprintRTF("(");
+                break;
+
+            case ')':
+                if (g_processing_fields && g_escape_parent)
+                    fprintRTF("\\\\)");
+                else
+                    fprintRTF(")");
+                break;
+
+            case ';':
+                if (g_field_separator == ';' && g_processing_fields)
+                    fprintRTF("\\\\;");
+                else if (FrenchMode)
+                    fprintRTF("\\~;");
+                else
+                    fprintRTF(";");
+                break;
+
+            case ',':
+                if (g_field_separator == ',' && g_processing_fields)
+                    fprintRTF("\\\\,");
+                else
+                    fprintRTF(",");
+                break;
+
+            default:
+                if (mode == MODE_MATH || mode == MODE_DISPLAYMATH) {
+                    if (('a' <= cThis && cThis <= 'z') || ('A' <= cThis && cThis <= 'Z'))
+                        fprintRTF("{\\i %c}", cThis);
+                    else
+                        fprintRTF("%c", cThis);
+
+                } else {
+
+                    SetTexMode(MODE_HORIZONTAL);
+                    fprintRTF("%c", cThis);
+                }
+                break;
+        }
+
+        tabcounter++;
+        cLast = cThis;
+    }
+    RecursionLevel--;
+    diagnostics(5, "Exiting Convert via exhaustion ret = %d", ret);
 }
 
-void 
-TranslateCommand()
+void TranslateCommand()
+
 /****************************************************************************
 purpose: The function is called on a backslash in input file and
 	 tries to call the command-function for the following command.
@@ -568,227 +568,250 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
          global flags for convert
  ****************************************************************************/
 {
-	char            cCommand[MAXCOMMANDLEN];
-	int             i,mode;
-	int             cThis;
+    char cCommand[MAXCOMMANDLEN];
+    int i, mode;
+    int cThis;
 
 
-	cThis = getTexChar();
-	mode = GetTexMode();
-	
-	diagnostics(5, "Beginning TranslateCommand() \\%c", cThis);
+    cThis = getTexChar();
+    mode = GetTexMode();
 
-	switch (cThis) {
-	case '}':
-		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
-		fprintRTF("\\}");
-		return;
-	case '{':
-		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
-		fprintRTF("\\{");
-		return;
-	case '#':
-		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
-		fprintRTF("#");
-		return;
-	case '$':
-		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
-		fprintRTF("$");
-		return;
-	case '&':
-		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
-		fprintRTF("&");
-		return;
-	case '%':
-		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
-		fprintRTF("%%");
-		return;
-	case '_':
-		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
-		fprintRTF("_");
-		return;
-		
-	case '\\':		/* \\[1mm] or \\*[1mm] possible */
-		CmdSlashSlash(0);
-		return;
-		
-	case ' ':
-	case '\n':
-		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
-		fprintRTF(" ");	/* ordinary interword space */
-		skipSpaces();
-		return;
+    diagnostics(5, "Beginning TranslateCommand() \\%c", cThis);
+
+    switch (cThis) {
+        case '}':
+            if (mode == MODE_VERTICAL)
+                SetTexMode(MODE_HORIZONTAL);
+            fprintRTF("\\}");
+            return;
+        case '{':
+            if (mode == MODE_VERTICAL)
+                SetTexMode(MODE_HORIZONTAL);
+            fprintRTF("\\{");
+            return;
+        case '#':
+            if (mode == MODE_VERTICAL)
+                SetTexMode(MODE_HORIZONTAL);
+            fprintRTF("#");
+            return;
+        case '$':
+            if (mode == MODE_VERTICAL)
+                SetTexMode(MODE_HORIZONTAL);
+            fprintRTF("$");
+            return;
+        case '&':
+            if (mode == MODE_VERTICAL)
+                SetTexMode(MODE_HORIZONTAL);
+            fprintRTF("&");
+            return;
+        case '%':
+            if (mode == MODE_VERTICAL)
+                SetTexMode(MODE_HORIZONTAL);
+            fprintRTF("%%");
+            return;
+        case '_':
+            if (mode == MODE_VERTICAL)
+                SetTexMode(MODE_HORIZONTAL);
+            fprintRTF("_");
+            return;
+
+        case '\\':             /* \\[1mm] or \\*[1mm] possible */
+            CmdSlashSlash(0);
+            return;
+
+        case ' ':
+        case '\n':
+            if (mode == MODE_VERTICAL)
+                SetTexMode(MODE_HORIZONTAL);
+            fprintRTF(" ");     /* ordinary interword space */
+            skipSpaces();
+            return;
 
 /* \= \> \< \+ \- \' \` all have different meanings in a tabbing environment */
 
-	case '-':
-		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
-		if (g_processing_tabbing){
-			(void) PopBrace();
-			PushBrace();
-		} else
-			fprintRTF("\\-");
-		return;
+        case '-':
+            if (mode == MODE_VERTICAL)
+                SetTexMode(MODE_HORIZONTAL);
+            if (g_processing_tabbing) {
+                (void) PopBrace();
+                PushBrace();
+            } else
+                fprintRTF("\\-");
+            return;
 
-	case '+':
-		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
-		if (g_processing_tabbing){
-			(void) PopBrace();
-			PushBrace();
-		}
-		return;
-		
-	case '<':
-		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
-		if (g_processing_tabbing){
-			(void) PopBrace();
-			PushBrace();
-		}
-		return;
+        case '+':
+            if (mode == MODE_VERTICAL)
+                SetTexMode(MODE_HORIZONTAL);
+            if (g_processing_tabbing) {
+                (void) PopBrace();
+                PushBrace();
+            }
+            return;
 
-	case '>':
-		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
-		if (g_processing_tabbing){
-			(void) PopBrace();
-			CmdTabjump();
-			PushBrace();
-		} else 
-			CmdSpace(0.50);  /* medium space */
-		return;
-		
-	case '`':
-		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
-		if (g_processing_tabbing){
-			(void) PopBrace();
-			PushBrace();
-		} else
-			CmdLApostrophChar(0);
-		return;
-		
-	case '\'':
-		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
-		if (g_processing_tabbing){
-			(void) PopBrace();
-			PushBrace();
-			return;
-		} else
-			CmdRApostrophChar(0);	/* char ' =?= \' */
-		return;
+        case '<':
+            if (mode == MODE_VERTICAL)
+                SetTexMode(MODE_HORIZONTAL);
+            if (g_processing_tabbing) {
+                (void) PopBrace();
+                PushBrace();
+            }
+            return;
 
-	case '=':
-		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
-		if (g_processing_tabbing){
-			(void) PopBrace();
-			CmdTabset();
-			PushBrace();
-		}
-		else
-			CmdMacronChar(0);
-		return;
-		
-	case '~':
-		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
-		CmdTildeChar(0);
-		return;
-	case '^':
-		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
-		CmdHatChar(0);
-		return;
-	case '.':
-		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
-		CmdDotChar(0);
-		return;
-	case '\"':
-		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
-		CmdUmlauteChar(0);
-		return;
-	case '(':
-		CmdEquation(EQN_RND_OPEN | ON);
-		/*PushBrace();*/
-		return;
-	case '[':
-		CmdEquation(EQN_BRACKET_OPEN | ON);
-		/*PushBrace();*/
-		return;
-	case ')':
-		CmdEquation(EQN_RND_CLOSE | OFF);
-		/*ret = RecursionLevel - PopBrace();*/
-		return;
-	case ']':
-		CmdEquation(EQN_BRACKET_CLOSE | OFF);
-		/*ret = RecursionLevel - PopBrace();*/
-		return;
-	case '/':
-		CmdIgnore(0);		/* italic correction */
-		return;
-	case '!':
-		CmdIgnore(0);		/* \! negative thin space */
-		return;
-	case ',':
-		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
-		CmdSpace(0.33);	/* \, produces a small space */
-		return;
-	case ';':
-		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
-		CmdSpace(0.75);	/* \; produces a thick space */
-		return;
-	case '@':
-		CmdIgnore(0);	/* \@ produces an "end of sentence" space */
-		return;
-	case '3':
-		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
-		fprintRTF("{\\'df}");	/* german symbol 'á' */
-		return;
-	}
+        case '>':
+            if (mode == MODE_VERTICAL)
+                SetTexMode(MODE_HORIZONTAL);
+            if (g_processing_tabbing) {
+                (void) PopBrace();
+                CmdTabjump();
+                PushBrace();
+            } else
+                CmdSpace(0.50); /* medium space */
+            return;
+
+        case '`':
+            if (mode == MODE_VERTICAL)
+                SetTexMode(MODE_HORIZONTAL);
+            if (g_processing_tabbing) {
+                (void) PopBrace();
+                PushBrace();
+            } else
+                CmdLApostrophChar(0);
+            return;
+
+        case '\'':
+            if (mode == MODE_VERTICAL)
+                SetTexMode(MODE_HORIZONTAL);
+            if (g_processing_tabbing) {
+                (void) PopBrace();
+                PushBrace();
+                return;
+            } else
+                CmdRApostrophChar(0);   /* char ' =?= \' */
+            return;
+
+        case '=':
+            if (mode == MODE_VERTICAL)
+                SetTexMode(MODE_HORIZONTAL);
+            if (g_processing_tabbing) {
+                (void) PopBrace();
+                CmdTabset();
+                PushBrace();
+            } else
+                CmdMacronChar(0);
+            return;
+
+        case '~':
+            if (mode == MODE_VERTICAL)
+                SetTexMode(MODE_HORIZONTAL);
+            CmdTildeChar(0);
+            return;
+        case '^':
+            if (mode == MODE_VERTICAL)
+                SetTexMode(MODE_HORIZONTAL);
+            CmdHatChar(0);
+            return;
+        case '.':
+            if (mode == MODE_VERTICAL)
+                SetTexMode(MODE_HORIZONTAL);
+            CmdDotChar(0);
+            return;
+        case '\"':
+            if (mode == MODE_VERTICAL)
+                SetTexMode(MODE_HORIZONTAL);
+            CmdUmlauteChar(0);
+            return;
+        case '(':
+            CmdEquation(EQN_RND_OPEN | ON);
+            /* PushBrace(); */
+            return;
+        case '[':
+            CmdEquation(EQN_BRACKET_OPEN | ON);
+            /* PushBrace(); */
+            return;
+        case ')':
+            CmdEquation(EQN_RND_CLOSE | OFF);
+            /* ret = RecursionLevel - PopBrace(); */
+            return;
+        case ']':
+            CmdEquation(EQN_BRACKET_CLOSE | OFF);
+            /* ret = RecursionLevel - PopBrace(); */
+            return;
+        case '/':
+            CmdIgnore(0);       /* italic correction */
+            return;
+        case '!':
+            CmdIgnore(0);       /* \! negative thin space */
+            return;
+        case ',':
+            if (mode == MODE_VERTICAL)
+                SetTexMode(MODE_HORIZONTAL);
+            CmdSpace(0.33);     /* \, produces a small space */
+            return;
+        case ';':
+            if (mode == MODE_VERTICAL)
+                SetTexMode(MODE_HORIZONTAL);
+            CmdSpace(0.75);     /* \; produces a thick space */
+            return;
+        case '@':
+            CmdIgnore(0);       /* \@ produces an "end of sentence" space */
+            return;
+        case '3':
+            if (mode == MODE_VERTICAL)
+                SetTexMode(MODE_HORIZONTAL);
+            fprintRTF("{\\'df}");   /* german symbol 'á' */
+            return;
+    }
 
 
-	/* LEG180498 Commands consist of letters and can have an optional * at the end */
-	for (i = 0; i < MAXCOMMANDLEN; i++) {
-		if (!isalpha((int)cThis) && (cThis != '*')) {
-			bool            found_nl = FALSE;
+    /* LEG180498 Commands consist of letters and can have an optional * at the end */
+    for (i = 0; i < MAXCOMMANDLEN; i++) {
+        if (!isalpha((int) cThis) && (cThis != '*')) {
+            bool found_nl = FALSE;
 
-			if (cThis == '%'){			/* put the % back and get the next char */
-				ungetTexChar('%');
-				cThis=getTexChar();
-			}
+            if (cThis == '%') { /* put the % back and get the next char */
+                ungetTexChar('%');
+                cThis = getTexChar();
+            }
 
-			/* all spaces after commands are ignored, a single \n may occur */
-			while (cThis == ' ' || (cThis == '\n' && !found_nl)) {
-				if (cThis == '\n')
-					found_nl = TRUE;
-				cThis = getTexChar();
-			}
+            /* all spaces after commands are ignored, a single \n may occur */
+            while (cThis == ' ' || (cThis == '\n' && !found_nl)) {
+                if (cThis == '\n')
+                    found_nl = TRUE;
+                cThis = getTexChar();
+            }
 
-			ungetTexChar(cThis);	/* put back first non-space char after command */
-			break;					/* done skipping spaces */
-		} else
-			cCommand[i] = cThis;
+            ungetTexChar(cThis);    /* put back first non-space char after command */
+            break;              /* done skipping spaces */
+        } else
+            cCommand[i] = cThis;
 
-		cThis = getRawTexChar();	/* Necessary because % ends a command */
-	}
+        cThis = getRawTexChar();    /* Necessary because % ends a command */
+    }
 
-	cCommand[i] = '\0';	/* mark end of string with zero */
-	diagnostics(5, "TranslateCommand() <%s>", cCommand);
+    cCommand[i] = '\0';         /* mark end of string with zero */
+    diagnostics(5, "TranslateCommand() <%s>", cCommand);
 
-	if (i == 0)
-		return;
-		
-	if (strcmp(cCommand,"begin")==0){
-		fprintRTF("{");
-		PushBrace();
-	}
-		
-	if (CallCommandFunc(cCommand)){	/* call handling function for command */
-		if (strcmp(cCommand,"end")==0) {
-			ret = RecursionLevel - PopBrace();
-			fprintRTF("}");
-		}
-		return;
-	}
-	
-	if (TryDirectConvert(cCommand)) return;
-	
-	if (TryVariableIgnore(cCommand)) return;
-		
-	diagnostics(WARNING, "Command \\%s not found - ignored", cCommand);
+    if (i == 0)
+        return;
+
+    if (strcmp(cCommand, "begin") == 0) {
+        fprintRTF("{");
+        PushBrace();
+    }
+
+    if (CallCommandFunc(cCommand)) {    /* call handling function for command */
+        if (strcmp(cCommand, "end") == 0) {
+            ret = RecursionLevel - PopBrace();
+            fprintRTF("}");
+        }
+        return;
+    }
+
+    if (TryDirectConvert(cCommand))
+        return;
+
+    if (TryVariableIgnore(cCommand))
+        return;
+
+    diagnostics(WARNING, "Command \\%s not found - ignored", cCommand);
 }

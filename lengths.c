@@ -1,3 +1,4 @@
+
 /* lengths.c - commands that access TeX variables that contain TeX lengths
 
 Copyright (C) 2001-2002 The Free Software Foundation
@@ -34,136 +35,137 @@ By convention all the values stored should be twips  20 twips = 1 pt
 #define MAX_LENGTHS 50
 
 struct {
-	char * name;
-	int distance;
+    char *name;
+    int distance;
 } Lengths[MAX_LENGTHS];
 
 static int iLengthCount = 0;
 
-static int
-existsLength(char * s)
+static int existsLength(char *s)
+
 /**************************************************************************
      purpose: checks to see if a named TeX dimension exists
      returns: the array index of the named TeX dimension
 **************************************************************************/
 {
-	int i=0;
-	
-	while(i < iLengthCount && strstr(Lengths[i].name,s)==NULL)
-		i++;
+    int i = 0;
 
-	if (i==iLengthCount) 
-		return -1;
-	else
-		return i;
+    while (i < iLengthCount && strstr(Lengths[i].name, s) == NULL)
+        i++;
+
+    if (i == iLengthCount)
+        return -1;
+    else
+        return i;
 }
 
-static void
-newLength(char *s, int d)
+static void newLength(char *s, int d)
+
 /**************************************************************************
      purpose: allocates and initializes a named TeX dimension 
 **************************************************************************/
 {
-	if (iLengthCount==MAX_LENGTHS){
-		diagnostics(WARNING,"Too many lengths, ignoring %s", s);
-		return;
-	}
-	
-	Lengths[iLengthCount].distance=d;
-	Lengths[iLengthCount].name=strdup(s); 
-	
-	if (Lengths[iLengthCount].name==NULL) {
-		fprintf(stderr, "\nCannot allocate name for length \\%s\n", s);
-		exit(1);
-	}
+    if (iLengthCount == MAX_LENGTHS) {
+        diagnostics(WARNING, "Too many lengths, ignoring %s", s);
+        return;
+    }
 
-	iLengthCount++;
+    Lengths[iLengthCount].distance = d;
+    Lengths[iLengthCount].name = strdup(s);
+
+    if (Lengths[iLengthCount].name == NULL) {
+        fprintf(stderr, "\nCannot allocate name for length \\%s\n", s);
+        exit(1);
+    }
+
+    iLengthCount++;
 }
 
-void
-setLength(char * s, int d)
+void setLength(char *s, int d)
+
 /**************************************************************************
      purpose: allocates (if necessary) and sets a named TeX dimension 
 **************************************************************************/
 {
-	int i;
-	i = existsLength(s);
-	
-	if (i<0) 
-		newLength(s, d);
-	else
-		Lengths[i].distance = d;
+    int i;
+
+    i = existsLength(s);
+
+    if (i < 0)
+        newLength(s, d);
+    else
+        Lengths[i].distance = d;
 }
 
-int
-getLength(char * s)
+int getLength(char *s)
+
 /**************************************************************************
      purpose: retrieves a named TeX dimension 
 **************************************************************************/
 {
-	int i;
-	i = existsLength(s);
-	
-	if (i<0) {
-		diagnostics(WARNING, "No length of type %s", s);
-		return 0;
-	}
-		
-	return Lengths[i].distance;
+    int i;
+
+    i = existsLength(s);
+
+    if (i < 0) {
+        diagnostics(WARNING, "No length of type %s", s);
+        return 0;
+    }
+
+    return Lengths[i].distance;
 }
 
-void
-CmdSetTexLength(int code)
+void CmdSetTexLength(int code)
 {
-	int d;
-	char c;
-	
-	c = getNonSpace();
-	if (c == '=')			/* optional '=' */
-		skipSpaces();
-	else
-		ungetTexChar(c);
+    int d;
+    char c;
 
-	d = getDimension();
-	diagnostics(4, "CmdSetTexLength size = %d",d);
-	
-		switch (code){
-	
-		case SL_HOFFSET:
-			setLength("hoffset",d);
-			break;
-		case SL_VOFFSET:
-			setLength("voffset",d);
-			break;
-		case SL_PARINDENT:
-			setLength("parindent",d);
-			break;
-		case SL_PARSKIP:
-			setLength("parskip",d);
-			break;
-		case SL_BASELINESKIP:
-			setLength("baselineskip",d);
-			break;
-		case SL_TOPMARGIN:
-			setLength("topmargin",d);
-			break;
-		case SL_TEXTHEIGHT:
-			setLength("textheight",d);
-			break;
-		case SL_HEADHEIGHT:
-			setLength("headheight",d);
-			break;
-		case SL_HEADSEP:
-			setLength("headsep",d);
-			break;
-		case SL_TEXTWIDTH:
-			setLength("textwidth",d);
-			break;
-		case SL_ODDSIDEMARGIN:
-			setLength("oddsidemargin",d);
-			break;
-		case SL_EVENSIDEMARGIN:
-			setLength("evensidemargin",d);
-			break;
-	}
+    c = getNonSpace();
+    if (c == '=')               /* optional '=' */
+        skipSpaces();
+    else
+        ungetTexChar(c);
+
+    d = getDimension();
+    diagnostics(4, "CmdSetTexLength size = %d", d);
+
+    switch (code) {
+
+        case SL_HOFFSET:
+            setLength("hoffset", d);
+            break;
+        case SL_VOFFSET:
+            setLength("voffset", d);
+            break;
+        case SL_PARINDENT:
+            setLength("parindent", d);
+            break;
+        case SL_PARSKIP:
+            setLength("parskip", d);
+            break;
+        case SL_BASELINESKIP:
+            setLength("baselineskip", d);
+            break;
+        case SL_TOPMARGIN:
+            setLength("topmargin", d);
+            break;
+        case SL_TEXTHEIGHT:
+            setLength("textheight", d);
+            break;
+        case SL_HEADHEIGHT:
+            setLength("headheight", d);
+            break;
+        case SL_HEADSEP:
+            setLength("headsep", d);
+            break;
+        case SL_TEXTWIDTH:
+            setLength("textwidth", d);
+            break;
+        case SL_ODDSIDEMARGIN:
+            setLength("oddsidemargin", d);
+            break;
+        case SL_EVENSIDEMARGIN:
+            setLength("evensidemargin", d);
+            break;
+    }
 }

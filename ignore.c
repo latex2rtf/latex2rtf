@@ -1,3 +1,4 @@
+
 /* ignore.c - ignore commands found in ignore.cfg
 
 Copyright (C) 1995-2002 The Free Software Foundation
@@ -37,11 +38,11 @@ Authors:
 #include "parser.h"
 #include "convert.h"
 
-static void     IgnoreVar(void);
-static void     IgnoreCmd(void);
+static void IgnoreVar(void);
+static void IgnoreCmd(void);
 
-bool 
-TryVariableIgnore(char *command)
+bool TryVariableIgnore(char *command)
+
 /****************************************************************************
 purpose : ignores variable-formats shown in file "ignore.cfg"
 returns : TRUE if variable was ignored correctly, otherwise FALSE
@@ -59,81 +60,86 @@ returns : TRUE if variable was ignored correctly, otherwise FALSE
 #  ENVIRONMENT   ignores contentents of that environment
  ****************************************************************************/
 {
-	const char     *RtfCommand;
-	char            TexCommand[128];
-	bool            result = TRUE;
+    const char *RtfCommand;
+    char TexCommand[128];
+    bool result = TRUE;
 
-	if (strlen(command) >= 100) {
-		diagnostics(WARNING, "Command <%s> is too long", command);
-		return FALSE;	/* command too long */
-	}
-	TexCommand[0] = '\\';
-	TexCommand[1] = '\0';
-	strcat(TexCommand, command);
+    if (strlen(command) >= 100) {
+        diagnostics(WARNING, "Command <%s> is too long", command);
+        return FALSE;           /* command too long */
+    }
+    TexCommand[0] = '\\';
+    TexCommand[1] = '\0';
+    strcat(TexCommand, command);
 
-	RtfCommand = SearchRtfCmd(TexCommand, IGNORE_A);
-	if (RtfCommand == NULL)
-		result = FALSE;
-	else if (strcmp(RtfCommand, "NUMBER") == 0)
-		IgnoreVar();
-	else if (strcmp(RtfCommand, "MEASURE") == 0)
-		IgnoreVar();
-	else if (strcmp(RtfCommand, "OTHER") == 0)
-		IgnoreVar();
-	else if (strcmp(RtfCommand, "COMMAND") == 0)
-		IgnoreCmd();
-	else if (strcmp(RtfCommand, "SINGLE") == 0)
-		{}
-	else if (strcmp(RtfCommand, "PARAMETER") == 0)
-		CmdIgnoreParameter(No_Opt_One_NormParam);
+    RtfCommand = SearchRtfCmd(TexCommand, IGNORE_A);
+    if (RtfCommand == NULL)
+        result = FALSE;
+    else if (strcmp(RtfCommand, "NUMBER") == 0)
+        IgnoreVar();
+    else if (strcmp(RtfCommand, "MEASURE") == 0)
+        IgnoreVar();
+    else if (strcmp(RtfCommand, "OTHER") == 0)
+        IgnoreVar();
+    else if (strcmp(RtfCommand, "COMMAND") == 0)
+        IgnoreCmd();
+    else if (strcmp(RtfCommand, "SINGLE") == 0) {
+    } else if (strcmp(RtfCommand, "PARAMETER") == 0)
+        CmdIgnoreParameter(No_Opt_One_NormParam);
     else if (strcmp(RtfCommand, "TWOPARAMETER") == 0)
-         CmdIgnoreParameter(No_Opt_Two_NormParam);
+        CmdIgnoreParameter(No_Opt_Two_NormParam);
+
 /*	else if (strcmp(RtfCommand, "LINE") == 0) skipToEOL(); */
-	else if (strcmp(RtfCommand, "ENVIRONMENT") == 0) {
-		char           *str;
-		str = malloc(strlen(command) + 5);	/* envelope: end{..} */
-		if (str == NULL)
-			diagnostics(ERROR, "malloc error -> out of memory!\n");
-		strcpy(str, "end{");
-		strcat(str, command);
-		strcat(str, "}");
-		Ignore_Environment(str);
-		free(str);
-	} else if (strcmp(RtfCommand, "ENVCMD") == 0)
-		PushEnvironment(IGN_ENV_CMD);
-	else if (strcmp(RtfCommand, "PACKAGE") == 0)
-		{}
-	else
-		result = FALSE;
-	return (result);
+    else if (strcmp(RtfCommand, "ENVIRONMENT") == 0) {
+        char *str;
+
+        str = malloc(strlen(command) + 5);  /* envelope: end{..} */
+        if (str == NULL)
+            diagnostics(ERROR, "malloc error -> out of memory!\n");
+        strcpy(str, "end{");
+        strcat(str, command);
+        strcat(str, "}");
+        Ignore_Environment(str);
+        free(str);
+    } else if (strcmp(RtfCommand, "ENVCMD") == 0)
+        PushEnvironment(IGN_ENV_CMD);
+    else if (strcmp(RtfCommand, "PACKAGE") == 0) {
+    } else
+        result = FALSE;
+    return (result);
 }
 
 
-void 
-IgnoreVar(void)
+void IgnoreVar(void)
+
 /****************************************************************************
 purpose : ignores anything till a space or a newline
  ****************************************************************************/
 {
-	char            c;
-	while ((c = getTexChar()) && c != '\n' && c != ' '){}
+    char c;
+
+    while ((c = getTexChar()) && c != '\n' && c != ' ') {
+    }
 }
 
 
-void 
-IgnoreCmd(void)
+void IgnoreCmd(void)
+
 /****************************************************************************
 purpose : ignores anything till an alphanumeric character
  ****************************************************************************/
 {
-	char            c;
-	while ((c = getTexChar()) && c != '\\'){}
-	while ((c = getTexChar()) && !isalpha((int)c)){}
-	ungetTexChar(c);
+    char c;
+
+    while ((c = getTexChar()) && c != '\\') {
+    }
+    while ((c = getTexChar()) && !isalpha((int) c)) {
+    }
+    ungetTexChar(c);
 }
 
-void 
-Ignore_Environment(char *cCommand)
+void Ignore_Environment(char *cCommand)
+
 /******************************************************************************
   purpose: function, which ignores an unconvertable environment in LaTex
            and writes text unchanged into the Rtf-file.
@@ -142,24 +148,24 @@ parameter: searchstring : includes the string to search for
 		    searchstring="end{unknown}"
  ******************************************************************************/
 {
-	char            unknown_environment[100];
-	char            *buffer;
-	int				font;
+    char unknown_environment[100];
+    char *buffer;
+    int font;
 
-	diagnostics(4, "Entering IgnoreEnvironment <%s>", cCommand);
-	
-	snprintf(unknown_environment, 100, "\\%s%s%s", "end{", cCommand, "}");
-	font = TexFontNumber("Typewriter");
-	CmdEndParagraph(0);
-	CmdStartParagraph(FIRST_PAR);
-	fprintRTF("\\qc [Sorry. Ignored ");
-	fprintRTF("{\\plain\\f%d\\\\begin\\{%s\\} ... \\\\end\\{%s\\}}]", font, cCommand, cCommand);
-	CmdEndParagraph(0);
-	CmdIndent(INDENT_INHIBIT);
+    diagnostics(4, "Entering IgnoreEnvironment <%s>", cCommand);
 
-	buffer = getTexUntil(unknown_environment,0);
-	ConvertString(unknown_environment);
-	free(buffer);
-	
-	diagnostics(4, "Exiting IgnoreEnvironment");
+    snprintf(unknown_environment, 100, "\\%s%s%s", "end{", cCommand, "}");
+    font = TexFontNumber("Typewriter");
+    CmdEndParagraph(0);
+    CmdStartParagraph(FIRST_PAR);
+    fprintRTF("\\qc [Sorry. Ignored ");
+    fprintRTF("{\\plain\\f%d\\\\begin\\{%s\\} ... \\\\end\\{%s\\}}]", font, cCommand, cCommand);
+    CmdEndParagraph(0);
+    CmdIndent(INDENT_INHIBIT);
+
+    buffer = getTexUntil(unknown_environment, 0);
+    ConvertString(unknown_environment);
+    free(buffer);
+
+    diagnostics(4, "Exiting IgnoreEnvironment");
 }
