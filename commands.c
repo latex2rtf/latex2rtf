@@ -447,6 +447,7 @@ static CommandArray FrenchModeCommands[] = {
     {"dittomark", CmdFrenchAbbrev, DITTO_MARK},
     {"deuxpoints", CmdFrenchAbbrev, DEUX_POINTS},
     {"fup", CmdFrenchAbbrev, FUP},
+    {"up", CmdFrenchAbbrev, FUP},
     {"LCS", CmdFrenchAbbrev, LCS},
     {"FCS", CmdFrenchAbbrev, FCS},
 	{"", NULL, 0}
