@@ -290,7 +290,7 @@ TabularGetRow(char *table, char **row, char **next_row, int *height)
 		PopSource();
 	}
 
-	diagnostics(4,"height =<%s>=%d twpi",dimension,height);
+	diagnostics(3,"height =<%s>=%d twpi",dimension,height);
 	free(dimension);
 
 	/* skip blanks */
@@ -562,7 +562,10 @@ TabularWriteRow(TabularT tabular, char *this_row, char *next_row, int height, in
 	diagnostics(4, "TabularWriteRow height=%d twpi, row <%s>",height, this_row); 
 	
 	/* avoid writing anything for empty last row */
-	if (next_row == NULL && !strchr(this_row, '&')) return;
+	if (next_row == NULL) {
+		if (colCount==1 &&  strlen(this_row)==0)   return;
+		if (colCount >1 && !strchr(this_row, '&')) return;
+	}
 	
 	TabularBeginRow(tabular, this_row, next_row, first_row);
 	cell_start = this_row;
