@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.14 2001/08/12 22:56:01 prahl Exp $ */
+/* $Id: main.c,v 1.15 2001/08/20 01:12:46 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -274,8 +274,8 @@ globals: fTex, fRtf and all global flags for convert (see above)
  ****************************************************************************/
 {
 	char            cThis = '\n';
-	char            cLast = '\n';
-	char            cLast2 = '\n';
+	char            cLast = '\0';
+	char            cLast2 = '\0';
 	char            cNext;
 	int             count = 0;
 	int             i;
@@ -288,7 +288,13 @@ globals: fTex, fRtf and all global flags for convert (see above)
 		babelMode = TRUE;
 */		
 	while ((cThis = getTexChar()) && cThis != '\0') {
-		diagnostics(5, "Current character in Convert() is %c", cThis);
+	
+		if (cThis == '\n')
+			diagnostics(5, "Current character in Convert() is '\\n'");
+		else if (cThis == '\0')
+			diagnostics(5, "Current character in Convert() is '\\0'");
+		else
+			diagnostics(5, "Current character in Convert() is '%c'", cThis);
 
 /*		if (babelMode) {
 			cThis = babelConvert(cThis, g_babel_language);
@@ -336,7 +342,7 @@ globals: fTex, fRtf and all global flags for convert (see above)
 			if (!bInDocument)
 				continue;
 				
-			if ((cLast != ' ') && (cLast != '\n') ) {
+			if ((cLast != ' ') && (cLast != '\n') ) { 
 				if (!mbox)
 					/* if (bNewPar == FALSE) */
 					fprintf(fRtf, " ");
@@ -428,10 +434,11 @@ globals: fTex, fRtf and all global flags for convert (see above)
 				CmdFormula(FORM_DOLLAR);
 			}
 
-/* Formulas need to close all Convert() operations when they end 
-   This works for \begin{equation} but not $$ since the BraceLevel
-   and environments don't get pushed properly.  We do it explicitly here.
-*/
+			/* 
+			   Formulas need to close all Convert() operations when they end 
+			   This works for \begin{equation} but not $$ since the BraceLevel
+			   and environments don't get pushed properly.  We do it explicitly here.
+			*/
 			if (g_processing_equation)
 				PushBrace();
 			else {

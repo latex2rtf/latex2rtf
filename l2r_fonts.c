@@ -1,44 +1,11 @@
-/*
- * $Id: l2r_fonts.c,v 1.10 2001/08/20 00:02:24 prahl Exp $
- * History:
- * $Log: l2r_fonts.c,v $
- * Revision 1.10  2001/08/20 00:02:24  prahl
- * Fixed problem with processing fonts.tex
- * Added support for a variety French abbreviations
- *
- * Revision 1.9  2001/08/12 21:15:46  prahl
- *         Removed last two // comments
- *         Explicitly cast char to int in isalpha() and isdigit()
- *         Began the process of supporting Babel better
- *
- * Revision 1.6  1998/10/28 06:27:56  glehner
- * Removed <malloc.h>
- *
- * Revision 1.5  1997/02/15 20:55:50  ralf
- * Some reformatting and changes suggested by lclint
- * Removed direct access to data structures in cfg.c
- *
- * Revision 1.4  1995/05/24 15:32:22  ralf
- * Changes by Vladimir Menkov for DOS port
- *
- * Revision 1.3  1995/03/23  15:58:08  ralf
- * Reworked version by Friedrich Polzer and Gerhard Trisko
- *
- * Revision 1.2  1994/06/17  14:19:41  ralf
- * Corrected various bugs, for example interactive read of arguments
- *
- * Revision 1.1  1994/06/17  11:26:29  ralf
- * Initial revision
- *
- */
-/***************************************************************************
+/* $Id: l2r_fonts.c,v 1.11 2001/08/20 01:12:46 prahl Exp $
      name : fonts.c
    author : DORNER Fernando, GRANZER Andreas
             POLZER Friedrich,TRISKO Gerhard
  * uses now sorted array instead of fonts.cfg and chained list
  *
  purpose : The LaTeX font will be converted to the RTF font
- ******************************************************************************/
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -50,9 +17,7 @@
 #include "cfg.h"
 #include "parser.h"
 
-/******************************************************************************/
 void            error(char *);
-
 char            PointSize[10] = "10pt";
 char            normalsize[20] = "\\normalsize";
 int             document_font_size = 22;
@@ -278,13 +243,12 @@ parameter: code: includes the font-type
 		s = getParam();
 		ConvertString(s);
 		free(s);
-		fprintf(fRtf, "} ");
+		fprintf(fRtf, "}");
 
 	} else {
 		fprintf(fRtf, "\\f%d ", num);
 		Convert();
-		fprintf(fRtf, "} ");
-		Convert();
+		fprintf(fRtf, "}");
 	}
 
 	diagnostics(4, "Exiting CmdSetFont");

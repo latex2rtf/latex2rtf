@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.14 2001/08/12 23:39:12 prahl Exp $ 
+/* $Id: funct1.c,v 1.15 2001/08/20 01:12:46 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -1222,7 +1222,7 @@ ConvertString(char *string)
 	FILE           *fp, *LatexFile;
 	long            oldlinenumber;
 	int             test;
-	char            temp[31];
+	char            temp[51];
 	
 	if ((fp = tmpfile()) == NULL) {
 		fprintf(stderr, "%s: Fatal Error: cannot create temporary file\n", progname);
@@ -1245,9 +1245,10 @@ ConvertString(char *string)
 	oldlinenumber = linenumber;
 /*	linenumber = 1;*/
 
-	strncpy(temp,string,30);
+	strncpy(temp,string,50);
 	diagnostics(5, "Entering Convert() from StringConvert() <%s>",temp);
-	Convert();
+	while (!feof(fTex))
+		Convert();
 	diagnostics(5, "Exiting Convert() from StringConvert()");
 
 	fTex = LatexFile;
