@@ -1,4 +1,4 @@
-/*  $Id: parser.c,v 1.32 2001/11/11 06:17:36 prahl Exp $
+/*  $Id: parser.c,v 1.33 2001/11/11 18:57:06 prahl Exp $
 
    Contains declarations for a generic recursive parser for LaTeX code.
 */
@@ -39,9 +39,15 @@ static char             g_parser_currentChar;	/* Global current character */
 static char             g_parser_lastChar;
 static char             g_parser_penultimateChar;
 static int				g_parser_backslashes;
+static bool				g_parser_scan_ahead;
 
 static void     parseBracket();
 
+static void
+SetScanAhead(int flag)
+{
+	g_parser_scan_ahead = flag;
+}
 
 int CurrentLineNumber(void) 
 {
@@ -64,7 +70,23 @@ PushSource(char * filename, char * string)
 	char       s[50];
 	FILE *p    = NULL;
 	char *name = NULL;
-	int  line  = 1;
+	int i;
+	int line   = 1;
+	
+	if (0) {
+		diagnostics(1,"Before PushSource** line=%d, g_parser_depth=%d",
+		g_parser_line,g_parser_depth);
+		for (i=0; i<=g_parser_depth; i++) {
+			if (g_parser_stack[i].file)
+				diagnostics(1,"i=%d file   =%s, line=%d", i, g_parser_stack[i].file_name,
+					g_parser_stack[i].file_line);
+
+			else {
+				strncpy(s,g_parser_stack[i].string,25);
+				diagnostics(1,"i=%d string =%s, line=%d", i, s, g_parser_stack[i].file_line);
+			}
+		}
+	}
 	
 	/* save current values for linenumber and string */
 	if (g_parser_depth >=0) {
@@ -79,6 +101,7 @@ PushSource(char * filename, char * string)
            diagnostics(WARNING, "Cannot open <%s>\n", filename);
            return 0;
        }
+       g_parser_line=1;
     } else {
     	name = CurrentFileName();
     	line = CurrentLineNumber();
@@ -95,15 +118,30 @@ PushSource(char * filename, char * string)
 	g_parser_stack[g_parser_depth].file_name   = name;
 	g_parser_file = p;
 	g_parser_string = string;
+/*
 	g_parser_line = line;
-
-	if (g_parser_file)
+*/
+	if (g_parser_file) {
 		diagnostics(5, "Opening Source File %s", g_parser_stack[g_parser_depth].file_name);
-	else {
+	}else {
 		strncpy(s,g_parser_string,25);
 		diagnostics(5, "Opening Source string <%s>",s);
 	}
 
+	if (0) {
+		diagnostics(1,"After  PushSource** line=%d, g_parser_depth=%d",
+		g_parser_line,g_parser_depth);
+		for (i=0; i<=g_parser_depth; i++) {
+			if (g_parser_stack[i].file)
+				diagnostics(1,"i=%d file   =%s, line=%d", i, g_parser_stack[i].file_name,
+					g_parser_stack[i].file_line);
+
+			else {
+				strncpy(s,g_parser_stack[i].string,25);
+				diagnostics(1,"i=%d string =%s, line=%d", i, s, g_parser_stack[i].file_line);
+			}
+		}
+	}
 	return 1;
 }
 
@@ -120,7 +158,21 @@ void
 PopSource(void)
 {
 	char       s[50];
+	int i;
 
+	if (0) {
+		diagnostics(1,"Before PopSource** line=%d",g_parser_line);
+		for (i=0; i<=g_parser_depth; i++) {
+			if (g_parser_stack[i].file)
+				diagnostics(1,"i=%d file   =%s, line=%d", i, g_parser_stack[i].file_name,
+					g_parser_stack[i].file_line);
+
+			else {
+				strncpy(s,g_parser_stack[i].string,25);
+				diagnostics(1,"i=%d string =%s, line=%d", i, s, g_parser_stack[i].file_line);
+			}
+		}
+	}
 	if (g_parser_file)
 		diagnostics(5, "Closing Source File %s", g_parser_stack[g_parser_depth].file_name);
 	else {
@@ -141,6 +193,9 @@ PopSource(void)
 	if (g_parser_depth >= 0) {
 		g_parser_string = g_parser_stack[g_parser_depth].string;
 		g_parser_file   = g_parser_stack[g_parser_depth].file;
+	}
+
+	if (g_parser_file && 0) {
 		g_parser_line   = g_parser_stack[g_parser_depth].file_line;
 	}
 
@@ -149,6 +204,20 @@ PopSource(void)
 	else {
 		strncpy(s,g_parser_string,25);
 		diagnostics(5, "Resuming Source string <%s>",s);
+	}
+
+	if (0) {
+		diagnostics(1,"After PopSource** line=%d",g_parser_line);
+		for (i=0; i<=g_parser_depth; i++) {
+			if (g_parser_stack[i].file)
+				diagnostics(1,"i=%d file   =%s, line=%d", i, g_parser_stack[i].file_name,
+					g_parser_stack[i].file_line);
+
+			else {
+				strncpy(s,g_parser_stack[i].string,25);
+				diagnostics(1,"i=%d string =%s, line=%d", i, s, g_parser_stack[i].file_line);
+			}
+		}
 	}
 }
 
@@ -185,9 +254,6 @@ getRawTexChar()
 			
 		g_parser_currentChar = (char) thechar;
 
-	if (g_parser_currentChar == '\n')
-		g_parser_line++;
-		
 	} else {							/* no need to sanitize strings! */
 		if (g_parser_string && *g_parser_string) {
 			g_parser_currentChar = *g_parser_string;
@@ -195,6 +261,10 @@ getRawTexChar()
 		} else 
 			g_parser_currentChar = '\0';
 	}
+
+	if (g_parser_currentChar == '\n' && !g_parser_scan_ahead) 
+			g_parser_line++;
+	
 	g_parser_penultimateChar = g_parser_lastChar;
 	g_parser_lastChar = g_parser_currentChar;
 	return g_parser_currentChar;
@@ -215,7 +285,6 @@ purpose: rewind the filepointer in the LaTeX-file by one
 	if (g_parser_file) {
 	
 		ungetc(c, g_parser_file);
-		if (c == '\n') g_parser_line--;
 		
 	} else {
 		g_parser_string--; 
@@ -224,11 +293,14 @@ purpose: rewind the filepointer in the LaTeX-file by one
 		}
 	}
 	
+	if (c == '\n' && !g_parser_scan_ahead)
+		g_parser_line--;
+
 	g_parser_currentChar = g_parser_lastChar;
 	g_parser_lastChar = g_parser_penultimateChar;
 	g_parser_penultimateChar = '\0';	/* no longer know what that it was */
 	g_parser_backslashes = 0;
-	diagnostics(6,"ungetTexChar=<%c> backslashes=%d",c,g_parser_backslashes);
+	diagnostics(6,"after ungetTexChar=<%c> backslashes=%d line=%ld",c,g_parser_backslashes,g_parser_line);
 }
 
 char 
@@ -244,20 +316,19 @@ getTexChar()
 	char            cSave2 = g_parser_penultimateChar;
 
 	cThis = getRawTexChar();
-	diagnostics(6,"before getTexChar=<%c> backslashes=%d",cThis,g_parser_backslashes);
 	while (cThis == '%' && g_parser_backslashes % 2 == 0) {
 		skipToEOL();
 		g_parser_penultimateChar = cSave2;
 		g_parser_lastChar = cSave;
 		cThis = getRawTexChar();
-		diagnostics(6,"(after %%) getTexChar=<%c> backslashes=%d",cThis,g_parser_backslashes);
 	}
 	
 	if (cThis == '\\') 
 		g_parser_backslashes++;
 	else
 		g_parser_backslashes=0;
-	diagnostics(6,"after getTexChar=<%c> backslashes=%d",cThis,g_parser_backslashes);
+	diagnostics(6,"after getTexChar=<%c> backslashes=%d line=%d",cThis,
+	              g_parser_backslashes,g_parser_line);
 	return cThis;
 }
 
@@ -581,6 +652,8 @@ getTexUntil(char * target, int raw)
 	int             j   = 0;                /* number of found characters */
 	bool			end_of_file_reached = FALSE;
 	int             len = strlen(target);
+
+	SetScanAhead(TRUE);
 	diagnostics(3, "getTexUntil target = <%s> raw_search = %d ", target, raw);
 	
 	while (j < len && i < 4095) {
@@ -614,6 +687,7 @@ getTexUntil(char * target, int raw)
 		RestoreFilePosition(-1);	/* move to start of target */
 	}
 	
+	SetScanAhead(FALSE);
 	s = strdup(buffer);
 	diagnostics(6,"strdup result = %s",s);
 	return s;
@@ -767,6 +841,7 @@ getSection(char **body, char **header)
 	*body=NULL;
 	*header=NULL;
 	
+	SetScanAhead(TRUE);
 	for (delta=0;;delta++) {
 	
 		if (delta+2 >= section_buffer_size) increase_buffer_size();
@@ -887,4 +962,5 @@ getSection(char **body, char **header)
 	text = strdup(section_buffer);
 	*body = text;
 	*header = next_header;
+	SetScanAhead(FALSE);
 }
