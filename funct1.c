@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.55 2002/02/18 21:00:55 prahl Exp $ 
+/* $Id: funct1.c,v 1.56 2002/02/18 21:14:15 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -1721,7 +1721,7 @@ roman_item(int n)
 void
 CmdInclude(int code)
 /******************************************************************************
- purpose: handles \input file, \input{file}, and \include{file}
+ purpose: handles \input file, \input{file}, \include{file}
  ******************************************************************************/
 {
 	char            name[50], *s, *t, cNext;
