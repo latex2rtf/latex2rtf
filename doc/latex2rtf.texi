@@ -824,40 +824,46 @@ The format is really simple.
 @node Error Messages and Logging of LaTeX2RTF Activity,, Configuring LaTeX2RTF, Top
 @chapter Error Messages and Logging of LaTeX2RTF Activity 
 
-Note: Error reporting and logging is one of the most chaotic aspects of the
-program. There are a lot of inconsistencies, but I hope to get it cleaner with
-time.
+As stated in the Debugging section, @ltor{} provides a means to control 
+the amount of debugging information through the @option{-d#} switch.  
+By using a debugging level of 4, you can get a pretty good idea of what
+@latex{} command caused the problem and what line that command might be
+found on.  
 
-As stated in the Debugging section, @ltor{} provides a means to control the amount
-of information it puts out on stderr.
 @table @samp
 
 @item Fatal error messages
 indicate a bug in the source code. PLEASE report them, if they do not
-apear in the documentation, see section Reporting_Bugs. Note: By now you
-won't be informed by the program if an error is fatal or not. Try to find
-it out by context ...
+apear in the documentation @xref{Reporting Bugs}.
 
 @item Error messages
-always abort the program. They are thrown on conditions that do not allow
-further converting of the input file, but should be either documented as
-missing or unimplemented feature, or should be able to be corrected by
-the user (e.g. missing @file{.cfg} files).
+always abort the program and are caused by conditions that prevent
+further conversion of the input file.  Typically this is cause by
+@ltor{} getting hopelessly confused by the number of braces in the
+@latex{} file.
 
 @item Warning messages
 inform you, that there is some conversion loss from @latex{} to RTF, or that
-the output file has some restrictions on some RTF Readers.
+the output file has some restrictions on some RTF Readers. Most of these 
+warnings can be supressed by add the offending command to the @file{ignore.cfg}
+file.
 @end table
 
 Error and Warning messages should follow the GNU Coding standards, i.e. they
-have the format:
-``inputfile':line: Error|Warning: message'
+have the format
+@example
+inputfile':line: Error|Warning: message
+@end example
 
 Note: Neither the inputfile may be correctly announced if @code{\input}ing it, nor
-can you rely on the linenumber, see section Known_Bugs.
+can you rely on the linenumber, @xref{Known Bugs}.
 
 The other messages only indicate `filename' (sometimes wrong) and linenumber
 (also sometimes wrong) and some more or less usefull or interesting message.
+
+Note: Error reporting and logging is one of the most chaotic aspects of the
+program. There are a lot of inconsistencies, but I hope to get it cleaner with
+time.
 
 Don't try to encounter any sense in debugging levels above 3, these are for my
 own delight only and can change significantly between versions.
