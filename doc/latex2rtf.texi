@@ -806,6 +806,20 @@ present.  This is where @ltor{} obtains the reference numbers.  It would be
 nice if @ltor{} just automatically numbered the references when there was
 no @file{.aux} file, but @ltor{} does not do this yet.
  
+@ltor{} relies on @bibtex{} to convert and format bibliographic
+entries.  Usually the style file for a particular @bibtex{} format
+does not use any special @latex{} commands and therefore the
+bibliography file @file{file.bbl} can be processed by @ltor{}
+without difficulty.  As a consequence, @ltor{} can handle most
+bibliography styles without problem.
+
+There are several latex style packages that add additional
+latex commands to enhance bibliographic formatting.
+@ltor{} currently supports the following bibliographic packages:@*
+apacite, apalike, authordate, harvard, natbib (also with apanat1b).
+These packages have many, many options and you may encounter
+problems with formatting in special cases.
+
 Footnotes are implemented and appear at the bottom of each page.  
 
 Indexing is reasonable well supported.  The simple mark-up of @code{makeindex}
