@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.48 2001/11/16 05:16:27 prahl Exp $ 
+/* $Id: funct1.c,v 1.49 2001/11/17 00:58:49 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -518,7 +518,7 @@ parameter: code: type of section-recursion-level
 
 	case SECT_CHAPTER:
 	case SECT_CHAPTER_STAR:
-		fprintRTF("\\page{\\plain\\b\\fs32\\kerning28 ");
+		fprintRTF("\\page{\\plain\\b\\fs40\\kerning28 ");
 		ConvertBabelName("CHAPTERNAME");
 		if (code == SECT_CHAPTER && getCounter("secnumdepth")>=-1) {
 			incrementCounter("chapter");
@@ -535,7 +535,7 @@ parameter: code: type of section-recursion-level
 			if (g_section_label) fprintRTF("{\\v{\\*\\bkmkstart PR_%s}",g_section_label);
 			if (g_section_label) fprintRTF("{\\*\\bkmkend PR_%s}}",g_section_label);
 		}
-		fprintRTF("\\par}{\\fi0\\plain\\b\\fs40\\kerning28 ");
+		fprintRTF("\\par\\par}{\\fi0\\plain\\b\\fs40\\kerning28 ");
 		ConvertString(heading);
 		CmdEndParagraph(0);
 		fprintRTF("}");
@@ -555,7 +555,7 @@ parameter: code: type of section-recursion-level
 				fprintRTF("\\fs32 ");
 				sprintf(section_label, "%d.", getCounter("section"));
 			} else {
-				fprintRTF("\\fs24 ");
+				fprintRTF("\\fs32 ");
 				sprintf(section_label, "%d.%d", getCounter("chapter"),getCounter("section"));
 			}
 			if (g_section_label) fprintRTF("{\\v{\\*\\bkmkstart LBL_%s}",g_section_label);
