@@ -2,9 +2,9 @@
 # Initial version 28 May 2001 Scott Prahl
 #
 LATEX2PNG= ./latex2png
-
-PNG= test1.png test2.png test3.png test4.png /tmp/test1.png test1fig.png
 TMP= ../tmp
+
+PNG= test1.png test2.png test3.png test4.png $(TMP)/test1.png test1fig.png
 
 all:
 	mkdir -p $(TMP)
