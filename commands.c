@@ -141,6 +141,7 @@ static CommandArray commands[] = {
 	{"BibTeX", CmdLogo, CMD_BIBTEX},
 	{"AmSTeX", CmdLogo, CMD_AMSTEX},
 	{"AmSLaTeX", CmdLogo, CMD_AMSLATEX},
+	{"LyX", CmdLogo, CMD_LYX},
 	
 	/* ---------- SPECIAL CHARACTERS ------------------- */
 	{"hat", CmdHatChar, 0},

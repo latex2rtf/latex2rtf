@@ -5,6 +5,7 @@
 #define CMD_LATEXE 5
 #define CMD_AMSTEX 6
 #define CMD_AMSLATEX 7
+#define CMD_LYX 8
 
 void            CmdCedillaChar(int code);
 void            CmdUmlauteChar(int code);

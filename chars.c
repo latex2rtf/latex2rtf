@@ -821,17 +821,21 @@ CmdLogo(int code)
 	case CMD_TEX:
 		TeXlogo();
 		break;
+		
 	case CMD_LATEX:
 		LaTeXlogo();
 		break;
+		
 	case CMD_SLITEX:
 		fprintRTF("{\\scaps Sli}");  
 		TeXlogo();
 		break;
+		
 	case CMD_BIBTEX:
 		fprintRTF("{\\scaps Bib}");
 		TeXlogo();
 		break;
+		
 	case CMD_LATEXE:
 		LaTeXlogo();
 		if (CurrentFontSize() > 14) {
@@ -844,6 +848,7 @@ CmdLogo(int code)
 		font_num = RtfFontNumber("Symbol");
 		fprintRTF("2{\\dn%d\\f%d e}", dnsize, font_num);
 		break;
+		
 	case CMD_AMSTEX:
 		fprintRTF("{\\i AmS}-"); /* should be calligraphic */
 		TeXlogo();
@@ -852,6 +857,12 @@ CmdLogo(int code)
 	case CMD_AMSLATEX:
 		fprintRTF("{\\i AmS}-");  /* should be calligraphic */ 
 		LaTeXlogo();
+		break;
+		
+	case CMD_LYX:
+		DnSize = 0.3 * CurrentFontSize();
+		dnsize = DnSize + 0.45;
+		fprintRTF("L{\\dn%d Y}X", dnsize);
 		break;
 	}
 	fprintRTF("}");
