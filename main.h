@@ -1,4 +1,4 @@
-/* $Id: main.h,v 1.57 2003/01/06 01:26:06 prahl Exp $ */
+/* $Id: main.h,v 1.58 2003/03/08 15:48:10 prahl Exp $ */
 
 #if defined(UNIX)
 #define ENVSEP ':'
@@ -32,8 +32,8 @@
 #define MAXCOMMANDLEN 100
 
 /* available values for alignment */
-#define LEFT      'l'
-#define RIGHT     'r'
+#define LEFT	  'l'
+#define RIGHT	  'r'
 #define CENTERED  'c'
 #define JUSTIFIED 'j'
 
@@ -43,66 +43,67 @@
 #include <assert.h>
 #include <stdio.h>
 
-typedef int     bool;
+typedef int		bool;
 
-void            diagnostics(int level, char *format,...);
+void			diagnostics(int level, char *format,...);
 
 extern /* @dependent@ */ FILE *fRtf;	/* file pointer to RTF file */
 extern			char *g_aux_name;
 extern			char *g_bbl_name;
 extern			char *g_home_dir;
-extern 			char *progname;			/* name of the executable file */
+extern			char *progname;			/* name of the executable file */
 
-extern bool     GermanMode;
-extern bool     FrenchMode;
-extern bool     RussianMode;
+extern bool		GermanMode;
+extern bool		FrenchMode;
+extern bool		RussianMode;
 extern bool		CzechMode;
-extern bool     pagenumbering;
-extern int      headings;
+extern bool		pagenumbering;
+extern int		headings;
 
-extern int      g_verbosity_level;
-extern int      RecursionLevel;
-extern int      indent;
-extern char     alignment;
+extern int		g_verbosity_level;
+extern int		RecursionLevel;
+extern int		indent;
+extern char		alignment;
 
 /* table  & tabbing variables */
-extern char 	*colFmt;
-extern long   	pos_begin_kill;
-extern int      tabcounter;
-extern int      colCount;
-extern int      actCol;
-extern int 		g_equation_column;
-extern int      tabcounter;
+extern char		*colFmt;
+extern long		pos_begin_kill;
+extern int		tabcounter;
+extern int		colCount;
+extern int		actCol;
+extern int		g_equation_column;
+extern int		tabcounter;
 
-extern bool     twocolumn;
-extern bool     titlepage;
-extern bool     g_processing_equation;
-extern bool     g_processing_preamble;
-extern bool     g_processing_figure;
-extern bool 	g_processing_table;
-extern bool     g_processing_tabbing;
-extern bool     g_processing_tabular;
-extern bool     g_processing_eqnarray;
+extern bool		twocolumn;
+extern bool		titlepage;
+extern bool		g_processing_equation;
+extern bool		g_processing_preamble;
+extern bool		g_processing_figure;
+extern bool		g_processing_table;
+extern bool		g_processing_tabbing;
+extern bool		g_processing_tabular;
+extern bool		g_processing_eqnarray;
 extern int		g_processing_arrays;
-extern int 		g_processing_fields;
+extern int		g_processing_fields;
 extern int		g_dots_per_inch;
 
-extern int      g_equation_number;
-extern bool g_escape_parent;
-extern bool     g_show_equation_number;
-extern int      g_enumerate_depth;
-extern bool     g_suppress_equation_number;
-extern bool     g_aux_file_missing;
-extern int    	g_document_type;
-extern char     g_charset_encoding_name[20];
-extern int 		g_fcharset_number;
+extern int		g_document_type;
+extern int		g_document_bibstyle;
+extern int		g_equation_number;
+extern bool		g_escape_parent;
+extern bool		g_show_equation_number;
+extern int		g_enumerate_depth;
+extern bool		g_suppress_equation_number;
+extern bool		g_aux_file_missing;
+extern char		g_charset_encoding_name[20];
+extern int		g_fcharset_number;
 
 extern char		*g_figure_label;
 extern char		*g_table_label;
 extern char		*g_equation_label;
-extern char  	*g_section_label;
+extern char		*g_section_label;
 extern char		*g_config_path;
-extern char     g_field_separator;
+extern char		g_field_separator;
 extern char		*g_preamble;
 
 extern double	g_png_equation_scale; 

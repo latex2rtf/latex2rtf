@@ -86,9 +86,10 @@ int				g_enumerate_depth = 0;
 bool			g_suppress_equation_number = FALSE;
 bool			g_aux_file_missing = FALSE; /* assume that it exists */
 
+bool			g_document_type = FORMAT_ARTICLE;
+int				g_document_bibstyle = BIBSTYLE_STANDARD;
 int				g_safety_braces = 0;
 bool			g_processing_equation = FALSE;
-bool			g_document_type = FORMAT_ARTICLE;
 bool			g_RTF_warnings = FALSE;
 char		   *g_config_path = NULL;
 char		   *g_tmp_path = NULL;

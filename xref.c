@@ -45,7 +45,58 @@ char * g_section_label = NULL;
 char * g_label_list[MAX_LABELS];
 int g_label_list_number=-1;
 
-char * ScanAux(char *token, char * reference, int code);
+static char * 
+ScanAux(char *token, char * reference, int code)
+/*************************************************************************
+purpose: obtains a reference from .aux file
+
+code=0 means \token{reference}{number}       -> "number"
+code=1 means \token{reference}{{sect}{line}} -> "sect"
+ ************************************************************************/
+{
+	static FILE    *fAux = NULL;
+	char            AuxLine[1024];
+	char            target[256];
+	char           *s,*t;
+	int				braces;
+
+	if (g_aux_file_missing || strlen(token) == 0) {
+		return NULL;
+	}
+
+	snprintf(target, 256, "\\%s{%s}", token, reference);
+	
+	if (fAux == NULL && (fAux = my_fopen(g_aux_name, "r")) == NULL) {
+		diagnostics(WARNING, "No .aux file.  Run LaTeX to create %s\n", g_aux_name);
+		g_aux_file_missing = TRUE;
+		return NULL;
+	}
+	
+	rewind(fAux);
+	
+	while (fgets(AuxLine, 1023, fAux) != NULL) {
+
+		s = strstr(AuxLine, target);
+		if (s) {
+		
+			s += strlen(target);		/* move to \token{reference}{ */			
+			if (code==1) s++;			/* move to \token{reference}{{ */
+
+			t = s;					
+			braces = 1;
+			while ( braces >= 1) {		/* skip matched braces */
+				t++;
+				if (*t == '{') braces++;
+				if (*t == '}') braces--;
+				if (*t == '\0') return NULL;
+			}
+			
+			*t = '\0';
+			return strdup(s+1);
+		}
+	}
+	return NULL;
+}
 
 void 
 CmdFootNote(int code)
@@ -183,19 +234,22 @@ CmdBibitem(int code)
 		fprintRTF("]");
 	} else {
 		diagnostics(4,"CmdBibitem <%s>",s);
-		fprintRTF("[");
-		fprintRTF("{\\*\\bkmkstart BIB_%s}",signet);
-		ConvertString(s);
-		fprintRTF("{\\*\\bkmkend BIB_%s}",signet);
-		fprintRTF("]");
+		if (g_document_bibstyle == BIBSTYLE_STANDARD) {
+			fprintRTF("[");
+			fprintRTF("{\\v\\*\\bkmkstart BIB_%s}",signet);
+			ConvertString(s);
+			fprintRTF("{\\*\\bkmkend BIB_%s}",signet);
+			fprintRTF("]");
+			fprintRTF("\\tab ");
+		}
+		/* else emit nothing for APALIKE */
 	}
-
+	
 	if (s) free(s);
 	if (label) free(label);
 	free(signet);
 	free(key);
 	
-	fprintRTF("\\tab ");
 	c=getNonBlank();
 	ungetTexChar(c);
 }
@@ -301,6 +355,7 @@ void CmdLabel(int code)
 purpose: handles \label \ref \pageref \cite
 ******************************************************************************/
 {
+	char punct[4]="[],";
 	char *text, *signet;
 	char *str1, *comma, *s, *str;
 	char *option = NULL;
@@ -341,7 +396,10 @@ purpose: handles \label \ref \pageref \cite
 		
 /* {\field{\*\fldinst{\lang1024 REF section31 \\* MERGEFORMAT }}{\fldrslt{?}}} */
 		case LABEL_CITE:
-			fprintRTF("\n[");
+			if (g_document_bibstyle == BIBSTYLE_APALIKE) 
+				strcpy(punct,"();");
+
+			fprintRTF("\n%c", punct[0]);
 			str = strdup_noblanks(text);
 			str1 = str;
 			do {
@@ -349,14 +407,20 @@ purpose: handles \label \ref \pageref \cite
 				if (comma) *comma = '\0';	/* replace ',' with '\0' */
 				s = ScanAux("bibcite", str1, 0);
 				signet = strdup_nobadchars(str1);
-				fprintRTF("{\\field{\\*\\fldinst{\\lang1024 REF BIB_%s \\\\* MERGEFORMAT }}",signet);
-				fprintRTF("{\\fldrslt{");
+
+				if (g_document_bibstyle == BIBSTYLE_STANDARD) {
+					fprintRTF("{\\field{\\*\\fldinst{\\lang1024 REF BIB_%s \\\\* MERGEFORMAT }}",signet);
+					fprintRTF("{\\fldrslt{");
+				}
+				
 				if (s)
-					fprintRTF(s);
+					ConvertString(s);
 				else
-					fprintRTF("?");
-				fprintRTF("}}}");
-				if (comma) fprintRTF(",");
+					ConvertString(signet);
+					
+				if (g_document_bibstyle == BIBSTYLE_STANDARD)
+					fprintRTF("}}}");
+				if (comma) fprintRTF("%c ",punct[2]);
 				str1 = comma + 1;
 				if (s) free(s);
 				free(signet);
@@ -366,7 +430,8 @@ purpose: handles \label \ref \pageref \cite
 				fprintRTF(", ");
 				ConvertString(option);
 			}
-			fprintRTF("]");
+			
+			fprintRTF("%c",punct[1]);
 			free(str);
 			break;
 		
@@ -381,59 +446,6 @@ purpose: handles \label \ref \pageref \cite
 	
 	free(text);
 	if (option) free(option);
-}
-
-char * 
-ScanAux(char *token, char * reference, int code)
-/*************************************************************************
-purpose: obtains a reference from .aux file
-
-code=0 means \token{reference}{number}       -> "number"
-code=1 means \token{reference}{{sect}{line}} -> "sect"
- ************************************************************************/
-{
-	static FILE    *fAux = NULL;
-	char            AuxLine[1024];
-	char            target[256];
-	char           *s,*t;
-	int				braces;
-
-	if (g_aux_file_missing || strlen(token) == 0) {
-		return NULL;
-	}
-
-	snprintf(target, 256, "\\%s{%s}", token, reference);
-	
-	if (fAux == NULL && (fAux = my_fopen(g_aux_name, "r")) == NULL) {
-		diagnostics(WARNING, "No .aux file.  Run LaTeX to create %s\n", g_aux_name);
-		g_aux_file_missing = TRUE;
-		return NULL;
-	}
-	
-	rewind(fAux);
-	
-	while (fgets(AuxLine, 1023, fAux) != NULL) {
-
-		s = strstr(AuxLine, target);
-		if (s) {
-		
-			s += strlen(target);		/* move to \token{reference}{ */			
-			if (code==1) s++;			/* move to \token{reference}{{ */
-
-			t = s;					
-			braces = 1;
-			while ( braces >= 1) {		/* skip matched braces */
-				t++;
-				if (*t == '{') braces++;
-				if (*t == '}') braces--;
-				if (*t == '\0') return NULL;
-			}
-			
-			*t = '\0';
-			return strdup(s+1);
-		}
-	}
-	return NULL;
 }
 
 void

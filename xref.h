@@ -12,6 +12,9 @@
 #define LABEL_HTMLADDNORMALREF 8
 #define LABEL_HTMLREF 9
 
+#define BIBSTYLE_STANDARD   1
+#define BIBSTYLE_APALIKE    2
+
 void    CmdFootNote(int code);
 void    CmdLabel(int code);
 void 	CmdNoCite(int code);

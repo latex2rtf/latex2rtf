@@ -37,6 +37,7 @@ Authors:
 #include "ignore.h"
 #include "commands.h"
 #include "counters.h"
+#include "xref.h"
 
 static bool   g_preambleTwoside  = FALSE;
 static bool   g_preambleTwocolumn= FALSE;
@@ -418,6 +419,8 @@ setDocumentOptions(char *optionlist)
 			g_preambleTitlepage = TRUE;
 		else if (strcmp(option, "isolatin1") == 0)
 			setPackageInputenc("latin1");
+		else if (strcmp(option, "apalike") == 0)
+			g_document_bibstyle = BIBSTYLE_APALIKE;
 		else if (strcmp(option, "hyperlatex") == 0) {
 			PushEnvironment(HYPERLATEX); 
 		} else if (strcmp(option, "fancyhdr") == 0) {
