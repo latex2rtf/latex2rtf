@@ -1,9 +1,9 @@
-# $Id: Makefile,v 1.62 2002/10/07 14:55:14 prahl Exp $
+# $Id: Makefile,v 1.63 2002/10/15 07:17:05 whennings Exp $
 
 CC=gcc
 MKDIR=mkdir -p
-LIBS=-lMallocDebug -force_flat_namespace
-#LIBS=
+#LIBS=-lMallocDebug -force_flat_namespace
+LIBS=
 
 CFLAGS:=-DUNIX
 #CFLAGS:=-DMSDOS
@@ -19,8 +19,14 @@ CFLAGS:=-DUNIX
 #Uncomment if getopt() is not available
 #CFLAGS:=$(CFLAGS) -DHAS_NO_GETOPT
 
-#Comment out if you don't want compiler warnings
-CFLAGS:=$(CFLAGS) -g -Wall -ansi
+#Option "-ansi" prevents loading of non-standard libraries,
+#therefore deactivated by whennings.
+#CFLAGS:=$(CFLAGS) -g -Wall -ansi
+
+#Option "-fsigned-char" needed on IBM SP/2 (AIX),
+#seems to do no harm on other systems,
+#therefore added by whennings.
+CFLAGS:=$(CFLAGS) -g -Wall -fsigned-char
 
 #Base directory
 PREFIX=$(PREFIX_DRIVE)/usr/local
