@@ -7,6 +7,11 @@ Fit & Finish:
 	add documentation for %latex2rtf
 	add examples to help page
 	improve readme.osx
+
+	ensure natbib number style works
+	add bib_simple1 and others to test
+	add ensuremath
+	add \circ
 	
 Potential Features:
 

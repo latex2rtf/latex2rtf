@@ -38,6 +38,7 @@
 #include "l2r_fonts.h"
 #include "style.h"
 #include "definitions.h"
+#include "equation.h"
 
 char *g_figure_label = NULL;
 char *g_table_label = NULL;
@@ -366,7 +367,8 @@ void CmdBibitem(int code)
         fprintRTF("]");
     } else {
         diagnostics(4, "CmdBibitem <%s>", s);
-        if (g_document_bibstyle == BIBSTYLE_STANDARD) {
+        if (g_document_bibstyle == BIBSTYLE_STANDARD ||
+            (g_document_bibstyle == BIBSTYLE_NATBIB && g_bibpunct_style != BIB_STYLE_ALPHA)) {
             fprintRTF("[");
             fprintRTF("{\\v\\*\\bkmkstart BIB_%s}", signet);
             ConvertString(s);
