@@ -1,4 +1,4 @@
-/* $Id: xref.c,v 1.1 2001/10/17 02:48:31 prahl Exp $ 
+/* $Id: xref.c,v 1.2 2001/10/27 06:13:58 prahl Exp $ 
  
 This file contains routines to handle cross references :
 	\label{key}, \ref{key},   \pageref{key}, \bibitem{key},
@@ -8,6 +8,7 @@ This file contains routines to handle cross references :
 #include <stdlib.h>
 #include <string.h>
 #include "main.h"
+#include "util.h"
 #include "convert.h"
 #include "funct1.h"
 #include "commands.h"
@@ -19,7 +20,6 @@ This file contains routines to handle cross references :
 #include "l2r_fonts.h"
 
 char * ScanAux(char *token, char * reference, int code);
-char * PurifyWord(char * text);
 
 void 
 CmdFootNote(int code)
@@ -73,8 +73,7 @@ parameter: if FALSE (0) work as normal
            if HYPERLATEX get reference string from remembered \link parameter
  ******************************************************************************/
 {
-	char            *reference;
-	char           *str1, *str2;
+	char            *reference, *str1, *str2, *nonblank;
 
 	fprintRTF("[");
 
@@ -84,11 +83,13 @@ parameter: if FALSE (0) work as normal
 			fprintRTF("?]");
 			return;
 		}
-		reference=strdup(hyperref);
+		reference = strdup(hyperref);
 	} else
 		reference = getBraceParam();
 
-	str1 = reference;
+	nonblank = strdup_noblanks(reference);
+	diagnostics(4,"before <%s>, after <%s>", reference, nonblank);
+	str1 = nonblank;
 	while ((str2 = strchr(str1, ',')) != NULL) {
 		*str2 = '\0';	/* replace ',' with '\0' */
 		ScanAux("bibcite", str1, 0);
@@ -98,6 +99,7 @@ parameter: if FALSE (0) work as normal
 
 	ScanAux("bibcite", str1, 0);
 	fprintRTF("]");
+	free(nonblank);
 	free(reference);
 }
 
@@ -155,7 +157,7 @@ CmdBibitem(int code)
 	}
 	
 	key = getBraceParam();
-	signet = PurifyWord(key);
+	signet = strdup_nobadchars(key);
 	s=ScanAux("bibcite", key, 0);
 	
 	fprintRTF("[");
@@ -186,7 +188,7 @@ purpose: handles \label \ref \pageref \cite
 ******************************************************************************/
 {
 	char *text, *signet;
-	char *str1, *comma, *s;
+	char *str1, *comma, *s, *str;
 	
 	text = getBraceParam();
 	if (strlen(text)==0) {
@@ -196,7 +198,7 @@ purpose: handles \label \ref \pageref \cite
 	
 	switch (code) {
 		case LABEL_LABEL:
-			signet = PurifyWord(text);
+			signet = strdup_nobadchars(text);
 			fprintRTF("{\\*\\bkmkstart LBL_%s}",signet);
 			fprintRTF("{\\*\\bkmkend LBL_%s}",signet);
 			free(signet);
@@ -204,7 +206,7 @@ purpose: handles \label \ref \pageref \cite
 		
 		case LABEL_HYPERREF:
 		case LABEL_REF:
-			signet = PurifyWord(text);
+			signet = strdup_nobadchars(text);
 			s = ScanAux("newlabel", text, 1);
 			fprintRTF("{\\field{\\*\\fldinst{REF LBL_%s \\\\n}}",signet);
 			fprintRTF("{\\fldrslt{%s}}}", ((s)?s:"?"));
@@ -214,12 +216,13 @@ purpose: handles \label \ref \pageref \cite
 		
 		case LABEL_CITE:
 			fprintRTF("[");
-			str1 = text;
+			str = strdup_noblanks(text);
+			str1 = str;
 			do {
 				comma = strchr(str1, ',');
 				if (comma) *comma = '\0';	/* replace ',' with '\0' */
 				s = ScanAux("bibcite", str1, 0);
-				signet = PurifyWord(str1);
+				signet = strdup_nobadchars(str1);
 				fprintRTF("{\\field{\\*\\fldinst{REF BIB_%s \\\\n }}",signet);
 				fprintRTF("{\\fldrslt{%s}}}", ((s)?s:"?"));
 				if (comma) fprintRTF(",");
@@ -229,11 +232,12 @@ purpose: handles \label \ref \pageref \cite
 			} while (comma != NULL);
 
 			fprintRTF("]");
+			free(str);
 			break;
 		
 		case LABEL_HYPERPAGEREF:
 		case LABEL_PAGEREF:
-			signet = PurifyWord(text);
+			signet = strdup_nobadchars(text);
 			fprintRTF("{\\field{\\*\\fldinst{PAGEREF LBL_%s }}",signet);
 			fprintRTF("{\\fldrslt{PAGEREF[%s]}}}",signet);
 			free(signet);
@@ -295,26 +299,3 @@ code=1 means \\token{reference}{{sect}{line}} -> "sect"
 	}
 	return NULL;
 }
-
-char * 
-PurifyWord(char * text)
-/*************************************************************************
-purpose: duplicate text with bad characters replaced by '_'
- ************************************************************************/
-{
-	char *signet, *s;
-	
-	signet = strdup(text);
-	s = signet;
-	
-	while (*s) {
-		if (!('a' <= *s && *s <= 'z') &&
-		    !('A' <= *s && *s <= 'Z') &&
-		    !('0' <= *s && *s <= '9'))
-			*s = '_';
-		s++;
-	}
-
-	return signet;
-}
-

@@ -1,4 +1,4 @@
-/* $Id: preamble.c,v 1.22 2001/10/17 02:48:31 prahl Exp $
+/* $Id: preamble.c,v 1.23 2001/10/27 06:13:58 prahl Exp $
 
 purpose : Handles LaTeX commands that should only occur in the preamble.
           These are gathered together because the entire preamble must be
@@ -11,6 +11,7 @@ purpose : Handles LaTeX commands that should only occur in the preamble.
 #include <string.h>
 #include "main.h"
 #include "convert.h"
+#include "util.h"
 #include "preamble.h"
 #include "l2r_fonts.h"
 #include "cfg.h"

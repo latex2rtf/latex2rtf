@@ -1,4 +1,4 @@
-/* $Id: main.h,v 1.27 2001/10/25 14:41:51 prahl Exp $ */
+/* $Id: main.h,v 1.28 2001/10/27 06:13:58 prahl Exp $ */
 #ifndef __MAIN_H
 #define __MAIN_H
 
@@ -8,10 +8,6 @@
 #define ENVSEP '^'
 #define PATHSEP ':'
 #include "MainMain.h"
-#endif
-
-#ifdef HAS_NO_STRDUP
-char           *strdup(const char *str);
 #endif
 
 #ifdef HAS_NO_GETOPT

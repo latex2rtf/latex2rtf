@@ -1,4 +1,4 @@
-/* $Id: chars.c,v 1.14 2001/10/15 03:43:16 prahl Exp $
+/* $Id: chars.c,v 1.15 2001/10/27 06:13:58 prahl Exp $
 
    purpose : handles special characters and logos
 */
@@ -287,7 +287,7 @@ CmdOaccentChar(int code)
 		if (strcmp(cParam, "\\i") == 0)
 			fprintRTF("\\'ee");
 		else
-			fprintf(stderr, "Cannot put \\r on '%s'", cParam);
+			diagnostics(WARNING, "Cannot put \\r on '%s'", cParam);
 		break;
 
 	default:
@@ -350,6 +350,7 @@ CmdCedillaChar(int code)
  purpose: converts \c{c} from LaTeX to RTF
  ******************************************************************************/
 {
+	int down;
 	char           *cParam = getBraceParam();
 	if (cParam == NULL)
 		return;
@@ -363,9 +364,10 @@ CmdCedillaChar(int code)
 		break;
 
 	default:
+		down = CurrentFontSize() / 4;
 		fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(");
 		ConvertString(cParam);
-		fprintRTF("%c\\'b8)}", FORMULASEP);
+		fprintRTF("%c\\dn%d\\'b8)}", FORMULASEP,down);
 		fprintRTF("{\\fldrslt }}");
 		break;
 	}
@@ -466,7 +468,7 @@ CmdUnderdotChar(int code)
 
 	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(");
 	ConvertString(cParam);
-	fprintRTF("%c\\\\S\\\\do%d(\\'2e))}", FORMULASEP, dnsize);
+	fprintRTF("%c\\\\S\\\\dn%d(\\'2e))}", FORMULASEP, dnsize);
 	fprintRTF("{\\fldrslt }}");
 
 	free(cParam);

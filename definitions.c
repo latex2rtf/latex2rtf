@@ -11,6 +11,7 @@ Scott Prahl, October 2001
 #include "definitions.h"
 #include "parser.h"
 #include "funct1.h"
+#include "util.h"
 
 #define MAX_DEFINITIONS 50
 
