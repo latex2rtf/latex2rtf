@@ -210,7 +210,7 @@ CmdNewDef(int code)
      purpose : handles \def \newcommand \renewcommand
  ******************************************************************************/
 {
-	char * name, *def, cThis;
+	char * name, *opt_param, *def, cThis;
 	char * params=NULL;
 	int param=0;
 	
@@ -228,17 +228,20 @@ CmdNewDef(int code)
 		}		
 		ungetTexChar('{');
 		
+		opt_param = NULL;
 		def = getBraceParam();
 		UpdateLineNumber(def);
-		newDefinition(name+1,def,param);		
+		newDefinition(name+1,opt_param, def,param);		
 	}
 	
 	if (code == DEF_NEW || code == DEF_RENEW) {
 		name = getBraceParam();
 		params = getBracketParam();
+		opt_param = getBracketParam();
 		def = getBraceParam();
 		UpdateLineNumber(name);
 		UpdateLineNumber(params);
+		if (opt_param) UpdateLineNumber(opt_param);
 		UpdateLineNumber(def);
 		param = 0;
 		if (params) {
@@ -250,30 +253,33 @@ CmdNewDef(int code)
 		
 
 		if (code == DEF_NEW)
-			newDefinition(name+1,def,param);
+			newDefinition(name+1,opt_param,def,param);
 		else
-			renewDefinition(name+1,def,param);
+			renewDefinition(name+1,opt_param,def,param);
 		
 	}
 
-	diagnostics(3,"CmdNewDef name=<%s> param=%d def=<%s>", name,param,def);
+	diagnostics(3,"CmdNewDef name=<%s> param=%d opt_param=<%s> def=<%s>", name,param, opt_param, def);
 	free(name);
 	free(def);
 	if (params) free(params);
+	if (opt_param) free(opt_param);
 }
 
 void
 CmdNewEnvironment(int code)
 {
-	char * name, *begdef, *enddef, *params;
+	char * name, *opt_param, *begdef, *enddef, *params;
 	int param;
 	
 	name = getBraceParam();
 	params = getBracketParam();
+	opt_param = getBracketParam();
 	begdef = getBraceParam();
 	enddef = getBraceParam();
 	UpdateLineNumber(name);
 	UpdateLineNumber(params);
+	if (opt_param) UpdateLineNumber(opt_param);
 	UpdateLineNumber(begdef);
 	UpdateLineNumber(enddef);
 	param = 0;
@@ -289,10 +295,11 @@ CmdNewEnvironment(int code)
 	diagnostics(3,"CmdNewEnvironment enddef=<%s>", enddef);
 
 	if (code == DEF_NEW)
-		newEnvironment(name,begdef,enddef,param);
+		newEnvironment(name,opt_param,begdef,enddef,param);
 	else
-		renewEnvironment(name,begdef,enddef,param);
+		renewEnvironment(name,opt_param,begdef,enddef,param);
 	
+	if (opt_param) free(opt_param);
 	free(name);
 	free(begdef);
 	free(enddef);
