@@ -1,4 +1,4 @@
-/* $Id: cfg.c,v 1.14 2001/09/18 03:40:25 prahl Exp $
+/* $Id: cfg.c,v 1.15 2001/09/26 14:02:59 prahl Exp $
 
      purpose : Read config files and provide lookup routines
 
@@ -126,8 +126,8 @@ params:  name: config-file-name
 	if (strlen(path) > 2 && path[strlen(path) - 1] != PATHSEP) {	/* append PATHSEP if
 									 * needed */
 		int             pathlen = strlen(path);
-		path[pathlen - 1] = PATHSEP;
-		path[pathlen] = '\0';
+		path[pathlen] = PATHSEP;
+		path[pathlen+1] = '\0';
 	}
 	strcat(path, name);
 	if ((fp = fopen(path, "r")) == NULL) {
