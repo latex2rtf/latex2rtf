@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.40 2001/10/27 21:56:30 prahl Exp $ 
+/* $Id: funct1.c,v 1.41 2001/10/28 04:02:44 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -603,10 +603,23 @@ CmdCaption(int code)
 	}
 
 	fprintRTF(" ");
+	if (g_processing_figure && g_figure_label)
+		fprintRTF("{\\*\\bkmkstart LBL_%s}",g_figure_label);
+
+	if (g_processing_table && g_table_label)
+		fprintRTF("{\\*\\bkmkstart LBL_%s}",g_table_label);
+
 	if (g_document_type != FORMAT_ARTICLE) 
 		fprintRTF("%d.", getCounter("chapter"));
-	fprintRTF("%d:  ", n);
+	fprintRTF("%d", n);
 
+	if (g_processing_figure && g_figure_label)
+		fprintRTF("{\\*\\bkmkend LBL_%s}",g_figure_label);
+
+	if (g_processing_table && g_table_label)
+		fprintRTF("{\\*\\bkmkend LBL_%s}",g_table_label);
+
+	fprintRTF(":  ");
 	thecaption = getBraceParam();
 	diagnostics(4, "in CmdCaption [%s]", thecaption);
 	ConvertString(thecaption);
@@ -1201,16 +1214,25 @@ void
 CmdFigure(int code)
 /******************************************************************************
   purpose: Process \begin{figure} ... \end{figure} environment
+  		   This is only complicated because we need to know what to
+  		   label the caption before the caption is processed.  So 
+  		   we just slurp the figure environment, extract the tag, and
+  		   the process the environment as usual.
  ******************************************************************************/
 {
-	char            *loc;
+	char            *loc, *figure_contents;
 
 	if (code & ON) {
 		loc = getBracketParam();
 		diagnostics(4, "entering CmdFigure [%s]", loc);
 		g_processing_figure = TRUE;
 		if (loc) free(loc);
+		figure_contents = getTexUntil("\\end{figure}", FALSE);
+		g_figure_label = ExtractLabelTag(figure_contents);
+		ConvertString(figure_contents);	
+		free(figure_contents);		
 	} else {
+		if (g_figure_label) free(g_figure_label);
 		g_processing_figure = FALSE;
 		diagnostics(4, "exiting CmdFigure");
 	}

@@ -1,4 +1,4 @@
-/* $Id: xref.c,v 1.3 2001/10/27 21:56:31 prahl Exp $ 
+/* $Id: xref.c,v 1.4 2001/10/28 04:02:44 prahl Exp $ 
  
 This file contains routines to handle cross references :
 	\label{key}, \ref{key},   \pageref{key}, \bibitem{key},
@@ -19,6 +19,8 @@ This file contains routines to handle cross references :
 #include "lengths.h"
 #include "l2r_fonts.h"
 
+char * g_figure_label = NULL;
+char * g_table_label = NULL;
 char * ScanAux(char *token, char * reference, int code);
 
 void 
@@ -198,9 +200,10 @@ purpose: handles \label \ref \pageref \cite
 	
 	switch (code) {
 		case LABEL_LABEL:
+			if (g_processing_figure || g_processing_table) break;
 			signet = strdup_nobadchars(text);
-			fprintRTF("{\\lang1024 \\*\\bkmkstart LBL_%s}",signet);
-			fprintRTF("{\\lang1023 \\*\\bkmkend LBL_%s}",signet);
+			fprintRTF("{\\*\\bkmkstart LBL_%s}",signet);
+			fprintRTF("{\\*\\bkmkend LBL_%s}",signet);
 			free(signet);
 			break;
 		

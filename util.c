@@ -1,10 +1,11 @@
 /*
- * $Id: util.c,v 1.16 2001/10/27 06:13:58 prahl Exp $ 
+ * $Id: util.c,v 1.17 2001/10/28 04:02:44 prahl Exp $ 
  */
 #include <stdlib.h>
 #include <string.h>
 #include "main.h"
 #include "util.h"
+#include "parser.h"
 
 #ifdef HAS_NO_STRDUP
 char           *
@@ -47,7 +48,7 @@ purpose: duplicate text with only a..z A..Z 0..9 and _
 {
 	char *dup, *s;
 	
-	dup = strdup(text);
+	dup = strdup_noblanks(text);
 	s = dup;
 	
 	while (*s) {
@@ -60,4 +61,28 @@ purpose: duplicate text with only a..z A..Z 0..9 and _
 
 	return dup;
 }
+
+char *
+ExtractLabelTag(char *text)
+/******************************************************************************
+  purpose: return a copy of tag from \label{tag} in the string text
+ ******************************************************************************/
+{
+	char *s, *label_with_spaces, *label;
+	
+	s = strstr(text,"\\label{");
+	if (!s) s = strstr(text,"\\label ");
+	if (!s) return NULL;
+	
+	s += strlen("\\label");
+	PushSource(NULL,s);
+	label_with_spaces = getBraceParam();
+	PopSource();
+	label = strdup_nobadchars(label_with_spaces);
+	free(label_with_spaces);
+
+	diagnostics(4, "LabelTag = <%s>", (label) ? label : "missing");
+	return label;
+}
+
 

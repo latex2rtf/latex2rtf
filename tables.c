@@ -1,4 +1,4 @@
-/* $Id: tables.c,v 1.11 2001/10/25 14:41:51 prahl Exp $
+/* $Id: tables.c,v 1.12 2001/10/28 04:02:44 prahl Exp $
 
    Translation of tabbing and tabular environments
 */
@@ -17,6 +17,7 @@
 #include "cfg.h"
 #include "parser.h"
 #include "counters.h"
+#include "util.h"
 
 #define ERR_EOF_INPUT 1
 #define ERR_WRONG_COMMAND 2
@@ -29,6 +30,7 @@ bool            tabbing_on = FALSE;
 bool            tabbing_return = FALSE;
 bool            tabbing_on_itself = FALSE;
 long          	pos_begin_kill;
+bool			g_processing_table = FALSE;
 
 int             colCount;			/* number of columns in a tabular environment */
 int             actCol;				/* actual column in the tabular environment */
@@ -432,23 +434,25 @@ CmdTable(int code)
 parameter: type of array-environment
  ******************************************************************************/
 {
-	char            *location;
+	char            *location, *table_contents;
 
-	if (code & ON) {	/* on switch */
-		code &= ~(ON);	/* mask MSB */
-
-		CmdEndParagraph(0);
-		CmdIndent(INDENT_NONE);
-		
-		if ((code == FIGURE) || (code == FIGURE_1))
-			g_processing_figure = TRUE;
+	if (code & ON) {
 
 		location = getBracketParam();
 		if (location) free(location);
-	} else {		/* off switch */
-		code &= ~(OFF);	/* mask MSB */
-		g_processing_figure = FALSE;
+
 		CmdEndParagraph(0);
+		CmdIndent(INDENT_NONE);
+
+		g_processing_table = TRUE;
+		table_contents = getTexUntil("\\end{table}", FALSE);
+		g_table_label = ExtractLabelTag(table_contents);
+		ConvertString(table_contents);	
+		free(table_contents);		
+	} else {
+		g_processing_table = FALSE;
+		CmdEndParagraph(0);
+		if (g_table_label) free(g_table_label);
 	}
 }
 

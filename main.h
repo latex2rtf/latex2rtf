@@ -1,4 +1,4 @@
-/* $Id: main.h,v 1.28 2001/10/27 06:13:58 prahl Exp $ */
+/* $Id: main.h,v 1.29 2001/10/28 04:02:44 prahl Exp $ */
 #ifndef __MAIN_H
 #define __MAIN_H
 
@@ -84,6 +84,7 @@ extern bool     titlepage;
 extern bool     g_processing_equation;
 extern bool     g_processing_preamble;
 extern bool     g_processing_figure;
+extern bool 	g_processing_table;
 extern bool     g_processing_eqnarray;
 extern int		g_processing_arrays;
 extern int 		g_processing_fields;
@@ -95,6 +96,8 @@ extern bool     g_suppress_equation_number;
 extern bool     g_aux_file_missing;
 extern int    	g_document_type;
 extern char     g_encoding[20];
+extern char		*g_figure_label;
+extern char		*g_table_label;
 
 void fprintRTF(char *format, ...);
 void putRtfChar(char cThis);

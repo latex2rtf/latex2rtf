@@ -1,4 +1,4 @@
-/*  $Id: parser.c,v 1.27 2001/10/27 21:56:31 prahl Exp $
+/*  $Id: parser.c,v 1.28 2001/10/28 04:02:44 prahl Exp $
 
    Contains declarations for a generic recursive parser for LaTeX code.
 */
@@ -548,7 +548,7 @@ RestoreFilePosition(int offset)
 		fseek(g_parser_file, g_parser_file_pos+offset, SEEK_SET);
 	else {
 		diagnostics(3, "Restoring before pos %ld char='%c'",g_parser_string, *g_parser_string);
-		g_parser_string = g_parser_string_pos+offset-1;
+		g_parser_string = g_parser_string_pos+offset;
 		diagnostics(3, "Restoring after  pos %ld char='%c'",g_parser_string, *g_parser_string);
 	}
 }
