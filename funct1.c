@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.36 2001/10/20 21:17:12 prahl Exp $ 
+/* $Id: funct1.c,v 1.37 2001/10/22 04:33:03 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -21,6 +21,7 @@ Authors:  Dorner, Granzer, Polzer, Trisko, Schlatterbeck, Lehner, Prahl
 #include "parser.h"
 #include "counters.h"
 #include "lengths.h"
+#include "definitions.h"
 #include "preamble.h"
 
 extern bool     twocolumn;	/* true if twocolumn-mode is enabled */
@@ -137,6 +138,70 @@ CmdVspace(int code)
 }
 
 void
+CmdNewDef(int code)
+{
+	char * name, *def, *params;
+	int param;
+	
+	if (code == DEF_NEW || code == DEF_RENEW) {
+		name = getBraceParam();
+		params = getBracketParam();
+		def = getBraceParam();
+		param = 0;
+		if (params) {
+			if ('0' <= *params && *params <= '9')
+				param = *params - '0';
+			else
+				diagnostics(ERROR, "non-numeric number of parameters in newcommand");
+		}
+		
+		diagnostics(3,"CmdNewDef name=<%s> param=%d def=<%s>", name,param,def);
+
+		if (code == DEF_NEW)
+			newDefinition(name+1,def,param);
+		else
+			renewDefinition(name+1,def,param);
+		
+		free(name);
+		free(def);
+		if (params) free(params);
+	}
+}
+
+void
+CmdNewEnvironment(int code)
+{
+	char * name, *begdef, *enddef, *params;
+	int param;
+	
+	name = getBraceParam();
+	params = getBracketParam();
+	begdef = getBraceParam();
+	enddef = getBraceParam();
+	param = 0;
+	if (params) {
+		if ('0' <= *params && *params <= '9')
+			param = *params - '0';
+		else
+			diagnostics(ERROR, "non-numeric number of parameters in newcommand");
+	}
+	
+	diagnostics(3,"CmdNewEnvironment name=<%s> param=%d", name,param);
+	diagnostics(3,"CmdNewEnvironment begdef=<%s>", begdef);
+	diagnostics(3,"CmdNewEnvironment enddef=<%s>", enddef);
+
+	if (code == DEF_NEW)
+		newEnvironment(name,begdef,enddef,param);
+	else
+		renewEnvironment(name,begdef,enddef,param);
+	
+	free(name);
+	free(begdef);
+	free(enddef);
+	if (params) free(params);
+	
+}
+void
 CmdIndent(int code)
 /******************************************************************************
  purpose : set flags so that CmdStartParagraph() does the right thing
@@ -239,19 +304,27 @@ CmdBeginEnd(int code)
 		          CMD_END:   end of environment
  ***************************************************************************/
 {
-/*	char            c;*/
+	int i;
 	char           *s = getBraceParam();
 
-	switch (code) {
-	case CMD_BEGIN:
-		(void) CallParamFunc(s, ON);
-		break;
-	case CMD_END:
-		(void) CallParamFunc(s, OFF);
-		CmdIndent(INDENT_INHIBIT);
-		break;
-	default:
-		assert(0);
+	i=existsEnvironment(s);
+	if (i>-1) 
+	
+		expandEnvironment(i,code);
+
+	else {
+	
+		switch (code) {
+		case CMD_BEGIN:
+			diagnostics(4, "\\begin{%s}", s);
+			(void) CallParamFunc(s, ON);
+			break;
+		case CMD_END:
+			diagnostics(4, "\\end{%s}", s);
+			(void) CallParamFunc(s, OFF);
+			CmdIndent(INDENT_INHIBIT);
+			break;
+		}
 	}
 	free(s);
 }
@@ -886,6 +959,7 @@ CmdVerb(int code)
 			ungetTexChar(cThis);
 			text = getBraceParam();
 			s = text;
+			diagnostics(4, "CmdVerbatim \\url{%s}",text);
 			while (*s) {
 				putRtfChar(*s);
 				s++;
@@ -1347,91 +1421,34 @@ CmdTitlepage(int code)
 {
 	switch (code) {
 		case ON:
-		fprintRTF("\n\\par\\pard \\page ");	/* new page */
-		fprintRTF("\n\\par\\q%c ", alignment);
-		break;
-	case OFF:
-		fprintRTF("\\pard ");
-		fprintRTF("\n\\par\\q%c \\page ", alignment);
-		break;
-	}			/* switch */
+			fprintRTF("\n\\par\\pard \\page ");	/* new page */
+			fprintRTF("\n\\par\\q%c ", alignment);
+			break;
+		case OFF:
+			fprintRTF("\\pard ");
+			fprintRTF("\n\\par\\q%c \\page ", alignment);
+			break;
+	}
 }
 
-void 
-CmdMultiCol( /* @unused@ */ int code)
+void
+CmdMinipage(int code)
 /******************************************************************************
- purpose: converts the LaTex-Multicolumn to a similar Rtf-style
-	  this converting is only partially
-	  so the user has to convert some part of the Table-environment by hand
+  purpose: recognize and parse Minipage parameters
+  		   currently this does nothing
  ******************************************************************************/
 {
-	char            inchar[10];
-	char            numColStr[100];
-	long            numCol, i, toBeInserted;
-	char            colFmtChar = 'u';
-	char           *eptr;	/* for srtol   */
-	static bool     bWarningDisplayed = FALSE;
-
-	if (!bWarningDisplayed) {
-		diagnostics(WARNING, "Multicolumn: Cells must be merged by hand!");
-		bWarningDisplayed = TRUE;
-	}
-	i = 0;
-	do {
-		inchar[0] = getTexChar();
-		if (isdigit((unsigned char) inchar[0]))
-			numColStr[i++] = inchar[0];
-	}
-	while (inchar[0] != '}');
-	numColStr[i] = '\0';
-	numCol = strtol(numColStr, &eptr, 10);
-	if (eptr == numColStr)
-		diagnostics(ERROR, " multicolumn: argument num invalid\n");
-
-
-	do {
-		inchar[0] = getTexChar();
-		switch (inchar[0]) {
-		case 'c':
-		case 'r':
-		case 'l':
-			if (colFmtChar == 'u')
-				colFmtChar = inchar[0];
+	char * v_align, *width;
+	switch (code) {
+		case ON:
+			v_align = getBracketParam();
+			width   = getBraceParam();
+			if (v_align) free(v_align);
+			free(width);
 			break;
-		default:
+		case OFF:
 			break;
-		}
 	}
-	while (inchar[0] != '}');
-	if (colFmtChar == 'u')
-		colFmtChar = 'l';
-
-	switch (colFmtChar) {
-	case 'r':
-		toBeInserted = numCol;
-		break;
-	case 'c':
-		toBeInserted = (numCol + 1) / 2;
-		break;
-	default:
-		toBeInserted = 1;
-		break;
-	}
-
-	for (i = 1; i < toBeInserted; i++, actCol++) {
-		fprintRTF(" \\cell \\pard \\intbl ");
-	}
-	fprintRTF("\\q%c ", colFmtChar);
-
-	diagnostics(4, "Entering Convert() from CmdMultiCol()");
-	Convert();
-	diagnostics(4, "Exiting Convert() from CmdMultiCol()");
-
-	for (i = toBeInserted; (i < numCol) && (actCol < colCount); i++, actCol++) {
-		fprintRTF(" \\cell \\pard \\intbl ");
-	}
-
-
 }
 
 void 

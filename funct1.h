@@ -1,10 +1,5 @@
-/* $Id: funct1.h,v 1.24 2001/10/20 21:17:12 prahl Exp $ */
+/* $Id: funct1.h,v 1.25 2001/10/22 04:33:03 prahl Exp $ */
 
-#define AST_FORM 100
-#define EMPHASIZE 1
-void            Format(int code);
-
-#define FOOTN 1
 #define THANKS 2
 
 #define CMD_BEGIN 1
@@ -34,6 +29,12 @@ void            CmdEndParagraph(int code);
 void            CmdIndent(int code);
 void			CmdVspace(int code);
 void			CmdSlashSlash(int code);
+
+#define DEF_NEW    1
+#define DEF_RENEW  2
+#define DEF_DEF    3
+void  			CmdNewDef(int code);
+void			CmdNewEnvironment(int code);
 
 void            CmdAlign(int code);
 void            CmdToday(int code);
@@ -87,6 +88,7 @@ void            GermanPrint(int code);
 void            CmdIgnoreLet(int code);
 void            CmdIgnoreDef(int code);
 void            CmdItem(int code);
+void			CmdMinipage(int code);
 
 /* LEG030598 Start */
 #define RIGHT_SIDE 347
@@ -119,11 +121,6 @@ void            CmdItem(int code);
 
 #define NewPage 1
 #define NewColumn 2
-
-#define ARRAY 1
-#define TABLE 2
-#define TABLE_1 3
-
 
 void            CmdIgnoreEnviron(int code);
 

@@ -1,4 +1,4 @@
-/*  $Id: parser.c,v 1.25 2001/10/17 02:48:31 prahl Exp $
+/*  $Id: parser.c,v 1.26 2001/10/22 04:33:03 prahl Exp $
 
    Contains declarations for a generic recursive parser for LaTeX code.
 */
@@ -97,10 +97,10 @@ PushSource(char * filename, char * string)
 	g_parser_line = line;
 
 	if (g_parser_file)
-		diagnostics(3, "Opening Source File %s", g_parser_stack[g_parser_depth].file_name);
+		diagnostics(5, "Opening Source File %s", g_parser_stack[g_parser_depth].file_name);
 	else {
 		strncpy(s,g_parser_string,25);
-		diagnostics(3, "Opening Source string <%s>",s);
+		diagnostics(5, "Opening Source string <%s>",s);
 	}
 
 	return 1;
@@ -121,10 +121,10 @@ PopSource(void)
 	char       s[50];
 
 	if (g_parser_file)
-		diagnostics(3, "Closing Source File %s", g_parser_stack[g_parser_depth].file_name);
+		diagnostics(5, "Closing Source File %s", g_parser_stack[g_parser_depth].file_name);
 	else {
 		strncpy(s,g_parser_string,25);
-		diagnostics(3, "Closing Source string <%s>",s);
+		diagnostics(5, "Closing Source string <%s>",s);
 	}
 
 	if (g_parser_depth < 0) 
@@ -144,10 +144,10 @@ PopSource(void)
 	}
 
 	if (g_parser_file)
-		diagnostics(3, "Resuming Source File %s", g_parser_stack[g_parser_depth].file_name);
+		diagnostics(5, "Resuming Source File %s", g_parser_stack[g_parser_depth].file_name);
 	else {
 		strncpy(s,g_parser_string,25);
-		diagnostics(3, "Resuming Source string <%s>",s);
+		diagnostics(5, "Resuming Source string <%s>",s);
 	}
 }
 
@@ -446,7 +446,7 @@ getSimpleCommand(void)
 		return NULL;
 
 	for (size = 1; size < 127; size++) {
-		buffer[size] = getTexChar();
+		buffer[size] = getRawTexChar();    /* \t \r '%' all end command */
 
 		if (!isalpha((int)buffer[size])) {
 			ungetTexChar(buffer[size]);
@@ -535,8 +535,10 @@ SaveFilePosition(void)
 {
 	if (g_parser_file)
 		g_parser_file_pos = ftell(g_parser_file);
-	else
+	else {
+		diagnostics(3, "Saving current string pos %ld char='%c'",g_parser_string, *g_parser_string);
 		g_parser_string_pos = g_parser_string;
+	}
 }
 
 static void 
@@ -544,8 +546,11 @@ RestoreFilePosition(int offset)
 {
 	if (g_parser_file)
 		fseek(g_parser_file, g_parser_file_pos+offset, SEEK_SET);
-	else
-		g_parser_string = g_parser_string_pos+offset;
+	else {
+		diagnostics(3, "Restoring before pos %ld char='%c'",g_parser_string, *g_parser_string);
+		g_parser_string = g_parser_string_pos+offset-1;
+		diagnostics(3, "Restoring after  pos %ld char='%c'",g_parser_string, *g_parser_string);
+	}
 }
 
 char *
@@ -561,7 +566,7 @@ getTexUntil(char * target, int raw)
 	int             j   = 0;                /* number of found characters */
 	int             len = strlen(target);
 	
-	diagnostics(4, "getTexUntil target = <%s>", target);
+	diagnostics(3, "getTexUntil target = <%s>", target);
 	
 	while (j < len && i < 4095) {
 	

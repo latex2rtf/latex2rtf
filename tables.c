@@ -1,4 +1,4 @@
-/* $Id: tables.c,v 1.9 2001/10/17 02:48:31 prahl Exp $
+/* $Id: tables.c,v 1.10 2001/10/22 04:33:03 prahl Exp $
 
    Translation of tabbing and tabular environments
 */
@@ -446,3 +446,79 @@ parameter: type of array-environment
 	}
 }
 
+void 
+CmdMultiCol( /* @unused@ */ int code)
+/******************************************************************************
+ purpose: converts the LaTex-Multicolumn to a similar Rtf-style
+	  this converting is only partially
+	  so the user has to convert some part of the Table-environment by hand
+ ******************************************************************************/
+{
+	char            inchar[10];
+	char            numColStr[100];
+	long            numCol, i, toBeInserted;
+	char            colFmtChar = 'u';
+	char           *eptr;	/* for srtol   */
+	static bool     bWarningDisplayed = FALSE;
+
+	if (!bWarningDisplayed) {
+		diagnostics(WARNING, "Multicolumn: Cells must be merged by hand!");
+		bWarningDisplayed = TRUE;
+	}
+	i = 0;
+	do {
+		inchar[0] = getTexChar();
+		if (isdigit((unsigned char) inchar[0]))
+			numColStr[i++] = inchar[0];
+	}
+	while (inchar[0] != '}');
+	numColStr[i] = '\0';
+	numCol = strtol(numColStr, &eptr, 10);
+	if (eptr == numColStr)
+		diagnostics(ERROR, " multicolumn: argument num invalid\n");
+
+
+	do {
+		inchar[0] = getTexChar();
+		switch (inchar[0]) {
+		case 'c':
+		case 'r':
+		case 'l':
+			if (colFmtChar == 'u')
+				colFmtChar = inchar[0];
+			break;
+		default:
+			break;
+		}
+	}
+	while (inchar[0] != '}');
+	if (colFmtChar == 'u')
+		colFmtChar = 'l';
+
+	switch (colFmtChar) {
+	case 'r':
+		toBeInserted = numCol;
+		break;
+	case 'c':
+		toBeInserted = (numCol + 1) / 2;
+		break;
+	default:
+		toBeInserted = 1;
+		break;
+	}
+
+	for (i = 1; i < toBeInserted; i++, actCol++) {
+		fprintRTF(" \\cell \\pard \\intbl ");
+	}
+	fprintRTF("\\q%c ", colFmtChar);
+
+	diagnostics(4, "Entering Convert() from CmdMultiCol()");
+	Convert();
+	diagnostics(4, "Exiting Convert() from CmdMultiCol()");
+
+	for (i = toBeInserted; (i < numCol) && (actCol < colCount); i++, actCol++) {
+		fprintRTF(" \\cell \\pard \\intbl ");
+	}
+
+
+}

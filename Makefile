@@ -112,7 +112,7 @@ SOURCES=commands.c commands.h chars.c chars.h direct.c direct.h encode.c encode.
     Makefile README README.DOS README.Mac Copyright\
     mygetopt.c optind.c version \
     debian.README debian.control debian.rules ChangeLog l2r.bat\
-    encode_tables.h
+    encode_tables.h definitions.c definitions.h
 
 SUPPORT=cfg/fonts.cfg     cfg/direct.cfg   cfg/ignore.cfg \
     cfg/afrikaans.cfg cfg/bahasa.cfg cfg/basque.cfg cfg/brazil.cfg cfg/breton.cfg \
@@ -141,7 +141,7 @@ TEST=   test/Makefile \
 
 OBJS=l2r_fonts.o direct.o encode.o commands.o stack.o funct1.o tables.o \
 	chars.o ignore.o cfg.o main.o util.o parser.o mygetopt.o lengths.o counters.o \
-	preamble.o letterformat.o equation.o convert.o xref.o
+	preamble.o letterformat.o equation.o convert.o xref.o definitions.o
 
 ARCH="`dpkg --print-architecture`"
 

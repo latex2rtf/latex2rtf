@@ -1,4 +1,4 @@
-/* $Id: convert.c,v 1.17 2001/10/20 21:17:12 prahl Exp $ 
+/* $Id: convert.c,v 1.18 2001/10/22 04:33:03 prahl Exp $ 
 	purpose: ConvertString(), Convert(), TranslateCommand() 
 	
 TeX has six modes according to the TeX Book:
@@ -87,13 +87,13 @@ ConvertString(char *string)
 	strncpy(temp,string,50);
 
 	if (PushSource(NULL, string)) {
-		diagnostics(3, "Entering Convert() from StringConvert() <%s>",temp);
+		diagnostics(5, "Entering Convert() from StringConvert() <%s>",temp);
 
 		while (StillSource())
 			Convert();
 			
 		PopSource();
-		diagnostics(3, "Exiting Convert() from StringConvert()");
+		diagnostics(5, "Exiting Convert() from StringConvert()");
 	}
 }
 
@@ -106,33 +106,38 @@ ConvertAllttString(char *s)
 			   their usual meanings
 ******************************************************************************/
 {	
+	char cThis;
 	diagnostics(4, "Entering Convert() from StringAllttConvert()");
 
-	while (*s) {
-	
-		switch (*s) {
-		
-			case '\\':
-				PushLevels();	
-				TranslateCommand();
-				CleanStack();
-				break;
+	if (PushSource(NULL, s)) {
+
+		while (StillSource()) {
+
+			cThis = getRawTexChar();   /* it is a verbatim like environment */
+			switch (cThis) {
+			
+				case '\\':
+					PushLevels();	
+					TranslateCommand();
+					CleanStack();
+					break;
+					
+				case '{':
+					PushBrace();
+					fprintRTF("{");
+					break;
 				
-			case '{':
-				PushBrace();
-				fprintRTF("{");
-				break;
-			
-			case '}':			
-				ret = RecursionLevel - PopBrace();
-				fprintRTF("}");
-				break;
-			
-			default:
-				putRtfChar(*s);
-				break;
+				case '}':			
+					ret = RecursionLevel - PopBrace();
+					fprintRTF("}");
+					break;
+				
+				default:
+					putRtfChar(cThis);
+					break;
+			}
 		}
-		s++;
+		PopSource();
 	}
 
 	diagnostics(4, "Exiting Convert() from StringAllttConvert()");
@@ -150,6 +155,7 @@ globals: fTex, fRtf and all global flags for convert (see above)
 	char            cNext;
 	int				mode, count;
 
+	diagnostics(3, "Entering Convert ret = %d", ret);
 	RecursionLevel++;
 	PushLevels();
 
@@ -167,29 +173,33 @@ globals: fTex, fRtf and all global flags for convert (see above)
 		case '\\':
 			PushLevels();
 			
-			(void) TranslateCommand();
+			TranslateCommand();
 
 			CleanStack();
 
 			if (ret > 0) {
 				ret--;
 				RecursionLevel--;
+				diagnostics(5, "Exiting Convert via TranslateCommand ret = %d", ret);
 				return;
 			}
 			break;
 			
 			
 		case '{':
+			CleanStack();
 			PushBrace();
 			fprintRTF("{");
 			break;
 			
 		case '}':
+			CleanStack();
 			ret = RecursionLevel - PopBrace();
 			fprintRTF("}");
 			if (ret > 0) {
 				ret--;
 				RecursionLevel--;
+				diagnostics(5, "Exiting Convert via '}' ret = %d", ret);
 				return;
 			}
 			break;
@@ -256,6 +266,7 @@ globals: fTex, fRtf and all global flags for convert (see above)
 				if (ret > 0) {
 					ret--;
 					RecursionLevel--;
+					diagnostics(5, "Exiting Convert via Math ret = %d", ret);
 					return;
 				}
 			}
@@ -426,6 +437,7 @@ globals: fTex, fRtf and all global flags for convert (see above)
 		cLast = cThis;
 	}
 	RecursionLevel--;
+	diagnostics(5, "Exiting Convert via exhaustion ret = %d", ret);
 }
 
 bool 
@@ -442,11 +454,12 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 	int             i,mode;
 	int            cThis;
 
-	diagnostics(5, "Beginning TranslateCommand()");
 
 	cThis = getTexChar();
 	mode = GetTexMode();
 	
+	diagnostics(5, "Beginning TranslateCommand() \\%c", cThis);
+
 	switch (cThis) {
 	case '}':
 		if (mode == MODE_VERTICAL) SetTexMode(MODE_HORIZONTAL);
@@ -615,6 +628,11 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 		if (!isalpha(cThis) && (cThis != '*')) {
 			bool            found_nl = FALSE;
 
+			if (cThis == '%'){			/* put the % back and get the next char */
+				ungetTexChar('%');
+				cThis=getTexChar();
+			}
+
 			/* all spaces after commands are ignored, a single \n may occur */
 			while (cThis == ' ' || (cThis == '\n' && !found_nl)) {
 				if (cThis == '\n')
@@ -627,7 +645,7 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 		} else
 			cCommand[i] = cThis;
 
-		cThis = getTexChar();
+		cThis = getRawTexChar();	/* Necessary because % ends a command */
 	}
 
 	cCommand[i] = '\0';	/* mark end of string with zero */

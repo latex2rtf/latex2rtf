@@ -1,3 +1,5 @@
+#define FOOTN               1
+
 #define LABEL_LABEL			1
 #define LABEL_HYPERREF		2
 #define LABEL_REF			3

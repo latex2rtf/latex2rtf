@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.30 2001/10/17 04:43:47 prahl Exp $ */
+/* $Id: main.c,v 1.31 2001/10/22 04:33:03 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -287,10 +287,14 @@ diagnostics(int level, char *format,...)
 		case 4:
 		case 5:
 		case 6:
-		    fprintf(errfile, "\n%s %4d bra=%d rec=%d env=%d ", input, linenumber, \
-		    BraceLevel, RecursionLevel, iEnvCount);
-			for (i=0; i<RecursionLevel; i++)
+		    fprintf(errfile, "\n%s %4d rec=%d ", input, linenumber, RecursionLevel);
+			for (i=0; i<BraceLevel; i++)
+				fprintf(errfile, "{");
+			for (i=8; i>BraceLevel; i--)
 				fprintf(errfile, " ");
+			
+			for (i=0; i<RecursionLevel; i++)
+				fprintf(errfile, "  ");
 			break;
 		default:
 			fprintf(errfile, "\nline=%d ", linenumber);

@@ -1,4 +1,4 @@
-/*  $Id: commands.c,v 1.33 2001/10/20 21:17:12 prahl Exp $
+/*  $Id: commands.c,v 1.34 2001/10/22 04:33:03 prahl Exp $
  
     Defines subroutines to translate LaTeX commands to RTF
 */
@@ -20,6 +20,7 @@
 #include "xref.h"
 #include "ignore.h"
 #include "lengths.h"
+#include "definitions.h"
 
 typedef struct commandtag {
 	char           *cpCommand;			/* LaTeX command name without \ */
@@ -283,10 +284,10 @@ static CommandArray PreambleCommands[] = {
     {"thepage", CmdThePage, 0},
 	{"hyphenation", CmdHyphenation, 0},
 	{"def", CmdIgnoreDef, 0},
-	{"newcommand", CmdIgnoreParameter, One_Opt_Three_NormParam},
-	{"renewcommand", CmdIgnoreParameter, One_Opt_Two_NormParam},
-	{"newenvironment", CmdIgnoreParameter, One_Opt_Three_NormParam},
-	{"renewenvironment", CmdIgnoreParameter, One_Opt_Three_NormParam},
+	{"newcommand", CmdNewDef, DEF_NEW},
+	{"renewcommand", CmdNewDef, DEF_RENEW},
+	{"newenvironment", CmdNewEnvironment, DEF_NEW},
+	{"renewenvironment", CmdNewEnvironment, DEF_RENEW},
 	{"newtheorem", CmdIgnoreParameter, One_Opt_Two_NormParam},
 	{"renewtheorem", CmdIgnoreParameter, One_Opt_Two_NormParam},
 	{"pagestyle", CmdIgnoreParameter, No_Opt_One_NormParam},
@@ -396,7 +397,7 @@ static CommandArray params[] = {
 	{"figure", CmdFigure, FIGURE},
 	{"figure*", CmdFigure, FIGURE_1},
 	{"picture", CmdIgnoreEnviron, IGNORE_PICTURE},
-	{"minipage", CmdIgnoreEnviron, IGNORE_MINIPAGE},
+	{"minipage", CmdMinipage, 0},
 
 	{"quote", CmdQuote, QUOTE},
 	{"quotation", CmdQuote, QUOTATION},
@@ -474,10 +475,16 @@ returns: success or failure
 globals: command-functions have side effects or recursive calls
  ****************************************************************************/
 {
-	int             i = 0, j;
+	int             i, j;
 
-	diagnostics(5,"CallCommandFunc %s, iEnvCount = %d",cCommand,iEnvCount);
+	diagnostics(5,"CallCommandFunc <%s>, iEnvCount = %d",cCommand,iEnvCount);
 	
+	i=existsDefinition(cCommand);
+	if (i>-1) {
+		expandDefinition(i);
+		return TRUE;
+	}
+
 	for (j = iEnvCount - 1; j >= 0; j--) {
 		i = 0;
 		while (strcmp(Environments[j][i].cpCommand, "") != 0) {

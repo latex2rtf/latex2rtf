@@ -1,4 +1,4 @@
-/* $Id: stack.c,v 1.16 2001/10/12 05:45:07 prahl Exp $
+/* $Id: stack.c,v 1.17 2001/10/22 04:33:03 prahl Exp $
 
   purpose : code that implements a stack to handle braces and recursive calls
 	        created by environments, and open and closing-braces
@@ -17,6 +17,22 @@ int      BraceLevel = 0;
 int             BasicPush(int lev, int brack);
 int             BasicPop(int *lev, int *brack);
 int             getStackRecursionLevel(void);
+
+void
+printStack(void)
+{
+int i, lev, brack;
+
+	fprintf(stderr, "\nStack Status top=%d\n",top);
+	i=0;
+	while (2*i<top) {
+		lev = stack[2*i+1];
+		brack = stack[2*i+2];
+		i++;
+	
+		fprintf(stderr, " #%d lev=%d bracket=%d\n", i, lev, brack);
+	}
+}
 
 void
 InitializeStack(void)
@@ -71,15 +87,20 @@ BasicPop(int *lev, int *brack)
 void 
 PushLevels(void)
 /******************************************************************************
-  purpose: wrapper to hide BraceLevel from rest of program ******************************************************************************/
+  purpose: wrapper to hide BraceLevel from rest of program 
+ ******************************************************************************/
 {
+	diagnostics(5, "PushLevels");
+	CleanStack();
 	(void) BasicPush(RecursionLevel, BraceLevel);
+	/*printStack();*/
 }
 
 int 
 PopLevels(void)
 /******************************************************************************
-  purpose: wrapper to hide BraceLevel from rest of program ******************************************************************************/
+  purpose: wrapper to hide BraceLevel from rest of program 
+ ******************************************************************************/
 {
 	int level;
 	(void) BasicPop(&level, &BraceLevel);
@@ -112,28 +133,25 @@ int             PopLevel, PopBrack, PPopLevel, PPopBrack, size;
 void
 CleanStack(void)
 /******************************************************************************
-  purpose: removes multiple identical copies on stack
+  purpose: removes multiple identical copies on top of stack
  ******************************************************************************/
 {
-int             PopLevel = 0, PopBrack, PPopLevel, PPopBrack, size;
+int             PopLevel, PopBrack, PPopLevel, PPopBrack;
 	diagnostics(5, "Cleaning Stack");
-	for (;;) {
-		if ((size = BasicPop(&PPopLevel, &PPopBrack)) <= 0) {
-			(void) BasicPush(PPopLevel, PPopBrack);
-			break;
-		}
-		
-		(void) BasicPop(&PopLevel, &PopBrack);
 
-		if ((PPopLevel == PopLevel) && (PPopBrack == PopBrack)) {
-			(void) BasicPush(PopLevel, PopBrack);
-		} else {
-			(void) BasicPush(PopLevel, PopBrack);
-			(void) BasicPush(PPopLevel, PPopBrack);
-			break;
-		}
-	}
-/*	diagnostics(5, "Done Cleaning Stack");*/
+	if (top<4) return;
+	
+	BasicPop(&PPopLevel, &PPopBrack);
+	BasicPop(&PopLevel, &PopBrack);
+	
+	while (PPopLevel == PopLevel && PPopBrack == PopBrack && top>0) 
+		BasicPop(&PopLevel, &PopBrack);
+		
+	BasicPush(PopLevel, PopBrack);
+	if (PPopLevel != PopLevel || PPopBrack != PopBrack)
+		BasicPush(PPopLevel, PPopBrack);
+	
+/*	printStack(); */
 }
 
 void 
@@ -152,20 +170,24 @@ int
 PopBrace(void)
 /******************************************************************************
   purpose: to return the recursion level of the matching open brace
+           search down through the stack for the lowest recursionlevel
+           that matches the current bracelevel-1.  
  ******************************************************************************/
 {
-int             PopLevel, PopBrack, PPopLevel, size;
+int             PopLevel, PopBrack, PPopLevel;
 
-/*	diagnostics(5,"Popping Brace Level");*/
-			
+	diagnostics(6,"Popping Brace Level");
 	BraceLevel--;
 	PPopLevel = RecursionLevel;
 	
-	while ((size = BasicPop(&PopLevel, &PopBrack)) >= 0  && PopBrack >= BraceLevel) 		
-		PPopLevel = PopLevel;
+	BasicPop(&PopLevel, &PopBrack);
+	while (PopBrack >= BraceLevel) {
+		if (PopLevel < PPopLevel) PPopLevel = PopLevel;
+		BasicPop(&PopLevel, &PopBrack);
+	}
 	
-	(void) BasicPush(PopLevel, PopBrack);	/* push back */
-	(void) BasicPush(PPopLevel, BraceLevel);
+	BasicPush(PopLevel, PopBrack);	/* push back */
+	BasicPush(PPopLevel, BraceLevel);
 
 	return PPopLevel;
 }
