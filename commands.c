@@ -202,6 +202,7 @@ static CommandArray commands[] = {
     {"appendix", CmdIgnore, 0},
     {"protect", CmdIgnore, 0},
     {"clearpage", CmdNewPage, NewPage},
+    {"efloatseparator", CmdNewPage, NewPage},
     {"cleardoublepage", CmdNewPage, NewPage},
     {"newpage", CmdNewPage, NewColumn},
     {"pagebreak", CmdNewPage, NewPage},

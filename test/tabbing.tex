@@ -76,4 +76,27 @@ Gnu:            \> eaten by  \>    gnats
 three aligned columns}
 \end{center}
 \end{table}
+
+\begin{table}
+\centering
+\begin{tabbing}
+\t{oo} \= \verb|\t{oo}|~~~ \=
+\t{oo} \= \verb|\t{oo}|~~~ \=
+\t{oo} \= \verb|\t{oo}|~~~ \=
+\t{oo} \= \verb|\t{oo}|~~~ \=
+\t{oo} \= \verb|\t{oo}|~~~ \=
+\t{oo} \=                       \kill
+
+\a`{o} \> \verb|\`{o}|  \> \~{o}  \> \verb|\~{o}|  \> \v{o}  \> \verb|\v{o}| \>
+\c{o}  \> \verb|\c{o}|  \> \a'{o} \> \verb|\'{o}|  \\
+\a={o} \> \verb|\={o}|  \> \H{o}  \> \verb|\H{o}|  \> \d{o}  \> \verb|\d{o}| \>
+\^{o}  \> \verb|\^{o}|  \> \.{o}  \> \verb|\.{o}|  \\
+\t{oo} \> \verb|\t{oo}| \> \b{o}  \> \verb|\b{o}|  \\  \"{o} \> \verb|\"{o}| \>
+\u{o}  \> \verb|\u{o}|  \\
+\end{tabbing}
+\caption{This does table does not really work on any RTF reader that I have.  Some
+display the \verb|\H{o}| correctly because they support unicode, but fail with the
+table formatting.  Others (like Word v.X for Macintosh) handle the table correctly,
+but fail to support unicode.  Sigh.}
+\end{table}
 \end{document}

@@ -35,6 +35,7 @@ This file is available from http://sourceforge.net/projects/latex2rtf/
 #include "counters.h"
 #include "util.h"
 #include "lengths.h"
+#include "preamble.h"
 
 typedef struct TabularT {
     int n;                      /* number of columns */
@@ -1251,36 +1252,45 @@ void CmdTabbing(int code)
 void CmdTable(int code)
 
 /******************************************************************************
- purpose: converts the LaTex-Table to a similar Rtf-style
-	  this converting is only partially
-	  so the user has to convert some part of the Table-environment by hand
-parameter: type of array-environment
+ purpose: converts a LaTeX-Table to a similar RTF-style
+	  this converting is partial, so the user has to some hand tweaking
  ******************************************************************************/
 {
     char *location, *table_contents;
-    char endtable[] = "\\end{table}";
 	static char     oldalignment;
+    char *endtable = ((code & ~ON) == TABLE) ? "\\end{table}" : "\\end{table*}";
 
     if (code & ON) {
+        location = getBracketParam();
+        if (location) free(location);
+
 		CmdEndParagraph(0);
 		oldalignment = alignment;
 		alignment = JUSTIFIED;
 
 		CmdVspace(VSPACE_BIG_SKIP);
-		CmdStartParagraph(0);
-
-        location = getBracketParam();
-        if (location)
-            free(location);
-
-        if (GetTexMode() != MODE_VERTICAL)
-            CmdEndParagraph(0);
         CmdIndent(INDENT_NONE);
 
         g_processing_table = TRUE;
         table_contents = getTexUntil(endtable, TRUE);
         g_table_label = ExtractLabelTag(table_contents);
-        ConvertString(table_contents);
+        if (g_endfloat_tables) {
+			if (g_endfloat_markers) {
+				alignment = CENTERED;
+				CmdStartParagraph(0);
+				incrementCounter("endfloattable");  /* two separate counters */
+				fprintRTF("[");                     /* one for tables and one for */
+				ConvertBabelName("TABLENAME");      /* endfloat tables */
+				fprintRTF(" ");
+				if (g_document_type != FORMAT_ARTICLE)
+					fprintRTF("%d.", getCounter("chapter"));
+				fprintRTF("%d about here]", getCounter("endfloattable"));
+			}
+		} else {
+			CmdStartParagraph(0);
+        	ConvertString(table_contents);
+        }
+        
         ConvertString(endtable);
         free(table_contents);
     } else {

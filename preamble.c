@@ -420,6 +420,8 @@ static void setDocumentOptions(char *optionlist)
             g_document_bibstyle = BIBSTYLE_APALIKE;
         else if (strcmp(option, "apanat1b") == 0)
             PushEnvironment(APACITE_MODE);
+        else if (strcmp(option, "endfloat") == 0)
+            g_endfloat_figures = TRUE;
         else if (strcmp(option, "bibentry") == 0)
             /* do nothing */;
         else if (strcmp(option, "harvard") == 0) {
@@ -553,7 +555,12 @@ void CmdUsepackage(int code)
       strstr(package, "avant") || strstr(package, "newcen") || strstr(package, "helvet"))
         setPackageFont(package);
 
-    else if (strcmp(package, "cite") == 0) {
+    else if (strcmp(package, "endfloat") == 0) {
+        g_endfloat_figures = TRUE;
+        g_endfloat_tables  = TRUE;
+        if (options && strstr(options,"nomarkers")) g_endfloat_markers = FALSE;
+
+    } else if (strcmp(package, "cite") == 0) {
        set_sorted_citations();
        set_compressed_citations();
 

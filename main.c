@@ -60,6 +60,7 @@ char *g_toc_name = NULL;
 char *g_lof_name = NULL;
 char *g_lot_name = NULL;
 char *g_fff_name = NULL;
+char *g_ttt_name = NULL;
 char *g_bbl_name = NULL;
 char *g_home_dir = NULL;
 
@@ -121,6 +122,9 @@ bool g_tableofcontents = FALSE;
 double g_png_equation_scale = 1.22;
 double g_png_figure_scale = 1.35;
 bool g_latex_figures = FALSE;
+bool g_endfloat_figures = FALSE;
+bool g_endfloat_tables = FALSE;
+bool g_endfloat_markers = TRUE;
 int  g_graphics_package = GRAPHICS_NONE;
 
 int indent = 0;
@@ -332,6 +336,9 @@ int main(int argc, char **argv)
     if (g_fff_name == NULL && basename != NULL)
         g_fff_name = strdup_together(basename, ".fff");
 
+    if (g_ttt_name == NULL && basename != NULL)
+        g_ttt_name = strdup_together(basename, ".ttt");
+
     if (basename) {
         diagnostics(3, "latex filename is <%s>", g_tex_name);
         diagnostics(3, "  rtf filename is <%s>", g_rtf_name);
@@ -419,12 +426,40 @@ static void ConvertWholeDocument(void)
         free(sec_head);
         sec_head = sec_head2;
     }
+    
+    if (g_endfloat_figures && g_fff_name) {
+    	g_endfloat_figures = FALSE;
+        if (PushSource(g_fff_name, NULL) == 0) {
+        	CmdNewPage(NewPage);
+        	CmdListOf(LIST_OF_FIGURES);
+			getSection(&body, &sec_head2, &g_section_label);
+			ConvertString(sec_head);
+			ConvertString(body);
+			if (g_section_label) free(g_section_label);
+			free(body);
+			free(sec_head);
+        }
+     }
+    
+    if (g_endfloat_tables && g_ttt_name) {
+    	g_endfloat_tables = FALSE;
+        if (PushSource(g_ttt_name, NULL) == 0) {
+        	CmdNewPage(NewPage);
+        	CmdListOf(LIST_OF_TABLES);
+			getSection(&body, &sec_head2, &g_section_label);
+			ConvertString(sec_head);
+			ConvertString(body);
+			if (g_section_label) free(g_section_label);
+			free(body);
+			free(sec_head);
+        }
+     }
 }
 
 static void print_version(void)
 {
     fprintf(stdout, "latex2rtf %s\n\n", Version);
-    fprintf(stdout, "Copyright (C) 2002 Free Software Foundation, Inc.\n");
+    fprintf(stdout, "Copyright (C) 2004 Free Software Foundation, Inc.\n");
     fprintf(stdout, "This is free software; see the source for copying conditions.  There is NO\n");
     fprintf(stdout, "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n");
     fprintf(stdout, "Written by Prahl, Lehner, Granzer, Dorner, Polzer, Trisko, Schlatterbeck.\n");
@@ -596,6 +631,8 @@ static void InitializeLatexLengths(void)
     setCounter("footnote", 0);
     setCounter("mpfootnote", 0);
     setCounter("secnumdepth", 2);
+    setCounter("endfloatfigure", 0);
+    setCounter("endfloattable", 0);
 
 /* vertical separation lengths */
     setLength("topsep", 3 * 20);
@@ -623,10 +660,11 @@ static void InitializeLatexLengths(void)
     setLength("marginparsep", 10 * 20);
 }
 
+static void RemoveInterpretCommentString(char *s)
+
 /****************************************************************************
 purpose: removes %InterpretCommentString from preamble (usually "%latex2rtf:")
  ****************************************************************************/
-static void RemoveInterpretCommentString(char *s)
 {
     char *p, *t;
     int n = strlen(InterpretCommentString);

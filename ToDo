@@ -6,17 +6,16 @@ Fit & Finish:
 	Reset footnote numbering at each new chapter
 	add documentation for %latex2rtf:
 	add examples to help page
+	fix problem with scaling of pdf files in conversion
 
 Potential Features:
 
-	add \listoftables, \listoffigures
 	add estimates for column sizes to tables
 	
 	Expand -f support to array
 	Expand -f support to weird characters
 	
 	New diagnostic level to replace Warning for expected stuff
-	Support \includegraphics options (both graphics and graphicx)
 
 	Translation when .aux is absent.
 
@@ -26,7 +25,6 @@ Potential Features:
 	Add support for \usepackage{fullpage}
 	Add support for \usepackage{doublespace}
 	Add support for \usepackage{geometry}
-	Add support for \usepackage{endfloat}
 	
 	Add autonumbering of equations using fields
 	

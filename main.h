@@ -1,4 +1,4 @@
-/* $Id: main.h,v 1.68 2005/01/07 05:10:13 prahl Exp $ */
+/* $Id: main.h,v 1.69 2005/01/18 06:19:46 prahl Exp $ */
 
 #if defined(UNIX)
 #define ENVSEP ':'
@@ -129,6 +129,9 @@ extern char		*g_preamble;
 extern double	g_png_equation_scale; 
 extern double	g_png_figure_scale;
 extern bool		g_latex_figures;
+extern bool		g_endfloat_figures;
+extern bool		g_endfloat_tables;
+extern bool		g_endfloat_markers;
 
 extern bool		g_equation_inline_rtf;
 extern bool		g_equation_display_rtf;

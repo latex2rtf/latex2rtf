@@ -1673,14 +1673,13 @@ void CmdFigure(int code)
     char *loc, *figure_contents;
     char *endfigure = ((code & ~ON) == FIGURE) ? "\\end{figure}" : "\\end{figure*}";
 	static char     oldalignment;
-			
+	
     if (code & ON) {
 		CmdEndParagraph(0);
 		oldalignment = alignment;
 		alignment = JUSTIFIED;
 
 		CmdVspace(VSPACE_BIG_SKIP);
-		CmdStartParagraph(0);
         loc = getBracketParam();
         diagnostics(4, "entering CmdFigure [%s]", (loc) ? loc : "");
         g_processing_figure = TRUE;
@@ -1688,13 +1687,23 @@ void CmdFigure(int code)
             free(loc);
         figure_contents = getTexUntil(endfigure, TRUE);
         g_figure_label = ExtractLabelTag(figure_contents);
-        if (g_latex_figures) {
+        if (g_endfloat_figures) {
+			if (g_endfloat_markers) {
+				alignment = CENTERED;
+				CmdStartParagraph(0);
+				incrementCounter("endfloatfigure");  /* two separate counters */
+				fprintRTF("[");                      /* one for figures and one for */
+				ConvertBabelName("FIGURENAME");      /* endfloat figures */
+				fprintRTF(" ");
+				if (g_document_type != FORMAT_ARTICLE)
+					fprintRTF("%d.", getCounter("chapter"));
+				fprintRTF("%d about here]", getCounter("endfloatfigure"));
+			}
+		} else if (g_latex_figures) {
             char *caption, *label;
 
             caption = ExtractAndRemoveTag("\\caption", figure_contents);
             label = ExtractAndRemoveTag("\\label", figure_contents);
-            CmdEndParagraph(0);
-            CmdVspace(VSPACE_SMALL_SKIP);
             CmdStartParagraph(FIRST_PAR);
             WriteLatexAsBitmap("\\begin{figure}", figure_contents, "\\end{figure}");
             ConvertString(caption);
@@ -1702,10 +1711,12 @@ void CmdFigure(int code)
                 free(label);
             if (caption)
                 free(caption);
-        } else
+        } else {
+			CmdStartParagraph(0);
             ConvertString(figure_contents);
-        ConvertString(endfigure);
+        }
         free(figure_contents);
+        ConvertString(endfigure);
     } else {
         if (g_figure_label)
             free(g_figure_label);
