@@ -193,6 +193,7 @@ EquationNeedsFields(char *eq)
 	if (strstr(eq,"\\sqrt")) return 1;
 	if (strstr(eq,"\\over")) return 1;
 	if (strstr(eq,"\\stackrel")) return 1;
+	if (strstr(eq,"_") || strstr(eq,"^")) return 1;
 	if (strstr(eq,"\\dfrac")) return 1;
 	if (strstr(eq,"\\lim")) return 1;
 	if (strstr(eq,"\\liminf")) return 1;
@@ -841,6 +842,75 @@ parameter: type of operand
 		free(upper_limit);
 }
 
+/*--------------------------------------------------------------*/
+/* Stack a superscript and a subscript together                 */
+/*--------------------------------------------------------------*/
+
+void
+SubSupWorker (bool big)
+{
+	char cThis;
+	char *upper_limit = NULL;
+	char *lower_limit = NULL;
+	
+	for (;;) {
+		cThis = getNonBlank ();
+		if (cThis == '_') {
+			if (lower_limit) diagnostics (ERROR, "Double subscript");
+			lower_limit = getBraceParam ();
+		}
+		else if (cThis == '^') {
+			if (upper_limit) diagnostics (ERROR, "Double superscript");
+			upper_limit = getBraceParam ();
+		} else {
+			ungetTexChar (cThis);
+			break;
+		}
+	}
+	
+	if (upper_limit && lower_limit) {
+		int size, newsize;
+		size = CurrentFontSize ();
+		newsize = size / 1.2;
+		fprintRTF ("\\\\s\\\\up({\\fs%d ", newsize);
+		ConvertString (upper_limit);
+		if (big)
+			fprintRTF ("%c %c", g_field_separator, g_field_separator);
+		else
+			fprintRTF ("%c", g_field_separator);
+		ConvertString (lower_limit);
+		fprintRTF ("})");
+		free (lower_limit);
+		free (upper_limit);
+
+	} else if (lower_limit) {
+		int size, newsize, upsize;
+		size = CurrentFontSize ();
+		newsize = size / 1.2;
+		if (big)
+			upsize = size / 1.4;
+		else
+			upsize = size / 4;
+		fprintRTF ("\\\\s\\\\do%d({\\fs%d ", upsize, newsize);
+		ConvertString (lower_limit);
+		fprintRTF ("})");
+		free (lower_limit);
+		
+	} else if (upper_limit) {
+		int size, newsize, upsize;
+		size = CurrentFontSize ();
+		newsize = size / 1.2;
+		if (big)
+			upsize = size / 1.4;
+		else
+			upsize = size / 4;
+		fprintRTF ("\\\\s\\\\up%d({\\fs%d ", upsize, newsize);
+		ConvertString (upper_limit);
+		fprintRTF ("})");
+		free (upper_limit);
+	}
+}
+
 void
 CmdSuperscript(int code)
 /******************************************************************************
@@ -849,6 +919,18 @@ CmdSuperscript(int code)
 {
 	char           *s = NULL;
 	int  size, newsize, upsize;
+
+	if (g_processing_fields){
+		ungetTexChar('^');
+		SubSupWorker(FALSE);
+		return;
+	}
+
+	if (g_processing_fields){
+		ungetTexChar('_');
+		SubSupWorker (FALSE);
+		return;
+	}
 
 	if ((s = getBraceParam())) {
 		size = CurrentFontSize();
@@ -889,32 +971,59 @@ CmdLeftRight(int code)
  			 entire equation.  
  ******************************************************************************/
 { 
-	char delim;
+	char ldelim,rdelim;
+	char *contents;
 
-	delim = getTexChar();
-	if (delim == '\\')			/* might be \{ or \} */
-		delim = getTexChar();
-	
-	if (code == 0) {
-		diagnostics(4, "CmdLeftRight() ... \\left <%c>", delim);
+	ldelim = getTexChar();
+	if (ldelim == '\\')			/* might be \{ or \} */
+		ldelim = getTexChar();
 
-		if (delim == '.')
-			diagnostics(WARNING, "\\left. not supported");
-		
-		fprintRTF(" \\\\b ");
-		if (delim == '(' || delim == '.')
-			fprintRTF("(");
-		else if (delim == '{')
-			fprintRTF("\\\\bc\\\\\\{ (");
-		else 
-			fprintRTF("\\\\bc\\\\%c (", delim);
+	contents= getLeftRightParam();
+	rdelim= getTexChar();
 
-	} else {
-		fprintRTF(")");
-		if (delim == '.')
-			diagnostics(WARNING, "\\right. not supported");
-		diagnostics(4, "CmdLeftRight() ... \\right <%c>", delim);
+	if (rdelim == '\\')			/* might be \{ or \} */
+		rdelim = getTexChar();
+
+	if (code == 1) diagnostics(ERROR, "\\right without opening \\left");
+
+	diagnostics(4, "CmdLeftRight() ... \\left <%c> \\right <%c>", ldelim, rdelim);
+
+	fprintRTF(" \\\\b ");
+	if (ldelim == '(' && rdelim == ')'){
+		fprintRTF("(");
+		goto finish;
 	}
+
+	if (ldelim == '{' && rdelim == '}'){
+		fprintRTF("\\\\bc\\\\\\{ (");
+		goto finish;
+	}
+
+	if (ldelim == '[' && rdelim == ']'){
+		fprintRTF("\\\\bc\\\\[ (");
+		goto finish;
+	}
+
+	if (ldelim == '{' || ldelim == '}'){
+		fprintRTF("\\\\lc\\\\\\%c",ldelim);
+	} else {
+		if (ldelim != '.') fprintRTF("\\\\lc\\\\%c", ldelim);
+	}
+
+	if (rdelim == '{' || rdelim == '}'){
+		fprintRTF("\\\\rc\\\\\\%c (",ldelim);
+		
+	}else{
+		if (rdelim != '.') 
+			fprintRTF("\\\\rc\\\\%c (", ldelim);
+		else 
+			fprintRTF("(");
+	}
+	
+finish:
+	ConvertString(contents);
+	fprintRTF(")");
+	SubSupWorker(TRUE);
 }
 
 void

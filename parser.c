@@ -718,6 +718,47 @@ getBraceParam(void)
 }
 
 char *
+getLeftRightParam(void)
+/**************************************************************************
+     purpose: get text between \left ... \right
+ **************************************************************************/
+{
+	char text[5000],s,*command;
+	int i=0;
+	int lrdepth=1;
+	
+	text[0]='\0';
+	
+	for (;;){
+		s=getTexChar();
+		if (s=='\\'){
+			ungetTexChar(s);
+			command=getSimpleCommand();
+			if (strcmp(command,"\\right")==0){
+				lrdepth--;
+				if (lrdepth==0) {
+					free(command);
+					return strdup(text);
+				}
+			}
+			strcat(text+i, command);
+			i+= strlen(command);
+			if (i>4950) diagnostics(ERROR, "Contents of \\left .. \\right too large.");
+			if (strcmp(command,"\\left")==0) lrdepth++;
+			free(command);
+		} else {
+			text[i]=s;
+			i++;
+			text[i]= '\0';
+		}
+	}
+	return NULL;
+}
+
+
+  
+  
+char *
 getTexUntil(char * target, int raw)
 /**************************************************************************
      purpose: returns the portion of the file to the beginning of target

@@ -222,6 +222,8 @@ globals: fTex, fRtf and all global flags for convert (see above)
 			CleanStack();
 			PushBrace();
 			fprintRTF("{");
+			Convert();    /* CHB */
+			CleanStack(); /* CHB */
 			break;
 			
 		case '}':
@@ -480,14 +482,14 @@ globals: fTex, fRtf and all global flags for convert (see above)
 			break;
 
 		case '(':
-			if (g_processing_fields)
+			if (g_processing_fields&&g_escape_parent)
 				fprintRTF("\\\\(");
 			else
 				fprintRTF("(");
 			break;
 			
 		case ')':
-			if (g_processing_fields)
+			if (g_processing_fields&&g_escape_parent)
 				fprintRTF("\\\\)");
 			else
 				fprintRTF(")");

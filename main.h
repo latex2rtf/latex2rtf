@@ -1,4 +1,4 @@
-/* $Id: main.h,v 1.53 2002/11/07 02:06:56 prahl Exp $ */
+/* $Id: main.h,v 1.54 2002/11/19 04:06:01 prahl Exp $ */
 #ifndef __MAIN_H
 #define __MAIN_H
 
@@ -102,6 +102,7 @@ extern int 		g_processing_fields;
 extern int		g_dots_per_inch;
 
 extern int      g_equation_number;
+extern bool g_escape_parent;
 extern bool     g_show_equation_number;
 extern int      g_enumerate_depth;
 extern bool     g_suppress_equation_number;

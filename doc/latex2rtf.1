@@ -1,10 +1,10 @@
-.\" $Id: latex2rtf.1,v 1.4 2002/04/27 03:55:40 prahl Exp $
+.\" $Id: latex2rtf.1,v 1.5 2002/11/19 04:06:01 prahl Exp $
 .\"
 .TH latex2rtf 1
 .SH NAME
 latex2rtf \- Convert a LaTeX file to an RTF file
 .SH SYNTAX
-latex2rtf [-hlSV] [ -d# ] [ -M# 
+latex2rtf [-phlSV] [ -d# ] [ -M# 
 ] [ -a
 .I auxfile
 ] [ -b
@@ -87,7 +87,12 @@ Unless an
 .I outputfile
 is specified with the -o option, the resulting RTF is produced in a file with .tex
 replaced by .rtf.
-.TP 
+.TP
+.B \-p
+do not quote printed parentheses in mathematical formulas, as some versions of
+Word(TM) have deep psychological problems with EQ fields using quoted parentheses.
+So if Word displays some formulas with parentheses as 'Error!', try this option.
+.TP
 .B \-M#
 where # selects the type of equation conversion.  -M3 is the default and
 converts both inline and displayed equations to RTF.  -M6 converts inline 

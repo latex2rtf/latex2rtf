@@ -24,6 +24,7 @@ void            skipSpaces(void);
 
 void            CmdIgnoreParameter(int);
 char           *getBraceParam(void);
+char	       *getLeftRightParam(void);
 char           *getBracketParam(void);
 char           *getSimpleCommand(void);
 char           *getTexUntil(char * target, int raw);

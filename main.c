@@ -92,6 +92,7 @@ char		   *g_config_path = NULL;
 char		   *g_tmp_path = NULL;
 char		   *g_preamble = NULL;
 char			g_field_separator = ',';
+bool 			g_escape_parent= TRUE;
 
 bool			g_equation_display_rtf	  = TRUE;
 bool			g_equation_inline_rtf	  = TRUE;
@@ -133,7 +134,7 @@ int main(int argc, char **argv)
 	SetEndianness();
 	progname = argv[0];
 	optind = 1;
-	while ((c = getopt(argc, argv, "lhvFSWZ:o:a:b:d:i:s:C:D:M:P:T:")) != EOF) {
+	while ((c = getopt(argc, argv, "lhpvFSWZ:o:a:b:d:i:s:C:D:M:P:T:")) != EOF) {
 		switch (c) {
 		case 'a':
 			g_aux_name = optarg;
@@ -157,6 +158,9 @@ int main(int argc, char **argv)
 		case 'o':
 			g_rtf_name = strdup(optarg);
 			break;
+		case 'p':
+		  	g_escape_parent= FALSE;
+		  	break;
 		case 'v':
 			print_version();
 			return (0);
