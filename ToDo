@@ -8,11 +8,6 @@ Fit & Finish:
 	add examples to help page
 	improve readme.osx
 
-	ensure natbib number style works
-	add bib_simple1 and others to test
-	add ensuremath
-	add \circ
-	
 Potential Features:
 
 	add \tableofcontents, \listoftables, \listoffigures
@@ -42,6 +37,7 @@ Potential Features:
 	Style stuff in rtf header
 		add style support for quote environment
 		add style support for enumerate environment
+                add style support for superscript natbib entries
 
 	support \hsize
 	add support for \vspace

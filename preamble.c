@@ -532,13 +532,28 @@ void CmdUsepackage(int code)
       strstr(package, "avant") || strstr(package, "newcen") || strstr(package, "helvet"))
         setPackageFont(package);
 
+    else if (strcmp(package, "cite") == 0)
+       set_sorted_citations();
+
     else if (strcmp(package, "natbib") == 0) {
         if (options && strstr(options, ""))
             set_longnamesfirst();
         if (options && strstr(options, "super"))
             set_bibpunct_style_super();
         if (options && strstr(options, "comma"))
-            set_bibpunct_style_sep_comma();
+            set_bibpunct_style_separator(",");
+        if (options && strstr(options, "colon"))
+            set_bibpunct_style_separator(":");
+        if (options && strstr(options, "round"))
+            set_bibpunct_style_paren("(",")");
+        if (options && strstr(options, "square"))
+            set_bibpunct_style_paren("[","]");
+        if (options && strstr(options, "curly"))
+            set_bibpunct_style_paren("{","}");
+        if (options && strstr(options, "angle"))
+            set_bibpunct_style_paren("<",">");
+        if (options && strstr(options, "sort"))
+            set_sorted_citations();
 
         PushEnvironment(NATBIB_MODE);
         g_document_bibstyle = BIBSTYLE_NATBIB;

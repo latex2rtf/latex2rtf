@@ -3,7 +3,7 @@
 #define FOOTNOTE_THANKS     3
 #define FOOTNOTE_ENDNOTE    8 /* must be able to be OR-ed with other FOOTNOTE_* flags */
 
-#define LABEL_LABEL			1
+#define LABEL_LABEL 		1
 #define LABEL_HYPERREF		2
 #define LABEL_REF			3
 #define LABEL_HYPERCITE	4
@@ -63,32 +63,36 @@
 #define LIST_OF_TABLES		2
 #define TABLE_OF_CONTENTS	3
 
-void 	InitializeBibliography(void);
-void	CmdTheEndNotes(int code);
-void    CmdFootNote(int code);
-void    CmdLabel(int code);
-void 	CmdNoCite(int code);
-void	CmdBibliographyStyle(int code);
-void 	CmdBibliography(int code);
-void 	CmdThebibliography(int code);
-void 	CmdBibitem(int code);
-void 	CmdNewblock(int code);
-void	CmdIndex(int code);
-void	CmdPrintIndex(int code);
-void 	CmdHtml(int code);
-void	InsertBookmark(char *name, char *text);
-void	CmdCite(int code);
-void	CmdHarvardCite(int code);
-void	CmdBCAY(int code);
-void	CmdApaCite(int code);
-void    set_longnamesfirst(void);
-void    set_bibpunct_style_super(void);
-void    set_bibpunct_style_number(void);
-void    set_bibpunct_style_sep_comma(void);
-void	CmdCiteName(int code);
-void	CmdNumberLine(int code);
-void	CmdContentsLine(int code);
-void	CmdListOf(int code);
-void    CmdHarvard(int code);
-void    CmdNatbibCite(int code);
-void    CmdBibpunct(int code);
+void InitializeBibliography(void);
+void CmdTheEndNotes(int code);
+void CmdFootNote(int code);
+void CmdLabel(int code);
+void CmdNoCite(int code);
+void CmdBibliographyStyle(int code);
+void CmdBibliography(int code);
+void CmdThebibliography(int code);
+void CmdBibitem(int code);
+void CmdNewblock(int code);
+void CmdIndex(int code);
+void CmdPrintIndex(int code);
+void CmdHtml(int code);
+void InsertBookmark(char *name, char *text);
+void CmdCite(int code);
+void CmdHarvardCite(int code);
+void CmdBCAY(int code);
+void CmdApaCite(int code);
+void set_longnamesfirst(void);
+
+void set_bibpunct_style_super(void);
+void set_bibpunct_style_number(void);
+void set_bibpunct_style_separator(char *s);
+void set_bibpunct_style_paren(char *open, char *close);
+void set_sorted_citations(void);
+
+void CmdCiteName(int code);
+void CmdNumberLine(int code);
+void CmdContentsLine(int code);
+void CmdListOf(int code);
+void CmdHarvard(int code);
+void CmdNatbibCite(int code);
+void CmdBibpunct(int code);

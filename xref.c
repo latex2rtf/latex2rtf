@@ -55,6 +55,12 @@ int g_suppress_name = FALSE;
 char *g_label_list[MAX_LABELS];
 int g_label_list_number = -1;
 
+typedef struct citekey_type {
+	char *key;
+	int number;
+} citekey_type;
+
+
 static char *g_all_citations[MAX_CITATIONS];
 static int g_last_citation = 0;
 static int g_current_cite_type = 0;
@@ -64,6 +70,7 @@ static char g_last_author_cited[201];
 static char g_last_year_cited[51];
 static int g_citation_longnamesfirst = 0;
 static int g_current_cite_item = 0;
+static int g_sorted_citations = FALSE;
 
 static char *g_bibpunct_open = NULL;
 static char *g_bibpunct_close = NULL;
@@ -101,10 +108,22 @@ void set_bibpunct_style_number(void)
     g_bibpunct_style = BIB_STYLE_NUMBER;
 }
 
-void set_bibpunct_style_sep_comma(void)
+void set_bibpunct_style_separator(char *s)
 {
     g_bibpunct_touched = TRUE;
-	g_bibpunct_cite_sep=strdup(",");
+	g_bibpunct_cite_sep=strdup(s);
+}
+
+void set_bibpunct_style_paren(char *open, char *close)
+{
+    g_bibpunct_touched = TRUE;
+	g_bibpunct_open = strdup(open);
+	g_bibpunct_close = strdup(close);
+}
+
+void set_sorted_citations(void)
+{
+	g_sorted_citations = TRUE;
 }
 
 /*************************************************************************
@@ -1004,6 +1023,67 @@ void CmdBibpunct(int code)
 	g_bibpunct_touched = TRUE;
 }
 
+static int CmpFunc( const void * _a, const void * _b)
+{ 
+	citekey_type * aa = (citekey_type *) _a;
+	citekey_type * bb = (citekey_type *) _b;
+	int a = (*aa).number;
+	int b = (*bb).number;
+
+ 	if (a > b) return 1;
+	if (a ==  b) return 0;
+	return -1;
+}
+
+static char * reorder_citations(char *keys)
+{
+    char *key, *remaining_keys,*ordered_keys,*a,*b;
+    int n,i; 
+    citekey_type names[100];
+
+	diagnostics(3,"unordered list <%s>",keys);
+	
+/* gather citekeys and numbers into list */
+    key = keys;
+    remaining_keys = popCommaName(key);
+	n=0;
+    while (key  && n < 100) {
+		char *s = ScanAux("bibcite", key, 0); /* look up bibliographic * reference */
+		if (s) {
+			int number;
+			sscanf(s,"%d",&number);
+			free(s);
+   			names[n].key = key;
+    		names[n].number = number;
+    		n++;
+		}
+        key = remaining_keys;
+        remaining_keys = popCommaName(key);
+    }
+ 
+ 	/* if there is no .aux file or only one key return original list */
+ 	if (n<=1) {
+ 		ordered_keys = strdup(keys);
+ 		return ordered_keys;
+ 	}
+ 	
+/* sort list according to the numbers */
+ 	qsort(names, n, sizeof(citekey_type), CmpFunc);
+
+/* write the sorted list of keys into a string */
+	ordered_keys=strdup(names[0].key);
+	for (i=1; i<n; i++) {
+		a = strdup_together(ordered_keys, ",");
+		b = strdup_together(a, names[i].key);
+		free(a);
+		free(ordered_keys);
+		ordered_keys=b;
+	}
+	
+	diagnostics(3,"reordered list <%s>",ordered_keys);
+	return ordered_keys;    
+}
+
 /******************************************************************************
 purpose: handles \cite
 ******************************************************************************/
@@ -1065,9 +1145,17 @@ void CmdCite(int code)
         ConvertString(pretext);
         fprintRTF(" ");
     }
-    /* now start processing keys */
+
+    /* clean-up keys and sort if necessary */
     keys = strdup_noblanks(text);
     free(text);
+    if (g_sorted_citations){
+    	text = reorder_citations(keys);
+    	free(keys);
+    	keys = text;
+    }
+
+    /* now start processing keys */
     key = keys;
     next_keys = popCommaName(key);
 
@@ -1210,9 +1298,16 @@ void CmdNatbibCite(int code)
         ConvertString(g_bibpunct_open);
     }
 
-    /* now start processing keys */
+    /* clean-up keys and sort if necessary */
     keys = strdup_noblanks(text);
     free(text);
+    if (g_sorted_citations){
+    	text = reorder_citations(keys);
+    	free(keys);
+    	keys = text;
+    }
+
+    /* now start processing keys */
     key = keys;
     next_keys = popCommaName(key);
 
@@ -1300,9 +1395,16 @@ void CmdHarvardCite(int code)
         ConvertString(g_bibpunct_open);
     }
 
-    /* now start processing keys */
+    /* clean-up keys and sort if necessary */
     keys = strdup_noblanks(text);
     free(text);
+    if (g_sorted_citations){
+    	text = reorder_citations(keys);
+    	free(keys);
+    	keys = text;
+    }
+
+    /* now start processing keys */
     key = keys;
     next_keys = popCommaName(key);
 
