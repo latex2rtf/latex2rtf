@@ -13,7 +13,7 @@ all:	accentchars.rtf array.rtf cite.rtf eqns.rtf fonts.rtf fontsize.rtf \
 	enc_maccyr.rtf enc_macukr.rtf eqns-koi8.rtf \
 	defs.rtf qualisex.rtf ttgfsr7.rtf excalibur.rtf include.rtf ch.rtf\
 	spago1.rtf theorem.rtf picture.rtf tabbing.rtf figtest.rtf \
-	apalike.rtf chem.rtf linux.rtf
+	apalike.rtf chem.rtf subsup.rtf linux.rtf
 
 LATEX= latex
 BIBTEX= bibtex
