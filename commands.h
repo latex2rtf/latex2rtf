@@ -1,4 +1,4 @@
-/* $Id: commands.h,v 1.21 2003/04/07 01:46:46 prahl Exp $ */
+/* $Id: commands.h,v 1.22 2004/10/01 05:03:13 prahl Exp $ */
 
 #define PREAMBLE 1
 #define DOCUMENT 2
@@ -16,6 +16,9 @@
 #define CZECH_MODE   16
 #define APACITE_MODE 17
 #define NATBIB_MODE  18
+#define HARVARD_MODE 19
+#define AUTHORDATE_MODE 20
+
 #define ON 0x4000
 #define OFF 0x0000
 

@@ -92,6 +92,7 @@ static int citation_used(char *citation)
 purpose: obtains a reference from .aux file
     code==0 means \token{reference}{number}       -> "number"
     code==1 means \token{reference}{{sect}{line}} -> "sect"
+    code==2 means \token{reference}{a}{b}{c}      -> "{a}{b}{c}"
  ************************************************************************/
 static char *ScanAux(char *token, char *reference, int code)
 {
@@ -121,6 +122,12 @@ static char *ScanAux(char *token, char *reference, int code)
         if (s) {
 
             s += strlen(target);    /* move to \token{reference}{ */
+            
+            if (code == 2) {
+				diagnostics(4, "found <%s>", s);
+				return strdup_noendblanks(s);
+			}
+            	
             if (code == 1)
                 s++;            /* move to \token{reference}{{ */
 
@@ -722,6 +729,64 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first)
     free(full);
 }
 
+static void ConvertHarvard(char *s, int code, char *pre, char *post, int first)
+{
+    char *year, *abbv, *full;
+    int author_repeated, year_repeated;
+
+    PushSource(NULL, s);
+    full = getBraceParam();
+    abbv = getBraceParam();
+    year = getBraceParam();
+    PopSource();
+    diagnostics(2, "harvard pre=[%s] post=<%s> full=<%s> abbv=<%s> year=<%s>", pre, post, full, abbv, year);
+    author_repeated = FALSE;
+    year_repeated = FALSE;
+    switch (code) {
+        case CITE_AFFIXED:
+        	if (first && pre) {
+        		ConvertString(pre);
+        		fprintRTF(" ");
+        	}
+            ConvertString(full);
+            fprintRTF(" ");
+            ConvertString(year);
+            break;
+
+        case CITE_CITE:
+            ConvertString(full);
+            fprintRTF(" ");
+            ConvertString(year);
+            break;
+
+        case CITE_YEAR:
+        case CITE_YEAR_STAR:
+             ConvertString(year);
+             break;
+             
+        case CITE_NAME:
+             ConvertString(full);
+             break;
+
+        case CITE_AS_NOUN:
+             ConvertString(full);
+             fprintRTF(" (");
+             ConvertString(year);
+             fprintRTF(")");
+             break;
+             
+        case CITE_POSSESSIVE:
+             ConvertString(full);
+             fprintRTF("\\rquote s (");
+             ConvertString(year);
+             fprintRTF(")");
+             break;
+    }
+    free(year);
+    free(abbv);
+    free(full);
+}
+
 /******************************************************************************
 purpose: handles \cite
 ******************************************************************************/
@@ -765,11 +830,22 @@ void CmdCite(int code)
             g_current_cite_paren = FALSE;
         g_current_cite_type = code;
     }
+    if (g_document_bibstyle == BIBSTYLE_HARVARD) {
+        option = getBracketParam();
+        strcpy(punct, "(),");
+        if (code == CITE_AS_NOUN || code == CITE_YEAR_STAR || 
+            code == CITE_NAME || code == CITE_POSSESSIVE)
+            g_current_cite_paren = FALSE;
+    }
+    
     text = getBraceParam();
     str1 = strdup_nocomments(text);
     free(text);
     text = str1;
 
+    if (g_document_bibstyle == BIBSTYLE_HARVARD && code == CITE_AFFIXED) 
+        pretext = getBraceParam();
+        
     if (strlen(text) == 0) {
         free(text);
         if (pretext)
@@ -798,8 +874,11 @@ void CmdCite(int code)
 
         g_current_cite_item++;
 
-        s = ScanAux("bibcite", key, 0); /* look up bibliographic * reference */
-
+		if (g_document_bibstyle == BIBSTYLE_HARVARD) 
+            s = ScanAux("harvardcite", key, 2); /* look up bibliographic * reference */
+        else
+            s = ScanAux("bibcite", key, 0); /* look up bibliographic * reference */
+            
         if (g_document_bibstyle == BIBSTYLE_APALIKE) {  /* can't use Word refs for APALIKE or APACITE */
             t = s ? s : key;
             if (!first_key)
@@ -834,6 +913,20 @@ void CmdCite(int code)
                 ConvertString(key);
             }
         }
+        if (g_document_bibstyle == BIBSTYLE_HARVARD) {
+            diagnostics(2, "harvard key=[%s] <%s>", key, s);
+            if (s) {
+				if (!first_key)
+					fprintRTF("%c ", punct[2]); /* punctuation between * citations */
+                g_current_cite_seen = citation_used(key);
+                ConvertHarvard(s, code, pretext, NULL, first_key);
+            } else {
+                if (!first_key)
+                    fprintRTF("%c ", punct[2]); /* punctuation between * citations */
+                ConvertString(key);
+            }
+        }
+        
         if (g_document_bibstyle == BIBSTYLE_STANDARD) {
             char *signet = strdup_nobadchars(key);
 
@@ -850,6 +943,7 @@ void CmdCite(int code)
             if (signet)
                 free(signet);
         }
+        
         first_key = FALSE;
         key = next_keys;
         next_keys = popCommaName(key);  /* key modified to be a * single key */
@@ -858,7 +952,9 @@ void CmdCite(int code)
     }
 
     /* final text after citation */
-    if (option && (g_document_bibstyle == BIBSTYLE_APACITE || g_document_bibstyle == BIBSTYLE_AUTHORDATE)) {
+    if (option && (g_document_bibstyle == BIBSTYLE_APACITE || 
+                   g_document_bibstyle == BIBSTYLE_AUTHORDATE ||
+                   g_document_bibstyle == BIBSTYLE_HARVARD)) {
         fprintRTF(", ");
         ConvertString(option);
     }
@@ -1143,6 +1239,29 @@ void CmdNumberLine(int code)
     ConvertString(number);
     fprintRTF("\\tab ");
     free(number);
+}
+
+/******************************************************************************
+purpose: handles \harvarditem{a}{b}{c} \harvardyearleft \harvardyearright
+******************************************************************************/
+void CmdHarvard(int code)
+{
+    char *s;
+
+	if (code == CITE_HARVARD_ITEM) {
+		s = getBraceParam();
+		free(s);
+		s = getBraceParam();
+		free(s);
+		s = getBraceParam();
+		free(s);
+	}
+	
+	if (code == CITE_HARVARD_YEAR_LEFT) 
+		fprintRTF("(");
+
+	if (code == CITE_HARVARD_YEAR_RIGHT) 
+		fprintRTF(")");
 }
 
 /******************************************************************************

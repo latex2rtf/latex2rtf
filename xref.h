@@ -19,6 +19,7 @@
 #define BIBSTYLE_APACITE    3
 #define BIBSTYLE_NATBIB     4
 #define BIBSTYLE_AUTHORDATE 5
+#define BIBSTYLE_HARVARD    6
 
 #define CITE_CITE           1
 #define CITE_FULL           2
@@ -48,6 +49,15 @@
 #define CITE_AUTHOR_STAR   26
 #define CITE_YEAR_P        27
 
+#define CITE_AS_NOUN            28
+#define CITE_POSSESSIVE         29
+#define CITE_AFFIXED            30
+#define CITE_YEAR_STAR          31
+#define CITE_HARVARD_ITEM       32
+#define CITE_HARVARD_YEAR_LEFT  33
+#define CITE_HARVARD_YEAR_RIGHT 34
+#define CITE_NAME               35
+
 #define LIST_OF_FIGURES		1
 #define LIST_OF_TABLES		2
 #define TABLE_OF_CONTENTS	3
@@ -73,4 +83,4 @@ void	CmdCiteName(int code);
 void	CmdNumberLine(int code);
 void	CmdContentsLine(int code);
 void	CmdListOf(int code);
-
+void    CmdHarvard(int code);

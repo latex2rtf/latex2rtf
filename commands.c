@@ -326,8 +326,6 @@ static CommandArray commands[] = {
     {"abstract", CmdAbstract, 1},
     {"endinput", CmdEndInput, 0},
     {"textcolor", CmdTextColor, 0},
-    {"citename", CmdCiteName, 0},
-    {"shortcite", CmdCite, CITE_SHORT},
     {"tableofcontents", CmdListOf, TABLE_OF_CONTENTS},
     {"listoffigures", CmdListOf, LIST_OF_FIGURES},
     {"listoftables", CmdListOf, LIST_OF_TABLES},
@@ -746,6 +744,31 @@ static CommandArray natbibCommands[] = {
     {"", NULL, 0}
 };
 
+/********************************************************************
+purpose: commands for harvard package 
+********************************************************************/
+static CommandArray harvardCommands[] = {
+    {"citeasnoun", CmdCite, CITE_AS_NOUN},
+    {"possessivecite", CmdCite, CITE_POSSESSIVE},
+    {"citeaffixed", CmdCite, CITE_AFFIXED},
+    {"citeyear", CmdCite, CITE_YEAR},
+    {"citeyear*", CmdCite, CITE_YEAR_STAR},
+    {"harvarditem", CmdHarvard, CITE_HARVARD_ITEM},
+    {"harvardyearleft", CmdHarvard, CITE_HARVARD_YEAR_LEFT},
+    {"harvardyearright", CmdHarvard, CITE_HARVARD_YEAR_RIGHT},
+    {"citename", CmdCite, CITE_NAME},
+    {"", NULL, 0}
+};
+
+/********************************************************************
+purpose: commands for harvard package 
+********************************************************************/
+static CommandArray authordateCommands[] = {
+    {"citename", CmdCiteName, 0},
+    {"shortcite", CmdCite, CITE_SHORT},
+    {"", NULL, 0}
+};
+
 bool CallCommandFunc(char *cCommand)
 
 /****************************************************************************
@@ -910,6 +933,14 @@ globals: changes Environment - array of active environments
             Environments[iEnvCount] = natbibCommands;
             diag = "natbib";
             break;
+        case HARVARD_MODE:
+            Environments[iEnvCount] = harvardCommands;
+            diag = "harvard";
+            break;
+        case AUTHORDATE_MODE:
+            Environments[iEnvCount] = authordateCommands;
+            diag = "authordate";
+            break;            
         case GENERIC_ENV:
             Environments[iEnvCount] = commands;
             diag = "Generic Environment";
