@@ -74,14 +74,12 @@ commands has been implemented to date.  *Note Unimplemented Features::.
 buggy. *Note Known Bugs::.
 
    RTF is a moving target, because Microsoft does not stop inventing
-new extensions and features for it. So you cannot view newer RTF files
-with older word processors.  LaTeX2RTF  eventually will generate RTF
-output that is unreadable with your Program.  The syntax and semantics
-of RTF are somewhat artistic, i.e., you can generate a syntactically
-correct RTF file that cannot be displayed by some/most word processors.
-
-   For more details on RTF look at the RTF-Tools by Paul DuBois, and
-the corresponding newsgroups, etc. `http://www.primate.wisc.edu/'
+new extensions and features, consequently you cannot view newer RTF
+files with older word processors.  The syntax and semantics of RTF are
+somewhat artistic, i.e., you can generate a syntactically correct RTF
+file that cannot be displayed by some/most word processors.  For more
+details on RTF the specification consult the links at
+`http://latex2rtf.sf.net/'
 
 Installation
 ************
@@ -147,6 +145,14 @@ UNIX
      On IBM AIX, the IBM make utility does not support some of the
      commands used in Makefile. In this case use `gmake' (from GNU)
      instead.
+
+     Sun has decided to support the XPG4 standard on Solaris by an
+     alternative set of binaries.  So allow bitmap conversion of
+     equations, two things are needed.  First, change the first line of
+     latex2png to `#!/usr/xpg4/bin/sh' Second, define the XPG4_GREP
+     environment variable accordingly, for bash-like shells
+     `XPG4_GREP=/usr/xpg4/bin/grep; export XPG4_GREP' or for tsch-like
+     shells `setenv XPG4_GREP /usr/xpg4/bin/grep'.
 
   4. `make install'
 
@@ -458,6 +464,28 @@ syntax is:
      are converted to png files.  The default value is 300 dots per
      inch.
 
+`-f#'
+     where # selects which fields to use during conversion:
+    `-f0'
+          do not use fields in RTF.  This is handy when primitive RTF
+           editors are being used to view the RTF output.
+
+    `-f1'
+          	use fields for equations but not `\ref' and `\cite'.
+
+    `-f2'
+          	use fields for `\ref' and `\cite' but not equations.  This
+          will be useful for versions of OpenOffice that import
+          cross-references 	properly (as of Sept 2003 in a
+          soon-to-be released version) but do not properly
+          handle fields in equations.
+
+    `-f3'
+          use fields when possible.  This is the default and is most
+          useful when     the RTF file is being exported to be used in
+          Word.  This retains the most     information from the
+          original LaTeX  file.
+
 `-F'
      use LaTeX to create bitmaps for all figures.  This may help when
      figures are not translated properly with the default settings.
@@ -498,9 +526,8 @@ syntax is:
 
     `-M16'
           insert Word comment field that contains the original equation
-          text
-     These switches can be added together to get the desired
-     conversion.  Handy examples are
+          text     These switches can be added together to get the
+     desired conversion.  Handy examples are
     `-M3'
           convert both inline and displayed equations to RTF (default)
 
@@ -548,7 +575,6 @@ syntax is:
      add the specified number of extra `}' to the end of the RTF file.
      This is useful for files that are not cleanly converted by
      LaTeX2RTF .
-
 
    With no arguments other than switches starting with a "-", LaTeX2RTF
 acts as a filter, i.e., it reads from `stdin' and writes to `stdout'.
