@@ -1,4 +1,4 @@
-/* $Id: encode.c,v 1.9 2001/12/07 05:03:48 prahl Exp $ 
+/* $Id: encode.c,v 1.10 2002/04/24 14:31:16 prahl Exp $ 
    Translate high bit characters into RTF assuming that
    the default codepage is ansi (1252)
    
@@ -1753,6 +1753,76 @@ char *s;
 	}
 }
 
+static void cp1251_enc(int index)
+{
+	char *s;
+	s = cp1251_2_cp1251[index];
+	if (s[0]!='0'){
+		fprintRTF("\\'%s",s);
+		return;
+	}
+}
+
+static void cp855_enc(int index)
+{
+	char *s;
+	s = cp855_2_cp1251[index];
+	if (s[0]!='0'){
+		fprintRTF("\\'%s",s);
+		return;
+	}
+}
+
+static void cp866_enc(int index)
+{
+	char *s;
+	s = cp866_2_cp1251[index];
+	if (s[0]!='0'){
+		fprintRTF("\\'%s",s);
+		return;
+	}
+}
+
+static void koi8r_enc(int index)
+{
+	char *s;
+	s = koi8r_2_cp1251[index];
+	if (s[0]!='0'){
+		fprintRTF("\\'%s",s);
+		return;
+	}
+}
+
+static void koi8u_enc(int index)
+{
+	char *s;
+	s = koi8u_2_cp1251[index];
+	if (s[0]!='0'){
+		fprintRTF("\\'%s",s);
+		return;
+	}
+}
+
+static void maccyr_enc(int index)
+{
+	char *s;
+	s = maccyr_2_cp1251[index];
+	if (s[0]!='0'){
+		fprintRTF("\\'%s",s);
+		return;
+	}
+}
+
+static void macukr_enc(int index)
+{
+	char *s;
+	s = macukr_2_cp1251[index];
+	if (s[0]!='0'){
+		fprintRTF("\\'%s",s);
+		return;
+	}
+}
+
 void WriteEightBitChar(char cThis)
 {
 	int index = (int) cThis + 128;
@@ -1787,6 +1857,20 @@ void WriteEightBitChar(char cThis)
 		latin9_enc(index);
 	else if (strcmp(g_encoding, "next") == 0 ) 
 		next_enc(index);
+	else if (strcmp(g_encoding, "cp1251") == 0 ) 
+		cp1251_enc(index);
+	else if (strcmp(g_encoding, "cp855") == 0 ) 
+		cp855_enc(index);
+	else if (strcmp(g_encoding, "cp866") == 0 ) 
+		cp866_enc(index);
+	else if (strcmp(g_encoding, "koi8-r") == 0 ) 
+		koi8r_enc(index);
+	else if (strcmp(g_encoding, "koi8-u") == 0 ) 
+		koi8u_enc(index);
+	else if (strcmp(g_encoding, "maccyr") == 0 ) 
+		maccyr_enc(index);
+	else if (strcmp(g_encoding, "macukr") == 0 ) 
+		macukr_enc(index);
 }
 
 

@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.51 2002/04/21 22:49:59 prahl Exp $
+# $Id: Makefile,v 1.52 2002/04/24 14:31:16 prahl Exp $
 
 CC=gcc
 MKDIR=mkdir -p
@@ -46,7 +46,7 @@ CFGS=cfg/fonts.cfg cfg/direct.cfg cfg/ignore.cfg \
     cfg/latin.cfg cfg/lsorbian.cfg cfg/magyar.cfg cfg/norsk.cfg cfg/nynorsk.cfg \
     cfg/polish.cfg cfg/portuges.cfg cfg/romanian.cfg cfg/samin.cfg cfg/scottish.cfg \
     cfg/serbian.cfg cfg/slovak.cfg cfg/slovene.cfg cfg/spanish.cfg cfg/swedish.cfg \
-    cfg/turkish.cfg cfg/usorbian.cfg cfg/welsh.cfg 
+    cfg/turkish.cfg cfg/usorbian.cfg cfg/welsh.cfg cfg/russian.cfg
 
 DOCS= doc/latex2rtf.1   doc/latex2png.1    doc/latex2rtf.texi doc/latex2rtf.pdf \
       doc/latex2rtf.txt doc/latex2rtf.info doc/latex2rtf.html doc/credits \
@@ -63,11 +63,13 @@ TEST=   test/Makefile test/bracecheck \
 	test/list.tex test/logo.tex test/misc1.tex test/misc2.tex \
 	test/oddchars.tex test/tabular.tex test/percent.tex test/essential.tex test/hndout.sty \
 	test/misc3.tex test/misc4.tex test/fancy.tex test/align.tex \
-	test/german.tex test/box.tex \
+	test/german.tex test/box.tex test/ttgfsr7.tex \
 	test/enc_applemac.tex test/enc_cp437.tex test/enc_cp865.tex test/enc_latin2.tex \
 	test/enc_latin5.tex test/enc_cp1250.tex test/enc_cp850.tex test/enc_decmulti.tex  \
 	test/enc_latin3.tex test/enc_latin9.tex test/enc_cp1252.tex test/enc_cp852.tex \
-	test/enc_latin1.tex test/enc_latin4.tex test/enc_next.tex test/ttgfsr7.tex \
+	test/enc_latin1.tex test/enc_latin4.tex test/enc_next.tex  \
+	test/enc_cp1251.tex test/enc_cp855.tex  test/enc_cp866.tex  test/enc_koi8-r.tex \
+	test/enc_koi8-u.tex test/enc_maccyr.tex test/enc_macukr.tex \
 	test/defs.tex test/proffois.tex test/excalibur.tex test/qualisex.tex test/include.tex \
 	test/include1.tex test/include2.tex test/include3.tex test/ch.tex test/spago1.tex \
 	test/theorem.tex test/picture.tex

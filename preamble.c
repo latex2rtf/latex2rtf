@@ -1,4 +1,4 @@
-/* $Id: preamble.c,v 1.32 2002/04/21 22:49:59 prahl Exp $
+/* $Id: preamble.c,v 1.33 2002/04/24 14:31:16 prahl Exp $
 
 purpose : Handles LaTeX commands that should only occur in the preamble.
           These are gathered together because the entire preamble must be
@@ -61,6 +61,12 @@ setPackageBabel(char * option)
 		ReadLanguage("french");
 	}
 		
+	if (strcmp(option, "russian") == 0)
+	{
+		RussianMode = TRUE;
+	/*	PushEnvironment(RUSSIAN_MODE); */
+		ReadLanguage("russian");
+	}
 }
 
 void
@@ -86,7 +92,14 @@ setPackageInputenc(char * option)
 	         strcmp(option, "latin4") == 0 ||
 	         strcmp(option, "latin5") == 0 ||
 	         strcmp(option, "latin9") == 0 ||
-	         strcmp(option, "next") == 0 ) 
+	         strcmp(option, "next") == 0   ||
+	         strcmp(option, "cp1251") == 0 ||
+	         strcmp(option, "cp855") == 0  ||
+	         strcmp(option, "cp866") == 0  ||
+	         strcmp(option, "maccyr") == 0 ||
+	         strcmp(option, "macukr") == 0 ||
+	         strcmp(option, "koi8-r") == 0 ||
+	         strcmp(option, "koi8-u") == 0 ) 
 		strcpy(g_encoding, option);
 	else
 		diagnostics(WARNING,"\n Input Encoding <%s> not supported", option);
@@ -694,7 +707,15 @@ WriteFontHeader(void)
 
 			fprintRTF(" {\\f%d\\fnil\\fcharset2 %s;}\n",num,(*config_handle)->RtfCommand);
 
-		else
+		else if (RussianMode) {
+			
+			if (strcmp(((*config_handle)->RtfCommand),"Times")==0 ||
+			    strcmp(((*config_handle)->RtfCommand),"Courier")==0 ||
+				strcmp(((*config_handle)->RtfCommand),"Helvetica")==0)
+				fprintRTF(" {\\f%d\\fnil\\fcharset204 %s;}\n",num,(*config_handle)->RtfCommand);
+
+		} else
+		
 			fprintRTF(" {\\f%d\\fnil\\fcharset0 %s;}\n",num,(*config_handle)->RtfCommand);
 
 		++num;

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.70 2002/04/21 22:49:59 prahl Exp $ */
+/* $Id: main.c,v 1.71 2002/04/24 14:31:16 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -35,6 +35,7 @@ char		   *g_home_dir = NULL;
 char           *progname;	            /* name of the executable file */
 bool            GermanMode = FALSE;	    /* support germanstyle */
 bool            FrenchMode = FALSE;	    /* support frenchstyle */
+bool            RussianMode = FALSE;	/* support russianstyle */
 
 char            g_encoding[20] = "cp1252";
 bool            twoside = FALSE;

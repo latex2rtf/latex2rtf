@@ -1,4 +1,4 @@
-/* $Id: main.h,v 1.46 2002/04/21 22:49:59 prahl Exp $ */
+/* $Id: main.h,v 1.47 2002/04/24 14:31:16 prahl Exp $ */
 #ifndef __MAIN_H
 #define __MAIN_H
 
@@ -74,6 +74,7 @@ extern 			char *progname;			/* name of the executable file */
 
 extern bool     GermanMode;
 extern bool     FrenchMode;
+extern bool     RussianMode;
 extern bool     pagenumbering;
 extern int      headings;
 
