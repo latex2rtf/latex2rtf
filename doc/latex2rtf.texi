@@ -668,8 +668,6 @@ there are a lot of HTML oriented commands in Hyperlatex that we simply can
 @node Configuring LaTeX2RTF, Error Messages and Logging of LaTeX2RTF Activity, Features, Top
 @chapter Configuring LaTeX2RTF 
 
-This chapter is out of date and needs to be revised.
-
 @menu
 * Input processing ::           
 * Output formatting ::          
@@ -855,23 +853,29 @@ have the format
 inputfile':line: Error|Warning: message
 @end example
 
-Note: Neither the inputfile may be correctly announced if @code{\input}ing it, nor
-can you rely on the linenumber, @xref{Known Bugs}.
+You can also control the level of debugging output by inserting @code{\verbositylevel@{#@}}
+in the @latex{} file.  This is very handy if you have a large @latex{} file
+that is failing in only a small section.  For example,
+@example
+problem free latex file ....
+\verbositylevel@{5@}
+problematic code
+\verbositylevel@{0@}
+@end example
+@noindent will cause a huge amount of debugging information to be emitted
+for the problematic code.
 
-The other messages only indicate `filename' (sometimes wrong) and linenumber
-(also sometimes wrong) and some more or less usefull or interesting message.
-
-Note: Error reporting and logging is one of the most chaotic aspects of the
-program. There are a lot of inconsistencies, but I hope to get it cleaner with
-time.
-
-Don't try to encounter any sense in debugging levels above 3, these are for my
+Error reporting and logging still has many inconsistencies, but it
+gets better with each release.
+Don't try to make any sense in debugging levels above 4, these are for my
 own delight only and can change significantly between versions.
+
+The @file{inputfile} may be incorrectly identified if it is incorporated
+through @code{\input} or @code{\include}.  The line may be also be wrong
+at times.  @xref{Known Bugs}.
 
 @node LaTeX2RTF under Development,,, Top
 @chapter LaTeX2RTF under Development 
-
-This chapter needs extensive revision.
 
 @menu
 * Unimplemented Features ::     
@@ -885,73 +889,59 @@ This chapter needs extensive revision.
 @section Unimplemented Features 
 
 @itemize @bullet
-@item @latex{} passes the optional parameters of \\documentstyle on to \\usepackage,
-      @ltor{} doesn't do this. @ltor{}@{@} now accepts optional arguments to
-      \\usepackage, but only uses them if they contain latin1
-@item Add more input encoding features (other isolatin1 aproaches, other
-      codepages,...).
+@item @ltor{} ignores some of the optional parameters of @code{\documentstyle} 
+@item Need to finish code page support.  Typically characters that need to be
+	  constructed using RTF @code{\field} commands are not implemented.
 @item Add the code to produce the corresponding chapter, section informations
       and page numbering with headings and myheadings pagestyles. Implement
-		  @code{\markboth} and @code{\markright}.
-@item To include the tableofcontents there would be two approaches: Transfer
+      @code{\markboth} and @code{\markright}.
+@item To support @code{\tableofcontents} there would be two approaches: Transfer
       sectioning information, title text and let produce pagenumber by the rtf-
       reader. Scan and label all of the sectioning commands while reading and
       then construct the sectioning information using these labels. Needs two
       passes on @latex{} input.
-@item Separate the Scope of the Document Environment from the Preample
-      Environment.
-@item Rewrite the parser to allow some kind of macro expansion hence more
-      flexibility in configuration and extension.
-@item newcounter, newenvironment, newcommand, ...
 @item Include the GNU gettext package to internationalize @ltor{}'s Messages.
 @item Switch over to GNU getopt() and long options.
 @end itemize
-
-Here comes a list of @latex{}-commands that are not implemented:
-`setlength, bigcap, dag, ddag, sharp, clubsuit, sim, nobreak, vspace, today,
-left-((, right-))'
 
 @node Missing and faulty command line options, Known Bugs, Unimplemented Features, LaTeX2RTF under Development
 @section Missing and faulty command line options 
 
 In this section you find comments about missing and buggy command line options.
-  @option{-V}
-       The Version information output is not compatible with the GNU Coding
-      Standards.
 
-  @option{-d}
-       Information logging and Error reporting is not implemented consistently.
-      So do expect confusing Messages and inconsistent format. The linenumber
-      and filename of the offending spot in the input in the most cases is not
-      correctly determined.
-  `'
-       There should be an option to intersperse RTF-Output with the @latex{}-input
-      that produced it to have a better hand for debugging.
-      
-  @option{-o}
-       Actually you must specify an output filename. Maybe further on the
-      meaning of this option changes, as writing `-o filename' takes more
-      typework then `> filename'. Either you may specify the name, or you must
-      not do it, depending on whether we choose to use GNU getopt or not.
+@table @option
+@item -V
+The version information output is not compatible with the GNU Coding
+Standards.
 
-  @option{-q}
-       There should be a @option{-q} (quiet) option, to suppress Warning Messages. By
-      now this can be achieved by the -d0 option.
-      
-  `-rmajor.minor'
-       There should be an option that restrict the generation of RTF code with
-      version greater than major,minor. Actually this is done at compile time.
-      There are some Warning messages if ``newer'' RTF Code is generated, but it
-      is not consistent at all.
-      
-  @option{-h}
-       The default values for search pathes and switches changeable by
-      commandlineoptions should be shown.
+@item -d
+Information logging and Error reporting is not implemented consistently.
+Need to test and track problems with the linenumber and with the file name.
 
-There is a need for a `--language' option (@option{-l} is yet used, and could be
-changed to -e # (--encoding). @option{-i} as for `--international' is chosen meanwhile
-so that the user can select an alternate language file, see section Output
-formatting.
+@item -?
+There should be an option to intersperse RTF-Output with the @latex{} input
+that produced it to aid debugging.
+
+@item -o
+Actually you must specify an output filename. Maybe further on the
+meaning of this option changes, as writing @option{-o filename} takes more
+typework then @option{> filename}. Either you may specify the name, or you must
+not do it, depending on whether we choose to use GNU getopt or not.
+
+@item -q
+There should be a @option{-q} (quiet) option, to suppress Warning Messages. By
+now this can be achieved by the @option{-d0} option.
+
+@item -rmajor.minor
+There should be an option that restrict the generation of RTF code with
+version greater than major,minor. Actually this is done at compile time.
+There are some Warning messages if ``newer'' RTF Code is generated, but it
+is not consistent at all.
+
+@option{-h}
+The default values for search pathes and switches changeable by
+command line options should be shown.
+@end table
 
 It would be useful to implement the GNU long option names, e.g.: `--debug',
 `--output_file', `--quiet', etc.
@@ -1023,6 +1013,7 @@ question. I will, however, try to fix reported bugs in upcoming releases.
 @node Todo List,, Reporting Bugs, LaTeX2RTF under Development
 @section Todo List 
 
+Georg's todo list
 @itemize @bullet
 @item  Make this Manual more consistent, the Todo and Known Bug List shorter and
       the Features List longer.
@@ -1035,25 +1026,19 @@ question. I will, however, try to fix reported bugs in upcoming releases.
 @item  Add a chapter with lists of all @latex{} commands that convert, and that do
       not convert to RTF, including their status (for future releases, never,
       partially functional, ...).
-@item  The following comes from Ralf: 
-		@enumerate 
-		@item Redesign the input routines to not
-      use lseek so that @ltor{} can read from pipes. 
-      @item Change the Makefile
-      to use default rules for generating .o files. 
-      @item Also use generic rules in
-      some other places (clean target) 
-      @item For ignored commands the number of
-      arguments to ignore should also be given 
-      @item Environment definition
-      produced with @code{\newtheorem} should be supported 
-      @item Move version control
-      archive (currently RCS) to CVS. 
-      @item  Change how the current version is
-      computed (currently version.h defines the version of the whole package
-      this should change to a CVS (or RCS) version tag from which a version.h
-      file should automatically be generated).
-      @end enumerate
+@end itemize
+
+The following comes from Ralf: 
+@itemize @bullet  
+@item Redesign the input routines to not use lseek so that @ltor{} can read from pipes. 
+@item Change the Makefile to use default rules for generating .o files. 
+@item Also use generic rules in some other places (clean target) 
+@item For ignored commands the number of arguments to ignore should also be given 
+@item Environment definition produced with @code{\newtheorem} should be supported 
+@item  Change how the current version is
+computed (currently version.h defines the version of the whole package
+this should change to a CVS (or RCS) version tag from which a version.h
+file should automatically be generated).
 @end itemize
 
 @node Index of Commandline and Configuration file Options,,, Top
