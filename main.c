@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.51 2002/02/18 06:36:38 prahl Exp $ */
+/* $Id: main.c,v 1.52 2002/02/18 17:43:18 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -136,8 +136,8 @@ int main(int argc, char **argv)
 			sscanf(optarg, "%d", &x);
 			diagnostics(WARNING, "Math option = %s x=%d",optarg,x);
 			g_equation_rtf            = x & 1;
-			g_equation_inline_bitmap  = x & 2;
-			g_equation_display_bitmap = x & 4;
+			g_equation_display_bitmap = x & 2;
+			g_equation_inline_bitmap  = x & 4;
 			g_equation_comment        = x & 8;
 			break;
 		case 'P':
@@ -523,11 +523,11 @@ purpose: output filter to track of brace depth and font settings
 	
 	while ( *text ) {
 	
-		if (*text < 0)
+		if ((unsigned char) *text > 127) {
 			
 			WriteEightBitChar(text[0]);
 			
-		else {		
+		} else {		
 			fputc(*text, fRtf);
 			
 			if (*text == '{')
