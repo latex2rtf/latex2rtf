@@ -1,4 +1,4 @@
-/*  $Id: parser.c,v 1.21 2001/10/13 20:04:56 prahl Exp $
+/*  $Id: parser.c,v 1.22 2001/10/13 20:11:52 prahl Exp $
 
    Contains declarations for a generic recursive parser for LaTeX code.
 */
@@ -323,7 +323,6 @@ getBracketParam(void)
   			
   \item[1]   --->  "1"        \item[]   --->  ""        \item the  --->  NULL
        ^                           ^                         ^
-
   \item [1]  --->  "1"        \item []  --->  ""        \item  the --->  NULL
        ^                           ^                         ^
  ******************************************************************************/
@@ -349,12 +348,16 @@ char           *
 getBraceParam(void)
 /**************************************************************************
      purpose: allocates and returns the next parameter in the LaTeX file
-              if ^ indicates the current file position then
+              Examples:  (^ indicates the current file position)
               
      \alpha\beta   --->  "\beta"             \bar \alpha   --->  "\alpha"
            ^                                     ^
      \bar{text}    --->  "text"              \bar text     --->  "t"
          ^                                       ^
+	_\alpha        ---> "\alpha"             _{\alpha}     ---> "\alpha"
+	 ^                                        ^
+	_2             ---> "2"                  _{2}          ---> "2"
+	 ^                                        ^
  **************************************************************************/
 {
 	char            s[2], *text;
@@ -433,34 +436,6 @@ getTexUntil(char * target, int raw)
 	fseekTex(start_of_target-1);	/* move to start of target */
 	
 	return strdup(buffer);
-}
-
-char           *
-getMathParam(void)
-/**************************************************************************
-     purpose: returns the parameter after ^ or _
-     example  ^\alpha and ^{\alpha} both return \alpha
-              ^2      and ^{2} both return 2
-**************************************************************************/
-{
-	char            buffer[2];
-
-	diagnostics(5,"entering getMathParam");
-
-	buffer[0] = getNonSpace();			/*skip spaces and one possible newline */
-	if (buffer[0] == '\n')
-		buffer[0] = getNonSpace();	
-
-	if (buffer[0] == '{') {
-		return getDelimitedText('{','}');
-	} else if (buffer[0] == '\\') {
-		ungetTexChar(buffer[0]);
-		return getSimpleCommand();
-	} else {
-		buffer[1] = '\0';
-		return strdup(buffer);
-	}
-
 }
 
 int 

@@ -23,7 +23,6 @@ void            skipSpaces(void);
 void            CmdIgnoreParameter(int);
 char           *getBraceParam(void);
 char           *getBracketParam(void);
-char           *getMathParam(void);
 char           *getSimpleCommand(void);
 char           *getTexUntil(char * target, int raw);
 int             getDimension(void);

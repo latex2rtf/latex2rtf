@@ -12,7 +12,6 @@
 #include "counters.h"
 #include "funct1.h"
 #include "lengths.h"
-#define getMathParam getBraceParam
 
 void
 CmdSuperscript(int code)
@@ -23,7 +22,7 @@ CmdSuperscript(int code)
 	char           *s = NULL;
 	int  size, newsize, upsize;
 
-	if ((s = getMathParam())) {
+	if ((s = getBraceParam())) {
 		size = CurrentFontSize();
 		newsize = size / 1.2;
 		upsize = size / 3;
@@ -43,7 +42,7 @@ CmdSubscript(int code)
 	char           *s = NULL;
 	int  size, newsize, upsize;
 
-	if ((s = getMathParam())) {
+	if ((s = getBraceParam())) {
 		size = CurrentFontSize();
 		newsize = size / 1.2;
 		upsize = size / 3;
@@ -291,18 +290,18 @@ parameter: type of operand
 	cThis = getNonBlank();
 
 	if (cThis == '_')
-		lower_limit = getMathParam();
+		lower_limit = getBraceParam();
 	else if (cThis == '^')
-		upper_limit = getMathParam();
+		upper_limit = getBraceParam();
 	else
 		ungetTexChar(cThis);
 
 	if (upper_limit || lower_limit) {
 		cThis = getNonBlank();
 		if (cThis == '_')
-			lower_limit = getMathParam();
+			lower_limit = getBraceParam();
 		else if (cThis == '^')
-			upper_limit = getMathParam();
+			upper_limit = getBraceParam();
 		else
 			ungetTexChar(cThis);
 	}
