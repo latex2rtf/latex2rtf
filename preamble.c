@@ -851,7 +851,7 @@ WriteStyleHeader(void)
 	style = CfgStartIterate(STYLE_A);
 	while ((style = CfgNext(STYLE_A, style)) != NULL) {
 		rtf = (*style)->RtfCommand;
-		diagnostics(WARNING,"style <%s>=<%s>", (*style)->TexCommand,rtf);
+		diagnostics(4,"style <%s>=<%s>", (*style)->TexCommand,rtf);
 		if (rtf[1]=='c')
 			fprintRTF("{\\*");  /* make \cs definitions optional */
 		else

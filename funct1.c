@@ -613,7 +613,9 @@ CmdLdots( /* @unused@ */ int code)
  purpose: converts the LaTeX-\ldots-command into "..." in Rtf
  ******************************************************************************/
 {
-	SetTexMode(MODE_HORIZONTAL);
+	if (GetTexMode() != MODE_MATH && GetTexMode() != MODE_DISPLAYMATH)
+		SetTexMode(MODE_HORIZONTAL);
+		
 	fprintRTF("...");
 }
 
