@@ -10,6 +10,7 @@ Scott Prahl, June 2001
 #include <stdio.h>
 #include "main.h"
 #include "lengths.h"
+#include "parser.h"
 
 #define MAX_LENGTHS 50
 
@@ -92,3 +93,57 @@ getLength(char * s)
 	return Lengths[i].distance;
 }
 
+void
+CmdSetTexLength(int code)
+{
+	int d;
+	char c;
+	
+	c = getNonSpace();
+	if (c == '=')			/* optional '=' */
+		skipSpaces();
+	else
+		ungetTexChar(c);
+
+	d = getDimension();
+	
+	switch (code){
+	
+		case SL_HOFFSET:
+			setLength("hoffset",d);
+			break;
+		case SL_VOFFSET:
+			setLength("voffset",d);
+			break;
+		case SL_PARINDENT:
+			setLength("parindent",d);
+			break;
+		case SL_PARSKIP:
+			setLength("parskip",d);
+			break;
+		case SL_BASELINESKIP:
+			setLength("baselineskip",d);
+			break;
+		case SL_TOPMARGIN:
+			setLength("topmargin",d);
+			break;
+		case SL_TEXTHEIGHT:
+			setLength("textheight",d);
+			break;
+		case SL_HEADHEIGHT:
+			setLength("headheight",d);
+			break;
+		case SL_HEADSEP:
+			setLength("headsep",d);
+			break;
+		case SL_TEXTWIDTH:
+			setLength("textwidth",d);
+			break;
+		case SL_ODDSIDEMARGIN:
+			setLength("oddsidemargin",d);
+			break;
+		case SL_EVENSIDEMARGIN:
+			setLength("evensidemargin",d);
+			break;
+	}
+}
