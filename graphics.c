@@ -1,4 +1,4 @@
-/* $Id: graphics.c,v 1.3 2002/03/04 05:30:18 prahl Exp $ 
+/* $Id: graphics.c,v 1.4 2002/03/08 06:46:59 prahl Exp $ 
 This file contains routines that handle LaTeX graphics commands
 */
 
@@ -187,8 +187,8 @@ int width, height;
 	fclose(fp);
 }
 
-static void 
-PutPngFile(char * s)
+void 
+PutPngFile(char * s, double scale)
 /******************************************************************************
      purpose : Include .png file in RTF
  ******************************************************************************/
@@ -198,6 +198,7 @@ unsigned char buffer[16];
 unsigned long width, height;
 char reftag[9] = "\211PNG\r\n\032\n";
 char refchunk[5] = "IHDR";
+int iscale;
 
 	fp = open_graphics_file(s);
 	if (fp == NULL) return;
@@ -221,7 +222,12 @@ char refchunk[5] = "IHDR";
 	}
 	diagnostics(1,"width = %ld, height = %ld", width, height);
 
-	fprintRTF("\n{\\pict\\pngblip\\picw%ld\\pich%ld\n", width, height);
+	fprintRTF("\n{\\pict\\pngblip\\picw%ld\\pich%ld", width, height);
+	if (scale != 1.0) {
+		iscale = (int) (scale * 100);
+		fprintRTF("\\picscalex%d\\picscaley%d\n", iscale, iscale);
+	}
+	fprintRTF("\n");
 	rewind(fp);
 	PutHexFile(fp);
 	fprintRTF("}\n");
@@ -278,7 +284,6 @@ static void
 PutEmfFile(char *s)
 {
 	FILE *fp;
-	int width, height;
 	
 	fp = open_graphics_file(s);
 	if (fp == NULL) return;
@@ -286,7 +291,7 @@ PutEmfFile(char *s)
 /* identify file type */
 /* extract size information */
 
-	diagnostics(1, "EMF files are not implemented yet");
+	diagnostics(1, "EMF file inclusion not implemented yet");
 
 /*	width = buffer[1];
 	height = buffer[0];
@@ -303,7 +308,7 @@ PutEmfFile(char *s)
 static void
 PutEpsFile(char *s)
 {
-	char *cmd, *s1, *p, *png;
+	char *cmd, *s1, *p, *png, *tmp;
 	diagnostics(1, "filename = <%s>", s);
 	s1 = strdup(s);
 	if ((p=strstr(s1,".eps")) == NULL && (p=strstr(s1,".EPS")) == NULL) {
@@ -312,23 +317,25 @@ PutEpsFile(char *s)
 		return;
 	}
 	strcpy(p,".png");
-	png = strdup_together(g_tmp_path,s1);
+	tmp = getTmpPath();
+	png = strdup_together(tmp,s1);
 	cmd = (char *) malloc(strlen(s)+strlen(png)+10);
 	sprintf(cmd, "convert %s %s", s, png);	
 	system(cmd);
 	
-	PutPngFile(png);
+	PutPngFile(png,1.0);
 	unlink(png);
 	
 	free(png);
 	free(cmd);
 	free(s1);
+	free(tmp);
 }
 
 static void
 PutTiffFile(char *s)
 {
-	char *cmd, *s1, *p, *png;
+	char *cmd, *s1, *p, *png, *tmp;
 	diagnostics(1, "filename = <%s>", s);
 	s1 = strdup(s);
 	if ((p=strstr(s1,".tiff")) == NULL && (p=strstr(s1,".TIFF")) == NULL) {
@@ -337,23 +344,25 @@ PutTiffFile(char *s)
 		return;
 	}
 	strcpy(p,".png");
-	png = strdup_together(g_tmp_path,s1);
+	tmp = getTmpPath();
+	png = strdup_together(tmp,s1);
 	cmd = (char *) malloc(strlen(s)+strlen(png)+10);
 	sprintf(cmd, "convert %s %s", s, png);	
 	system(cmd);
 	
-	PutPngFile(png);
+	PutPngFile(png,1.0);
 	unlink(png);
 	
 	free(png);
 	free(cmd);
 	free(s1);
+	free(tmp);
 }
 
 static void
 PutGifFile(char *s)
 {
-	char *cmd, *s1, *p, *png;
+	char *cmd, *s1, *p, *png, *tmp;
 	diagnostics(1, "filename = <%s>", s);
 	s1 = strdup(s);
 	if ((p=strstr(s1,".gif")) == NULL && (p=strstr(s1,".GIF")) == NULL) {
@@ -362,17 +371,19 @@ PutGifFile(char *s)
 		return;
 	}
 	strcpy(p,".png");
-	png = strdup_together(g_tmp_path,s1);
+	tmp = getTmpPath();
+	png = strdup_together(tmp,s1);
 	cmd = (char *) malloc(strlen(s)+strlen(png)+10);
 	sprintf(cmd, "convert %s %s", s, png);	
 	system(cmd);
 	
-	PutPngFile(png);
+	PutPngFile(png,1.0);
 	unlink(png);
 	
 	free(png);
 	free(cmd);
 	free(s1);
+	free(tmp);
 }
 
 void 
@@ -407,7 +418,7 @@ draft=true/false.
 		PutPictFile(filename);
 		
 	else if (strstr(filename, ".png")  || strstr(filename, ".PNG"))
-		PutPngFile(filename);
+		PutPngFile(filename,1.0);
 
 	else if (strstr(filename, ".gif")  || strstr(filename, ".GIF"))
 		PutGifFile(filename);

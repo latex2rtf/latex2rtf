@@ -1,6 +1,7 @@
 Bugs:
  	Fix line numbering better
 	Reset footnote numbering at each new chapter
+	Fix message about missing refs in cite.tex
 
 	Extra paragraph at
 		- in misc1.tex, near the end, after the italic text before the comma in:

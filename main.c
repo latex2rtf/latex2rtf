@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.53 2002/03/04 05:30:18 prahl Exp $ */
+/* $Id: main.c,v 1.54 2002/03/08 06:46:59 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -139,6 +139,10 @@ int main(int argc, char **argv)
 			g_equation_display_bitmap = x & 2;
 			g_equation_inline_bitmap  = x & 4;
 			g_equation_comment        = x & 8;
+			diagnostics(WARNING, "Math option g_equation_rtf           = %d",g_equation_rtf);
+			diagnostics(WARNING, "Math option g_equation_display_bitmap= %d",g_equation_display_bitmap);
+			diagnostics(WARNING, "Math option g_equation_inline_bitmap = %d",g_equation_inline_bitmap);
+			diagnostics(WARNING, "Math option g_equation_comment       = %d",g_equation_comment);
 			break;
 		case 'P':
 			g_config_path = strdup(optarg);
@@ -189,19 +193,21 @@ int main(int argc, char **argv)
 		s = strrchr(*argv, PATHSEP);
 		if (s == NULL) s = *argv;
 
-		t = strstr(s, ".tex");			/* remove .tex if present */
-		if (t != NULL) 
-			*t = '\0';
+		if (strcmp(s,"-")!=0) {
+			t = strstr(s, ".tex");			/* remove .tex if present */
+			if (t != NULL) 
+				*t = '\0';
+				
+			basename = strdup(s);			
+			s = strchr(basename, '.');		/* check for dot in name */
 			
-		basename = strdup(s);			
-		s = strchr(basename, '.');		/* check for dot in name */
-		
-		if (t == NULL && s != NULL)
-			TexName = strdup(basename);
-		else
-			TexName = strdup_together(basename, ".tex");
-			
-		RtfName = strdup_together(basename, ".rtf");
+			if (t == NULL && s != NULL)
+				TexName = strdup(basename);
+			else
+				TexName = strdup_together(basename, ".tex");
+				
+			RtfName = strdup_together(basename, ".rtf");
+		}
 	} 
 	
 	if (AuxName == NULL && basename != NULL) 
@@ -545,3 +551,11 @@ purpose: output filter to track of brace depth and font settings
 		text++;
 	}			
 }
+
+char *
+getTmpPath(void)
+{
+	return strdup(g_tmp_path);
+}
+
+

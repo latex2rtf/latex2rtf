@@ -90,7 +90,8 @@ SOURCES=commands.c commands.h chars.c chars.h direct.c direct.h encode.c encode.
     Makefile README README.DOS README.Mac Copyright\
     mygetopt.c optind.c version \
     debian.README debian.control debian.rules ChangeLog l2r.bat\
-    encode_tables.h definitions.c definitions.h graphics.c graphics.h
+    encode_tables.h definitions.c definitions.h graphics.c graphics.h \
+    tex2png_1 tex2png_2 tex2png_3 tex2png_4
 
 SUPPORT=cfg/fonts.cfg     cfg/direct.cfg   cfg/ignore.cfg \
     cfg/afrikaans.cfg cfg/bahasa.cfg cfg/basque.cfg cfg/brazil.cfg cfg/breton.cfg \

@@ -14,6 +14,7 @@
 #include "funct1.h"
 #include "lengths.h"
 #include "util.h"
+#include "graphics.h"
 
 int g_equation_column = 1;
 
@@ -182,30 +183,24 @@ WriteEquationAsComment(char *pre, char *eq, char *post)
 }
 
 char *
-getTmpPath(void)
-{
-	return strdup("");
-}
-
-char *
 SaveEquationAsFile(char *pre, char *eq, char *post)
 {	
 	FILE * f;
-	char filename[15];
-	char * path, *fullname, *fullname1;
+	char name[15];
+	char *tmp_dir, *fullname, *texname;
 	static int file_number = 0;
 	
-	path = getTmpPath();
-	
+	/* create needed file names */
 	file_number++;
-	sprintf(filename, "l2r_%04d", file_number);
-	fullname1 = strdup_together(path,filename);
-	fullname = strdup_together(fullname1,".tex");
-	free(path);
+	tmp_dir = getTmpPath();
+	*tmp_dir ='\0';
+	sprintf(name, "l2r_%04d", file_number);
+	fullname = strdup_together(tmp_dir, name);	
+	texname = strdup_together(fullname,".tex");
+
+	diagnostics(1, "SaveEquationAsFile =%s", texname);
 	
-	diagnostics(2, "SaveEquationAsFile =%s", fullname);
-	
-	f = fopen(fullname,"w");
+	f = fopen(texname,"w");
 	while (eq && (*eq == '\n' || *eq == ' ')) eq++;  /* skip whitespace */
 	if (f) {
 		fprintf(f, "%s", g_preamble);
@@ -216,12 +211,13 @@ SaveEquationAsFile(char *pre, char *eq, char *post)
 		fprintf(f, "\n\\end{document}");
 		fclose(f);
 	} else {
-		free(fullname1);
-		fullname1 = NULL;
+		free(fullname);
+		fullname = NULL;
 	}
 	
-	free(fullname);
-	return fullname1;
+	free(tmp_dir);
+	free(texname);
+	return(fullname);
 }
 
 	
@@ -231,19 +227,30 @@ WriteEquationAsBitmap(char *pre, char *eq, char *post)
  purpose   : Convert Equation to Bitmap and write to RTF file
  ******************************************************************************/
 {
-	char * filename, *script, *bitmap_name;
-	filename = SaveEquationAsFile(pre,eq,post);
-	if (!filename) return;
-	script = strdup_together("/Users/prahl/Documents/l2r/latex2rtf/tex2png ", filename);
-/*	system(script);*/
-	bitmap_name = strdup_together(filename, ".png");
-/*	PrepareBitmapEquation(code,EQ_Needed);
-	WriteBitmap(bitmap_name);
-	FinishBitmapEquation(code,EQ_Needed);
-*/
-	free(bitmap_name);
-	free(script);
-	free(filename);
+	char *png, *pdf, *name, *cmd;
+	int resolution = 288; /*points per inch */
+	
+	diagnostics(1, "Entering WriteEquationAsBitmap");
+
+/* filename mangling */
+	name = SaveEquationAsFile(pre,eq,post);
+	if (!name) return;
+	
+	png = strdup_together(name,".png");
+	pdf = strdup_together(name,".pdf");
+
+/* create shell commands to convert equations */
+	cmd = (char *) malloc(strlen(name)+16);
+	sprintf(cmd, "tex2png -d %d %s", resolution, name);	
+	diagnostics(1, "cmd = <%s>", cmd);
+
+	if (system(cmd) == 0)
+		PutPngFile(png,(72.0/resolution));
+	
+	free(name);
+	free(pdf);
+	free(png);
+	free(cmd);
 }
 
 void 
@@ -586,8 +593,11 @@ CmdEquation(int code)
 		WriteEquationAsComment(pre,eq,post);
 	
 	if ((inline_equation && g_equation_inline_bitmap)  || 
-		(!inline_equation && g_equation_display_bitmap) )
-		WriteEquationAsBitmap(pre,eq,post);
+		(!inline_equation && g_equation_display_bitmap) ) {
+			PrepareRtfEquation(true_code,FALSE);
+			WriteEquationAsBitmap(pre,eq,post);
+			FinishRtfEquation(true_code,FALSE);
+	}
 
 	if (g_equation_rtf) {
 		setCounter("equation",number);
