@@ -46,6 +46,7 @@ Authors:
 #include "xref.h"
 #include "equation.h"
 #include "direct.h"
+#include "style.h"
 
 extern bool     twocolumn;	/* true if twocolumn-mode is enabled */
 int				g_right_margin_indent;

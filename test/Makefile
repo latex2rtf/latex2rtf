@@ -7,7 +7,7 @@ LATEX2RTF= ../latex2rtf
 OPTIONS  = -Z3 -P ../cfg/:../scripts/ -T ../tmp/
 
 RTF=accentchars.rtf array.rtf bib_simple.rtf bib_apalike.rtf bib_apalike2.rtf \
-    bib_apacite.rtf bib_natbib1.rtf bib_natbib2.rtf bib_apanat.rtf bib_authordate.rtf\
+    bib_natbib1.rtf bib_natbib2.rtf \
     eqns.rtf fonts.rtf fontsize.rtf \
     frac.rtf list.rtf logo.rtf misc1.rtf misc2.rtf oddchars.rtf \
     tabular.rtf percent.rtf essential.rtf misc3.rtf misc4.rtf fancy.rtf \
@@ -19,8 +19,10 @@ RTF=accentchars.rtf array.rtf bib_simple.rtf bib_apalike.rtf bib_apalike2.rtf \
 	enc_maccyr.rtf enc_macukr.rtf eqns-koi8.rtf \
 	defs.rtf qualisex.rtf ttgfsr7.rtf excalibur.rtf include.rtf ch.rtf\
 	spago1.rtf theorem.rtf picture.rtf tabbing.rtf figtest.rtf figtest2.rtf\
-	chem.rtf subsup.rtf linux.rtf color.rtf figtest3.rtf bib_natbib3.rtf \
+	chem.rtf subsup.rtf linux.rtf color.rtf bib_natbib3.rtf \
 	head_book.rtf head_article.rtf head_report.rtf
+
+RTFX=bib_apacite.rtf bib_apanat.rtf bib_authordate.rtf figtest3.rtf
 
 all:
 	mkdir -p ../tmp
