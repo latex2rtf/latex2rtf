@@ -23,7 +23,7 @@ RTF=accentchars.rtf array.rtf eqns.rtf fonts.rtf fontsize.rtf \
 	spago1.rtf theorem.rtf picture.rtf tabbing.rtf \
 	fig_test.rtf fig_test2.rtf fig_size.rtf \
 	chem.rtf subsup.rtf linux.rtf color.rtf \
-	head_book.rtf head_article.rtf head_report.rtf endnote.rtf 
+	head_book.rtf head_article.rtf head_report.rtf endnote.rtf report.rtf
 
 RTFX=bib_apacite.rtf bib_apanat.rtf bib_authordate.rtf fig_test3.rtf
 
