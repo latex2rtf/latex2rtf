@@ -143,14 +143,32 @@ code==1 means \token{reference}{{sect}{line}} -> "sect"
 	return NULL;
 }
 
+void
+CmdTheEndNotes(int code)
+/******************************************************************************
+ purpose: creates RTF so that endnotes will be emitted at this point
+ ******************************************************************************/
+{
+	diagnostics(4,"Entering CmdTheEndNotes");
+
+	CmdVspace(VSPACE_BIG_SKIP);
+	CmdStartParagraph(TITLE_PAR);
+	fprintRTF("{\\sect ");
+	InsertStyle("section");
+	fprintRTF(" Notes");
+	CmdEndParagraph(0);
+
+	fprintRTF("\\endnhere}");
+}
+
 void 
 CmdFootNote(int code)
 /******************************************************************************
- purpose: converts footnotes from LaTeX to Rtf
+ purpose: converts footnotes and endnotes from LaTeX to Rtf
  params : code specifies whether it is a footnote or a thanks-mark
  ******************************************************************************/
 {
-	char           *number, *text;
+ 	char           *number, *text, *end_note_extra = "";
 	static int      thankno = 1;
 	int             text_ref_upsize, foot_ref_upsize;
 	int				DefFont = DefaultFontFamily();
@@ -163,22 +181,27 @@ CmdFootNote(int code)
 	text_ref_upsize = (int) (0.8 * CurrentFontSize());
 	foot_ref_upsize = (int) (0.8 * CurrentFontSize());
 
+    if (code & FOOTNOTE_ENDNOTE) {
+        code &= ~FOOTNOTE_ENDNOTE;
+        end_note_extra = "\\ftnalt";
+     }
+ 
 	switch (code) {
 		case FOOTNOTE_THANKS:
 			thankno++;
 			fprintRTF("{\\up%d %d}\n", text_ref_upsize, thankno);
-			fprintRTF("{\\*\\footnote \\pard\\plain\\s246\\f%d",DefFont);
+ 			fprintRTF("{\\*\\footnote%s \\pard\\plain\\s246\\f%d", end_note_extra, DefFont);
 			fprintRTF("\\fs%d {\\up%d %d}", CurrentFontSize(), foot_ref_upsize, thankno);
 			break;
 	
 		case FOOTNOTE:
 			fprintRTF("{\\up%d\\chftn}\n", text_ref_upsize);
-			fprintRTF("{\\*\\footnote \\pard\\plain\\s246\\f%d",DefFont);
+ 			fprintRTF("{\\*\\footnote%s \\pard\\plain\\s246\\f%d", end_note_extra, DefFont);
 			fprintRTF("\\fs%d {\\up%d\\chftn}", CurrentFontSize(), foot_ref_upsize);
 			break;
 	
 		case FOOTNOTE_TEXT:
-			fprintRTF("{\\*\\footnote \\pard\\plain\\s246\\f%d",DefFont);
+ 			fprintRTF("{\\*\\footnote%s \\pard\\plain\\s246\\f%d", end_note_extra, DefFont);
 			fprintRTF("\\fs%d ", CurrentFontSize());
 			break;
 	}

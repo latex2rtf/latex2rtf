@@ -62,6 +62,7 @@ static CommandArray commands[] = {
 	{"end", CmdBeginEnd, CMD_END},
 	{"today", CmdToday, 0},
 	{"footnote", CmdFootNote, FOOTNOTE},
+	{"endnote", CmdFootNote, FOOTNOTE | FOOTNOTE_ENDNOTE},
 
 	{"rmfamily", CmdFontFamily, F_FAMILY_ROMAN  },
 	{"rm",       CmdFontFamily, F_FAMILY_ROMAN_1},
@@ -115,6 +116,7 @@ static CommandArray commands[] = {
 	{"ssmall",   	 CmdFontSize, 12},  /* from moresize.sty */
 	{"scriptsize",   CmdFontSize, 14},
 	{"footnotesize", CmdFontSize, 16},
+	{"enotesize",    CmdFontSize, 16},
 	{"small",        CmdFontSize, 18},
 	{"normalsize",   CmdFontSize, 20},
 	{"large",        CmdFontSize, 24},
@@ -219,6 +221,7 @@ static CommandArray commands[] = {
 	{"hsize", CmdLength, 0},
 	{"letterspace", CmdLength, 0},
 	{"footnotemark", CmdIgnoreParameter, One_Opt_No_NormParam},
+	{"endnotemark", CmdIgnoreParameter, One_Opt_No_NormParam},
 	{"label", CmdLabel, LABEL_LABEL},
 	{"ref", CmdLabel, LABEL_REF},
 	{"eqref", CmdLabel, LABEL_EQREF},
@@ -394,6 +397,7 @@ static CommandArray PreambleCommands[] = {
 	{"oddsidemargin",CmdSetTexLength, SL_ODDSIDEMARGIN},
 	{"evensidemargin",CmdSetTexLength, SL_EVENSIDEMARGIN},
 	{"footnotetext", CmdFootNote, FOOTNOTE_TEXT},
+	{"endnotetext", CmdFootNote, FOOTNOTE_TEXT | FOOTNOTE_ENDNOTE},
 	{"include", CmdInclude, 0},
 	{"input", CmdInclude, 0},
 	{"htmladdnormallink",CmdHtml, LABEL_HTMLADDNORMALREF},
@@ -403,6 +407,7 @@ static CommandArray PreambleCommands[] = {
 	{"hline", CmdHline, 0},
 	{"cline", CmdHline, 1},
 	{"ifx", CmdIf, 0},
+	{"theendnotes", CmdTheEndNotes, 0},
 	{"", NULL, 0}
 };				/* end of list */
 

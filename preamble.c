@@ -887,6 +887,8 @@ WritePageSize(void)
   \landscape      Landscape format.
   \pgnstart<N>    The beginning page number (the default is 1).
   \widowctrl      Widow control.
+  \ftnbj          Footnotes at bottom of page (bj = bottom justified)
+  \aftnnar        Endnotes numbered in arabic numerals
 
   \headery<N>     The header is <N> twips from the top of the page (the default is 720).
   \footery<N>     The footer is <N> twips from the bottom of the page (the default is 720).
@@ -915,9 +917,9 @@ WritePageSize(void)
 	n = getLength("pageheight") - (n + getLength("textheight") + getLength("footskip"));
 	fprintRTF("\\margb%d", n);
 	diagnostics(4, "Writepagesize bottom margin =%d pt", n/20);
-	
+
 	fprintRTF("\\pgnstart%d", getCounter("page"));
-	fprintRTF("\\widowctrl\\qj\\ftnbj\n");
+	fprintRTF("\\widowctrl\\qj\\ftnbj\\aftnnar\n");
 }
 
 static void
@@ -933,41 +935,41 @@ WriteHeadFoot(void)
 {
 /*	fprintRTF("\\ftnbj\\sectd\\linex0\\endnhere\\qj\n"); */
 
-  	int textwidth = getLength("textwidth");
-  	
-  	if (g_preambleLFOOT || g_preambleCFOOT || g_preambleRFOOT) {
-  		fprintRTF("{\\footer\\pard\\plain\\tqc\\tx%d\\tqr\\tx%d ", textwidth/2, textwidth);
-  		
+	int textwidth = getLength("textwidth");
+
+	if (g_preambleLFOOT || g_preambleCFOOT || g_preambleRFOOT) {
+		fprintRTF("{\\footer\\pard\\plain\\tqc\\tx%d\\tqr\\tx%d ", textwidth/2, textwidth);
+
 		if (g_preambleLFOOT)
 			ConvertString(g_preambleLFOOT);
-		
+
 		fprintRTF("\\tab ");
 		if (g_preambleCFOOT)
 			ConvertString(g_preambleCFOOT);
-		
+
 		if (g_preambleRFOOT) {
 			fprintRTF("\\tab ");
 			ConvertString(g_preambleRFOOT);
 		}
-  		
+
         fprintRTF("\\par}\n");
     }
 
-  	if (g_preambleLHEAD || g_preambleCHEAD || g_preambleRHEAD) {
-  		fprintRTF("{\\header\\pard\\plain\\tqc\\tx%d\\tqr\\tx%d ", textwidth/2, textwidth);
-  		
+	if (g_preambleLHEAD || g_preambleCHEAD || g_preambleRHEAD) {
+		fprintRTF("{\\header\\pard\\plain\\tqc\\tx%d\\tqr\\tx%d ", textwidth/2, textwidth);
+
 		if (g_preambleLHEAD)
 			ConvertString(g_preambleLHEAD);
-		
+
 		fprintRTF("\\tab ");
 		if (g_preambleCHEAD)
 			ConvertString(g_preambleCHEAD);
-		
+
 		if (g_preambleRHEAD) {
 			fprintRTF("\\tab ");
 			ConvertString(g_preambleRHEAD);
 		}
-  		
+
         fprintRTF("\\par}\n");
     }
 }

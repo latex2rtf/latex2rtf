@@ -1,11 +1,12 @@
 #define FOOTNOTE            1
 #define FOOTNOTE_TEXT       2
 #define FOOTNOTE_THANKS     3
+#define FOOTNOTE_ENDNOTE    8 /* must be able to be OR-ed with other FOOTNOTE_* flags */
 
 #define LABEL_LABEL			1
 #define LABEL_HYPERREF		2
 #define LABEL_REF			3
-#define LABEL_HYPERCITE  	4
+#define LABEL_HYPERCITE	4
 #define LABEL_CITE			5
 #define LABEL_HYPERPAGEREF	6
 #define LABEL_PAGEREF		7
@@ -51,6 +52,7 @@
 #define LIST_OF_TABLES		2
 #define TABLE_OF_CONTENTS	3
 
+void	CmdTheEndNotes(int code);
 void    CmdFootNote(int code);
 void    CmdLabel(int code);
 void 	CmdNoCite(int code);
