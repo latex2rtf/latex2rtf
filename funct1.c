@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.54 2002/02/17 17:17:57 prahl Exp $ 
+/* $Id: funct1.c,v 1.55 2002/02/18 21:00:55 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -1716,4 +1716,35 @@ roman_item(int n)
 
 	s[i] = '\0';
 	return strdup(s);
+}
+
+void
+CmdInclude(int code)
+/******************************************************************************
+ purpose: handles \input file, \input{file}, and \include{file}
+ ******************************************************************************/
+{
+	char            name[50], *s, *t, cNext;
+	int i;
+
+	cNext = getNonSpace();
+	
+	if (cNext == '{') {			/* \input{gnu} or \include{gnu} */
+		ungetTexChar(cNext);
+		s = getBraceParam();
+		
+	} else {					/* \input gnu */
+		name[0] = cNext;
+		for (i=1; i<50; i++){
+			name[i] = getTexChar();
+			if (isspace(name[i])) {name[i]='\0';break;}
+		}
+		s = strdup(name);
+	}
+			
+	t = strdup_together(s,".tex");
+	PushSource(t,NULL);
+	diagnostics(1, "Including file <%s>",t);
+	free(s);
+	free(t);
 }

@@ -34,6 +34,14 @@ Bugs:
 		extraneous label text in section 7.3.6
 		word disregards \* MERGEFORMAT in same section
 		
+	Schneider
+		add \latex
+		add \htmladdnormallink
+		add \nobreakspace
+		add \bodytext
+		fix wierdness in citations
+		add \newtheorem
+		
 Features:
 	support \hsize
 	support ## in macro expansion

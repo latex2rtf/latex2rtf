@@ -1,4 +1,4 @@
-/* $Id: xref.c,v 1.12 2001/12/08 21:20:06 prahl Exp $ 
+/* $Id: xref.c,v 1.13 2002/02/18 21:00:55 prahl Exp $ 
  
 This file contains routines to handle cross references :
 	\label{key}, \ref{key},   \pageref{key}, \bibitem{key},
@@ -138,7 +138,10 @@ CmdBibitem(int code)
 	
 	fprintRTF("[");
 	fprintRTF("{\\*\\bkmkstart BIB_%s}",signet);
-	fprintRTF("%s",((s)?s:""));
+			if (s)
+				ConvertString(s);
+			else
+				fprintRTF("");
 	fprintRTF("{\\*\\bkmkend BIB_%s}",signet);
 	fprintRTF("]");
 
@@ -236,7 +239,13 @@ purpose: handles \label \ref \pageref \cite
 			signet = strdup_nobadchars(text);
 			s = ScanAux("newlabel", text, 1);
 			fprintRTF("{\\field{\\*\\fldinst{\\lang1024 REF LBL_%s \\\\* MERGEFORMAT}}",signet);
-			fprintRTF("{\\fldrslt{%s}}}", ((s)?s:"?"));
+			fprintRTF("{\\fldrslt{");
+			if (s)
+				ConvertString(s);
+			else
+				fprintRTF("?");
+			fprintRTF("}}}");
+				
 			free(signet);
 			if (s) free(s);
 			break;
@@ -252,7 +261,12 @@ purpose: handles \label \ref \pageref \cite
 				s = ScanAux("bibcite", str1, 0);
 				signet = strdup_nobadchars(str1);
 				fprintRTF("{\\field{\\*\\fldinst{\\lang1024 REF BIB_%s \\\\* MERGEFORMAT}}",signet);
-				fprintRTF("{\\fldrslt{%s}}}", ((s)?s:"?"));
+				fprintRTF("{\\fldrslt{");
+				if (s)
+					ConvertString(s);
+				else
+					fprintRTF("?");
+				fprintRTF("}}}");
 				if (comma) fprintRTF(",");
 				str1 = comma + 1;
 				if (s) free(s);
@@ -293,6 +307,7 @@ code=1 means \\token{reference}{{sect}{line}} -> "sect"
 	char            AuxLine[1024];
 	char            target[256];
 	char           *s,*t;
+	int				braces;
 
 	if (g_aux_file_missing || strlen(token) == 0) {
 		return NULL;
@@ -314,19 +329,43 @@ code=1 means \\token{reference}{{sect}{line}} -> "sect"
 		if (s) {
 			s += strlen(target);
 
-			s = strchr(s, '{');
+			s = strchr(s, '{');			/* move to \\token{reference}{ */
 			if (!s) return NULL;
 			s++;
-
-			if (code) {
+			
+			if (code==1) {				/* move to \\token{reference}{{ */
 				s = strchr(s, '{');
 				if (!s) return NULL;
 				s++;		
 			}
+
+			t = s;						/* skip matched braces */
+			braces = 1;
+			while ( braces >= 1) {
+				t++;
+				if (*t == '{') braces++;
+				if (*t == '}') braces--;
+				if (*t == '\0') return NULL;
+			}
 			
-			t = strchr(s, '}');		/* find end of string */
-			if (t) *t = '\0';		/* replace '}'        */
+			if (code == 0) {			/* return result */
+				*t = '\0';
+				return strdup(s);
+			}
 			
+			s = strchr(s, '{');			/* case when code == 1 */
+			if (!s) return NULL;
+			s++;		
+			t = s;						/* skip matched braces */
+			braces = 1;
+			while ( braces >= 1) {
+				t++;
+				if (*t == '{') braces++;
+				if (*t == '}') braces--;
+				if (*t == '\0') return NULL;
+			}
+			
+			*t = '\0';
 			return strdup(s);
 		}
 	}

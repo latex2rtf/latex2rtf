@@ -1,4 +1,4 @@
-/*  $Id: commands.c,v 1.41 2002/02/17 05:12:59 prahl Exp $
+/*  $Id: commands.c,v 1.42 2002/02/18 21:00:55 prahl Exp $
  
     Defines subroutines to translate LaTeX commands to RTF
 */
@@ -325,6 +325,8 @@ static CommandArray PreambleCommands[] = {
 	{"oddsidemargin",CmdSetTexLength, SL_ODDSIDEMARGIN},
 	{"evensidemargin",CmdSetTexLength, SL_EVENSIDEMARGIN},
 	{"footnotetext", CmdFootNote, FOOTNOTE_TEXT},
+	{"include", CmdInclude, 0},
+	{"input", CmdInclude, 0},
 	{"", NULL, 0}
 };				/* end of list */
 
