@@ -840,10 +840,10 @@ getDimension(void)
 	
 /* obtain unit of measure */
 	skipSpaces();
-	buffer[0] = tolower(getTexChar());
+	buffer[0] = tolower((int) getTexChar());
 	
 	if (buffer[0] != '\\') {
-		buffer[1] = tolower(getTexChar());
+		buffer[1] = tolower((int) getTexChar());
 		buffer[2] = '\0';
 		
 		diagnostics(4,"getDimension() dimension is <%s>", buffer);

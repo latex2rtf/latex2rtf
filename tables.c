@@ -54,6 +54,7 @@ bool            tabbing_return = FALSE;
 bool            tabbing_on_itself = FALSE;
 long          	pos_begin_kill;
 bool            g_processing_tabbing = FALSE;
+bool			g_processing_tabular = FALSE;
 bool			g_processing_table = FALSE;
 
 int             colCount;			/* number of columns in a tabular environment */
@@ -620,6 +621,7 @@ CmdTabular(int code)
 		return;
 	}
 
+	g_processing_tabular = TRUE;
 	width = NULL;
 	pos=NULL;
 	cols=NULL;
@@ -905,6 +907,7 @@ CmdTabbing(int code)
 		return;
 	}
 
+	g_processing_tabbing = TRUE;
 	n=0;
 	g_tabbing_left_position=0;
 	strcpy(align,"l");

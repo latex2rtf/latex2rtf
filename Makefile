@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.63 2002/10/15 07:17:05 whennings Exp $
+# $Id: Makefile,v 1.64 2002/11/05 15:17:04 prahl Exp $
 
 CC=gcc
 MKDIR=mkdir -p
@@ -19,15 +19,6 @@ CFLAGS:=-DUNIX
 #Uncomment if getopt() is not available
 #CFLAGS:=$(CFLAGS) -DHAS_NO_GETOPT
 
-#Option "-ansi" prevents loading of non-standard libraries,
-#therefore deactivated by whennings.
-#CFLAGS:=$(CFLAGS) -g -Wall -ansi
-
-#Option "-fsigned-char" needed on IBM SP/2 (AIX),
-#seems to do no harm on other systems,
-#therefore added by whennings.
-CFLAGS:=$(CFLAGS) -g -Wall -fsigned-char
-
 #Base directory
 PREFIX=$(PREFIX_DRIVE)/usr/local
 
@@ -42,6 +33,8 @@ SUPPORT_INSTALL=$(PREFIX)/share/latex2rtf
 CFG_INSTALL=$(PREFIX)/share/latex2rtf/cfg
 
 # Nothing to change below this line
+
+CFLAGS:=$(CFLAGS) -g -Wall -fsigned-char
 
 VERSION="`scripts/version`"
 

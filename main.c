@@ -63,7 +63,7 @@ bool			FrenchMode = FALSE;		/* support frenchstyle */
 bool			RussianMode = FALSE;	/* support russianstyle */
 
 char			g_charset_encoding_name[20] = "cp1252";
-int				g_fcharset_number = 1252;
+int				g_fcharset_number = 0;
 
 bool			twoside = FALSE;
 int				g_verbosity_level = WARNING;
@@ -76,7 +76,6 @@ int				headings = FALSE;
 bool			g_processing_preamble = TRUE;	/* flag set until \begin{document} */
 bool			g_processing_figure = FALSE;	/* flag, set for figures and not tables */
 bool			g_processing_eqnarray = FALSE;	/* flag set when in an eqnarry */
-bool			g_processing_tabular = FALSE;
 int				g_processing_arrays = 0;
 int				g_processing_fields = 0;
 

@@ -39,6 +39,11 @@ german.rtf: german.tex
 	$(LATEX) german > latex.log
 	$(LATEX2RTF) $(OPTIONS) german
 
+russian.rtf: russian.tex
+	$(LATEX) russian > russian.log
+	$(LATEX) russian > russian.log
+	$(LATEX2RTF) $(OPTIONS) russian
+
 ttgfsr7.rtf: ttgfsr7.tex
 	$(LATEX) ttgfsr7 > latex.log
 	$(LATEX) ttgfsr7 > latex.log
