@@ -45,13 +45,15 @@ Authors:
 #include "graphics.h"
 
 typedef struct commandtag {
-	char           *cpCommand;			/* LaTeX command name without \ */
-	void (*func) (int);	        		/* function converting LaTex-cmd to Rtf-cmd */
-	int             param;	    		/* used in various ways */
+	char	*cpCommand;			/* LaTeX command name without \ */
+	void	(*func) (int);	    /* function to convert LaTeX to RTF */
+	int		param;	    		/* used in various ways */
 } CommandArray;
 
 static int      iEnvCount = 0;			/* number of active environments */
 static CommandArray *Environments[100];	/* list of active environments */
+static int parindentArray[100];
+static int indentArray[100];
 
 static CommandArray commands[] = {
 	{"begin", CmdBeginEnd, CMD_BEGIN},
@@ -691,6 +693,9 @@ globals: changes Environment - array of active environments
 {
 	char           *diag = "";
 
+	parindentArray[iEnvCount] = getLength("parindent");
+	indentArray[iEnvCount] = indent;
+	
 	switch (code) {
 	case PREAMBLE:
 		Environments[iEnvCount] = PreambleCommands;
@@ -760,6 +765,9 @@ globals: changes Environment - array of active environments
 {
 	--iEnvCount;
 	Environments[iEnvCount] = NULL;
+
+	setLength("parindent",parindentArray[iEnvCount]);
+	indent=indentArray[iEnvCount];
 
 	/*
 	 * overlapping environments are not allowed !!! example:

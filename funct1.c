@@ -67,12 +67,16 @@ CmdStartParagraph(int code)
 {
 	int parindent;
 	
-	diagnostics(5,"CmdStartParagraph mode = %d", GetTexMode());
-	diagnostics(5,"Noindent is %d", (int) g_paragraph_no_indent);
-	diagnostics(5,"Inhibit  is %d", (int) g_paragraph_inhibit_indent);
-	diagnostics(5,"parindent  is %d", getLength("parindent"));
+	parindent = getLength("parindent");
 
-	fprintRTF("\\q%c\\li%d ", alignment, indent);
+	diagnostics(5,"CmdStartParagraph mode = %d", GetTexMode());
+	diagnostics(5,"Noindent is         %s", (g_paragraph_no_indent) ? "TRUE" : "FALSE");
+	diagnostics(5,"Inhibit is          %s", (g_paragraph_inhibit_indent) ? "TRUE" : "FALSE");
+	diagnostics(5,"indent is           %d", indent);
+	diagnostics(5,"right indent is     %d", indent_right);
+	diagnostics(5,"paragraph indent is %d", getLength("parindent"));
+
+	fprintRTF("\\q%c ", alignment);
 	if (indent!=0)
 		fprintRTF("\\li%d ", indent);
 	if (indent_right!=0)
@@ -80,12 +84,10 @@ CmdStartParagraph(int code)
 
 	if (g_paragraph_no_indent || g_paragraph_inhibit_indent) 
 		parindent = 0;
-	else
-		parindent = getLength("parindent");
 	
 	fprintRTF("\\fi%d ", parindent);
 	
-	SetTexMode(MODE_HORIZONTAL);
+	SetTexMode(-MODE_HORIZONTAL);  /* negative value avoids calling CmdStartParagraph! */
 	g_paragraph_no_indent = FALSE;
 	g_paragraph_inhibit_indent = FALSE;
 }
@@ -291,7 +293,7 @@ CmdIndent(int code)
      			     		
            INDENT_NONE tells CmdStartParagraph() to not indent the next paragraph
            
-           INDENT_USUAL has CmdStartParagraph() uses the value of \parindent
+           INDENT_USUAL has CmdStartParagraph() use the value of \parindent
  ******************************************************************************/
 {
 	diagnostics(5,"CmdIndent mode = %d", GetTexMode());
@@ -997,38 +999,40 @@ CmdList(int code)
  globals  : indent
  ******************************************************************************/
 {
+	int amount = 300;
 	CmdEndParagraph(0);
-	CmdIndent(INDENT_INHIBIT);
 
 	switch (code) {
 		case (ITEMIZE | ON):
 		PushEnvironment(ITEMIZE);
-		indent += 512;
+		setLength("parindent", -amount);
+		indent += 2*amount;
+		CmdIndent(INDENT_USUAL);
 		break;
-	case (ITEMIZE | OFF):
-		PopEnvironment();
-		indent -= 512;
-		break;
+		
 
 	case (ENUMERATE | ON):
 		PushEnvironment(ENUMERATE);
 		g_enumerate_depth++;
 		CmdItem(RESET_ITEM_COUNTER);
-		indent += 512;
+		setLength("parindent", -amount);
+		indent += 2*amount;
+		CmdIndent(INDENT_USUAL);
 		break;
-	case (ENUMERATE | OFF):
-		PopEnvironment();
-		g_enumerate_depth--;
-		indent -= 512;
-		break;
+		
 
 	case (DESCRIPTION | ON):
 		PushEnvironment(DESCRIPTION);
-		indent += 512;
+		setLength("parindent", -amount);
+		indent += 2*amount;
+		CmdIndent(INDENT_USUAL);
 		break;
+		
+	case (ENUMERATE | OFF):  g_enumerate_depth--; /* fall through */
+	case (ITEMIZE | OFF):
 	case (DESCRIPTION | OFF):
 		PopEnvironment();
-		indent -= 512;
+		CmdIndent(INDENT_INHIBIT);
 		break;
 	}
 }
@@ -1041,7 +1045,7 @@ CmdItem(int code)
            this routine will get called recursively.
  ******************************************************************************/
 {
-	char           *itemlabel;
+	char           *itemlabel, thechar;
 	static int      item_number[4];
 
 	if (code == RESET_ITEM_COUNTER) {
@@ -1053,26 +1057,26 @@ CmdItem(int code)
 	diagnostics(4, "Entering CmdItem depth=%d item=%d",g_enumerate_depth,item_number[g_enumerate_depth]);
 
 	CmdEndParagraph(0);
-	CmdIndent(INDENT_NONE);
+	CmdIndent(INDENT_USUAL);
 	CmdStartParagraph(0);
 	
 	itemlabel = getBracketParam();
 	if (itemlabel) {	/* \item[label] */
-
-		fprintRTF("{\\b ");	/* bold on */
+		fprintRTF("{\\b ");	
 		diagnostics(5,"Entering ConvertString from CmdItem");
 		ConvertString(itemlabel);
 		diagnostics(5,"Exiting ConvertString from CmdItem");
-		fprintRTF("}\\tab ");	/* bold off */
-		free(itemlabel);
+		fprintRTF("}\\tab ");
 	}
 	
 	switch (code) {
 	case ITEMIZE:
+		if (itemlabel) break;
 		fprintRTF("\\bullet\\tab ");
 		break;
 
 	case ENUMERATE:
+		if (itemlabel) break;
 		switch (g_enumerate_depth) {
 		case 1:
 			fprintRTF("%d.", item_number[g_enumerate_depth]);
@@ -1099,10 +1103,9 @@ CmdItem(int code)
 		break;
 	}
 	
-/*	Convert();
-	CmdEndParagraph(0);
-	CmdIndent(INDENT_NONE);
-	diagnostics(4, "Exiting Convert() from CmdItem");*/
+	if (itemlabel) free(itemlabel);
+	thechar=getNonBlank();
+	ungetTexChar(thechar);
 }
 
 void 

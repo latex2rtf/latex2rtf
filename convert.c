@@ -80,6 +80,11 @@ void SetTexMode(int mode)
 	if (g_TeX_mode != mode) 
 		diagnostics(4, "TeX mode now %s", TexModeName[mode]);
 		
+	if (mode < 0) {
+		g_TeX_mode = -mode;
+		return;
+	}
+
 	if (g_TeX_mode == MODE_VERTICAL && mode == MODE_HORIZONTAL) {
 		g_TeX_mode = mode;  /* prevent recursion */
 		CmdStartParagraph(0);
