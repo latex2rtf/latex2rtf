@@ -1,4 +1,4 @@
-/* $Id: l2r_fonts.c,v 1.17 2001/10/07 17:48:39 prahl Exp $
+/* $Id: l2r_fonts.c,v 1.18 2001/10/07 18:29:52 prahl Exp $
 
 	All changes to font size, font style, and font face are 
 	handled in this file.  Explicit changing of font characteristics
@@ -549,16 +549,15 @@ InitializeDocumentFont(int family, int size, int shape, int series)
 	if (series >= 0)
 		RtfFontInfo[0].series = series;
 
-	diagnostics(4,"InitializeDocumentFont depth=%d, family=%d, size=%d, shape=%d, series=%d",\
-				   0, RtfFontInfo[0].family, \
-	               RtfFontInfo[0].size, RtfFontInfo[0].shape,\
+	diagnostics(4,"InitializeDocumentFont family=%d, size=%d, shape=%d, series=%d",\
+				   RtfFontInfo[0].family, RtfFontInfo[0].size, RtfFontInfo[0].shape,\
 	               RtfFontInfo[0].series);
 }
 
 int
 DefaultFontFamily(void)
 {
-	diagnostics(4,"DefaultFontFamily -- series=%d", RtfFontInfo[0].family);
+	diagnostics(4,"DefaultFontFamily -- family=%d", RtfFontInfo[0].family);
 	return RtfFontInfo[0].family;
 }
 

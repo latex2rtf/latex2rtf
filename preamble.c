@@ -1,4 +1,4 @@
-/* $Id: preamble.c,v 1.13 2001/10/07 17:48:39 prahl Exp $
+/* $Id: preamble.c,v 1.14 2001/10/07 18:29:52 prahl Exp $
 
 purpose : Handles LaTeX commands that should only occur in the preamble.
           These are gathered together because the entire preamble must be
@@ -422,14 +422,14 @@ CmdUsepackage(int code)
 		     strcmp(package, "french")  == 0) 
 		setPackageBabel(package);
 
-	else if (strcmp(package, "palatino") == 0   ||
-	         strcmp(package, "times") == 0      ||
-	         strcmp(package, "bookman") == 0    ||
-	         strcmp(package, "chancery") == 0   ||
-	         strcmp(package, "courier") == 0   ||
-	         strstr(package, "avant") == 0      ||
-	         strstr(package, "newcen") == 0     ||
-	         strstr(package, "helvet") == 0 )
+	else if (strcmp(package, "palatino") == 0 ||
+	         strcmp(package, "times") == 0    ||
+	         strcmp(package, "bookman") == 0  ||
+	         strcmp(package, "chancery") == 0 ||
+	         strcmp(package, "courier") == 0  ||
+	         strstr(package, "avant")         ||
+	         strstr(package, "newcen")        ||
+	         strstr(package, "helvet") )
 		setPackageFont(package);
 		
 	else
