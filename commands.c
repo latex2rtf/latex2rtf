@@ -316,6 +316,7 @@ static CommandArray commands[] = {
     {"right", CmdLeftRight, 1},
     {"stackrel", CmdStackrel, 0},
     {"matrix", CmdMatrix, 0},
+    {"overline",CmdOverLine,0},
     {"leftrightarrows", CmdArrows, LEFT_RIGHT},
     {"leftleftarrows", CmdArrows, LEFT_LEFT},
     {"rightrightarrows", CmdArrows, RIGHT_RIGHT},

@@ -39,3 +39,4 @@ void WriteLatexAsBitmap(char *pre, char *eq, char *post);
 int  script_shift(void);
 int  script_size(void);
 void CmdEnsuremath(int code);
+void CmdOverLine(int code);

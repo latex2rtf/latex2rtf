@@ -182,8 +182,10 @@ static char *expandmacro(char *macro, char *opt_param, int params)
             } else if (param < params) {
                 diagnostics(3, "expandmacro arg =<%s>", args[param]);
                 if (expanded+strlen(args[param])+1 <buffer+buff_size) {
-                    *expanded=' ';
-                    expanded++;
+                    if (*(expanded-1)!=' ') {
+                    	*expanded=' ';
+                        expanded++;
+                    }
                     strcpy(expanded, args[param]);
                     expanded += strlen(args[param]);
                 } else 

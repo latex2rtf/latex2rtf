@@ -238,6 +238,8 @@ static int EquationNeedsFields(char *eq)
         return 1;
     if (strstr(eq, "\\limsup"))
         return 1;
+    if (strstr(eq, "\\overline"))
+        return 1;
     return 0;
 }
 
@@ -1427,4 +1429,31 @@ void CmdStackrel(int code)
 
     free(numer);
     free(denom);
+}
+
+/******************************************************************************
+ purpose   : Handles \overline{a}
+ ******************************************************************************/
+void CmdOverLine(int code)
+
+{
+    char *argument;
+    int size;
+
+    argument = getBraceParam();
+    diagnostics(4, "CmdOverLine() ... \\overline{%s}", argument);
+
+    if (g_fields_use_EQ) {
+        fprintRTF(" \\\\x\\\\to( ");
+        ConvertString(argument);
+        fprintRTF(") ");
+
+    } else {
+        diagnostics(WARNING, "sorry overline requires fields");
+        fprintRTF("{");
+        ConvertString(argument);
+        fprintRTF("}");
+    }
+
+    free(argument);
 }
