@@ -1,4 +1,4 @@
-/* $Id: convert.c,v 1.21 2001/11/04 19:20:44 prahl Exp $ 
+/* $Id: convert.c,v 1.22 2001/11/04 19:46:39 prahl Exp $ 
 	purpose: ConvertString(), Convert(), TranslateCommand() 
 	
 TeX has six modes according to the TeX Book:
@@ -418,6 +418,22 @@ globals: fTex, fRtf and all global flags for convert (see above)
 			cThis = ' ';
 			break;
 
+#ifdef SEMICOLONSEP
+		case ';':
+			if (g_processing_fields)
+				fprintRTF("\\\\;");
+			else
+				fprintRTF(";");
+		break;
+#else
+		case ',':
+			if (g_processing_fields)
+				fprintRTF("\\\\,");
+			else
+				fprintRTF(",");
+			break;
+#endif
+			
 		default:
 			if (mode == MODE_MATH || mode == MODE_DISPLAYMATH) {
 				if (('a' <= cThis && cThis <= 'z') || ('A' <= cThis && cThis <= 'Z'))
