@@ -542,6 +542,17 @@ CmdAlign(int code)
 		fprintRTF("}");
 		break;
 
+	case (PAR_RAGGEDRIGHT):
+		old_alignment_before_centerline = alignment;
+		alignment = LEFT;
+//		fprintRTF("{");
+		diagnostics(4,"Entering Convert from CmdAlign (centerline)");
+		Convert();
+		diagnostics(4,"Exiting Convert from CmdAlign (centerline)");
+		alignment = old_alignment_before_centerline;
+		CmdEndParagraph(0);
+//		fprintRTF("}");
+		break;
 
 	case (PAR_CENTER | ON):
 		CmdIndent(INDENT_NONE);
