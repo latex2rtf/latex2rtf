@@ -1,4 +1,4 @@
-/* $Id: xref.c,v 1.11 2001/11/16 05:16:27 prahl Exp $ 
+/* $Id: xref.c,v 1.12 2001/12/08 21:20:06 prahl Exp $ 
  
 This file contains routines to handle cross references :
 	\label{key}, \ref{key},   \pageref{key}, \bibitem{key},
@@ -235,12 +235,13 @@ purpose: handles \label \ref \pageref \cite
 		case LABEL_REF:
 			signet = strdup_nobadchars(text);
 			s = ScanAux("newlabel", text, 1);
-			fprintRTF("{\\field{\\*\\fldinst{\\lang1024 REF LBL_%s}}",signet);
+			fprintRTF("{\\field{\\*\\fldinst{\\lang1024 REF LBL_%s \\\\* MERGEFORMAT}}",signet);
 			fprintRTF("{\\fldrslt{%s}}}", ((s)?s:"?"));
 			free(signet);
 			if (s) free(s);
 			break;
 		
+/* {\field{\*\fldinst{\lang1024 REF LBL_section31 \\* MERGEFORMAT}}{\fldrslt{?}}} */
 		case LABEL_CITE:
 			fprintRTF("[");
 			str = strdup_noblanks(text);
@@ -250,7 +251,7 @@ purpose: handles \label \ref \pageref \cite
 				if (comma) *comma = '\0';	/* replace ',' with '\0' */
 				s = ScanAux("bibcite", str1, 0);
 				signet = strdup_nobadchars(str1);
-				fprintRTF("{\\field{\\*\\fldinst{\\lang1024 REF BIB_%s}}",signet);
+				fprintRTF("{\\field{\\*\\fldinst{\\lang1024 REF BIB_%s \\\\* MERGEFORMAT}}",signet);
 				fprintRTF("{\\fldrslt{%s}}}", ((s)?s:"?"));
 				if (comma) fprintRTF(",");
 				str1 = comma + 1;
@@ -269,7 +270,7 @@ purpose: handles \label \ref \pageref \cite
 		case LABEL_HYPERPAGEREF:
 		case LABEL_PAGEREF:
 			signet = strdup_nobadchars(text);
-			fprintRTF("{\\field{\\*\\fldinst{\\lang1024 PAGEREF PR_%s}}",signet);
+			fprintRTF("{\\field{\\*\\fldinst{\\lang1024 PAGEREF PR_%s \\\\* MERGEFORMAT}}",signet);
 			fprintRTF("{\\fldrslt{}}}",signet);
 			free(signet);
 			break;
