@@ -1,8 +1,6 @@
-/* $Id: main.h,v 1.26 2001/10/25 05:53:46 prahl Exp $ */
+/* $Id: main.h,v 1.27 2001/10/25 14:41:51 prahl Exp $ */
 #ifndef __MAIN_H
 #define __MAIN_H
-
-#undef HAS_NO_GETOPT
 
 #ifdef __MWERKS__
 #define HAS_NO_GETOPT
@@ -16,6 +14,10 @@
 char           *strdup(const char *str);
 #endif
 
+#ifdef HAS_NO_GETOPT
+#define getopt my_getopt
+#endif
+
 #ifndef ENVSEP
 #define ENVSEP ':'
 #endif
@@ -24,16 +26,9 @@ char           *strdup(const char *str);
 #define PATHSEP '/'
 #endif 
 
-#include <assert.h>
-#include <stdio.h>
-
 #ifndef SEEK_SET
 #define SEEK_SET 0
 #define SEEK_CUR 1
-#endif
-
-#ifdef HAS_NO_GETOPT
-#define getopt my_getopt
 #endif
 
 #ifdef SEMICOLONSEP
@@ -42,37 +37,27 @@ char           *strdup(const char *str);
 #define FORMULASEP ','
 #endif
 
-typedef int     bool;
-
-void            IgnoreTo(char cEnd);
-void            diagnostics(int level, char *format,...);
-/* level values */
-
 #define ERROR 0
 #define WARNING 1
 
-bool            rtf_restrict(int major, int minor);
-
 #define MAXCOMMANDLEN 100
-#define MAXENVIRONS 100
-
-
-/*** error constants ***/
-#define ERR_EOF_INPUT 1
-#define ERR_WRONG_COMMAND 2
-#define ERR_Param 3
-#define ERR_WRONG_COMMAND_IN_TABBING 4
-#define ERR_NOT_IN_DOCUMENT 5
 
 /* available values for alignment */
-#define LEFT 'l'
-#define RIGHT 'r'
-#define CENTERED 'c'
+#define LEFT      'l'
+#define RIGHT     'r'
+#define CENTERED  'c'
 #define JUSTIFIED 'j'
 
 #define PATHMAX 255
 
-/********************************* global variables *************************/
+/*** error constants ***/
+#include <assert.h>
+#include <stdio.h>
+
+typedef int     bool;
+
+void            diagnostics(int level, char *format,...);
+
 extern /* @dependent@ */ FILE *fRtf;	/* file pointer to RTF file */
 extern			char *AuxName;
 extern			char *BblName;
@@ -97,9 +82,6 @@ extern bool     g_processing_tabular;
 extern int      colCount;
 extern int      actCol;
 extern int      tabcounter;
-extern bool     tabbing_on_itself;	/* LEG220698*** lclint - really used? */
-extern bool     tabbing_return;	/* LEG220698*** lclint - really used? */
-
 
 extern bool     twocolumn;
 extern bool     titlepage;

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.33 2001/10/23 14:35:34 prahl Exp $ */
+/* $Id: main.c,v 1.34 2001/10/25 14:41:51 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -79,6 +79,7 @@ static void     CloseRtf(FILE ** f);
 static void     ConvertLatexPreamble(void);
 static void     InitializeLatexLengths(void);
 static void		printhelp(void);
+static bool     rtf_restrict(int major, int minor);
 
 void           *GetCommandFunc(char *cCommand);
 

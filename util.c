@@ -1,12 +1,9 @@
 /*
- * $Id: util.c,v 1.14 2001/10/17 02:48:31 prahl Exp $ 
+ * $Id: util.c,v 1.15 2001/10/25 14:41:51 prahl Exp $ 
  */
 #include <stdlib.h>
 #include <string.h>
-#include <stdarg.h>
 #include "main.h"
-#include "util.h"
-
 
 #ifdef HAS_NO_STRDUP
 char           *

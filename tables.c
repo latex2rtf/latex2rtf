@@ -1,4 +1,4 @@
-/* $Id: tables.c,v 1.10 2001/10/22 04:33:03 prahl Exp $
+/* $Id: tables.c,v 1.11 2001/10/25 14:41:51 prahl Exp $
 
    Translation of tabbing and tabular environments
 */
@@ -17,6 +17,12 @@
 #include "cfg.h"
 #include "parser.h"
 #include "counters.h"
+
+#define ERR_EOF_INPUT 1
+#define ERR_WRONG_COMMAND 2
+#define ERR_Param 3
+#define ERR_WRONG_COMMAND_IN_TABBING 4
+#define ERR_NOT_IN_DOCUMENT 5
 
 int             tabcounter = 0;
 bool            tabbing_on = FALSE;
