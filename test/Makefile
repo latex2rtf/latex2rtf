@@ -7,7 +7,7 @@ LATEX2RTF= ../latex2rtf
 OPTIONS  = -Z3 -P ../cfg/:../scripts/ -T ../tmp/
 
 RTF=accentchars.rtf array.rtf bib_simple.rtf bib_apalike.rtf bib_apalike2.rtf \
-    bib_apacite.rtf bib_natbib1.rtf bib_natbib2.rtf bib_apanat.rtf \
+    bib_apacite.rtf bib_natbib1.rtf bib_natbib2.rtf bib_apanat.rtf bib_authordate.rtf\
     eqns.rtf fonts.rtf fontsize.rtf \
     frac.rtf list.rtf logo.rtf misc1.rtf misc2.rtf oddchars.rtf \
     tabular.rtf percent.rtf essential.rtf misc3.rtf misc4.rtf fancy.rtf \
@@ -72,6 +72,11 @@ bib_apanat.rtf: bib_apanat.tex
 	$(LATEX) bib_apanat > latex.log
 	$(LATEX) bib_apanat > latex.log
 	$(LATEX2RTF) $(OPTIONS) bib_apanat
+
+bib_authordate.rtf: bib_authordate.tex
+	$(LATEX) bib_authordate > latex.log
+	$(LATEX) bib_authordate > latex.log
+	$(LATEX2RTF) $(OPTIONS) bib_authordate
 
 misc2.rtf: misc2.tex
 	$(LATEX) misc2 > latex.log
