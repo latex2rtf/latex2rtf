@@ -6,6 +6,7 @@ Bugs:
 Features:
 	Add support for \usepackage{fullpage}
 	Add support for \usepackage{doublespace}
+	Add support for \includegraphics
 
 	Add rendering of equations as in ltx2rtf
 
@@ -18,7 +19,7 @@ Features:
 	Suppress empty column that sometimes appears in tabular environments
 	Suppress empty row when a final // is present
 
-	add support for \vspace, \vskip	
+	add support for hspace
 	add support for \hline
 	
 	replace getBracketParam by something that allocates memory

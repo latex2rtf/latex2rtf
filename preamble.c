@@ -1,4 +1,4 @@
-/* $Id: preamble.c,v 1.15 2001/10/07 21:20:51 prahl Exp $
+/* $Id: preamble.c,v 1.16 2001/10/11 04:27:12 prahl Exp $
 
 purpose : Handles LaTeX commands that should only occur in the preamble.
           These are gathered together because the entire preamble must be
@@ -750,14 +750,19 @@ WritePageSize(void)
 	if (g_preambleTwocolumn)
 		fprintRTF("\\cols2\\colsx709");	 /* two columns -- space between columns 709 */
 
+	diagnostics(3, "hoffset =%d pt", getLength("hoffset"));
 	n = getLength("hoffset") + 72*20 + getLength("oddsidemargin");
 	fprintRTF("\\margl%d", n);
+	diagnostics(3, "Writepagesize left margin   =%d pt", n/20);
 	n = getLength("pagewidth") - (n + getLength("textwidth"));
 	fprintRTF("\\margr%d", n);
+	diagnostics(3, "Writepagesize right margin  =%d pt", n/20);
 	n = getLength("voffset") + 72*20 + getLength("topmargin") + getLength("headheight")+getLength("headsep");
 	fprintRTF("\\margt%d", n);
+	diagnostics(3, "Writepagesize top    margin =%d pt", n/20);
 	n = getLength("pageheight") - (n + getLength("textheight") + getLength("footskip"));
 	fprintRTF("\\margb%d", n);
+	diagnostics(3, "Writepagesize bottom margin =%d pt", n/20);
 	
 	fprintRTF("\\pgnstart%d", getCounter("page"));
 	fprintRTF("\\widowctrl\\qj\n");

@@ -106,8 +106,9 @@ CmdSetTexLength(int code)
 		ungetTexChar(c);
 
 	d = getDimension();
+	diagnostics(3, "CmdSetTexLength size = %d",d);
 	
-	switch (code){
+		switch (code){
 	
 		case SL_HOFFSET:
 			setLength("hoffset",d);

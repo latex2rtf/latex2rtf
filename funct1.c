@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.26 2001/10/08 02:43:19 prahl Exp $ 
+/* $Id: funct1.c,v 1.27 2001/10/11 04:27:12 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -98,12 +98,12 @@ CmdVspace(int code)
 	
 	switch (code) {
 		case -1 :
-			vspace = getDimension()/2;
+			vspace = getDimension();
 			break;
 			
 		case 0 :
 			while ((c = getTexChar()) && c != '{');
-			vspace = getDimension()/2;
+			vspace = getDimension();
 			parseBrace();
 			break;
 			

@@ -1,4 +1,4 @@
-/*  $Id: parser.c,v 1.15 2001/10/08 01:59:03 prahl Exp $
+/*  $Id: parser.c,v 1.16 2001/10/11 04:27:12 prahl Exp $
 
    Contains declarations for a generic recursive parser for LaTeX code.
 */
@@ -515,7 +515,7 @@ getDimension(void)
 		diagnostics(WARNING, "Screwy number in TeX dimension");
 		return 0;
 	}
-	num *= 2;                   /* convert pts to twips */
+/*	num *= 2;                    convert pts to twips */
 	
 /* obtain unit of measure */
 	skipSpaces();

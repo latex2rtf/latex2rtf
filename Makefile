@@ -5,8 +5,8 @@
 # Recent changes by Scott Prahl
 
 CC=gcc    # C-Compiler 
-CFLAGS=-g -Wall -ansi -pedantic $(XCFLAGS)
-#CFLAGS=$(XCFLAGS) # Use -O here if you want it optimized
+#CFLAGS=-g -Wall -ansi -pedantic $(XCFLAGS)
+CFLAGS=$(XCFLAGS) # Use -O here if you want it optimized
 #CFLAGS=
 COPY=cp
 INSTALL=install
@@ -111,7 +111,8 @@ SOURCES=commands.c commands.h chars.c chars.h direct.c direct.h encode.c encode.
     preamble.c preamble.h equation.c equation.h convert.c convert.h biblio.c biblio.h\
     Makefile README README.DOS README.Mac Copyright\
     mygetopt.c optind.c version \
-    debian.README debian.control debian.rules ChangeLog l2r.bat
+    debian.README debian.control debian.rules ChangeLog l2r.bat\
+    encode_tables.h
 
 SUPPORT=cfg/fonts.cfg     cfg/direct.cfg   cfg/ignore.cfg \
     cfg/afrikaans.cfg cfg/bahasa.cfg cfg/basque.cfg cfg/brazil.cfg cfg/breton.cfg \

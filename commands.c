@@ -1,5 +1,5 @@
-/*  $Id: commands.c,v 1.27 2001/10/08 05:06:37 prahl Exp $
-
+/*  $Id: commands.c,v 1.28 2001/10/11 04:27:12 prahl Exp $
+ 
     Defines subroutines to translate LaTeX commands to RTF
 */
 
@@ -252,18 +252,6 @@ static CommandArray commands[] = {
 	{"sqrt", CmdRoot, 0},
     {"int",  CmdIntegral, 0},
 	{"nonumber",CmdNonumber, EQN_NO_NUMBER},
-	{"hoffset",CmdSetTexLength, SL_HOFFSET},
-	{"voffset",CmdSetTexLength, SL_VOFFSET},
-	{"parindent",CmdSetTexLength, SL_PARINDENT},
-	{"parskip",CmdSetTexLength, SL_PARSKIP},
-	{"baselineskip",CmdSetTexLength, SL_BASELINESKIP},
-	{"topmargin",CmdSetTexLength, SL_TOPMARGIN},
-	{"textheight",CmdSetTexLength, SL_TEXTHEIGHT},
-	{"headheight",CmdSetTexLength, SL_HEADHEIGHT},
-	{"headsep",CmdSetTexLength, SL_HEADSEP},
-	{"textwidth",CmdSetTexLength, SL_TEXTWIDTH},
-	{"oddsidemargin",CmdSetTexLength, SL_ODDSIDEMARGIN},
-	{"evensidemargin",CmdSetTexLength, SL_EVENSIDEMARGIN},
 	{"", NULL, 0}
 };
 
@@ -312,6 +300,18 @@ static CommandArray PreambleCommands[] = {
 	{"nofiles",CmdIgnoreParameter,0},
 	{"makelabels",CmdIgnoreParameter,0},
 	{"verbositylevel",CmdVerbosityLevel,0},
+	{"hoffset",CmdSetTexLength, SL_HOFFSET},
+	{"voffset",CmdSetTexLength, SL_VOFFSET},
+	{"parindent",CmdSetTexLength, SL_PARINDENT},
+	{"parskip",CmdSetTexLength, SL_PARSKIP},
+	{"baselineskip",CmdSetTexLength, SL_BASELINESKIP},
+	{"topmargin",CmdSetTexLength, SL_TOPMARGIN},
+	{"textheight",CmdSetTexLength, SL_TEXTHEIGHT},
+	{"headheight",CmdSetTexLength, SL_HEADHEIGHT},
+	{"headsep",CmdSetTexLength, SL_HEADSEP},
+	{"textwidth",CmdSetTexLength, SL_TEXTWIDTH},
+	{"oddsidemargin",CmdSetTexLength, SL_ODDSIDEMARGIN},
+	{"evensidemargin",CmdSetTexLength, SL_EVENSIDEMARGIN},
 	{"", NULL, 0}
 };				/* end of list */
 
