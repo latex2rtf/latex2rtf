@@ -165,7 +165,7 @@ int main(int argc, char **argv)
 			print_version();
 			return (0);
 		case 'C':
-			setPackageInputenc(0);
+			setPackageInputenc(optarg);
 			break;
 		case 'D':
 			sscanf(optarg, "%d", &g_dots_per_inch);
