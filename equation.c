@@ -588,9 +588,7 @@ CmdEquation(int code)
 	int inline_equation, number, true_code;
 
 	true_code = code & ~ON;	
-	
-/*	if (code & ON) fprintRTF("[xx ");*/
-		
+			
 	if (!(code & ON)) return ;
 
 	SlurpEquation(code,&pre,&eq,&post);
@@ -611,9 +609,29 @@ CmdEquation(int code)
 
 	if ((inline_equation && g_equation_inline_bitmap)  || 
 		(!inline_equation && g_equation_display_bitmap) ) {
-			PrepareRtfEquation(true_code,FALSE);
-			WriteLatexAsBitmap(pre,eq,post);
-			FinishRtfEquation(true_code,FALSE);
+			if (true_code != EQN_ARRAY) {
+				PrepareRtfEquation(true_code,FALSE);
+				WriteLatexAsBitmap(pre,eq,post);
+				FinishRtfEquation(true_code,FALSE);
+			} else {
+				char *s, *t;
+				s=eq;
+				diagnostics(1,"eqnarray whole = <%s>",s);
+				do {
+					t=strstr(s,"\\\\");
+					if (t) *t = '\0';
+					diagnostics(1,"eqnarray piece = <%s>",s);
+					if (strstr(s,"\\nonumber"))
+						g_suppress_equation_number = TRUE;
+					else
+						g_suppress_equation_number = FALSE;
+
+					PrepareRtfEquation(true_code,FALSE);
+					WriteLatexAsBitmap("\\begin{eqnarray*}",s,"\\end{eqnarray*}");
+					FinishRtfEquation(true_code,FALSE);
+					if (t) s = t+2;
+				} while (t);
+			}
 	}
 
 	if ((inline_equation && g_equation_inline_rtf)  || 
@@ -621,8 +639,6 @@ CmdEquation(int code)
 		setCounter("equation",number);
 		WriteEquationAsRTF(true_code,&eq);	
 	}
-
-/*	fprintRTF(" xx]");*/
 
 /* balance \begin{xxx} with \end{xxx} call */	
 	if (true_code == EQN_MATH     || true_code == EQN_DISPLAYMATH   ||
