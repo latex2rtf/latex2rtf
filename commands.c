@@ -1,4 +1,4 @@
-/*  $Id: commands.c,v 1.15 2001/08/22 05:50:23 prahl Exp $
+/*  $Id: commands.c,v 1.16 2001/08/23 05:35:02 prahl Exp $
 
     Defines subroutines to translate LaTeX commands to RTF
 */
@@ -70,6 +70,9 @@ static CommandArray commands[] = {
 	{"textit",   CmdSetFontShape, F_SHAPE_ITALIC_2},
 	{"mathit",   CmdSetFontShape, F_SHAPE_ITALIC_2},
 
+	{"upshape",  CmdSetFontShape, F_SHAPE_UPRIGHT_1},
+	{"textup",   CmdSetFontShape, F_SHAPE_UPRIGHT_2},
+
 	{"sc",       CmdSetFontShape, F_SHAPE_CAPS},
 	{"scshape",  CmdSetFontShape, F_SHAPE_CAPS_1},
 	{"textsc",   CmdSetFontShape, F_SHAPE_CAPS_2},
@@ -88,6 +91,7 @@ static CommandArray commands[] = {
 	{"LARGE",        CmdSetFontSize, 34},
 	{"huge",         CmdSetFontSize, 40},
 	{"Huge",         CmdSetFontSize, 50},
+    {"HUGE",         CmdSetFontSize, 60 },
 	
 	/* ---------- OTHER FONT STUFF ------------------- */
 	{"em",           CmdEmphasize, F_EMPHASIZE_NORMAL},
@@ -249,8 +253,9 @@ static CommandArray commands[] = {
 	{"cline", CmdIgnoreParameter, No_Opt_One_NormParam},
 	{"multicolumn", CmdMultiCol, 0},
 	{"frac", CmdFraction, 0},
+    {"Frac", CmdFraction, 0},
 	{"sqrt", CmdRoot, 0},
-	{"int", CmdIntegral, 0},
+    {"int",  CmdIntegral, 0},
 	{"nonumber",CmdFormula, FORM_NO_NUMBER},
 	{"", NULL, 0}
 };
@@ -343,24 +348,24 @@ static CommandArray GermanModeCommands[] = {
 };
 
 static CommandArray FrenchModeCommands[] = {
-/*   { "degree", CmdFrenchAbbrev, DEGREE}, */
-   { "ier", CmdFrenchAbbrev, IERF},
-   { "iere", CmdFrenchAbbrev, IEREF},
-   { "iers", CmdFrenchAbbrev, IERSF},
-   { "ieres", CmdFrenchAbbrev, IERESF},
-   { "ieme", CmdFrenchAbbrev, IEMEF},
-   { "iemes", CmdFrenchAbbrev, IEMESF},
-   { "numero", CmdFrenchAbbrev, NUMERO},
-   { "numeros", CmdFrenchAbbrev, NUMEROS},
-   { "Numero", CmdFrenchAbbrev, CNUMERO},
-   { "Numeros", CmdFrenchAbbrev, CNUMEROS},
-/*   { "degres", CmdFrenchAbbrev, DEGREE}, */
-/*   { "textdegree", CmdFrenchAbbrev, DEGREE}, */
-   { "primo", CmdFrenchAbbrev, PRIMO},
-   { "secundo", CmdFrenchAbbrev, SECUNDO},
-   { "tertio", CmdFrenchAbbrev, TERTIO},
-   { "quarto", CmdFrenchAbbrev, QUARTO},
-   { "fup", CmdFrenchAbbrev, FUP},
+/*    {"degree", CmdFrenchAbbrev, DEGREE}, */
+    {"ier", CmdFrenchAbbrev, IERF},
+    {"iere", CmdFrenchAbbrev, IEREF},
+    {"iers", CmdFrenchAbbrev, IERSF},
+    {"ieres", CmdFrenchAbbrev, IERESF},
+    {"ieme", CmdFrenchAbbrev, IEMEF},
+    {"iemes", CmdFrenchAbbrev, IEMESF},
+    {"numero", CmdFrenchAbbrev, NUMERO},
+    {"numeros", CmdFrenchAbbrev, NUMEROS},
+    {"Numero", CmdFrenchAbbrev, CNUMERO},
+    {"Numeros", CmdFrenchAbbrev, CNUMEROS},
+/*    {"degres", CmdFrenchAbbrev, DEGREE}, */
+/*    {"textdegree", CmdFrenchAbbrev, DEGREE}, */
+    {"primo", CmdFrenchAbbrev, PRIMO},
+    {"secundo", CmdFrenchAbbrev, SECUNDO},
+    {"tertio", CmdFrenchAbbrev, TERTIO},
+    {"quarto", CmdFrenchAbbrev, QUARTO},
+    {"fup", CmdFrenchAbbrev, FUP},
 	{"", NULL, 0}
 };
 
@@ -378,7 +383,7 @@ static CommandArray params[] = {
 	{"figure*", CmdFigure, FIGURE_1},
 	{"picture", CmdIgnoreFigure, PICTURE},
 	{"minipage", CmdIgnoreFigure, MINIPAGE},
-	/* { "thebibliography", CmdIgnoreFigure, THEBIBLIOGRAPHY }, */
+	/*  {"thebibliography", CmdIgnoreFigure, THEBIBLIOGRAPHY }, */
 
 	{"quote", CmdQuote, QUOTE},
 	{"quotation", CmdQuote, QUOTATION},
@@ -387,6 +392,7 @@ static CommandArray params[] = {
 	{"itemize", CmdList, ITEMIZE},
 	{"description", CmdList, DESCRIPTION},
 	{"verbatim", CmdVerbatim, 1},
+    {"Verbatim", CmdVerbatim, 1},
 	{"verse", CmdVerse, 0},
 	{"tabular", CmdTabular, TABULAR},
 	{"tabular*", CmdTabular, TABULAR_1},
@@ -405,7 +411,7 @@ static CommandArray params[] = {
 	{"table", CmdTable, TABLE},
 	{"table*", CmdTable, TABLE_1},
 	{"thebibliography", CmdConvertBiblio, 0},
-	/* { "thebibliography", CmdIgnoreEnvironment, BIBLIOGRAPHY }, */
+	/*  {"thebibliography", CmdIgnoreEnvironment, BIBLIOGRAPHY }, */
 	{"abstract", CmdAbstract, 0},
 	{"titlepage", CmdTitlepage, 0},
 	{"em", CmdEmphasize, F_EMPHASIZE},
@@ -417,6 +423,7 @@ static CommandArray params[] = {
 	{"itshape",  CmdSetFontShape, F_SHAPE_ITALIC_3},
 	{"scshape",  CmdSetFontShape, F_SHAPE_CAPS_3},
 	{"slshape",  CmdSetFontShape, F_SHAPE_SLANTED_3},
+	{"upshape",  CmdSetFontShape, F_SHAPE_UPRIGHT_3},
 	{"", NULL, 0}
 };				/* end of list */
 

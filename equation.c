@@ -229,7 +229,15 @@ parameter: type of operand
 			ungetTexChar(cThis);
 	}
 
-	fprintf(fRtf, "{\\field{\\*\\fldinst  EQ \\\\I(");
+	fprintf(fRtf, "{\\field{\\*\\fldinst  EQ \\\\I");
+	  switch(code)
+	  {
+		case 0 : fprintf(fRtf,"\\\\in("); break;	
+		case 1 : fprintf(fRtf,"\\\\su("); break;
+		case 2 : fprintf(fRtf,"\\\\pr("); break;
+		default: error("Illegal code to CmdIntegral");
+	  }
+
 	if (lower_limit)
 		ConvertString(lower_limit);
 	fprintf(fRtf, "%c", FORMULASEP);
