@@ -334,7 +334,7 @@ with Notepad (Windows).
 At the end of that file, add the line @*
 @file{PATH=C:\l2r;%PATH%} 
 @item
-Save the file to its original location.
+Save the file to its original location. Shutdown and reboot the PC.
 @end itemize
 @item
 WinNT, Win2000, WinXP
@@ -399,7 +399,8 @@ DOS, Windows 3.1, Windows 95, Windows 98 or Windows ME) then@*
 add to your config.sys a line like the following@*
 @code{SHELL=C:\COMMAND.COM C:\ /E:4096 /P}@*
 or, if there already is such a line, modify it so that it supplies a 
-sufficiently large environment space @code{/E:}
+sufficiently large environment space @code{/E:}.  
+Shutdown and reboot the PC.
 
 @node Win32 systems, Macintosh, DOS or Windows, Installation
 @section Win32 systems
@@ -417,8 +418,18 @@ you must have LaTeX, ImageMagick and Ghostscript installed. These programs are
 freely available for download at @uref{http://www.miktex.org/}, 
 @uref{http://www.imagemagick.org} and @uref{http://www.ghostscript.com}
 
-Paths to LaTeX, ImageMagick and Ghostscript executables have to be specified in the 
-"Environment" tab of the @ltor{} window.
+If MikTeX, ImageMagick and Ghostscript are installed before installing @ltor{},
+the pathes to the executables are automatically found in the windows registry 
+by the installer. Otherwise, these pathes may have to be specified manually 
+in the "Environment" tab of the @ltor{} window.
+
+If you get the message "Out of environment space" (should occur only under 
+Windows 95, Windows 98 or Windows ME) then@*
+add to your config.sys a line like the following@*
+@code{SHELL=C:\COMMAND.COM C:\ /E:4096 /P}@*
+or, if there already is such a line, modify it so that it supplies a 
+sufficiently large environment space @code{/E:}.  
+Shutdown and reboot the PC.
 
 
 @node Macintosh, Problems Compiling, Win32 systems, Installation
