@@ -524,11 +524,13 @@ ConvertOverToFrac(char ** equation)
 	eq = *equation;
 	p = eq;
 	diagnostics(4,"ConvertOverToFrac before <%s>",p);
+
 	while ((mid = strstr(p,"\\over")) != NULL) {
 		diagnostics(5,"Matched at <%s>",mid);
 		cNext = *(mid+5);
 		diagnostics(5,"Next char is <%c>",cNext);
-	 	if (!(('A'<= cNext && cNext <= 'Z') || ('a'<= cNext && cNext <= 'z'))) {
+	 	if (!isalpha((int)cNext)) {
+	 		
 			first = scanback(eq, mid);
 			diagnostics(6, "first = <%s>", first);
 			last  = scanahead(mid);
@@ -536,7 +538,7 @@ ConvertOverToFrac(char ** equation)
 	
 			strncpy(mid,"  }{ ",5);
 			diagnostics(6, "mid = <%s>", mid);
-			s = (char *) malloc(strlen(eq)+7);
+			s = (char *) malloc(strlen(eq)+sizeof("\\frac{}")+1);
 			t = s;
 
 			strncpy(t, eq, first-eq);			/* everything up to {A\over B} */

@@ -1,8 +1,9 @@
-# $Id: Makefile,v 1.53 2002/04/27 03:55:39 prahl Exp $
+# $Id: Makefile,v 1.54 2002/04/27 16:05:41 prahl Exp $
 
-CC=gcc
+CC=cc
 MKDIR=mkdir -p
-LIBS=-lMallocDebug -force_flat_namespace
+#LIBS=-lMallocDebug -force_flat_namespace
+LIBS=
 
 CFLAGS:=-DUNIX
 #CFLAGS:=-DMSDOS

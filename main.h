@@ -1,4 +1,4 @@
-/* $Id: main.h,v 1.47 2002/04/24 14:31:16 prahl Exp $ */
+/* $Id: main.h,v 1.48 2002/04/27 16:05:42 prahl Exp $ */
 #ifndef __MAIN_H
 #define __MAIN_H
 
@@ -133,4 +133,5 @@ char *getTmpPath(void);
 char *my_strdup(const char *str);
 FILE *my_fopen(char *path, char *mode);
 
+void debug_malloc(void);
 #endif				/* __MAIN_H */

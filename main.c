@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.71 2002/04/24 14:31:16 prahl Exp $ */
+/* $Id: main.c,v 1.72 2002/04/27 16:05:42 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -242,6 +242,8 @@ int main(int argc, char **argv)
 		PopSource();
 		CloseRtf(&fRtf);
 		printf("\n");
+/*		debug_malloc();*/
+
 		return 0;
 	} else {
 		printf("\n");	
@@ -673,3 +675,10 @@ my_fopen(char *path, char *mode)
 	return p;
 }
 
+void debug_malloc(void)
+{
+	char c;
+	diagnostics(1,"Malloc Debugging --- press return to continue");
+	fflush(NULL);
+	fscanf(stdin,"%c",&c);
+}

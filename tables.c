@@ -1,4 +1,4 @@
-/* $Id: tables.c,v 1.17 2002/04/21 22:49:59 prahl Exp $
+/* $Id: tables.c,v 1.18 2002/04/27 16:05:42 prahl Exp $
 
    Translation of tabbing and tabular environments
 */
@@ -489,6 +489,8 @@ CmdTabular(int code)
 	if (!(code & ON)) {
 		diagnostics(1, "Exiting CmdTabular");
 		g_processing_tabular = FALSE;
+		free(colFmt);
+		colFmt=NULL;
 		return;
 	}
 
