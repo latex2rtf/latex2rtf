@@ -1,4 +1,4 @@
-/* $Id: graphics.c,v 1.12 2002/05/05 03:45:36 prahl Exp $ 
+/* $Id: graphics.c,v 1.13 2002/05/05 18:11:41 prahl Exp $ 
 This file contains routines that handle LaTeX graphics commands
 */
 
@@ -347,24 +347,140 @@ static void
 PutEmfFile(char *s)
 {
 	FILE *fp;
+	unsigned long	RecordType;		/* Record type (always 0x00000001)*/
+	unsigned long	RecordSize;		/* Size of the record in bytes */
+	long			BoundsLeft;		/* Left inclusive bounds */
+	long			BoundsRight;	/* Right inclusive bounds */
+	long			BoundsTop;		/* Top inclusive bounds */
+	long			BoundsBottom;	/* Bottom inclusive bounds */
+	long			FrameLeft;		/* Left side of inclusive picture frame */
+	long			FrameRight;		/* Right side of inclusive picture frame */
+	long			FrameTop;		/* Top side of inclusive picture frame */
+	long			FrameBottom;	/* Bottom side of inclusive picture frame */
+	unsigned long	Signature;		/* Signature ID (always 0x464D4520) */
+	long			w,h,width,height;
+	
+	diagnostics(1, "PutEmfFile");
+	fp = open_graphics_file(s);
+	if (fp == NULL) return;
+
+/* extract size information*/
+	if (fread(&RecordSize,4,1,fp)  != 1) goto out;
+	if (fread(&BoundsLeft,4,1,fp)  != 1) goto out;
+	if (fread(&BoundsRight,4,1,fp) != 1) goto out;
+	if (fread(&BoundsTop,4,1,fp)   != 1) goto out;
+	if (fread(&BoundsBottom,4,1,fp)!= 1) goto out;
+	if (fread(&FrameLeft,4,1,fp)   != 1) goto out;
+	if (fread(&FrameRight,4,1,fp)  != 1) goto out;
+	if (fread(&FrameTop,4,1,fp)    != 1) goto out;
+	if (fread(&FrameBottom,4,1,fp) != 1) goto out;
+	if (fread(&Signature,4,1,fp)   != 1) goto out;
+
+	if (!g_little_endian) {
+		RecordType   = LETONL(RecordType);
+		BoundsLeft   = LETONS(BoundsLeft);
+		BoundsRight  = LETONS(BoundsRight);
+		BoundsTop    = LETONS(BoundsTop);
+		BoundsBottom = LETONS(BoundsBottom);
+		FrameLeft    = LETONS(FrameLeft);
+		FrameRight   = LETONS(FrameRight);
+		FrameTop     = LETONS(FrameTop);
+		FrameBottom  = LETONS(FrameBottom);
+		Signature    = LETONS(Signature);
+	}
+
+	if (RecordType != 1 || Signature != 0x464D4520) goto out;
+	height = abs(BoundsTop-BoundsBottom);
+	width = abs(BoundsLeft-BoundsRight);
+	
+	w = (unsigned long)( 100000.0*width  )/ ( 20* POINTS_PER_M );
+	h = (unsigned long)( 100000.0*height )/ ( 20* POINTS_PER_M );
+	diagnostics(1,"width = %ld, height = %ld", width, height);
+	fprintRTF("\n{\\pict\\emfblip\\picw%ld\\pich%ld", w, h);
+	fprintRTF("\\picwgoal%ld\\pichgoal%ld\n", width*20, height*20);
+
+/* write file */
+	rewind(fp);
+	PutHexFile(fp);
+	fprintRTF("}\n");
+	fclose(fp);
+	return;
+
+out:
+	diagnostics(WARNING,"Problem with file %s --- not included");
+	fclose(fp);
+}
+
+static void
+PutWmfFile(char *s)
+{
+	FILE *fp;
+	unsigned long	Key;			/* Magic number (always 0x9AC6CDD7) */
+	unsigned short	FileType;		/* Type of metafile (0=memory, 1=disk) */
+	unsigned short	HeaderSize;		/* Size of header in WORDS (always 9) */
+	unsigned short	Handle;			/* Metafile HANDLE number (always 0) */
+	short			Left;			/* Left coordinate in twips */
+	short			Top;			/* Top coordinate in twips */
+	short			Right;			/* Right coordinate in twips */
+	short			Bottom;			/* Bottom coordinate in twips */
+	int 			width, height;
 	
 	fp = open_graphics_file(s);
 	if (fp == NULL) return;
 
-/* identify file type */
-/* extract size information */
+	diagnostics(1, "PutWmfFile");
 
-	diagnostics(1, "EMF file inclusion not implemented yet");
+	/* verify file is actually WMF and get size */
+	if (fread(&Key,4,1,fp) != 1) goto out;
+	if (!g_little_endian) Key  = LETONL(Key);
 
-/*	width = buffer[1];
-	height = buffer[0];
+	if (Key == 0x9AC6CDD7) {		/* file is placeable metafile */
+		if (fread(&Handle,2,1,fp) != 1) goto out;
+		if (fread(&Left,2,1,fp)   != 1) goto out;
+		if (fread(&Top,2,1,fp)    != 1) goto out;
+		if (fread(&Right,2,1,fp)  != 1) goto out;
+		if (fread(&Bottom,2,1,fp) != 1) goto out;
+
+		if (!g_little_endian) {
+			Left   = LETONS(Left);
+			Top    = LETONS(Top);
+			Right  = LETONS(Right);
+			Bottom = LETONS(Bottom);
+		}
+		
+		width  = abs(Right - Left);
+		height = abs(Top-Bottom);
+
+	} else {					/* file may be old wmf file with no size */
+
+		rewind(fp);
+		if (fread(&FileType,2,1,fp) != 1) goto out;
+		if (fread(&HeaderSize,2,1,fp) != 1) goto out;
+		
+		if (!g_little_endian) {
+			FileType  = LETONS(FileType);
+			HeaderSize = LETONS(HeaderSize);
+		}
+	
+		if (FileType != 0 && FileType != 1) goto out;
+		if (HeaderSize != 9) goto out;
+		
+		/* real wmf file ... just assume size */
+		width = 200;
+		height = 200;
+	}
+
 	diagnostics(1,"width = %d, height = %d", width, height);
+	fprintRTF("\n{\\pict\\wmetafile1\\picw%d\\pich%d\n", width, height);
 
-	fprintRTF("\n{\\pict\\emfblip\\picw%d\\pich%d\n", width, height);
 	rewind(fp);
 	PutHexFile(fp);
 	fprintRTF("}\n");
-*/
+	fclose(fp);
+	return;
+
+out:
+	diagnostics(WARNING,"Problem with file %s --- not included");
 	fclose(fp);
 }
 
@@ -533,6 +649,9 @@ draft=true/false.
 
 	else if (strstr(filename, ".emf")  || strstr(filename, ".EMF"))
 		PutEmfFile(filename);
+
+	else if (strstr(filename, ".wmf")  || strstr(filename, ".WMF"))
+		PutWmfFile(filename);
 
 	else if (strstr(filename, ".eps")  || strstr(filename, ".EPS"))
 		PutEpsFile(filename);
