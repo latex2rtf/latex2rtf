@@ -107,12 +107,27 @@ int RtfFontNumber(char *Fname)
  ****************************************************************************/
 {
     int num = 0;
+    char *font_type, *font_name;
     ConfigEntryT **config_handle = CfgStartIterate(FONT_A);
 
     while ((config_handle = CfgNext(FONT_A, config_handle)) != NULL) {
         diagnostics(4, "font name =%s", (*config_handle)->RtfCommand);
-        if (strcmp((*config_handle)->RtfCommand, Fname) == 0) {
-            return num + 3;
+
+        font_type = (char *) (*config_handle)->TexCommand;
+        font_name = (char *) (*config_handle)->RtfCommand;
+        if (strcmp(font_name, Fname) == 0) {
+			int charset = 0;
+	
+			if (strncmp(font_name, "Symbol", 6) == 0)
+				charset = 2;
+	
+			if (strncmp(font_type, "Cyrillic", 8) == 0)
+				charset = 204;
+	
+			if (strncmp(font_type, "Latin2", 6) == 0)
+				charset = 238;
+
+			if (g_fcharset_number == charset) return num;
         }
         num++;
     }
@@ -126,7 +141,7 @@ int TexFontNumber(char *Fname)
   example: TexFontNumber("Roman")
  ****************************************************************************/
 {
-    return SearchRtfIndex(Fname, FONT_A) + 3;
+    return SearchRtfIndex(Fname, FONT_A);
 }
 
 void CmdFontFamily(int code)

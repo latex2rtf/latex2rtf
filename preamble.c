@@ -139,7 +139,9 @@ void setPackageInputenc(char *option)
       strcmp(option, "1251") == 0 ||
       strcmp(option, "1252") == 0 ||
       strcmp(option, "maccyr") == 0 ||
-      strcmp(option, "macukr") == 0 || strcmp(option, "koi8-r") == 0 || strcmp(option, "koi8-u") == 0) {
+      strcmp(option, "macukr") == 0 || 
+      strcmp(option, "koi8-r") == 0 || 
+      strcmp(option, "koi8-u") == 0) {
 
         strcpy(g_charset_encoding_name, option);
         g_fcharset_number = 0;  /* ANSI in RTF Specification */
@@ -512,9 +514,9 @@ void CmdUsepackage(int code)
     if (options_with_spaces) {
         options = strdup_noblanks(options_with_spaces);
         free(options_with_spaces);
-        diagnostics(4, "Package {%s} with options [%s]", package, options);
+        diagnostics(1, "Package {%s} with options [%s]", package, options);
     } else
-        diagnostics(4, "Package {%s} with no options", package);
+        diagnostics(1, "Package {%s} with no options", package);
 
     if (strcmp(package, "inputenc") == 0 && options)
         setPackageInputenc(options);
@@ -848,7 +850,7 @@ static void WriteFontHeader(void)
     fprintRTF("{\\fonttbl");
 
     config_handle = CfgStartIterate(FONT_A);
-    i = 3;
+    i = 0;
     while ((config_handle = CfgNext(FONT_A, config_handle)) != NULL) {
 
         font_type = (char *) (*config_handle)->TexCommand;
@@ -974,6 +976,8 @@ static void WriteHeadFoot(void)
 
 /*	fprintRTF("\\ftnbj\\sectd\\linex0\\endnhere\\qj\n"); */
 
+    int family = DefaultFontFamily();
+	int size   = DefaultFontSize(); 
     int textwidth = getLength("textwidth");
 
     if (g_preambleLFOOT || g_preambleCFOOT || g_preambleRFOOT) {
@@ -992,6 +996,8 @@ static void WriteHeadFoot(void)
         }
 
         fprintRTF("\\par}\n");
+    } else {
+		fprintRTF("{\\footer\\pard\\plain\\f%d\\fs%d\\qc\\chpgn\\par}\n",family,size);
     }
 
     if (g_preambleLHEAD || g_preambleCHEAD || g_preambleRHEAD) {
