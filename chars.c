@@ -1,4 +1,4 @@
-/* $Id: chars.c,v 1.13 2001/10/13 20:04:56 prahl Exp $
+/* $Id: chars.c,v 1.14 2001/10/15 03:43:16 prahl Exp $
 
    purpose : handles special characters and logos
 */
@@ -434,17 +434,19 @@ CmdBreveChar(int code)
 		  Now we just fake it with a u
  ******************************************************************************/
 {
-	int             upsize;
+	int             upsize,num;
 	char           *cParam;
 	
+	num = RtfFontNumber("MT Extra");
 	cParam = getBraceParam();
 	if (cParam == NULL)
 		return;
 
-	upsize = (CurrentFontSize() * 3) / 4;
+	upsize = CurrentFontSize()/2;
 	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(");
 	ConvertString(cParam);
-	fprintRTF("%c\\\\S(\\up%d u))}", FORMULASEP, upsize);
+/*	fprintRTF("%c\\\\S(\\up%d u))}", FORMULASEP, upsize);*/
+	fprintRTF("%c\\\\S(\\up%d\\f%d \\\\())}", FORMULASEP, upsize, num);
 	fprintRTF("{\\fldrslt }}");
 	free(cParam);
 }
