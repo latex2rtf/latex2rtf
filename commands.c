@@ -55,6 +55,7 @@ static CommandArray *Environments[100];	/* list of active environments */
 static int g_par_indent_array[100];
 static int g_left_indent_array[100];
 static int g_right_indent_array[100];
+static char g_align_array[100];
 
 static CommandArray commands[] = {
 	{"begin", CmdBeginEnd, CMD_BEGIN},
@@ -327,6 +328,7 @@ static CommandArray commands[] = {
 	{"listoftables", CmdListOf, LIST_OF_TABLES},
 	{"numberline", CmdNumberLine, 0},
 	{"contentsline", CmdContentsLine, 0},
+	{"centering", CmdAlign, PAR_CENTERING},
 
 	{"", NULL, 0}
 };
@@ -828,6 +830,7 @@ globals: changes Environment - array of active environments
 	g_par_indent_array[iEnvCount] = getLength("parindent");
 	g_left_indent_array[iEnvCount] = g_left_margin_indent;
 	g_right_indent_array[iEnvCount] = g_right_margin_indent;
+	g_align_array[iEnvCount]        = alignment;
 	
 	switch (code) {
 	case PREAMBLE:
@@ -918,6 +921,7 @@ globals: changes Environment - array of active environments
 	setLength("parindent",g_par_indent_array[iEnvCount]);
 	g_left_margin_indent=g_left_indent_array[iEnvCount];
 	g_right_margin_indent=g_right_indent_array[iEnvCount];
+	alignment = g_align_array[iEnvCount];
 
 	/*
 	 * overlapping environments are not allowed !!! example:

@@ -952,6 +952,40 @@ CmdFrenchAbbrev(int code)
   fprintRTF("}");
 }
 
+void CmdLatin1Char(int code)
+/******************************************************************************
+ * purpose : insert Latin1 character into RTF stream
+ * ******************************************************************************/
+{
+	int n;
+	
+	if (code<=0 || code >= 255) return;
+	
+	n = CurrentLatin1FontFamily();
+	
+	if (n>=0)
+		fprintRTF("{\\f%d\\\'%.2X}", n, code);
+	else										/* already using Latin1 Font */
+		fprintRTF("\\\'%.2X", code);
+}
+
+void CmdLatin2Char(int code)
+/******************************************************************************
+ * purpose : insert Latin2 character into RTF stream
+ * ******************************************************************************/
+{
+	int n;
+	
+	if (code<=0 || code >= 255) return;
+	
+	n = CurrentLatin2FontFamily();
+	
+	if (n>=0)
+		fprintRTF("{\\f%d\\\'%.2X}", n, code);
+	else										/* already using Latin2 Font */
+		fprintRTF("\\\'%.2X", code);
+}
+
 void CmdCyrillicChar(int code)
 /******************************************************************************
  * purpose : insert cyrillic character into RTF stream

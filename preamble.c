@@ -824,6 +824,9 @@ WriteFontHeader(void)
 		if (strncmp(font_type, "Cyrillic", 8)==0)	
 			charset = 204;
 					
+		if (strncmp(font_type, "Latin2", 6)==0)	
+			charset = 238;
+					
 		fprintRTF("{\\f%d\\fnil\\fcharset%d %s;}\n",i, charset, font_name);
 
 		i++;

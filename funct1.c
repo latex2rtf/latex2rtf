@@ -560,13 +560,13 @@ CmdAlign(int code)
 	case (PAR_RAGGEDRIGHT):
 		old_alignment_before_centerline = alignment;
 		alignment = LEFT;
-//		fprintRTF("{");
+/*		fprintRTF("{"); */
 		diagnostics(4,"Entering Convert from CmdAlign (centerline)");
 		Convert();
 		diagnostics(4,"Exiting Convert from CmdAlign (centerline)");
 		alignment = old_alignment_before_centerline;
 		CmdEndParagraph(0);
-//		fprintRTF("}");
+/*		fprintRTF("}");*/
 		break;
 
 	case (PAR_CENTER | ON):
@@ -598,6 +598,11 @@ CmdAlign(int code)
 	case (PAR_LEFT | OFF):
 		alignment = old_alignment_before_left;
 		CmdIndent(INDENT_INHIBIT);
+		break;
+	case (PAR_CENTERING):
+		CmdIndent(INDENT_NONE);
+		old_alignment_before_center = alignment;
+		alignment = CENTERED;
 		break;
 	}
 }

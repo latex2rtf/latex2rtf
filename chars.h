@@ -30,6 +30,8 @@ void            CmdLogo(int code);
 void 			CmdFrenchAbbrev(int code);
 void			CmdCzechAbbrev(int code);
 void            CmdCyrillicChar(int code);
+void            CmdLatin1Char(int code);
+void            CmdLatin2Char(int code);
 void 			CmdCyrillicStrChar(char *s);
 
 #define IERF 1

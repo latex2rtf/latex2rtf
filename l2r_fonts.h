@@ -1,4 +1,4 @@
-/* $Id: l2r_fonts.h,v 1.14 2002/04/28 18:45:53 prahl Exp $ */
+/* $Id: l2r_fonts.h,v 1.15 2004/05/12 06:11:25 prahl Exp $ */
 
 #define F_FAMILY_ROMAN          1
 #define F_FAMILY_ROMAN_1        2
@@ -80,6 +80,8 @@ void	CmdFontSize(int code);
 int		CurrentFontSize(void);
 int		DefaultFontSize(void);
 int 	CurrentCyrillicFontFamily(void);
+int 	CurrentLatin1FontFamily(void);
+int 	CurrentLatin2FontFamily(void);
 
 void	CmdEmphasize(int code);
 void	CmdUnderline(int code);
