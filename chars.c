@@ -893,6 +893,8 @@ CmdFrenchAbbrev(int code)
   if (code == SUPERIEURA) {fprintRTF(">"); return;}
   if (code == FRENCH_LQ) {fprintRTF("\\lquote"); return;}
   if (code == FRENCH_RQ) {fprintRTF("\\rquote"); return;}
+  if (code == FRENCH_OG) {fprintRTF("\\'AB"); return;} /* guillemotleft */
+  if (code == FRENCH_FG) {fprintRTF("\\'BB"); return;} /* guillemotright */
   if (code == FRENCH_LQQ) {fprintRTF("\\ldblquote"); return;}
   if (code == FRENCH_RQQ) {fprintRTF("\\rdblquote"); return;}
   if (code == POINT_VIRGULE) {fprintRTF(";"); return;}

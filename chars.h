@@ -64,4 +64,6 @@ void 			CmdCyrillicStrChar(char *s);
 #define DEUX_POINTS	 27
 #define LCS	 28
 #define FCS	 29
+#define FRENCH_OG 30
+#define FRENCH_FG 31
 

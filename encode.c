@@ -42,12 +42,14 @@ static void put_breve_char(char c)
 	fprintRTF("{\\fldrslt }}");
 }
 
+/*
 static void put_acute_char(char c)
 {
 	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(%c",c);
 	fprintRTF("%c\\\\S(\\'b4))}", g_field_separator);
 	fprintRTF("{\\fldrslt }}");
 }
+*/
 
 static void put_cedilla_char(char c)
 {

@@ -485,6 +485,8 @@ static CommandArray FrenchModeCommands[] = {
     {"up", CmdFrenchAbbrev, FUP},
     {"LCS", CmdFrenchAbbrev, LCS},
     {"FCS", CmdFrenchAbbrev, FCS},
+    {"og", CmdFrenchAbbrev, FRENCH_OG},
+    {"fg", CmdFrenchAbbrev, FRENCH_FG},
 	{"", NULL, 0}
 };
 
@@ -867,11 +869,11 @@ globals: changes Environment - array of active environments
 		break;
 	case RUSSIAN_MODE:
 		Environments[iEnvCount] = RussianModeCommands;
-		diag = "french";
+		diag = "russian";
  		break;
 	case CZECH_MODE:
 		Environments[iEnvCount] = CzechModeCommands;
-		diag = "french";
+		diag = "czech";
 		break;
 	case FIGURE_ENV:
 		Environments[iEnvCount] = FigureCommands;
