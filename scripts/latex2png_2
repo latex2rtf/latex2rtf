@@ -1,18 +1,20 @@
 #!/bin/sh
 # This version uses pdflatex
 #              and  pstoimg that comes with latex2html
+#
 help()
 {
     cat <<HELP
 latex2png -- convert latex file to PNG image
 
-USAGE: latex2png [-d density] [-h] [-k] latex_file
+USAGE: latex2png [-d density] [-h] [-k] [-H home dir] latex_file
 
-OPTIONS: -d density in pixels per inch
-         -h help text
-         -k keep intermediate files
+OPTIONS: -d density (where density is in pixels per inch)
+         -h         	this help text
+         -k         	keep intermediate files (for debugging)
+         -H /home/dir	directory to be included in search path
 
-EXAMPLE: latex2png -d 144 eqn
+EXAMPLE: latex2png -d 144 -H /usr/home /tmp/eqn  (to create /tmp/eqn.png)
 
 HELP
     exit 0
@@ -20,11 +22,13 @@ HELP
 
 opt_d=144
 opt_k=0
+home_dir="."
 while [ -n "$1" ]; do
 case $1 in
     -h) help;shift 1;;
     -k) opt_k=1;shift 1;; # variable opt_f is set
     -d) opt_d=$2;shift 2;; # -d takes an argument -> shift by 2
+    -H) home_dir=$2;shift 2;;
     --) break;;
     -*) echo "error: no such option $1. -h for help";exit 1;;
     *)  break;;
@@ -40,14 +44,18 @@ fi
 #process 'latex2png file.tex' and 'latex2png file' equivalently
 name=`basename "$1" ".tex"`
 dir=`dirname "$1"`
+start_dir=`pwd`
 
 #need to search the current working directory for \input or \include
+cd $home_dir
 TEXINPUTS=`pwd`":"
+export TEXINPUTS
+cd $start_dir
 cd $dir
 rm -f $name.png
 rm -f $name.pdf
 
-pdflatex $name > /dev/null
+pdflatex  --interaction batchmode $name > /dev/null
 
 if [ ! -e "$name.pdf" ] ; then
  	error "ERROR: pdflatex failed to create $name.pdf"
