@@ -1,4 +1,4 @@
-/* $Id: convert.c,v 1.6 2001/09/18 03:40:25 prahl Exp $ 
+/* $Id: convert.c,v 1.7 2001/09/18 05:20:10 prahl Exp $ 
 	purpose: ConvertString(), Convert(), TranslateCommand() */
 
 #include <stdio.h>
@@ -110,7 +110,6 @@ globals: fTex, fRtf and all global flags for convert (see above)
 	char            cNext;
 	int             count = 0;
 	int             i;
-	bool            babelMode = FALSE;
 
 	RecursionLevel++;
 	PushLevels();

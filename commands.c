@@ -1,4 +1,4 @@
-/*  $Id: commands.c,v 1.21 2001/09/18 03:40:25 prahl Exp $
+/*  $Id: commands.c,v 1.22 2001/09/18 05:20:10 prahl Exp $
 
     Defines subroutines to translate LaTeX commands to RTF
 */
@@ -286,6 +286,7 @@ static CommandArray PreambleCommands[] = {
 	{"listoffiles",CmdIgnoreParameter,0},
 	{"nofiles",CmdIgnoreParameter,0},
 	{"makelabels",CmdIgnoreParameter,0},
+	{"verbositylevel",CmdVerbosityLevel,0},
 	{"", NULL, 0}
 };				/* end of list */
 

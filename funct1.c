@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.21 2001/09/18 03:40:25 prahl Exp $ 
+/* $Id: funct1.c,v 1.22 2001/09/18 05:20:10 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -430,7 +430,6 @@ CmdFootNote(int code)
 	char            number[255];
 	static int      thankno = 1;
 	int             text_ref_upsize, foot_ref_upsize;
-	char            *footnote;
 	int				DefFont = DefaultFontFamily();
 	
 	diagnostics(4,"Entering ConvertFootNote");
@@ -452,13 +451,6 @@ CmdFootNote(int code)
 	}
 
 	Convert();
-/*
-	footnote = getParam();
-	if (footnote) {
-		ConvertString(footnote);
-		free(footnote);
-	}
-*/
 	diagnostics(4,"Exiting CmdFootNote");
 	fprintRTF("}\n ");
 }
@@ -1167,42 +1159,20 @@ void
 CmdIgnoreFigure(int code)
 /******************************************************************************
   purpose: function to ignore Picture and Minipage Environment
-parameter: code: which environment to ignore
  ******************************************************************************/
 {
-	char            environ[30];
-	char            thechar;
-
-	switch (code & ~(ON)) {	/* mask MSB */
+	if (code & ON) {
 	
-	case PICTURE:
-			strcpy(environ, "picture");
-			break;
-	
-	case MINIPAGE:
-			strcpy(environ, "minipage");
-			break;
-	
-	default:
-			fprintf(stderr, "CmdIgnoreFigure called with unknown environment\n");
-			return;
-	}
-
-	while ((thechar = getTexChar())) {
-		char *thisEnviron;
-		if (thechar == '\\') {
-			if (getTexChar() != 'e') break;
-			if (getTexChar() != 'n') break;
-			if (getTexChar() != 'd') break;
-			skipSpaces();
-			thisEnviron = getParam();
-			if (strcmp(environ,thisEnviron) == 0) {
-				free(thisEnviron);
-				return;
-			}
+		switch (code & ~(ON)) {
+			case PICTURE:
+					getTexUntil("\\end{picture}");
+					break;
+			
+			case MINIPAGE:
+					getTexUntil("\\end{minipage}");
+					break;
 		}
 	}
-	return;
 }
 
 /******************************************************************************
@@ -1549,4 +1519,17 @@ CmdGraphics(int code)
 		fclose(fp);
 		free(filename);
 	}
+}
+
+void 
+CmdVerbosityLevel(int code)
+/***************************************************************************
+ * purpose: insert \verbositylevel{5} in the tex file to set the verbosity 
+            in the LaTeX file!
+ ***************************************************************************/
+{
+	char * s = getParam();
+	g_verbosity_level = atoi(s);
+	free(s);
+
 }

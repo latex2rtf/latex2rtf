@@ -1,4 +1,4 @@
-/*  $Id: parser.c,v 1.12 2001/09/18 03:40:25 prahl Exp $
+/*  $Id: parser.c,v 1.13 2001/09/18 05:20:10 prahl Exp $
 
    Contains declarations for a generic recursive parser for LaTeX code.
 */
@@ -175,11 +175,11 @@ parseBrace()
 			parseBrace();
 			break;
 
-		case '[':
+/*		case '[':
 
 			parseBracket();
 			break;
-
+*/
 		default: /* Skip other characters */ ;
 		}
 	}
@@ -193,10 +193,11 @@ parseBracket()
 {
 	while (getTexChar() != ']') {
 		switch (currentChar) {
-			case '{':
+/*			case '{':
 
 			parseBrace();
 			break;
+*/
 
 		case '[':
 

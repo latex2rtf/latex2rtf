@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.21 2001/09/18 03:40:25 prahl Exp $ */
+/* $Id: main.c,v 1.22 2001/09/18 05:20:10 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -40,7 +40,7 @@ bool            GermanMode = FALSE;	    /* support germanstyle */
 
 char           *g_language = "english";	/* before \begin{document} "g_language".cfg is read in */
 bool            twoside = FALSE;
-static int      verbosity = WARNING;
+int      		g_verbosity_level = WARNING;
 static FILE    *logfile = NULL;
 
 /* flags indicating to which rtf-version output is restricted */
@@ -144,9 +144,9 @@ globals: initializes in- and outputfile fTex, fRtf,
 		case 'v':
 			{
 				char           *endptr;
-				verbosity = (int) strtol(optarg, &endptr, 10);
-				if (verbosity < 0)
-					diagnostics(ERROR, "verbosity should be a positive integer 0--6");
+				g_verbosity_level = (int) strtol(optarg, &endptr, 10);
+				if (g_verbosity_level < 0)
+					diagnostics(ERROR, "g_verbosity_level should be a positive integer 0--6");
 				if ((*endptr != '\0') || (endptr == optarg))
 					diagnostics(ERROR, "argument to -v option malformed: %s",
 						    optarg);
@@ -328,9 +328,9 @@ globals: progname; latexname; linenumber;
 }
 
 /*
- * Writes the given warning message in format, ... if global verbosity is
+ * Writes the given warning message in format, ... if global g_verbosity_level is
  * higher or equal then level.  If ??? option is given, i.e. logfile is not
- * null, everything is logged to the logfile -vn Flag (verbosity)	0 ...
+ * null, everything is logged to the logfile -vn Flag (g_verbosity_level)	0 ...
  * only errors = -q 1 ... (default) Translation Warnings 2 ... conditions on
  * output e.g. (rtf1.5 options) 3 ... complete logging of what's going on.
  */
@@ -350,7 +350,7 @@ diagnostics(int level, char *format,...)
 /*
 	va_start(ap, format);
 
-	if ((level <= 1) && (verbosity != 0)) {
+	if ((level <= 1) && (g_verbosity_level != 0)) {
 		switch (level) {
 		case 0:
 			fprintf(stderr, "\nError! ");
@@ -376,7 +376,7 @@ diagnostics(int level, char *format,...)
 
 	va_start(apf, format);
 
-	if (level <= verbosity) {
+	if (level <= g_verbosity_level) {
 		int iEnvCount=CurrentEnvironmentCount();
 		switch (level) {
 		case 0:

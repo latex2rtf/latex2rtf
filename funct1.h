@@ -1,4 +1,4 @@
-/* $Id: funct1.h,v 1.16 2001/09/18 03:40:25 prahl Exp $ */
+/* $Id: funct1.h,v 1.17 2001/09/18 05:20:10 prahl Exp $ */
 
 #define AST_FORM 100
 #define EMPHASIZE 1
@@ -151,4 +151,5 @@ void            GetRequiredParam(char *string, int size);
 void 			CmdQuad(int kk);
 void			CmdColsep(int code);
 void		 	CmdSpace(float kk);
+void 			CmdVerbosityLevel(int code);
 
