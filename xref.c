@@ -1830,42 +1830,30 @@ void CmdContentsLine(int code)
 }
 
 /******************************************************************************
-purpose: handles \listoffigures \tableofcontents \listoftables
+purpose: handles \listoffigures \listoftables
 ******************************************************************************/
 void CmdListOf(int code)
 {
-    /* 
-     * FILE *fp=NULL; char *name;
-     */
-
+	char c = 't';
+	
+	if (code == LIST_OF_FIGURES) c = 'f';
+	
     diagnostics(4, "Entering CmdListOf");
 
-    /* this it probably the wrong way to implement \tableofcontents ! */
-
-    /* 
-     * print appropriate heading CmdVspace(VSPACE_BIG_SKIP);
-     * CmdStartParagraph(TITLE_PAR); fprintRTF("{"); if (g_document_type
-     * == FORMAT_BOOK || g_document_type == FORMAT_REPORT)
-     * InsertStyle("chapter"); else InsertStyle("section"); fprintRTF("
-     * ");
-     * 
-     * if (code == LIST_OF_FIGURES) { ConvertBabelName("LISTFIGURENAME"); }
-     * 
-     * if (code == LIST_OF_TABLES) { name = g_lot_name;
-     * ConvertBabelName("LISTTABLENAME"); }
-     * 
-     * if (code == TABLE_OF_CONTENTS) { name = g_toc_name;
-     * ConvertBabelName("CONTENTSNAME"); }
-     * 
-     * CmdEndParagraph(0); fprintRTF("}"); CmdVspace(VSPACE_SMALL_SKIP);
-     * 
-     * now set things up so that we start reading from the appropriate
-     * auxiliary file fp = my_fopen(name, "r"); if (fp == NULL) {
-     * diagnostics(WARNING, "Missing latex .lot/.lof/.toc file.  Run
-     * LaTeX to create %s\n", name); return; } else fclose(fp);
-     * esting for existence to give better error message
-     * 
-     * PushSource(name,NULL);
-     * 
-     */
+	CmdStartParagraph(TITLE_PAR);
+	fprintRTF("{");
+	InsertStyle("contents_no_style");
+	fprintRTF(" ");
+	if (code == LIST_OF_FIGURES)
+		ConvertBabelName("LISTFIGURENAME");
+	else
+		ConvertBabelName("LISTTABLENAME");
+	
+	CmdEndParagraph(0);
+	fprintRTF("}");
+	CmdVspace(VSPACE_SMALL_SKIP);
+	
+	g_tableofcontents = TRUE;
+	fprintRTF("{\\field{\\*\\fldinst TOC \\\\f %c }{\\fldrslt }}\n",c);  
+	CmdNewPage(NewPage);
 }

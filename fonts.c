@@ -119,7 +119,7 @@ int RtfFontNumber(char *Fname)
 			int charset = 0;
 	
 			if (strncmp(font_name, "Symbol", 6) == 0)
-				charset = 2;
+				return num;      /* Symbol is same in all charsets! */
 	
 			if (strncmp(font_type, "Cyrillic", 8) == 0)
 				charset = 204;

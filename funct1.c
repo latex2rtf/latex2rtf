@@ -815,12 +815,11 @@ parameter: code: type of section-recursion-level
                 free(unit_label);
             }
             CmdEndParagraph(0);
-            fprintRTF("}{");
             CmdVspace(VSPACE_BIG_SKIP);
             CmdStartParagraph(TITLE_PAR);
             ConvertString(heading);
             CmdEndParagraph(0);
-            fprintRTF("}");
+            fprintRTF("\\par\\par}");
             CmdVspace(VSPACE_SMALL_SKIP);
             break;
 
@@ -961,6 +960,7 @@ void CmdCaption(int code)
     int n, vspace;
     char old_align;
     char number[20];
+    char c;
 
     old_align = alignment;
     alignment = CENTERED;
@@ -984,10 +984,12 @@ void CmdCaption(int code)
         incrementCounter("figure");
         ConvertBabelName("FIGURENAME");
         n = getCounter("figure");
+        c = 'f';
     } else {
         incrementCounter("table");
         ConvertBabelName("TABLENAME");
         n = getCounter("table");
+        c = 't';
     }
 
     fprintRTF(" ");
@@ -1005,12 +1007,18 @@ void CmdCaption(int code)
     else
         fprintRTF("%s", number);
 
-    fprintRTF(":  ");
     thecaption = getBraceParam();
     diagnostics(4, "in CmdCaption [%s]", thecaption);
+	fprintRTF(": ");
     ConvertString(thecaption);
-    free(thecaption);
     fprintRTF("}");
+
+    fprintRTF("{\\field{\\*\\fldinst TC \"");
+	fprintRTF("%s  ",number);
+    ConvertString(thecaption);
+    fprintRTF("\" \\\\f %c}{\\fldrslt }}", c);
+    free(thecaption);
+
     CmdEndParagraph(0);
     vspace = getLength("belowcaptionskip") + getLength("textfloatsep");
     DirectVspace(vspace);
