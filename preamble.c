@@ -39,6 +39,7 @@ Authors:
 #include "counters.h"
 #include "xref.h"
 #include "direct.h"
+#include "style.h"
 
 static bool   g_preambleTwoside  = FALSE;
 static bool   g_preambleTwocolumn= FALSE;
