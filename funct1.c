@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.65 2002/03/31 20:17:57 prahl Exp $ 
+/* $Id: funct1.c,v 1.66 2002/04/01 15:21:10 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -823,7 +823,7 @@ CmdCaption(int code)
 	if (g_document_type != FORMAT_ARTICLE) 
 		sprintf(number, "%d.%d", getCounter("chapter"), n);
 	else
-		sprintf(number, "%d", getCounter("chapter"));
+		sprintf(number, "%d", n);
 	
 	if (g_processing_figure && g_figure_label)
 		InsertBookmark(g_figure_label, number);

@@ -1,4 +1,4 @@
-/*  $Id: parser.c,v 1.51 2002/03/31 17:13:11 prahl Exp $
+/*  $Id: parser.c,v 1.52 2002/04/01 15:21:11 prahl Exp $
 
    Contains declarations for a generic recursive parser for LaTeX code.
 */
@@ -27,7 +27,7 @@ typedef struct InputStackType
    long   file_line;
 } InputStackType;
 
-#define PARSER_SOURCE_MAX 40
+#define PARSER_SOURCE_MAX 100
 
 static InputStackType   g_parser_stack[PARSER_SOURCE_MAX];
 
