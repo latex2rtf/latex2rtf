@@ -1,4 +1,4 @@
-/* $Id: cfg.c,v 1.20 2001/12/07 05:03:48 prahl Exp $
+/* $Id: cfg.c,v 1.21 2002/03/12 06:42:19 prahl Exp $
 
      purpose : Read config files and provide lookup routines
 
@@ -103,39 +103,46 @@ purpose: open config by trying multiple paths
 		
 /* try the environment variable RTFPATH */
 	p = getenv("RTFPATH");	
-	env_path = strdup(p);
-	p = env_path;
-	while (p) {
-		p1 = strchr(p, ENVSEP);
-		if (p1) *p1 = '\0';
-		
-		fp=try_path(p, name);
-		if (fp) {free(env_path); return fp;}
-		
-		p= (p1) ? p1+1 : NULL;
-	}
-	free(env_path);				
+	if (p) {
+		env_path = strdup(p);  /* create a copy to work with */
+		p = env_path;
+		while (p) {
+			p1 = strchr(p, ENVSEP);
+			if (p1) *p1 = '\0';
+			
+			fp=try_path(p, name);
+			if (fp) {free(env_path); return fp;}
+			
+			p= (p1) ? p1+1 : NULL;
+		}
+		free(env_path);
+	}		
 
 /* last resort.  try LIBDIR */
 	lib_path = strdup(LIBDIR);
-	p = lib_path;
-	while (p) {
-		p1 = strchr(p, ENVSEP);
-		if (p1) *p1 = '\0';
-		
-		fp=try_path(p, name);
-		if (fp) {free(lib_path); return fp;}
-		
-		p= (p1) ? p1+1 : NULL;
+	if (lib_path) {
+		p = lib_path;
+		while (p) {
+			p1 = strchr(p, ENVSEP);
+			if (p1) *p1 = '\0';
+			
+			fp=try_path(p, name);
+			if (fp) {free(lib_path); return fp;}
+			
+			p= (p1) ? p1+1 : NULL;
+		}
+		free(lib_path);
 	}
 
 /* failed ... give some feedback */
-	diagnostics(WARNING, "Cannot open cfg file");
-	diagnostics(WARNING, "Either specify environmental variable RTFPATH or");
-	diagnostics(WARNING, "use command line path option \"-L /path/to/cfg/file\"");
+	diagnostics(WARNING, "Cannot open the latex2rtf .cfg files");
+	diagnostics(WARNING, "Locate the directory containing the .cfg files and");
+	diagnostics(WARNING, "   (1) define the environment variable RTFPATH, *or*");
+	diagnostics(WARNING, "   (2) use command line path option \"-L /path/to/cfg/file\", *or*");
+	diagnostics(WARNING, "   (3) recompile latex2rtf with LIBDIR defined properly");
 	diagnostics(WARNING, "Current RTFPATH: %s", getenv("RTFPATH"));
-	diagnostics(WARNING, "Path specified at compile time: %s", lib_path);
-	diagnostics(ERROR, "Giving up.  Cannot open config file '%s'", name);
+	diagnostics(WARNING, "Current  LIBDIR: %s", LIBDIR);
+	diagnostics(ERROR,   " Giving up.  Have a nice day.");
 	return NULL;
 }
 

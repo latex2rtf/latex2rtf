@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.57 2002/03/11 15:58:37 prahl Exp $ */
+/* $Id: main.c,v 1.58 2002/03/12 06:42:19 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -25,7 +25,7 @@
 #include "preamble.h"
 #include "xref.h"
 
-FILE           *fRtf = (FILE *) NULL;	/* file pointer to RTF file */
+FILE           *fRtf = NULL;	/* file pointer to RTF file */
 char           *TexName = NULL;
 static char    *RtfName = NULL;
 char           *AuxName = NULL;
@@ -347,8 +347,6 @@ purpose : Writes the message to errfile depending on debugging level
 		switch (level) {
 		case 0:
 			fprintf(errfile, "\nError! line=%d ", linenumber);
-			CloseRtf(&fRtf);
-			exit(0);
 			break;
 		case 1:
 			fprintf(errfile, "\nWarning line=%d ", linenumber);
@@ -382,7 +380,12 @@ purpose : Writes the message to errfile depending on debugging level
 	va_end(apf);
 
 	if (level == 0) {
-		fprintf(stderr, "\n");
+		fprintf(errfile, "\n");
+		fflush(errfile);
+		if (fRtf) {
+			fflush(fRtf);
+			CloseRtf(&fRtf);
+		}
 		exit(EXIT_FAILURE);
 	}
 }

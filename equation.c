@@ -531,9 +531,9 @@ ConvertOverToFrac(char ** equation)
 	p = eq;
 	diagnostics(4,"ConvertOverToFrac before <%s>",p);
 	while ((mid = strstr(p,"\\over")) != NULL) {
-		diagnostics(1,"Matched at <%s>",mid);
+		diagnostics(5,"Matched at <%s>",mid);
 		cNext = *(mid+5);
-		diagnostics(1,"Next char is <%c>",cNext);
+		diagnostics(5,"Next char is <%c>",cNext);
 	 	if (!(('A'<= cNext && cNext <= 'Z') || ('a'<= cNext && cNext <= 'z'))) {
 			first = scanback(eq, mid);
 			diagnostics(6, "first = <%s>", first);

@@ -423,7 +423,6 @@ look similar to the original.  The command line syntax is:
 latex2rtf [-options] inputfile.[tex]
 @end example
 
-If inputfile is not specified, standard input is read.
 The @code{-options} may consist of one or more of the following
 
 @table @code
@@ -519,6 +518,17 @@ is useful for files that are not cleanly converted by @ltor{}.
 
 @end table
 
+With no arguments other than switches starting with a ``-'', 
+@ltor{} acts as a filter, i.e., it reads from @code{stdin} and writes to @code{stdout}.
+In addition, diagnostic messages are sent to @code{stderr}. If these standard
+channels are not redirected using @code{<} and @code{>}, then the
+input is read from the command line, and both output and error
+messages are printed on the screen.
+
+If a non-switch argument is present, @ltor{} assumes it is the name of
+the input file. The file must have extension ``.tex'' but the extension
+is optional. The output file is constructed from the input file name
+by removing the extension ``.tex'' and adding ``.rtf''.
 
 @node Debugging, ,LaTeX2RTF Options, Using LaTeX2RTF
 @section Debugging
