@@ -1,8 +1,8 @@
-/* $Id: main.h,v 1.54 2002/11/19 04:06:01 prahl Exp $ */
+/* $Id: main.h,v 1.55 2002/11/23 16:40:43 prahl Exp $ */
 #ifndef __MAIN_H
 #define __MAIN_H
 
-#if defined(UNIX) && !defined(HAS_DOS_SEP)
+#if defined(UNIX)
 #ifndef ENVSEP
 #define ENVSEP ':'
 #endif
@@ -11,7 +11,16 @@
 #endif 
 #endif
 
-#if defined(MSDOS) || defined(HAS_DOS_SEP)
+#if defined(MSDOS)
+#ifndef ENVSEP
+#define ENVSEP ';'
+#endif
+#ifndef PATHSEP
+#define PATHSEP '\\'
+#endif 
+#endif
+
+#if defined(OS2)
 #ifndef ENVSEP
 #define ENVSEP ';'
 #endif
@@ -25,10 +34,6 @@
 #define ENVSEP '^'
 #define PATHSEP ':'
 #include "MainMain.h"
-#endif
-
-#ifdef HAS_NO_GETOPT
-#define getopt my_getopt
 #endif
 
 #ifdef HAS_STRDUP

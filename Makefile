@@ -1,23 +1,19 @@
-# $Id: Makefile,v 1.68 2002/11/20 16:25:27 prahl Exp $
+# $Id: Makefile,v 1.69 2002/11/23 16:40:43 prahl Exp $
 
 CC=gcc
 MKDIR=mkdir -p
-#LIBS=-lMallocDebug -force_flat_namespace
-LIBS=
 
 CFLAGS:=-DUNIX
 #CFLAGS:=-DMSDOS
 #CFLAGS:=-DMACINTOSH
+#CFLAGS:=-DOS2
 
-#Uncomment next three lines for os2/emx or win32/rsx
+#Uncomment next two lines for windows machines
 #EXESFX=.exe
 #PREFIX_DRIVE=c:
-#CFLAGS:=-DHAS_DOS_SEP
+
 #Uncomment next line when using rsx compiler, target win32
 #CFLAGS:=-Zwin32  
-
-#Uncomment if getopt() is not available
-#CFLAGS:=$(CFLAGS) -DHAS_NO_GETOPT
 
 #Base directory
 PREFIX=$(PREFIX_DRIVE)/usr/local
@@ -35,6 +31,9 @@ CFG_INSTALL=$(PREFIX)/share/latex2rtf/cfg
 # Nothing to change below this line
 
 CFLAGS:=$(CFLAGS) -g -Wall -fsigned-char
+
+LIBS=
+#LIBS=-lMallocDebug -force_flat_namespace
 
 VERSION="`scripts/version`"
 

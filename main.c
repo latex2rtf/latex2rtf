@@ -32,6 +32,7 @@ Authors:
 #include <stdarg.h>
 #include <errno.h>
 #include "main.h"
+#include "mygetopt.h"
 #include "convert.h"
 #include "commands.h"
 #include "chars.h"
@@ -123,7 +124,6 @@ static void		print_version(void);
 
 extern char *optarg;
 extern int	 optind;
-extern int getopt(int ac, char *const av[], const char *optstring);
 
 int main(int argc, char **argv)
 {
@@ -134,7 +134,7 @@ int main(int argc, char **argv)
 	SetEndianness();
 	progname = argv[0];
 	optind = 1;
-	while ((c = getopt(argc, argv, "lhpvFSWZ:o:a:b:d:i:s:C:D:M:P:T:")) != EOF) {
+	while ((c = my_getopt(argc, argv, "lhpvFSWZ:o:a:b:d:i:s:C:D:M:P:T:")) != EOF) {
 		switch (c) {
 		case 'a':
 			g_aux_name = optarg;

@@ -19,17 +19,11 @@
  */
 
 #include "main.h"
-#ifdef HAS_NO_GETOPT
-
 #include <stdlib.h>
 #include <string.h>
 
 extern char    *optarg;
 extern int      optind;
-
-typedef int     logical;
-
-int             my_getopt(int argc, char **argv, char *optstring);
 
 int 
 my_getopt(int argc, char **argv, char *optstring)
@@ -37,7 +31,7 @@ my_getopt(int argc, char **argv, char *optstring)
 	char           *q;
 	static char    *rem = NULL;
 	int             c;
-	logical         needarg = 0;
+	int         	needarg = 0;
 
 	optarg = NULL;
 
@@ -52,8 +46,7 @@ my_getopt(int argc, char **argv, char *optstring)
 		if (optind < argc && argv[optind][0] == '-') {
 			rem = argv[optind] + 1;
 			if (*rem == 0)
-				return EOF;	/* Treat lone "-" as a
-						 * non-option arg */
+				return EOF;	/* Treat lone "-" as a non-option arg */
 			if (*rem == '-') {
 				optind++;
 				return EOF;
@@ -90,6 +83,3 @@ my_getopt(int argc, char **argv, char *optstring)
 	}
 	return c;
 }
-#else
-int AVOID_EMPTY_MYGETOPT_SOURCE;
-#endif
