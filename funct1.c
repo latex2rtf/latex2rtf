@@ -1771,7 +1771,7 @@ CmdInclude(int code)
 		s = t;
 	}
 
-	if (PushSource(s,NULL)==0);
-	diagnostics(WARNING, "Including file <%s>",t);
+	if (PushSource(s,NULL)==0)
+		diagnostics(WARNING, "Including file <%s>",t);
 	free(s);
 }

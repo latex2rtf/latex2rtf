@@ -852,7 +852,7 @@ parameter: type of operand
 	/* is there an exponent/subscript ? */
 	cThis = getNonBlank();
 
-	if (cThis=='\\') {			/* handle \nolimits and \limits gracefully*/
+	if (cThis=='\\') {			/* accept \nolimits and \limits */
 		ungetTexChar(cThis);
 		command=getSimpleCommand();	
 		if (!(strstr(command,"\\limits")==0) && !(strstr(command,"\\nolimits")==0))
