@@ -70,6 +70,8 @@ CmdLeftRight(int code)
 	if (code == 0) {
 		diagnostics(4, "CmdLeftRight() ... \\left <%c>", delim);
 
+		if (delim == '.')
+			diagnostics(WARNING, "\\left. not supported");
 		g_processing_fields++;
 		
 		fprintRTF("{\\field{\\*\\fldinst{EQ \\\\b ");
@@ -83,11 +85,10 @@ CmdLeftRight(int code)
 	} else {
 		g_processing_fields--;
 		fprintRTF(")}}{\\fldrslt{0}}}");
+		if (delim == '.')
+			diagnostics(WARNING, "\\right. not supported");
 		diagnostics(4, "CmdLeftRight() ... \\right <%c>", delim);
 	}
-
-	if (delim == '.')
-		diagnostics(WARNING, "\\right. and \\left. not supported");
 }
 
 void

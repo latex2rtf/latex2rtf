@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.38 2001/10/25 05:53:46 prahl Exp $ 
+/* $Id: funct1.c,v 1.39 2001/10/27 15:25:51 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -1008,7 +1008,7 @@ CmdVerbatim(int code)
 		CmdIndent(INDENT_NONE);
 		CmdStartParagraph(0);
 		num = TexFontNumber("Typewriter");
-		fprintRTF("\\b0\\i0\\scaps0\\f%d ", num);
+		fprintRTF("\\pard\\ql\\b0\\i0\\scaps0\\f%d ", num);
 		
 		if (true_code == VERBATIM_2) 
 			verbatim_text = getTexUntil("\\end{Verbatim}", 1);
