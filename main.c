@@ -58,7 +58,6 @@ char		   *g_aux_name = NULL;
 char		   *g_bbl_name = NULL;
 char		   *g_home_dir = NULL;
 
-
 /*** interpret comment lines that follow the '%' with this string ***/
 const char * InterpretCommentString  = "latex2rtf:";
 
@@ -198,17 +197,17 @@ int main(int argc, char **argv)
 			break;
 		case 'M':
 			sscanf(optarg, "%d", &x);
-			diagnostics(WARNING, "Math option = %s x=%d",optarg,x);
+			diagnostics(2, "Math option = %s x=%d",optarg,x);
 			g_equation_display_rtf	  = (x & 1) ? TRUE : FALSE;
 			g_equation_inline_rtf	  = (x & 2) ? TRUE : FALSE;
 			g_equation_display_bitmap = (x & 4) ? TRUE : FALSE;
 			g_equation_inline_bitmap  = (x & 8) ? TRUE : FALSE;
 			g_equation_comment		  = (x & 16)? TRUE : FALSE;
-			diagnostics(WARNING, "Math option g_equation_display_rtf      = %d",g_equation_display_rtf);
-			diagnostics(WARNING, "Math option g_equation_inline_rtf	      = %d",g_equation_inline_rtf);
-			diagnostics(WARNING, "Math option g_equation_display_bitmap   = %d",g_equation_display_bitmap);
-			diagnostics(WARNING, "Math option g_equation_inline_bitmap    = %d",g_equation_inline_bitmap);
-			diagnostics(WARNING, "Math option g_equation_comment	      = %d",g_equation_comment);
+			diagnostics(2, "Math option g_equation_display_rtf      = %d",g_equation_display_rtf);
+			diagnostics(2, "Math option g_equation_inline_rtf	      = %d",g_equation_inline_rtf);
+			diagnostics(2, "Math option g_equation_display_bitmap   = %d",g_equation_display_bitmap);
+			diagnostics(2, "Math option g_equation_inline_bitmap    = %d",g_equation_inline_bitmap);
+			diagnostics(2, "Math option g_equation_comment	      = %d",g_equation_comment);
 			if (!g_equation_comment && !g_equation_inline_rtf && !g_equation_inline_bitmap)
 				g_equation_inline_rtf=TRUE;
 			if (!g_equation_comment && !g_equation_display_rtf && !g_equation_display_bitmap)
@@ -460,9 +459,9 @@ print_usage(void)
 
 void
 diagnostics(int level, char *format,...)
-/*
-purpose : Writes the message to stderr depending on debugging level
-*/
+/****************************************************************************
+purpose: Writes the message to stderr depending on debugging level
+ ****************************************************************************/
 {
 	char		   buffer[512], *buff_ptr;
 	va_list		   apf;
@@ -768,7 +767,7 @@ purpose: return the directory to store temporary files
 #endif
 }
 
-char		   *
+char *
 my_strdup(const char *str)
 /****************************************************************************
 purpose: duplicate string --- exists to ease porting
@@ -789,6 +788,9 @@ purpose: duplicate string --- exists to ease porting
 
 FILE *
 my_fopen(char *path, char *mode)
+/****************************************************************************
+purpose: opens "g_home_dir/path"
+ ****************************************************************************/
 {
 	char *name;
 	FILE *p;
