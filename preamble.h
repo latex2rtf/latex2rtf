@@ -29,6 +29,7 @@ void CmdUsepackage(int code);
 void CmdTitle(int code);
 void CmdMakeTitle(int code);
 void CmdPreambleBeginEnd(int code);
+void CmdTableOfContents(int code);
 void PlainPagestyle(void);
 void CmdPagestyle(int code);
 void CmdHeader(int code);

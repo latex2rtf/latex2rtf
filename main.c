@@ -37,7 +37,7 @@ Authors:
 #include "convert.h"
 #include "commands.h"
 #include "chars.h"
-#include "l2r_fonts.h"
+#include "fonts.h"
 #include "stack.h"
 #include "direct.h"
 #include "ignore.h"
@@ -115,6 +115,7 @@ bool g_equation_inline_rtf = TRUE;
 bool g_equation_inline_bitmap = FALSE;
 bool g_equation_display_bitmap = FALSE;
 bool g_equation_comment = FALSE;
+bool g_tableofcontents = FALSE;
 
 double g_png_equation_scale = 1.22;
 double g_png_figure_scale = 1.35;
@@ -379,8 +380,8 @@ static void ConvertWholeDocument(void)
     char *body, *sec_head, *sec_head2, *label;
     char t[] = "\\begin{document}";
 
-    PushEnvironment(DOCUMENT);  /* because we use ConvertString in preamble.c */
-    PushEnvironment(PREAMBLE);
+    PushEnvironment(DOCUMENT_MODE);  /* because we use ConvertString in preamble.c */
+    PushEnvironment(PREAMBLE_MODE);
     SetTexMode(MODE_VERTICAL);
     ConvertLatexPreamble();
     WriteRtfHeader();

@@ -25,7 +25,7 @@ This file is available from http://sourceforge.net/projects/latex2rtf/
 #include <stdlib.h>
 #include "main.h"
 #include "convert.h"
-#include "l2r_fonts.h"
+#include "fonts.h"
 #include "commands.h"
 #include "funct1.h"
 #include "tables.h"

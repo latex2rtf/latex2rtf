@@ -1,4 +1,4 @@
-/* $Id: main.h,v 1.66 2004/11/09 06:06:55 prahl Exp $ */
+/* $Id: main.h,v 1.67 2004/12/07 03:17:54 prahl Exp $ */
 
 #if defined(UNIX)
 #define ENVSEP ':'
@@ -135,6 +135,7 @@ extern bool		g_equation_inline_bitmap;
 extern bool		g_equation_display_bitmap;
 extern bool		g_equation_comment;
 extern bool		g_little_endian;
+extern bool		g_tableofcontents;
 
 void fprintRTF(char *format, ...);
 void putRtfChar(char cThis);

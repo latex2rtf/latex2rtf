@@ -1,4 +1,3 @@
-
 /* preamble.c - Handles LaTeX commands that should only occur in the preamble.
 
 Copyright (C) 2001-2002 The Free Software Foundation
@@ -25,11 +24,13 @@ Authors:
 
 #include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include "main.h"
 #include "convert.h"
 #include "util.h"
 #include "preamble.h"
-#include "l2r_fonts.h"
+#include "fonts.h"
 #include "cfg.h"
 #include "encode.h"
 #include "parser.h"
@@ -41,6 +42,8 @@ Authors:
 #include "xref.h"
 #include "direct.h"
 #include "style.h"
+
+extern char *Version;  /*storage and definition in version.h */
 
 static bool g_preambleTwoside = FALSE;
 static bool g_preambleTwocolumn = FALSE;
@@ -409,7 +412,7 @@ static void setDocumentOptions(char *optionlist)
         else if (strcmp(option, "isolatin1") == 0)
             setPackageInputenc("latin1");
         else if (strcmp(option, "hyperlatex") == 0)
-            PushEnvironment(HYPERLATEX);
+            PushEnvironment(HYPERLATEX_MODE);
         else if (strcmp(option, "apalike") == 0)
             g_document_bibstyle = BIBSTYLE_APALIKE;
         else if (strcmp(option, "apanat1b") == 0)
@@ -609,6 +612,23 @@ void CmdTitle(int code)
     }
 }
 
+void CmdTableOfContents(int code)
+{
+	CmdStartParagraph(TITLE_PAR);
+	fprintRTF("{");
+	InsertStyle("contents_no_style");
+	fprintRTF(" ");
+	ConvertBabelName("CONTENTSNAME");
+	CmdEndParagraph(0);
+	fprintRTF("}");
+	CmdVspace(VSPACE_SMALL_SKIP);
+	
+	g_tableofcontents = TRUE;
+	fprintRTF("{\\field{\\*\\fldinst TOC \\\\o \"1-3\" }{\\fldrslt }}\n");  
+	CmdNewPage(NewPage);
+}
+
+
 void CmdMakeTitle(int code)
 
 /******************************************************************************
@@ -703,7 +723,7 @@ void CmdPagestyle( /* @unused@ */ int code)
 
 Produces latex-like headers and footers.
 Needs to be terminated for:
-- headings chapter, section informations and page numbering
+- headings chapter, section information and page numbering
 - myheadings page nunmbering, combined with markboth, markright.
  ******************************************************************************/
 {
@@ -1074,9 +1094,18 @@ static void WriteInfo(void)
   \version<N>     The version number of the document
   \doccomm        Comments displayed in Word's Summary Info dialog
   
-{\info {\title This is a page} {\author \'ca}}
+{\info {\title This is a page} {\doccomm Converted using}}
  ***************************************************************************/
 {
+/*	struct stat sb;*/
+	time_t tm;
+
+	fprintRTF("{\\info\n{\\title Original file was %s}\n",CurrentFileName());
+	tm = time(NULL);
+	fprintRTF("{\\doccomm Created using latex2rtf %s on %s}\n", Version, ctime(&tm));
+/*	if (fstat(CurrentFileDescriptor(),&sb)) {} */
+/*	fprintRTF("{\\creatim %s}\n", ctime(&tm)); */
+	fprintRTF("}\n");
 }
 
 void WriteRtfHeader(void)

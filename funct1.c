@@ -34,7 +34,7 @@ Authors:
 #include "funct1.h"
 #include "commands.h"
 #include "stack.h"
-#include "l2r_fonts.h"
+#include "fonts.h"
 #include "cfg.h"
 #include "ignore.h"
 #include "util.h"
@@ -674,7 +674,7 @@ parameter: code includes the type of the environment
     if (code & ON) {
         code &= ~(ON);          /* mask MSB */
         diagnostics(4, "Entering Environment (%d)", code);
-        PushEnvironment(code);
+        PushEnvironment(GENERIC_MODE);
     } else {                    /* off switch */
         CmdEndParagraph(0);
         diagnostics(4, "Exiting  Environment (%d)", code);
@@ -1129,7 +1129,7 @@ void CmdQuote(int code)
 
     switch (code) {
         case (QUOTATION | ON):
-            PushEnvironment(GENERIC_ENV);
+            PushEnvironment(QUOTE_MODE);
             diagnostics(4, "Entering \\begin{quotation}");
             CmdVspace(VSPACE_SMALL_SKIP);
             g_left_margin_indent += 512;
@@ -1138,7 +1138,7 @@ void CmdQuote(int code)
             break;
 
         case (QUOTE | ON):
-            PushEnvironment(GENERIC_ENV);
+            PushEnvironment(QUOTATION_MODE);
             diagnostics(4, "Entering \\begin{quote}");
             CmdVspace(VSPACE_SMALL_SKIP);
             g_left_margin_indent += 512;
@@ -1174,17 +1174,17 @@ void CmdList(int code)
         CmdEndParagraph(0);
 
     switch (code) {
-        case (ITEMIZE | ON):
+        case (ITEMIZE_MODE | ON):
             DirectVspace(vspace);
-            PushEnvironment(ITEMIZE);
+            PushEnvironment(ITEMIZE_MODE);
             setLength("parindent", -amount);
             g_left_margin_indent += 2 * amount;
             CmdIndent(INDENT_USUAL);
             break;
 
-        case (ENUMERATE | ON):
+        case (ENUMERATE_MODE | ON):
             DirectVspace(vspace);
-            PushEnvironment(ENUMERATE);
+            PushEnvironment(ENUMERATE_MODE);
             g_enumerate_depth++;
             CmdItem(RESET_ITEM_COUNTER);
             setLength("parindent", -amount);
@@ -1192,18 +1192,18 @@ void CmdList(int code)
             CmdIndent(INDENT_USUAL);
             break;
 
-        case (DESCRIPTION | ON):
+        case (DESCRIPTION_MODE | ON):
             DirectVspace(vspace);
-            PushEnvironment(DESCRIPTION);
+            PushEnvironment(DESCRIPTION_MODE);
             setLength("parindent", -amount);
             g_left_margin_indent += amount;
             CmdIndent(INDENT_USUAL);
             break;
 
-        case (ENUMERATE | OFF):
+        case (ENUMERATE_MODE | OFF):
             g_enumerate_depth--;    /* fall through */
-        case (ITEMIZE | OFF):
-        case (DESCRIPTION | OFF):
+        case (ITEMIZE_MODE | OFF):
+        case (DESCRIPTION_MODE | OFF):
             PopEnvironment();
             CmdIndent(INDENT_USUAL);    /* need to reset INDENT_NONE from CmdItem */
             g_processing_list_environment = FALSE;
@@ -1242,18 +1242,18 @@ void CmdItem(int code)
     itemlabel = getBracketParam();
     if (itemlabel) {            /* \item[label] */
         fprintRTF("{");
-        if (code == DESCRIPTION)
+        if (code == DESCRIPTION_MODE)
             fprintRTF("\\b ");
         diagnostics(5, "Entering ConvertString from CmdItem");
         ConvertString(itemlabel);
         diagnostics(5, "Exiting ConvertString from CmdItem");
         fprintRTF("}");
-        if (code != DESCRIPTION)
+        if (code != DESCRIPTION_MODE)
             fprintRTF("\\tab ");
     }
 
     switch (code) {
-        case ITEMIZE:
+        case ITEMIZE_MODE:
             if (!itemlabel) {
                 if (FrenchMode)
                     fprintRTF("\\endash\\tab ");
@@ -1262,7 +1262,7 @@ void CmdItem(int code)
             }
             break;
 
-        case ENUMERATE:
+        case ENUMERATE_MODE:
             if (itemlabel)
                 break;
             switch (g_enumerate_depth) {
@@ -1286,7 +1286,7 @@ void CmdItem(int code)
             item_number[g_enumerate_depth]++;
             break;
 
-        case DESCRIPTION:
+        case DESCRIPTION_MODE:
             fprintRTF(" ");
             break;
     }
@@ -1422,6 +1422,7 @@ void CmdVerbatim(int code)
 
         if (true_code != VERBATIM_4) {
 
+            PushEnvironment(VERBATIM_MODE);
             CmdEndParagraph(0);
             CmdIndent(INDENT_NONE);
             CmdStartParagraph(FIRST_PAR);
@@ -1467,8 +1468,12 @@ void CmdVerbatim(int code)
     } else {
         diagnostics(4, "Exiting CmdVerbatim");
 
-        if (true_code != VERBATIM_4)
+        if (true_code != VERBATIM_4) {
+        	PopEnvironment();
             CmdEndParagraph(0);
+        }
+            
+        
     }
 
 }
@@ -1482,7 +1487,7 @@ void CmdVerse(int code)
     CmdEndParagraph(0);
     switch (code) {
         case ON:
-            PushEnvironment(GENERIC_ENV);
+            PushEnvironment(VERSE_MODE);
             CmdIndent(INDENT_USUAL);
             g_left_margin_indent += 1134;
             setLength("parindent", 0);

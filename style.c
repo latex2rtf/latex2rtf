@@ -27,7 +27,7 @@ Authors:
 #include <string.h>
 #include "main.h"
 #include "direct.h"
-#include "l2r_fonts.h"
+#include "fonts.h"
 #include "cfg.h"
 #include "util.h"
 #include "parser.h"

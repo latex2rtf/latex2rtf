@@ -35,7 +35,7 @@ Authors:
 #include "stack.h"
 #include "util.h"
 #include "parser.h"
-#include "l2r_fonts.h"
+#include "fonts.h"
 #include "lengths.h"
 #include "definitions.h"
 #include "funct1.h"
@@ -94,11 +94,10 @@ void PopTrackLineNumber(void)
     g_track_line_number--;
 }
 
-int CurrentLineNumber(void)
-
 /***************************************************************************
  purpose:     returns the current line number of the text being processed
 ****************************************************************************/
+int CurrentLineNumber(void)
 {
     return g_parser_line;
 }
@@ -117,6 +116,18 @@ void UpdateLineNumber(char *s)
             g_parser_line++;
         s++;
     }
+}
+
+/***************************************************************************
+ purpose:     returns the current file descriptor
+****************************************************************************/
+int CurrentFileDescriptor(void)
+{
+    int fd=0;
+    if (g_parser_file)
+    	fd = fileno(g_parser_file);
+    
+    return fd;
 }
 
 char *CurrentFileName(void)

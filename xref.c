@@ -35,7 +35,7 @@
 #include "parser.h"
 #include "preamble.h"
 #include "lengths.h"
-#include "l2r_fonts.h"
+#include "fonts.h"
 #include "style.h"
 #include "definitions.h"
 #include "equation.h"
@@ -360,7 +360,7 @@ void CmdThebibliography(int code)
         CmdEndParagraph(0);
         CmdVspace(VSPACE_SMALL_SKIP);
 
-        PushEnvironment(GENERIC_ENV);
+        PushEnvironment(BIBLIOGRAPHY_MODE);
         setLength("parindent", -amount);
         g_left_margin_indent += 2 * amount;
     } else {

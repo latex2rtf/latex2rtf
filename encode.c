@@ -28,7 +28,7 @@ Authors:
 #include <stdlib.h>
 #include <string.h>
 #include "main.h"
-#include "l2r_fonts.h"
+#include "fonts.h"
 #include "funct1.h"
 #include "encode.h"
 #include "encode_tables.h"

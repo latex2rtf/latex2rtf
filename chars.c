@@ -26,7 +26,7 @@ This file is available from http://sourceforge.net/projects/latex2rtf/
 #include <ctype.h>
 #include "main.h"
 #include "commands.h"
-#include "l2r_fonts.h"
+#include "fonts.h"
 #include "cfg.h"
 #include "ignore.h"
 #include "encode.h"

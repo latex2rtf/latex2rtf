@@ -54,7 +54,7 @@ correctly, as well as vertical and horizontal space.
 #include "commands.h"
 #include "chars.h"
 #include "funct1.h"
-#include "l2r_fonts.h"
+#include "fonts.h"
 #include "stack.h"
 #include "tables.h"
 #include "equation.h"
