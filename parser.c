@@ -1046,7 +1046,7 @@ getSection(char **body, char **header, char **label)
 		if (*(section_buffer+delta) == '\0') break;
 
 		/* slurp TeX comments */
-		if (*(section_buffer+delta) == '%' && bs_count % 2) {	
+		if (*(section_buffer+delta) == '%' && bs_count % 2 == 0) {	
 			delta++;
 			while ((cNext=getRawTexChar()) != '\n') {
 				if (delta+2 >= section_buffer_size) increase_buffer_size();
