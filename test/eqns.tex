@@ -194,7 +194,7 @@ $$
 \section{fields}
 Problem with mbox containing \$ in a field
 $$
-x[l]\leftarrow x[(l+m) mod  n] \oplus \mbox{shiftright}(x[l])
+x[l]\leftarrow x[(l+m) \bmod  n] \oplus \mbox{shiftright}(x[l])
  \oplus \left\{ \begin{array}{ll}
                 0   & \mbox{if LSB of $x[l]$=0} \\
                 b   & \mbox{if LSB of $x[l]$=1,}
@@ -203,7 +203,7 @@ x[l]\leftarrow x[(l+m) mod  n] \oplus \mbox{shiftright}(x[l])
 $$
 problem with correctly delimiting the above equation 
 $
-x[l]\leftarrow x[(l+m) mod  n] \oplus \mbox{shiftright}(x[l])
+x[l]\leftarrow x[(l+m) \bmod  n] \oplus \mbox{shiftright}(x[l])
  \oplus \left\{ \begin{array}{ll}
                 0   & \mbox{if LSB of $x[l]$=0} \\
                 b   & \mbox{if LSB of $x[l]$=1,}

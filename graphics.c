@@ -865,7 +865,7 @@ PutLatexFile(char *s)
 {
 	char *png, *cmd;
 	int err, cmd_len;
-	unsigned long width, height;
+	unsigned long width, height, rw, rh;
 	unsigned long max=32767/20;
 	int resolution = g_dots_per_inch*2; /*points per inch */
 	
@@ -893,10 +893,16 @@ PutLatexFile(char *s)
 			GetPngSize(png, &width, &height);
 			diagnostics(4, "png size width=%d height =%d", width, height);
 		}
+		
+		if(width>max || height>max){  
+			rw=((resolution*max)/width)*2;
+		 	rh=((resolution*max)/height)*2; 
+			resolution=rw<rh?rw:rh;
+		}
 	} while (!err && resolution>10 && ( (width>max) || (height>max)) );
 	
 	if (err==0)
-		PutPngFile(png, 72.0/resolution, TRUE);
+		PutPngFile(png, g_png_equation_scale*72.0/resolution, TRUE);
 	
 	free(png);
 	free(cmd);

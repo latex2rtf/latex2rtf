@@ -325,8 +325,8 @@ purpose: handles \label \ref \pageref \cite
 				signet = strdup_nobadchars(str1);
 				fprintRTF("{\\field{\\*\\fldinst{\\lang1024 REF BIB_%s \\\\* MERGEFORMAT }}",signet);
 				fprintRTF("{\\fldrslt{");
-				if (s && 0)
-					ConvertString(s);
+				if (s)
+					fprintRTF(s);
 				else
 					fprintRTF("?");
 				fprintRTF("}}}");

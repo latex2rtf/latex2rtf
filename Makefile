@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.59 2002/09/22 00:47:43 prahl Exp $
+# $Id: Makefile,v 1.60 2002/09/22 21:48:30 prahl Exp $
 
 CC=gcc
 MKDIR=mkdir -p
@@ -96,10 +96,10 @@ all : checkdir latex2rtf
 latex2rtf: $(OBJS) $(HDRS)
 	$(CC) $(CFLAGS) $(OBJS)	$(LIBS) -o $(BINARY_NAME)
 
-cfg.o: Makefile
+cfg.o: Makefile cfg.c
 	$(CC) $(CFLAGS) -DCFGDIR=\"$(CFG_INSTALL)\" -c cfg.c -o cfg.o
 
-main.o: Makefile
+main.o: Makefile main.c
 	$(CC) $(CFLAGS) -DCFGDIR=\"$(CFG_INSTALL)\" -c main.c -o main.o
 
 check test: latex2rtf
