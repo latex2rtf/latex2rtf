@@ -1,4 +1,4 @@
-/*  $Id: commands.c,v 1.24 2001/09/26 03:31:50 prahl Exp $
+/*  $Id: commands.c,v 1.25 2001/10/07 21:20:51 prahl Exp $
 
     Defines subroutines to translate LaTeX commands to RTF
 */
@@ -188,9 +188,10 @@ static CommandArray commands[] = {
 	{"quad", CmdQuad, 1},
 	{"qquad", CmdQuad, 2},
 	{"textsuperscript", CmdSuperscript, 0},
+	{"hspace", CmdIgnoreParameter, No_Opt_One_NormParam},
 	{"hspace*", CmdIgnoreParameter, No_Opt_One_NormParam},
-	{"vspace", CmdIgnoreParameter, No_Opt_One_NormParam},
-	{"vspace*", CmdIgnoreParameter, No_Opt_One_NormParam},
+	{"vspace", CmdVspace, 0},
+	{"vspace*", CmdVspace, 1},
 	{"addvspace", CmdIgnoreParameter, No_Opt_One_NormParam},
 	{"addcontentsline", CmdIgnoreParameter, No_Opt_Three_NormParam},
 	{"addcontents", CmdIgnoreParameter, No_Opt_Two_NormParam},

@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.23 2001/09/26 03:31:50 prahl Exp $ 
+/* $Id: funct1.c,v 1.24 2001/10/07 21:20:51 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -47,7 +47,10 @@ CmdStartParagraph(int code)
 	int parindent;
 	
 	diagnostics(4,"CmdStartParagraph mode = %d", GetTexMode());
-	
+	diagnostics(4,"Noindent is %d", (int) g_paragraph_no_indent);
+	diagnostics(4,"Inhibit  is %d", (int) g_paragraph_inhibit_indent);
+	diagnostics(4,"parindent  is %d", getLength("parindent"));
+
 	fprintRTF("\\q%c\\li%d ", alignment, indent);
 
 	if (g_paragraph_no_indent || g_paragraph_inhibit_indent) 
@@ -79,6 +82,29 @@ CmdEndParagraph(int code)
 }
 
 void
+CmdVspace(int code)
+{
+	int vspace;
+	char c;
+	int mode = GetTexMode();
+	diagnostics(4,"CmdVspace mode = %d", GetTexMode());
+	
+	while ((c = getTexChar()) && c != '{');
+	vspace = getDimension() /2;
+	while ((c = getTexChar()) && c != '}');
+
+	fprintRTF("\\sa%d ", vspace);
+	if (mode == MODE_VERTICAL) 			
+		fprintRTF("\\par ");		/* forces \sa to take effect */
+	else {
+		CmdEndParagraph(0);
+		CmdIndent(INDENT_INHIBIT);
+	}
+	fprintRTF("\\sa0");
+
+}
+
+void
 CmdIndent(int code)
 /******************************************************************************
  purpose : set flags so that CmdStartParagraph() does the right thing
@@ -91,6 +117,7 @@ CmdIndent(int code)
            INDENT_USUAL has CmdStartParagraph() uses the value of \parindent
  ******************************************************************************/
 {
+	diagnostics(4,"CmdIndent mode = %d", GetTexMode());
 	if (code == INDENT_NONE)
 		g_paragraph_no_indent = TRUE;
 	
@@ -101,6 +128,8 @@ CmdIndent(int code)
 		g_paragraph_no_indent = FALSE;
 		g_paragraph_inhibit_indent = FALSE;
 	}
+	diagnostics(4,"Noindent is %d", (int) g_paragraph_no_indent);
+	diagnostics(4,"Inhibit  is %d", (int) g_paragraph_inhibit_indent);
 }
 
 void 
@@ -240,6 +269,7 @@ parameter: code includes the type of the environment
 		diagnostics(4,"Entering Environment (%d)", code);		
 		PushEnvironment(code);
 	} else {		/* off switch */
+		CmdEndParagraph(0);
 		diagnostics(4,"Exiting  Environment (%d)", code);
 		PopEnvironment();
 	}

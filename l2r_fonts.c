@@ -1,4 +1,4 @@
-/* $Id: l2r_fonts.c,v 1.18 2001/10/07 18:29:52 prahl Exp $
+/* $Id: l2r_fonts.c,v 1.19 2001/10/07 21:20:51 prahl Exp $
 
 	All changes to font size, font style, and font face are 
 	handled in this file.  Explicit changing of font characteristics
@@ -88,6 +88,7 @@ RtfFontNumber(char *Fname)
 	ConfigEntryT **config_handle = CfgStartIterate(FONT_A);
 
 	while ((config_handle = CfgNext(FONT_A, config_handle)) != NULL) {
+		diagnostics(4,"font name =%s", (*config_handle)->RtfCommand);
 		if (strcmp((*config_handle)->RtfCommand, Fname) == 0) {
 			return num+3;
 		}

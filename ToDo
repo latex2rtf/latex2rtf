@@ -1,12 +1,9 @@
 Bugs:
-	Fix the breve and \u in accentchars.tex for non-Macintoshes
 	Fix \right. and \left.
  	Improve spacing before and after \section et al.
 	Improve font sizes in \section et al.
 	
 Features:
-	Add full support for \usepackage[encoding]{inputenc}
-	Add support for \usepackage{fontname}
 	Add support for \usepackage{fullpage}
 	Add support for \usepackage{doublespace}
 

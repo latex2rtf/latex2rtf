@@ -1,4 +1,4 @@
-/* $Id: funct1.h,v 1.18 2001/09/26 03:31:50 prahl Exp $ */
+/* $Id: funct1.h,v 1.19 2001/10/07 21:20:51 prahl Exp $ */
 
 #define AST_FORM 100
 #define EMPHASIZE 1
@@ -24,6 +24,7 @@ void            CmdBeginEnd(int code);
 void            CmdStartParagraph(int code);
 void            CmdEndParagraph(int code);
 void            CmdIndent(int code);
+void			CmdVspace(int code);
 
 void            CmdAlign(int code);
 void            CmdToday(int code);

@@ -1,4 +1,4 @@
-/* $Id: preamble.c,v 1.14 2001/10/07 18:29:52 prahl Exp $
+/* $Id: preamble.c,v 1.15 2001/10/07 21:20:51 prahl Exp $
 
 purpose : Handles LaTeX commands that should only occur in the preamble.
           These are gathered together because the entire preamble must be
@@ -107,25 +107,25 @@ int fnumber=-1;
 	if (strcmp(font, "palatino") == 0)
 		fnumber = RtfFontNumber("Palatino");
 		
-	else if (strstr(font, "times") == 0 )
+	else if (strstr(font, "times") )
 			fnumber = RtfFontNumber("Times");
 
-	else if (strstr(font, "chancery") == 0 )
+	else if (strstr(font, "chancery") )
 			fnumber = RtfFontNumber("Zapf Chancery");
 
-	else if (strstr(font, "courier") == 0 )
+	else if (strstr(font, "courier") )
 			fnumber = RtfFontNumber("Courier");
 
-	else if (strstr(font, "avant") == 0 )
+	else if (strstr(font, "avant") )
 			fnumber = RtfFontNumber("Avant Garde");
 
-	else if (strstr(font, "helvet") == 0 )
+	else if (strstr(font, "helvet") )
 			fnumber = RtfFontNumber("Helvetica");
 
-	else if (strstr(font, "newcen") == 0 )
+	else if (strstr(font, "newcen") )
 			fnumber = RtfFontNumber("New Century Schoolbook");
 
-	else if (strstr(font, "book") == 0 )
+	else if (strstr(font, "book") )
 			fnumber = RtfFontNumber("Bookman");
 
 	InitializeDocumentFont(fnumber, -1, -1, -1);
