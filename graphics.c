@@ -211,6 +211,7 @@ eps_to_pict(char *s)
 	FILE *fp_eps, *fp_pict_bitmap, *fp_pict_eps;
 	char *cmd, *p, *pict_bitmap, *pict_eps, *eps, buffer[560];
 	long ii, pict_bitmap_size, eps_size;
+	int err;
 	short PostScriptBegin = 190;
 	short PostScriptEnd   = 191;
 	short PostScriptHandle= 192;
@@ -243,8 +244,10 @@ eps_to_pict(char *s)
 	cmd = (char *) malloc(strlen(eps)+strlen(pict_bitmap)+strlen("convert -crop 0x0  ")+1);
 	sprintf(cmd, "convert -crop 0x0 %s %s", eps, pict_bitmap);	
 	diagnostics(1,"%s",cmd);
-	system(cmd);
+	err = system(cmd);
 	free(cmd);
+	
+	if (err!=0) diagnostics(WARNING, "problem creating bitmap from %s", eps);
 	
 	/* open the eps file and make sure that it is less than 32k */
  	fp_eps = fopen (eps, "rb");
@@ -1046,23 +1049,29 @@ code=4 => psfig
 	
 		options = getBracketParam();
 		if (options) free(options);
+		filename = getBraceParam();
 	}
 	
+	if (code==1) { /* \epsffile{filename.eps} */
+		filename = getBraceParam();
+	}
+
 	if (code==2) { /* \epsfbox[0 0 30 50]{filename.ps} */
 		options = getBracketParam();
 		if (options) free(options);
+		filename = getBraceParam();
 	}
 	
-	
-	filename = getBraceParam();
-	
 	if (code==3) {		/* \BoxedEPSF{filename [scaled nnn]} */
-		char *s= strchr(filename,' ');
+		char *s;
+		filename = getBraceParam();
+		s= strchr(filename,' ');
 		if (s) *s='\0';
 	}
 		
 	if (code==4) {		/* \psfig{figure=filename,height=hhh,width=www} */
 		char *s, *t;
+		filename = getBraceParam();
 		s = strstr(filename,"figure=");
 		if (!s) return;
 		s += strlen("figure=");

@@ -62,6 +62,7 @@ char		   *progname;				/* name of the executable file */
 bool			GermanMode = FALSE;		/* support germanstyle */
 bool			FrenchMode = FALSE;		/* support frenchstyle */
 bool			RussianMode = FALSE;	/* support russianstyle */
+bool			CzechMode = FALSE;		/* support czech */
 
 char			g_charset_encoding_name[20] = "cp1252";
 int				g_fcharset_number = 0;

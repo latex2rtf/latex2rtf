@@ -417,6 +417,11 @@ static CommandArray GermanModeCommands[] = {
 	{"", NULL, 0}
 };
 
+static CommandArray CzechModeCommands[] = {
+	{"uv", CmdCzechAbbrev, 0},
+	{"", NULL, 0}
+};
+
 static CommandArray FrenchModeCommands[] = {
 /*    {"degree", CmdFrenchAbbrev, DEGREE}, */
     {"ier", CmdFrenchAbbrev, IERF},
@@ -748,6 +753,10 @@ globals: changes Environment - array of active environments
 		Environments[iEnvCount] = RussianModeCommands;
 		diag = "french";
  		break;
+	case CZECH_MODE:
+		Environments[iEnvCount] = CzechModeCommands;
+		diag = "french";
+		break;
 	case FIGURE_ENV:
 		Environments[iEnvCount] = FigureCommands;
 		diag = "figure";

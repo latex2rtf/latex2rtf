@@ -1,4 +1,4 @@
-/* $Id: commands.h,v 1.18 2002/11/19 11:28:19 prahl Exp $ */
+/* $Id: commands.h,v 1.19 2002/11/23 23:35:41 prahl Exp $ */
 
 #define PREAMBLE 1
 #define DOCUMENT 2
@@ -13,6 +13,7 @@
 #define FRENCH_MODE 13
 #define RUSSIAN_MODE 14
 #define GENERIC_ENV 15
+#define CZECH_MODE 16
 
 #define ON 0x4000
 #define OFF 0x0000

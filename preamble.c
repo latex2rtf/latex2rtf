@@ -84,6 +84,16 @@ setPackageBabel(char * option)
 		PushEnvironment(RUSSIAN_MODE);
 		ReadLanguage("russian");
 	}
+
+	if (strcmp(option, "czech") == 0)
+	{
+		CzechMode = TRUE;
+		PushEnvironment(CZECH_MODE);
+		ReadLanguage("czech");
+		g_fcharset_number=238;  			/* East European in RTF Specification */
+		strcpy(g_charset_encoding_name, "raw");
+	}
+		
 }
 
 void
@@ -395,6 +405,7 @@ setDocumentOptions(char *optionlist)
 			     strcmp(option, "spanish") == 0 || 
 			     strcmp(option, "english") == 0 || 
 			     strcmp(option, "russian") == 0 || 
+			     strcmp(option, "czech"  ) == 0 || 
 				 strcmp(option, "french")  == 0) 
 			setPackageBabel(option);
 		else if (strcmp(option, "twoside") == 0) 
@@ -499,8 +510,9 @@ CmdUsepackage(int code)
 	else if (strcmp(package, "babel") == 0 && options)
 		setPackageBabel(options);
 		
-	else if (strcmp(package, "german")  == 0 ||
+	else if (strcmp(package, "german" )  == 0 ||
 		     strcmp(package, "ngerman")  == 0 ||
+		     strcmp(package, "czech"  )  == 0 ||
 		     strcmp(package, "french")  == 0) 
 		setPackageBabel(package);
 

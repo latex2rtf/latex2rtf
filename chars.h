@@ -27,6 +27,7 @@ void            CmdChar(int code);
 void            CmdLogo(int code);
 
 void 			CmdFrenchAbbrev(int code);
+void			CmdCzechAbbrev(int code);
 void            CmdCyrillicChar(int code);
 void 			CmdCyrillicStrChar(char *s);
 

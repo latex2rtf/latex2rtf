@@ -858,6 +858,22 @@ CmdLogo(int code)
 }
 
 void 
+CmdCzechAbbrev(int code)
+/******************************************************************************
+  purpose: only handles \uv{quote} at the moment
+ ******************************************************************************/
+{
+	char *quote;
+	
+	quote=getBraceParam();
+	fprintRTF(" \\'84");
+	ConvertString(quote); 
+	free(quote);
+	fprintRTF("\\ldblquote ");
+	return;
+}
+
+void 
 CmdFrenchAbbrev(int code)
 /******************************************************************************
   purpose: makes \\ier, \\ieme, etc
