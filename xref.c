@@ -380,7 +380,11 @@ InsertBookmark(char *name, char *text)
 	} else {
 		diagnostics(3,"bookmark %s being inserted around <%s>",signet,text);
 		RecordBookmark(signet);
-		fprintRTF("{\\*\\bkmkstart BM%s}%s{\\*\\bkmkend BM%s}",signet,text,signet);
+		if (g_fields_use_REF) 
+			fprintRTF("{\\*\\bkmkstart BM%s}",signet);
+		fprintRTF("%s",text);
+		if (g_fields_use_REF) 
+			fprintRTF("{\\*\\bkmkend BM%s}",signet);
 	}
 	
 	free(signet);
@@ -416,13 +420,15 @@ purpose: handles \label \ref \pageref \cite
 		case LABEL_REF:
 			signet = strdup_nobadchars(text);
 			s = ScanAux("newlabel", text, 1);
-			fprintRTF("{\\field{\\*\\fldinst{\\lang1024 REF BM%s \\\\* MERGEFORMAT }}",signet);
-			fprintRTF("{\\fldrslt{");
+			if (g_fields_use_REF) {
+				fprintRTF("{\\field{\\*\\fldinst{\\lang1024 REF BM%s \\\\* MERGEFORMAT }}",signet);
+				fprintRTF("{\\fldrslt{");
+			}
 			if (s)
 				ConvertString(s);
 			else
 				fprintRTF("?");
-			fprintRTF("}}}");
+			if (g_fields_use_REF) fprintRTF("}}}");
 				
 			free(signet);
 			if (s) free(s);
@@ -431,8 +437,12 @@ purpose: handles \label \ref \pageref \cite
 		case LABEL_HYPERPAGEREF:
 		case LABEL_PAGEREF:
 			signet = strdup_nobadchars(text);
-			fprintRTF("{\\field{\\*\\fldinst{\\lang1024 PAGEREF BM%s \\\\* MERGEFORMAT }}",signet);
-			fprintRTF("{\\fldrslt{}}}",signet);
+			if (g_fields_use_REF) {
+				fprintRTF("{\\field{\\*\\fldinst{\\lang1024 PAGEREF BM%s \\\\* MERGEFORMAT }}",signet);
+				fprintRTF("{\\fldrslt{");
+			}
+			fprintRTF("%s",signet);
+			if (g_fields_use_REF) fprintRTF("}}}");
 			free(signet);
 			break;
 	}
@@ -656,10 +666,12 @@ purpose: handles \cite
 		if (g_document_bibstyle == BIBSTYLE_STANDARD) {  /*  */
 			char *signet = strdup_nobadchars(key);			
 			t = s ? s : signet;							/* if .aux is missing or incomplete use original citation */
-			fprintRTF("{\\field{\\*\\fldinst{\\lang1024 REF BIB_%s \\\\* MERGEFORMAT }}",signet);
-			fprintRTF("{\\fldrslt{");
+			if (g_fields_use_REF) {
+				fprintRTF("{\\field{\\*\\fldinst{\\lang1024 REF BIB_%s \\\\* MERGEFORMAT }}",signet);
+				fprintRTF("{\\fldrslt{");
+			}
 			ConvertString(t);
-			fprintRTF("}}}");
+			if (g_fields_use_REF) fprintRTF("}}}");
 			if (signet) free(signet);
 		}
 			

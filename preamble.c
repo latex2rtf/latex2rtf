@@ -1026,7 +1026,7 @@ WriteInfo(void)
   \keywords       Selected keywords for the document
   \comment        Comments; text is ignored
   \version<N>     The version number of the document
-  \doccomm        Comments displayed in Word’s Summary Info dialog
+  \doccomm        Comments displayed in Word's Summary Info dialog
   
 {\info {\title This is a page} {\author \'ca}}
  ***************************************************************************/
@@ -1042,7 +1042,7 @@ purpose: writes header info for the RTF file
  ****************************************************************************/
 {
 	int family = DefaultFontFamily();
-	int size   = DefaultFontSize();
+/*	int size   = DefaultFontSize(); */
 
 	diagnostics(4, "Writing header for RTF file");
 

@@ -1,4 +1,4 @@
-/* $Id: main.h,v 1.61 2003/09/02 04:10:16 prahl Exp $ */
+/* $Id: main.h,v 1.62 2003/09/03 05:27:38 prahl Exp $ */
 
 #if defined(UNIX)
 #define ENVSEP ':'
@@ -90,7 +90,10 @@ extern int		g_dots_per_inch;
 
 extern int		g_document_type;
 extern int		g_document_bibstyle;
-extern bool 	g_document_nofields;
+
+extern bool		g_fields_use_EQ;
+extern bool		g_fields_use_REF;
+
 extern int		g_equation_number;
 extern bool		g_escape_parent;
 extern bool		g_show_equation_number;

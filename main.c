@@ -88,7 +88,9 @@ bool			g_aux_file_missing = FALSE; /* assume that it exists */
 
 bool			g_document_type = FORMAT_ARTICLE;
 int				g_document_bibstyle = BIBSTYLE_STANDARD;
-bool			g_document_nofields = FALSE;
+
+bool			g_fields_use_EQ = TRUE;
+bool			g_fields_use_REF = TRUE;
 
 int				g_safety_braces = 0;
 bool			g_processing_equation = FALSE;
@@ -143,7 +145,7 @@ int main(int argc, char **argv)
 	InitializeStack();
 	InitializeLatexLengths();
 
-	while ((c = my_getopt(argc, argv, "flhpvFSWZ:o:a:b:d:i:s:C:D:M:P:T:")) != EOF) {
+	while ((c = my_getopt(argc, argv, "lhpvFSWZ:o:a:b:d:f:i:s:C:D:M:P:T:")) != EOF) {
 		switch (c) {
 		case 'a':
 			g_aux_name = optarg;
@@ -159,7 +161,10 @@ int main(int argc, char **argv)
 			}
 			break;
 		case 'f':
-			g_document_nofields = TRUE;
+			sscanf(optarg, "%d", &x);
+			diagnostics(WARNING, "Field option = %s x=%d",optarg,x);
+			g_fields_use_EQ	  = (x & 1) ? FALSE : TRUE;
+			g_fields_use_REF  = (x & 2) ? FALSE : TRUE;
 			break;
 		case 'i':
 			setPackageBabel(optarg);

@@ -406,7 +406,7 @@ PrepareRtfEquation(int code, int EQ_Needed)
 			break;
 		}
 
-	if (!g_document_nofields && EQ_Needed && g_processing_fields==0) {
+	if (g_fields_use_EQ && EQ_Needed && g_processing_fields==0) {
 		fprintRTF("{\\field{\\*\\fldinst{ EQ ");
 		g_processing_fields++;	
 	}
@@ -416,7 +416,7 @@ PrepareRtfEquation(int code, int EQ_Needed)
 static void 
 FinishRtfEquation(int code, int EQ_Needed)
 {	
-	if (!g_document_nofields && EQ_Needed && g_processing_fields==1) {
+	if (g_fields_use_EQ && EQ_Needed && g_processing_fields==1) {
 		fprintRTF("}}{\\fldrslt }}");
 		g_processing_fields--;	
 	}
@@ -723,7 +723,7 @@ CmdRoot(int code)
 	power = getBracketParam();
 	root = getBraceParam();
 	
-	if (!g_document_nofields){
+	if (g_fields_use_EQ){
 		fprintRTF(" \\\\R(");
 		if (power && strlen(power)>0)
 			ConvertString(power);
@@ -765,7 +765,7 @@ CmdFraction(int code)
 	diagnostics(4,"CmdFraction -- numerator   = <%s>", nptr);
 	diagnostics(4,"CmdFraction -- denominator = <%s>", dptr);
 
-	if (!g_document_nofields){
+	if (g_fields_use_EQ){
 		fprintRTF(" \\\\F(");
 		ConvertString(nptr);
 		fprintRTF("%c", g_field_separator);
@@ -855,7 +855,7 @@ parameter: 0=\lim, 1=\limsup, 2=\liminf
 	else
 		s=strdup("lim inf");
 
-	if (!g_document_nofields){
+	if (g_fields_use_EQ){
 		if (lower_limit) 
 			fprintRTF("\\\\a\\\\ac(");
 	
@@ -922,7 +922,7 @@ parameter: type of operand
 			ungetTexChar(cThis);
 	}
 
-	if (!g_document_nofields){
+	if (g_fields_use_EQ){
 	
 		fprintRTF(" \\\\I");
 			switch(code) {
@@ -1033,7 +1033,7 @@ CmdSuperscript(int code)
 {
 	char           *s = NULL;
 
-	if (!g_document_nofields){
+	if (g_fields_use_EQ){
 		ungetTexChar('^');
 		SubSupWorker(FALSE);
 		return;
@@ -1055,7 +1055,7 @@ CmdSubscript(int code)
 {
 	char           *s = NULL;
 
-	if (!g_document_nofields){
+	if (g_fields_use_EQ){
 		ungetTexChar('_');
 		SubSupWorker (FALSE);
 		return;
@@ -1094,7 +1094,7 @@ CmdLeftRight(int code)
 
 	diagnostics(4, "CmdLeftRight() ... \\left <%c> \\right <%c>", ldelim, rdelim);
 
-	if (!g_document_nofields) {
+	if (g_fields_use_EQ) {
 	
 		fprintRTF(" \\\\b ");
 		if (ldelim == '(' && rdelim == ')'){
@@ -1133,7 +1133,7 @@ CmdLeftRight(int code)
 		fprintRTF(")");
 		SubSupWorker(TRUE);		/* move super or subscripts a lot */
 
-	} else {   /*!g_document_nofields */
+	} else {   /*g_fields_use_EQ */
 	
 		putRtfChar(ldelim);
 		ConvertString(contents);
@@ -1203,7 +1203,7 @@ int size;
 	denom = getBraceParam();
 	diagnostics(4, "CmdStackrel() ... \\stackrel{%s}{%s}", numer,denom);
 	
-	if (!g_document_nofields) {
+	if (g_fields_use_EQ) {
 		fprintRTF(" \\\\a ({\\fs%d ",size);
 		ConvertString(numer);
 		fprintRTF("}%c", g_field_separator);
