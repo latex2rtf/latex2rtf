@@ -1255,22 +1255,39 @@ void CmdSubscript(int code)
 /******************************************************************************
  purpose   : Handles subscripts _\alpha, _a, _{a},           code=0
                                 \textsubscript{script}       code=1
+                                \lower4emA                   code=2
  ******************************************************************************/
 {
     char *s = NULL;
-
-    if (code == 0 && g_fields_use_EQ) {
-        ungetTexChar('_');
-        SubSupWorker(FALSE);
-        return;
+    int size;
+    
+    if (code == 0) {
+    	if (g_fields_use_EQ) {
+			ungetTexChar('_');
+			SubSupWorker(FALSE);
+       }
     }
 
-    if ((s = getBraceParam())) {
+    if (code == 1) {
+        s=getBraceParam();
         fprintRTF("{\\dn%d\\fs%d ", script_shift(), script_size());
         ConvertString(s);
         fprintRTF("}");
         free(s);
     }
+
+    if (code == 2) {
+		size = getDimension();  /* size is in half-points */
+        fprintRTF("{\\dn%d ", size);
+        s=getBraceParam();
+        if (strcmp(s,"\\hbox")==0)
+        	CmdBox(BOX_HBOX);
+        else
+        	ConvertString(s);
+        fprintRTF("}");
+        free(s);
+    }
+
 }
 
 void CmdLeftRight(int code)

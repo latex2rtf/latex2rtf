@@ -150,6 +150,8 @@ static CommandArray commands[] = {
     {"AmSTeX", CmdLogo, CMD_AMSTEX},
     {"AmSLaTeX", CmdLogo, CMD_AMSLATEX},
     {"LyX", CmdLogo, CMD_LYX},
+    {"lower",CmdSubscript,2},
+    {"kern",CmdKern,0},
 
     /* ---------- SPECIAL CHARACTERS ------------------- */
     {"hat", CmdHatChar, 0},
@@ -417,6 +419,8 @@ static CommandArray PreambleCommands[] = {
     {"theendnotes", CmdTheEndNotes, 0},
     {"euro", CmdEuro, 0},
     {"EUR", CmdEuro, 1},
+    {"resizebox", CmdResizeBox, 0},
+    {"resizebox*", CmdResizeBox, 1},    
     {"", NULL, 0}
 };                              /* end of list */
 

@@ -1298,6 +1298,18 @@ void CmdItem(int code)
     CmdIndent(INDENT_NONE);
 }
 
+void CmdResizeBox(int code)
+{
+	char *size, *options, *content;
+	size = getBraceParam();
+	options = getBraceParam();
+	content = getBraceParam();
+	free(size);
+	free(options);
+	ConvertString(content);
+	free(content);
+}
+
 void CmdBox(int code)
 
 /******************************************************************************
@@ -1619,6 +1631,16 @@ void CmdSpace(float kk)
     int size = CurrentFontSize() * kk;
 
     fprintRTF("{\\fs%d  }", size);
+}
+
+/******************************************************************************
+ purpose: handles \kern command
+ ******************************************************************************/
+void CmdKern(int code)
+{
+int size = getDimension()*2;  /* size is in quarter-points */
+
+	fprintRTF("\\expnd%d\\expndtw%d ",size,size);
 }
 
 void CmdFigure(int code)
