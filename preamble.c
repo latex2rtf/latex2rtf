@@ -1,4 +1,4 @@
-/* $Id: preamble.c,v 1.12 2001/10/07 15:10:09 prahl Exp $
+/* $Id: preamble.c,v 1.13 2001/10/07 17:48:39 prahl Exp $
 
 purpose : Handles LaTeX commands that should only occur in the preamble.
           These are gathered together because the entire preamble must be
@@ -102,7 +102,35 @@ setPackageInputenc(char * option)
 static void
 setPackageFont(char * font)
 {
-	fprintf(stderr,"\n Font Package <%s> not supported yet", font);
+int fnumber=-1;
+
+	if (strcmp(font, "palatino") == 0)
+		fnumber = RtfFontNumber("Palatino");
+		
+	else if (strstr(font, "times") == 0 )
+			fnumber = RtfFontNumber("Times");
+
+	else if (strstr(font, "chancery") == 0 )
+			fnumber = RtfFontNumber("Zapf Chancery");
+
+	else if (strstr(font, "courier") == 0 )
+			fnumber = RtfFontNumber("Courier");
+
+	else if (strstr(font, "avant") == 0 )
+			fnumber = RtfFontNumber("Avant Garde");
+
+	else if (strstr(font, "helvet") == 0 )
+			fnumber = RtfFontNumber("Helvetica");
+
+	else if (strstr(font, "newcen") == 0 )
+			fnumber = RtfFontNumber("New Century Schoolbook");
+
+	else if (strstr(font, "book") == 0 )
+			fnumber = RtfFontNumber("Bookman");
+
+	InitializeDocumentFont(fnumber, -1, -1, -1);
+	if (fnumber == -1)
+		fprintf(stderr,"\n Font Package <%s> not supported yet", font);
 }
 
 static void
@@ -259,19 +287,19 @@ static void
 setPointSize(char * option)
 {
 	if (strcmp(option, "10pt") == 0){
-		InitializeDocumentFont(TexFontNumber("Roman"), 20, F_SHAPE_UPRIGHT, F_SERIES_MEDIUM);
+		InitializeDocumentFont(-1, 20, -1, -1);
 		setLength("baselineskip",12*20);
 		setLength("parindent",   15*20);
 		setLength("parskip",      0*20);
 
 	}else if (strcmp(option, "11pt") == 0){
-		InitializeDocumentFont(TexFontNumber("Roman"), 22, F_SHAPE_UPRIGHT, F_SERIES_MEDIUM);
+		InitializeDocumentFont(-1, 22, -1, -1);
 		setLength("baselineskip",14*20);
 		setLength("parindent",   17*20);
 		setLength("parskip",      0*20);
 
 	}else {
-		InitializeDocumentFont(TexFontNumber("Roman"), 24, F_SHAPE_UPRIGHT, F_SERIES_MEDIUM);
+		InitializeDocumentFont(-1, 24, -1, -1);
 		setLength("baselineskip",14.5*20);
 		setLength("parindent",   18*20);
 		setLength("parskip",      0*20);
@@ -394,10 +422,16 @@ CmdUsepackage(int code)
 		     strcmp(package, "french")  == 0) 
 		setPackageBabel(package);
 
-	else if (strcmp(package, "palatino") == 0 ||
-	         strcmp(package, "times") == 0    ||
-	         strcmp(package, "helvetica") == 0 )
-		setPackageFont(optionlist);
+	else if (strcmp(package, "palatino") == 0   ||
+	         strcmp(package, "times") == 0      ||
+	         strcmp(package, "bookman") == 0    ||
+	         strcmp(package, "chancery") == 0   ||
+	         strcmp(package, "courier") == 0   ||
+	         strstr(package, "avant") == 0      ||
+	         strstr(package, "newcen") == 0     ||
+	         strstr(package, "helvet") == 0 )
+		setPackageFont(package);
+		
 	else
 		setDocumentOptions(package);
 		
@@ -487,7 +521,7 @@ PlainPagestyle(void)
   globals : pagenumbering set to TRUE if pagenumbering is to occur, default
  ******************************************************************************/
 {
-	int fn = TexFontNumber("Roman");
+	int fn = DefaultFontFamily();
 	pagenumbering = TRUE;
 	
 	if (g_preambleTwoside) {
@@ -637,11 +671,7 @@ WriteFontHeader(void)
 
 	config_handle = CfgStartIterate(FONT_A);
 	while ((config_handle = CfgNext(FONT_A, config_handle)) != NULL) {
-		if (strstr((*config_handle)->TexCommand, "MacRoman"))
-		
-			fprintRTF(" {\\f%d\\fnil\\fcharset1 %s;}\n",num,(*config_handle)->RtfCommand);
-				
-		else if (strstr((*config_handle)->RtfCommand, "Symbol"))
+		if (strstr((*config_handle)->RtfCommand, "Symbol"))
 
 			fprintRTF(" {\\f%d\\fnil\\fcharset2 %s;}\n",num,(*config_handle)->RtfCommand);
 

@@ -1,4 +1,4 @@
-/* $Id: encode.c,v 1.4 2001/10/07 15:10:09 prahl Exp $ 
+/* $Id: encode.c,v 1.5 2001/10/07 17:48:39 prahl Exp $ 
    Translate high bit characters into RTF assuming that
    the default codepage is ansi (1252)
    
@@ -20,13 +20,13 @@ static void applemac_enc(int index)
 char *s;
 	s = applemac_2_ansi[index];
 	if (s[0]!='0'){
-		fprintRTF("\\'%s ",s);
+		fprintRTF("\\'%s",s);
 		return;
 	}
 	s = applemac_2_sym[index];
 	if (s[0]!='0'){
 		int sym=RtfFontNumber("Symbol");
-		fprintRTF("{\\f%d \\'%s}",sym,s);
+		fprintRTF("{\\f%d\\'%s}",sym,s);
 		return;
 	}
 	if (0xDE) { /* U+64257 LATIN SMALL LIGATURE FI */ 
@@ -76,13 +76,13 @@ static void cp437_enc(int index)
 char *s;
 	s = cp437_2_ansi[index];
 	if (s[0]!='0'){
-		fprintRTF("\\'%s ",s);
+		fprintRTF("\\'%s",s);
 		return;
 	}
 	s = cp437_2_sym[index];
 	if (s[0]!='0'){
 		int sym=RtfFontNumber("Symbol");
-		fprintRTF("{\\f%d \\'%s}",sym,s);
+		fprintRTF("{\\f%d\\'%s}",sym,s);
 		return;
 	}
 	if (index + 128 == 0x9E) { /* U+8359 PESETA SIGN */ 
@@ -148,13 +148,13 @@ static void cp850_enc(int index)
 char *s;
 	s = cp850_2_ansi[index];
 	if (s[0]!='0'){
-		fprintRTF("\\'%s ",s);
+		fprintRTF("\\'%s",s);
 		return;
 	}
 	s = cp850_2_sym[index];
 	if (s[0]!='0'){
 		int sym=RtfFontNumber("Symbol");
-		fprintRTF("{\\f%d \\'%s}",sym,s);
+		fprintRTF("{\\f%d\\'%s}",sym,s);
 		return;
 	}
 	if (index + 128 == 0xB0) { /* U+9617 LIGHT SHADE */ 
@@ -204,13 +204,13 @@ static void cp852_enc(int index)
 char *s;
 	s = cp852_2_ansi[index];
 	if (s[0]!='0'){
-		fprintRTF("\\'%s ",s);
+		fprintRTF("\\'%s",s);
 		return;
 	}
 	s = cp852_2_sym[index];
 	if (s[0]!='0'){
 		int sym=RtfFontNumber("Symbol");
-		fprintRTF("{\\f%d \\'%s}",sym,s);
+		fprintRTF("{\\f%d\\'%s}",sym,s);
 		return;
 	}
 	if (index + 128 == 0x85) { /* U+367 LATIN SMALL LETTER U WITH RING ABOVE */ 
@@ -472,13 +472,13 @@ static void cp865_enc(int index)
 char *s;
 	s = cp865_2_ansi[index];
 	if (s[0]!='0'){
-		fprintRTF("\\'%s ",s);
+		fprintRTF("\\'%s",s);
 		return;
 	}
 	s = cp865_2_sym[index];
 	if (s[0]!='0'){
 		int sym=RtfFontNumber("Symbol");
-		fprintRTF("{\\f%d \\'%s}",sym,s);
+		fprintRTF("{\\f%d\\'%s}",sym,s);
 		return;
 	}
 	if (index + 128 == 0x9E) { /* U+8359 PESETA SIGN */ 
@@ -544,13 +544,13 @@ static void cp1250_enc(int index)
 char *s;
 	s = cp1250_2_ansi[index];
 	if (s[0]!='0'){
-		fprintRTF("\\'%s ",s);
+		fprintRTF("\\'%s",s);
 		return;
 	}
 	s = cp1250_2_sym[index];
 	if (s[0]!='0'){
 		int sym=RtfFontNumber("Symbol");
-		fprintRTF("{\\f%d \\'%s}",sym,s);
+		fprintRTF("{\\f%d\\'%s}",sym,s);
 		return;
 	}
 	if (index + 128 == 0x80) { /* U+65535 unknown */ 
@@ -808,13 +808,13 @@ static void cp1252_enc(int index)
 char *s;
 	s = cp1252_2_ansi[index];
 	if (s[0]!='0'){
-		fprintRTF("\\'%s ",s);
+		fprintRTF("\\'%s",s);
 		return;
 	}
 	s = cp1252_2_sym[index];
 	if (s[0]!='0'){
 		int sym=RtfFontNumber("Symbol");
-		fprintRTF("{\\f%d \\'%s}",sym,s);
+		fprintRTF("{\\f%d\\'%s}",sym,s);
 		return;
 	}
 	if (index + 128 == 0x80) { /* U+65535 unknown */ 
@@ -856,13 +856,13 @@ static void decmulti_enc(int index)
 char *s;
 	s = decmulti_2_ansi[index];
 	if (s[0]!='0'){
-		fprintRTF("\\'%s ",s);
+		fprintRTF("\\'%s",s);
 		return;
 	}
 	s = decmulti_2_sym[index];
 	if (s[0]!='0'){
 		int sym=RtfFontNumber("Symbol");
-		fprintRTF("{\\f%d \\'%s}",sym,s);
+		fprintRTF("{\\f%d\\'%s}",sym,s);
 		return;
 	}
 	if (index + 128 == 0xA0) { /* U+65535 unknown */ 
@@ -932,13 +932,13 @@ static void latin1_enc(int index)
 char *s;
 	s = latin1_2_ansi[index];
 	if (s[0]!='0'){
-		fprintRTF("\\'%s ",s);
+		fprintRTF("\\'%s",s);
 		return;
 	}
 	s = latin1_2_sym[index];
 	if (s[0]!='0'){
 		int sym=RtfFontNumber("Symbol");
-		fprintRTF("{\\f%d \\'%s}",sym,s);
+		fprintRTF("{\\f%d\\'%s}",sym,s);
 		return;
 	}
 }
@@ -948,13 +948,13 @@ static void latin2_enc(int index)
 char *s;
 	s = latin2_2_ansi[index];
 	if (s[0]!='0'){
-		fprintRTF("\\'%s ",s);
+		fprintRTF("\\'%s",s);
 		return;
 	}
 	s = latin2_2_sym[index];
 	if (s[0]!='0'){
 		int sym=RtfFontNumber("Symbol");
-		fprintRTF("{\\f%d \\'%s}",sym,s);
+		fprintRTF("{\\f%d\\'%s}",sym,s);
 		return;
 	}
 	if (index + 128 == 0xA1) { /* U+260 LATIN CAPITAL LETTER A WITH OGONEK */ 
@@ -1184,13 +1184,13 @@ static void latin3_enc(int index)
 char *s;
 	s = latin3_2_ansi[index];
 	if (s[0]!='0'){
-		fprintRTF("\\'%s ",s);
+		fprintRTF("\\'%s",s);
 		return;
 	}
 	s = latin3_2_sym[index];
 	if (s[0]!='0'){
 		int sym=RtfFontNumber("Symbol");
-		fprintRTF("{\\f%d \\'%s}",sym,s);
+		fprintRTF("{\\f%d\\'%s}",sym,s);
 		return;
 	}
 	if (index + 128 == 0xA1) { /* U+294 LATIN CAPITAL LETTER H WITH STROKE */ 
@@ -1340,13 +1340,13 @@ static void latin4_enc(int index)
 char *s;
 	s = latin4_2_ansi[index];
 	if (s[0]!='0'){
-		fprintRTF("\\'%s ",s);
+		fprintRTF("\\'%s",s);
 		return;
 	}
 	s = latin4_2_sym[index];
 	if (s[0]!='0'){
 		int sym=RtfFontNumber("Symbol");
-		fprintRTF("{\\f%d \\'%s}",sym,s);
+		fprintRTF("{\\f%d\\'%s}",sym,s);
 		return;
 	}
 	if (index + 128 == 0xA1) { /* U+260 LATIN CAPITAL LETTER A WITH OGONEK */ 
@@ -1548,13 +1548,13 @@ static void latin5_enc(int index)
 char *s;
 	s = latin5_2_ansi[index];
 	if (s[0]!='0'){
-		fprintRTF("\\'%s ",s);
+		fprintRTF("\\'%s",s);
 		return;
 	}
 	s = latin5_2_sym[index];
 	if (s[0]!='0'){
 		int sym=RtfFontNumber("Symbol");
-		fprintRTF("{\\f%d \\'%s}",sym,s);
+		fprintRTF("{\\f%d\\'%s}",sym,s);
 		return;
 	}
 	if (index + 128 == 0xD0) { /* U+286 LATIN CAPITAL LETTER G WITH BREVE */ 
@@ -1600,13 +1600,13 @@ static void latin9_enc(int index)
 char *s;
 	s = latin9_2_ansi[index];
 	if (s[0]!='0'){
-		fprintRTF("\\'%s ",s);
+		fprintRTF("\\'%s",s);
 		return;
 	}
 	s = latin9_2_sym[index];
 	if (s[0]!='0'){
 		int sym=RtfFontNumber("Symbol");
-		fprintRTF("{\\f%d \\'%s}",sym,s);
+		fprintRTF("{\\f%d\\'%s}",sym,s);
 		return;
 	}
 	if (index + 128 == 0xA4) { /* U+8364 unknown */ 
@@ -1628,13 +1628,13 @@ static void next_enc(int index)
 char *s;
 	s = next_2_ansi[index];
 	if (s[0]!='0'){
-		fprintRTF("\\'%s ",s);
+		fprintRTF("\\'%s",s);
 		return;
 	}
 	s = next_2_sym[index];
 	if (s[0]!='0'){
 		int sym=RtfFontNumber("Symbol");
-		fprintRTF("{\\f%d \\'%s}",sym,s);
+		fprintRTF("{\\f%d\\'%s}",sym,s);
 		return;
 	}
 	if (index + 128 == 0xAE) { /* U+64257 LATIN SMALL LIGATURE FI */ 

@@ -1,4 +1,4 @@
-/* $Id: chars.c,v 1.7 2001/10/07 05:42:18 prahl Exp $
+/* $Id: chars.c,v 1.8 2001/10/07 17:48:39 prahl Exp $
 
    purpose : handles special characters and logos
 */
@@ -33,40 +33,39 @@ CmdUmlauteChar(int code)
 	if (cParam == NULL)
 		return;
 
-	num = TexFontNumber("Roman");
 	switch (cParam[0]) {
 	case 'o':
-		fprintRTF("{\\'f6}");
+		fprintRTF("\\'f6");
 		break;
 	case 'O':
-		fprintRTF("{\\'d6}");
+		fprintRTF("\\'d6");
 		break;
 	case 'a':
-		fprintRTF("{\\'e4}");
+		fprintRTF("\\'e4");
 		break;
 	case 'A':
-		fprintRTF("{\\'c4}");
+		fprintRTF("\\'c4");
 		break;
 	case 'u':
-		fprintRTF("{\\'fc}");
+		fprintRTF("\\'fc");
 		break;
 	case 'U':
-		fprintRTF("{\\'dc}");
+		fprintRTF("\\'dc");
 		break;
 	case 'E':
-		fprintRTF("{\\'cb}");
+		fprintRTF("\\'cb");
 		break;
 	case 'I':
-		fprintRTF("{\\'cf}");
+		fprintRTF("\\'cf");
 		break;
 	case 'e':
-		fprintRTF("{\\'eb}");
+		fprintRTF("\\'eb");
 		break;
 	case 'i':
-		fprintRTF("{\\'ef}");
+		fprintRTF("\\'ef");
 		break;
 	case 'y':
-		fprintRTF("{\\'ff}");
+		fprintRTF("\\'ff");
 		break;
 
 	default:
@@ -93,34 +92,34 @@ CmdLApostrophChar( int code)
 
 	switch (cParam[0]) {
 	case 'A':
-		fprintRTF("{\\'c0}");
+		fprintRTF("\\'c0");
 		break;
 	case 'E':
-		fprintRTF("{\\'c8}");
+		fprintRTF("\\'c8");
 		break;
 	case 'I':
-		fprintRTF("{\\'cc}");
+		fprintRTF("\\'cc");
 		break;
 	case 'O':
-		fprintRTF("{\\'d2}");
+		fprintRTF("\\'d2");
 		break;
 	case 'U':
-		fprintRTF("{\\'d9}");
+		fprintRTF("\\'d9");
 		break;
 	case 'a':
-		fprintRTF("{\\'e0}");
+		fprintRTF("\\'e0");
 		break;
 	case 'e':
-		fprintRTF("{\\'e8}");
+		fprintRTF("\\'e8");
 		break;
 	case 'i':
-		fprintRTF("{\\'ec}");
+		fprintRTF("\\'ec");
 		break;
 	case 'o':
-		fprintRTF("{\\'f2}");
+		fprintRTF("\\'f2");
 		break;
 	case 'u':
-		fprintRTF("{\\'f9}");
+		fprintRTF("\\'f9");
 		break;
 	default:
 		num = RtfFontNumber("MT Extra");
@@ -144,40 +143,40 @@ CmdRApostrophChar(int code)
 
 	switch (cParam[0]) {
 	case 'A':
-		fprintRTF("{\\'c1}");
+		fprintRTF("\\'c1");
 		break;
 	case 'E':
-		fprintRTF("{\\'c9}");
+		fprintRTF("\\'c9");
 		break;
 	case 'I':
-		fprintRTF("{\\'cd}");
+		fprintRTF("\\'cd");
 		break;
 	case 'O':
-		fprintRTF("{\\'d3}");
+		fprintRTF("\\'d3");
 		break;
 	case 'U':
-		fprintRTF("{\\'da}");
+		fprintRTF("\\'da");
 		break;
 	case 'a':
-		fprintRTF("{\\'e1}");
+		fprintRTF("\\'e1");
 		break;
 	case 'e':
-		fprintRTF("{\\'e9}");
+		fprintRTF("\\'e9");
 		break;
 	case 'i':
-		fprintRTF("{\\'ed}");
+		fprintRTF("\\'ed");
 		break;
 	case 'o':
-		fprintRTF("{\\'f3}");
+		fprintRTF("\\'f3");
 		break;
 	case 'u':
-		fprintRTF("{\\'fa}");
+		fprintRTF("\\'fa");
 		break;
 	case 'y':
-		fprintRTF("{\\'fd}");
+		fprintRTF("\\'fd");
 		break;
 	case 'Y':
-		fprintRTF("{\\'dd}");
+		fprintRTF("\\'dd");
 		break;
 	default:
 		fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O");
@@ -248,34 +247,34 @@ CmdHatChar(int code)
 
 	switch (cParam[0]) {
 	case 'A':
-		fprintRTF("{\\'c2}");
+		fprintRTF("\\'c2");
 		break;
 	case 'E':
-		fprintRTF("{\\'ca}");
+		fprintRTF("\\'ca");
 		break;
 	case 'I':
-		fprintRTF("{\\'ce}");
+		fprintRTF("\\'ce");
 		break;
 	case 'O':
-		fprintRTF("{\\'d4}");
+		fprintRTF("\\'d4");
 		break;
 	case 'U':
-		fprintRTF("{\\'db}");
+		fprintRTF("\\'db");
 		break;
 	case 'a':
-		fprintRTF("{\\'e2}");
+		fprintRTF("\\'e2");
 		break;
 	case 'e':
-		fprintRTF("{\\'ea}");
+		fprintRTF("\\'ea");
 		break;
 	case 'i':
-		fprintRTF("{\\'ee}");
+		fprintRTF("\\'ee");
 		break;
 	case 'o':
-		fprintRTF("{\\'f4}");
+		fprintRTF("\\'f4");
 		break;
 	case 'u':
-		fprintRTF("{\\'fb}");
+		fprintRTF("\\'fb");
 		break;
 
 	default:
@@ -303,11 +302,11 @@ CmdOaccentChar(int code)
 
 	switch (cParam[0]) {
 	case 'A':
-		fprintRTF("{\\'c5}");
+		fprintRTF("\\'c5");
 		break;
 
 	case 'a':
-		fprintRTF("{\\'e5}");
+		fprintRTF("\\'e5");
 		break;
 
 	case '\\':
@@ -342,22 +341,22 @@ CmdTildeChar( int code)
 
 	switch (cParam[0]) {
 	case 'A':
-		fprintRTF("{\\'c3}");
+		fprintRTF("\\'c3");
 		break;
 	case 'O':
-		fprintRTF("{\\'d5}");
+		fprintRTF("\\'d5");
 		break;
 	case 'a':
-		fprintRTF("{\\'e3}");
+		fprintRTF("\\'e3");
 		break;
 	case 'o':
-		fprintRTF("{\\'f5}");
+		fprintRTF("\\'f5");
 		break;
 	case 'n':
-		fprintRTF("{\\'f1}");
+		fprintRTF("\\'f1");
 		break;
 	case 'N':
-		fprintRTF("{\\'d1}");
+		fprintRTF("\\'d1");
 		break;
 	default:
 		num = RtfFontNumber("MT Extra");
@@ -381,10 +380,10 @@ CmdCedillaChar(int code)
 
 	switch (cParam[0]) {
 	case 'C':
-		fprintRTF("{\\'c7}");
+		fprintRTF("\\'c7");
 		break;
 	case 'c':
-		fprintRTF("{\\'e7}");
+		fprintRTF("\\'e7");
 		break;
 
 	default:
@@ -449,32 +448,32 @@ void
 CmdBreveChar(int code)
 /*****************************************************************************
  purpose: converts \u{o} and \breve{o} from LaTeX to RTF
-          this version works on a Macintosh.
-		  Cannot use breve accent \'28 from MT Extra because Word 
-		  always treats \'28 as a '(' 
-          we could just fake it with a u
+ 		  there is no breve in codepage 1252
+ 		  there is one \'f9 in the MacRoman, but that is not so portable
+		  there is one in MT Extra, but the RTF parser for word mistakes
+		  \'28 as a '(' and goes bananas.
+		  the only solution is to encode with unicode --- perhaps later
+		  Now we just fake it with a u
  ******************************************************************************/
 {
-	int             num;
+	int             upsize;
 	char           *cParam;
 	
 	cParam = getParam();
 	if (cParam == NULL)
 		return;
 
-	num = TexFontNumber("MacRoman");
-
+	upsize = (CurrentFontSize() * 3) / 4;
 	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O");
-	fprintRTF("(%c%c\\\\S(\\f%d\\'f9))}", cParam[0], FORMULASEP, num);
+	fprintRTF("(%c%c\\\\S(\\up%d u))}", cParam[0], FORMULASEP, upsize);
 	fprintRTF("{\\fldrslt }}");
-
 	free(cParam);
 }
 
 void 
 CmdUnderdotChar(int code)
 /******************************************************************************
- purpose: converts cedillas from LaTeX to RTF
+ purpose: converts chars with dots under from LaTeX to RTF
  ******************************************************************************/
 {
 	int             dnsize;
@@ -610,8 +609,7 @@ CmdLogo(int code)
 	float           DnSize;
 
 	SetTexMode(MODE_HORIZONTAL);
-	font_num = RtfFontNumber("Roman");
-	fprintRTF("{\\b0\\i0\\scaps0\\f%d ",font_num);
+	fprintRTF("{\\plain ");
 	
 	switch (code) {
 	case CMD_TEX:
