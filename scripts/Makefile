@@ -3,7 +3,14 @@
 #
 LATEX2PNG= ./latex2png
 
-all:	test1.png test2.png test3.png test4.png /tmp/test1.png test1fig.png
+PNG= test1.png test2.png test3.png test4.png /tmp/test1.png test1fig.png
+TMP= ../tmp
+
+all:
+	mkdir -p $(TMP)
+	make png
+
+png: $(PNG)
 
 %.png:	%.tex
 	$(LATEX2PNG) $<
@@ -19,11 +26,11 @@ test1.png: test1.tex
 
 test3.png: test3.tex test3a.tex
 
-/tmp/test1.png: test1.tex
-	cp test1.tex /tmp
-	$(LATEX2PNG) -H . /tmp/test1
-	cp test1fig.eps /tmp
-	$(LATEX2PNG) /tmp/test1
+$(TMP)/test1.png: test1.tex
+	cp test1.tex $(TMP)
+	$(LATEX2PNG) -H . $(TMP)/test1
+	cp test1fig.eps $(TMP)
+	$(LATEX2PNG) $(TMP)/test1
 
 test1fig.png: test1fig.eps
 	$(LATEX2PNG) test1fig.eps
@@ -34,6 +41,7 @@ test1fig.png: test1fig.eps
 	$(LATEX2PNG) -d 200 -g test1fig.eps
 
 clean:
-	rm -f *.png *.pbm *.aux *.log *.dvi *.map
+	rm -f *.png *.pbm *.aux *.log *.dvi *.map 
+	rm -rf $(TMP)
 	
 .PHONY: clean all

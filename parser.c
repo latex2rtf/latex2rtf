@@ -123,7 +123,12 @@ CurrentFileName(void)
  purpose:     returns the filename of the text being processed
 ****************************************************************************/
 {
-	return g_parser_stack[g_parser_depth].file_name;
+	char *s = "(Not set)";
+	
+	if (g_parser_stack[g_parser_depth].file_name)
+		return g_parser_stack[g_parser_depth].file_name;
+	else
+		return s;
 }
 
 /*

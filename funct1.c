@@ -259,7 +259,7 @@ CmdNewDef(int code)
 		
 	}
 
-	diagnostics(3,"CmdNewDef name=<%s> param=%d opt_param=<%s> def=<%s>", name,param, opt_param, def);
+	diagnostics(3,"CmdNewDef name=<%s> param=%d opt_param=<%s> def=<%s>", name,param, (opt_param) ? opt_param : "", def);
 	free(name);
 	free(def);
 	if (params) free(params);
@@ -324,7 +324,7 @@ CmdNewTheorem(int code)
 
 	diagnostics(3,"CmdNewTheorem name=<%s>", name);
 	diagnostics(3,"CmdNewTheorem caption=<%s>", caption);
-	diagnostics(3,"CmdNewTheorem like=<%s>", numbered_like);
+	diagnostics(3,"CmdNewTheorem like=<%s>", (numbered_like) ? numbered_like : "");
 	newTheorem(name,caption,numbered_like,within);
 	
 	free(name);
@@ -1520,7 +1520,7 @@ CmdFigure(int code)
 
 	if (code & ON) {
 		loc = getBracketParam();
-		diagnostics(4, "entering CmdFigure [%s]", loc);
+		diagnostics(4, "entering CmdFigure [%s]", (loc) ? loc : "");
 		g_processing_figure = TRUE;
 		if (loc) free(loc);
 		figure_contents = getTexUntil(endfigure, TRUE);

@@ -318,7 +318,8 @@ expandDefinition(int thedef)
 		return NULL;
 	
 	diagnostics(3, "expandDefinition name     =<%s>", Definitions[thedef].name);
-	diagnostics(3, "expandDefinition opt_param=<%s>", Definitions[thedef].opt_param);
+	diagnostics(3, "expandDefinition opt_param=<%s>", 
+	        (Definitions[thedef].opt_param) ? Definitions[thedef].opt_param : "");
 	diagnostics(3, "expandDefinition def      =<%s>", Definitions[thedef].def);
 	diagnostics(3, "expandDefinition params   =<%d>", Definitions[thedef].params);
 

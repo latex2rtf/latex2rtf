@@ -83,10 +83,10 @@ try_path(const char *path, const char *file)
 	char * both;
 	FILE * fp=NULL;
 	size_t lastchar;
-		
-	diagnostics(4, "trying path=<%s> file=<%s>", path, file);
-	
+			
 	if (path==NULL || file == NULL) return NULL;
+
+	diagnostics(4, "trying path=<%s> file=<%s>", path, file);
 
 	lastchar = strlen(path);
 

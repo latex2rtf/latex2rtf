@@ -689,7 +689,7 @@ CmdTabular(int code)
 
 	} else {
 	
-		diagnostics(3, "Entering CmdTabular() options [%s], format {%s}",pos, cols); 
+		diagnostics(3, "Entering CmdTabular() options [%s], format {%s}",(pos)?pos:"", cols); 
 		tabular=TabularPreamble(table,width,pos,cols);
 		row_start=table;
 		TabularGetRow(row_start,&this_row,&next_row_start,&this_height);

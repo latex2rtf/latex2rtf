@@ -291,7 +291,7 @@ int main(int argc, char **argv)
 		diagnostics(3, "  rtf filename is <%s>", g_rtf_name);
 		diagnostics(3, "  aux filename is <%s>", g_aux_name);
 		diagnostics(3, "  bbl filename is <%s>", g_bbl_name);
-		diagnostics(3, "home directory is <%s>", g_home_dir);
+		diagnostics(3, "home directory is <%s>", (g_home_dir) ? g_home_dir : "");
 	}
 	
 	ReadCfg();
@@ -344,9 +344,9 @@ ConvertWholeDocument(void)
 	g_processing_preamble = FALSE;
 	getSection(&body,&sec_head,&label);
 	
-	diagnostics(2,"*******************\nbody=%s",body);
-	diagnostics(2,"*******************\nsec_head=%s",sec_head);
-	diagnostics(2,"*******************\nlabel=%s",g_section_label);
+	diagnostics(2,"*******************\nbody=%s",(body) ? body : "<empty>");
+	diagnostics(2,"*******************\nsec_head=%s",(sec_head) ? sec_head : "<none>");
+	diagnostics(2,"*******************\nlabel=%s",(g_section_label) ? g_section_label : "<none>");
 	ConvertString(body);
 	free(body);
 	if (label) free(label);
@@ -358,10 +358,10 @@ ConvertWholeDocument(void)
 			if (g_section_label) free(g_section_label);
 			g_section_label = label;
 		} 
-		diagnostics(2,"\n========this section head==========\n%s",sec_head);
-		diagnostics(2,"\n============ label ================\nlabel=%s",g_section_label);
-		diagnostics(2,"\n==============body=================\n%s\n=========end	body=================",body);
-		diagnostics(2,"\n========next section head==========\n%s",sec_head2);
+		diagnostics(2,"\n========this section head==========\n%s",(sec_head)?sec_head:"<none>");
+		diagnostics(2,"\n============ label ================\nlabel=%s",(g_section_label) ? g_section_label : "<none>");
+		diagnostics(2,"\n==============body=================\n%s\n=========end	body=================",(body) ? body : "<empty>");
+		diagnostics(2,"\n========next section head==========\n%s",(sec_head2) ? sec_head2 : "<none>");
 		ConvertString(sec_head);
 		ConvertString(body);
 		free(body);
@@ -385,6 +385,7 @@ print_version(void)
 static void
 print_usage(void)
 {
+	char *s;
 	fprintf(stdout, "`%s' converts text files in LaTeX format to rich text format (RTF).\n\n",progname);
 	fprintf(stdout, "Usage:  %s [options] input[.tex]\n\n", progname);
 	fprintf(stdout, "Options:\n");
@@ -408,7 +409,7 @@ print_usage(void)
 	fprintf(stdout, "       -M16         insert Word comment field that the original equation text\n");
 	fprintf(stdout, "  -o outputfile    file for RTF output\n");
 	fprintf(stdout, "  -p               option to avoid bug in Word for some equations\n");
-	fprintf(stdout, "  -P /path/to/cfg  directory containing .cfg files\n");
+	fprintf(stdout, "  -P path          paths to *.cfg & latex2png\n");
 	fprintf(stdout, "  -S               use ';' to separate args in RTF fields\n");
 	fprintf(stdout, "  -se#             scale factor for bitmap equations\n");
 	fprintf(stdout, "  -sf#             scale factor for bitmap figures\n");
@@ -418,16 +419,21 @@ print_usage(void)
 	fprintf(stdout, "  -W               include warnings in RTF\n");
 	fprintf(stdout, "  -Z#              add # of '}'s at end of rtf file (# is 0-9)\n\n");
 	fprintf(stdout, "Examples:\n");
-	fprintf(stdout, "  latex2rtf foo              convert foo.tex to foo.rtf\n");
-	fprintf(stdout, "  latex2rtf <foo >foo.RTF    convert foo to foo.RTF\n");
-	fprintf(stdout, "  latex2rtf -M12 foo         replace equations with bitmaps\n");
-	fprintf(stdout, "  latex2rtf -i russian foo   assume russian tex conventions\n");
-	fprintf(stdout, "  latex2rtf -C raw foo       retain font encoding in rtf file\n");
-	fprintf(stdout, "  latex2rtf -d4 foo          lots of debugging information\n\n");
+	fprintf(stdout, "  latex2rtf foo                       convert foo.tex to foo.rtf\n");
+	fprintf(stdout, "  latex2rtf <foo >foo.RTF             convert foo to foo.RTF\n");
+	fprintf(stdout, "  latex2rtf -P ./cfg/:./scripts/ foo  use alternate cfg and latex2png files\n");
+	fprintf(stdout, "  latex2rtf -M12 foo                  replace equations with bitmaps\n");
+	fprintf(stdout, "  latex2rtf -i russian foo            assume russian tex conventions\n");
+	fprintf(stdout, "  latex2rtf -C raw foo                retain font encoding in rtf file\n");
+	fprintf(stdout, "  latex2rtf -d4 foo                   lots of debugging information\n\n");
 	fprintf(stdout, "Report bugs to <latex2rtf-developers@lists.sourceforge.net>\n\n");
-	fprintf(stdout, "RTFPATH designates the directory for configuration files (*.cfg)\n");
-	fprintf(stdout, "RTFPATH = '%s'\n\n", getenv("RTFPATH"));
-	fprintf(stdout, "CFGDIR  = '%s'\n\n", CFGDIR);
+	fprintf(stdout, "$RTFPATH designates the directory for configuration files (*.cfg)\n");
+	s=getenv("RTFPATH");
+	fprintf(stdout, "$RTFPATH = '%s'\n\n", (s) ? s : "not defined");
+	s=CFGDIR;
+	fprintf(stdout, "CFGDIR compiled-in directory for configuration files (*.cfg)\n");
+	fprintf(stdout, "CFGDIR  = '%s'\n\n", (s) ? s : "not defined");
+	fprintf(stdout, "latex2rtf %s\n", Version);
 	exit(1);
 }
 

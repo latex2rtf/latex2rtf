@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.86 2003/06/07 16:06:19 prahl Exp $
+# $Id: Makefile,v 1.87 2003/06/15 04:57:39 prahl Exp $
 
 CC=gcc
 MKDIR=mkdir -p
@@ -96,8 +96,7 @@ OBJS=l2r_fonts.o direct.o encode.o commands.o stack.o funct1.o tables.o \
 	preamble.o letterformat.o equation.o convert.o xref.o definitions.o graphics.o \
 	mygetopt.o
 
-all : checkdir latex2rtf
-	touch stamp-build
+all : checkdir uptodate latex2rtf
 
 latex2rtf: $(OBJS) $(HDRS)
 	$(CC) $(CFLAGS) $(OBJS)	$(LIBS) -o $(BINARY_NAME)
@@ -180,7 +179,7 @@ install-info: doc/latex2rtf.info
 	install-info --info-dir=$(INFO_INSTALL) doc/latex2rtf.info
 
 realclean: checkdir clean
-	rm -f stamp-build makefile.depend latex2rtf-$(VERSION).tar.gz
+	rm -f makefile.depend latex2rtf-$(VERSION).tar.gz
 	cd doc && $(MAKE) clean
 	cd test && $(MAKE) clean
 
