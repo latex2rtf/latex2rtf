@@ -19,7 +19,7 @@ SET MAGICKDIR=
 
 rem Set path to Ghostscript's gswin32c.exe here (NOT ending with \) 
 rem     if it isn't in your search path:
-rem e.g. SET GSDIR=C:\Aladdin\gs6.01\bin
+rem e.g. SET GSDIR=C:\gs\gs7.04\bin
 SET GSDIR=
 
 :parmloop
@@ -43,8 +43,9 @@ goto :parmloop
 rem input check:
 IF NOT EXIST %fn%.tex GOTO ERR1
 
-del %fn%.dvi
-del %fn%.png
+IF EXIST %fn%.dvi del %fn%.dvi
+IF EXIST %fn%.png del %fn%.png
+
 set TEXINPUTS=%th%
 %TEXDIR%latex  --interaction batchmode %fn% >NUL
 set TEXINPUTS=
@@ -55,11 +56,11 @@ IF NOT EXIST %fn%.dvi GOTO ERR2
 
 IF NOT EXIST %fn%.eps GOTO ERR3
 
-set OLDCPATH=%PATH%
-PATH=%GSDIR%;%PATH%
+IF NOT x%GSDIR%==x set OLDCPATH=%PATH%
+IF NOT x%GSDIR%==x PATH=%GSDIR%;%PATH%
 %MAGICKDIR%convert -crop 0x0 -density %dn%x%dn% %fn%.eps %fn%.png >NUL
-PATH=%OLDCPATH%
-set OLDCPATH=
+IF NOT x%GSDIR%==x PATH=%OLDCPATH%
+IF NOT x%GSDIR%==x set OLDCPATH=
 
 IF NOT EXIST %fn%.png GOTO ERR4
 
