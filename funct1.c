@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.53 2002/02/17 14:55:26 prahl Exp $ 
+/* $Id: funct1.c,v 1.54 2002/02/17 17:17:57 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -277,6 +277,8 @@ CmdSlashSlash(int code)
 
 	if (g_processing_eqnarray) {	/* eqnarray */
 
+		if (g_processing_fields)
+			fprintRTF("}}{\\fldrslt }}");
 		if (g_show_equation_number && !g_suppress_equation_number) {
 			for (; g_equation_column < 3; g_equation_column++)
 				fprintRTF("\\tab ");
@@ -295,6 +297,9 @@ CmdSlashSlash(int code)
 		}
 
 		fprintRTF("\\par\n\\tab ");
+		if (g_processing_fields)
+			fprintRTF("{\\field{\\*\\fldinst{ EQ ");
+
 		g_suppress_equation_number = FALSE;
 		g_equation_column = 1;
 		return;
