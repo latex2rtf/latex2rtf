@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.25 2001/10/07 05:42:18 prahl Exp $ */
+/* $Id: main.c,v 1.26 2001/10/08 02:43:19 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -394,6 +394,9 @@ InitializeLatexLengths(void)
 	setLength("marginparsep", 10*20);
 	setLength("columnsep",    10*20);
 
+	setLength("smallskipamount", 3*20);
+	setLength("medskipamount", 6*20);
+	setLength("bigskipamount", 12*20);
 	setLength("evensidemargin",11*20);
 
 	/* Default Paragraph Sizes */
@@ -413,6 +416,7 @@ InitializeLatexLengths(void)
 	setCounter("equation",      0);
 	setCounter("footnote",      0);
 	setCounter("mpfootnote",    0);
+	
  }
 
 

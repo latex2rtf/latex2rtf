@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.25 2001/10/08 01:59:03 prahl Exp $ 
+/* $Id: funct1.c,v 1.26 2001/10/08 02:43:19 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -83,15 +83,44 @@ CmdEndParagraph(int code)
 
 void
 CmdVspace(int code)
+/******************************************************************************
+     purpose : vspace, vspace*, and vskip
+     		   code ==  0 if vspace or vspace*
+     		   code == -1 if vskip
+     		   code ==  1 if \smallskip
+     		   code ==  2 if \medskip
+     		   code ==  3 if \bigskip
+ ******************************************************************************/
 {
 	int vspace;
 	char c;
 	int mode = GetTexMode();
-	diagnostics(4,"CmdVspace mode = %d", GetTexMode());
 	
-	while ((c = getTexChar()) && c != '{');
-	vspace = getDimension() /2;
-	parseBrace();
+	switch (code) {
+		case -1 :
+			vspace = getDimension()/2;
+			break;
+			
+		case 0 :
+			while ((c = getTexChar()) && c != '{');
+			vspace = getDimension()/2;
+			parseBrace();
+			break;
+			
+		case 1:
+			vspace = getLength("smallskipamount");
+			break;
+			
+		case 2:
+			vspace = getLength("medskipamount");
+			break;
+	
+		case 3:
+			vspace = getLength("bigskipamount");
+			break;
+	}
+
+	diagnostics(4,"CmdVspace mode = %d, vspace=%d", GetTexMode(), vspace);
 
 	fprintRTF("\\sa%d ", vspace);
 	if (mode == MODE_VERTICAL) 			

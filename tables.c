@@ -1,4 +1,4 @@
-/* $Id: tables.c,v 1.4 2001/09/26 03:31:56 prahl Exp $
+/* $Id: tables.c,v 1.5 2001/10/08 02:43:19 prahl Exp $
 
    Translation of tabbing and tabular environments
 */
@@ -296,7 +296,7 @@ parameter: type of array-environment
 		diagnostics(4, "Entering CmdTabular() with options {%s}\n",colParams); 
 
 		if (!bWarningDisplayed) {
-			diagnostics(WARNING, "Tabular or array environment: May need resizing");
+/*			diagnostics(WARNING, "Tabular or array environment: May need resizing");*/
 			bWarningDisplayed = TRUE;
 		}
 		assert(colFmt == NULL);
