@@ -772,7 +772,7 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 
 
     /* LEG180498 Commands consist of letters and can have an optional * at the end */
-    for (i = 0; i < MAXCOMMANDLEN; i++) {
+    for (i = 0; i < MAXCOMMANDLEN-1; i++) {
         if (!isalpha((int) cThis) && (cThis != '*')) {
             bool found_nl = FALSE;
 
@@ -798,6 +798,11 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 
     cCommand[i] = '\0';         /* mark end of string with zero */
     diagnostics(5, "TranslateCommand() <%s>", cCommand);
+
+	if (i==MAXCOMMANDLEN-1) {
+	    diagnostics(WARNING, "Skipping absurdly long command <%s>", cCommand);
+	    return;
+	}
 
     if (i == 0)
         return;
