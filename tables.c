@@ -1,4 +1,4 @@
-/* $Id: tables.c,v 1.12 2001/10/28 04:02:44 prahl Exp $
+/* $Id: tables.c,v 1.13 2001/12/03 04:44:13 prahl Exp $
 
    Translation of tabbing and tabular environments
 */
@@ -91,7 +91,7 @@ parameter: code : on/off at begin/end-environment
 			/* tabbing_on_itself = FALSE; */
 
 			fprintRTF("\\par\\line ");
-			pos_begin_kill= ftell(fRtf);
+/*			pos_begin_kill= ftell(fRtf);*/
 			/* Test ConvertTabbing(); */
 		}
 	} else {		/* off switch */
@@ -134,11 +134,12 @@ CmdTabkill( /* @unused@ */ int code)
 /******************************************************************************
  purpose: a line in the tabbing-Environment which ends with an kill-command won't be
 	 written to the rtf-FILE
+	 \kill does not work until tables.c gets rewritten
  ******************************************************************************/
 {
 	int             i;
 
-	fseek(fRtf, pos_begin_kill, SEEK_SET);
+/*	fseek(fRtf, pos_begin_kill, SEEK_SET);*/
 
 	for (i = 0; i < number_of_tabstops; i++) {
 		fprintRTF("\\tx%d ", tabstoparray[i]);	/* Tab at tabstop/567 centimeters */
@@ -435,6 +436,7 @@ parameter: type of array-environment
  ******************************************************************************/
 {
 	char            *location, *table_contents;
+	char	endtable[] = "\\end{table}";
 
 	if (code & ON) {
 
@@ -445,9 +447,10 @@ parameter: type of array-environment
 		CmdIndent(INDENT_NONE);
 
 		g_processing_table = TRUE;
-		table_contents = getTexUntil("\\end{table}", FALSE);
+		table_contents = getTexUntil(endtable, FALSE);
 		g_table_label = ExtractLabelTag(table_contents);
 		ConvertString(table_contents);	
+		ConvertString(endtable);
 		free(table_contents);		
 	} else {
 		g_processing_table = FALSE;

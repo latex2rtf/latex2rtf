@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.43 2001/11/16 05:16:27 prahl Exp $ */
+/* $Id: main.c,v 1.44 2001/12/03 04:44:13 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -246,12 +246,14 @@ static void
 ConvertWholeDocument(void)
 {
 char * body, *sec_head, *sec_head2, *label;
+	char t[] = "\\begin{document}";
 
 		PushEnvironment(PREAMBLE);
 		SetTexMode(MODE_VERTICAL);
 		ConvertLatexPreamble(); 
 		WriteRtfHeader();
-		
+		ConvertString(t);
+
 		g_processing_preamble = FALSE;
 		getSection(&body,&sec_head,&label);
 		
@@ -426,12 +428,13 @@ purpose: reads the LaTeX preamble (to \begin{document} ) for the file
 {
 	FILE * hidden;
 	char * s;
+	char t[] = "\\begin{document}";
 	
 	diagnostics(4, "Reading LaTeX Preamble");
 	hidden = fRtf;
 	fRtf = stderr;
 	 
-	s = getTexUntil("\\begin{document}",0);
+	s = getTexUntil(t,0);
 	
 	diagnostics(4, "Entering ConvertString() from ConvertLatexPreamble <%s>",s);
 	ConvertString(s);

@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.50 2001/11/23 21:43:48 prahl Exp $ 
+/* $Id: funct1.c,v 1.51 2001/12/03 04:44:13 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -323,8 +323,8 @@ CmdSlashSlash(int code)
 	CmdIndent(INDENT_INHIBIT);
 	
 	tabcounter = 0;
-	if (tabbing_on)
-		pos_begin_kill= ftell(fRtf);
+/*	if (tabbing_on)
+		pos_begin_kill= ftell(fRtf);*/
 }
 
 void 
@@ -1076,7 +1076,7 @@ CmdVerbatim(int code)
 	VERBATIM_2   for \begin{Verbatim} ... \end{Verbatim}
 ******************************************************************************/
 {
-	char			*verbatim_text, *vptr;
+	char			*verbatim_text, *vptr,*endtag;
 	int				num;
 	int true_code = code & ~ON;
 	
@@ -1090,14 +1090,13 @@ CmdVerbatim(int code)
 		fprintRTF("\\pard\\ql\\b0\\i0\\scaps0\\f%d ", num);
 		
 		if (true_code == VERBATIM_2) 
-			verbatim_text = getTexUntil("\\end{Verbatim}", 1);
-			
+			endtag = strdup("\\end{Verbatim}");
 		else if (true_code == VERBATIM_3) 
-			verbatim_text = getTexUntil("\\end{alltt}", 1);
-			
+			endtag = strdup("\\end{alltt}");			
 		else
-			verbatim_text = getTexUntil("\\end{verbatim}", 1);
-
+			endtag = strdup("\\end{verbatim}");			
+			
+		verbatim_text = getTexUntil(endtag, 1);
 		vptr = verbatim_text;
 				
 		if (true_code == VERBATIM_3)   /* alltt environment */
@@ -1113,6 +1112,8 @@ CmdVerbatim(int code)
 		}
 		
 		free(verbatim_text);
+		ConvertString(endtag);
+		free(endtag);
 
 	} else {
 		diagnostics(4, "Exiting CmdVerbatim");
@@ -1290,15 +1291,17 @@ CmdFigure(int code)
  ******************************************************************************/
 {
 	char            *loc, *figure_contents;
+	char endfigure[] = "\\end{figure}";
 
 	if (code & ON) {
 		loc = getBracketParam();
 		diagnostics(4, "entering CmdFigure [%s]", loc);
 		g_processing_figure = TRUE;
 		if (loc) free(loc);
-		figure_contents = getTexUntil("\\end{figure}", FALSE);
+		figure_contents = getTexUntil(endfigure, FALSE);
 		g_figure_label = ExtractLabelTag(figure_contents);
 		ConvertString(figure_contents);	
+		ConvertString(endfigure);	
 		free(figure_contents);		
 	} else {
 		if (g_figure_label) free(g_figure_label);
@@ -1313,29 +1316,35 @@ CmdIgnoreEnviron(int code)
   purpose: function to ignore \begin{environ} ... \end{environ}
  ******************************************************************************/
 {
+	char *endtag=NULL;
 	char *s = NULL;
 	
 	if (code & ON) {
 	
 		switch (code & ~(ON)) {
 			case IGNORE_PICTURE:
-					s= getTexUntil("\\end{picture}",0);
-					break;
+				endtag = strdup("\\end{picture}");
+				break;
 			
 			case IGNORE_MINIPAGE:
-					s=getTexUntil("\\end{minipage}",0);
-					break;
+				endtag = strdup("\\end{minipage}");
+				break;
 
 			case IGNORE_HTMLONLY:
-					s=getTexUntil("\\end{htmlonly}",0);
-					break;
+				endtag = strdup("\\end{htmlonly}");
+				break;
 
 			case IGNORE_RAWHTML:
-					s=getTexUntil("\\end{rawhtml}",0);
-					break;
+				endtag = strdup("\\end{rawhtml}");
+				break;
 		}
 
-		if (s) free(s);
+		if (endtag) {
+			s=getTexUntil(endtag,0);
+			ConvertString(endtag);
+			if (s) free(s);
+			free(endtag);
+		}
 	}
 }
 

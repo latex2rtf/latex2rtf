@@ -1,4 +1,4 @@
-/*  $Id: parser.c,v 1.37 2001/11/23 21:43:48 prahl Exp $
+/*  $Id: parser.c,v 1.38 2001/12/03 04:44:13 prahl Exp $
 
    Contains declarations for a generic recursive parser for LaTeX code.
 */
@@ -33,9 +33,6 @@ static char            *g_parser_string = "stdin";
 static FILE            *g_parser_file   = stdin;
 static int 				g_parser_line   = 1;
 static int 				g_parser_include_level=0;
-
-static long				g_parser_file_pos;
-static char            *g_parser_string_pos;
 
 static char             g_parser_currentChar;	/* Global current character */
 static char             g_parser_lastChar;
@@ -643,32 +640,6 @@ getBraceParam(void)
 	return text;
 }
 
-static void 
-SaveFilePosition(void)
-{
-	if (g_parser_file) {
-		diagnostics(3, "Saving current file pos %ld",ftell(g_parser_file));
-		g_parser_file_pos = ftell(g_parser_file);
-	} else {
-		diagnostics(3, "Saving current string pos %ld char='%c'",g_parser_string, *g_parser_string);
-		g_parser_string_pos = g_parser_string;
-	}
-}
-
-static void 
-RestoreFilePosition(int offset)
-{
-	if (g_parser_file) {
-		diagnostics(3, "Restoring before pos %ld",ftell(g_parser_file));
-		fseek(g_parser_file, g_parser_file_pos+offset, SEEK_SET);
-		diagnostics(3, "Restoring after  pos %ld",ftell(g_parser_file));
-	} else {
-		diagnostics(3, "Restoring before pos %ld char='%c'",g_parser_string, *g_parser_string);
-		g_parser_string = g_parser_string_pos+offset;
-		diagnostics(3, "Restoring after  pos %ld char='%c'",g_parser_string, *g_parser_string);
-	}
-}
-
 char *
 getTexUntil(char * target, int raw)
 /**************************************************************************
@@ -677,17 +648,21 @@ getTexUntil(char * target, int raw)
  **************************************************************************/
 {
 	char            *s, buffer[4096];
-	int             i   = 0;                /* size of string that has been read */
-	int             j   = 0;                /* number of found characters */
+	int				last_i = -1;
+	int             i   = 0;       /* size of string that has been read */
+	int             j   = 0;       /* number of found characters */
 	bool			end_of_file_reached = FALSE;
 	int             len = strlen(target);
 
 	SetScanAhead(TRUE);
 	diagnostics(3, "getTexUntil target = <%s> raw_search = %d ", target, raw);
-	
+
 	while (j < len && i < 4095) {
 	
-		buffer[i] = (raw) ? getRawTexChar() : getTexChar();
+		if (i > last_i) {
+			buffer[i] = (raw) ? getRawTexChar() : getTexChar();
+			last_i = i;
+		}
 		
 		if (!buffer[i]) {
 			end_of_file_reached = TRUE;
@@ -696,29 +671,24 @@ getTexUntil(char * target, int raw)
 		
 		if (buffer[i] != target[j]) {
 			if (j > 0) {			        /* false start, put back what was found */
-				RestoreFilePosition(0);
 				i-=j;
 				j=0;
 			}
-		} else {
-			if (j==0)
-				SaveFilePosition();
+		} else 
 			j++;
-		}
+
 		i++;
 	}
 	
 	if (i == 4096) 
 		diagnostics(ERROR, "Could not find <%s> in 4096 characters", target);
 	
-	if (!end_of_file_reached) {
+	if (!end_of_file_reached) /* do not include target in returned string*/
 		buffer[i-len] = '\0';
-		RestoreFilePosition(-1);	/* move to start of target */
-	}
 	
 	SetScanAhead(FALSE);
 	s = strdup(buffer);
-	diagnostics(6,"strdup result = %s",s);
+	diagnostics(3,"strdup result = %s",s);
 	return s;
 }
 
@@ -1054,11 +1024,14 @@ getSection(char **body, char **header, char **label)
 			delta++;
 			s=getTexUntil(ecommand[i],TRUE);
 
-			while (delta+strlen(s)+1 >= section_buffer_size)
+			while (delta+strlen(s)+strlen(ecommand[i])+1 >= section_buffer_size)
 				increase_buffer_size();
 
-			strcpy(section_buffer+delta,s);
+			strcpy(section_buffer+delta,s);				/* append s */
 			delta += strlen(s)-1;
+			
+			strcpy(section_buffer+delta,ecommand[i]);	/* append ecommand[i] */
+			delta += strlen(ecommand[i])-1;
 			free(s);
 			index = 0;				/* keep looking */
 			continue;

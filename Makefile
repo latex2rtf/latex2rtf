@@ -26,7 +26,7 @@ CFLAGS:=-DUNIX
 #CFLAGS:=$(CFLAGS) -DHAS_NO_GETOPT
 
 #Comment out if you don't want warnings
-#CFLAGS:=$(CFLAGS) -g -Wall -ansi -pedantic
+CFLAGS:=$(CFLAGS) -g -Wall -ansi -pedantic
 
 #Base directory
 PREFIX=/usr/local
