@@ -498,8 +498,7 @@ purpose: Writes the message to stderr depending on debugging level
 {
     char buffer[512], *buff_ptr;
     va_list apf;
-    int i, linenumber, iEnvCount;
-    char *input;
+    int i, iEnvCount;
 
     buff_ptr = buffer;
 
@@ -507,11 +506,9 @@ purpose: Writes the message to stderr depending on debugging level
 
     if (level <= g_verbosity_level) {
 
-        linenumber = CurrentLineNumber();
-        input = CurrentFileName();
         iEnvCount = CurrentEnvironmentCount();
 
-        fprintf(stderr, "\n%s:%d ",input,linenumber);
+        fprintf(stderr, "\n%s:%d ",CurrentFileName(),CurrentLineNumber());
         switch (level) {
             case 0:
                 fprintf(stderr, "Error! ");
@@ -552,10 +549,9 @@ purpose: Writes the message to stderr depending on debugging level
     if (level == 0) {
         fprintf(stderr, "\n");
         fflush(stderr);
-        if (fRtf) {
+        if (fRtf) 
             fflush(fRtf);
-            CloseRtf(&fRtf);
-        }
+            
         exit(EXIT_FAILURE);
     }
 }

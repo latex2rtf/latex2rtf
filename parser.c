@@ -794,7 +794,7 @@ char *getTexUntil(char *target, int raw)
 {
     enum { BUFFSIZE = 16000 };
     char *s;
-    char buffer[BUFFSIZE + 1] = { '\0' };
+    char buffer[BUFFSIZE];
     int last_i = -1;
     int i = 0;                  /* size of string that has been read */
     size_t j = 0;               /* number of found characters */
@@ -836,7 +836,8 @@ char *getTexUntil(char *target, int raw)
     }
 
     if (i == BUFFSIZE)
-        diagnostics(ERROR, "Could not find <%s> in %d characters", BUFFSIZE);
+        diagnostics(ERROR, "Could not find <%s> in %d characters \n\
+        Recompile with larger BUFFSIZE in getTexUntil() in parser.c", target, BUFFSIZE);
 
     if (!end_of_file_reached)   /* do not include target in returned string */
         buffer[i - len] = '\0';
