@@ -135,6 +135,9 @@ int main(int argc, char **argv)
 	SetEndianness();
 	progname = argv[0];
 
+	InitializeStack();
+	InitializeLatexLengths();
+
 	while ((c = my_getopt(argc, argv, "lhpvFSWZ:o:a:b:d:i:s:C:D:M:P:T:")) != EOF) {
 		switch (c) {
 		case 'a':
@@ -289,8 +292,6 @@ int main(int argc, char **argv)
 	if (PushSource(g_tex_name, NULL)==0) {
 		OpenRtfFile(g_rtf_name, &fRtf);
 		
-		InitializeStack();
-		InitializeLatexLengths();
 		InitializeDocumentFont(TexFontNumber("Roman"), 20, F_SHAPE_UPRIGHT, F_SERIES_MEDIUM);
 		PushTrackLineNumber(TRUE);
 
