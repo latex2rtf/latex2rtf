@@ -435,7 +435,20 @@ static CommandArray FrenchModeCommands[] = {
     {"secundo", CmdFrenchAbbrev, SECUNDO},
     {"tertio", CmdFrenchAbbrev, TERTIO},
     {"quarto", CmdFrenchAbbrev, QUARTO},
+    {"inferieura", CmdFrenchAbbrev, INFERIEURA},
+    {"superieura", CmdFrenchAbbrev, SUPERIEURA},
+    {"lq", CmdFrenchAbbrev, FRENCH_LQ},
+    {"rq", CmdFrenchAbbrev, FRENCH_RQ},
+    {"lqq", CmdFrenchAbbrev, FRENCH_LQQ},
+    {"rqq", CmdFrenchAbbrev, FRENCH_RQQ},
+    {"pointvirgule", CmdFrenchAbbrev, POINT_VIRGULE},
+    {"pointexclamation", CmdFrenchAbbrev, POINT_EXCLAMATION},
+    {"pointinterrogation", CmdFrenchAbbrev, POINT_INTERROGATION},
+    {"dittomark", CmdFrenchAbbrev, DITTO_MARK},
+    {"deuxpoints", CmdFrenchAbbrev, DEUX_POINTS},
     {"fup", CmdFrenchAbbrev, FUP},
+    {"LCS", CmdFrenchAbbrev, LCS},
+    {"FCS", CmdFrenchAbbrev, FCS},
 	{"", NULL, 0}
 };
 

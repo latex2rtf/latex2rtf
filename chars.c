@@ -867,6 +867,26 @@ CmdFrenchAbbrev(int code)
   int up, size;
   char *fuptext;
 
+  if (code == INFERIEURA) {fprintRTF("<"); return;}
+  if (code == SUPERIEURA) {fprintRTF(">"); return;}
+  if (code == FRENCH_LQ) {fprintRTF("\\lquote"); return;}
+  if (code == FRENCH_RQ) {fprintRTF("\\rquote"); return;}
+  if (code == FRENCH_LQQ) {fprintRTF("\\ldblquote"); return;}
+  if (code == FRENCH_RQQ) {fprintRTF("\\rdblquote"); return;}
+  if (code == POINT_VIRGULE) {fprintRTF(";"); return;}
+  if (code == POINT_EXCLAMATION) {fprintRTF("!"); return;}
+  if (code == POINT_INTERROGATION) {fprintRTF("?"); return;}
+  if (code == DITTO_MARK) {fprintRTF("\""); return;}
+  if (code == DEUX_POINTS) {fprintRTF(":"); return;}
+  if (code == LCS || code == FCS) {
+  		char *abbev=getBraceParam();
+		fprintRTF("{\\scaps ");
+ 		ConvertString(abbev); 
+       	free(abbev);
+		fprintRTF("}");
+		return;
+  }
+
   if (code == NUMERO) fprintRTF("n");
   if (code == NUMEROS) fprintRTF("n");
   if (code == CNUMERO) fprintRTF("N");

@@ -47,3 +47,17 @@ void 			CmdCyrillicStrChar(char *s);
 #define QUARTO 15
 #define FUP 16
 
+#define INFERIEURA	 17
+#define SUPERIEURA	 18
+#define FRENCH_LQ	 19
+#define FRENCH_RQ	 20
+#define FRENCH_LQQ	 21
+#define FRENCH_RQQ	 22
+#define POINT_VIRGULE	 23
+#define POINT_EXCLAMATION	 24
+#define POINT_INTERROGATION	 25
+#define DITTO_MARK	 26
+#define DEUX_POINTS	 27
+#define LCS	 28
+#define FCS	 29
+
