@@ -966,7 +966,7 @@ parameter: type of array-environment
 		location = getBracketParam();
 		if (location) free(location);
 
-		CmdEndParagraph(0);
+		if (GetTexMode()!=MODE_VERTICAL) CmdEndParagraph(0);
 		CmdIndent(INDENT_NONE);
 
 		g_processing_table = TRUE;
@@ -977,7 +977,7 @@ parameter: type of array-environment
 		free(table_contents);		
 	} else {
 		g_processing_table = FALSE;
-		CmdEndParagraph(0);
+		if (GetTexMode()!=MODE_VERTICAL) CmdEndParagraph(0);
 		if (g_table_label) free(g_table_label);
 	}
 }

@@ -116,6 +116,24 @@ CmdEndParagraph(int code)
 }
 
 void
+DirectVspace(int vspace)
+{
+	int mode = GetTexMode();
+	diagnostics(4,"DirectVspace mode = %d, vspace=%d", mode, vspace);
+
+	if (vspace<0) vspace=0;
+	
+	fprintRTF("\\sa%d ", vspace);
+	if (mode == MODE_VERTICAL) 			
+		fprintRTF("\\par ");		/* forces \sa to take effect */
+	else {
+		CmdEndParagraph(0);
+//		CmdIndent(INDENT_INHIBIT);
+	}
+	fprintRTF("\\sa0");
+}
+
+void
 CmdVspace(int code)
 /******************************************************************************
      purpose : vspace, vspace*, and vskip
@@ -128,7 +146,6 @@ CmdVspace(int code)
 {
 	int vspace;
 	char c;
-	int mode = GetTexMode();
 	
 	switch (code) {
 		case VSPACE_VSPACE :
@@ -154,18 +171,7 @@ CmdVspace(int code)
 			break;
 	}
 
-	diagnostics(4,"CmdVspace mode = %d, vspace=%d", GetTexMode(), vspace);
-
-	if (vspace<0) vspace =0;
-	fprintRTF("\\sa%d ", vspace);
-	if (mode == MODE_VERTICAL) 			
-		fprintRTF("\\par ");		/* forces \sa to take effect */
-	else {
-		CmdEndParagraph(0);
-		CmdIndent(INDENT_INHIBIT);
-	}
-	fprintRTF("\\sa0");
-
+	DirectVspace(vspace);
 }
 
 void
@@ -665,13 +671,13 @@ parameter: code: type of section-recursion-level
 		diagnostics(4,"entering CmdSection {%s}",heading);
 
 	CmdEndParagraph(0);
-	CmdIndent(INDENT_NONE);
-	CmdStartParagraph(FIRST_PAR);
 	
 	switch (code) {
 	case SECT_PART:
 	case SECT_PART_STAR:
 		fprintRTF("\\page");
+		CmdIndent(INDENT_NONE);
+		CmdStartParagraph(FIRST_PAR);
 		fprintRTF("{\\qc\\b\\fs40 ");
 		ConvertBabelName("PARTNAME");
 		if (code == SECT_PART) {
@@ -687,7 +693,10 @@ parameter: code: type of section-recursion-level
 
 	case SECT_CHAPTER:
 	case SECT_CHAPTER_STAR:
-		fprintRTF("\\page{\\plain\\b\\fs40\\kerning28 ");
+		fprintRTF("\\page");
+		CmdIndent(INDENT_NONE);
+		CmdStartParagraph(FIRST_PAR);
+		fprintRTF("{\\plain\\b\\fs40\\kerning28 ");
 		ConvertBabelName("CHAPTERNAME");
 		if (code == SECT_CHAPTER && getCounter("secnumdepth")>=-1) {
 			incrementCounter("chapter");
@@ -702,15 +711,18 @@ parameter: code: type of section-recursion-level
 			InsertBookmark(g_section_label, unit_label);
 			free(unit_label);
 		}
-		fprintRTF("\\par\\par}{\\fi0\\plain\\b\\fs40\\kerning28 ");
+		fprintRTF("\\par\\par\n");
 		ConvertString(heading);
-		CmdEndParagraph(0);
 		fprintRTF("}");
+		CmdEndParagraph(0);
+		CmdVspace(VSPACE_SMALL_SKIP);
 		break;
 
 	case SECT_NORM:
 	case SECT_NORM_STAR:
 		CmdVspace(VSPACE_BIG_SKIP);
+		CmdIndent(INDENT_NONE);
+		CmdStartParagraph(FIRST_PAR);
 		fprintRTF("{\\plain\\b ");
 		if(code == SECT_NORM && getCounter("secnumdepth")>=0) {		
 			incrementCounter("section");
@@ -726,14 +738,16 @@ parameter: code: type of section-recursion-level
 			free(unit_label);
 		}
 		ConvertString(heading);
-		CmdEndParagraph(0);
 		fprintRTF("}");
+		CmdEndParagraph(0);
 		CmdVspace(VSPACE_SMALL_SKIP);
 		break;
 
 	case SECT_SUB:
 	case SECT_SUB_STAR:
 		CmdVspace(VSPACE_MEDIUM_SKIP);
+		CmdIndent(INDENT_NONE);
+		CmdStartParagraph(FIRST_PAR);
 		fprintRTF("{\\plain\\b\\fs24 ");
 		if (code == SECT_SUB && getCounter("secnumdepth")>=1) {
 			incrementCounter("subsection");
@@ -747,14 +761,16 @@ parameter: code: type of section-recursion-level
 			free(unit_label);
 		}
 		ConvertString(heading);
-		CmdEndParagraph(0);
 		fprintRTF("}");
+		CmdEndParagraph(0);
 		CmdVspace(VSPACE_SMALL_SKIP);
 		break;
 
 	case SECT_SUBSUB:
 	case SECT_SUBSUB_STAR:
 		CmdVspace(VSPACE_MEDIUM_SKIP);
+		CmdIndent(INDENT_NONE);
+		CmdStartParagraph(FIRST_PAR);
 		fprintRTF("{\\plain\\b\\fs24 ");
 		if (code == SECT_SUBSUB && getCounter("secnumdepth")>=2) {
 			incrementCounter("subsubsection");
@@ -767,14 +783,16 @@ parameter: code: type of section-recursion-level
 			free(unit_label);
 		}
 		ConvertString(heading);
-		CmdEndParagraph(0);
 		fprintRTF("}");
+		CmdEndParagraph(0);
 		CmdVspace(VSPACE_SMALL_SKIP);
 		break;
 
 	case SECT_SUBSUBSUB:
 	case SECT_SUBSUBSUB_STAR:
 		CmdVspace(VSPACE_MEDIUM_SKIP);
+		CmdIndent(INDENT_NONE);
+		CmdStartParagraph(FIRST_PAR);
 		fprintRTF("{\\plain\\b ");
 		if (code == SECT_SUBSUBSUB && getCounter("secnumdepth")>=3) {
 			incrementCounter("paragraph");
@@ -786,12 +804,16 @@ parameter: code: type of section-recursion-level
 			free(unit_label);
 		}
 		ConvertString(heading);
-		fprintRTF("}  ");
+		fprintRTF("} ");
+		CmdEndParagraph(0);
+		CmdVspace(VSPACE_SMALL_SKIP);
 		break;
 
 	case SECT_SUBSUBSUBSUB:
 	case SECT_SUBSUBSUBSUB_STAR:
 		CmdVspace(VSPACE_MEDIUM_SKIP);
+		CmdIndent(INDENT_NONE);
+		CmdStartParagraph(FIRST_PAR);
 		fprintRTF("{\\plain\\b ");
 		if (code == SECT_SUBSUBSUBSUB && getCounter("secnumdepth")>=4) {
 			incrementCounter("subparagraph");
@@ -827,7 +849,7 @@ CmdCaption(int code)
 {
 	char           *thecaption;
 	char           *lst_entry;
-	int				n;
+	int				n,vspace;
 	char   			old_align;
 	char			number[20];
 	
@@ -842,7 +864,10 @@ CmdCaption(int code)
 	} else
 		diagnostics(4, "entering CmdCaption");
 
-	CmdEndParagraph(0);
+	if (GetTexMode()!=MODE_VERTICAL)
+		CmdEndParagraph(0);
+	vspace = getLength("abovecaptionskip");
+	DirectVspace(vspace);
 	CmdIndent(INDENT_NONE);
 	CmdStartParagraph(FIRST_PAR);
 	fprintRTF("{");
@@ -879,6 +904,8 @@ CmdCaption(int code)
 	free(thecaption);
 	fprintRTF("}");
 	CmdEndParagraph(0);
+	vspace = getLength("belowcaptionskip")+getLength("textfloatsep");
+	DirectVspace(vspace);
 	alignment = old_align;
 	diagnostics(4, "exiting CmdCaption");
 }
@@ -1014,8 +1041,16 @@ CmdList(int code)
  globals  : indent
  ******************************************************************************/
 {
+	int vspace;
 	int amount = 300;
-	CmdEndParagraph(0);
+
+	vspace = getLength("topsep")+getLength("parskip");
+	
+	if (GetTexMode()==MODE_VERTICAL)
+		vspace += getLength("partopsep");
+	else
+		CmdEndParagraph(0);
+	DirectVspace(vspace);
 	
 	switch (code) {
 		case (ITEMIZE | ON):
@@ -1062,17 +1097,20 @@ CmdItem(int code)
 {
 	char           *itemlabel, thechar;
 	static int      item_number[4];
-
+	int				vspace;
+	
 	if (code == RESET_ITEM_COUNTER) {
 		item_number[g_enumerate_depth] = 1;
 		return;
 	}
 
-/*	PushLevels();*/
 	diagnostics(4, "Entering CmdItem depth=%d item=%d",g_enumerate_depth,item_number[g_enumerate_depth]);
 
 	g_processing_list_environment=TRUE;
 	CmdEndParagraph(0);
+	vspace = getLength("itemsep")+getLength("parsep");
+	DirectVspace(vspace);
+	
 	CmdIndent(INDENT_USUAL);
 	CmdStartParagraph(FIRST_PAR);
 	

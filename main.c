@@ -507,12 +507,7 @@ InitializeLatexLengths(void)
 	setLength("topmargin",	  18*20);
 	setLength("headsep",	  25*20);	
 	setLength("textwidth",	 345*20);
-	setLength("marginparsep", 10*20);
 	setLength("columnsep",	  10*20);
-
-	setLength("smallskipamount", 3*20);
-	setLength("medskipamount", 6*20);
-	setLength("bigskipamount", 12*20);
 	setLength("evensidemargin",11*20);
 
 	/* Default Paragraph Sizes */
@@ -534,6 +529,27 @@ InitializeLatexLengths(void)
 	setCounter("mpfootnote",	0);
 	setCounter("secnumdepth",	2);
 	
+/* vertical separation lengths */
+	setLength("topsep",			0*20);
+	setLength("partopsep",		0*20);
+	setLength("parsep",			0*20);
+	setLength("itemsep",		0*20);
+	setLength("labelwidth",		0*20);
+	setLength("labelsep",		0*20);
+	setLength("itemindent",		0*20);
+	setLength("listparindent",	0*20);
+	setLength("leftmargin",		0*20);
+	setLength("floatsep",		0*20);
+	setLength("intextsep",		0*20);
+	setLength("abovecaptionskip",	0*20);
+	setLength("belowcaptionskip",	 0*20);
+	setLength("intextsep",		0*20);
+	
+	setLength("smallskipamount",3*20);
+	setLength("medskipamount", 	6*20);
+	setLength("bigskipamount", 	12*20);
+	
+	setLength("marginparsep", 	10*20);
  }
 
 
