@@ -7,13 +7,6 @@ Fit & Finish:
 	Improve font sizes in \section etc.
 	Reset footnote numbering at each new chapter
 
-	misc4.tex
-		missing references
-				
-	Extra paragraph at
-		- in proffois, source line 305 after the \"\i{} in:
-		cont\"enu et de la mise en page, ma\"is, ma\"\i{}zena, ma\^{\i}zena, b\"ureau, etc.),
-
 Potential Features:
 
 	Support \includegraphics options (both graphics and graphicx)
@@ -44,7 +37,3 @@ Potential Features:
 	add support for \vspace
 	add support for \hspace
 	add support for \hline
-
-	support ## in macro expansion
-
-
