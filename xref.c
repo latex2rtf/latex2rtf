@@ -785,7 +785,7 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first)
                 fprintRTF(" ");
             }
 
-            if (pre && post) {
+            if (pre && post && first) {
                 ConvertString(pre);
             	fprintRTF(" ");
             }
@@ -805,7 +805,7 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first)
 				ConvertString(pre);
 			}
 
-			if (post) {
+			if (post && *post != '\0') {
 				ConvertString(g_bibpunct_postnote_sep);
 				ConvertString(post);
 			}

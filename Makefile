@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.108 2004/11/07 15:44:31 prahl Exp $
+# $Id: Makefile,v 1.109 2004/11/08 01:47:45 prahl Exp $
 
 CC=gcc
 MKDIR=mkdir -p
@@ -157,8 +157,8 @@ dist: checkdir releasedate latex2rtf doc $(SRCS) $(HDRS) $(CFGS) $(README) Makef
 	rm -rf latex2rtf-$(VERSION)
 
 uptodate:
-#	perl -pi.bak -e '$$date=scalar localtime; s/\(.*/($$date)";/' version.h
-#	rm version.h.bak
+	perl -pi.bak -e '$$date=scalar localtime; s/\(.*/($$date)";/' version.h
+	rm version.h.bak
 
 releasedate:
 	perl -pi.bak -e '$$date=scalar localtime; s/\(.*/(released $$date)";/; s/d ..../d /;s/\d\d:\d\d:\d\d //;' version.h
