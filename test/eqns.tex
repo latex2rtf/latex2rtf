@@ -12,6 +12,34 @@ both the $\rm Q$ and the bold font $\bf n$ should not be
 italicized in the  .rtf output. LaTeX never italicizes bold font in math 
 mode (as this is never needed/wanted). 
 
+\section{testing \texttt{align} environment}
+
+First align without an asterisk.
+
+\begin{align} 
+zw &=  (3+2i)(2-i) \notag \\ 
+&=  6-3i+4i-2i^2   \notag \\ 
+&=  8+i  \notag 
+\end{align} 
+
+
+\begin{eqnarray} 
+zw &=&  (3+2i)(2-i) \nonumber \\ 
+&=&  6-3i+4i-2i^2   \nonumber \\ 
+&=&  8+i  \nonumber 
+\end{eqnarray} 
+
+
+Now align with an asterisk.
+
+
+\begin{align*} 
+zw &=  (3+2i)(2-i)  \\ 
+&=  6-3i+4i-2i^2    \\ 
+&=  8+i   
+\end{align*} 
+
+
 \section{testing equation references}
 \begin{equation}
 x=y

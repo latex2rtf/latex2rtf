@@ -298,14 +298,6 @@ globals: fTex, fRtf and all global flags for convert (see above)
                     ungetTexChar(cNext);
                     CmdEquation(EQN_DOLLAR | ON);
                 }
-
-                /* 
-                   Formulas need to close all Convert() operations when they end This works for \begin{equation} but
-                   not $$ since the BraceLevel and environments don't get pushed properly.  We do it explicitly here. */
-                /* 
-                   if (GetTexMode() == MODE_MATH || GetTexMode() == MODE_DISPLAYMATH) PushBrace(); else { ret =
-                   RecursionLevel - PopBrace(); if (ret > 0) { ret--; RecursionLevel--; diagnostics(5, "Exiting Convert 
-                   via Math ret = %d", ret); return; } } */
                 break;
 
             case '&':
@@ -315,7 +307,9 @@ globals: fTex, fRtf and all global flags for convert (see above)
                 }
 
                 if (GetTexMode() == MODE_MATH || GetTexMode() == MODE_DISPLAYMATH) {    /* in eqnarray */
-                    fprintRTF("\\tab ");
+                    if (g_processing_fields) fprintRTF("}}}{\\fldrslt }}");
+					fprintRTF("\\tab ");
+                    if (g_processing_fields) fprintRTF("{{\\field{\\*\\fldinst{ EQ ");
                     g_equation_column++;
                     break;
                 }

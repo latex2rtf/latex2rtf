@@ -179,6 +179,20 @@ static void SlurpEquation(int code, char **pre, char **eq, char **post)
             *post = strdup("\\end{eqnarray}");
             *eq = getTexUntil(*post, 0);
             break;
+
+        case EQN_ALIGN_STAR:
+            diagnostics(4, "Entering CmdDisplayMath -- align* ");
+            *pre = strdup("\\begin{align*}");
+            *post = strdup("\\end{align*}");
+            *eq = getTexUntil(*post, 0);
+            break;
+
+        case EQN_ALIGN:
+            diagnostics(4, "SlurpEquation() --- align");
+            *pre = strdup("\\begin{align}");
+            *post = strdup("\\end{align}");
+            *eq = getTexUntil(*post, 0);
+            break;
     }
 }
 
@@ -320,7 +334,17 @@ void WriteLatexAsBitmap(char *pre, char *eq, char *post)
             name = SaveEquationAsFile("\\begin{eqnarray*}", eq, "\\end{eqnarray*}");
         else
             name = SaveEquationAsFile(pre, eq, post);
+
+    } else if (strcmp(pre, "\\begin{align}") == 0) {
+        p = strstr(eq, "\\label");
+        if (p != NULL && strlen(p) > 6) /* found one ... is there a second? */
+            p = strstr(p + 6, "\\label");
+        if (p == NULL)
+            name = SaveEquationAsFile("\\begin{align*}", eq, "\\end{align*}");
+        else
+            name = SaveEquationAsFile(pre, eq, post);
     } else
+
         name = SaveEquationAsFile(pre, eq, post);
 
     PutLatexFile(name, 0, 0, scale, pre);
@@ -424,6 +448,30 @@ static void PrepareRtfEquation(int code, int EQ_Needed)
             SetTexMode(MODE_DISPLAYMATH);
             break;
 
+        case EQN_ALIGN_STAR:
+            diagnostics(4, "PrepareRtfEquation -- align* ");
+            g_show_equation_number = FALSE;
+            g_processing_eqnarray = TRUE;
+            g_processing_tabular = TRUE;
+            g_equation_column = 1;
+            fprintRTF("\\par\\par\n\\pard");
+            fprintRTF("\\tqr\\tx%d\\tql\\tx%d", a, b);
+            fprintRTF("\\tab ");
+            SetTexMode(MODE_DISPLAYMATH);
+            break;
+
+        case EQN_ALIGN:
+            diagnostics(4, "PrepareRtfEquation --- align");
+            g_show_equation_number = TRUE;
+            g_processing_eqnarray = TRUE;
+            g_processing_tabular = TRUE;
+            g_equation_column = 1;
+            fprintRTF("\\par\\par\n\\pard");
+            fprintRTF("\\tqr\\tx%d\\tql\\tx%d\\tqr\\tx%d", a, b, width);
+            fprintRTF("\\tab ");
+            SetTexMode(MODE_DISPLAYMATH);
+            break;
+            
         default:
             diagnostics(ERROR, "calling PrepareRtfEquation with OFF code");
             break;
@@ -500,9 +548,18 @@ static void FinishRtfEquation(int code, int EQ_Needed)
             g_processing_tabular = FALSE;
             break;
 
+        case EQN_ALIGN_STAR:
+            diagnostics(4, "FinishRtfEquation -- align* ");
+            CmdEndParagraph(0);
+            CmdIndent(INDENT_INHIBIT);
+            g_processing_eqnarray = FALSE;
+            g_processing_tabular = FALSE;
+            break;
+
         case EQN_EQUATION:
         case EQN_ARRAY:
-            diagnostics(4, "FinishRtfEquation --- equation or eqnarray");
+        case EQN_ALIGN:
+            diagnostics(4, "FinishRtfEquation --- equation or eqnarray or align");
             if (g_show_equation_number && !g_suppress_equation_number) {
                 char number[20];
 
@@ -718,11 +775,7 @@ void CmdEquation(int code)
     diagnostics(4, "inline=%d display_rtf   =%d", inline_equation, g_equation_display_rtf);
 
     if ((inline_equation && g_equation_inline_bitmap) || (!inline_equation && g_equation_display_bitmap)) {
-        if (true_code != EQN_ARRAY) {
-            PrepareRtfEquation(true_code, FALSE);
-            WriteLatexAsBitmap(pre, eq, post);
-            FinishRtfEquation(true_code, FALSE);
-        } else {
+        if (true_code == EQN_ARRAY) {
             char *s, *t;
 
             s = eq;
@@ -743,6 +796,33 @@ void CmdEquation(int code)
                 if (t)
                     s = t + 2;
             } while (t);
+            
+        } else  if (true_code == EQN_ALIGN) {
+            char *s, *t;
+
+            s = eq;
+            diagnostics(4, "align whole = <%s>", s);
+            do {
+                t = strstr(s, "\\\\");
+                if (t)
+                    *t = '\0';
+                diagnostics(4, "array piece = <%s>", s);
+                if (strstr(s, "\\notag"))
+                    g_suppress_equation_number = TRUE;
+                else
+                    g_suppress_equation_number = FALSE;
+
+                PrepareRtfEquation(true_code, FALSE);
+                WriteLatexAsBitmap("\\begin{align*}", s, "\\end{align*}");
+                FinishRtfEquation(true_code, FALSE);
+                if (t)
+                    s = t + 2;
+            } while (t);
+            
+        } else {
+            PrepareRtfEquation(true_code, FALSE);
+            WriteLatexAsBitmap(pre, eq, post);
+            FinishRtfEquation(true_code, FALSE);
         }
     }
 
@@ -752,9 +832,10 @@ void CmdEquation(int code)
     }
 
 /* balance \begin{xxx} with \end{xxx} call */
-    if (true_code == EQN_MATH || true_code == EQN_DISPLAYMATH ||
-      true_code == EQN_EQUATION || true_code == EQN_EQUATION_STAR ||
-      true_code == EQN_ARRAY || true_code == EQN_ARRAY_STAR)
+    if (true_code == EQN_MATH     || true_code == EQN_DISPLAYMATH   ||
+        true_code == EQN_EQUATION || true_code == EQN_EQUATION_STAR ||
+        true_code == EQN_ARRAY    || true_code == EQN_ARRAY_STAR    ||
+        true_code == EQN_ALIGN    || true_code == EQN_ALIGN_STAR)
         ConvertString(post);
 
     free(pre);

@@ -323,6 +323,7 @@ static CommandArray commands[] = {
     {"longleftrightarrows", CmdArrows, LONG_LEFTRIGHT},
     {"longrightleftarrows", CmdArrows, LONG_RIGHTLEFT},
     {"nonumber", CmdNonumber, EQN_NO_NUMBER},
+    {"notag", CmdNonumber, EQN_NO_NUMBER},
     {"char", CmdChar, 0},
     {"htmladdnormallink", CmdHtml, LABEL_HTMLADDNORMALREF},
     {"htmlref", CmdHtml, LABEL_HTMLREF},
@@ -616,6 +617,8 @@ static CommandArray params[] = {
     {"equation*", CmdEquation, EQN_EQUATION_STAR},
     {"eqnarray*", CmdEquation, EQN_ARRAY_STAR},
     {"eqnarray", CmdEquation, EQN_ARRAY},
+    {"align*", CmdEquation, EQN_ALIGN_STAR},
+    {"align", CmdEquation, EQN_ALIGN},
     {"math", CmdEquation, EQN_MATH},
 
     {"multicolumn", CmdMultiCol, 0},
