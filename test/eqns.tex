@@ -32,10 +32,16 @@ $$
 \nabla^2 \phi -{1\over c} {\partial \phi\over \partial t}  = 0
 $$
 
-Bug that cased crash when equation began with \verb#\ldots#
+Bug that caused crash when equation began with \verb#\ldots#
 $$
 \ldots\nabla^2 \phi -{1\over c} {\partial \phi\over \partial t}  = 0
 $$
+
+another reported crash with ldots
+\begin{eqnarray*} 
+\ldots & = & b \\
+c      & = & d
+\end{eqnarray*} 
 
 Note: Delimiting an equation by \verb|$$| is a plain\TeX{} command
 which causes inconsistent vertical distances and does not obey
