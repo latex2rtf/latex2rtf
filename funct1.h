@@ -1,4 +1,4 @@
-/* $Id: funct1.h,v 1.21 2001/10/17 02:48:31 prahl Exp $ */
+/* $Id: funct1.h,v 1.22 2001/10/17 02:50:26 prahl Exp $ */
 
 #define AST_FORM 100
 #define EMPHASIZE 1
@@ -42,8 +42,6 @@ void            Environment(int code);
 #define SECT_CHAPTER 5
 #define SECT_PART 6
 void            CmdSection(int code);
-
-void            CmdFootNote(int code);
 
 #define QUOTE 1
 #define QUOTATION 2
