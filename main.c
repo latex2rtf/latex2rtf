@@ -530,9 +530,9 @@ InitializeLatexLengths(void)
 	setCounter("secnumdepth",	2);
 	
 /* vertical separation lengths */
-	setLength("topsep",			0*20);
-	setLength("partopsep",		0*20);
-	setLength("parsep",			0*20);
+	setLength("topsep",			3*20);
+	setLength("partopsep",		2*20);
+	setLength("parsep",			2.5*20);
 	setLength("itemsep",		0*20);
 	setLength("labelwidth",		0*20);
 	setLength("labelsep",		0*20);
@@ -541,6 +541,8 @@ InitializeLatexLengths(void)
 	setLength("leftmargin",		0*20);
 	setLength("floatsep",		0*20);
 	setLength("intextsep",		0*20);
+	setLength("abovedisplayskip",	0*20);
+	setLength("belowdisplayskip",	 0*20);
 	setLength("abovecaptionskip",	0*20);
 	setLength("belowcaptionskip",	 0*20);
 	setLength("intextsep",		0*20);

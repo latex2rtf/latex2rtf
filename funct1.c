@@ -57,6 +57,7 @@ char 			*roman_item(int n);
 static bool  g_paragraph_no_indent = FALSE;
 static bool  g_paragraph_inhibit_indent = FALSE;
 static bool  g_processing_list_environment = FALSE;
+static int   g_vertical_space_to_add = 0;
 
 void
 CmdStartParagraph(int code)
@@ -64,9 +65,19 @@ CmdStartParagraph(int code)
      purpose : RTF codes to create a new paragraph.  If the paragraph should
                not be indented then emit \fi0 otherwise use the current value
                of \parindent as the indentation of the first line.
+               
+               Sometimes it is necessary to know what the next paragraph will
+               be before it has been parsed.  For example, a section command
+               should create a paragraph for the section title and then the
+               next paragraph encountered should be handled like the first 
+               paragraph.  So status is set to 2 (and ignored when 
  ******************************************************************************/
 {
+	static int status;
 	int parindent;
+	
+	if (code==TITLE_PAR) status=2;
+	if (code==FIRST_PAR) status=1;
 	
 	parindent = getLength("parindent");
 
@@ -77,16 +88,29 @@ CmdStartParagraph(int code)
 	diagnostics(5,"right indent is     %d", indent_right);
 	diagnostics(5,"paragraph indent is %d", getLength("parindent"));
 
-	fprintRTF("\\q%c ", alignment);
-	if (indent!=0)
-		fprintRTF("\\li%d ", indent);
-	if (indent_right!=0)
-		fprintRTF("\\ri%d ", indent_right);
+	fprintRTF("\\q%c", alignment);
+	
+	if (g_vertical_space_to_add>0)
+		fprintRTF("\\sb%d ", g_vertical_space_to_add);
+	g_vertical_space_to_add = 0;
 
-	if (code!=FIRST_PAR || !FrenchMode) {
-		if (g_paragraph_no_indent || g_paragraph_inhibit_indent) 
-			parindent = 0;
-	}
+	if (indent!=0)
+		fprintRTF("\\li%d", indent);
+
+	if (indent_right!=0)
+		fprintRTF("\\ri%d", indent_right);
+
+	/*titles are never indented */
+	if (status==2)
+		parindent=0;
+	
+ 	/* French does not indent first paragraphs */
+ 	if (status==1 && !FrenchMode )
+		parindent=0;
+	
+	/* use indent flags for ANY_PAR */
+	if (status<=0 && (g_paragraph_no_indent || g_paragraph_inhibit_indent))
+		parindent = 0;
 	
 	fprintRTF("\\fi%d ", parindent);
 	
@@ -96,6 +120,8 @@ CmdStartParagraph(int code)
 		g_paragraph_no_indent = FALSE;
 		g_paragraph_inhibit_indent = FALSE;
 	}
+	
+	status--;
 }
 
 void
@@ -115,22 +141,10 @@ CmdEndParagraph(int code)
 	g_paragraph_inhibit_indent = FALSE;
 }
 
-void
+static void
 DirectVspace(int vspace)
 {
-	int mode = GetTexMode();
-	diagnostics(4,"DirectVspace mode = %d, vspace=%d", mode, vspace);
-
-	if (vspace<0) vspace=0;
-	
-	fprintRTF("\\sa%d ", vspace);
-	if (mode == MODE_VERTICAL) 			
-		fprintRTF("\\par ");		/* forces \sa to take effect */
-	else {
-		CmdEndParagraph(0);
-//		CmdIndent(INDENT_INHIBIT);
-	}
-	fprintRTF("\\sa0");
+	g_vertical_space_to_add = vspace;
 }
 
 void
@@ -414,17 +428,18 @@ CmdBeginEnd(int code)
  ***************************************************************************/
 {
 	int i;
-	char * str,*option;
-	char           *s = getBraceParam();
+	char *str,*option;
+	char *s = getBraceParam();
 
 	if (code==CMD_BEGIN) 
 		diagnostics(5, "\\begin{%s}", s);
 	else 
 		diagnostics(5, "\\end{%s}", s);
 
-	/* hack to avoid problems with multicols */
+/* hack to avoid problems with multicols */
 	if (strcmp(s,"multicols")==0) {free(s); return;}
 	
+/* user defined environments */
 	i=existsEnvironment(s);
 	if (i>-1) {
 		str = expandEnvironment(i,code);
@@ -432,9 +447,9 @@ CmdBeginEnd(int code)
 		free(str);
 		free(s);
 		return;
-	} else
-		diagnostics(5,"failed to match environment");
-	
+	} 
+		
+/* theorem environment */
 	i=existsTheorem(s);
 	if (i>-1) {
 		if (code == CMD_BEGIN) {
@@ -457,10 +472,9 @@ CmdBeginEnd(int code)
 		}
 		free(s);
 		return;
-	} else
-		diagnostics(5,"failed to match theorem");
-
-
+	}
+	
+/* usual environments */
 	if (code==CMD_BEGIN) {
 		diagnostics(4, "\\begin{%s}", s);
 		(void) CallParamFunc(s, ON);
@@ -677,7 +691,7 @@ parameter: code: type of section-recursion-level
 	case SECT_PART_STAR:
 		fprintRTF("\\page");
 		CmdIndent(INDENT_NONE);
-		CmdStartParagraph(FIRST_PAR);
+		CmdStartParagraph(TITLE_PAR);
 		fprintRTF("{\\qc\\b\\fs40 ");
 		ConvertBabelName("PARTNAME");
 		if (code == SECT_PART) {
@@ -695,7 +709,7 @@ parameter: code: type of section-recursion-level
 	case SECT_CHAPTER_STAR:
 		fprintRTF("\\page");
 		CmdIndent(INDENT_NONE);
-		CmdStartParagraph(FIRST_PAR);
+		CmdStartParagraph(TITLE_PAR);
 		fprintRTF("{\\plain\\b\\fs40\\kerning28 ");
 		ConvertBabelName("CHAPTERNAME");
 		if (code == SECT_CHAPTER && getCounter("secnumdepth")>=-1) {
@@ -722,7 +736,7 @@ parameter: code: type of section-recursion-level
 	case SECT_NORM_STAR:
 		CmdVspace(VSPACE_BIG_SKIP);
 		CmdIndent(INDENT_NONE);
-		CmdStartParagraph(FIRST_PAR);
+		CmdStartParagraph(TITLE_PAR);
 		fprintRTF("{\\plain\\b ");
 		if(code == SECT_NORM && getCounter("secnumdepth")>=0) {		
 			incrementCounter("section");
@@ -738,8 +752,8 @@ parameter: code: type of section-recursion-level
 			free(unit_label);
 		}
 		ConvertString(heading);
-		fprintRTF("}");
 		CmdEndParagraph(0);
+		fprintRTF("}");
 		CmdVspace(VSPACE_SMALL_SKIP);
 		break;
 
@@ -747,7 +761,7 @@ parameter: code: type of section-recursion-level
 	case SECT_SUB_STAR:
 		CmdVspace(VSPACE_MEDIUM_SKIP);
 		CmdIndent(INDENT_NONE);
-		CmdStartParagraph(FIRST_PAR);
+		CmdStartParagraph(TITLE_PAR);
 		fprintRTF("{\\plain\\b\\fs24 ");
 		if (code == SECT_SUB && getCounter("secnumdepth")>=1) {
 			incrementCounter("subsection");
@@ -770,7 +784,7 @@ parameter: code: type of section-recursion-level
 	case SECT_SUBSUB_STAR:
 		CmdVspace(VSPACE_MEDIUM_SKIP);
 		CmdIndent(INDENT_NONE);
-		CmdStartParagraph(FIRST_PAR);
+		CmdStartParagraph(TITLE_PAR);
 		fprintRTF("{\\plain\\b\\fs24 ");
 		if (code == SECT_SUBSUB && getCounter("secnumdepth")>=2) {
 			incrementCounter("subsubsection");
@@ -792,7 +806,7 @@ parameter: code: type of section-recursion-level
 	case SECT_SUBSUBSUB_STAR:
 		CmdVspace(VSPACE_MEDIUM_SKIP);
 		CmdIndent(INDENT_NONE);
-		CmdStartParagraph(FIRST_PAR);
+		CmdStartParagraph(TITLE_PAR);
 		fprintRTF("{\\plain\\b ");
 		if (code == SECT_SUBSUBSUB && getCounter("secnumdepth")>=3) {
 			incrementCounter("paragraph");
@@ -813,7 +827,7 @@ parameter: code: type of section-recursion-level
 	case SECT_SUBSUBSUBSUB_STAR:
 		CmdVspace(VSPACE_MEDIUM_SKIP);
 		CmdIndent(INDENT_NONE);
-		CmdStartParagraph(FIRST_PAR);
+		CmdStartParagraph(TITLE_PAR);
 		fprintRTF("{\\plain\\b ");
 		if (code == SECT_SUBSUBSUBSUB && getCounter("secnumdepth")>=4) {
 			incrementCounter("subparagraph");
@@ -834,10 +848,7 @@ parameter: code: type of section-recursion-level
 		g_section_label = NULL;
 	}
 	
-	if (FrenchMode)
-		CmdIndent(INDENT_USUAL);
-	else
-		CmdIndent(INDENT_NONE);
+	CmdIndent(INDENT_NONE);
 }
 
 
@@ -1015,22 +1026,33 @@ CmdQuote(int code)
   globals:   indent which is the left-indent-position
  ******************************************************************************/
 {
-	CmdEndParagraph(0);
+	if (GetTexMode()!=MODE_VERTICAL)
+		CmdEndParagraph(0);
 
 	switch (code) {
 	case (QUOTATION | ON):
-		case (QUOTE | ON):
-		diagnostics(4,"Entering CmdQuote");
+		diagnostics(4,"Entering \\begin{quotation}");
+		CmdVspace(VSPACE_SMALL_SKIP);
 		indent += 512;
+		indent_right +=512;
 		CmdIndent(INDENT_USUAL);
-		CmdStartParagraph(FIRST_PAR);
+		break;
+
+	case (QUOTE     | ON):
+		diagnostics(4,"Entering CmdQuote");
+		CmdVspace(VSPACE_SMALL_SKIP);
+		indent += 512;
+		indent_right +=512;
+		setLength("parindent",0);
+		CmdIndent(INDENT_USUAL);
 		break;
 		
 	case (QUOTATION | OFF):
 	case (QUOTE | OFF):
 		diagnostics(4,"Exiting CmdQuote");
-		CmdIndent(INDENT_INHIBIT);
 		indent -= 512;
+		indent_right -=512;
+		CmdVspace(VSPACE_SMALL_SKIP);
 	}
 }
 
@@ -1050,10 +1072,10 @@ CmdList(int code)
 		vspace += getLength("partopsep");
 	else
 		CmdEndParagraph(0);
-	DirectVspace(vspace);
 	
 	switch (code) {
 		case (ITEMIZE | ON):
+		DirectVspace(vspace);
 		PushEnvironment(ITEMIZE);
 		setLength("parindent", -amount);
 		indent += 2*amount;
@@ -1061,6 +1083,7 @@ CmdList(int code)
 		break;
 
 	case (ENUMERATE | ON):
+		DirectVspace(vspace);
 		PushEnvironment(ENUMERATE);
 		g_enumerate_depth++;
 		CmdItem(RESET_ITEM_COUNTER);
@@ -1070,6 +1093,7 @@ CmdList(int code)
 		break;
 
 	case (DESCRIPTION | ON):
+		DirectVspace(vspace);
 		PushEnvironment(DESCRIPTION);
 		setLength("parindent", -amount);
 		indent += amount;
@@ -1081,8 +1105,8 @@ CmdList(int code)
 	case (DESCRIPTION | OFF):
 		PopEnvironment();
 		CmdIndent(INDENT_USUAL);  /* need to reset INDENT_NONE from CmdItem */
-		CmdIndent(INDENT_INHIBIT);
 		g_processing_list_environment=FALSE;
+		DirectVspace(vspace);
 		break;
 	}
 }
@@ -1112,7 +1136,7 @@ CmdItem(int code)
 	DirectVspace(vspace);
 	
 	CmdIndent(INDENT_USUAL);
-	CmdStartParagraph(FIRST_PAR);
+	CmdStartParagraph(ANY_PAR);
 	
 	itemlabel = getBracketParam();
 	if (itemlabel) {	/* \item[label] */
@@ -1129,10 +1153,12 @@ CmdItem(int code)
 	
 	switch (code) {
 	case ITEMIZE:
-		if (FrenchMode) 
-			fprintRTF("\\endash\\tab ");
-		else
-			fprintRTF("\\bullet\\tab ");
+		if (!itemlabel) {
+			if (FrenchMode) 
+				fprintRTF("\\endash\\tab ");
+			else
+				fprintRTF("\\bullet\\tab ");
+		}
 		break;
 
 	case ENUMERATE:

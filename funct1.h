@@ -32,6 +32,7 @@ This file is available from http://sourceforge.net/projects/latex2rtf/
 
 #define FIRST_PAR      1
 #define ANY_PAR        2
+#define TITLE_PAR      3
 
 #define INDENT_NONE    1
 #define INDENT_INHIBIT 2
