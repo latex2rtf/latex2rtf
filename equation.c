@@ -1438,7 +1438,6 @@ void CmdOverLine(int code)
 
 {
     char *argument;
-    int size;
 
     argument = getBraceParam();
     diagnostics(4, "CmdOverLine() ... \\overline{%s}", argument);

@@ -141,6 +141,7 @@ static CommandArray commands[] = {
     {"vcenter", CmdAlign, PAR_VCENTER},
 
     /* ---------- LOGOS ------------------- */
+    {"latex", CmdLogo, CMD_LATEX},
     {"LaTeX", CmdLogo, CMD_LATEX},
     {"LaTeXe", CmdLogo, CMD_LATEXE},
     {"TeX", CmdLogo, CMD_TEX},
