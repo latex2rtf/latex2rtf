@@ -312,7 +312,7 @@ parameter: type of operand
 		case 0 : fprintRTF("\\\\in("); break;	
 		case 1 : fprintRTF("\\\\su("); break;
 		case 2 : fprintRTF("\\\\pr("); break;
-		default: error("Illegal code to CmdIntegral");
+		default: diagnostics(ERROR, "Illegal code to CmdIntegral");
 	  }
 
 	if (lower_limit)

@@ -1,4 +1,4 @@
-/*  $Id: parser.c,v 1.24 2001/10/14 18:24:10 prahl Exp $
+/*  $Id: parser.c,v 1.25 2001/10/17 02:48:31 prahl Exp $
 
    Contains declarations for a generic recursive parser for LaTeX code.
 */
@@ -169,7 +169,7 @@ getRawTexChar()
 		thechar = getc(g_parser_file);
 		if (thechar == EOF)
 			if(!feof(g_parser_file)) 
-				error("Unknown error reading latex file\n");
+				diagnostics(ERROR, "Unknown file I/O error reading latex file\n");
 			else
 				thechar = '\0';
 		else if (thechar == CR){                  /* convert CR, CRLF, or LF to \n */
@@ -455,9 +455,11 @@ getSimpleCommand(void)
 	}
 
 	buffer[size] = '\0';
-	if (size == 127)
-		error(" Misplaced brace in command.  Scanned 127 chars looking for end\n");
-
+	if (size == 127){
+		diagnostics(WARNING, "Misplaced brace.");
+		diagnostics(ERROR, "Cannot find close brace in 127 characters");
+	}
+	
 	diagnostics(5, "getSimpleCommand result <%s>", buffer);
 	return strdup(buffer);
 }
@@ -579,10 +581,8 @@ getTexUntil(char * target, int raw)
 		i++;
 	}
 	
-	if (i == 4096) {
-		sprintf(buffer,"Could not find <%s> in 4096 characters", target);
-		error(buffer);
-	}
+	if (i == 4096) 
+		diagnostics(ERROR, "Could not find <%s> in 4096 characters", target);
 	
 	buffer[i-len] = '\0';
 

@@ -1,4 +1,4 @@
-/* $Id: main.h,v 1.23 2001/10/14 18:24:10 prahl Exp $ */
+/* $Id: main.h,v 1.24 2001/10/17 02:48:31 prahl Exp $ */
 
 #undef HAS_NO_GETOPT
 
@@ -43,9 +43,6 @@ char           *strdup(const char *str);
 typedef int     bool;
 
 void            IgnoreTo(char cEnd);
- /* @exits@ */ void numerror(int num);
- /* @exits@ */ void error(char *text);
- /* @dependent@ */ FILE *open_cfg(const char *);
 void            diagnostics(int level, char *format,...);
 /* level values */
 
@@ -70,10 +67,6 @@ bool            rtf_restrict(int major, int minor);
 #define RIGHT 'r'
 #define CENTERED 'c'
 #define JUSTIFIED 'j'
-
-enum TexCharSetKind {
-	SEVEN_BIT, ISO_8859_1
-};
 
 #define PATHMAX 255
 

@@ -1,4 +1,4 @@
-/* $Id: convert.c,v 1.13 2001/10/14 18:24:10 prahl Exp $ 
+/* $Id: convert.c,v 1.14 2001/10/17 02:48:31 prahl Exp $ 
 	purpose: ConvertString(), Convert(), TranslateCommand() 
 	
 TeX has six modes according to the TeX Book:
@@ -52,7 +52,6 @@ correctly, as well as vertical and horizontal space.
 
 static bool     TranslateCommand();	/* converts commands */
 
-extern enum   TexCharSetKind TexCharSet;
 static int    ret = 0;
 static int g_TeX_mode = MODE_VERTICAL;
 

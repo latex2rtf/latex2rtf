@@ -4,7 +4,6 @@ Bugs:
 	Improve font sizes in \section etc.
 	
 Features:
-	Eliminate need for temporary files to process ConvertString()
 	Add Field support for simple math arrays
 	Add RTF support for \label, \ref, \pageref ...
 	Add support for \usepackage{fullpage}

@@ -1,4 +1,4 @@
-/* $Id: preamble.c,v 1.21 2001/10/14 18:24:10 prahl Exp $
+/* $Id: preamble.c,v 1.22 2001/10/17 02:48:31 prahl Exp $
 
 purpose : Handles LaTeX commands that should only occur in the preamble.
           These are gathered together because the entire preamble must be
@@ -23,7 +23,6 @@ purpose : Handles LaTeX commands that should only occur in the preamble.
 #include "counters.h"
 
 extern bool   pagestyledefined;
-extern enum   TexCharSetKind TexCharSet;
 
 static bool   g_preambleTwoside  = FALSE;
 static bool   g_preambleTwocolumn= FALSE;

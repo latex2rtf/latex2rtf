@@ -108,7 +108,7 @@ SOURCES=commands.c commands.h chars.c chars.h direct.c direct.h encode.c encode.
     l2r_fonts.h funct1.c funct1.h tables.c tables.h ignore.c ignore.h main.c \
     main.h stack.c stack.h version.h cfg.c cfg.h util.c util.h parser.c parser.h \
     lengths.c lengths.h counters.c counters.h letterformat.c letterformat.h \
-    preamble.c preamble.h equation.c equation.h convert.c convert.h biblio.c biblio.h\
+    preamble.c preamble.h equation.c equation.h convert.c convert.h xref.c xref.h\
     Makefile README README.DOS README.Mac Copyright\
     mygetopt.c optind.c version \
     debian.README debian.control debian.rules ChangeLog l2r.bat\
@@ -141,7 +141,7 @@ TEST=   test/Makefile \
 
 OBJS=l2r_fonts.o direct.o encode.o commands.o stack.o funct1.o tables.o \
 	chars.o ignore.o cfg.o main.o util.o parser.o mygetopt.o lengths.o counters.o \
-	preamble.o letterformat.o equation.o convert.o biblio.o
+	preamble.o letterformat.o equation.o convert.o xref.o
 
 ARCH="`dpkg --print-architecture`"
 

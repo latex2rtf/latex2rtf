@@ -1,4 +1,4 @@
-/* $Id: ignore.c,v 1.17 2001/10/12 05:45:07 prahl Exp $
+/* $Id: ignore.c,v 1.18 2001/10/17 02:48:31 prahl Exp $
 
   purpose : ignores variable-name-commands which can't be converted from LaTeX2Rtf
 	    (variable-command-formats must be added by the user in the file
@@ -70,7 +70,7 @@ returns : TRUE if variable was ignored correctly, otherwise FALSE
 		char           *str;
 		str = malloc(strlen(command) + 5);	/* envelope: end{..} */
 		if (str == NULL)
-			error(" malloc error -> out of memory!\n");
+			diagnostics(ERROR, "malloc error -> out of memory!\n");
 		strcpy(str, "end{");
 		strcat(str, command);
 		strcat(str, "}");

@@ -1,4 +1,4 @@
-/* $Id: l2r_fonts.c,v 1.21 2001/10/13 20:04:56 prahl Exp $
+/* $Id: l2r_fonts.c,v 1.22 2001/10/17 02:48:31 prahl Exp $
 
 	All changes to font size, font style, and font face are 
 	handled in this file.  Explicit changing of font characteristics
@@ -627,7 +627,7 @@ void
 PushFontSettings(void)
 {
 	if (FontInfoDepth == MAX_FONT_INFO_DEPTH)
-		error("FontInfoDepth too large, cannot PushFontSettings()!");
+		diagnostics(ERROR, "FontInfoDepth too large, cannot PushFontSettings()!");
 	
 	RtfFontInfo[FontInfoDepth+1].size = RtfFontInfo[FontInfoDepth].size;
 	RtfFontInfo[FontInfoDepth+1].family = RtfFontInfo[FontInfoDepth].family;
@@ -645,7 +645,7 @@ void
 PopFontSettings(void)
 {
 	if (FontInfoDepth == 0)
-		error("FontInfoDepth = 0, cannot PopFontSettings()!");
+		diagnostics(ERROR, "FontInfoDepth = 0, cannot PopFontSettings()!");
 	
 	FontInfoDepth--;
 	diagnostics(6,"PopFontSettings depth=%d, family=%d, size=%d, shape=%d, series=%d",\

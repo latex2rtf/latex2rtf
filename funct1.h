@@ -1,4 +1,4 @@
-/* $Id: funct1.h,v 1.20 2001/10/12 05:45:07 prahl Exp $ */
+/* $Id: funct1.h,v 1.21 2001/10/17 02:48:31 prahl Exp $ */
 
 #define AST_FORM 100
 #define EMPHASIZE 1
@@ -81,18 +81,6 @@ void            GermanPrint(int code);
 #define GP_RDBL 5
 
 void            CmdIgnoreLet(int code);
-
-#define LABEL 1
-#define REF 2
-#define PAGEREF 3
-
-/* LEG190498 Start */
-#define HYPER 100
-#define HYPERREF HYPER+REF
-#define HYPERPAGEREF HYPER+PAGEREF
-/* LEG190498 End */
-
-void            CmdLabel(int code);
 void            CmdIgnoreDef(int code);
 void            CmdItem(int code);
 
@@ -101,8 +89,6 @@ void            CmdItem(int code);
 #define BOTH_SIDES  348
 #define LEFT_SIDE  349
 /* LEG030598 End */
-
-int             ScanAux(char *token, char *reference, int code);
 
 #define FIGURE 1
 #define PICTURE 2

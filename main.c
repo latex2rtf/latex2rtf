@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.28 2001/10/14 18:24:10 prahl Exp $ */
+/* $Id: main.c,v 1.29 2001/10/17 02:48:31 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -22,7 +22,7 @@
 #include "lengths.h"
 #include "counters.h"
 #include "preamble.h"
-#include "biblio.h"
+#include "xref.h"
 
 FILE           *fRtf = (FILE *) NULL;	/* file pointer to RTF file */
 char           *input = NULL;
@@ -68,17 +68,8 @@ int             indent = 0;
 char            alignment = JUSTIFIED;	/* default for justified: */
 
 int             RecursionLevel = 0;
-int             tabcounter = 0;
 bool            twocolumn = FALSE;
 bool            titlepage = FALSE;
-bool            tabbing_on = FALSE;
-bool            tabbing_return = FALSE;
-bool            tabbing_on_itself = FALSE;
-long          	pos_begin_kill;
-
-int             colCount;			/* number of columns in a tabular environment */
-int             actCol;				/* actual column in the tabular environment */
-char           *colFmt = NULL;
 
 static void     OpenRtfFile(char *filename, FILE ** f);
 static void     CloseRtf(FILE ** f);
@@ -144,10 +135,9 @@ globals: initializes in- and outputfile fRtf,
 
 	if (argc > optind + 1 || errflag) {
 		fprintf(stderr, "%s: Usage: %s [-V] [-l] [-o outfile]"
-		" [-a auxfile] [-b bblfile] [ -i languagefile ] inputfile\n",
+		" [-a auxfile] [-b bblfile] [-i languagefile] inputfile\n",
 			progname, progname);
-		fprintf(stderr, "-l\t Latin-1 (= ISO 8859-1) special characters will be\n");
-		fprintf(stderr, "\t converted into RTF-Commands!\n");
+		fprintf(stderr, "-l\t use ISO 8859-1 charset");
 		return (1);
 	}
 	
@@ -160,11 +150,11 @@ globals: initializes in- and outputfile fRtf,
 
 		if ((s = strrchr(s, '.')) == NULL) {
 			if ((input = malloc(strlen(argv[optind]) + 4)) == NULL)
-				error(" malloc error -> out of memory!\n");
+				diagnostics(ERROR, " malloc error -> out of memory!\n");
 			strcpy(input, argv[optind]);
 			strcat(input, ".tex");
 		} else if (strcmp(s, ".tex"))
-			error("latex files must end with .tex");
+			diagnostics(ERROR, "latex files must end with .tex");
 		else
 			input = argv[optind];
 
@@ -172,7 +162,7 @@ globals: initializes in- and outputfile fRtf,
 
 		/* create the .rtf filename */
 		if ((newrtf = malloc(strlen(input) + 5)) == NULL)
-			error(" malloc error -> out of memory!\n");
+			diagnostics(ERROR, " malloc error -> out of memory!\n");
 		strcpy(newrtf, input);
 		if ((s = strrchr(newrtf, '.')) == NULL || strcmp(s, ".tex") != 0)
 			strcat(newrtf, ".rtf");
@@ -186,7 +176,7 @@ globals: initializes in- and outputfile fRtf,
 		char           *s;
 		if (input != NULL) {
 			if ((AuxName = malloc(strlen(input) + 5)) == NULL)
-				error(" malloc error -> out of memory!\n");
+				diagnostics(ERROR, " malloc error -> out of memory!\n");
 			strcpy(AuxName, input);
 			if ((s = strrchr(AuxName, '.')) == NULL || strcmp(s, ".tex") != 0)
 				strcat(AuxName, ".aux");
@@ -194,7 +184,7 @@ globals: initializes in- and outputfile fRtf,
 				strcpy(s, ".aux");
 		} else {
 			if ((AuxName = malloc(1)) == NULL)
-				error(" malloc error -> out of memory!\n");
+				diagnostics(ERROR, " malloc error -> out of memory!\n");
 			*AuxName = '\0';
 		}
 	}
@@ -203,7 +193,7 @@ globals: initializes in- and outputfile fRtf,
 		char           *s;
 		if (input != NULL) {
 			if ((BblName = malloc(strlen(input) + 5)) == NULL)
-				error(" malloc error -> out of memory!\n");
+				diagnostics(ERROR, " malloc error -> out of memory!\n");
 			strcpy(BblName, input);
 			if ((s = strrchr(BblName, '.')) == NULL || strcmp(s, ".tex") != 0)
 				strcat(BblName, ".bbl");
@@ -211,7 +201,7 @@ globals: initializes in- and outputfile fRtf,
 				strcpy(s, ".bbl");
 		} else {
 			if ((BblName = malloc(1)) == NULL)
-				error(" malloc error -> out of memory!\n");
+				diagnostics(ERROR, " malloc error -> out of memory!\n");
 			BblName = '\0';
 		}
 	}
@@ -254,62 +244,6 @@ rtf_restrict(int major, int minor)
 	return ((major <= rtf_major) && (minor <= rtf_minor));
 }
 
-void 
-error(char *text)
-/****************************************************************************
-purpose: writes error message
-globals: reads progname;
- ****************************************************************************/
-{
-	fprintf(stderr, "\nERROR: %s\n", text);
-	exit(EXIT_FAILURE);
-}
-
-void 
-numerror(int num)
-/****************************************************************************
-purpose: writes error message identified by number - for messages on many
-	 places in code. Calls function error.
- ****************************************************************************/
-{
-
-	char            text[1024];
-	int linenumber = CurrentLineNumber();
-	char *latexname = CurrentFileName();
-
-	switch (num) {
-	case ERR_EOF_INPUT:
-		sprintf(text, "%s%s%s%d%s", "unexpected end of input file in: ", latexname, " at linenumber: ", linenumber, "\n");
-		error(text);
-		/* @notreached@ */
-		break;
-	case ERR_WRONG_COMMAND:
-		sprintf(text, "%s%s%s%d%s", "unexpected command or character in: ", latexname, " at linenumber: ", linenumber, "\n");
-		error(text);
-		/* @notreached@ */
-		break;
-
-	case ERR_NOT_IN_DOCUMENT:
-		sprintf(text, "\nNot in document %s at line %d.  Missing \\begin{document}?\n", latexname, linenumber);
-		error(text);
-		/* @notreached@ */
-		break;
-	case ERR_Param:
-		error("wrong number of parameters\n");
-		/* @notreached@ */
-		break;
-	case ERR_WRONG_COMMAND_IN_TABBING:
-		sprintf(text, "%s%s%s%d%s", "wrong command in Tabbing-kill-command-line in: ", latexname, " at linenumber: ", linenumber, "\n");
-		error(text);
-		/* @notreached@ */
-		break;
-	default:
-		error("internal error");
-		/* @notreached@ */
-		break;
-	}
-}
-
 /*
  * Writes the given warning message in format, ... if global g_verbosity_level is
  * higher or equal then level.  If ??? option is given, i.e. logfile is not
@@ -341,6 +275,7 @@ diagnostics(int level, char *format,...)
 		switch (level) {
 		case 0:
 			fprintf(errfile, "\nError! line=%d ", linenumber);
+			exit(0);
 			break;
 		case 1:
 			fprintf(errfile, "\nWarning line=%d ", linenumber);
@@ -456,10 +391,9 @@ params: filename - name of outputfile, possibly NULL for already open file
 		 * --V.Menkov
 		 */
 
-		if ((*f = fopen(filename, "w")) == NULL) {	/* open file */
-			fprintf(stderr, "Error opening RTF file %s\n", filename);
-			exit(EXIT_FAILURE);
-		}
+		if ((*f = fopen(filename, "w")) == NULL) 	/* open file */
+			diagnostics(ERROR,  "Error opening RTF file %s\n", filename);
+		
 	}
 }
 

@@ -1,4 +1,4 @@
-/* $Id: tables.c,v 1.8 2001/10/13 20:04:56 prahl Exp $
+/* $Id: tables.c,v 1.9 2001/10/17 02:48:31 prahl Exp $
 
    Translation of tabbing and tabular environments
 */
@@ -18,10 +18,53 @@
 #include "parser.h"
 #include "counters.h"
 
+int             tabcounter = 0;
+bool            tabbing_on = FALSE;
+bool            tabbing_return = FALSE;
+bool            tabbing_on_itself = FALSE;
+long          	pos_begin_kill;
+
+int             colCount;			/* number of columns in a tabular environment */
+int             actCol;				/* actual column in the tabular environment */
+char           *colFmt = NULL;
+
 static int      tabstoparray[100];
 static int      number_of_tabstops = 0;
 
 static void     Convert_Tabbing_with_kill(void);
+
+static void 
+numerror(int num)
+/****************************************************************************
+purpose: writes error message identified by number - for messages on many
+	 places in code. Calls function error.
+ ****************************************************************************/
+{
+
+	int linenumber = CurrentLineNumber();
+	char *latexname = CurrentFileName();
+
+	switch (num) {
+	case ERR_EOF_INPUT:
+		diagnostics(ERROR, "%s%s%s%d%s", "unexpected end of input file in: ", latexname, " at linenumber: ", linenumber, "\n");
+		break;
+	case ERR_WRONG_COMMAND:
+		diagnostics(ERROR, "%s%s%s%d%s", "unexpected command or character in: ", latexname, " at linenumber: ", linenumber, "\n");
+		break;
+	case ERR_NOT_IN_DOCUMENT:
+		diagnostics(ERROR, "\nNot in document %s at line %d.  Missing \\begin{document}?\n", latexname, linenumber);
+		break;
+	case ERR_Param:
+		diagnostics(ERROR,"wrong number of parameters\n");
+		break;
+	case ERR_WRONG_COMMAND_IN_TABBING:
+		diagnostics(ERROR, "%s%s%s%d%s", "wrong command in Tabbing-kill-command-line in: ", latexname, " at linenumber: ", linenumber, "\n");
+		break;
+	default:
+		diagnostics(ERROR,"internal error");
+		break;
+	}
+}
 
 void 
 CmdTabbing(int code)
@@ -282,7 +325,7 @@ parameter: type of array-environment
 		code &= ~(ON);	/* mask MSB */
 
 		if (g_processing_tabular)
-			error(" Nested tabular and array environments not supported! Giving up! \n");
+			diagnostics(ERROR, "Nested tabular and array environments not supported! Giving up! \n");
 		g_processing_tabular = TRUE;
 
 		dummy = getBracketParam();	/* throw it away */
@@ -301,7 +344,7 @@ parameter: type of array-environment
 		assert(colFmt == NULL);
 		colFmt = (char *) malloc(sizeof(char) * 20);
 		if (colFmt == NULL)
-			error(" malloc error -> out of memory!\n");
+			diagnostics(ERROR, " malloc error -> out of memory!\n");
 		n = 0;
 		colFmt[n++] = ' ';	/* colFmt[0] unused */
 		i = 0;

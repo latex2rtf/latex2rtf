@@ -1,4 +1,4 @@
-/*  $Id: commands.c,v 1.29 2001/10/12 05:45:07 prahl Exp $
+/*  $Id: commands.c,v 1.30 2001/10/17 02:48:31 prahl Exp $
  
     Defines subroutines to translate LaTeX commands to RTF
 */
@@ -17,11 +17,9 @@
 #include "letterformat.h"
 #include "commands.h"
 #include "parser.h"
-#include "biblio.h"
+#include "xref.h"
 #include "ignore.h"
 #include "lengths.h"
-
-void            error(char *);
 
 typedef struct commandtag {
 	char           *cpCommand;			/* LaTeX command name without \ */
@@ -176,9 +174,10 @@ static CommandArray commands[] = {
 	{"moveright", CmdLength, 0},
 	{"footnotemark", CmdIgnoreParameter, One_Opt_No_NormParam},
 	{"footnotetext", CmdIgnoreParameter, One_Opt_One_NormParam},
-	{"label", CmdLabel, LABEL},
-	{"ref", CmdLabel, REF},
-	{"pageref", CmdLabel, PAGEREF},
+	{"label", CmdLabel, LABEL_LABEL},
+	{"ref", CmdLabel, LABEL_REF},
+	{"pageref", CmdLabel, LABEL_PAGEREF},
+	{"cite", CmdLabel, LABEL_CITE},
 	{"bibliography", CmdBibliography, 0},
 	{"bibitem", CmdBibitem, 0},
 	{"newblock", CmdNewblock, 0},
@@ -235,7 +234,6 @@ static CommandArray commands[] = {
 	{"linebreak", CmdIgnoreParameter, One_Opt_No_NormParam},
 	{"nolinebreak", CmdIgnoreParameter, One_Opt_No_NormParam},
 	{"typein", CmdIgnoreParameter, One_Opt_One_NormParam},
-	{"cite", CmdCite, 0},
 	{"marginpar", CmdIgnoreParameter, One_Opt_One_NormParam},
 	{"baselineskip", Cmd_OptParam_Without_braces, 0},
 	{"lineskip", Cmd_OptParam_Without_braces, 0},
@@ -452,9 +450,9 @@ purpose: commands for hyperlatex package
 static CommandArray hyperlatex[] = {
 	{"link", CmdLink, 0},
 	{"xlink", CmdLink, 0},
-	{"Cite", CmdCite, HYPERLATEX},
-	{"Ref", CmdLabel, HYPERREF},
-	{"Pageref", CmdLabel, HYPERPAGEREF},
+	{"Cite", CmdCite, LABEL_HYPERCITE},
+	{"Ref", CmdLabel, LABEL_HYPERREF},
+	{"Pageref", CmdLabel, LABEL_HYPERPAGEREF},
 	{"S", CmdColsep, 0},
 	{"", NULL, 0}
 };				/* end of list */
@@ -600,7 +598,7 @@ globals: changes Environment - array of active environments
 		break;
 
 	default:
-		error("assertion failed at function PushEnvironment");
+		diagnostics(ERROR,"assertion failed at function PushEnvironment");
 	}
 
 	iEnvCount++;

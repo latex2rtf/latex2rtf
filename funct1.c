@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.33 2001/10/14 18:24:10 prahl Exp $ 
+/* $Id: funct1.c,v 1.34 2001/10/17 02:48:31 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -25,11 +25,8 @@ Authors:  Dorner, Granzer, Polzer, Trisko, Schlatterbeck, Lehner, Prahl
 
 extern bool     twocolumn;	/* true if twocolumn-mode is enabled */
 extern int      indent;		/* includes the left margin e.g. for itemize-commands */
-extern enum     TexCharSetKind TexCharSet;
 int 			indent_right;
 
-static void     CmdLabel1_4(int code, char *text);
-static void     CmdLabelOld(int code, char *text);
 void            CmdPagestyle( /* @unused@ */ int code);
 void            CmdHeader(int code);
 char 			*roman_item(int n);
@@ -581,41 +578,6 @@ CmdLength(int code)
 }
 
 void 
-CmdFootNote(int code)
-/******************************************************************************
- purpose: converts footnotes from LaTeX to Rtf
- params : code specifies whether it is a footnote or a thanks-mark
- ******************************************************************************/
-{
-	char           *number;
-	static int      thankno = 1;
-	int             text_ref_upsize, foot_ref_upsize;
-	int				DefFont = DefaultFontFamily();
-	
-	diagnostics(4,"Entering ConvertFootNote");
-	number = getBracketParam();	/* ignored by automatic footnumber generation */
-
-	if (number) free(number);
-	text_ref_upsize = (6 * CurrentFontSize()) / 20;
-	foot_ref_upsize = (6 * CurrentFontSize()) / 20;
-
-	if (code == THANKS) {
-		thankno++;
-		fprintRTF("{\\up%d %d}\n", text_ref_upsize, thankno);
-		fprintRTF("{\\*\\footnote \\pard\\plain\\s246\\f%d",DefFont);
-		fprintRTF("\\fs%d {\\up%d %d}", CurrentFontSize(), foot_ref_upsize, thankno);
-	} else {
-		fprintRTF("{\\up%d\\chftn}\n", text_ref_upsize);
-		fprintRTF("{\\*\\footnote \\pard\\plain\\s246\\f%d",DefFont);
-		fprintRTF("\\fs%d {\\up%d\\chftn}", CurrentFontSize(), foot_ref_upsize);
-	}
-
-	Convert();
-	diagnostics(4,"Exiting CmdFootNote");
-	fprintRTF("}\n ");
-}
-
-void 
 CmdQuote(int code)
 /******************************************************************************
   purpose: handles \begin{quote} ... \end{quote} 
@@ -1035,181 +997,6 @@ CmdIgnoreLet( /* @unused@ */ int code)
 	}
 }
 
-
-/*************************************************************************
- *LEG250498
- * purpose: opens existing aux-file and scans for token, with value
- * reference.  Then outputs the corresponding ref-information to the
- * rtf-file parameters: 
- * code 0 = get the first parameter {refnumber} -> refnumber)
- *      1 = get the first par. of the first {{{sectref}{line}} } -> sectref 
- * 
- * globals: input (name of LaTeX-Inputfile) fRtf rtf-Outputfile
- * returns 1 if target is found otherwise 0
- ************************************************************************/
-
-int 
-ScanAux(char *token, char *reference, int code)
-{
-	static FILE    *fAux = NULL;
-	static char     openbrace = '{';
-	static char     closebrace = '}';
-	char            tokenref[255];	/* should really be allocated dynmically */
-	char            AuxLine[1024];
-	char           *s;
-
-	if (g_aux_file_missing || strlen(reference) == 0) {
-		fprintRTF("?");
-		return 0;
-	}
-	
-	if (fAux == NULL && (fAux = fopen(AuxName, "r")) == NULL) {	/* open .aux file if not
-									 * opened before */
-		diagnostics(WARNING, "No .aux file.  Run LaTeX to create %s\n", AuxName);
-		g_aux_file_missing = TRUE;
-		fprintRTF("?");
-		return 0;
-	}
-	
-	rewind(fAux);
-	sprintf(tokenref, "\\%s{%s}", token, reference);
-
-	while (fgets(AuxLine, 1023, fAux) != NULL) {
-
-		if ((s = strstr(AuxLine, tokenref)) != NULL) {
-			s += strlen(tokenref);
-
-			for (; code >= 0; code--) {	/* Do once or twice depending on code */
-				s = strchr(s, openbrace);
-				if (s == NULL) {	/* no parameter found, print '?' and return */
-					fprintRTF("?");
-					return 0;
-				}
-				s++;
-			}
-
-			while (*s != closebrace && *s != '\0')	/* print the number and exit */
-				fprintRTF("%c", *s++);
-
-			return 1;
-		}
-	}
-
-	diagnostics(WARNING, "\\%s{%s} not found in %s", token, reference, AuxName);
-	fprintRTF("?");
-	return 0;
-}
-
-void
-CmdLabel(int code)
-/******************************************************************************
-  purpose : label, produce rtf-output in dependency of the rtfversion.
-  parameter : code  kind of label, passed through  *** BROKEN by SAP ***
- ******************************************************************************/
-{
-	char           *label;
-	char            cThis;
-
-	label=getBraceParam();
-	
-	switch (code) {
-	
-		case REF:	
-			ScanAux("newlabel", label, 1);
-			break;
-		
-		default:
-			break;
-	}
-	
-	free(label);
-	return;
-	
-	if (code < HYPER) {
-		label = getBraceParam();
-		ungetTexChar(label[strlen(label) - 1]);	/* somewhat screwy */
-	} else {
-		label = hyperref;
-	}
-
-	diagnostics(3, "Generating label/bookmark `%s'", label);
-
-	if (rtf_restrict(1, 1))
-		CmdLabelOld(code, label);
-	if (rtf_restrict(1, 4))
-		CmdLabel1_4(code, label);
-
-	if (code >= HYPER)
-		free(label);
-
-	cThis = getTexChar();
-
-	cThis = getNonSpace();
-
-	cThis = getTexChar();
-
-	if (cThis != '\n')
-		ungetTexChar(cThis);
-
-	/* LEG190498 */
-}
-
-void
-CmdLabel1_4(int code, char *text)
-/******************************************************************************
-  purpose : label
-  parameter : code  kind of label, text name of the label
- ******************************************************************************/
-{
-	switch (code) {
-		case LABEL:
-		/*
-		 * Note that Hyperlabels do not exist, if they are
-		 * encountered it's a severe bug
-		 */
-
-		fprintRTF("{\\*\\bkmkstart %s} {\\*\\bkmkend %s}", text, text);
-		break;
-	case REF:
-	case HYPERREF:
-		fprintRTF("{\\field\\fldlock{\\*\\fldinst REF %s  \\\\n}{\\fldrslt ", text);
-		ScanAux("newlabel", text, 1);
-		fprintRTF("}}");
-		break;
-	case PAGEREF:
-	case HYPERPAGEREF:
-		fprintRTF("{\\field{\\*\\fldinst PAGEREF %s}{\\fldrslt ?}}", text);
-		break;
-	default:
-		diagnostics(ERROR, "Called CmdLabel with wrong Code %d", code);
-	}
-}
-
-
-void
-CmdLabelOld(int code, char *text)
-/******************************************************************************
-     purpose : label
-   parameter : code  kind of label
- ******************************************************************************/
-{
-	switch (code) {
-		case LABEL:
-		fprintRTF("{\\v[LABEL: %s]}", text);
-		break;
-	case REF:
-	case HYPERREF:
-		fprintRTF("{\\v[REF: %s]}", text);
-		break;
-	case PAGEREF:
-	case HYPERPAGEREF:
-		fprintRTF("{\\v[PAGEREF: %s]}", text);
-		break;
-	default:
-		diagnostics(ERROR, "Called CmdLabel with wrong Code %d", code);
-	}
-}
-
 void CmdQuad(int kk)
 /******************************************************************************
  purpose: inserts kk quad spaces (D. Taupin)
@@ -1321,7 +1108,7 @@ CmdLink(int code)
 
 	hyperref = (char *) malloc((strlen(param2) + 1));
 	if (hyperref == NULL)
-		error(" malloc error -> out of memory!\n");
+		diagnostics(ERROR, " malloc error -> out of memory!\n");
 
 	strcpy(hyperref, param2);
 	free(param2);
@@ -1489,7 +1276,7 @@ CmdMultiCol( /* @unused@ */ int code)
 	numColStr[i] = '\0';
 	numCol = strtol(numColStr, &eptr, 10);
 	if (eptr == numColStr)
-		error(" multicolumn: argument num invalid\n");
+		diagnostics(ERROR, " multicolumn: argument num invalid\n");
 
 
 	do {
