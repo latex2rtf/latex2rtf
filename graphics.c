@@ -282,9 +282,9 @@ eps_to_pict(char *s)
 	eps = strdup_together(g_home_dir,s);
 
 	/* create a bitmap version of the eps file */
-	cmd_len = strlen(eps)+strlen(pict_bitmap)+strlen("convert -crop 0x0  ")+1;
+	cmd_len = strlen(eps)+strlen(pict_bitmap)+strlen("convert -crop 0x0 -density ")+40;
 	cmd = (char *) malloc(cmd_len);
-	snprintf(cmd, cmd_len, "convert -crop 0x0 %s %s", eps, pict_bitmap);	
+	snprintf(cmd, cmd_len, "convert -crop 0x0 -density %d %s %s", g_dots_per_inch, eps, pict_bitmap);	
 	diagnostics(2, "system graphics command = [%s]", cmd);
 	err = system(cmd);
 	free(cmd);
@@ -384,9 +384,9 @@ eps_to_png(char *eps)
 
 	strcpy(p,".png");
 	png = strdup_tmp_path(s1);
-	cmd_len=strlen(eps)+strlen(png)+10;
+	cmd_len=strlen(eps)+strlen(png)+40;
 	cmd = (char *) malloc(cmd_len);
-	snprintf(cmd, cmd_len, "convert %s %s", eps, png);	
+	snprintf(cmd, cmd_len, "convert -density %d %s %s", g_dots_per_inch, eps, png);	
 	diagnostics(2, "system graphics command = [%s]", cmd);
 	system(cmd);	
 	
@@ -414,9 +414,9 @@ pdf_to_png(char *pdf)
 
 	strcpy(p,".png");
 	png = strdup_tmp_path(s1);
-	cmd_len=strlen(pdf)+strlen(png)+10;
+	cmd_len=strlen(pdf)+strlen(png)+40;
 	cmd = (char *) malloc(cmd_len);
-	snprintf(cmd, cmd_len, "convert %s %s", pdf, png);	
+	snprintf(cmd, cmd_len, "convert -density %d %s %s", g_dots_per_inch, pdf, png);	
 	diagnostics(2, "system graphics command = [%s]", cmd);
 	system(cmd);	
 	

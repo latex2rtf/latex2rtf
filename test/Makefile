@@ -93,6 +93,8 @@ figtest.rtf: figtest.tex figtest.eps figtestc.ps
 	$(LATEX2RTF) $(OPTIONS) -F figtest
 
 figtest2.rtf: figtest2.tex figtestb.pdf
+	$(LATEX2RTF) $(OPTIONS) -D 300 figtest2
+	mv figtest2.rtf figtest2a.rtf
 	$(LATEX2RTF) $(OPTIONS) figtest2
 
 linux.rtf: linux.tex
