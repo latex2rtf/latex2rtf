@@ -1,4 +1,4 @@
-/*  $Id: parser.c,v 1.41 2002/02/17 14:55:26 prahl Exp $
+/*  $Id: parser.c,v 1.42 2002/02/17 22:01:29 prahl Exp $
 
    Contains declarations for a generic recursive parser for LaTeX code.
 */
@@ -32,7 +32,7 @@ static InputStackType   g_parser_stack[PARSER_SOURCE_MAX];
 
 static int              g_parser_depth = -1;
 static char            *g_parser_string = "stdin";
-static FILE            *g_parser_file   = stdin;
+static FILE            *g_parser_file   = NULL;
 static int 				g_parser_line   = 1;
 static int 				g_parser_include_level=0;
 
