@@ -1,6 +1,6 @@
 \documentclass[a4paper, notitlepage]{report}
 \usepackage[latin1]{inputenc}    % Accept european-encoded (latin1) characters.
-\usepackage{a4wide}              % Wide paper
+\usepackage{a4wide}              % Wide paper -- W.Hennings: this is bad practice
 \usepackage{url}
 \urlstyle{sf}
 % For Swedish reports
@@ -36,7 +36,9 @@
 \usepackage{fancyhdr} 
 \fancyhead[L]{Linux Versus AIX, HP-UX, Tru64 UNIX, Solaris}
 \fancyhead[R]{by César da Silva}
-\footrulewidth 0.5pt % Insert a line above the footer
+%W.Hennings: following line is bad practice and gives error message under MikTeX:
+%\footrulewidth 0.5pt % Insert a line above the footer
+
 \pagestyle{fancy}
 
 %
