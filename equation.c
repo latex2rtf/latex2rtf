@@ -16,118 +16,6 @@
 int g_equation_column = 1;
 
 void
-CmdSuperscript(int code)
-/******************************************************************************
- purpose   : Handles superscripts ^\alpha, ^a, ^{a} and \textsuperscript{a}
- ******************************************************************************/
-{
-	char           *s = NULL;
-	int  size, newsize, upsize;
-
-	if ((s = getBraceParam())) {
-		size = CurrentFontSize();
-		newsize = size / 1.2;
-		upsize = size / 3;
-		fprintRTF("{\\up%d\\fs%d ",upsize,newsize);
-		ConvertString(s);
-		fprintRTF("}");
-		free(s);
-	}
-}
-
-void
-CmdSubscript(int code)
-/******************************************************************************
- purpose   : Handles superscripts ^\alpha, ^a, ^{a}
- ******************************************************************************/
-{
-	char           *s = NULL;
-	int  size, newsize, upsize;
-
-	if ((s = getBraceParam())) {
-		size = CurrentFontSize();
-		newsize = size / 1.2;
-		upsize = size / 3;
-		fprintRTF("{\\dn%d\\fs%d ",upsize,newsize);
-		ConvertString(s);
-		fprintRTF("}");
-		free(s);
-	}
-}
-
-void
-CmdLeftRight(int code)
-/******************************************************************************
- purpose   : Handles \left \right
- 			 to properly handle \left. or \right. would require prescanning the
- 			 entire equation.  
- ******************************************************************************/
-{ 
-	char delim;
-
-	delim = getTexChar();
-	if (delim == '\\')			/* might be \{ or \} */
-		delim = getTexChar();
-	
-	if (code == 0) {
-		diagnostics(4, "CmdLeftRight() ... \\left <%c>", delim);
-
-		if (delim == '.')
-			diagnostics(WARNING, "\\left. not supported");
-		g_processing_fields++;
-		
-		fprintRTF("{\\field{\\*\\fldinst{EQ \\\\b ");
-		if (delim == '(' || delim == '.')
-			fprintRTF("(");
-		else if (delim == '{')
-			fprintRTF("\\\\bc\\\\\\{ (");
-		else 
-			fprintRTF("\\\\bc\\\\%c (", delim);
-
-	} else {
-		g_processing_fields--;
-		fprintRTF(")}}{\\fldrslt{0}}}");
-		if (delim == '.')
-			diagnostics(WARNING, "\\right. not supported");
-		diagnostics(4, "CmdLeftRight() ... \\right <%c>", delim);
-	}
-}
-
-void
-CmdArray(int code)
-/******************************************************************************
- purpose   : Handles \begin{array}[c]{ccc} ... \end{array}
- ******************************************************************************/
-{
-char * v_align, * col_align, *s;
-int n=0;
-
-	if (code & ON) {
-		v_align = getBracketParam();
-		col_align = getBraceParam();
-		diagnostics(4, "CmdArray() ... \\begin{array}[%s]{%s}", v_align?v_align:"", col_align);
-		if (v_align) free(v_align);
-		
-		s = col_align;
-		while (*s) {
-			if (*s == 'c' || *s == 'l' || *s == 'r' ) n++;
-			s++;
-		}
-		free(col_align);
-		
-		fprintRTF("{\\field{\\*\\fldinst{EQ \\\\a \\\\ac \\\\co%d (", n);
-		g_processing_fields++;
-		g_processing_arrays++;
-		
-	} else {
-		fprintRTF(")}}{\\fldrslt{0}}}");
-		diagnostics(4, "CmdArray() ... \\end{array}");
-		g_processing_fields--;
-		g_processing_arrays--;
-	}
-}
-
-void
 CmdNonumber(int code)
 /******************************************************************************
  purpose   : Handles \nonumber to suppress numbering in equations
@@ -135,6 +23,18 @@ CmdNonumber(int code)
 {	
 	if (g_processing_eqnarray || !g_processing_tabular)
 		g_suppress_equation_number = TRUE;
+}
+
+void
+BeginEquation(char * start, char * end)
+{
+
+/* slurp entire equation */
+/* write entire equation as comment if desired */
+/* write bitmap of equation if desired */
+/* write equation with fields */
+/* write EQ if necessary */
+
 }
 
 void
@@ -325,7 +225,7 @@ CmdRoot(int code)
 	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\R(");
 	if (power && strlen(power)>0)
 		ConvertString(power);
-	fprintRTF("%c", FORMULASEP);
+	fprintRTF("%c", g_field_separator);
 	ConvertString(root);
 	fprintRTF(")}{\\fldrslt }}");
 	g_processing_fields--;
@@ -352,7 +252,7 @@ CmdFraction(int code)
 	g_processing_fields++;
 	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\F(");
 	ConvertString(numerator);
-	fprintRTF("%c", FORMULASEP);
+	fprintRTF("%c", g_field_separator);
 	ConvertString(denominator);
 	fprintRTF(")}{\\fldrslt }}");
 	g_processing_fields--;
@@ -404,15 +304,127 @@ parameter: type of operand
 
 	if (lower_limit)
 		ConvertString(lower_limit);
-	fprintRTF("%c", FORMULASEP);
+	fprintRTF("%c", g_field_separator);
 	if (upper_limit)
 		ConvertString(upper_limit);
-	fprintRTF("%c )}{\\fldrslt }}", FORMULASEP);
+	fprintRTF("%c )}{\\fldrslt }}", g_field_separator);
 	g_processing_fields--;
 
 	if (lower_limit)
 		free(lower_limit);
 	if (upper_limit)
 		free(upper_limit);
+}
+
+void
+CmdSuperscript(int code)
+/******************************************************************************
+ purpose   : Handles superscripts ^\alpha, ^a, ^{a} and \textsuperscript{a}
+ ******************************************************************************/
+{
+	char           *s = NULL;
+	int  size, newsize, upsize;
+
+	if ((s = getBraceParam())) {
+		size = CurrentFontSize();
+		newsize = size / 1.2;
+		upsize = size / 3;
+		fprintRTF("{\\up%d\\fs%d ",upsize,newsize);
+		ConvertString(s);
+		fprintRTF("}");
+		free(s);
+	}
+}
+
+void
+CmdSubscript(int code)
+/******************************************************************************
+ purpose   : Handles superscripts ^\alpha, ^a, ^{a}
+ ******************************************************************************/
+{
+	char           *s = NULL;
+	int  size, newsize, upsize;
+
+	if ((s = getBraceParam())) {
+		size = CurrentFontSize();
+		newsize = size / 1.2;
+		upsize = size / 3;
+		fprintRTF("{\\dn%d\\fs%d ",upsize,newsize);
+		ConvertString(s);
+		fprintRTF("}");
+		free(s);
+	}
+}
+
+void
+CmdLeftRight(int code)
+/******************************************************************************
+ purpose   : Handles \left \right
+ 			 to properly handle \left. or \right. would require prescanning the
+ 			 entire equation.  
+ ******************************************************************************/
+{ 
+	char delim;
+
+	delim = getTexChar();
+	if (delim == '\\')			/* might be \{ or \} */
+		delim = getTexChar();
+	
+	if (code == 0) {
+		diagnostics(4, "CmdLeftRight() ... \\left <%c>", delim);
+
+		if (delim == '.')
+			diagnostics(WARNING, "\\left. not supported");
+		g_processing_fields++;
+		
+		fprintRTF("{\\field{\\*\\fldinst{EQ \\\\b ");
+		if (delim == '(' || delim == '.')
+			fprintRTF("(");
+		else if (delim == '{')
+			fprintRTF("\\\\bc\\\\\\{ (");
+		else 
+			fprintRTF("\\\\bc\\\\%c (", delim);
+
+	} else {
+		g_processing_fields--;
+		fprintRTF(")}}{\\fldrslt{0}}}");
+		if (delim == '.')
+			diagnostics(WARNING, "\\right. not supported");
+		diagnostics(4, "CmdLeftRight() ... \\right <%c>", delim);
+	}
+}
+
+void
+CmdArray(int code)
+/******************************************************************************
+ purpose   : Handles \begin{array}[c]{ccc} ... \end{array}
+ ******************************************************************************/
+{
+char * v_align, * col_align, *s;
+int n=0;
+
+	if (code & ON) {
+		v_align = getBracketParam();
+		col_align = getBraceParam();
+		diagnostics(4, "CmdArray() ... \\begin{array}[%s]{%s}", v_align?v_align:"", col_align);
+		if (v_align) free(v_align);
+		
+		s = col_align;
+		while (*s) {
+			if (*s == 'c' || *s == 'l' || *s == 'r' ) n++;
+			s++;
+		}
+		free(col_align);
+		
+		fprintRTF("{\\field{\\*\\fldinst{EQ \\\\a \\\\ac \\\\co%d (", n);
+		g_processing_fields++;
+		g_processing_arrays++;
+		
+	} else {
+		fprintRTF(")}}{\\fldrslt{0}}}");
+		diagnostics(4, "CmdArray() ... \\end{array}");
+		g_processing_fields--;
+		g_processing_arrays--;
+	}
 }
 

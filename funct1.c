@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.51 2001/12/03 04:44:13 prahl Exp $ 
+/* $Id: funct1.c,v 1.52 2001/12/07 05:03:48 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -263,7 +263,7 @@ CmdSlashSlash(int code)
 	if (g_processing_arrays) {		/* array */
 		cThis=getNonBlank();
 		ungetTexChar(cThis);
-		fprintRTF("%c",FORMULASEP);
+		fprintRTF("%c",g_field_separator);
 		return;
 	}
 		

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.44 2001/12/03 04:44:13 prahl Exp $ */
+/* $Id: main.c,v 1.45 2001/12/07 05:03:48 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -65,6 +65,8 @@ bool            g_processing_tabular = FALSE;
 int				g_processing_arrays = 0;
 int 			g_processing_fields = 0;
 bool			g_RTF_warnings = FALSE;
+char           *g_config_path = NULL;
+extern char     g_field_separator = ',';
 
 int             indent = 0;
 char            alignment = JUSTIFIED;	/* default for justified: */
@@ -101,7 +103,7 @@ globals: initializes in- and outputfile fRtf,
 
 	progname = argv[0];
 	optind = 1;
-	while ((c = getopt(argc, argv, "lhvVWZ:o:a:b:d:i:")) != EOF) {
+	while ((c = getopt(argc, argv, "lhvVWZ:o:a:b:d:i:P:")) != EOF) {
 		switch (c) {
 		case 'a':
 			AuxName = optarg;
@@ -133,6 +135,12 @@ globals: initializes in- and outputfile fRtf,
 			return (0);
 		case 'C':
 			setPackageInputenc(optarg);
+			break;
+		case 'P':
+			g_config_path = strdup(optarg);
+			break;
+		case 'S':
+			g_field_separator = ';';
 			break;
 		case 'V':
 			fprintf(stderr, "%s: %s\n", progname, Version);
@@ -288,18 +296,20 @@ printhelp(void)
 {
     	fprintf(stderr, "Usage:\n\t %s [options] input[.tex]\n", progname);
 		fprintf(stderr, "Options:\n");
-		fprintf(stderr, "\t -a auxfile    : use LaTeX auxfile rather than input.aux\n");
-		fprintf(stderr, "\t -b bblfile    : use BibTex bblfile rather than input.bbl)\n");
-		fprintf(stderr, "\t -d#           : debug level (# is 0-6)\n");
-		fprintf(stderr, "\t -h            : display this help\n");
-		fprintf(stderr, "\t -i language   : babel idiom (german, french)\n");
-		fprintf(stderr, "\t -l            : use latin1 encoding (default)\n");
-		fprintf(stderr, "\t -o outputfile : RTF output other than input.rtf\n");
-		fprintf(stderr, "\t -v            : version information\n");
-		fprintf(stderr, "\t -C codepage   : input encoding (latin1, cp850, etc.)\n");
-		fprintf(stderr, "\t -V            : version information\n");
-		fprintf(stderr, "\t -W            : include warnings in RTF\n");
-		fprintf(stderr, "\t -Z#           : add # of '}'s at end of rtf file (# is 0-9)\n\n");
+		fprintf(stderr, "\t -a auxfile       : use LaTeX auxfile rather than input.aux\n");
+		fprintf(stderr, "\t -b bblfile       : use BibTex bblfile rather than input.bbl)\n");
+		fprintf(stderr, "\t -d#              : debug level (# is 0-6)\n");
+		fprintf(stderr, "\t -h               : display this help\n");
+		fprintf(stderr, "\t -i language      : babel idiom (german, french)\n");
+		fprintf(stderr, "\t -l               : use latin1 encoding (default)\n");
+		fprintf(stderr, "\t -o outputfile    : RTF output other than input.rtf\n");
+		fprintf(stderr, "\t -v               : version information\n");
+		fprintf(stderr, "\t -C codepage      : input encoding (latin1, cp850, etc.)\n");
+		fprintf(stderr, "\t -P /path/to/cfg/ : version information\n");
+		fprintf(stderr, "\t -V               : version information\n");
+		fprintf(stderr, "\t -S               : use ';' to separate args in RTF fields\n");
+		fprintf(stderr, "\t -W               : include warnings in RTF\n");
+		fprintf(stderr, "\t -Z#              : add # of '}'s at end of rtf file (# is 0-9)\n\n");
 		fprintf(stderr, "RTFPATH designates the directory for configuration files (*.cfg)\n");
 		fprintf(stderr, "\t RTFPATH = '%s'\n\n", getenv("RTFPATH"));
 }

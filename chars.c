@@ -1,4 +1,4 @@
-/* $Id: chars.c,v 1.19 2001/11/23 21:43:48 prahl Exp $
+/* $Id: chars.c,v 1.20 2001/12/07 05:03:48 prahl Exp $
 
    purpose : handles special characters and logos
 */
@@ -59,18 +59,20 @@ CmdUmlauteChar(int code)
 	case 'e':
 		fprintRTF("\\'eb");
 		break;
-	case 'i':
-		fprintRTF("\\'ef");
-		break;
 	case 'y':
 		fprintRTF("\\'ff");
 		break;
 
 	default:
+		if (strcmp(cParam,"\\i")==0) {
+			fprintRTF("\\'ef");
+			break;
+		}
+
 		num = RtfFontNumber("MT Extra");
 		fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(");
 		ConvertString(cParam);
-		fprintRTF("%c\\\\S(\\f%d\\'26\\'26))}", FORMULASEP, num);
+		fprintRTF("%c\\\\S(\\f%d\\'26\\'26))}", g_field_separator, num);
 		fprintRTF("{\\fldrslt }}");
 		break;
 
@@ -124,7 +126,7 @@ CmdLApostrophChar( int code)
 		num = RtfFontNumber("MT Extra");
 		fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(");
 		ConvertString(cParam);
-		fprintRTF("%c\\\\S(\\f%d\\'23))}", FORMULASEP, num);
+		fprintRTF("%c\\\\S(\\f%d\\'23))}", g_field_separator, num);
 		fprintRTF("{\\fldrslt }}");
 		break;
 	}
@@ -181,7 +183,7 @@ CmdRApostrophChar(int code)
 	default:
 		fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(");
 		ConvertString(cParam);
-		fprintRTF("%c\\\\S(\\'b4))}", FORMULASEP);
+		fprintRTF("%c\\\\S(\\'b4))}", g_field_separator);
 		fprintRTF("{\\fldrslt }}");
 		break;
 
@@ -201,7 +203,7 @@ CmdMacronChar(int code)
 
 	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(");
 	ConvertString(cParam);
-	fprintRTF("%c\\\\S(\\'af))}", FORMULASEP);
+	fprintRTF("%c\\\\S(\\'af))}", g_field_separator);
 	fprintRTF("{\\fldrslt }}");
 
 	free(cParam);
@@ -258,7 +260,7 @@ CmdHatChar(int code)
 		num = RtfFontNumber("MT Extra");
 		fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(");
 		ConvertString(cParam);
-		fprintRTF("%c\\\\S(\\f%d\\'24))}", FORMULASEP, num);
+		fprintRTF("%c\\\\S(\\f%d\\'24))}", g_field_separator, num);
 		fprintRTF("{\\fldrslt }}");
 		break;
 	}
@@ -297,7 +299,7 @@ CmdOaccentChar(int code)
 	default:
 		fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(");
 		ConvertString(cParam);
-		fprintRTF("%c\\\\S(\\'b0))}", FORMULASEP);
+		fprintRTF("%c\\\\S(\\'b0))}", g_field_separator);
 		fprintRTF("{\\fldrslt }}");
 		break;
 	}
@@ -341,7 +343,7 @@ CmdTildeChar( int code)
 		num = RtfFontNumber("MT Extra");
 		fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(");
 		ConvertString(cParam);
-		fprintRTF("%c\\\\S(\\f%d\\'25))}", FORMULASEP, num);
+		fprintRTF("%c\\\\S(\\f%d\\'25))}", g_field_separator, num);
 		fprintRTF("{\\fldrslt }}");
 		break;
 	}
@@ -371,7 +373,7 @@ CmdCedillaChar(int code)
 		down = CurrentFontSize() / 4;
 		fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(");
 		ConvertString(cParam);
-		fprintRTF("%c\\dn%d\\'b8)}", FORMULASEP,down);
+		fprintRTF("%c\\dn%d\\'b8)}", g_field_separator,down);
 		fprintRTF("{\\fldrslt }}");
 		break;
 	}
@@ -423,7 +425,7 @@ CmdVecChar(int code)
 
 	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(");
 	ConvertString(cParam);
-	fprintRTF("%c\\\\S(\\up%d\\f%d\\'72))}", FORMULASEP, upsize, num);
+	fprintRTF("%c\\\\S(\\up%d\\f%d\\'72))}", g_field_separator, upsize, num);
 	fprintRTF("{\\fldrslt }}");
 	free(cParam);
 }
@@ -451,8 +453,8 @@ CmdBreveChar(int code)
 	upsize = CurrentFontSize()/2;
 	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(");
 	ConvertString(cParam);
-/*	fprintRTF("%c\\\\S(\\up%d u))}", FORMULASEP, upsize);*/
-	fprintRTF("%c\\\\S(\\up%d\\f%d \\\\())}", FORMULASEP, upsize, num);
+/*	fprintRTF("%c\\\\S(\\up%d u))}", g_field_separator, upsize);*/
+	fprintRTF("%c\\\\S(\\up%d\\f%d \\\\())}", g_field_separator, upsize, num);
 	fprintRTF("{\\fldrslt }}");
 	free(cParam);
 }
@@ -472,7 +474,7 @@ CmdUnderdotChar(int code)
 
 	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(");
 	ConvertString(cParam);
-	fprintRTF("%c\\\\S(\\dn%d\\'2e))}", FORMULASEP, dnsize);
+	fprintRTF("%c\\\\S(\\dn%d\\'2e))}", g_field_separator, dnsize);
 	fprintRTF("{\\fldrslt }}");
 
 	free(cParam);
@@ -498,7 +500,7 @@ CmdHacekChar(int code)
 
 	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(");
 	ConvertString(cParam);
-	fprintRTF("%c\\\\S(\\up%d\\f%d\\'da))}", FORMULASEP, upsize, num);
+	fprintRTF("%c\\\\S(\\up%d\\f%d\\'da))}", g_field_separator, upsize, num);
 	fprintRTF("{\\fldrslt }}");
 
 	free(cParam);
@@ -522,7 +524,7 @@ CmdDotChar(int code)
 
 	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(");
 	ConvertString(cParam);
-	fprintRTF("%c\\\\S(\\f%d\\'26))}", FORMULASEP, num);
+	fprintRTF("%c\\\\S(\\f%d\\'26))}", g_field_separator, num);
 	fprintRTF("{\\fldrslt }}");
 
 	free(cParam);
@@ -547,7 +549,7 @@ CmdUnderbarChar(int code)
 	if (cParam[0]) {
 		fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(");
 		ConvertString(cParam);
-		fprintRTF("%c_)}", FORMULASEP);
+		fprintRTF("%c_)}", g_field_separator);
 		fprintRTF("{\\fldrslt }}");
 	}
 	free(cParam);

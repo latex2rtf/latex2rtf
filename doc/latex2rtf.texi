@@ -144,9 +144,9 @@ on @uref{http://sourceforge.net/projects/latex2rtf/,SourceForge} where there are
 and developers
 @email{latex2rtf-developers@@lists.sourceforge.net}.
 For subscription to these lists:
-@email{mail_to_latex2rtf-users-request@@lists.sourceforge.net?subject=subscribe}
+@email{latex2rtf-users-request@@lists.sourceforge.net?subject=subscribe}
 or
-@email{mail_to_latex2rtf-developers-request@@lists.sourceforge.net?subject=subscribe}
+@email{latex2rtf-developers-request@@lists.sourceforge.net?subject=subscribe}
 
 As of December 2001, version 1.9.12 of @ltor{} is available. 
 One day there shall be a jump to Version 2.0, but this is not history but future ...
@@ -307,6 +307,15 @@ The @acronym{UNIX} and Mac distributions do not contain an executable for DOS / 
 Instead, get the DOS / Windows port as file @file{latex2rtf-x.xx_dos.zip}
 (where x.xx is the version number) from  @uref{http://sourceforge.net/projects/latex2rtf/}
 
+The MSDOS release contains two
+precompiled executables:
+@itemize @bullet
+@item latex2rt.exe which uses the comma as field delimiter; it is called by l2r.bat,
+@item lt2rtsem.exe which uses the semicolon as the field delimiter; it is called by l2rsem.bat.
+@end itemize
+(We hope that some day we are able to implement this as a program option so that we'd need
+only one executable.)
+
 @node Macintosh,Problems Compiling,Windows,Installing LaTeX2RTF
 @section Macintosh
 
@@ -463,6 +472,14 @@ is not needed if the above command is already in the @latexe{} file.  You may se
 of the following code pages: ansinew, applemac, cp437, cp437de, cp850, cp852, cp865,
 decmulti, cp1250, cp1252, latin1, latin2, latin3, latin4, latin5, latin9, and next.  The
 default behavior is to use ansinew (code page 1252).
+
+@item -L /path/to/cfg
+used to specify the directory that contains the @code{.cfg} files
+
+@item -S
+used to specify that semicolons should be used to separate arguments in RTF fields
+(instead of commas).  Typically this is needed when the machine that opens the RTF file
+has a version of Word that uses `,' for decimal points.
 
 @item -V 
 prints version information on standard output and exits.
@@ -626,9 +643,20 @@ gets processed.  It is also possible to confuse the @ltor{} in eqnarray environm
 @node Equations, Tables, Cross References, Features
 @section Equations
 
-Equations are now converted to RTF fields.  This is an interim solution.  
-Ideally the equations would become OLE equation objects in the RTF file,
-but this needs to be implemented.
+Equations are now converted to EQ fields.  This is an interim solution (for some
+definition of ``interim''). Ideally the equations would become OLE equation objects in the
+RTF file, but this needs to be implemented.
+
+The current implementation converts equations to EQ fields. Some functions in the EQ
+fields have two or more parameters with a separator between each two. Unfortunately, the
+interpretation of these separators depends on the country specific settings in the MS
+Windows system in which the rtf file is opened. E.g. in English versions of MS Windows,
+the default parameter separator is the comma, in German versions the default is the
+semicolon. If the parameter in the RTF file does not match the Windows setting, some EQ
+fields are not interpreted correctly. You can check and set the separator in [Windows
+control panel - country settings - numbers - list separator]. By default, latex2rtf uses
+the comma as separator. If latex2rtf is compiled with the compile switch  -DSEMICOLONSEP ,
+the semicolon is inserted as parameter delimiter. 
 
 It would be nice to have four separate levels of equation translation
 @enumerate 
@@ -984,7 +1012,7 @@ It would be useful to implement the GNU long option names, e.g.: `--debug',
 @node Reporting Bugs, Todo List, Known Bugs, LaTeX2RTF under Development
 @section Reporting Bugs 
 
-Report bugs to @email{Jorge.Lehner@@gmx.net,Georg Lehner)}. Ralf Schlatterbeck is no
+Report bugs to @email{Jorge.Lehner@@gmx.net,Georg Lehner}. Ralf Schlatterbeck is no
 longer the maintainer. Please provide the following information and observe the following
 guidelines when reporting a bug in the program:
 @enumerate

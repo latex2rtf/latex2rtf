@@ -1,4 +1,4 @@
-/* $Id: encode.c,v 1.8 2001/10/27 14:19:31 prahl Exp $ 
+/* $Id: encode.c,v 1.9 2001/12/07 05:03:48 prahl Exp $ 
    Translate high bit characters into RTF assuming that
    the default codepage is ansi (1252)
    
@@ -18,14 +18,14 @@ static void put_breve_char(char c)
 	int num = RtfFontNumber("MT Extra");	
 	int upsize = CurrentFontSize()/2;
 	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(%c",c);
-	fprintRTF("%c\\\\S(\\up%d\\f%d \\\\())}", FORMULASEP, upsize, num);
+	fprintRTF("%c\\\\S(\\up%d\\f%d \\\\())}", g_field_separator, upsize, num);
 	fprintRTF("{\\fldrslt }}");
 }
 
 static void put_acute_char(char c)
 {
 	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(%c",c);
-	fprintRTF("%c\\\\S(\\'b4))}", FORMULASEP);
+	fprintRTF("%c\\\\S(\\'b4))}", g_field_separator);
 	fprintRTF("{\\fldrslt }}");
 }
 
@@ -33,21 +33,21 @@ static void put_cedilla_char(char c)
 {
 	int down = CurrentFontSize() / 4;
 	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(%c",c);
-	fprintRTF("%c\\\\S(\\dn%d\\'b8))}", FORMULASEP,down);
+	fprintRTF("%c\\\\S(\\dn%d\\'b8))}", g_field_separator,down);
 	fprintRTF("{\\fldrslt }}");
 }
 
 static void put_ring_char(char c)
 {
 	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(%c",c);
-	fprintRTF("%c\\\\S(\\'b0))}", FORMULASEP);
+	fprintRTF("%c\\\\S(\\'b0))}", g_field_separator);
 	fprintRTF("{\\fldrslt }}");
 }
 
 static void put_macron_char(char c)
 {
 	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(%c",c);
-	fprintRTF("%c\\\\S(\\'af))}", FORMULASEP);
+	fprintRTF("%c\\\\S(\\'af))}", g_field_separator);
 	fprintRTF("{\\fldrslt }}");
 }
 
@@ -55,7 +55,7 @@ static void put_tilde_char(char c)
 {
 	int num = RtfFontNumber("MT Extra");
 	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(%c",c);
-	fprintRTF("%c\\\\S(\\f%d\\'25))}", FORMULASEP, num);
+	fprintRTF("%c\\\\S(\\f%d\\'25))}", g_field_separator, num);
 	fprintRTF("{\\fldrslt }}");
 }
 
@@ -63,7 +63,7 @@ static void put_dot_char(char c)
 {
 	int num = RtfFontNumber("MT Extra");
 	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(%c",c);
-	fprintRTF("%c\\\\S(\\f%d\\'26))}", FORMULASEP, num);
+	fprintRTF("%c\\\\S(\\f%d\\'26))}", g_field_separator, num);
 	fprintRTF("{\\fldrslt }}");
 }
 

@@ -1,4 +1,4 @@
-/* $Id: convert.c,v 1.23 2001/11/13 05:43:56 prahl Exp $ 
+/* $Id: convert.c,v 1.24 2001/12/07 05:03:48 prahl Exp $ 
 	purpose: ConvertString(), Convert(), TranslateCommand() 
 	
 TeX has six modes according to the TeX Book:
@@ -275,7 +275,7 @@ globals: fTex, fRtf and all global flags for convert (see above)
 
 		case '&':
 			if (g_processing_arrays) {
-				fprintRTF("%c",FORMULASEP);
+				fprintRTF("%c",g_field_separator);
 				break;
 			}
 
@@ -365,7 +365,9 @@ globals: fTex, fRtf and all global flags for convert (see above)
 					ungetTexChar(cNext);
 					fprintRTF("<");
 				}
-			}
+			} else
+				fprintRTF("<");
+
 			break;
 
 		case '>':
@@ -378,7 +380,8 @@ globals: fTex, fRtf and all global flags for convert (see above)
 					ungetTexChar(cNext);
 					fprintRTF(">");
 				}
-			}
+			} else
+				fprintRTF(">");
 			break;
 
 		case '!':
