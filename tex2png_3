@@ -41,13 +41,16 @@ fi
 
 #process 'tex2png file.tex' and 'tex2png file' equivalently
 name=`basename "$1" ".tex"`
+dir=`dirname "$1"`
 
+(
+cd $dir
 latex  --interaction batchmode $name > /dev/null
 dvips -E -o $name.eps $name.dvi >& /dev/null
-gs -dNOPAUSE -sDEVICE=pbmraw -r${opt_d} -sOutputFile=$name.pbm $name.eps quit.ps >& /dev/null
+gs -dNOPAUSE -sDEVICE=pbmraw -r${opt_d} -sOutputFile=$name.pbm $name.eps -c quit.ps >& /dev/null
 pnmcrop $name.pbm | pnmtopng > $name.png 2> /dev/null
  
- if [ $opt_k -eq 0 ] ; then
+if [ $opt_k -eq 0 ] ; then
 	rm -f $name.dvi
 	rm -f $name.aux
 	rm -f $name.log
@@ -56,3 +59,4 @@ pnmcrop $name.pbm | pnmtopng > $name.png 2> /dev/null
 fi
 
 exit 0
+)
