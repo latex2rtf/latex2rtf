@@ -1482,23 +1482,41 @@ CmdIgnoreEnviron(int code)
 }
 
 void
+FixTildes(char *s)
+{
+	char *p,*p3;
+	while ( (p=strstr(s,"\\~{}")) != NULL ) {
+		*p = '~';
+		p++;
+		p3 = p+3;
+		while (*p3) {*p++=*p3++;}
+		*p = '\0';
+	}
+}
+
+void
 CmdLink(int code)
 /******************************************************************************
   purpose: hyperlatex support for \link{anchor}[ltx]{label}
+                              and \xlink{anchor}[printed reference]{URL}
 ******************************************************************************/
 {
-	char           *anchor,*latex,*label;
+	char           *anchor,*latex,*url;
 
 	diagnostics(4, "Entering hyperlatex \\link command");
 	anchor = getBraceParam();
 	latex = getBracketParam();
-	label = getBraceParam();
-	
-	/* Do something with these */
+	url = getBraceParam();
+
+	FixTildes(url);	
+	fprintRTF("{\\field\\fldedit{\\*\\fldinst { HYPERLINK \"%s\" \\\\* MERGEFORMAT }}",url);
+	fprintRTF("{\\fldrslt {\\cs15\\ul\\cf2 ");
+	ConvertString(anchor);
+	fprintRTF("}}}");
 	
 	if (latex) free(latex);
 	free(anchor);
-	free(label);
+	free(url);
 }
 
 void 

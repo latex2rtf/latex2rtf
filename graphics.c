@@ -203,37 +203,44 @@ strdup_tmp_path(char *s)
 static char *
 eps_to_pict(char *s)
 /******************************************************************************
-     purpose : create a pict file from an EPS file and return file name
-               the pict file contains a bitmap version for viewing
-               and the original EPS for printing
+     purpose : create a pict file from an EPS file and return file name for
+               the pict file.  Ideally this file will contain both the bitmap
+               and the original EPS embedded in the PICT file as comments.  If a
+               bitmap cannot be created, then the EPS is still embedded in the PICT
+               file so that at least the printed version will be good.
  ******************************************************************************/
 {
-	FILE *fp_eps, *fp_pict_bitmap, *fp_pict_eps;
-	char *cmd, *p, *pict_bitmap, *pict_eps, *eps, buffer[560];
+	char *cmd, *p, buffer[560];
 	long ii, pict_bitmap_size, eps_size;
-	int err;
-	short PostScriptBegin = 190;
-	short PostScriptEnd   = 191;
-	short PostScriptHandle= 192;
-	short handle_size;
+	short err,handle_size;
 	unsigned char byte;
+	short PostScriptBegin 	= 190;
+	short PostScriptEnd   	= 191;
+	short PostScriptHandle	= 192;
+	char *pict_bitmap		=NULL;
+	char *pict_eps			=NULL;
+	char *eps				=NULL;
+	char *return_value		=NULL;
+	FILE *fp_eps			=NULL;
+	FILE *fp_pict_bitmap	=NULL;
+	FILE *fp_pict_eps		=NULL;
+	
+	diagnostics(2, "eps_to_pict filename = <%s>", s);
 
-	diagnostics(1, "eps_to_pict filename = <%s>", s);
+	/* Create filename for bitmap */
 	p = strdup_new_extension(s, ".eps", "a.pict");
 	if (p == NULL) {
 		p = strdup_new_extension(s, ".EPS", "a.pict");
-		if (p == NULL) return NULL;
+		if (p == NULL) goto Exit;
 	}
 	pict_bitmap = strdup_tmp_path(p);
 	free(p);
 	
+	/* Create filename for eps file */
 	p = strdup_new_extension(s, ".eps", ".pict");
 	if (p == NULL) {
 		p = strdup_new_extension(s, ".EPS", ".pict");
-		if (p == NULL) {
-			free(pict_bitmap);
-			return NULL;
-		}
+		if (p == NULL) goto Exit;
 	}
 	pict_eps = strdup_tmp_path(p);
 	free(p);
@@ -243,45 +250,37 @@ eps_to_pict(char *s)
 	/* create a bitmap version of the eps file */
 	cmd = (char *) malloc(strlen(eps)+strlen(pict_bitmap)+strlen("convert -crop 0x0  ")+1);
 	sprintf(cmd, "convert -crop 0x0 %s %s", eps, pict_bitmap);	
-	diagnostics(1,"%s",cmd);
+	diagnostics(1,"<%s> ",cmd);
 	err = system(cmd);
 	free(cmd);
 	
-	if (err!=0) diagnostics(WARNING, "problem creating bitmap from %s", eps);
-	
+	if (err!=0) 
+		diagnostics(WARNING, "problem creating bitmap from %s", eps);
+	else
+		return_value = pict_bitmap;
+		
 	/* open the eps file and make sure that it is less than 32k */
  	fp_eps = fopen (eps, "rb");
-	if (fp_eps==NULL) return NULL;
+	if (fp_eps==NULL) goto Exit;
 	fseek(fp_eps, 0, SEEK_END);
   	eps_size = ftell (fp_eps);
   	if (eps_size > 32000) {
-  		fclose(fp_eps); 
-  		free(pict_eps);
   		diagnostics(WARNING, "EPS file >32K ... using bitmap only");
-  		return pict_bitmap;
+  		goto Exit;
   	}
   	rewind (fp_eps);
   	diagnostics(WARNING, "eps size is 0x%X bytes", eps_size);
   
 	/*open bitmap pict file and get file size */
 	fp_pict_bitmap = fopen(pict_bitmap, "rb");
-	if (fp_pict_bitmap == NULL) {
-		fclose(fp_eps);
-  		free(pict_eps);
-		return pict_bitmap;
-	}
+	if (fp_pict_bitmap == NULL) goto Exit;
 	fseek(fp_pict_bitmap, 0, SEEK_END);
   	pict_bitmap_size = ftell(fp_pict_bitmap);
   	rewind(fp_pict_bitmap);
 
 	/*open new pict file */
 	fp_pict_eps = fopen(pict_eps, "w");
-	if (fp_pict_eps == NULL) {
-		fclose(fp_pict_bitmap); 
-		fclose(fp_eps);
-  		free(pict_eps);
-		return pict_bitmap;
-	}
+	if (fp_pict_eps == NULL) goto Exit;
 
 	/*copy header 512 buffer + 40 byte header*/
 	fread( &buffer,1,512+40,fp_pict_bitmap);
@@ -295,12 +294,11 @@ eps_to_pict(char *s)
 		fread(&byte,1,1,fp_pict_bitmap);
 		fwrite(&byte,1,1,fp_pict_eps);
 	}
-	fclose(fp_pict_bitmap);
 	
 	/*copy eps graphic (write an even number of bytes) */
 	handle_size = eps_size;   
-	if (eps_size % 2) 	
-		handle_size ++;	
+	if (eps_size % 2) handle_size ++;	
+	
 	PicComment(PostScriptHandle,handle_size,fp_pict_eps);
 	for (ii=0; ii<eps_size; ii++) {
 		fread(&byte,1,1,fp_eps);
@@ -310,7 +308,6 @@ eps_to_pict(char *s)
 		byte = ' ';
 		fwrite(&byte,1,1,fp_pict_eps);
 	}		
-	fclose(fp_eps);
 	
 	/*close file*/
 	PicComment(PostScriptEnd,0,fp_pict_eps);
@@ -318,8 +315,18 @@ eps_to_pict(char *s)
 	fwrite(&byte,1,1,fp_pict_eps);
 	byte = 0xFF;
 	fwrite(&byte,1,1,fp_pict_eps);
-	fclose(fp_pict_eps);
-	return pict_eps;
+
+	return_value= pict_eps;
+	
+Exit:
+	if (eps)           free(eps);
+	if (pict_eps)      free(pict_eps);
+	if (pict_bitmap)   free(pict_bitmap);
+
+  	if (fp_eps)         fclose(fp_eps); 
+	if (fp_pict_eps)    fclose(fp_pict_eps); 
+	if (fp_pict_bitmap) fclose(fp_pict_bitmap); 
+	return return_value;
 }
 
 static char *
@@ -782,27 +789,33 @@ static void
 PutEpsFile(char *s)
 {
 	char *png, *emf, *pict;
-	diagnostics(1, "PutEpsFile filename = <%s>", s);
+	diagnostics(2, "PutEpsFile filename = <%s>", s);
 
-	if (0) {
+	if (1) {
 		png = eps_to_png(s);
-		PutPngFile(png, 1.0, 0.0, TRUE);
-		my_unlink(png);
-		free(png);
+		if (png) {
+			PutPngFile(png, 1.0, 0.0, TRUE);
+			my_unlink(png);
+			free(png);
+		}
 	}
 	
-	if (1) {
+	if (0) {
 		pict = eps_to_pict(s);
-		PutPictFile(pict, TRUE);
-/*		my_unlink(pict);  */
-		free(pict);
+		if (pict) {
+			PutPictFile(pict, TRUE);
+/*			my_unlink(pict);  */
+			free(pict);
+		}
 	}
 
 	if (0) {
 		emf = eps_to_emf(s);
-		PutEmfFile(emf, TRUE);
-		my_unlink(emf);
-		free(emf);
+		if (emf) {
+			PutEmfFile(emf, TRUE);
+			my_unlink(emf);
+			free(emf);
+		}
 	}
 }
 

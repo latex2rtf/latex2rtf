@@ -822,7 +822,9 @@ WriteStyleHeader(void)
 	fprintRTF("{%s\\f%d%s \\sbasedon0\\snext0 heading 2;}\n", HEADER21, DefFont, HEADER22);
 	fprintRTF("{%s\\f%d%s \\sbasedon0\\snext0 heading 3;}\n", HEADER31, DefFont, HEADER32);
 	fprintRTF("{%s\\f%d%s \\sbasedon0\\snext0 heading 4;}\n", HEADER41, DefFont, HEADER42);
-	fprintRTF("%s\n", HEADER03);
+	fprintRTF("%s", HEADER03);
+	fprintRTF("%s", HEADER04);
+	fprintRTF("%s\n", HEADER05);
 	
 	fprintRTF("%s\n", HEADER13);
 	fprintRTF("%s\n", HEADER23);
@@ -967,10 +969,23 @@ WriteColorTable(void)
      <colordef>          \red ? & \green ? & \blue ? ';'
  ***************************************************************************/
 {
-	fprintRTF("{\\colortbl");
-	fprintRTF("\\red255\\green0\\blue0;");
-	fprintRTF("\\red0\\green255\\blue0;");
-	fprintRTF("\\red0\\green0\\blue255;");
+	fprintRTF("{\\colortbl;\n");
+	fprintRTF("\\red0\\green0\\blue0;\n");
+	fprintRTF("\\red0\\green0\\blue255;\n");
+	fprintRTF("\\red0\\green255\\blue255;\n");
+	fprintRTF("\\red0\\green255\\blue0;\n");
+	fprintRTF("\\red255\\green0\\blue255;\n");
+	fprintRTF("\\red255\\green0\\blue0;\n");
+	fprintRTF("\\red255\\green255\\blue0;\n");
+	fprintRTF("\\red255\\green255\\blue255;\n");
+	fprintRTF("\\red0\\green0\\blue128;\n");
+	fprintRTF("\\red0\\green128\\blue128;\n");
+	fprintRTF("\\red0\\green128\\blue0;\n");
+	fprintRTF("\\red128\\green0\\blue128;\n");
+	fprintRTF("\\red128\\green0\\blue0;\n");
+	fprintRTF("\\red128\\green128\\blue0;\n");
+	fprintRTF("\\red128\\green128\\blue128;\n");
+	fprintRTF("\\red192\\green192\\blue192;\n");
 	fprintRTF("}\n");
 }
 
