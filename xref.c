@@ -492,7 +492,7 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post)
 	abbv=getBraceParam();
 	full=getBraceParam();
 	PopSource();
-	diagnostics(1,"natbib <%s> <%s> <%s> <%s>",n,year,abbv,full);
+	diagnostics(5,"natbib <%s> <%s> <%s> <%s>",n,year,abbv,full);
 	switch (code) {
 		case CITE_T:
 		case CITE_T_STAR:
@@ -633,7 +633,7 @@ purpose: handles \cite
 		} 
 
 		if (g_document_bibstyle == BIBSTYLE_NATBIB) {
-			diagnostics(1,"natbib key=[%s] <%s>",key, s);
+			diagnostics(5,"natbib key=[%s] <%s>",key, s);
 			if (s) {
 				g_current_cite_seen=citation_used(key);
 				ConvertNatbib(s,code,pretext,option);

@@ -2,10 +2,11 @@
 # Initial version 28 May 2001 Scott Prahl
 #
 
-all:	accentchars.rtf array.rtf bib_simple.rtf bib_apalike.rtf bib_apalike2.rtf \
-        bib_apacite.rtf bib_natbib1.rtf eqns.rtf fonts.rtf fontsize.rtf \
-        frac.rtf list.rtf logo.rtf misc1.rtf misc2.rtf oddchars.rtf \
-        tabular.rtf percent.rtf essential.rtf misc3.rtf misc4.rtf fancy.rtf \
+all:accentchars.rtf array.rtf bib_simple.rtf bib_apalike.rtf bib_apalike2.rtf \
+    bib_apacite.rtf bib_natbib1.rtf bib_natbib2.rtf bib_apanat.rtf \
+    eqns.rtf fonts.rtf fontsize.rtf \
+    frac.rtf list.rtf logo.rtf misc1.rtf misc2.rtf oddchars.rtf \
+    tabular.rtf percent.rtf essential.rtf misc3.rtf misc4.rtf fancy.rtf \
 	align.rtf german.rtf russian.rtf box.rtf \
 	enc_applemac.rtf enc_cp437.rtf enc_cp865.rtf    enc_latin2.rtf enc_latin5.rtf \
 	enc_cp1250.rtf   enc_cp850.rtf enc_decmulti.rtf enc_latin3.rtf enc_latin9.rtf\
@@ -55,6 +56,11 @@ bib_natbib2.rtf: bib_natbib2.tex
 	$(LATEX) bib_natbib2 > latex.log
 	$(LATEX) bib_natbib2 > latex.log
 	$(LATEX2RTF) $(OPTIONS) bib_natbib2
+
+bib_apanat.rtf: bib_apanat.tex
+	$(LATEX) bib_apanat > latex.log
+	$(LATEX) bib_apanat > latex.log
+	$(LATEX2RTF) $(OPTIONS) bib_apanat
 
 misc2.rtf: misc2.tex
 	$(LATEX) misc2 > latex.log

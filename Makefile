@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.82 2003/04/07 01:46:45 prahl Exp $
+# $Id: Makefile,v 1.83 2003/04/07 02:18:42 prahl Exp $
 
 CC=gcc
 MKDIR=mkdir -p
@@ -73,7 +73,7 @@ SCRIPTS= scripts/version scripts/latex2png scripts/latex2png_1 scripts/latex2png
 TEST=   test/Makefile test/bracecheck \
 	test/accentchars.tex test/array.tex test/bib_simple.tex test/bib_simple.bib \
 	test/bib_apacite.tex test/bib_apalike.tex test/bib_apalike2.tex \
-	test/bib_natbib1.tex test/bib_natbib2.tex \
+	test/bib_natbib1.tex test/bib_natbib2.tex test/bib_apanat.tex \
 	test/eqns.tex test/fonts.tex test/fontsize.tex test/frac.tex \
 	test/list.tex test/logo.tex test/misc1.tex test/misc2.tex \
 	test/oddchars.tex test/tabular.tex test/percent.tex test/essential.tex test/hndout.sty \

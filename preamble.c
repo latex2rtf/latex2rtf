@@ -423,6 +423,8 @@ setDocumentOptions(char *optionlist)
 			PushEnvironment(HYPERLATEX); 
 		else if (strcmp(option, "apalike") == 0)
 			g_document_bibstyle = BIBSTYLE_APALIKE;
+		else if (strcmp(option, "apanat1b") == 0)
+			PushEnvironment(APACITE_MODE);
 		else if (strcmp(option, "natbib") == 0){
 			PushEnvironment(NATBIB_MODE);
 			g_document_bibstyle = BIBSTYLE_NATBIB;
