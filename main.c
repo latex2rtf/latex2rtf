@@ -118,7 +118,8 @@ static void		InitializeLatexLengths(void);
 
 static void		SetEndianness(void);
 static void		ConvertWholeDocument(void);
-static void		usage(void);
+static void		print_usage(void);
+static void		print_version(void);
 
 extern char *optarg;
 extern int	 optind;
@@ -133,7 +134,7 @@ int main(int argc, char **argv)
 	SetEndianness();
 	progname = argv[0];
 	optind = 1;
-	while ((c = getopt(argc, argv, "lhvSVWZ:o:a:b:d:i:s:C:D:M:P:T:")) != EOF) {
+	while ((c = getopt(argc, argv, "lhvSWZ:o:a:b:d:i:s:C:D:M:P:T:")) != EOF) {
 		switch (c) {
 		case 'a':
 			g_aux_name = optarg;
@@ -145,7 +146,7 @@ int main(int argc, char **argv)
 			g_verbosity_level = *optarg - '0';
 			if (g_verbosity_level < 0 || g_verbosity_level > 7) {
 				diagnostics(WARNING, "debug level (-d# option) must be 0-7");
-				usage();
+				print_usage();
 			}
 			break;
 		case 'i':
@@ -158,10 +159,10 @@ int main(int argc, char **argv)
 			g_rtf_name = optarg;
 			break;
 		case 'v':
-			fprintf(stderr, "%s: %s\n", progname, Version);
+			print_version();
 			return (0);
 		case 'C':
-			setPackageInputenc(optarg);
+			setPackageInputenc(0);
 			break;
 		case 'D':
 			sscanf(optarg, "%d", &g_dots_per_inch);
@@ -205,10 +206,6 @@ int main(int argc, char **argv)
 		case 'T':
 			g_tmp_path = strdup(optarg);
 			break;
-		case 'V':
-			fprintf(stderr, "%s: %s\n", progname, Version);
-			fprintf(stderr, "RTFPATH = '%s'\n", getenv("RTFPATH"));
-			return (0);
 		case 'W':
 			g_RTF_warnings = TRUE;
 			break;
@@ -217,14 +214,14 @@ int main(int argc, char **argv)
 			g_safety_braces = *optarg - '0';
 			if (g_safety_braces < 0 || g_safety_braces > 9) {
 				diagnostics(WARNING, "Number of safety braces (-Z#) must be 0-9");
-				usage();
+				print_usage();
 			}
 			break;
 			
 		case 'h':
 		case '?':
 		default:
-			usage();
+			print_usage();
 		}
 	}
 
@@ -353,9 +350,22 @@ ConvertWholeDocument(void)
 }
 
 static void
-usage(void)
+print_version(void)
 {
-	fprintf(stderr, "Usage:\n\t %s [options] input[.tex]\n", progname);
+	fprintf(stderr, "%s %s\n\n", progname, Version);
+	fprintf(stderr, "Copyright (C) 2002 Free Software Foundation, Inc.\n\n");
+	fprintf(stderr, "This is free software; see the source for copying conditions.  There is NO\n");
+	fprintf(stderr, "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n");
+	fprintf(stderr, "Written by Prahl, Lehner, Granzer, Dorner, Polzer, Trisko, Schlatterbeck.\n");
+
+/*		fprintf(stderr, "RTFPATH = '%s'\n", getenv("RTFPATH"));*/
+}
+
+static void
+print_usage(void)
+{
+	fprintf(stderr, "latex2rtf converts text files in LaTeX format to rich text format (RTF).\n\n");
+	fprintf(stderr, "Usage:\t %s [options] input[.tex]\n\n", progname);
 	fprintf(stderr, "Options:\n");
 	fprintf(stderr, "\t -a auxfile       : use LaTeX auxfile rather than input.aux\n");
 	fprintf(stderr, "\t -b bblfile       : use BibTex bblfile rather than input.bbl)\n");
