@@ -175,6 +175,7 @@ void            CmdNewPage(int code);
 void            GetInputParam(char *, int);
 void            CmdBottom(int code);
 void            CmdAbstract(int code);
+void            CmdAcknowledgments(int code);
 void            CmdTitlepage(int code);
 void            CmdAnnotation(int code);
 void            CmdLink(int code);

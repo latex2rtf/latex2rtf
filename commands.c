@@ -63,9 +63,8 @@ static CommandArray commands[] = {
     {"end", CmdBeginEnd, CMD_END},
     {"today", CmdToday, 0},
     {"footnote", CmdFootNote, FOOTNOTE},
-    {"endnote", CmdFootNote, FOOTNOTE | FOOTNOTE_ENDNOTE},
 
-    {"rmfamily", CmdFontFamily, F_FAMILY_ROMAN},
+	{"rmfamily", CmdFontFamily, F_FAMILY_ROMAN  },
     {"rm", CmdFontFamily, F_FAMILY_ROMAN_1},
     {"mathrm", CmdFontFamily, F_FAMILY_ROMAN_2},
     {"textrm", CmdFontFamily, F_FAMILY_ROMAN_2},
@@ -228,6 +227,8 @@ static CommandArray commands[] = {
     {"eqref", CmdLabel, LABEL_EQREF},
     {"pageref", CmdLabel, LABEL_PAGEREF},
     {"cite", CmdCite, CITE_CITE},
+	{"onlinecite", CmdCite, CITE_CITE},
+	{"citeonline", CmdCite, CITE_CITE},
     {"bibliography", CmdBibliography, 0},
     {"bibliographystyle", CmdBibliographyStyle, 0},
     {"bibitem", CmdBibitem, 0},
@@ -618,6 +619,7 @@ static CommandArray params[] = {
     {"table*", CmdTable, TABLE_1},
     {"thebibliography", CmdThebibliography, 0},
     {"abstract", CmdAbstract, 0},
+	{"acknowledgments", CmdAcknowledgments, 0},
     {"titlepage", CmdTitlepage, 0},
 
     {"em", CmdEmphasize, F_EMPHASIZE_3},
@@ -762,7 +764,7 @@ static CommandArray harvardCommands[] = {
 };
 
 /********************************************************************
-purpose: commands for harvard package 
+purpose: commands for authordate package 
 ********************************************************************/
 static CommandArray authordateCommands[] = {
     {"citename", CmdCiteName, 0},

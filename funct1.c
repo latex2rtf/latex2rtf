@@ -1890,8 +1890,33 @@ void CmdAbstract(int code)
     }
 }
 
-void CmdTitlepage(int code)
+void
+CmdAcknowledgments(int code)
+{
+	static char     oldalignment;
 
+	CmdEndParagraph(0);
+	
+	if (code == ON) {
+		
+		CmdVspace(VSPACE_BIG_SKIP);
+		CmdStartParagraph(0);
+		fprintRTF("\n{\\b ");
+		fprintRTF("Acknowledgments"); /* should be in cfg file, but it is not */
+		fprintRTF("}\n");
+		CmdEndParagraph(0);
+		oldalignment = alignment;
+		alignment = JUSTIFIED;
+
+	} else {
+		alignment = oldalignment;
+		CmdVspace(VSPACE_BIG_SKIP);				/* put \medskip after acknowledgments */
+	}
+}
+
+
+void 
+CmdTitlepage(int code)
 /******************************************************************************
   purpose: \begin{titlepage} ... \end{titlepage}
            add pagebreaks before and after this environment
