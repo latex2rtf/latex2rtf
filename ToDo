@@ -1,7 +1,26 @@
 Bugs:
- 	Fix line numbering better
+ 	Fix line numbering
+	Add support for a local cfg directory
+	Add support for \includegraphics options (both graphics and graphicx)
+
+Fit & Finish:
+
+	Improve spacing before and after \section etc.
+	Improve font sizes in \section etc.
 	Reset footnote numbering at each new chapter
-	Fix message about missing refs in cite.tex
+
+	misc4.tex
+		missing references
+		error while processing ?
+		
+	essential.tex
+		error while processing
+		
+	excalibur.tex
+		word disregards \* MERGEFORMAT in some sections
+		
+	cite.tex
+		Fix message about missing refs
 
 	Extra paragraph at
 		- in misc1.tex, near the end, after the italic text before the comma in:
@@ -13,52 +32,35 @@ Bugs:
 		\'ech\'eant par jugement ou d\'ecision des autorit\'es l\'egales.}~>>~:
 		- in proffois, source line 305 after the \"\i{} in:
 		cont\"enu et de la mise en page, ma\"is, ma\"\i{}zena, ma\^{\i}zena, b\"ureau, etc.),
-		
-	misc4.tex
-		missing references
-		error while processing
-		
-	essential.tex
-		error while processing
-		
-	excalibur.tex
-		word disregards \* MERGEFORMAT in some sections
-		
-Features:
-	support \hsize
-	support ## in macro expansion
+
+Potential Features:
+
+	Translation when .aux is absent.
+
 	add support for \symbol{\'134}
+	finish special cases for \char 'xxx
 	
 	Add default page numbering
 	
-	Add support for a local cfg directory
-	Add more complete support for \input
-	finish special cases for \char 'xxx
-
 	Add support for \usepackage{fullpage}
 	Add support for \usepackage{doublespace}
-	Add support for \includegraphics
-
-	Add rendering of equations as in ltx2rtf
-
 	Add support for \mark commands
 	
 	Add autonumbering of equations using fields
 	
-	Figure out style stuff in rtf header
-	add style support for quote environment
-	add style support for enumerate environment
- 	add back style support for \section, \subsection
+	Style stuff in rtf header
+		add style support for quote environment
+		add style support for enumerate environment
+ 		add back style support for \section, \subsection
 
 	revise the table code
-	Suppress empty column that sometimes appears in tabular environments
-	Suppress empty row when a final // is present
+		Suppress empty column that sometimes appears in tabular environments
+		Suppress empty row when a final // is present
 
+	support \hsize
 	add support for \hspace
 	add support for \hline
 
-	Improve spacing before and after \section etc.
-	Improve font sizes in \section etc.
+	support ## in macro expansion
 
-	Figure out how much translation is possible when no .aux
-	file is present.  
+
