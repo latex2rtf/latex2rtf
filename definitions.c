@@ -122,9 +122,10 @@ expandmacro(char *macro, char *opt_param, int params)
 
 	for (; i<params; i++) {
 		args[i] = getBraceParam();
-		diagnostics(5, "argument #%d <%s>", i+1, args[i]);
+		diagnostics(3, "argument #%d <%s>", i+1, args[i]);
 	}
 	
+	*buffer='\0';
 	expanded = buffer;
 	dmacro = strdup(macro);
 	macro_piece = dmacro;
@@ -268,6 +269,7 @@ newDefinition(char *name, char * opt_param, char *def, int params)
 	}
 	
 	iDefinitionCount++;
+	diagnostics(3,"Successfully added macro #%d",iDefinitionCount);
 }
 
 void

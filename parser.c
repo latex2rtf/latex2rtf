@@ -975,12 +975,12 @@ getSection(char **body, char **header, char **label)
 	char cNext, *s,*text,*next_header,*str;
 	int i;
 	size_t delta;
-	int  match[31];
-	char * command[31] = {"",  /* 0 entry is for user definitions */
+	int  match[33];
+	char * command[33] = {"",  /* 0 entry is for user definitions */
 	                      "",  /* 1 entry is for user environments */
-						  "\\begin{verbatim}", "\\begin{figure}", "\\begin{equation}", 
+						  "\\begin{verbatim}", "\\begin{figure}", "\\begin{figure*}", "\\begin{equation}", 
 						  "\\begin{eqnarray}", "\\begin{table}", "\\begin{description}",
-						  "\\end{verbatim}", "\\end{figure}", "\\end{equation}", 
+						  "\\end{verbatim}", "\\end{figure}", "\\end{figure*}", "\\end{equation}", 
 						  "\\end{eqnarray}", "\\end{table}", "\\end{description}",
 	                     "\\part", "\\chapter", "\\section", "\\subsection", "\\subsubsection", 
 	                     "\\section*", "\\subsection*", "\\subsubsection*", 
@@ -992,25 +992,27 @@ getSection(char **body, char **header, char **label)
 	const int b_verbatim_item   = 2;
 	const int b_figure_item     = 3;
 	const int b_equation_item   = 4;
-	const int b_eqnarray_item   = 5;
-	const int b_table_item      = 6;
-	const int b_description_item= 7;
-	const int e_verbatim_item   = 8;
-	const int e_figure_item     = 9;
-	const int e_equation_item   =10;
-	const int e_eqnarray_item   =11;
-	const int e_table_item      =12;
-	const int e_description_item=13;
+	const int b_equation_item2  = 5;
+	const int b_eqnarray_item   = 6;
+	const int b_table_item      = 7;
+	const int b_description_item= 8;
+	const int e_verbatim_item   = 9;
+	const int e_figure_item     = 10;
+	const int e_equation_item   =11;
+	const int e_equation_item2  =12;
+	const int e_eqnarray_item   =13;
+	const int e_table_item      =14;
+	const int e_description_item=15;
 
-	const int label_item   = 22;
-	const int input_item   = 23;
-	const int include_item = 24;
-	const int verb_item    = 25;
-	const int url_item     = 26;
-	const int new_item     = 27;
-	const int def_item     = 28;
-	const int renew_item   = 29;
-	const int endinput_item= 30;
+	const int label_item   = 24;
+	const int input_item   = 25;
+	const int include_item = 26;
+	const int verb_item    = 27;
+	const int url_item     = 28;
+	const int new_item     = 29;
+	const int def_item     = 30;
+	const int renew_item   = 31;
+	const int endinput_item= 32;
 
 	int bs_count = 0;
 	size_t index = 0;
@@ -1286,14 +1288,14 @@ getSection(char **body, char **header, char **label)
 			continue;
 		}
 			
-		if (i==b_figure_item || i==b_equation_item || i==b_eqnarray_item ||
+		if (i==b_figure_item || i==b_equation_item || i==b_equation_item2 || i==b_eqnarray_item ||
 			i==b_table_item  || i==b_description_item){
 			label_depth++;		/* labels now will not be the section label */
 			index = 0;
 			continue;
 		}
 
-		if (i==e_figure_item || i==e_equation_item || i==e_eqnarray_item ||
+		if (i==e_figure_item || i==e_equation_item || i==e_equation_item2 || i==e_eqnarray_item ||
 			i==e_table_item  || i==e_description_item){
 			label_depth--;		/* labels may now be the section label */
 			index = 0;

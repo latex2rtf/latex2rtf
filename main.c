@@ -758,6 +758,7 @@ purpose: duplicate string --- exists to ease porting
 	
 	strsize = strlen(str);
 	s = (char *) malloc(strsize+1);
+	*s = '\0';
 	if (s == NULL) 
 		diagnostics(ERROR,"Cannot allocate memory to duplicate string");
 	strcpy(s, str);

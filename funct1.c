@@ -1516,7 +1516,7 @@ CmdFigure(int code)
  ******************************************************************************/
 {
 	char            *loc, *figure_contents;
-	char endfigure[] = "\\end{figure}";
+	char *endfigure = ((code & ~ON) == FIGURE) ? "\\end{figure}" : "\\end{figure*}";
 
 	if (code & ON) {
 		loc = getBracketParam();
