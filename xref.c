@@ -763,9 +763,10 @@ CmdBCAY(int code)
 {
 	char *s, *t, *v, *year;
 	
+	s = getBraceParam();
+
 	diagnostics(4,"Entering CmdBCAY", s);
 
-	s = getBraceParam();
 	t = getBraceParam();
 	year = getBraceParam();
 	v = g_current_cite_seen ? t : s;
@@ -902,10 +903,10 @@ purpose: handles \citename from authordate bib style
 {		
 	char *s;
 	
-	diagnostics(4,"Entering CmdCitename", s);
-
 	s = getBraceParam();
 	
+	diagnostics(4,"Entering CmdCitename", s);
+
 	if (!g_suppress_name)
 		ConvertString(s);
 	

@@ -1,4 +1,4 @@
-/* $Id: main.h,v 1.63 2003/09/26 04:34:28 prahl Exp $ */
+/* $Id: main.h,v 1.64 2004/03/03 04:11:59 prahl Exp $ */
 
 #if defined(UNIX)
 #define ENVSEP ':'
@@ -9,6 +9,11 @@
 #define ENVSEP ';'
 #define PATHSEP '\\'
 #endif 
+
+#if defined(VMS)
+#define ENVSEP ','
+#define PATHSEP ''
+#endif
 
 #if defined(MAC_CLASSIC)
 #define ENVSEP '^'

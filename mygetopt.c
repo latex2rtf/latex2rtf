@@ -21,6 +21,7 @@
 #include "main.h"
 #include <stdlib.h>
 #include <string.h>
+#include "mygetopt.h"
 
 char           *optarg = 0;
 int             optind = 1;

@@ -1,3 +1,7 @@
+#if defined(VMS) && defined(NEED_SNPRINTF)
+#include <X11VMS/vmsutil.h>
+#endif
+
 #define DIRECT_A	0
 #define FONT_A		1
 #define IGNORE_A	2
@@ -5,7 +9,11 @@
 #define LANGUAGE_A  4
 
 #ifndef CFGDIR
+#ifdef VMS
+#define CFGDIR "L2RCFGDIR:"
+#else
 #define CFGDIR ""
+#endif
 #endif
 
 #ifndef TRUE

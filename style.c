@@ -114,8 +114,10 @@ TryStyleConvert(char *command)
 	char *	RtfCommand;
 	char *	TexCommand;
 	char *	option[9];
+	char *	option_header[9];
 	char *  mandatory[9];
-	char *  rtf_piece[20];
+	char *  mandatory_header[9];
+	char *  rtf_piece[40];
 	char *  comma;
 	int 	optional;
 	int	    mandated;

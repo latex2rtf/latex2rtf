@@ -279,7 +279,7 @@ PopSource(void)
 			strcpy(s,g_parser_stack[g_parser_depth].string_start);
 		else {
 			strncpy(s,g_parser_stack[g_parser_depth].string_start,49);
-			s[50]='\0';
+			s[49]='\0';
 		}
 			
 		diagnostics(5, "Closing Source string <%s>",s);

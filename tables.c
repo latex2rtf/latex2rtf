@@ -603,6 +603,121 @@ TabularWriteRow(TabularT tabular, char *this_row, char *next_row, int height, in
 	TabularEndRow();
 }
 
+int 
+TabularMeasureCell(char *cell)
+/******************************************************************************
+ purpose:  come up with a rough number for the number of characters in a cell
+           this is pretty ridiculous, but just counting characters is better
+           than nothing.
+ ******************************************************************************/
+{
+	char *t;
+	char *s;
+	int len;
+	
+	if (cell==NULL || *cell=='\0')
+		return 0;
+		
+	s=strstr(cell,"multicolumn");
+	
+	if (s) {
+		char *num, *format, *text, *xtext;
+		
+		PushSource(NULL,s+strlen("multicolumn"));
+		num     = getBraceParam();
+		format  = getBraceParam();
+		text    = getBraceParam();
+		PopSource();
+		xtext   = strdup_noendblanks(text);
+
+		len = strlen(xtext);
+		free(num);
+		free(format);
+		free(text);
+		free(xtext);
+		return len;
+		
+	}
+	
+	return strlen(cell);
+}
+
+int 
+TabularMeasureCellx(char *cell)
+/******************************************************************************
+ purpose:  come up with a rough number for the number of characters in a cell
+           this is pretty ridiculous, but just counting characters is better
+           than nothing.
+ ******************************************************************************/
+{
+	char *t;
+	char *s;
+	
+	if (cell==NULL || *cell=='\0')
+		return 0;
+		
+	s=strstr(cell,"multicolumn");
+	
+	if (s) {
+		int i;
+		
+		/* find beginning of text in \multicolumn{1}{c}{ text } */
+		for (i=0; i<3; i++) {			/* skip over multicolumn{1}{c}{ text }   */
+			while (*s && *s!='{') s++;
+			if (*s=='\0') return 0;
+			s++;
+		}
+		while (*s && *s==' ') s++;  /* skip over spaces */
+		
+		/* find last non-space character in text */
+		t = strrchr(s,'}');
+		if (!t) return 0;
+		t--;
+		while (t>=s && *t==' ') t--;  /* skip over spaces */
+		
+		return t-s+1;
+	}
+	
+	return strlen(cell);
+}
+
+static void
+TabularMeasureRow(TabularT tabular, char *this_row, char *next_row, int height, int first_row)
+/******************************************************************************
+ purpose:  come up with relative widths for all cells in a row
+  ******************************************************************************/
+{
+	char *cell, *cell_start, *cell_end;
+	char align;
+	int n, lvert, rvert;
+	
+	actCol=0;
+	if (this_row==NULL || strlen(this_row)==0) return;
+	
+	diagnostics(4, "TabularMeasureRow height=%d twpi, row <%s>",height, this_row); 
+		
+	cell_start = this_row;
+	while (cell_start) {
+
+		cell = TabularNextCell(cell_start, &cell_end);
+		
+		TabularMultiParameters(cell,&n,&align,&lvert,&rvert);
+		if (n == 0) {
+			n = 1;
+		}
+
+		if (cell !=NULL) {
+			int len;
+			len = TabularMeasureCell(cell);
+			diagnostics(1, "col=%d n=%d len=%d cell=<%s>",actCol,n,len,cell); 
+		}
+				
+		actCol+=n;
+		cell_start = cell_end;
+		if (cell != NULL) free(cell);
+	}
+}
+
 void 
 CmdTabular(int code)
 /******************************************************************************
@@ -680,7 +795,7 @@ CmdTabular(int code)
 	if (begins>0) {
 		char *p;
 		int num = TexFontNumber("Typewriter");
-		diagnostics(1, "Nest tabular/tabbing environments not allowed"); 
+		diagnostics(1, "Nested tabular/tabbing environments not allowed"); 
 		diagnostics(2, "table_table_table_table_table\n%stable_table_table_table_table",table);
 		fprintRTF("\\pard\\ql\\b0\\i0\\scaps0\\f%d ", num);
 		p=begin;
@@ -694,11 +809,25 @@ CmdTabular(int code)
 	
 		diagnostics(3, "Entering CmdTabular() options [%s], format {%s}",(pos)?pos:"", cols); 
 		tabular=TabularPreamble(table,width,pos,cols);
-		row_start=table;
-		TabularGetRow(row_start,&this_row,&next_row_start,&this_height);
-	
 		diagnostics(2, "table_table_table_table_table\n%stable_table_table_table_table",table);
+
+		row_start=table;
+		TabularGetRow(row_start,&this_row,&next_row_start,&this_height);		
+
+		/* scan entire table to get some estimate for column widths */
+		first_row = TRUE;
+		while (this_row) {
+			row_start=next_row_start;
+			TabularGetRow(row_start,&next_row,&next_row_start,&next_height);
+			TabularMeasureRow(tabular, this_row, next_row, this_height, first_row);
+			free(this_row);
+			this_row = next_row;
+			this_height = next_height;
+			first_row = FALSE;
+		}
 		
+		row_start=table;
+		TabularGetRow(row_start,&this_row,&next_row_start,&this_height);		
 		first_row = TRUE;
 		while (this_row) {
 			row_start=next_row_start;
@@ -709,7 +838,7 @@ CmdTabular(int code)
 			this_height = next_height;
 			first_row = FALSE;
 		}
-		
+
 		free(tabular.cline);
 		free(tabular.align);
 		free(tabular.vert);

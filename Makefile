@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.101 2004/02/09 02:12:03 prahl Exp $
+# $Id: Makefile,v 1.102 2004/03/03 04:11:59 prahl Exp $
 
 CC=gcc
 MKDIR=mkdir -p
@@ -37,7 +37,16 @@ CFLAGS:=$(CFLAGS) -g -Wall -fsigned-char
 LIBS=
 #LIBS=-lMallocDebug -force_flat_namespace
 
-VERSION="`scripts/version`"
+VERSION:="`scripts/version`"
+
+# Locations for MacOS X packaging
+PWD := $(shell pwd)
+PKG_DIR := "$(PWD)/macosx/pkgdir"
+PKG_CONTENTS="$(PKG_DIR)/Package_contents"
+PKG_RESOURCES="$(PKG_DIR)/Install_resources"
+PKG_NAME:="$(PWD)/macosx/dmg/latex2rtf-$(VERSION)/latex2rtf.pkg"
+PKG_MAKER=/Developer/Applications/PackageMaker.app/Contents/MacOS/PackageMaker
+DMG_DIR := "$(PWD)/macosx/dmg/latex2rtf-$(VERSION)"
 
 SRCS=commands.c chars.c direct.c encode.c l2r_fonts.c funct1.c tables.c ignore.c \
 	main.c stack.c cfg.c util.c parser.c lengths.c counters.c letterformat.c \
@@ -63,7 +72,7 @@ DOCS= doc/latex2rtf.1   doc/latex2png.1    doc/latex2rtf.texi doc/latex2rtf.pdf 
       doc/latex2rtf.txt doc/latex2rtf.info doc/latex2rtf.html doc/credits \
       doc/copying.txt   doc/Makefile       doc/latex2pn.txt  doc/latex2rt.txt
 
-README= README README.DOS README.Mac README.OS2 README.Solaris Copyright ChangeLog
+README= README README.DOS README.Mac README.OS2 README.Solaris README.VMS Copyright ChangeLog
 
 SCRIPTS= scripts/version scripts/latex2png scripts/latex2png_1 scripts/latex2png_2 \
 	scripts/latex2pn.bat scripts/README \
@@ -115,7 +124,7 @@ check test: latex2rtf
 	cd test && $(MAKE) 
 	cd test && $(MAKE) check
 
-checkdir: $(README) $(SRCS) $(HDRS) $(CFGS) $(SCRIPTS) $(TEST) doc/latex2rtf.texi
+checkdir: $(README) $(SRCS) $(HDRS) $(CFGS) $(SCRIPTS) $(TEST) doc/latex2rtf.texi Makefile vms_make.com
 
 clean: checkdir
 	rm -f $(OBJS) core $(BINARY_NAME)
@@ -124,7 +133,7 @@ depend: $(SRCS)
 	$(CC) -MM $(SRCS) >makefile.depend
 	@echo "***** Append makefile.depend to Makefile manually ******"
 
-dist: checkdir uptodate latex2rtf doc $(SRCS) $(HDRS) $(CFGS) $(README) Makefile $(SCRIPTS) $(DOCS) $(TEST)
+dist: checkdir uptodate latex2rtf doc $(SRCS) $(HDRS) $(CFGS) $(README) Makefile vms_make.com $(SCRIPTS) $(DOCS) $(TEST)
 	$(MKDIR) latex2rtf-$(VERSION)
 	$(MKDIR) latex2rtf-$(VERSION)/cfg
 	$(MKDIR) latex2rtf-$(VERSION)/doc
@@ -134,6 +143,7 @@ dist: checkdir uptodate latex2rtf doc $(SRCS) $(HDRS) $(CFGS) $(README) Makefile
 	ln $(HDRS)         latex2rtf-$(VERSION)
 	ln $(README)       latex2rtf-$(VERSION)
 	ln Makefile        latex2rtf-$(VERSION)
+	ln vms_make.com    latex2rtf-$(VERSION)
 	ln $(CFGS)         latex2rtf-$(VERSION)/cfg
 	ln $(DOCS)         latex2rtf-$(VERSION)/doc
 	ln $(SCRIPTS)      latex2rtf-$(VERSION)/scripts
@@ -188,6 +198,36 @@ realclean: checkdir clean
 
 splint: 
 	splint -weak $(SRCS) $(HDRS)
+
+pkg:
+	$(MKDIR) $(PKG_CONTENTS)/$(BIN_INSTALL)
+	$(MKDIR) $(PKG_CONTENTS)/$(MAN_INSTALL)
+	$(MKDIR) $(PKG_CONTENTS)/$(CFG_INSTALL)
+	$(MKDIR) $(PKG_CONTENTS)/$(SUPPORT_INSTALL)
+	$(MKDIR) $(PKG_RESOURCES)
+	$(MKDIR) $(DMG_DIR)
+
+	cp $(BINARY_NAME)     $(PKG_CONTENTS)/$(BIN_INSTALL)
+	cp scripts/latex2png  $(PKG_CONTENTS)/$(BIN_INSTALL)
+	cp doc/latex2rtf.1    $(PKG_CONTENTS)/$(MAN_INSTALL)
+	cp doc/latex2png.1    $(PKG_CONTENTS)/$(MAN_INSTALL)
+	cp $(CFGS)            $(PKG_CONTENTS)/$(CFG_INSTALL)
+	cp doc/latex2rtf.html $(PKG_CONTENTS)/$(SUPPORT_INSTALL)
+	cp doc/latex2rtf.pdf  $(PKG_CONTENTS)/$(SUPPORT_INSTALL)
+	cp doc/latex2rtf.txt  $(PKG_CONTENTS)/$(SUPPORT_INSTALL)
+
+	cp macosx/License.rtf $(PKG_RESOURCES)
+	cp macosx/ReadMe.html $(PKG_RESOURCES)
+	cp macosx/Welcome.html $(PKG_RESOURCES)
+	
+	-$(PKG_MAKER) -build -p $(PKG_NAME) -r $(PKG_RESOURCES) -f $(PKG_CONTENTS)
+	mkdmg $(DMG_DIR)
+	
+	rm -rf $(PKG_DIR)
+	
+	mkdmg 
+	
+	
 	
 .PHONY: all check checkdir clean depend dist doc install install_info realclean latex2rtf uptodate splint
 
