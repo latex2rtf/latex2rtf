@@ -634,9 +634,12 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first)
     year_repeated = FALSE;
 
 	if (g_bibpunct_style != BIB_STYLE_ALPHA){
-		if (!first)
+		if (!first) {
 			ConvertString(g_bibpunct_cite_sep);
-	
+			if (g_bibpunct_style == BIB_STYLE_NUMBER)
+	            fprintRTF(" ");
+	    }
+
 		ConvertString(n);
 		free(n);
 		free(year);
@@ -1178,8 +1181,11 @@ void CmdNatbibCite(int code)
 	if (code != CITE_P && code != CITE_P_STAR && code != CITE_YEAR_P)
 		g_current_cite_paren = FALSE;
     
-    if (g_bibpunct_style != BIB_STYLE_ALPHA)
+    if (g_bibpunct_style == BIB_STYLE_SUPER)
     	g_current_cite_paren = FALSE;
+
+    if (g_bibpunct_style == BIB_STYLE_NUMBER)
+    	g_current_cite_paren = TRUE;
     	
     text = getBraceParam();
     str1 = strdup_nocomments(text);
