@@ -218,6 +218,7 @@ static CommandArray commands[] = {
 	{"pageref", CmdLabel, LABEL_PAGEREF},
 	{"cite", CmdLabel, LABEL_CITE},
 	{"bibliography", CmdBibliography, 0},
+	{"bibliographystyle", CmdBibliographyStyle, 0},
 	{"bibitem", CmdBibitem, 0},
 	{"newblock", CmdNewblock, 0},
 	{"newsavebox", CmdIgnoreParameter, No_Opt_One_NormParam},

@@ -100,10 +100,25 @@ CmdNoCite(int code)
 	free(getBraceParam());	/* just skip the parameter */
 }
 
+void
+CmdBibliographyStyle(int code)
+{
+	char * s = getBraceParam();   /*throw away widest_label */
+	free(s);
+}
+
 void 
 CmdBibliography(int code)
 {
-	if (PushSource(g_bbl_name, NULL)) {
+	int err;
+	char *s;
+	
+	s = getBraceParam();   /*throw away bibliography name */
+	free(s);
+	
+	err=PushSource(g_bbl_name, NULL);
+	
+	if (!err) {
 		diagnostics(4, "CmdBibliography ... begin Convert()");
 		Convert();
 		diagnostics(4, "CmdBibliography ... done Convert()");
@@ -148,24 +163,26 @@ CmdBibitem(int code)
 	fprintRTF("\\li450 ");
 	
 	label = getBracketParam();
-	if (label) {
-		fprintRTF("[");
-		ConvertString(label);
-		fprintRTF("]");
-		free(label);
-	}
-	
 	key = getBraceParam();
 	signet = strdup_nobadchars(key);
 	s=ScanAux("bibcite", key, 0);
-	diagnostics(4,"CmdBibitem <%s>",s);
-	fprintRTF("[");
-	fprintRTF("{\\*\\bkmkstart BIB_%s}",signet);
-	ConvertString(s);
-	fprintRTF("{\\*\\bkmkend BIB_%s}",signet);
-	fprintRTF("]");
+
+	if (label && !s) {		/* happens when file needs to be latex'ed again */
+		diagnostics(WARNING,"file needs to be latexed again for references");
+		fprintRTF("[");
+		ConvertString(label);
+		fprintRTF("]");
+	} else {
+		diagnostics(4,"CmdBibitem <%s>",s);
+		fprintRTF("[");
+		fprintRTF("{\\*\\bkmkstart BIB_%s}",signet);
+		ConvertString(s);
+		fprintRTF("{\\*\\bkmkend BIB_%s}",signet);
+		fprintRTF("]");
+	}
 
 	if (s) free(s);
+	if (label) free(label);
 	free(signet);
 	free(key);
 	

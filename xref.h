@@ -15,6 +15,7 @@
 void    CmdFootNote(int code);
 void    CmdLabel(int code);
 void 	CmdNoCite(int code);
+void	CmdBibliographyStyle(int code);
 void 	CmdBibliography(int code);
 void 	CmdThebibliography(int code);
 void 	CmdBibitem(int code);
