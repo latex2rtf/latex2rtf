@@ -1,4 +1,4 @@
-/* $Id: main.h,v 1.49 2002/08/05 04:06:00 prahl Exp $ */
+/* $Id: main.h,v 1.50 2002/09/21 23:26:01 prahl Exp $ */
 #ifndef __MAIN_H
 #define __MAIN_H
 
@@ -111,7 +111,9 @@ extern int      g_enumerate_depth;
 extern bool     g_suppress_equation_number;
 extern bool     g_aux_file_missing;
 extern int    	g_document_type;
-extern char     g_encoding[20];
+extern char     g_charset_encoding_name[20];
+extern int 		g_fcharset_number;
+
 extern char		*g_figure_label;
 extern char		*g_table_label;
 extern char		*g_equation_label;

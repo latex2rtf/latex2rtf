@@ -1825,50 +1825,54 @@ static void macukr_enc(int index)
 void WriteEightBitChar(char cThis)
 {
 	int index = (int) cThis + 128;
-	diagnostics(5, "WriteEightBitChar char=%d index=%d encoding=%s",(int) cThis, index, g_encoding);
-	if (strcmp(g_encoding, "applemac") == 0)
+	diagnostics(5, "WriteEightBitChar char=%d index=%d encoding=%s",
+	                (int) cThis, index, g_charset_encoding_name);
+	                
+	if (strcmp(g_charset_encoding_name, "raw") == 0)
+		fprintRTF("\\'%2X", (unsigned char) cThis);
+	else if (strcmp(g_charset_encoding_name, "applemac") == 0)
 		applemac_enc(index);
-	else if (strcmp(g_encoding, "cp437") == 0)
+	else if (strcmp(g_charset_encoding_name, "cp437") == 0)
 		cp437_enc(index);
-	else if (strcmp(g_encoding, "cp850") == 0)
+	else if (strcmp(g_charset_encoding_name, "cp850") == 0)
 		cp850_enc(index);
-	else if (strcmp(g_encoding, "cp852") == 0)
+	else if (strcmp(g_charset_encoding_name, "cp852") == 0)
 		cp852_enc(index);
-	else if (strcmp(g_encoding, "cp865") == 0)
+	else if (strcmp(g_charset_encoding_name, "cp865") == 0)
 		cp865_enc(index);
-	else if (strcmp(g_encoding, "decmulti") == 0)
+	else if (strcmp(g_charset_encoding_name, "decmulti") == 0)
 		decmulti_enc(index);
-	else if (strcmp(g_encoding, "cp1250") == 0)
+	else if (strcmp(g_charset_encoding_name, "cp1250") == 0)
 		cp1250_enc(index);
-	else if (strcmp(g_encoding, "cp1252") == 0)
+	else if (strcmp(g_charset_encoding_name, "cp1252") == 0)
 		cp1252_enc(index);
-	else if (strcmp(g_encoding, "latin1") == 0)
+	else if (strcmp(g_charset_encoding_name, "latin1") == 0)
 		latin1_enc(index);
-	else if (strcmp(g_encoding, "latin2") == 0)
+	else if (strcmp(g_charset_encoding_name, "latin2") == 0)
 		latin2_enc(index);
-	else if (strcmp(g_encoding, "latin3") == 0)
+	else if (strcmp(g_charset_encoding_name, "latin3") == 0)
 		latin3_enc(index);
-	else if (strcmp(g_encoding, "latin4") == 0)
+	else if (strcmp(g_charset_encoding_name, "latin4") == 0)
 		latin4_enc(index);
-	else if (strcmp(g_encoding, "latin5") == 0)
+	else if (strcmp(g_charset_encoding_name, "latin5") == 0)
 		latin5_enc(index);
-	else if (strcmp(g_encoding, "latin9") == 0)
+	else if (strcmp(g_charset_encoding_name, "latin9") == 0)
 		latin9_enc(index);
-	else if (strcmp(g_encoding, "next") == 0 ) 
+	else if (strcmp(g_charset_encoding_name, "next") == 0 ) 
 		next_enc(index);
-	else if (strcmp(g_encoding, "cp1251") == 0 ) 
+	else if (strcmp(g_charset_encoding_name, "cp1251") == 0 ) 
 		cp1251_enc(index);
-	else if (strcmp(g_encoding, "cp855") == 0 ) 
+	else if (strcmp(g_charset_encoding_name, "cp855") == 0 ) 
 		cp855_enc(index);
-	else if (strcmp(g_encoding, "cp866") == 0 ) 
+	else if (strcmp(g_charset_encoding_name, "cp866") == 0 ) 
 		cp866_enc(index);
-	else if (strcmp(g_encoding, "koi8-r") == 0 ) 
+	else if (strcmp(g_charset_encoding_name, "koi8-r") == 0 ) 
 		koi8r_enc(index);
-	else if (strcmp(g_encoding, "koi8-u") == 0 ) 
+	else if (strcmp(g_charset_encoding_name, "koi8-u") == 0 ) 
 		koi8u_enc(index);
-	else if (strcmp(g_encoding, "maccyr") == 0 ) 
+	else if (strcmp(g_charset_encoding_name, "maccyr") == 0 ) 
 		maccyr_enc(index);
-	else if (strcmp(g_encoding, "macukr") == 0 ) 
+	else if (strcmp(g_charset_encoding_name, "macukr") == 0 ) 
 		macukr_enc(index);
 }
 

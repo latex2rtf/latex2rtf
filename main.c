@@ -62,7 +62,9 @@ bool            GermanMode = FALSE;	    /* support germanstyle */
 bool            FrenchMode = FALSE;	    /* support frenchstyle */
 bool            RussianMode = FALSE;	/* support russianstyle */
 
-char            g_encoding[20] = "cp1252";
+char            g_charset_encoding_name[20] = "cp1252";
+int				g_fcharset_number = 1252;
+
 bool            twoside = FALSE;
 int      		g_verbosity_level = WARNING;
 bool			g_little_endian = FALSE;  /* set properly in main() */
