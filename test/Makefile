@@ -25,7 +25,8 @@ RTF=accentchars.rtf array.rtf eqns.rtf fonts.rtf fontsize.rtf \
 	bibentry_apalike.rtf bibentry_plain.rtf
 
 RTFX=bib_apacite.rtf bib_apanat.rtf bib_authordate.rtf fig_test3.rtf bib_harvard.rtf \
-     bib_apalike.rtf bib_apalike2.rtf bib_natbib1.rtf bib_natbib2.rtf bib_natbib3.rtf
+     bib_apalike.rtf bib_apalike2.rtf bib_natbib1.rtf bib_natbib2.rtf bib_natbib3.rtf \
+     unicode.rtf
 
 all:
 	mkdir -p ../tmp

@@ -1,0 +1,505 @@
+\documentclass{article}
+\usepackage{amssymb}
+\usepackage{textcomp}
+\begin{document}
+
+\begin{table}
+\begin{center}
+\begin{tabular}{lll}
+command & unicode & actual symbol\\
+\verb#$\doteq$# & 279 & $\doteq$\\ 
+\verb#$\gtrdot$# & 289 & $\gtrdot$\\ 
+\verb#$\imath$# & 305 & $\imath$\\ 
+\verb#\OE# & 338 & \OE\\ 
+\verb#\oe# & 339 & \oe\\ 
+\verb#\textGamma# & 915 & \textGamma\\ 
+\verb#\textDelta# & 916 & \textDelta\\ 
+\verb#\textTheta# & 920 & \textTheta\\ 
+\verb#\textLambda# & 923 & \textLambda\\ 
+\verb#\textXi# & 926 & \textXi\\ 
+\verb#\textPi# & 928 & \textPi\\ 
+\verb#\textSigma# & 931 & \textSigma\\ 
+\verb#\textPhi# & 934 & \textPhi\\ 
+\verb#\textPsi# & 936 & \textPsi\\ 
+\verb#\textOmega# & 937 & \textOmega\\ 
+\verb#\textalpha# & 945 & \textalpha\\ 
+\verb#\textbeta# & 946 & \textbeta\\ 
+\verb#\textgamma# & 947 & \textgamma\\ 
+\verb#\textdelta# & 948 & \textdelta\\ 
+\verb#\textepsilon# & 949 & \textepsilon\\ 
+\verb#\textzeta# & 950 & \textzeta\\ 
+\verb#\texteta# & 951 & \texteta\\ 
+\verb#\textiota# & 953 & \textiota\\ 
+\verb#\textkappa# & 954 & \textkappa\\ 
+\verb#\textlambda# & 955 & \textlambda\\ 
+\verb#\textmu# & 956 & \textmu\\ 
+\verb#\textnu# & 957 & \textnu\\ 
+\verb#\textpi# & 960 & \textpi\\ 
+\verb#\textsigma# & 963 & \textsigma\\ 
+\verb#\texttau# & 964 & \texttau\\ 
+\verb#\textchi# & 967 & \textchi\\ 
+\verb#\textpsi# & 968 & \textpsi\\ 
+\verb#\digamma# & 989 & \digamma\\ 
+\verb#\textemdash# & 8212 & \textemdash\\ 
+\verb#\textquoteleft# & 8216 & \textquoteleft\\ 
+\verb#\textquoteright# & 8217 & \textquoteright\\ 
+\verb#\textquotedblleft# & 8220 & \textquotedblleft\\ 
+\verb#\textquotedblright# & 8221 & \textquotedblright\\ 
+\end{tabular}
+\end{center}
+\caption{Testing Unicode}
+\end{table}
+
+\begin{table}
+\begin{center}
+\begin{tabular}{lll}
+command & unicode & actual symbol\\
+\verb#\CYRBuki# & 1041 & \CYRBuki\\ 
+\verb#\CYRGlagol# & 1043 & \CYRGlagol\\ 
+\verb#\CYRJu# & 1046 & \CYRJu\\ 
+\verb#\CYRSemlja# & 1047 & \CYRSemlja\\ 
+\verb#\CYRIsche# & 1048 & \CYRIsche\\ 
+\verb#\CYRSchiwete# & 1049 & \CYRSchiwete\\ 
+\verb#\CYRKako# & 1050 & \CYRKako\\ 
+\verb#\CYRLjudi# & 1051 & \CYRLjudi\\ 
+\verb#\CYRPakoy# & 1055 & \CYRPakoy\\ 
+\verb#\CYRU# & 1059 & \CYRU\\ 
+\verb#\CYRFert# & 1060 & \CYRFert\\ 
+\verb#\CYRTscherw# & 1061 & \CYRTscherw\\ 
+\verb#\CYRZui# & 1062 & \CYRZui\\ 
+\verb#\CYRScha# & 1064 & \CYRScha\\ 
+\verb#\CYRSchtscha# & 1065 & \CYRSchtscha\\ 
+\verb#\CYRJerr# & 1066 & \CYRJerr\\ 
+\verb#\CYRJerui# & 1067 & \CYRJerui\\ 
+\verb#\CYRJher# & 1068 & \CYRJher\\ 
+\verb#\CYRDsche# & 1069 & \CYRDsche\\ 
+\verb#\CYRtjsche# & 1070 & \CYRtjsche\\ 
+\verb#\CYRZelo# & 1071 & \CYRZelo\\ 
+\verb#\CYRbuki# & 1073 & \CYRbuki\\ 
+\verb#\CYRwjedi# & 1074 & \CYRwjedi\\ 
+\verb#\CYRglagol# & 1075 & \CYRglagol\\ 
+\verb#\CYRdobro# & 1076 & \CYRdobro\\ 
+\verb#\CYRju# & 1078 & \CYRju\\ 
+\verb#\CYRsemlja# & 1079 & \CYRsemlja\\ 
+\verb#\CYRische# & 1080 & \CYRische\\ 
+\verb#\CYRschiwete# & 1081 & \CYRschiwete\\ 
+\verb#\CYRkako# & 1082 & \CYRkako\\ 
+\verb#\CYRljudi# & 1083 & \CYRljudi\\ 
+\verb#\CYRmuislette# & 1084 & \CYRmuislette\\ 
+\verb#\CYRnasch# & 1085 & \CYRnasch\\ 
+\verb#\CYRpakoy# & 1087 & \CYRpakoy\\ 
+\verb#\CYRtwerdo# & 1090 & \CYRtwerdo\\ 
+\verb#\CYRfert# & 1092 & \CYRfert\\ 
+\verb#\CYRtscherw# & 1093 & \CYRtscherw\\ 
+\verb#\CYRzui# & 1094 & \CYRzui\\ 
+\verb#\CYRscha# & 1096 & \CYRscha\\ 
+\verb#\CYRschtscha# & 1097 & \CYRschtscha\\ 
+\verb#\CYRjerr# & 1098 & \CYRjerr\\ 
+\verb#\CYRjerui# & 1099 & \CYRjerui\\ 
+\verb#\CYRjher# & 1100 & \CYRjher\\ 
+\verb#\CYRsemlja# & 1101 & \CYRsemlja\\ 
+\verb#\CYRJa# & 1102 & \CYRJa\\ 
+\verb#\CYRzelo# & 1103 & \CYRzelo\\ 
+\end{tabular}
+\end{center}
+\caption{Testing Unicode}
+\end{table}
+
+\clearpage
+\begin{table}
+\begin{center}
+\begin{tabular}{lll}
+command & unicode & actual symbol\\
+\verb#$\dag$# &  & $\dag$\\ 
+\verb#$\blackcircle$# & 8226 & $\blackcircle$\\ 
+\verb#$\textbullet$# & 8226 & $\textbullet$\\ 
+\verb#$\ldots$# & 8230 & $\ldots$\\ 
+\verb#$\textellipsis$# & 8230 & $\textellipsis$\\ 
+\verb#$\textperthousand$# & 8242 & $\textperthousand$\\ 
+\verb#$\backprime$# & 8245 & $\backprime$\\ 
+\verb#$\ddddot$# & 8412 & $\ddddot$\\ 
+\verb#$\hslash$# & 8463 & $\hslash$\\ 
+\verb#$\Im$# & 8465 & $\Im$\\ 
+\verb#$\ell$# & 8467 & $\ell$\\ 
+\verb#$\wp$# &  & $\wp$\\ 
+\verb#$\Re$# & 8476 & $\Re$\\ 
+\verb#$\mho$# & 8487 & $\mho$\\ 
+\verb#$\aleph$# & 8501 & $\aleph$\\ 
+\verb#$\beth$# & 8502 & $\beth$\\ 
+\verb#$\gimel$# & 8503 & $\gimel$\\ 
+\verb#$\daleth$# & 8504 & $\daleth$\\ 
+\verb#$\leftarrow$# &  & $\leftarrow$\\ 
+\verb#$\uparrow$# & 8593 & $\uparrow$\\ 
+\verb#$\rightarrow$# &  & $\rightarrow$\\ 
+\verb#$\downarrow$# & 8595 & $\downarrow$\\ 
+\verb#$\leftrightarrow$# & 8596 & $\leftrightarrow$\\ 
+\verb#$\updownarrow$# & 8597 & $\updownarrow$\\ 
+\verb#$\nwarrow$# & 8598 & $\nwarrow$\\ 
+\verb#$\nearrow$# & 8599 & $\nearrow$\\ 
+\verb#$\searrow$# & 8600 & $\searrow$\\ 
+\verb#$\swarrow$# & 8601 & $\swarrow$\\ 
+\verb#$\nleftarrow$# & 8602 & $\nleftarrow$\\ 
+\verb#$\nrightarrow$# & 8603 & $\nrightarrow$\\ 
+\verb#$\twoheadleftarrow$# & 8606 & $\twoheadleftarrow$\\ 
+\verb#$\twoheadrightarrow$# & 8608 & $\twoheadrightarrow$\\ 
+\verb#$\leftarrowtail$# & 8610 & $\leftarrowtail$\\ 
+\verb#$\rightarrowtail$# & 8611 & $\rightarrowtail$\\ 
+\verb#$\mapsto$# &  & $\mapsto$\\ 
+\verb#$\hookleftarrow$# & 8617 & $\hookleftarrow$\\ 
+\verb#$\hookrightarrow$# & 8618 & $\hookrightarrow$\\ 
+\verb#$\looparrowleft$# & 8619 & $\looparrowleft$\\ 
+\verb#$\looparrowright$# & 8620 & $\looparrowright$\\ 
+\end{tabular}
+\end{center}
+\caption{Testing Unicode}
+\end{table}
+\clearpage
+\begin{table}
+\begin{center}
+\begin{tabular}{lll}
+command & unicode & actual symbol\\
+\verb#$\leftrightsquigarrow$# & 8621 & $\leftrightsquigarrow$\\ 
+\verb#$\nleftrightarrow$# & 8622 & $\nleftrightarrow$\\ 
+\verb#$\Lsh$# & 8624 & $\Lsh$\\ 
+\verb#$\Rsh$# & 8625 & $\Rsh$\\ 
+\verb#$\curvearrowleft$# & 8630 & $\curvearrowleft$\\ 
+\verb#$\curvearrowright$# & 8631 & $\curvearrowright$\\ 
+\verb#$\leftharpoonup$# & 8636 & $\leftharpoonup$\\ 
+\verb#$\leftharpoondown$# & 8637 & $\leftharpoondown$\\ 
+\verb#$\upharpoonright$# & 8638 & $\upharpoonright$\\ 
+\verb#$\upharpoonleft$# & 8639 & $\upharpoonleft$\\ 
+\verb#$\rightharpoonup$# & 8640 & $\rightharpoonup$\\ 
+\verb#$\rightharpoondown$# & 8641 & $\rightharpoondown$\\ 
+\verb#$\downharpoonright$# & 8642 & $\downharpoonright$\\ 
+\verb#$\downharpoonleft$# & 8643 & $\downharpoonleft$\\ 
+\verb#$\rightleftarrows$# & 8644 & $\rightleftarrows$\\ 
+\verb#$\leftrightarrows$# & 8646 & $\leftrightarrows$\\ 
+\verb#$\leftleftarrows$# & 8647 & $\leftleftarrows$\\ 
+\verb#$\upuparrows$# & 8648 & $\upuparrows$\\ 
+\verb#$\rightrightarrows$# & 8649 & $\rightrightarrows$\\ 
+\verb#$\downdownarrows$# & 8650 & $\downdownarrows$\\ 
+\verb#$\leftrightharpoons$# & 8651 & $\leftrightharpoons$\\ 
+\verb#$\rightleftharpoons$# & 8652 & $\rightleftharpoons$\\ 
+\verb#$\nLeftarrow$# & 8653 & $\nLeftarrow$\\ 
+\verb#$\nLeftrightarrow$# & 8654 & $\nLeftrightarrow$\\ 
+\verb#$\nRightarrow$# & 8655 & $\nRightarrow$\\ 
+\verb#$\Leftarrow$# &  & $\Leftarrow$\\ 
+\verb#$\Uparrow$# & 8657 & $\Uparrow$\\ 
+\verb#$\Longrightarrow$# & 8658 & $\Longrightarrow$\\ 
+\verb#$\Downarrow$# & 8659 & $\Downarrow$\\ 
+\verb#$\Leftrightarrow$# & 8660 & $\Leftrightarrow$\\ 
+\verb#$\Updownarrow$# & 8661 & $\Updownarrow$\\ 
+\verb#$\Lleftarrow$# & 8666 & $\Lleftarrow$\\ 
+\verb#$\Rrightarrow$# & 8667 & $\Rrightarrow$\\ 
+\verb#$\leadsto$# & 8669 & $\leadsto$\\ 
+\verb#$\forall$# & 8704 & $\forall$\\ 
+\verb#$\complement$# & 8705 & $\complement$\\ 
+\verb#$\partial$# & 8706 & $\partial$\\ 
+\verb#$\exists$# & 8707 & $\exists$\\ 
+\verb#$\nexists$# & 8708 & $\nexists$\\ 
+\verb#$\varnothing$# & 8709 & $\varnothing$\\ 
+\verb#$\emptyset$# & 8709 & $\emptyset$\\ 
+\verb#$\nabla$# & 8711 & $\nabla$\\ 
+\verb#$\in$# & 8712 & $\in$\\ 
+\verb#$\notin$# & 8713 & $\notin$\\ 
+\verb#$\ni$# & 8715 & $\ni$\\ 
+\verb#$\prod$# & 8719 & $\prod$\\ 
+\verb#$\coprod$# & 8720 & $\coprod$\\ 
+\verb#$\amalg$# & 8720 & $\amalg$\\ 
+\verb#$\sum$# & 8721 & $\sum$\\ 
+\verb#$\minus$# & 8722 & $\minus$\\ 
+\end{tabular}
+\end{center}
+\caption{Testing Unicode}
+\end{table}
+\clearpage
+
+\begin{table}
+\begin{center}
+\begin{tabular}{lll}
+command & unicode & actual symbol\\
+\verb#$\mp$# & 8723 & $\mp$\\ 
+\verb#$\dotplus$# & 8724 & $\dotplus$\\ 
+\verb#$\setminus$# & 8726 & $\setminus$\\ 
+\verb#$\ast$# &  & $\ast$\\ 
+\verb#$\circ$# & 8728 & $\circ$\\ 
+\verb#$\centerdot$# & 8729 & $\centerdot$\\ 
+\verb#$\surd$# & 8730 & $\surd$\\ 
+\verb#$\propto$# & 8733 & $\propto$\\ 
+\verb#$\varpropto$# & 8734 & $\varpropto$\\ 
+\verb#$\infty$# &  & $\infty$\\ 
+\verb#$\angle$# & 8736 & $\angle$\\ 
+\verb#$\measuredangle$# & 8737 & $\measuredangle$\\ 
+\verb#$\sphericalangle$# & 8738 & $\sphericalangle$\\ 
+\verb#$\vert$# & 8739 & $\vert$\\ 
+\verb#$\nmid$# & 8740 & $\nmid$\\ 
+\verb#$\Vert$# & 8741 & $\Vert$\\ 
+\verb#$\parallel$# & 8741 & $\parallel$\\ 
+\verb#$\nparallel$# & 8742 & $\nparallel$\\ 
+\verb#$\wedge$# & 8743 & $\wedge$\\ 
+\verb#$\land$# & 8743 & $\land$\\ 
+\verb#$\vee$# & 8744 & $\vee$\\ 
+\verb#$\lor$# & 8744 & $\lor$\\ 
+\verb#$\cap$# & 8745 & $\cap$\\ 
+\verb#$\cup$# & 8746 & $\cup$\\ 
+\verb#$\int$# & 8747 & $\int$\\ 
+\verb#$\oint$# & 8750 & $\oint$\\ 
+\verb#$\therefore$# & 8756 & $\therefore$\\ 
+\verb#$\because$# & 8757 & $\because$\\ 
+\verb#$\Colon$# & 8759 & $\Colon$\\ 
+\verb#$\dotminus$# & 8760 & $\dotminus$\\ 
+\verb#$\sim$# &  & $\sim$\\ 
+\verb#$\backsim$# & 8765 & $\backsim$\\ 
+\verb#$\wr$# & 8768 & $\wr$\\ 
+\verb#$\nsim$# & 8769 & $\nsim$\\ 
+\verb#$\eqsim$# & 8770 & $\eqsim$\\ 
+\verb#$\simeq$# & 8771 & $\simeq$\\ 
+\verb#$\nsimeq$# & 8772 & $\nsimeq$\\ 
+\verb#$\cong$# & 8773 & $\cong$\\ 
+\verb#$\ncong$# & 8775 & $\ncong$\\ 
+\verb#$\approx$# & 8776 & $\approx$\\ 
+\verb#$\napprox$# & 8777 & $\napprox$\\ 
+\verb#$\approxeq$# & 8778 & $\approxeq$\\ 
+\verb#$\asymp$# & 8781 & $\asymp$\\ 
+\verb#$\Bumpeq$# & 8782 & $\Bumpeq$\\ 
+\verb#$\bumpeq$# & 8783 & $\bumpeq$\\ 
+\verb#$\doteq$# & 8784 & $\doteq$\\ 
+\verb#$\doteqdot$# & 8785 & $\doteqdot$\\ 
+\verb#$\Doteq$# & 8785 & $\Doteq$\\ 
+\verb#$\fallingdotseq$# & 8786 & $\fallingdotseq$\\ 
+\verb#$\risingdotseq$# & 8787 & $\risingdotseq$\\ 
+\end{tabular}
+\end{center}
+\caption{Testing Unicode}
+\end{table}
+\clearpage
+
+\begin{table}
+\begin{center}
+\begin{tabular}{lll}
+command & unicode & actual symbol\\
+\verb#$\coloneq$# & 8788 & $\coloneq$\\ 
+\verb#$\eqcolon$# & 8789 & $\eqcolon$\\ 
+\verb#$\eqcirc$# & 8790 & $\eqcirc$\\ 
+\verb#$\circeq$# & 8791 & $\circeq$\\ 
+\verb#$\wedgeq$# & 8793 & $\wedgeq$\\ 
+\verb#$\triangleeq$# & 8796 & $\triangleeq$\\ 
+\verb#$\questeq$# & 8799 & $\questeq$\\ 
+\verb#$\neq$# & 8800 & $\neq$\\ 
+\verb#$\ne$# & 8800 & $\ne$\\ 
+\verb#$\equiv$# & 8801 & $\equiv$\\ 
+\verb#$\nequiv$# & 8802 & $\nequiv$\\ 
+\verb#$\leq$# & 8804 & $\leq$\\ 
+\verb#$\le$# & 8804 & $\le$\\ 
+\verb#$\leqslant$# & 8804 & $\leqslant$\\ 
+\verb#$\geq$# & 8805 & $\geq$\\ 
+\verb#$\ge$# & 8805 & $\ge$\\ 
+\verb#$\geqslant$# & 8805 & $\geqslant$\\ 
+\verb#$\leqq$# & 8806 & $\leqq$\\ 
+\verb#$\geqq$# & 8807 & $\geqq$\\ 
+\verb#$\lneqq$# & 8808 & $\lneqq$\\ 
+\verb#$\gneqq$# & 8809 & $\gneqq$\\ 
+\verb#$\ll$# &  & $\ll$\\ 
+\verb#$\gg$# &  & $\gg$\\ 
+\verb#$\between$# & 8812 & $\between$\\ 
+\verb#$\nless$# & 8814 & $\nless$\\ 
+\verb#$\ngtr$# & 8815 & $\ngtr$\\ 
+\verb#$\nleqslant$# & 8816 & $\nleqslant$\\ 
+\verb#$\nleq$# & 8816 & $\nleq$\\ 
+\verb#$\ngeqslant$# & 8817 & $\ngeqslant$\\ 
+\verb#$\ngeq$# & 8817 & $\ngeq$\\ 
+\verb#$\lesssim$# & 8818 & $\lesssim$\\ 
+\verb#$\gtrsim$# & 8819 & $\gtrsim$\\ 
+\verb#$\lessgtr$# & 8822 & $\lessgtr$\\ 
+\verb#$\gtrless$# & 8823 & $\gtrless$\\ 
+\verb#$\prec$# &  & $\prec$\\ 
+\verb#$\succ$# &  & $\succ$\\ 
+\verb#$\precurlyeq$# & 8828 & $\precurlyeq$\\ 
+\verb#$\succcurlyeq$# & 8829 & $\succcurlyeq$\\ 
+\verb#$\precsim$# & 8830 & $\precsim$\\ 
+\verb#$\succsim$# & 8831 & $\succsim$\\ 
+\verb#$\nprec$# & 8832 & $\nprec$\\ 
+\verb#$\nsucc$# & 8833 & $\nsucc$\\ 
+\verb#$\subset$# & 8834 & $\subset$\\ 
+\verb#$\supset$# & 8835 & $\supset$\\ 
+\verb#$\nsubset$# & 8836 & $\nsubset$\\ 
+\verb#$\nsupset$# & 8837 & $\nsupset$\\ 
+\verb#$\subseteq$# & 8838 & $\subseteq$\\ 
+\verb#$\supseteq$# & 8839 & $\supseteq$\\ 
+\verb#$\nsubseteq$# & 8840 & $\nsubseteq$\\ 
+\verb#$\subsetneq$# & 8842 & $\subsetneq$\\ 
+\verb#$\supsetneq$# & 8843 & $\supsetneq$\\ 
+\verb#$\uplus$# & 8846 & $\uplus$\\ 
+\verb#$\sqsubset$# & 8847 & $\sqsubset$\\ 
+\verb#$\sqsupset$# & 8848 & $\sqsupset$\\ 
+\verb#$\sqsubseteq$# & 8849 & $\sqsubseteq$\\ 
+\verb#$\sqsupseteq$# & 8850 & $\sqsupseteq$\\ 
+\verb#$\sqcap$# & 8851 & $\sqcap$\\ 
+\verb#$\sqcup$# & 8852 & $\sqcup$\\ 
+\verb#$\oplus$# & 8853 & $\oplus$\\ 
+\end{tabular}
+\end{center}
+\caption{Testing Unicode}
+\end{table}
+\clearpage
+
+\begin{table}
+\begin{center}
+\begin{tabular}{lll}
+command & unicode & actual symbol\\
+\verb#$\ominus$# & 8854 & $\ominus$\\ 
+\verb#$\otimes$# & 8855 & $\otimes$\\ 
+\verb#$\oslash$# & 8856 & $\oslash$\\ 
+\verb#$\odot$# & 8857 & $\odot$\\ 
+\verb#$\circledcirc$# & 8858 & $\circledcirc$\\ 
+\verb#$\circledast$# & 8859 & $\circledast$\\ 
+\verb#$\circleddash$# & 8861 & $\circleddash$\\ 
+\verb#$\boxplus$# & 8862 & $\boxplus$\\ 
+\verb#$\boxminus$# & 8863 & $\boxminus$\\ 
+\verb#$\boxtimes$# & 8864 & $\boxtimes$\\ 
+\verb#$\vdash$# & 8866 & $\vdash$\\ 
+\verb#$\dashv$# & 8867 & $\dashv$\\ 
+\verb#$\top$# & 8868 & $\top$\\ 
+\verb#$\perp$# & 8869 & $\perp$\\ 
+\verb#$\models$# & 8871 & $\models$\\ 
+\verb#$\vDash$# & 8872 & $\vDash$\\ 
+\verb#$\Vdash$# & 8873 & $\Vdash$\\ 
+\verb#$\Vvdash$# & 8874 & $\Vvdash$\\ 
+\verb#$\nvdash$# & 8876 & $\nvdash$\\ 
+\verb#$\nvDash$# & 8877 & $\nvDash$\\ 
+\verb#$\nVdash$# & 8878 & $\nVdash$\\ 
+\verb#$\nVDash$# & 8879 & $\nVDash$\\ 
+\verb#$\vartriangleleft$# & 8882 & $\vartriangleleft$\\ 
+\verb#$\vartriangleright$# & 8883 & $\vartriangleright$\\ 
+\verb#$\trianglelefteq$# & 8884 & $\trianglelefteq$\\ 
+\verb#$\unlhd$# & 8884 & $\unlhd$\\ 
+\verb#$\trianglerighteq$# & 8885 & $\trianglerighteq$\\ 
+\verb#$\unrhd$# & 8885 & $\unrhd$\\ 
+\verb#$\multimap$# & 8888 & $\multimap$\\ 
+\verb#$\top$# & 8890 & $\top$\\ 
+\verb#$\veebar$# & 8891 & $\veebar$\\ 
+\verb#$\barwedge$# & 8892 & $\barwedge$\\ 
+\verb#$\diamond$# & 8900 & $\diamond$\\ 
+\verb#$\cdot$# & 8901 & $\cdot$\\ 
+\verb#$\star$# & 8902 & $\star$\\ 
+\verb#$\divideontimes$# & 8903 & $\divideontimes$\\ 
+\verb#$\bowtie$# & 8904 & $\bowtie$\\ 
+\verb#$\Join$# & 8904 & $\Join$\\ 
+\verb#$\ltimes$# & 8905 & $\ltimes$\\ 
+\verb#$\rtimes$# & 8906 & $\rtimes$\\ 
+\verb#$\leftthreetimes$# & 8907 & $\leftthreetimes$\\ 
+\verb#$\rightthreetimes$# & 8908 & $\rightthreetimes$\\ 
+\verb#$\backsimeq$# & 8909 & $\backsimeq$\\ 
+\verb#$\curlyvee$# & 8910 & $\curlyvee$\\ 
+\verb#$\curlywedge$# & 8911 & $\curlywedge$\\ 
+\verb#$\Subset$# & 8912 & $\Subset$\\ 
+\verb#$\Supset$# & 8913 & $\Supset$\\ 
+\verb#$\Cap$# & 8914 & $\Cap$\\ 
+\verb#$\doublecap$# & 8914 & $\doublecap$\\ 
+\verb#$\Cup$# & 8915 & $\Cup$\\ 
+\verb#$\doublecup$# & 8915 & $\doublecup$\\ 
+\end{tabular}
+\end{center}
+\caption{Testing Unicode}
+\end{table}
+\clearpage
+
+\begin{table}
+\begin{center}
+\begin{tabular}{lll}
+command & unicode & actual symbol\\
+\verb#$\pitchfork$# & 8916 & $\pitchfork$\\ 
+\verb#$\lessdot$# & 8918 & $\lessdot$\\ 
+\verb#$\gtrdot$# & 8919 & $\gtrdot$\\ 
+\verb#$\lll$# & 8920 & $\lll$\\ 
+\verb#$\llless$# & 8920 & $\llless$\\ 
+\verb#$\Ll$# & 8920 & $\Ll$\\ 
+\verb#$\lll$# & 8920 & $\lll$\\ 
+\verb#$\ggg$# & 8921 & $\ggg$\\ 
+\verb#$\gggtr$# & 8921 & $\gggtr$\\ 
+\verb#$\Gg$# & 8921 & $\Gg$\\ 
+\verb#$\ggg$# & 8921 & $\ggg$\\ 
+\verb#$\lesseqgtr$# & 8922 & $\lesseqgtr$\\ 
+\verb#$\gtreqless$# & 8923 & $\gtreqless$\\ 
+\verb#$\eqslantless$# & 8924 & $\eqslantless$\\ 
+\verb#$\curlyeqprec$# & 8926 & $\curlyeqprec$\\ 
+\verb#$\curlyeqsucc$# & 8927 & $\curlyeqsucc$\\ 
+\verb#$\npreceq$# & 8928 & $\npreceq$\\ 
+\verb#$\nsucceq$# & 8929 & $\nsucceq$\\ 
+\verb#$\lnsim$# & 8934 & $\lnsim$\\ 
+\verb#$\gnsim$# & 8935 & $\gnsim$\\ 
+\verb#$\precnsim$# & 8936 & $\precnsim$\\ 
+\verb#$\succnsim$# & 8937 & $\succnsim$\\ 
+\verb#$\ntriangleleft$# & 8938 & $\ntriangleleft$\\ 
+\verb#$\ntriangleright$# & 8939 & $\ntriangleright$\\ 
+\verb#$\ntrianglelefteq$# & 8940 & $\ntrianglelefteq$\\ 
+\verb#$\ntrianglerighteq$# & 8941 & $\ntrianglerighteq$\\ 
+\verb#$\lceil$# & 8968 & $\lceil$\\ 
+\verb#$\rceil$# & 8969 & $\rceil$\\ 
+\verb#$\lfloor$# & 8970 & $\lfloor$\\ 
+\verb#$\rfloor$# & 8971 & $\rfloor$\\ 
+\verb#$\ulcorner$# & 8988 & $\ulcorner$\\ 
+\verb#$\ulcorn$# & 8988 & $\ulcorn$\\ 
+\verb#$\urcorn$# & 8989 & $\urcorn$\\ 
+\verb#$\llcorner$# & 8990 & $\llcorner$\\ 
+\verb#$\dlcorn$# & 8990 & $\dlcorn$\\ 
+\verb#$\lrcorner$# & 8991 & $\lrcorner$\\ 
+\verb#$\drcorn$# & 8991 & $\drcorn$\\ 
+\verb#$\smallfrown$# & 8994 & $\smallfrown$\\ 
+\verb#$\frown$# & 8994 & $\frown$\\ 
+\verb#$\smile$# & 8995 & $\smile$\\ 
+\verb#$\langle$# & 9001 & $\langle$\\ 
+\verb#$\rangle$# & 9002 & $\rangle$\\ 
+\verb#$\square$# & 9633 & $\square$\\ 
+\verb#$\Box$# & 9633 & $\Box$\\ 
+\verb#$\blacksquare$# & 9642 & $\blacksquare$\\ 
+\verb#$\bigtriangleup$# & 9651 & $\bigtriangleup$\\ 
+\verb#$\triangle$# & 9651 & $\triangle$\\ 
+\verb#$\blacktriangle$# & 9652 & $\blacktriangle$\\ 
+\verb#$\vartriangle$# & 9653 & $\vartriangle$\\ 
+\verb#$\blacktriangleright$# & 9656 & $\blacktriangleright$\\ 
+\end{tabular}
+\end{center}
+\caption{Testing Unicode}
+\end{table}
+\clearpage
+
+\begin{table}
+\begin{center}
+\begin{tabular}{lll}
+command & unicode & actual symbol\\
+\verb#$\rhd$# & 9657 & $\rhd$\\ 
+\verb#$\triangleright$# &  & $\triangleright$\\ 
+\verb#$\bigtriangledown$# & 9661 & $\bigtriangledown$\\ 
+\verb#$\blacktriangledown$# & 9662 & $\blacktriangledown$\\ 
+\verb#$\triangle$# & 9663 & $\triangle$\\ 
+\verb#$\triangledown$# & 9663 & $\triangledown$\\ 
+\verb#$\blacktriangleleft$# & 9666 & $\blacktriangleleft$\\ 
+\verb#$\triangleleft$# &  & $\triangleleft$\\ 
+\verb#$\lhd$# & 9667 & $\lhd$\\ 
+\verb#$\bigcirc$# & 9675 & $\bigcirc$\\ 
+\verb#$\bigstar$# & 9733 & $\bigstar$\\ 
+\verb#$\spadesuit$# & 9824 & $\spadesuit$\\ 
+\verb#$\heartsuit$# & 9825 & $\heartsuit$\\ 
+\verb#$\diamondsuit$# & 9826 & $\diamondsuit$\\ 
+\verb#$\clubsuit$# & 9827 & $\clubsuit$\\ 
+\verb#$\flat$# & 9837 & $\flat$\\ 
+\verb#$\natural$# & 9838 & $\natural$\\ 
+\verb#$\sharp$# & 9839 & $\sharp$\\ 
+\verb#$\surd$# & 10003 & $\surd$\\ 
+\verb#$\maltese$# & 10016 & $\maltese$\\ 
+\verb#$\lozenge$# & 10023 & $\lozenge$\\ 
+\verb#$\Diamond$# & 10023 & $\Diamond$\\ 
+\verb#$\Longleftarrow$# & 10232 & $\Longleftarrow$\\ 
+\verb#$\Longrightarrow$# & 10233 & $\Longrightarrow$\\ 
+\verb#$\Longleftrightarrow$# & 10234 & $\Longleftrightarrow$\\ 
+\verb#$\longmapsto$# & 10236 & $\longmapsto$\\ 
+\verb#$\amalg$# & 10815 & $\amalg$\\ 
+\verb#$\preceq$# & 10927 & $\preceq$\\ 
+\verb#$\succeq$# & 10928 & $\succeq$\\ 
+\verb#$\jmath$# & 58068 & $\jmath$\\ 
+\end{tabular}
+\end{center}
+\caption{Testing Unicode}
+\end{table}
+\end{document}
