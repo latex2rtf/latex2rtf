@@ -1,4 +1,7 @@
-The file L2R.BAT is for use with the DJGPP generated version LATEX2RT.EXE.
+Last updated March 22, 2002, W. Hennings
+
+The files L2R.BAT and L2RSEM.BAT 
+are for use with the DJGPP generated version LATEX2RT.EXE.
 
 The Unix and Mac distributions do not contain an executable for DOS / Windows.
 Instead, get the DOS / Windows port as file latex2rtf-x.xx_dos.zip 
@@ -6,5 +9,59 @@ Instead, get the DOS / Windows port as file latex2rtf-x.xx_dos.zip
 
      http://sourceforge.net/projects/latex2rtf/
 
-Last updated June 2001.
+To install latex2rtf, extract all files from the zip archive to C:\l2rt
+ or to another folder (i.e. directory) of your choice,
+preserving the folder structure (winzip: check "use folder names")
+ If you extracted them to another folder,
+ edit the files L2R.BAT and L2RSEM.BAT and change the pathes to latex2rt.exe 
+ and to the cfg files to the folder where you put them.
 
+Either make sure that
+ the folder containing the executable latex2rt.exe is in your search path
+ (e.g. adding to your autoexcec.bat: "PATH=...;...;C:\l2r")
+or 
+ at least put the files L2R.BAT, L2RSEM.BAT and into a folder
+ which is in your search path.
+
+If you want to use the option to convert equations to bitmaps (-M 12),
+you must have TeX, ImageMagick and Ghostscript installed.
+This works only on win32 systems (win95, win98, winNT4, win2000, winXP)
+because ImageMagick is available only for win32, not for pure DOS.
+Of TeX, you need a complete installation.
+Of ImageMagick, get the version for Win2000, it will also work under win95 and win98.
+   You only need convert.exe.
+Of Ghostscript, you only need gswin32c.exe and gsdll32.dll.
+Either the folders where TeX, ImageMagick and Ghostscript are installed
+must be in your search path, or you must edit the file LATEX2PNG.BAT 
+and specify the folders where TeX, ImageMagick and Ghostscript are installed
+in the SET commands, e.g.
+...
+rem Set path to latex here (ending with \) if it isn't in your search path:
+SET TEXDIR=C:\texmf\miktex\bin\
+
+rem Set path to ImageMagick's convert here (ending with \) if it isn't in your search path:
+SET MAGICKDIR=C:\ImageMagick\
+
+rem Set path to Ghostscript's gswin32c.exe here if it isn't in your search path:
+SET GSDIR=C:\Aladdin\gs6.01\bin
+
+
+Starting the conversion:
+------------------------
+Best, copy the file(s) to be converted into an empty folder. 
+cd to this folder.
+Start conversion by calling l2r.bat (without -S option)
+or l2rsem.bat (with -S option).
+Whether you must use the -S option depends on the windows system
+in which the resulting rtf file will be opened ("target system").
+In the target system, check 
+"Start - Settings - Control Panel" ("Start - Einstellungen - Systemsteuerung")
+and open "country settings" ("Ländereinstellungen").
+Click the tab "numbers" ("Zahlen"). 
+The last entry in this menu is "list separator" ("Listentrennzeichen").
+This is either a comma or a semicolon.
+If it's a comma (default for English versions of Windows), 
+call latex2rt without -S parameter.
+If it's a semicolon (default for German versions of Windows), 
+call latex2rt with -S parameter.
+Sorry, I don't know what the defaults are for other countries.
