@@ -1,11 +1,21 @@
 /*
- * $Id: direct.c,v 1.3 2001/08/12 15:56:56 prahl Exp $
+ * $Id: direct.c,v 1.4 2001/08/12 17:29:00 prahl Exp $
  * History:
  * $Log: direct.c,v $
- * Revision 1.3  2001/08/12 15:56:56  prahl
- * latex2rtf version 1.5 by Ralf Schlatterbeck
+ * Revision 1.4  2001/08/12 17:29:00  prahl
+ * latex2rtf version 1.8aa by Georg Lehner
  *
- * Revision 1.4  1995/03/23  15:58:08  ralf
+ * Revision 1.7  1998/10/28 04:09:56  glehner
+ * (WriteFontName): Cleaned up. Eliminated unecessary warning
+ * and not completed rtf-output when using *Font*.
+ *
+ * Revision 1.6  1998/07/03 07:03:16  glehner
+ * lclint cleaning
+ *
+ * Revision 1.5  1997/02/15 20:45:41  ralf
+ * Some lclint changes and corrected variable declarations
+ *
+ * Revision 1.4  1995/03/23 15:58:08  ralf
  * Reworked version by Friedrich Polzer and Gerhard Trisko
  *
  *
@@ -36,9 +46,9 @@
 #include "cfg.h"
 /******************************************************************************/
 
-/*******************************  extern variables ****************************/
-extern char *progname;
-/******************************************************************************/
+/*************************** prototypes **************************************/
+
+static bool WriteFontName(const char **buffpoint, FILE *fRtf);
 
 /******************************* defines *************************************/
 #define MAXFONTLEN 100
@@ -46,7 +56,7 @@ extern char *progname;
 
 
 /******************************************************************************/
-BOOL WriteFontName(char **buffpoint, FILE *fRtf)
+bool WriteFontName(const char **buffpoint, FILE *fRtf)
 /******************************************************************************
   purpose: reads from the font-array to write correct font-number into
            Rtf-File
@@ -57,7 +67,7 @@ globals:   progname
 {
   char buffer[MAXFONTLEN+1];
   int i;
-  int fnumber;
+  size_t fnumber;
 
   if (**buffpoint == '*')
   {
@@ -69,8 +79,9 @@ globals:   progname
   {
     if ((i >= MAXFONTLEN) || (**buffpoint == '\0'))
     {
-      fprintf(stderr, "\n%s: ERROR: Invalid fontname in direct command",progname);
-      exit(-1);
+      fprintf(stderr, "\n%s: ERROR: Invalid fontname in direct command",
+	      progname);
+      exit(EXIT_FAILURE);
     }
     buffer[i] = **buffpoint;
     i++;
@@ -81,19 +92,16 @@ globals:   progname
   {
     fprintf(stderr, "\n%s: ERROR: Unknown fontname in direct command",progname);
     fprintf(stderr, "\nprogram aborted\n");
-    exit(-1);
+    exit(EXIT_FAILURE);
   }
   else
   {
-    fprintf(fRtf,"%d",fnumber);
+    fprintf(fRtf,"%u",(unsigned int)fnumber);
     return TRUE;
   }
 }
 
 
-
-/******************************************************************************/
-BOOL TryDirectConvert(char *command, FILE *fRtf)
 /******************************************************************************
   purpose: reads from the direct-array how some easy LaTex-commands can be
 	   converted into Rtf-commands by text exchange
@@ -101,48 +109,56 @@ parameter: command: LaTex-command and Rtf-command
 	   fRtf: File-Pointer to Rtf-File
 globals:   progname
  ******************************************************************************/
+bool
+TryDirectConvert(char *command, FILE *fRtf)
 {
-  int i;
-  char *buffpoint;
-  char *RtfCommand;
+  const char *buffpoint;
+  const char *RtfCommand;
   char TexCommand[128];
 
   if (strlen(command) >= 100)
-  {
+    {
       fprintf(stderr,"\n%s: WARNING: Command %s is too long in LaTeX-File.\n",progname,command);
       return FALSE;    /* command too long */
-  }
-
+    }
+  
   TexCommand[0] = '\\';
   TexCommand[1] = '\0';
   strcat (TexCommand, command);
-
-  RtfCommand = search (TexCommand, DIRECT_A);
+  
+  RtfCommand = SearchRtfCmd (TexCommand, DIRECT_A);
   if (RtfCommand == NULL)
-     return FALSE;
-
+    return FALSE;
+  
   buffpoint = RtfCommand;
-
+  diagnostics(4, "Direct converting `%s' command to `%s'.",
+	      TexCommand, RtfCommand);
   while (buffpoint[0] != '\0')
-  {
-     if (buffpoint[0] == '*')
-     {
-        ++buffpoint;
-        if (WriteFontName(&buffpoint, fRtf)==FALSE)
-        {
-           fprintf(stderr, "\n%s: WARNING: error in direct command file - invalid font name , \n",progname);
-           return FALSE;
-        }
-     }
-     else
-     {
-        fprintf(fRtf,"%c",*buffpoint);
-     }
+    {
+      if (buffpoint[0] == '*')
+	{
+	  ++buffpoint;
+	  (void)WriteFontName(&buffpoint, fRtf);
 
-     ++buffpoint;
-     
-  }  /* end while */
-
+	  /* From here on it is not necesarry
+	     if (WriteFontName(&buffpoint, fRtf))
+	     {
+	     fprintf(stderr,
+	     "\n%s: WARNING: error in direct command file"
+	     " - invalid font name , \n",
+	     progname);
+	     return FALSE;
+	     }
+	     */
+	}
+      else
+	{
+	  fprintf(fRtf,"%c",*buffpoint);
+	}
+      
+      ++buffpoint;
+      
+    }  /* end while */
   return TRUE;
 }
 

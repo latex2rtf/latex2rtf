@@ -1,11 +1,18 @@
 /*
- * $Id: ignore.c,v 1.3 2001/08/12 15:56:56 prahl Exp $
+ * $Id: ignore.c,v 1.4 2001/08/12 17:29:00 prahl Exp $
  * History:
  * $Log: ignore.c,v $
- * Revision 1.3  2001/08/12 15:56:56  prahl
- * latex2rtf version 1.5 by Ralf Schlatterbeck
+ * Revision 1.4  2001/08/12 17:29:00  prahl
+ * latex2rtf version 1.8aa by Georg Lehner
  *
- * Revision 1.5  1995/05/10  06:37:43  ralf
+ * Revision 1.7  1998/07/03 06:56:08  glehner
+ * adde PARAMETER, PACKAGE, ENVCMD, ENVIRONMENT
+ *
+ * Revision 1.6  1997/02/15 20:53:46  ralf
+ * Removed some global variable redeclarations
+ * Other lclint corrections
+ *
+ * Revision 1.5  1995/05/10 06:37:43  ralf
  * Added own includefile (for consistency checking of decls)
  *
  * Revision 1.4  1995/03/23  15:58:08  ralf
@@ -41,20 +48,18 @@
 #include "fonts.h"
 #include "cfg.h"
 #include "ignore.h"
-/*****************************************************************************/
-
-/************************   extern variables *********************************/
-extern char *progname;
-extern long linenumber;
+#include "funct2.h"
+#include "commands.h"
+#include "util.h"
 /*****************************************************************************/
 
 /***********************      prototypes   ***********************************/
-void IgnoreVar(FILE *fRtf);
-void IgnoreCmd(FILE *fTex);
+static void IgnoreVar(FILE *fRtf);
+static void IgnoreCmd(FILE *fTex);
 /*****************************************************************************/
 
 
-BOOL TryVariableIgnore(char *command, FILE *fTex)
+bool TryVariableIgnore(char *command, FILE *fTex)
 /****************************************************************************
 purpose : ignores variable-formats shown in file "ignore.cfg"
 params	:    fTex: open Tex-File
@@ -62,12 +67,19 @@ params	:    fTex: open Tex-File
 globals : progname
 returns : TRUE if variable was ignored correctly,
 	  else -> FALSE
+LEG190498
+expanded the syntax with PARAMTER, PACKAGE, ENVCMD, ENVIRONMENT:
+PARAMETER	ignores a command with one paramter
+PACKAGE		does not produce a Warning message if PACKAGE is
+		encountered
+ENVCMD		proceses contents of unknown environment as if it were
+		plain latex
+ENVIRONMENT     ignores contentents of that environment
  ****************************************************************************/
 {
-  int i;
-  char *buffpoint;
-  char *RtfCommand;
+  const char *RtfCommand;
   char TexCommand[128];
+  bool result = TRUE;
 
   if (strlen(command) >= 100)
   {
@@ -80,37 +92,43 @@ returns : TRUE if variable was ignored correctly,
   TexCommand[1] = '\0';
   strcat (TexCommand, command);
 
-  RtfCommand = search (TexCommand, IGNORE_A);
+  RtfCommand = SearchRtfCmd (TexCommand, IGNORE_A);
   if (RtfCommand == NULL)
-     return FALSE;
-
-  if (strcmp(RtfCommand,"NUMBER")==0)
-  {
-     IgnoreVar(fTex);
-     return TRUE;
-  }
-  if (strcmp(RtfCommand,"MEASURE")==0)
-  {
-     IgnoreVar(fTex);
-     return TRUE;
-  }
-  if (strcmp(RtfCommand,"OTHER")==0)
-  {
-     IgnoreVar(fTex);
-     return TRUE;
-  }
-  if (strcmp(RtfCommand,"COMMAND")==0)
-  {
-     IgnoreCmd(fTex);
-     return TRUE;
-  }
-  if (strcmp(RtfCommand,"SINGLE")==0)
-  {
-     return TRUE;
-  }
-
-  return FALSE;
-
+    result = FALSE;
+  else if (strcmp(RtfCommand,"NUMBER")==0)
+    IgnoreVar(fTex);
+  else if (strcmp(RtfCommand,"MEASURE")==0)
+    IgnoreVar(fTex);
+  else if (strcmp(RtfCommand,"OTHER")==0)
+    IgnoreVar(fTex);
+  else if (strcmp(RtfCommand,"COMMAND")==0)
+    IgnoreCmd(fTex);
+  else if (strcmp(RtfCommand,"SINGLE")==0)
+      ;
+  else if (strcmp(RtfCommand,"PARAMETER")==0)
+    CmdIgnoreParameter(No_Opt_One_NormParam);
+  else if (strcmp(RtfCommand,"LINE")==0)
+    IgnoreTo('\n');
+  else if (strcmp(RtfCommand,"ENVIRONMENT")==0)
+    {
+      char *str;
+      str = malloc(strlen(command)+5); /* envelope: end{..} */
+      if (str == NULL)
+	error(" malloc error -> out of memory!\n");
+      strcpy(str, "end{");
+      strcat(str, command);
+      strcat(str, "}");
+      Ignore_Environment(str);
+      free(str);
+    }
+  else if (strcmp(RtfCommand,"ENVCMD")==0)
+    PushEnvironment(IGN_ENV_CMD);
+  else if (strcmp(RtfCommand,"PACKAGE")==0)
+      ;
+  else
+    result = FALSE;
+  /*LEG210698*** lclint ?  free(RtfCommand);*/
+  return(result);
 }
 
 
@@ -122,12 +140,16 @@ globals : linenumber
 void IgnoreVar(FILE *fTex)
 {
   char dummy;
-  fread(&dummy,1,1,fTex);
+  if(fread(&dummy,1,1,fTex) != 1)
+    diagnostics(ERROR,
+		"fread; ignore.c (IgnoreVar): unexpected EOF in LaTeX-file or read error");
   if (dummy == '\n')
       linenumber++;
   do
   {
-    fread(&dummy,1,1,fTex);
+    if(fread(&dummy,1,1,fTex) != 1)
+      diagnostics(ERROR,
+		  "fread; ignore.c (IgnoreVar): unexpected EOF in LaTeX-file or read error");
     if (dummy == '\n')
 	linenumber++;
   } while ((dummy != ' ') && (dummy != '\n'));
@@ -142,23 +164,29 @@ globals : linenumber
 void IgnoreCmd(FILE *fTex)
 {
   char dummy;
-  fread(&dummy,1,1,fTex);
+  if(fread(&dummy,1,1,fTex) != 1)
+    diagnostics(ERROR,
+		"fread; ignore.c (IgnoreCmd): unexpected EOF in LaTeX-file or read error");
   if (dummy == '\n')
-      linenumber++;
+    linenumber++;
   do
   {
-    fread(&dummy,1,1,fTex);
+    if(fread(&dummy,1,1,fTex) != 1)
+      diagnostics(ERROR,
+		  "fread; ignore.c (IgnoreCmd): unexpected EOF in LaTeX-file or read error");
     if (dummy == '\n')
-	linenumber++;
+      linenumber++;
   } while (dummy != '\\');
   do
-  {
-    fread(&dummy,1,1,fTex);
-    if (dummy == '\n')
+    {
+      if(fread(&dummy,1,1,fTex) != 1)
+	diagnostics(ERROR,
+		    "fread; ignore.c (IgnoreCmd): unexpected EOF in LaTeX-file or read error");
+      if (dummy == '\n')
 	linenumber++;
-  }
-  while (!isalpha(dummy));
+    }
+  while (!isalpha((unsigned char) dummy));
   if (dummy == '\n')
-     linenumber--;
-  fseek(fTex,-1,SEEK_CUR);
+    linenumber--;
+  rewind_one();
 }

@@ -1,11 +1,18 @@
 /*
- * $Id: fonts.c,v 1.3 2001/08/12 15:56:56 prahl Exp $
+ * $Id: fonts.c,v 1.4 2001/08/12 17:29:00 prahl Exp $
  * History:
  * $Log: fonts.c,v $
- * Revision 1.3  2001/08/12 15:56:56  prahl
- * latex2rtf version 1.5 by Ralf Schlatterbeck
+ * Revision 1.4  2001/08/12 17:29:00  prahl
+ * latex2rtf version 1.8aa by Georg Lehner
  *
- * Revision 1.4  1995/05/24  15:32:22  ralf
+ * Revision 1.6  1998/10/28 06:27:56  glehner
+ * Removed <malloc.h>
+ *
+ * Revision 1.5  1997/02/15 20:55:50  ralf
+ * Some reformatting and changes suggested by lclint
+ * Removed direct access to data structures in cfg.c
+ *
+ * Revision 1.4  1995/05/24 15:32:22  ralf
  * Changes by Vladimir Menkov for DOS port
  *
  * Revision 1.3  1995/03/23  15:58:08  ralf
@@ -29,7 +36,6 @@
 
 /****************************************** includes ************************/
 #include <stdio.h>
-#include <malloc.h>
 #include <stdlib.h>
 #include "main.h"
 #include "fonts.h"
@@ -38,12 +44,8 @@
 void error(char *);
 
 /************************************* extern variables *********************/
-extern char *progname;
-
-extern struct ArrayElementT *FontArray;
-extern int FontArraySize;
 extern int fontsize;
-extern int DefFont;
+extern size_t DefFont;
 
 /******************************************************************************/
 
@@ -53,91 +55,79 @@ extern int DefFont;
 /****************************************************************************/
 
 
-/****************************************************************************/
-BOOL WriteFontHeader(FILE* fRtf)
+/***/
+void WriteFontHeader(FILE* fRtf)
 /****************************************************************************
-  purpose: writes fontnumbers and styles for headers into Rtf-File 
-parameter: fRtf: File-Pointer to Rtf-File
-  globals: fontsize
-           DefFont (default font number)
-           FontArray (contains list of fonts defined in fonts.cfg)
-           FontArraySize (number of elements in FontArray)
+ *   purpose: writes fontnumbers and styles for headers into Rtf-File 
+ * parameter: fRtf: File-Pointer to Rtf-File
+ *   globals: fontsize
+ *            DefFont (default font number)
  ****************************************************************************/
 {
-  int i;
+    size_t num = 0;
+    const ConfigEntryT **config_handle;
 
-  fprintf(fRtf,"{\\fonttbl");
+    fprintf(fRtf,"{\\fonttbl");
 
-  for(i = 0; i < FontArraySize; i++)
-  {
-    fprintf(fRtf,"{\\f%d\\fnil %s;}", i, FontArray[i].RtfCommand);
-  }; /* end for */
+    config_handle = CfgStartIterate (FONT_A);
+    while ((config_handle = CfgNext (FONT_A, config_handle)) != NULL)
+    {
+	fprintf( fRtf
+	       , "{\\f%u\\fnil %s;}"
+	       , (unsigned int)num
+	       , (*config_handle)->RtfCommand
+	       );
+	++num;
+    }
 
-  fprintf(fRtf,"}\\f%d\n", DefFont = GetFontNumber("Roman"));
+    fprintf(fRtf,"}\\f%u\n", (unsigned int)(DefFont = GetFontNumber("Roman")));
+    fprintf(fRtf,"{\\stylesheet{\\fs%d\\lang1031\\snext0 Normal;}",fontsize);
+    fprintf( fRtf,"{%s%u%s \\sbasedon0\\snext0 heading 1;}\n"
+	   , HEADER11,(unsigned int)DefFont,HEADER12);
+    fprintf( fRtf,"{%s%u%s \\sbasedon0\\snext0 heading 2;}\n"
+           , HEADER21,(unsigned int)DefFont,HEADER22);
+    fprintf( fRtf,"{%s%u%s \\sbasedon0\\snext0 heading 3;}\n"
+           , HEADER31,(unsigned int)DefFont,HEADER32);
+    fprintf( fRtf,"{%s%u%s \\sbasedon0\\snext0 heading 4;}\n"
+           , HEADER41,(unsigned int)DefFont,HEADER42);
 
-  fprintf(fRtf,"{\\stylesheet{\\fs%d\\lang1031\\snext0 Normal;}",fontsize);
-
-  fprintf(fRtf,"{%s%d%s \\sbasedon0\\snext0 heading 1;}\n", HEADER11,DefFont,HEADER12);
-  fprintf(fRtf,"{%s%d%s \\sbasedon0\\snext0 heading 2;}\n", HEADER21,DefFont,HEADER22);
-  fprintf(fRtf,"{%s%d%s \\sbasedon0\\snext0 heading 3;}\n", HEADER31,DefFont,HEADER32);
-  fprintf(fRtf,"{%s%d%s \\sbasedon0\\snext0 heading 4;}\n", HEADER41,DefFont,HEADER42);
-
-  fprintf(fRtf,"%s\n", HEADER03);
-  fprintf(fRtf,"%s\n", HEADER13);
-  fprintf(fRtf,"%s\n", HEADER23);
-  fprintf(fRtf,"%s\n", HEADER33);
-  fprintf(fRtf,"%s\n", HEADER43);
-
-  return TRUE;
+    fprintf(fRtf,"%s\n", HEADER03);
+    fprintf(fRtf,"%s\n", HEADER13);
+    fprintf(fRtf,"%s\n", HEADER23);
+    fprintf(fRtf,"%s\n", HEADER33);
+    fprintf(fRtf,"%s\n", HEADER43);
 }
 
 
-/****************************************************************************/
-int GetFontNumber(char * Fname)
+/***/
+size_t GetFontNumber(char * Fname)
 /****************************************************************************
-  purpose: gets the font number Rtf
-parameter: Fname: fontname in Rtf
-  globals: FontArray (contains list of fonts defined in fonts.cfg)
-           FontArraySize (number of elements in FontArray)
-   return: fontnumber from Rtf
+ *   purpose: gets the font number from an Rtf font name
+ * parameter: Fname: fontname in Rtf
+ *    return: font number
  ****************************************************************************/
 {
-  int num = 0;
+    size_t num = 0;
+    const ConfigEntryT **config_handle = CfgStartIterate (FONT_A);
 
-  for (num=0; num < FontArraySize; num++)
-  {
-     if (strcmp (FontArray[num].RtfCommand, Fname) == 0)
-        return num;  
-  }
-
-  return GetTexFontNumber ("Roman");  /* default font */
+    while ((config_handle = CfgNext (FONT_A, config_handle)) != NULL)
+    {
+	if (strcmp ((*config_handle)->RtfCommand, Fname) == 0)
+	{
+	    return num;  
+	}
+      num++; /* found by gerard Pénillault, added by W.Hennings March08,1999 */
+    }
+    return GetTexFontNumber ("Roman");  /* default font */
 }
 
-
-
-
-/****************************************************************************/
-int GetTexFontNumber(char * Fname)
+/***/
+size_t GetTexFontNumber(char * Fname)
 /****************************************************************************
-  purpose: gets the font number LaTex
+  purpose: gets the RTF font number from given LaTex font
 parameter: Fname: fontname in LaTex
-  globals: FontArray (contains list of fonts defined in fonts.cfg)
-           FontArraySize (number of elements in FontArray)
-   return: fontnumber from LaTex
+   return: RTF font number
  ****************************************************************************/
 {
-  struct ArrayElementT *help;
-
-
-  help = (struct ArrayElementT *) bsearch (Fname, FontArray, FontArraySize,
-                                   sizeof(struct ArrayElementT), (fptr)compare);
-  if (help == NULL)
-     return 0;
-  else
-     return help->number;
-
+    return SearchRtfIndex (Fname, FONT_A);
 }
-
-
-
-

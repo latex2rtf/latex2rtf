@@ -1,0 +1,14 @@
+Package: latex2rtf
+Version: =
+Architecture: =
+Section: tex
+Priority: optional
+Maintainer: Georg Lehner <glehner@unanleon.edu.ni>
+Description: LaTeX text to RTF format translator.
+ RTF format is used by several textprocessors, including Word.
+ Latex2rtf was written by Fernando Dorner and Andreas Granzer in
+ a one-semester course. It was later updated in another one-semester
+ course by Friedrich Polzer and Gerhard Trisko.
+ Ralf Schlatterbeck <ralf@zoo.priv.at> and many others
+ contributed to the actual version.
+Depends: libc5

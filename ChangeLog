@@ -1,0 +1,200 @@
+Thu Nov 12 06:58:28 1998  Georg Lehner  <glehner@econic.magma.com.ni>
+
+	* cfg.c: 
+
+	* cfg.h: Moved #includes to .h file. Added #ifndef __CFG_H
+
+	* Makefile (SOURCES): Vladimir Menkov's Borland-C/MS-DOS Version
+	is discontinued from Version 1.8; removed makefile.dos
+	(SUPPORT): Added l2r.exe
+	(DOCS): Added l2r.txt, added doc/Makefile
+	(doc): moved l2r.pdf to Makefile
+Tue Oct 27 23:55:31 1998  Georg Lehner  <glehner@econic.magma.com.ni>
+
+	* main.c (WriteTemp): fopen rb , to allow temp.tmp workaround.
+
+	* funct1.c (CmdInclude): fopen rb, to allow temp.tmp workaround.
+
+Mon Oct 26 23:29:51 1998  Georg Lehner  <glehner@econic.magma.com.ni>
+
+	* funct2.c (CmdAbstract): Internationalized Title.
+
+Sun Oct 25 00:37:26 1998  Georg Lehner  <glehner@econic.magma.com.ni>
+
+	* parser.c (parseBracket): Changed to void parse...().
+	(parseBrace): Ditto.
+
+	* funct1.h (ON): Changed from 0x8000 to 0x4000 for compiling with
+	msvc under DOS.
+
+	* main.c (WriteTemp): Added function to fix the newline problem
+	with diferent OS.
+	(CloseRtf): Output a second '}' at the end of the rtf-file.
+	(main): Call WriteTemp to convert end-of-line characters prior to
+	processing.
+	(CloseRtf): Added eol-character to rtf-file.
+
+	* Makefile (SUPPORT): added l2r.bat for cygwin/Win95.
+
+	* main.c (main): initialization of default input/output put here.      
+	Include <errno.h> now.
+
+	* funct2.c: Include <errno.h> now.
+
+Mon Sep 21 19:07:28 1998  Georg Lehner  <glehner@econic.magma.com.ni>
+
+	* funct1.c (CmdLabel): 
+	(CmdLabel1_4): 
+	(CmdLabelOld): fixed up so that old styled labels do not eat up
+	the parameter.
+
+	* direct.c (TryDirectConvert): 
+	Eliminated unecesarry warning and not completed rtf code output
+	when using *Font*.
+
+Sun Sep 20 18:42:50 1998  Georg Lehner  <glehner@econic.magma.com.ni>
+
+	* funct1.c (CmdTitle): now calls ConvertString only with existing
+	and non-empty strings.
+	(CmdFormula): "\)" now does not abort, neither "\]". Added
+	diagnostics.
+	
+	* main.c (getLinenumber): only when not reading stdin.
+
+Thu Aug 20 07:26:42 1998  Georg Lehner  <glehner@econic.magma.com.ni>
+
+	* funct1.c (CmdUsepackage): Support for [latin1]{inputenc} package
+	added.
+	(CmdC): 
+	(CmdUmlaute): Added missing spaces at the end of the \ansii codes.
+	(CmdLabel1_4): Added rewind_one after GetParam to avoid character
+	loss.
+	(CmdEmphasize): Fixed inverted if clause on "tabbing_on".
+
+Tue Aug 18 11:32:04 1998  Georg Lehner  <glehner@econic.magma.com.ni>
+
+	* cfg.h: removed #include <malloc.h>
+
+	* fonts.c: removed #include <malloc.h>
+
+	* funct2.c removed #include <malloc.h>
+	(OpenBblFile): open .bbl file, either named or from .tex.
+	(MakeBiblio): convert thebibliography environment.
+	(CmdConvertBiblio): make bibliography from environment.
+        (WriteRefList): make bibliography from .bbl file.
+
+Sat Jul 11 20:04:43 1998  Georg Lehner  <glehner@econic.magma.com.ni>
+
+	* commands.c: Ignore newcommand, newtheorem, newenvironment,
+	newcounter in commands[].
+	(CallCommandFunc): added diagnostics when calling
+	CmdIgnoreParameter.
+
+Fri Jul  3 22:46:40 1998  Georg Lehner  <glehner@econic.magma.com.ni>
+
+	* funct1.c (ConvertString): found fwrite-bug with NULL string
+	pointer.
+
+Thu Jul  2 23:22:10 1998  Georg Lehner  <glehner@econic.magma.com.ni>
+
+	* main.c (main): Added -i language option.
+
+Wed Jul  1 21:11:56 1998  Georg Lehner  <glehner@econic.magma.com.ni>
+
+	* Makefile: 
+	(dist source):  added doc/ and cfg/ directory.
+	(doc): texinfo documentation.
+	(XCFLAGS): added PATHSEP.
+
+	* debian.control:
+	* debian.README:  updated maintainer.
+
+Thu Jun 25 00:00:05 1998  Georg Lehner  <glehner@econic.magma.com.ni>
+
+	* cfg.c (open_cfg): Bug fixes and extended syntax in RTFPATH
+ 	parsing.
+	
+
+Wed Jun 24 22:41:32 1998  Georg Lehner  <glehner@econic.magma.com.ni>
+
+	* main.c (diagnostics): vfprintf bug fixed.  latexname in
+	reference.
+	
+
+Mon Jun 22 00:28:54 1998  Georg Lehner  <glehner@econic.magma.com.ni>
+
+	* main.c (main): And others, revised use of bCite.
+
+Sun Jun 21 13:06:55 1998  Georg Lehner  <glehner@econic.magma.com.ni>
+
+	* funct1.c (ScanAux): Passed here from funct2.c where it wasn't
+ 	used.
+
+	* util.c (rewind_one): New function.
+
+Sat Jun 20 16:47:02 1998  Georg Lehner  <glehner@econic.magma.com.ni>
+
+	* funct2.c (WriteRefList): add language support for REF and
+	REFARTICLE.
+
+	* funct1.c (CmdSection): added language support for Part.
+
+	* cfg.c (ReadLg): Read language.cfg file.
+	(TranslateName): Translates heading to corrsponding language.
+
+	* funct1.c (CmdPagestyle): support pagestyle command.
+	(CmdHeader): markboth, markright commands.
+	(RtfHeader): generates rtf-codes for CmdHeader.
+
+	* funct2.c (CmdCite): added hyperlatex support.
+
+	* funct1.c (CmdLabel): rtf-1.4 support, hyperlatex-support.
+
+Fri Jun 19 17:27:56 1998  Georg Lehner  <glehner@econic.magma.com.ni>
+
+	* funct2.c (ScanAux): new function, scans .aux for reference
+	material
+	
+	* main.c (main.c): added -v option (verbosity).
+	(diagnostics): new function to handle errors, warnings and logs.
+	(rtf_restrict): new function checks rtf_version to generate
+
+Tue Jun 16 05:35:26 1998  Georg Lehner  <glehner@econic.magma.com.ni>
+
+	* funct1.c (CmdDocumentStye): hyperlatex support.
+	(CmdUsepackage): hyperlatex support.
+	(Environment): disabled CleanEnvironment.
+
+	* funct2.c (CmdColsep): hyperlatex support.
+
+	* main.c: added global twoside.
+
+	* funct1.c (CmdDocumentStyle): automatic ISO_8859_1 switch. Fixed
+	stop condition of do while loop. Added language support.
+
+	* commands.c (PushEnvironment): added support for ignoring Environments.
+
+Sun Jun 14 20:35:56 1998  Georg Lehner  <glehner@econic.magma.com.ni>
+
+	* funct1.c (CmdItem): label in description item converts to ISO_8859_1.
+
+	* main.c: added global language.
+
+	* commands.c: added documentstyle and usepackage to HeaderCommands[].
+
+	* funct1.c (CmdUsepackage): LaTeX2e support.
+	(stralloc): malloc wrapper.
+
+	* ignore.c (TryVariableIgnore): added PARAMETER, PACKAGE, ENVCMD
+	ENVIRONMENT.
+	
+	* commands.h (IGN_ENV_CMD): environment which ignores contents.
+
+Sat Jun 13 12:07:38 1998  Georg Lehner  <glehner@econic.magma.com.ni>
+
+	* main.c (TranslateCommand): permit * in names of LaTeX commands.
+
+	* Makefile (SOURCES): added ChangeLog.
+
+	* encode.c (Write_ISO_8859_1): fixed missing spaces.
+

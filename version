@@ -1,0 +1,2 @@
+#!/bin/sh
+grep '$Revision:' version.h | sed 's/.*Revision: *\([^ ]*\).*/\1/'

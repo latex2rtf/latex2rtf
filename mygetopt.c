@@ -1,7 +1,19 @@
+/*  $Id: mygetopt.c,v 1.1 2001/08/12 17:29:00 prahl Exp $
+ *  History:
+ * $Log: mygetopt.c,v $
+ * Revision 1.1  2001/08/12 17:29:00  prahl
+ * latex2rtf version 1.8aa by Georg Lehner
+ *
+ * Revision 1.1  1998/11/12 13:05:43  glehner
+ * Initial revision
+ *
+ *
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include "main.h"
 
 /* my_getopt  is supposed to emulate the C Library getopt
    (which, according to the man pages, is written by Henry Spencer
@@ -39,16 +51,18 @@ int my_getopt(int argc, char ** argv, char * optstring) {
 
   optarg = NULL;
 
-/*  printf("optind = %d\n", optind);  if (rem) printf("rem=`%s'\n", rem);*/
+  diagnostics(4, "Processing option `%s'", argv[optind]);
 
-  if (!rem) {
+  /*  printf("optind = %d\n", optind);  if (rem) printf("rem=`%s'\n", rem);*/
+
+    if (!rem) {
     if (optind < argc && argv[optind][0] == '-') {
       rem = argv[optind]+1;
       if (*rem == 0) return EOF;     /* Treat lone "-" as a non-option arg */
       if (*rem == '-') { optind++; return EOF;}  /* skip "--" and terminate */
     }
     else return EOF;
-  }
+    }
 
   c = *rem;
   q = strchr(optstring, c);

@@ -1,11 +1,17 @@
 /*
- * $Id: stack.c,v 1.3 2001/08/12 15:56:56 prahl Exp $
+ * $Id: stack.c,v 1.4 2001/08/12 17:29:00 prahl Exp $
  * History:
  * $Log: stack.c,v $
- * Revision 1.3  2001/08/12 15:56:56  prahl
- * latex2rtf version 1.5 by Ralf Schlatterbeck
+ * Revision 1.4  2001/08/12 17:29:00  prahl
+ * latex2rtf version 1.8aa by Georg Lehner
  *
- * Revision 1.3  1995/05/10  06:37:43  ralf
+ * Revision 1.5  1998/07/03 07:03:16  glehner
+ * lclint cleaning
+ *
+ * Revision 1.4  1997/02/15 20:29:45  ralf
+ * Did some corrections for lclint checking
+ *
+ * Revision 1.3  1995/05/10 06:37:43  ralf
  * Added own includefile (for consistency checking of decls)
  *
  * Revision 1.2  1995/03/23  15:58:08  ralf
@@ -25,24 +31,18 @@
 /********************************* includes **********************************/
 #include <stdio.h>
 #include <stdlib.h>
+#include "main.h"
 #include "stack.h"
 /******************************************************************************/
 
-
-/********************************** extern variables *************************/
-extern int BracketLevel;
-extern char *progname;
-extern char *latexname;
-extern long linenumber;
-/******************************************************************************/
 
 /********************************* defines ***********************************/
 #define STACKSIZE 300
 /******************************************************************************/
 
 /******************************** global variables *****************************/
-int stack[STACKSIZE];
-int top = 0;
+static int stack[STACKSIZE];
+static int top = 0;
 /******************************************************************************/
 
 /******************************************************************************/
@@ -64,7 +64,7 @@ parameter: lev...level
   {
     fprintf(stderr,"\n%s: ERROR: too deep nesting -> internal stack-overflow",progname);
     fprintf(stderr,"\nprogram aborted\n");
-    exit(-1);
+    exit(EXIT_FAILURE);
   }
   return top;
 }
@@ -90,7 +90,7 @@ parameter: lev...level
   {
     fprintf(stderr,"\n%s: ERROR: error in LaTeX-File: %s at linenumber: %ld\n-> internal stack-underflow",progname,latexname,getLinenumber());
     fprintf(stderr,"\nprogram aborted\n");
-    exit(-1);
+    exit(EXIT_FAILURE);
   }
   return top;
 }

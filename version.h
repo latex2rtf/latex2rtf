@@ -1,11 +1,22 @@
 /*
- * $Id: version.h,v 1.3 2001/08/12 15:56:56 prahl Exp $
+ * $Id: version.h,v 1.4 2001/08/12 17:29:00 prahl Exp $
  * History:
  * $Log: version.h,v $
- * Revision 1.3  2001/08/12 15:56:56  prahl
- * latex2rtf version 1.5 by Ralf Schlatterbeck
+ * Revision 1.4  2001/08/12 17:29:00  prahl
+ * latex2rtf version 1.8aa by Georg Lehner
  *
- * Revision 1.5  1995/05/24  17:12:55  ralf
+ * Revision 1.8  1998/11/12 13:08:44  glehner
+ * The Mitch-revision, named after the Hurricane that passed over
+ * Nicaragua in November 1998.
+ *
+ * Revision 1.7  1998/07/03 06:46:15  glehner
+ * Added and Changed a lot. See file ChangeLog
+ *
+ * Revision 1.6  1998/06/08 19:26:59  ralf
+ * Corrected some reported bugs, for details see credits.
+ * Re-implemented config file parsing which was very buggy.
+ *
+ * Revision 1.5  1995/05/24 17:12:55  ralf
  * Some last-minute fixes (correct handling of reading from stdin)
  *
  * Revision 1.4  1995/05/24  16:12:16  ralf
@@ -45,4 +56,5 @@
  * Initial revision
  *
  */
-char *Version = "$Revision: 1.3 $ $Date: 2001/08/12 15:56:56 $";
+char *Version = "$Revision: 1.4 $ $Date: 2001/08/12 17:29:00 $";
+

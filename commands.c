@@ -1,11 +1,24 @@
 /*
- * $Id: commands.c,v 1.3 2001/08/12 15:56:56 prahl Exp $
+ * $Id: commands.c,v 1.4 2001/08/12 17:29:00 prahl Exp $
  * History:
  * $Log: commands.c,v $
- * Revision 1.3  2001/08/12 15:56:56  prahl
- * latex2rtf version 1.5 by Ralf Schlatterbeck
+ * Revision 1.4  2001/08/12 17:29:00  prahl
+ * latex2rtf version 1.8aa by Georg Lehner
  *
- * Revision 1.3  1995/05/24  15:35:32  ralf
+ * Revision 1.7  1998/10/28 06:30:53  glehner
+ * changed thebibliography from CmdIgnore... to CmdConvertBiblio.
+ *
+ * Revision 1.6  1998/07/03 06:59:05  glehner
+ * LaTeX2e support, documentclass, usepackage
+ * added ignoring environment
+ *
+ * Revision 1.5  1997/02/15 21:34:50  ralf
+ * Fixed bug in german quotes as corrected by Oliver Moldenhauer
+ *
+ * Revision 1.4  1997/02/15 20:42:58  ralf
+ * Corrected some declarations found by lclint.
+ *
+ * Revision 1.3  1995/05/24 15:35:32  ralf
  * Changes by Vladimir Menkov for DOS port
  * Added include of stdlib.h
  *
@@ -30,26 +43,25 @@
 #include "funct1.h"
 #include "commands.h"
 #include "funct2.h"
+#include "parser.h"
 /****************************************************************************/
 void error(char *);
 /*********************** typedefs *******************************************/
-typedef struct commandtag
-	  { char *cpCommand;		 /* LaTeX-commandname without \ */
-	    void (*func)(int);		 /* name of function which converts an LaTex-command to an Rtf-command */
-	    int param;			 /* optional parameter can be used in various ways */
-	  } CommandArray;
+typedef struct commandtag {
+    char *cpCommand;	 	 /* LaTeX-commandname without \ */
+    /*@null@*/void (*func)(int); /* function converting LaTex-cmd to Rtf-cmd */
+    int param;		 	 /* used in various ways */
+} CommandArray;
 /****************************************************************************/
 
-/********************** global variables ************************************/
-CommandArray *Environments[100] = {NULL}; /* list of active environments */
-int iEnvCount = 0;			 /* number of active environments */
-extern char *progname;
-extern BOOL GermanMode;
+/***************** file-global variables ************************************/
+static CommandArray *Environments[100]; /* list of active environments */
+static int iEnvCount = 0;               /* number of active environments */
 
-CommandArray commands[300] = {
 /********************************************************************/
 /* commands for environment document */
 /********************************************************************/
+static CommandArray commands[] = {
    { "begin", CmdBeginEnd, CMD_BEGIN },
    { "end", CmdBeginEnd, CMD_END },
    { "today", CmdToday, 0 },
@@ -206,12 +218,19 @@ CommandArray commands[300] = {
    { "date", CmdTitle, TITLE_DATE },
 /* end pftg ---------------------------------- */
    { "multicolumn", CmdMultiCol, 0 },
-   { "", NULL } };
+   { "newcommand", CmdIgnoreParameter, 13 }, /* one optional 3 required */
+   { "newenvironment", CmdIgnoreParameter, 13 }, /* ditto */
+   { "newtheorem", CmdIgnoreParameter, 12 }, /* one optional two required */
+   { "newcounter", CmdIgnoreParameter, 11 }, /* one optional one required */
+   { "", NULL, 0 }
+};
 
-CommandArray HeaderCommands[100] = {
 /********************************************************************/
 /* commands for environment LaTeX-header */
 /********************************************************************/
+static CommandArray HeaderCommands[] = {
+  { "documentclass", CmdDocumentStyle, 0 },
+  { "usepackage", CmdUsepackage, 0 },
    { "documentstyle", CmdDocumentStyle, 0 },
    { "setlength", CmdIgnoreParameter, No_Opt_Two_NormParam },
    { "pagestyle", CmdIgnoreParameter, No_Opt_One_NormParam }, /* pagestyle is ignored because there is a variable calculation
@@ -235,51 +254,57 @@ CommandArray HeaderCommands[100] = {
    { "opening", CmdOpening, 0},
    { "closing", CmdClosing, 0},
    { "ps", CmdPs, 0},
-   { "", NULL } };    /* end of list */
+   { "", NULL, 0 }
+};    /* end of list */
 
-CommandArray ItemizeCommands[10] = {
 /********************************************************************/
 /* commands for environment Itemize */
 /********************************************************************/
+static CommandArray ItemizeCommands[] = {
    { "item", CmdItem, ITEMIZE },
-   { "", NULL } };    /* end of list */
+   { "", NULL, 0 }
+};    /* end of list */
 
-CommandArray DescriptionCommands[10] = {
 /********************************************************************/
 /* commands for environment Description */
 /********************************************************************/
+static CommandArray DescriptionCommands[] = {
    { "item", CmdItem, DESCRIPTION },
-   { "", NULL } };    /* end of list */
+   { "", NULL, 0 }
+};    /* end of list */
 
-CommandArray EnumerateCommands[10] = {
 /********************************************************************/
 /* commands for environment Enumerate */
 /********************************************************************/
+static CommandArray EnumerateCommands[] = {
    { "item", CmdItem, ENUMERATE },
-   { "", NULL } };    /* end of list */
+   { "", NULL, 0 }
+};    /* end of list */
 
-CommandArray TabbingCommands[10] = {
 /********************************************************************/
 /* commands for environment tabbing */
 /********************************************************************/
+static CommandArray TabbingCommands[] = {
     { "kill" , CmdTabkill, 0 },  /* a line that ends with a \kill command produces no output */
-    { "", NULL } };   /* end of list */
+    { "", NULL, 0 }
+};   /* end of list */
 
-CommandArray LetterCommands[10] = {
 /********************************************************************/
 /* commands for environment letter */
 /********************************************************************/
+static CommandArray LetterCommands[] = {
     { "address" , CmdAddress, 0 },
     { "signature", CmdSignature, 0},
     { "opening", CmdOpening, 0},
     { "closing", CmdClosing, 0},
     { "ps", CmdPs, 0},
-    { "", NULL } };   /* end of list */
+    { "", NULL, 0 }
+};   /* end of list */
 
-CommandArray GermanModeCommands[10] = {
 /********************************************************************/
 /* commands for German Mode */
 /********************************************************************/
+static CommandArray GermanModeCommands[] = {
  /*   { "ck" , CmdPrintRtf , (int)"ck" },
     { "glqq" , CmdPrintRtf , (int)"\\ldblquote "},
     { "glq" , CmdPrintRtf , (int)"\\lquote "},
@@ -288,22 +313,23 @@ CommandArray GermanModeCommands[10] = {
     { "ck", GermanPrint, GP_CK},
     { "glqq", GermanPrint, GP_LDBL},
     { "glq", GermanPrint, GP_L},
-    { "grqq", GermanPrint, GP_R},
-    { "grq", GermanPrint, GP_RDBL},
-    { "", NULL } };   /* end of list */
+    { "grq", GermanPrint, GP_R},
+    { "grqq", GermanPrint, GP_RDBL},
+    { "", NULL, 0 }
+};   /* end of list */
 
-CommandArray params[100] = {
 /********************************************************************/
 /* commands for begin-end environments */
 /* only strings used in the form \begin{text} or \end{text} */
 /********************************************************************/
+static CommandArray params[] = {
    { "center", Paragraph, PAR_CENTER },
    { "flushright", Paragraph, PAR_RIGHT },
    { "flushleft", Paragraph, PAR_LEFT},
    { "document", Environment, DOCUMENT },
    { "tabbing", Tabbing, TABBING },
-   { "figure", CmdIgnoreFigure, FIGURE },
-   { "figure*", CmdIgnoreFigure, FIGURE_1 },
+   { "figure", CmdTable, FIGURE },
+   { "figure*", CmdTable, FIGURE_1 },
    { "picture", CmdIgnoreFigure, PICTURE },
    { "minipage", CmdIgnoreFigure, MINIPAGE },
    /*{ "thebibliography", CmdIgnoreFigure, THEBIBLIOGRAPHY },*/
@@ -318,6 +344,8 @@ CommandArray params[100] = {
    { "verse", CmdVerse, 0 },
    { "tabular", CmdTabular, TABULAR },
    { "tabular*", CmdTabular, TABULAR_1 },
+   { "longtable", CmdTabular, TABULAR },
+   { "longtable*", CmdTabular, TABULAR_1 },
    { "multicolumn", CmdMultiCol, 0 },
    { "math", CmdFormula2, 0 },
    { "displaymath" , CmdFormula2, 0 },
@@ -325,18 +353,34 @@ CommandArray params[100] = {
    { "letter", CmdLetter, 0 },
    { "table", CmdTable, TABLE },
    { "table*", CmdTable, TABLE_1 },
-   { "thebibliography", CmdIgnoreEnvironment, BIBLIOGRAPHY },
+   { "thebibliography", CmdConvertBiblio, 0 },
+   /*   { "thebibliography", CmdIgnoreEnvironment, BIBLIOGRAPHY },*/
    { "abstract", CmdAbstract, 0},
    { "titlepage", CmdTitlepage, 0},
    { "array", CmdArray, ARRAY },
    { "eqnarray", CmdArray, EQNARRAY },
    { "eqnarray*", CmdArray, EQNARRAY_1},
-   { "", NULL } };    /* end of list */
+   { "", NULL, 0 }
+};    /* end of list */
 
+
+/********************************************************************/
+/* commands for hyperlatex package */
+/* */
+/********************************************************************/
+static CommandArray hyperlatex[] = {
+   { "link", CmdLink, 0 },
+   { "xlink", CmdLink, 0 },
+   { "Cite", CmdCite, HYPERLATEX },
+   { "Ref", CmdLabel, HYPERREF },
+   { "Pageref", CmdLabel, HYPERPAGEREF },
+   { "S", CmdColsep, 0 },
+   { "", NULL, 0 }
+};    /* end of list */
 
 
 /****************************************************************************/
-BOOL CallCommandFunc(char *cCommand)
+bool CallCommandFunc(char *cCommand)
 /****************************************************************************
 purpose: The tries to call the command-function for the commandname
 params:  string with command name
@@ -360,6 +404,9 @@ fprintf(stderr,"%s ",Environments[j][i].cpCommand);
       {
 	if (Environments[j][i].func == NULL)
 	  return FALSE;
+	if(*Environments[j][i].func == CmdIgnoreParameter) {
+	  diagnostics (4, "Ignoring command %s.", cCommand);
+	}
 	(*Environments[j][i].func)((Environments[j][i].param));
 	return TRUE; /* Command Function found */
       }
@@ -371,7 +418,7 @@ fprintf(stderr,"%s ",Environments[j][i].cpCommand);
 
 
 /****************************************************************************/
-BOOL CallParamFunc(char *cCommand, int AddParam)
+bool CallParamFunc(char *cCommand, int AddParam)
 /****************************************************************************
 purpose: The tries to call the environment-function for the commandname
 params:  cCommand - string with command name
@@ -387,6 +434,7 @@ globals: command-functions have side effects or recursive calls
   {
     if (strcmp(params[i].cpCommand,cCommand)== 0)
       {
+	 assert(params[i].func != NULL);
 	 (*params[i].func)((params[i].param)|AddParam);
 	 return TRUE;	 /* command function found */
       }
@@ -416,30 +464,51 @@ globals: changes Environment - array of active environments
 		 iEnvCount   - counter of active environments
  ****************************************************************************/
 {
-  switch(code)
-  {
-    case HEADER: Environments[iEnvCount++]=HeaderCommands;
-		 break;
-    case DOCUMENT:
-		   Environments[iEnvCount++]=commands;
-		   if (GermanMode)
-		      Environments[iEnvCount++]=GermanModeCommands;
-		   break;
-    case ITEMIZE:  Environments[iEnvCount++]=ItemizeCommands;
-		   break;
-    case ENUMERATE: Environments[iEnvCount++]=EnumerateCommands;
-		    break;
-    case TABBING : Environments[iEnvCount++]=TabbingCommands;
-		   break;
-    case LETTER : Environments[iEnvCount++]=LetterCommands;
-		   break;
-    case DESCRIPTION : Environments[iEnvCount++]=DescriptionCommands;
-		   break;
-    case GERMANMODE : Environments[iEnvCount++]=GermanModeCommands;
-		   break;
+  char *diag = "";
 
+  switch(code)
+    {
+    case HEADER: Environments[iEnvCount++]=HeaderCommands;
+      diag = "preample";
+      break;
+    case DOCUMENT:
+      Environments[iEnvCount++]=commands;
+      if (GermanMode)
+	Environments[iEnvCount++]=GermanModeCommands;
+      diag = "document";
+      break;
+    case ITEMIZE:  Environments[iEnvCount++]=ItemizeCommands;
+      diag = "itemize";
+      break;
+    case ENUMERATE: Environments[iEnvCount++]=EnumerateCommands;
+      diag = "enumerate";
+      break;
+    case TABBING : Environments[iEnvCount++]=TabbingCommands;
+      diag = "tabbing";
+      break;
+    case LETTER : Environments[iEnvCount++]=LetterCommands;
+      diag = "letter";
+      break;
+    case DESCRIPTION : Environments[iEnvCount++]=DescriptionCommands;
+      diag = "description";
+      break;
+    case GERMANMODE : Environments[iEnvCount++]=GermanModeCommands;
+      diag = "?german?";
+      break;
+      /*LEG160698 Maybe we should push "nothing" 
+	but I think it doesn't harm*/
+    case IGN_ENV_CMD: Environments[iEnvCount++]=commands;
+      diag = "*latex2rtf ignored*";
+      break;
+    case HYPERLATEX: Environments[iEnvCount++]=hyperlatex;
+      diag = "hyperlatex";
+      break;
+      
     default: error("assertion failed at function PushEnvironment");
-  }
+    }
+  
+  diagnostics(4, "Entering %s environment, Depth: %d.", diag, iEnvCount);
+  
 }
 
 
@@ -452,6 +521,8 @@ globals: changes Environment - array of active environments
 		 iEnvCount - counter of active environments
  ****************************************************************************/
 {
+  diagnostics(4, "Leaving environment, Depth: %d", iEnvCount);
+
   --iEnvCount;
   Environments[iEnvCount]=NULL;
 

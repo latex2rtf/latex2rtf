@@ -1,0 +1,4 @@
+#!/bin/sh
+make prefix=/usr LIBINSTALL=debian-tmp/usr/lib/latex2rtf \
+    BININSTALL=debian-tmp/usr/bin \
+    MANINSTALL=debian-tmp/usr/man/man1  $*

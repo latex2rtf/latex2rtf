@@ -1,9 +1,28 @@
 /*
- * $Id: funct2.c,v 1.3 2001/08/12 15:56:56 prahl Exp $
+ * $Id: funct2.c,v 1.4 2001/08/12 17:29:00 prahl Exp $
  * History:
  * $Log: funct2.c,v $
- * Revision 1.3  2001/08/12 15:56:56  prahl
- * latex2rtf version 1.5 by Ralf Schlatterbeck
+ * Revision 1.4  2001/08/12 17:29:00  prahl
+ * latex2rtf version 1.8aa by Georg Lehner
+ *
+ * Revision 1.10  1998/11/05 13:21:49  glehner
+ * *** empty log message ***
+ *
+ * Revision 1.9  1998/10/28 06:04:51  glehner
+ * (CmdIgnoreParameter) now put in Frank Barnes parser.c
+ * Factored out WriteRefList into Open BblFile and MakeBiblio
+ * CmdConvertBiblio added: makes bibliography from
+ * \thebibliograpy environment.
+ * Removed #include <malloc.h>
+ * Internationalized Title in (CmdAbstract).
+ * Changed all output eol-codes to \n
+ *
+ * Revision 1.8  1998/07/03 07:00:13  glehner
+ * added hyperlatex-support, CmdColsep
+ *
+ * Revision 1.7  1997/02/15 20:59:16  ralf
+ * Corrected core-dump bug in tabular environment (gcc only)
+ * Some lclint changes
  *
  * Revision 1.6  1995/05/24  17:11:43  ralf
  * Corrected bug with variable input being NULL
@@ -25,12 +44,12 @@
  *
  * Revision 1.1  1994/06/17  11:26:29  ralf
  * Initial revision
+ * 
  *
- */
-/***************************************************************************
+ ***************************************************************************
    name : funct2.c
  author : DORNER Fernando, GRANZER Andreas
-          POLZER Friedrich,TRISKO Gerhard 
+          POLZER Friedrich,TRISKO Gerhard
  * CmdTabular & CommandTable changed
  * added CmdCite and WriteRefTable for creating correct citations
  purpose : includes besides funct1.c all functions which are called from the programm commands.c;
@@ -41,48 +60,26 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
-#include <malloc.h>
+#include <errno.h>
 #include "main.h"
 #include "funct1.h"
 #include "commands.h"
 #include "funct2.h"
 #include "stack.h"
+#include "cfg.h"
+#include "util.h"
+#include "parser.h"
 /******************************************************************************/
 
-/********************************   extern variables   *************************/
-extern int tabcounter;
-extern FILE *fRtf;
-extern FILE *fTex;
-extern BOOL bInDocument;
-extern int BracketLevel;
-extern int RecursLevel;
-extern BOOL twocolumn;
-extern BOOL TABBING_ON;
-extern BOOL TABBING_ON_itself;
-extern BOOL TABBING_RETURN;
-extern BOOL article;
-extern BOOL titlepage;
-extern int fontsize;
-extern char *progname;
-extern BOOL MathMode;
-extern char alignment;
-extern long linenumber;
-extern fpos_t pos_begin_kill;
-extern BOOL bTabular;
-extern int colCount;
-extern int actCol;
-extern char* colFmt;
-extern char* input;
-extern BOOL bCite;
-extern char *AuxName;
-extern char *BblName;
-extern BOOL GermanMode;
+/***************************** global variables ********************************/
+static int tabstoparray[100];
+static int number_of_tabstops=0;
 /*****************************************************************************/
 
-/***************************** global variables ********************************/
-int tabstoparray[100];
-int number_of_tabstops=0;
-/*****************************************************************************/
+/***************************** function prototypes ***************************/
+
+static void Convert_Tabbing_with_kill(void);
+
 
 /*----------------------------Tabbing Environment ------------------------*/
 /******************************************************************************/
@@ -90,8 +87,8 @@ void Tabbing(int code)
 /******************************************************************************
   purpose: pushes all tabbing-commands on a stack
 parameter: code : on/off at begin/end-environment
-  globals: TABBING_ON: true if tabbing-mode is on (only in this environment)
-	   TABBING_RETURN, TABBING_ITSELF: true if environmend ends
+  globals: tabbing_on: true if tabbing-mode is on (only in this environment)
+	   tabbing_return, tabbing_itself: true if environmend ends
  ******************************************************************************/
 {
   if (code & ON)  /* on switch */
@@ -99,21 +96,22 @@ parameter: code : on/off at begin/end-environment
     code &= ~(ON);  /* mask MSB */
     if (code == TABBING)
     {
-      TABBING_ON = TRUE;
-      /*TABBING_ON_itself = FALSE; */
+      tabbing_on = TRUE;
+      /*tabbing_on_itself = FALSE; */
 
       PushEnvironment(code);
 
       fprintf(fRtf,"\\par\\line ");
-      fgetpos(fRtf,&pos_begin_kill);
+      if(fgetpos(fRtf,&pos_begin_kill) != 0)
+	diagnostics(ERROR,"Failed fgetpos; funct2.c (Tabbing): errno %d", errno);
       /* Test ConvertTabbing(); */
     }
   }
   else /* off switch */
   {
-    /* TABBING_RETURN = TRUE;
-    TABBING_ON_itself = TRUE; */
-    TABBING_ON = FALSE;
+    /* tabbing_return = TRUE;
+    tabbing_on_itself = TRUE; */
+    tabbing_on = FALSE;
     PopEnvironment();
 
     fprintf(fRtf,"\\par\\pard\\line\\q%c ",alignment);
@@ -121,7 +119,7 @@ parameter: code : on/off at begin/end-environment
 }
 
 /******************************************************************************/
-void CmdTabset(int code)
+void CmdTabset()
 /******************************************************************************
  purpose: sets an tabstop
 globals:  tabcounter: specifies the tabstop-position
@@ -134,7 +132,7 @@ globals:  tabcounter: specifies the tabstop-position
 }
 
 /******************************************************************************/
-void CmdTabjump(int code)
+void CmdTabjump()
 /******************************************************************************
  purpose: jumps to an tabstop
  ******************************************************************************/
@@ -143,14 +141,16 @@ void CmdTabjump(int code)
 }
 
 /******************************************************************************/
-void CmdTabkill(int code)
+void CmdTabkill(/*@unused@*/ int code)
 /******************************************************************************
- purpose: a line in the TABBING-Environment which ends with an kill-command won't be
+ purpose: a line in the tabbing-Environment which ends with an kill-command won't be
 	 written to the rtf-FILE
  ******************************************************************************/
-{int i;
+{
+  int i;
 
-  fsetpos(fRtf,&pos_begin_kill);
+  if(fsetpos(fRtf,&pos_begin_kill) != 0)
+    diagnostics(ERROR,"Failed fsetpos; funct2.c (CmdTabkill): errno %d", errno);
 
   for(i=0;i<number_of_tabstops;i++)
     {
@@ -171,11 +171,12 @@ void CmdIgnoreFigure(int code)
 parameter: code: which environment to ignore
  ******************************************************************************/
 {
- char endfigure[20];
+ char endfigure[30];
  char zeichen;
- BOOL found = FALSE;
+ bool found = FALSE;
  int i, endstring=0;
 
+    endfigure[0] = '\0';
     switch (code & ~(ON))  /* mask MSB */
     {
 	 case FIGURE : {
@@ -203,6 +204,7 @@ parameter: code: which environment to ignore
 			   endstring = strlen(endfigure) -1;
 			   break;
 			}
+	 default: assert(0);
 
     } /* end switch */
 
@@ -210,19 +212,17 @@ parameter: code: which environment to ignore
     {
        if (zeichen == '\\')
        {
-	  int found_space = FALSE;
+	  bool found_space = FALSE;
 	  for (i=0; i<=endstring; i++)
 	    {
-	    int nl = FALSE;
+	    bool is_nl = FALSE;
 	    if (fread(&zeichen,1,1,fTex) < 1)
 		numerror(ERR_EOF_INPUT);
-	    if (zeichen == '\\');
-		/* linenumber++;  */             /* \\-in figure is a line !!! */
-	    while(zeichen == ' ' || zeichen == '\t' || zeichen == '\n' && !nl)
+	    while(zeichen == ' ' || zeichen == '\t' || zeichen == '\n' && !is_nl)
 	    {
 		if(zeichen == '\n')
                 {
-		    nl = TRUE;
+		    is_nl = TRUE;
                     linenumber++;
                 }
 		if(fread(&zeichen,1,1,fTex) !=1)
@@ -249,6 +249,8 @@ parameter: code: which environment to ignore
 }
 /*------------------------------------------------------------------------*/
 
+#if 0
+/* This is replaced by Frank Barnes CmdIgnoreParameter in parser.c */
 
 /******************************************************************************/
 void CmdIgnoreParameter(int code)
@@ -261,7 +263,7 @@ parameter: code: number of optional/normal parameters to ignore
  int count_opt_param_open = 0;
  char cThis = ' ';
  char cNext = ' ';
- BOOL firstloop = TRUE;
+ bool firstloop = TRUE;
  int bracket_open = 0;
 
     for(;;)  /* forever */
@@ -283,7 +285,7 @@ parameter: code: number of optional/normal parameters to ignore
 		{
 		     numerror(ERR_EOF_INPUT);
 		}
-	   fseek(fTex,-1L,SEEK_CUR); /* reread last character */
+	   rewind_one(); /* reread last character */
 	   if (cNext == '[')         /* count open braces */
 	       count_opt_param_open++;
 	 } break;
@@ -292,7 +294,7 @@ parameter: code: number of optional/normal parameters to ignore
 	   count_opt_param_close++;
 	   if ( (fread(&cNext,1,1,fTex) < 1))
 	       numerror(ERR_EOF_INPUT);
-	   fseek(fTex,-1L,SEEK_CUR); /* reread last character */
+	   rewind_one(); /* reread last character */
 	   if (cNext == '[')         /* count open braces */
 	       count_opt_param_open++;
 	 } break;
@@ -331,8 +333,8 @@ parameter: code: number of optional/normal parameters to ignore
 					   count_opt_param_open) &&
 					   (count_norm_param == 0))
 					   {
-					    if (firstloop == TRUE)
-						fseek(fTex,-1L,SEEK_CUR); /* reread last character */
+					    if (firstloop)
+						rewind_one(); /* reread last character */
 					    return;
 					   }
 				      break;
@@ -342,6 +344,65 @@ parameter: code: number of optional/normal parameters to ignore
 }
 /*------------------------------------------------------------------------*/
 
+#endif /* FALSE */
+
+/******************************************************************************
+CmdLink:
+
+  purpose: hyperlatex support. function, which translates the first parameter
+           to the rtf-file and ignores the second, the proposed optional
+	   parameter is also (still) ignored.
+  parameter: not (yet?) used.
+
+  The second parameter should be remembered for the \Cite (\Ref \Pageref)
+  command.
+  globals: hyperref, set to second Parameter
+
+The first parameter of a \link{anchor}[ltx]{label} is converted to the
+rtf-output. Label is stored to hyperref for later use, the optional
+parameter is ignored.
+[ltx] should be processed as Otfried recommends it, to use for
+exclusive latex output.e.g:
+
+	\link{readhere}[~\Ref]{explaining:chapter}.
+
+Since {explaining:chapter} is yet read by latex and hyperlatex when
+[...] is evaluated it produces the correct reference. We are only
+strolling from left to right through the text and can't remember what
+we will see in the future.
+
+ ******************************************************************************/
+void
+CmdLink(int code)
+{
+  char *param2;
+  char optparam[255] = "";
+
+  diagnostics(4, "> hyperlatex \\link command");
+     Convert(); /* convert routine is called again for evaluating the
+		   contents of the first parameter */
+     diagnostics(4, "  Converted first parameter");
+
+     GetOptParam(optparam, 255);
+     /**/ /*LEG190498 now should come processing of the optional parameter */
+     if(optparam[0] == '\0') 
+       rewind_one(); /* rewind to get the '{' back to: */
+     diagnostics(4, "  Converted optional parameter");
+     
+     param2 = GetParam();
+     diagnostics(4, "  Converted second parameter");
+
+     if(hyperref != NULL)
+       free(hyperref);
+
+      hyperref = (char*) malloc((strlen(param2)+1));
+      if (hyperref == NULL)
+	error(" malloc error -> out of memory!\n");
+
+      strcpy(hyperref,param2);
+      free(param2);
+      /*LEG210698*** better? hyperref = param2 */      
+}
 
 /******************************************************************************/
 void Ignore_Environment(char *searchstring)
@@ -354,7 +415,7 @@ parameter: searchstring : includes the string to search for
  ******************************************************************************/
 {
  char zeichen;
- BOOL found = FALSE;
+ bool found = FALSE;
  int i, j, endstring;
     endstring = strlen(searchstring) - 1;
     while (fTexRead(&zeichen,1,1,fTex) >=1)
@@ -384,6 +445,7 @@ parameter: searchstring : includes the string to search for
                     case '{':
                     case '}':
                          fprintf (fRtf, "\\"); 
+		    /*@fallthrough@*/
                     default:
                          fprintf (fRtf, "%c", searchstring[j]); 
                          break;
@@ -403,6 +465,7 @@ parameter: searchstring : includes the string to search for
              case '{':
              case '}':
                   fprintf (fRtf, "\\"); 
+	     /*@fallthrough@*/
              default:
                   fprintf (fRtf, "%c", zeichen); 
                   break;
@@ -436,14 +499,13 @@ int i,PopLevel,PopBrack;
 
   if ( cThis != '[' )
   {
-    string = "";
-    string[0] = '\0';
+    *string = '\0';
     return;
   }
   else
   {
     ++BracketLevel;
-    Push(RecursLevel,BracketLevel);
+    (void)Push(RecursLevel,BracketLevel);
   }
   for (i = 0; ;i++)   /* get param from input stream */
   {
@@ -452,7 +514,7 @@ int i,PopLevel,PopBrack;
     if (cThis == ']')
     {
       --BracketLevel;
-      Pop(&PopLevel,&PopBrack);
+      (void)Pop(&PopLevel,&PopBrack);
       break;
     }
     if (cThis == '%')
@@ -560,7 +622,7 @@ parameter: code: newpage or newcolumn-option
    {
       case NewPage :  fprintf(fRtf,"\\page "); /* causes new page */
 		      break;
-      case NewColumn : if (twocolumn == TRUE)
+      case NewColumn : if (twocolumn)
 			  fprintf(fRtf,"\\column "); /* new column */
 		       else
 			  fprintf(fRtf,"\\page ");  /* causes new page */
@@ -569,7 +631,7 @@ parameter: code: newpage or newcolumn-option
 }
 
 /******************************************************************************/
-void Cmd_OptParam_Without_braces(int code)
+void Cmd_OptParam_Without_braces(/*@unused@*/ int code)
 /******************************************************************************
  purpose: gets an optional parameter which isn't surrounded by braces but by spaces
  ******************************************************************************/
@@ -587,13 +649,14 @@ void Cmd_OptParam_Without_braces(int code)
 	     (cNext != '{') &&
 	     (cNext != '\n') &&
 	     (cNext != ',') &&
-	     ((cNext != '.')  || (isdigit(cLast))) && /* . doesn't mean the end of an command inside an number of the type real */
+	     ((cNext != '.')  || (isdigit((unsigned char) cLast))) &&
+	     /* . doesn't mean the end of an command inside an number of the type real */
 	     (cNext != '}') &&
 	     (cNext != '\"') &&
 	     (cNext != '[') &&
 	     (cNext != '$'));
 
-    fseek(fTex,-1L,SEEK_CUR);
+    rewind_one();
 }
 
 
@@ -608,20 +671,20 @@ parameter: string: returnvalue of the input/include-parameter
 {
   char cThis;
   int i,PopLevel,PopBrack;
-  BOOL readuntilnewline = FALSE;
+  bool readuntilnewline = FALSE;
 
   if ( (fread(&cThis,1,1,fTex) < 1))
     numerror(ERR_EOF_INPUT);
   if ( cThis == '{' )
   {
     ++BracketLevel;
-    Push(RecursLevel,BracketLevel);
+    (void)Push(RecursLevel,BracketLevel);
 
   }
   else
   {
     readuntilnewline = TRUE;
-    fseek(fTex,-1L,SEEK_CUR); /* reread last character */
+    rewind_one(); /* reread last character */
   }
   for (i = 0; ;i++)   /* get param from input stream */
   {
@@ -630,11 +693,11 @@ parameter: string: returnvalue of the input/include-parameter
     if (cThis == '}')
     {
       --BracketLevel;
-      Pop(&PopLevel,&PopBrack);
+      (void)Pop(&PopLevel,&PopBrack);
       break;
     }
 
-    if ((readuntilnewline == TRUE) &&
+    if ((readuntilnewline) &&
 	((cThis == ' ') || (cThis == '\n')))
 	{
 /*	if (cThis == '\n')
@@ -658,16 +721,16 @@ void ConvertTabbing(void)
   int i;
   long j=0;
   char cThis;
-  BOOL getcommand;
-  BOOL command_end_line_found;
-  BOOL command_kill_found;
+  bool getcommand;
+  bool command_end_line_found;
+  bool command_kill_found;
 
-while (TABBING_ON)
+while (tabbing_on)
 {
 command_end_line_found = FALSE;
 command_kill_found = FALSE;
 
-while (command_end_line_found == FALSE)
+while (command_end_line_found)
   {
   for (;;) /* do forever */
   {
@@ -696,7 +759,7 @@ while (command_end_line_found == FALSE)
 		    } /* switch */
 	      }  /* if */
 
-	   if (!isalpha(cThis))
+	   if (!isalpha((unsigned char) cThis))
 	       {
 	       while (cThis == ' ')   /* all spaces after commands are ignored */
 	       {
@@ -705,7 +768,7 @@ while (command_end_line_found == FALSE)
 	       j++;
 	       }
 
-	       fseek(fTex,-1L,SEEK_CUR); /* position of next character after command
+	       rewind_one(); /* position of next character after command
 					    except space */
 	       j--;
 	       break; /* for */
@@ -735,14 +798,14 @@ while (command_end_line_found == FALSE)
   } /* for */
   } /* while command_end_line_found */
 
-  fseek(fTex,-j,SEEK_CUR); /* re_read line */
+  rewind_one(); /* re_read line */
   if (command_kill_found)
     Convert_Tabbing_with_kill();
   else
     Convert();
 } /* while Tabbing_ON */
 
-TABBING_ON = FALSE;
+tabbing_on = FALSE;
 } /* ConvertTabbing */
 
 
@@ -753,13 +816,13 @@ void Convert_Tabbing_with_kill(void)
  globals: tabcounter:
  ******************************************************************************/
 { int i=0;
-  BOOL command_kill_found=FALSE;
+  bool command_kill_found=FALSE;
   char cThis;
   char cCommand[MAXCOMMANDLEN];
 
 tabcounter=0;
 
-while (command_kill_found == FALSE)
+while (command_kill_found)
    {
     if (fTexRead(&cThis,1,1,fTex) < 1)
        numerror(ERR_EOF_INPUT);
@@ -778,14 +841,14 @@ while (command_kill_found == FALSE)
 	      {
 	      switch(cThis)
 		  {
-		  case '=': CmdTabset(0);
+		  case '=': CmdTabset();
 			    break;
-		  default : if(!isalpha(cThis))
+		  default : if(!isalpha((unsigned char) cThis))
 				 numerror(ERR_WRONG_COMMAND_IN_TABBING);
 		    } /* switch */
 	      }  /* if */
 
-	   if (!isalpha(cThis))
+	   if (!isalpha((unsigned char) cThis))
 	       {
 	       while (cThis == ' ')   /* all spaces after commands are ignored */
 	       {
@@ -793,7 +856,7 @@ while (command_kill_found == FALSE)
 		   numerror(ERR_EOF_INPUT);
 	       }
 
-	       fseek(fTex,-1L,SEEK_CUR); /* position of next character after command
+	       rewind_one(); /* position of next character after command
 					    except space */
 	       break; /* for */
 	       }
@@ -816,19 +879,19 @@ while (command_kill_found == FALSE)
 
 
 /******************************************************************************/
-void CmdBottom(int code)
+void CmdBottom(/*@unused@*/ int code)
 /******************************************************************************/
 {
   /* it's conventional for the height of the text to be the same on all full pages */
 }
 
-/******************************************************************************/
-void CmdAbstract(int code)
 /******************************************************************************
   purpose: converts the LaTex-abstract-command to an similar Rtf-style
 parameter: code: on/off-option
  globals : article and titlepage from the documentstyle
  ******************************************************************************/
+void
+CmdAbstract(int code)
 { static char oldalignment = JUSTIFIED;
 
 
@@ -837,21 +900,19 @@ parameter: code: on/off-option
      case  ON:
 	 if ((article) && (titlepage))
 	    {
-	    fprintf(fRtf,"\n\r\\par\n\\par\\pard ");
+	    fprintf(fRtf,"\n\\par\n\\par\\pard ");
 	    fprintf(fRtf,"\\pard\\qj ");  /* blocked */
-            if (GermanMode)
-   	       fprintf(fRtf,"{\\b\\fs%d Zusammenfassung}",fontsize);
-            else
-   	       fprintf(fRtf,"{\\b\\fs%d Abstract}",fontsize);
+	    fprintf (fRtf,
+		     "{\\b\\fs%d %s}\\par ",
+		     fontsize, TranslateName("ABSTRACT"));
 	    }
 	 else
 	    {
-	    fprintf(fRtf,"\n\r\\par\n\\par\\pard \\page ");
+	    fprintf(fRtf,"\n\\par\n\\par\\pard \\page ");
 	    fprintf(fRtf,"\\pard\\qj ");   /* blocked */
-            if (GermanMode)
-	       fprintf(fRtf,"{\\b\\fs%d Zusammenfassung:}\\par ",fontsize);
-            else
-	       fprintf(fRtf,"{\\b\\fs%d Abstract:}\\par ",fontsize);
+	    fprintf (fRtf,
+		     "{\\b\\fs%d %s}\\par ",
+		     fontsize, TranslateName("ABSTRACT"));
 	    }
 	  oldalignment = alignment;
 	  alignment = JUSTIFIED;
@@ -859,7 +920,7 @@ parameter: code: on/off-option
     case  OFF:
 	  fprintf(fRtf,"\\pard ");
 	  alignment = oldalignment;
-	  fprintf(fRtf,"\n\r\\par\\q%c ",alignment);
+	  fprintf(fRtf,"\n\\par\\q%c ",alignment);
 	  break;
      } /* switch */
 }
@@ -877,26 +938,26 @@ parameter: on/off option
   switch (code)
      {
      case  ON:
-	    fprintf(fRtf,"\n\r\\par\\pard \\page ");  /* new page */
-	    fprintf(fRtf,"\n\r\\par\\q%c ",alignment);
+	    fprintf(fRtf,"\n\\par\\pard \\page ");  /* new page */
+	    fprintf(fRtf,"\n\\par\\q%c ",alignment);
 	    break;
     case  OFF:
 	  fprintf(fRtf,"\\pard ");
-	  fprintf(fRtf,"\n\r\\par\\q%c \\page ",alignment);
+	  fprintf(fRtf,"\n\\par\\q%c \\page ",alignment);
 	 break;
      } /* switch */
 }
 
 /******************************************************************************/
-void CmdHyphenation(int code)
+void CmdHyphenation(/*@unused@*/ int code)
 /******************************************************************************
  purpose: the parameter surrrounded by braces after the hyphenation-command
 	  won't be seperated at a line-end.
  ******************************************************************************/
-{ char *hyphenparameter;
-  unsigned int i;
+{
+    char *hyphenparameter;
 
-    GetParam(&hyphenparameter);
+    hyphenparameter = GetParam();
 
 /* In a future version we may correctly hyphenate all occurencies of
  * hyphenation-words
@@ -952,7 +1013,7 @@ parameter: code: on/off-option for environment
 }
 
 /******************************************************************************/
-void CmdAddress(int code)
+void CmdAddress(/*@unused@*/ int code)
 /******************************************************************************
  purpose: prints the address in a letter
  globals: alignment
@@ -961,7 +1022,7 @@ void CmdAddress(int code)
 
      oldalignment = alignment;
      alignment = RIGHT;
-     fprintf(fRtf,"\n\r\\par\\pard\\q%c ",alignment);   /* address will be printed on the right top */
+     fprintf(fRtf,"\n\\par\\pard\\q%c ",alignment);   /* address will be printed on the right top */
 
      Convert(); /* convert routine is called again for evaluating the contens
 		 hold in braces after the \address-command */
@@ -969,12 +1030,12 @@ void CmdAddress(int code)
      alignment = oldalignment;
      fprintf(fRtf,"\\par\\chdate "); /* additional to the address the actual date is printed */
 
-     fprintf(fRtf,"\n\r\\par\\pard\\q%c ",alignment);
+     fprintf(fRtf,"\n\\par\\pard\\q%c ",alignment);
 }
 
 
 /******************************************************************************/
-void CmdSignature(int code)
+void CmdSignature(/*@unused@*/ int code)
 /******************************************************************************
  purpose: prints the signature in a letter
  globals: alignment
@@ -983,17 +1044,17 @@ void CmdSignature(int code)
 
      oldalignment = alignment;
      alignment = RIGHT;
-     fprintf(fRtf,"\n\r\\par\\pard\\q%c ",alignment);   /* signature will be printed on the right top */
+     fprintf(fRtf,"\n\\par\\pard\\q%c ",alignment);   /* signature will be printed on the right top */
 
      Convert(); /* convert routine is called again for evaluating the contens
 		 hold in braces after the \signature-command */
 
      alignment = oldalignment;
-     fprintf(fRtf,"\n\r\\par\\pard\\q%c ",alignment);
+     fprintf(fRtf,"\n\\par\\pard\\q%c ",alignment);
 }
 
 /******************************************************************************/
-void CmdOpening(int code)
+void CmdOpening(/*@unused@*/ int code)
 /******************************************************************************
  purpose: special command in the LaTex-letter-environment will be converted to a
 	  similar Rtf-style
@@ -1003,17 +1064,17 @@ void CmdOpening(int code)
 
      oldalignment = alignment;
      alignment = LEFT;
-     fprintf(fRtf,"\n\r\\par\\pard\\q%c ",alignment);   /* opening will be printed on the right top */
+     fprintf(fRtf,"\n\\par\\pard\\q%c ",alignment);   /* opening will be printed on the right top */
 
      Convert(); /* convert routine is called again for evaluating the contens
 		 hold in braces after the \opening-command */
 
      alignment = oldalignment;
-     fprintf(fRtf,"\n\r\\par\\pard\\q%c ",alignment);
+     fprintf(fRtf,"\n\\par\\pard\\q%c ",alignment);
 }
 
 /******************************************************************************/
-void CmdClosing(int code)
+void CmdClosing(/*@unused@*/ int code)
 /******************************************************************************
  purpose: special command in the LaTex-letter-environment will be converted to a
 	  similar Rtf-style
@@ -1023,16 +1084,16 @@ void CmdClosing(int code)
 
      oldalignment = alignment;
      alignment = LEFT;
-     fprintf(fRtf,"\n\r\\par\\pard\\q%c ",alignment);   /* closing will be printed on the right top */
+     fprintf(fRtf,"\n\\par\\pard\\q%c ",alignment);   /* closing will be printed on the right top */
 
      Convert(); /* convert routine is called again for evaluating the contens
 		 hold in braces after the \closing-command */
 
      alignment = oldalignment;
-     fprintf(fRtf,"\n\r\\par\\pard\\q%c ",alignment);
+     fprintf(fRtf,"\n\\par\\pard\\q%c ",alignment);
 }
 
-void CmdPs(int code)
+void CmdPs(/*@unused@*/ int code)
 {
     /* additional text to the \ps-command will be converted by the basic convert-routine */
     /* but you'll have to type the 'P.S.:'-text yourself */
@@ -1098,7 +1159,7 @@ parameter: type of array-environment
 
 
 /******************************************************************************/
-void CmdMultiCol (int code)
+void CmdMultiCol (/*@unused@*/ int code)
 /******************************************************************************
  purpose: converts the LaTex-Multicolumn to a similar Rtf-style
 	  this converting is only partially
@@ -1108,10 +1169,10 @@ parameter: unused
 {
   char inchar[10];
   char numColStr[100];
-  int numCol, i, toBeInserted;
+  long numCol, i, toBeInserted;
   char colFmtChar = 'u';
   char *eptr;         /* for srtol   */
-  static BOOL bWarningDisplayed = FALSE;
+  static bool bWarningDisplayed = FALSE;
 
   if (!bWarningDisplayed)
   {
@@ -1125,7 +1186,7 @@ parameter: unused
   {
      if ( (fTexRead(&inchar,1,1,fTex) < 1))
        numerror(ERR_EOF_INPUT);
-     if (isdigit(inchar[0]))
+     if (isdigit((unsigned char) inchar[0]))
         numColStr[i++] = inchar[0];     
   }
   while (inchar[0] != '}');
@@ -1213,9 +1274,11 @@ parameter: type of array-environment
   char dummy[20];
   int i, n;
   char inchar[2];
-  static BOOL bWarningDisplayed = FALSE;
+  static bool bWarningDisplayed = FALSE;
   int openBracesInParam = 1;
 
+
+  dummy[0] = '\0';
 
   if (code & ON)  /* on switch */
   {
@@ -1230,7 +1293,7 @@ parameter: type of array-environment
              numerror(ERR_EOF_INPUT);
        }
        while (dummy[0] == ' ' || dummy[0] == '\n');
-       fseek(fTex,-1L,SEEK_CUR);
+       rewind_one();
 
        GetOptParam(dummy,20);
        bTabular = TRUE;
@@ -1251,7 +1314,7 @@ parameter: type of array-environment
              numerror(ERR_EOF_INPUT);
        }
        while (dummy[0] == ' ' || dummy[0] == '\n');
-       fseek(fTex,-1L,SEEK_CUR);
+       rewind_one();
 
        GetOptParam(dummy,20);
     }
@@ -1262,8 +1325,7 @@ parameter: type of array-environment
        bWarningDisplayed = TRUE;
     }
 
-    if (dummy[0] != '{')       /* was '{' consumed by GetOptParam ? */    /* for v
-i }} */
+    if (dummy[0] != '{')       /* was '{' consumed by GetOptParam ? */
        do
        {
           if ( (fTexRead(&dummy,1,1,fTex) < 1))
@@ -1272,6 +1334,7 @@ i }} */
        while (dummy[0] == ' ' || dummy[0] == '\n');
 
 
+    assert(colFmt == NULL);
     colFmt = (char*) malloc (sizeof(char) * 20);
     if (colFmt == NULL)
       error(" malloc error -> out of memory!\n");
@@ -1338,10 +1401,35 @@ i }} */
     }
     fprintf(fRtf," \\cell \\pard \\intbl \\row \\pard\\par \\pard\\q%c\n",alignment); 
 
+    assert(colFmt != NULL);
     free (colFmt);
+    colFmt = NULL;
   }
 }
 
+
+
+/***************************************************************************
+ * LEG190498
+ *
+ * purpose: hyperlatex support, makes the same as '&' in the convert
+ * routine in main.c parameter: not used
+ ***************************************************************************/
+void
+CmdColsep(int code)
+{
+  if (bTabular)
+    {
+      fprintf(fRtf," \\cell \\pard \\intbl ");
+      actCol++;
+      if(colFmt == NULL)
+	diagnostics(WARNING, "Fatal, Fatal! CmdColsep called whith colFmt == NULL.");
+      else
+	fprintf (fRtf, "\\q%c ", colFmt[actCol]);
+    }
+  else
+    fprintf(fRtf,"\\ansi\\'a7\\pc ");
+}
 
 
 
@@ -1366,15 +1454,15 @@ parameter: type of array-environment
           numerror(ERR_EOF_INPUT);
     }
     while (location[0] == ' ' || location[0] == '\n');
-    fseek(fTex,-1L,SEEK_CUR);
+    rewind_one();
 
     GetOptParam (location, 10);
  
-    fseek(fTex,-1L,SEEK_CUR);
+    rewind_one();
     if ( (fTexRead(&location,1,1,fTex) < 1))
           numerror(ERR_EOF_INPUT);
     if (location[0] != ']') 
-       fseek(fTex,-1L,SEEK_CUR);
+       rewind_one();
   }
   else /* off switch */
   {
@@ -1387,35 +1475,36 @@ parameter: type of array-environment
 
 
 /******************************************************************************/
-void CmdNoCite(int code)
+void CmdNoCite(/*@unused@*/ int code)
 /******************************************************************************
  purpose: produce reference-list at the end
-parameter: unused 
   globals: bCite: is set to true if a \nocite appeared in text,
                   necessary to produce reference-list at the end of the
                   article
  ******************************************************************************/
 {
-   char *parameter;
-
-   if (bCite == UNDEFINED)
-      bCite = TRUE;
-   GetParam (&parameter);
+  bCite = TRUE;
+  free(GetParam ()); /* just skip the parameter */
 }
 
 
 
 /******************************************************************************/
+/*LEG190498*/
 void CmdCite(int code)
 /******************************************************************************
  purpose: opens existing aux-file and reads the citing-number
-parameter: unused 
+LEG190498
+parameter: if FALSE (0) work as normal
+           if HYPERLATEX get reference string from remembered \link parameter
   globals: input  (name of LaTeX-Inputfile)
            bCite: is set to true if a \cite appeared in text,
                   necessary to produce reference-list at the end of the
                   article
                   is set to false if the .aux file cannot be opened or
                   it is not up to date
+	   LEG190498
+	   hyperref: NULL, or the last used reference by \link command.
  ******************************************************************************/
 {
   static FILE* fAux = NULL;
@@ -1423,170 +1512,183 @@ parameter: unused
   char reference[255] = "";
   char help[255] = "";
   char AuxLine[255];
+  char *str;
   int i;
 
 
   i = 0; 
   fprintf (fRtf,"["); 
+
   do
   { 
+    /*LEG190498 Start*/
+    if(code == HYPERLATEX) {
+      if (hyperref == NULL) {
+	fprintf(stderr,"\n%s: ERROR: \\Cite called before \\link"
+		" program terminated",
+		progname);
+	exit(EXIT_FAILURE);
+      }
+      reference[0] = '{';
+      str = strchr(hyperref, ',');
+      if (str != NULL)
+	str[0] = '0';
+      strcat(reference, hyperref);
+      strcat(reference, "}");
 
-     do
-     {
-        if ( (fTexRead(&inchar,1,1,fTex) < 1))
-        numerror(ERR_EOF_INPUT);
-        reference[i++] = inchar[0];     
-     } /* { */ while ( (inchar[0] != '}') && (inchar[0] != ','));
-     /* for vi { */
-     reference[i-1] = '}';
-     reference[i] = '\0';
+      if (str != NULL) {
+	hyperref = str;
+      }
+      else {
+	inchar[0] = '}'; /* fake end of reference list */
+      }
+    }
+    else {
+    /*LEG190498 End*/
+      do /* get the next reference from comma separated list */
+	{
+	  if ( (fTexRead(&inchar,1,1,fTex) < 1))
+	    numerror(ERR_EOF_INPUT);
+	  reference[i++] = inchar[0];     
+	} /* { */ while ( (inchar[0] != '}') && (inchar[0] != ','));
 
- 
-     if ( strcmp(reference,"{}") == 0)
-        break; 
-     if (fAux == NULL)
-     {
-        if ((fAux = fopen(AuxName,"r")) == NULL)   /* open file */
-        {
-           fprintf(stderr,"Error opening AUX-file: %s - ", AuxName);
-           error("no reference-list will be created.\n");
-           bCite = UNDEFINED;
-           return;
-        }
-     } /* if */
+      /* for vi { */
+      reference[i-1] = '}';
+      reference[i] = '\0';
+    }
 
-     strcpy (help, "\\bibcite\0");
-     strcat (help, reference);
-     strcpy (reference, help);
+
+	if ( strcmp(reference,"{}") == 0)
+	  break; 
+      
+	if (fAux == NULL)
+	  {
+	    if ((fAux = fopen(AuxName,"r")) == NULL)   /* open file */
+	      {
+		fprintf(stderr,"Error opening AUX-file: %s - ", AuxName);
+		error("no reference-list will be created.\n");
+		/*LEG210698 lclint - unreachable:  bCite = UNDEFINED;
+		return; */
+	      }
+	  } /* if */
+	
+	strcpy (help, "\\bibcite\0");
+	strcat (help, reference);
+	strcpy (reference, help);
+	
+	do
+	  {
+	    if (fgets (AuxLine, 255, fAux) == NULL)
+	      if (feof(fAux))
+		break;
+	      else
+		error ("Error reading AUX-File!\n");
+	    
+	    if (strstr (AuxLine, reference) )
+	      {
+		
+	      i = strlen (reference) + 1;
+	      /* for vi { */
+	      while (AuxLine[i] != '}')
+		{
+		  fprintf (fRtf, "%c", AuxLine[i++]);
+		}
+	      /* for vi { */
+	      if (inchar[0] != '}')
+		fprintf (fRtf, ",");
+	      
+	      bCite = TRUE;
+	      if (fseek (fAux, 0L, SEEK_SET) == -1)
+		error ("Error rewinding AUX-file\n");
+	      break;
+	    }
+	  
+	} while (!feof(fAux));
+      if (feof(fAux))
+	{
+	  fprintf(stderr, "Citation not found in AUX-file: Rerun BiBTeX/LaTeX first to get correct citations.\n");
+	  bCite = FALSE;
+	}
+      
+      /* for vi { */
+      if (inchar[0] != '}')
+	{
+	  i = 0;
+	  reference[i++] = '{'; /* for vi } */
+	}
+    } while /* for vi { */ (inchar[0] != '}');
   
-     do
-     {
-        if (fgets (AuxLine, 255, fAux) == NULL)
-           if (feof(fAux))
-              break;
-           else
-              error ("Error reading AUX-File!\n");
-           
-
-        if (strstr (AuxLine, reference) )
-        {
-     
-           i = strlen (reference) + 1;
-	   /* for vi { */
-           while (AuxLine[i] != '}')
-           {
-              fprintf (fRtf, "%c", AuxLine[i++]);
-           }
-	   /* for vi { */
-           if (inchar[0] != '}')
-              fprintf (fRtf, ",");
- 
-           if (bCite == UNDEFINED)
-              bCite = TRUE;
-           if (fseek (fAux, 0L, SEEK_SET) == -1)
-              error ("Error rewinding AUX-file\n");
-           break;
-        }
-        
-     } while (!feof(fAux));
-     if (feof(fAux))
-     {
-        fprintf(stderr, "Citation not found in AUX-file: Rerun BiBTeX/LaTeX first to get correct citations.\n");
-        bCite = FALSE;
-     }
-
-     /* for vi { */
-     if (inchar[0] != '}')
-     {
-        i = 0;
-        reference[i++] = '{'; /* for vi } */
-     }
-   } while /* for vi { */ (inchar[0] != '}');
-
-   fprintf (fRtf,"]"); 
-   return;
+  fprintf (fRtf,"]"); 
+  return;
 }
-
-
-
-
-
-/******************************************************************************/
-void WriteRefList(void)
-/******************************************************************************
- purpose: opens existing bbl-file and writes the Reference List 
-parameter: none
-  globals: input  (name of LaTeX-Inputfile)
-           bCite: if set to true the reference-list will be written
- ******************************************************************************/
+/***********************************************************************
+ * OpenBblFile
+ * purpose: opens either the "input".bbl file, or the .bll file named by
+ *          the -b command line option.
+ * globals: BblName,
+ */
+FILE*
+OpenBblFile(void)
 {
   static FILE* fBbl = NULL;
-  char InpBblName[PATHMAX] = "";
-  char inchar[3];
-  char help[255] = "";
+
+  if (BblName==NULL)
+    {
+      char *s;
+      if(input != NULL)
+	{
+	  if((BblName = malloc(strlen(input) + 5)) == NULL)
+	    error(" malloc error -> out of memory!\n");
+	  strcpy (BblName, input);
+	  if((s = strrchr(BblName, '.')) == NULL || strcmp(s, ".tex") != 0)
+	    strcat(BblName, ".bbl");
+	  else
+	    strcpy (s, ".bbl");
+	}
+      else
+	BblName = EmptyString();
+    }
+  
+  if ((fBbl = fopen(BblName,"r")) == NULL)   /* open file */
+    {
+      fprintf(stderr,"Error opening BBL-file: %s - ", BblName);
+      error("no reference-list will be created.\n");
+/* maybe @exits@ here */ 
+    }
+  return fBbl;
+}
+
+/*****************************************************************
+ * MakeBiblio
+ * Converts a bibliography environment
+ */
+void
+MakeBiblio(FILE* fBbl)
+{
   char BblLine[255];
   char *allBblLine = NULL;
-  int refcount = 0 ,i, j;
-  char *s;
-
-  if (fBbl == NULL)
-  {
-     if (BblName==NULL)
-     {
-	char *s;
-	if(input != NULL)
-	{
-	    if((BblName = malloc(strlen(input) + 5)) == NULL)
-		    error(" malloc error -> out of memory!\n");
-	    strcpy (BblName, input);
-	    if((s = strrchr(BblName, '.')) == NULL || strcmp(s, ".tex") != 0)
-		strcat(BblName, ".bbl");
-	    else
-		strcpy (s, ".bbl");
-	}
-	else
-	    BblName = "";
-     }
-
-     if ((fBbl = fopen(BblName,"r")) == NULL)   /* open file */
-     {
-        fprintf(stderr,"Error opening BBL-file: %s - ", BblName);
-        error("no reference-list will be created.\n");
-     }
-  }
-
+  int refcount = 0;
+  char *str;
+  
   if (article)
-  {
-     if (GermanMode)
-        fprintf (fRtf, "\\par \\par \\pard{\\fs28 \\b Literatur}");
-     else
-        fprintf (fRtf, "\\par \\par \\pard{\\fs28 \\b References}");
-  }
+    fprintf (fRtf, "\\par \\par \\pard{\\fs28 \\b %s}",
+	     TranslateName("REFARTICLE"));
   else
-  {
-     if (GermanMode)
-        fprintf (fRtf, "\\par \\pard\\page{\\fs32 \\b Literaturverzeichnis}");
-     else
-        fprintf (fRtf, "\\par \\pard\\page{\\fs32 \\b Bibliography}");
-  }
+    fprintf (fRtf, "\\par \\par \\pard{\\fs28 \\b %s}",
+	     TranslateName("REF"));
 
-  do
+  while (fgets (BblLine, 255, fBbl) != NULL)
   {
-     if (fgets (BblLine, 255, fBbl) == NULL)
-        if (feof(fBbl))
-           break;
-        else
-           error ("Error reading BBL-File!\n");
-
      if(strstr(BblLine, "\\begin{thebibliography}"))
 	continue;
      if(strstr(BblLine, "\\end{thebibliography}"))
      {
-	if(allBblLine)
+	if(allBblLine != NULL)
 	{
 	   ConvertString(allBblLine);
 	   fprintf (fRtf," ");
 	   free (allBblLine);
+	   allBblLine = NULL;
 	}
 	break;
      }
@@ -1594,43 +1696,50 @@ parameter: none
      {
 
 	char *label;
-	if(allBblLine)
+	if(allBblLine != NULL)
 	{
 	   ConvertString(allBblLine);
 	   fprintf (fRtf," ");
 	   free (allBblLine);
+	   allBblLine = NULL;
 	}
 	fprintf (fRtf, "\\par \\par \\pard ");
-	if(label = strchr(BblLine, '['))
+	if((label = strchr(BblLine, '[')) != NULL)
 	{
-	    for(; *label && *label != ']'; label++)
-		fputc(*label, fRtf);
-	    if(*label)
-		fputc(*label, fRtf);
-	    fputc(' ', fRtf);
+	    for(; *label != '\0' && *label != ']'; label++)
+		if(fputc(*label, fRtf) != (int) *label)
+		  diagnostics(ERROR, "Failed fputc; funct2.c (WriteRefList): %c.", *label);
+	    if(*label != '\0')
+	      {
+		if(fputc(*label, fRtf) != (int) *label)
+		  diagnostics(ERROR, "Failed fputc; funct2.c (WriteRefList): %c.", *label);
+	      }
+	    if(fputc(' ', fRtf) != (int) ' ')
+	      diagnostics(ERROR, "Failed fputc(' '); funct2.c (WriteRefList).");
 	}
 	else
 	    fprintf (fRtf, "[%d] ", ++refcount);
 	continue;
      }
-     else if ( s = strstr (BblLine, "\\newblock") )
+     else if ((str = strstr (BblLine, "\\newblock")) != NULL)
      {
-	 s += strlen("\\newblock");
-	 if(allBblLine)
+	 str += strlen("\\newblock");
+	 if(allBblLine != NULL)
 	 {
 	    ConvertString(allBblLine);
 	    fprintf (fRtf," ");
 	    free (allBblLine);
+	    allBblLine = NULL;
 	 }
-	 if ((allBblLine = malloc (strlen(s) + 1)) == NULL)
+	 if ((allBblLine = malloc (strlen(str) + 1)) == NULL)
 	   error(" malloc error -> out of memory!\n");
-	 strcpy(allBblLine, s);
+	 strcpy(allBblLine, str);
      }
      else
      {
 	if (BblLine[0] != '\n')
 	{
-	  if(allBblLine)
+	  if(allBblLine != NULL)
 	  {
 	      if((allBblLine = (char *)realloc(allBblLine,
 		strlen(allBblLine) + strlen(BblLine) + 1)) == NULL)
@@ -1645,12 +1754,35 @@ parameter: none
 	  }
 	}
      }
-  } while (!feof(fBbl));
+  }
+  if (ferror(fBbl) != 0)
+     error ("Error reading BBL-File!\n");
 
-  close (fBbl);
+  if(allBblLine != NULL)
+  {
+    free (allBblLine);
+  }
+  (void)fclose (fBbl);
 } 
 
+/*******************************************************************
+ * CmdConvertBiblio
+ * converts a bibliography environment
+ */
+void CmdConvertBiblio(int code)
+{
+  MakeBiblio(fTex);
+  /* Suppose!!! we are done now with bibliography */
+  bCite = FALSE;
+}
 
 
-
-
+/**********************************************************************
+ * WriteRefList
+ * Converts a .bbl File to rtf output
+ */
+void
+WriteRefList(void)
+{
+  MakeBiblio(OpenBblFile());
+}

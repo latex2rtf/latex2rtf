@@ -1,11 +1,21 @@
 /*
- * $Id: funct2.h,v 1.3 2001/08/12 15:56:56 prahl Exp $
+ * $Id: funct2.h,v 1.4 2001/08/12 17:29:00 prahl Exp $
  * History:
  * $Log: funct2.h,v $
- * Revision 1.3  2001/08/12 15:56:56  prahl
- * latex2rtf version 1.5 by Ralf Schlatterbeck
+ * Revision 1.4  2001/08/12 17:29:00  prahl
+ * latex2rtf version 1.8aa by Georg Lehner
  *
- * Revision 1.2  1995/03/23  15:58:08  ralf
+ * Revision 1.5  1998/10/28 06:08:06  glehner
+ * Changed ON Flag to 0x4000 for not to use MSB of int on some cc
+ *
+ * Revision 1.4  1998/07/03 07:00:13  glehner
+ * added hyperlatex-support, CmdColsep
+ *
+ * Revision 1.3  1997/02/15 20:59:16  ralf
+ * Corrected core-dump bug in tabular environment (gcc only)
+ * Some lclint changes
+ *
+ * Revision 1.2  1995/03/23 15:58:08  ralf
  * Reworked version by Friedrich Polzer and Gerhard Trisko
  *
  * Revision 1.1  1994/06/17  11:26:29  ralf
@@ -48,9 +58,9 @@
 #define TABULAR 1
 #define TABULAR_1 2
 /*--------------------------------function prototypes----------------------*/
-void CmdTabset(int code);
+void CmdTabset(void);
 
-void CmdTabjump(int code);
+void CmdTabjump(void);
 
 void CmdTabkill(int code);
 
@@ -60,9 +70,10 @@ void CmdIgnoreFigure(int code);
 
 void CmdIgnoreParameter(int code);
 
-void GetOptParam(char *string, int size);
+void GetOptParam(/*@out@*/ char *string, int size);
 
-void Ignore_Environment(char *searchstring);
+void Ignore_Environment(char *searchstring); /*LEG210698*** lclint -
+					       consider passing this to ignore.c */
 
 void CmdIgnoreEnvironment(int code);
 
@@ -77,8 +88,6 @@ void Cmd_OptParam_Without_braces(int code);
 void GetInputParam(char *, int);
 
 void ConvertTabbing(void);
-
-void Convert_Tabbing_with_kill(void);
 
 void CmdBottom(int code);
 
@@ -114,7 +123,13 @@ void CmdNoCite(int code);
 
 void CmdCite(int code);
 
-void WriteRefList ();
+void WriteRefList (void)
+    /*@globals input, bCite @*/
+;
 
 void CmdAnnotation(int code);
 
+void CmdColsep(/*@unused@*/ int code);
+void CmdLink(/*@unused@*/ int code);
+
+void CmdConvertBiblio(/*@unused@*/ int code);

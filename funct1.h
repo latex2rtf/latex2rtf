@@ -1,11 +1,20 @@
 /*
- * $Id: funct1.h,v 1.3 2001/08/12 15:56:56 prahl Exp $
+ * $Id: funct1.h,v 1.4 2001/08/12 17:29:00 prahl Exp $
  * History:
  * $Log: funct1.h,v $
- * Revision 1.3  2001/08/12 15:56:56  prahl
- * latex2rtf version 1.5 by Ralf Schlatterbeck
+ * Revision 1.4  2001/08/12 17:29:00  prahl
+ * latex2rtf version 1.8aa by Georg Lehner
  *
- * Revision 1.2  1995/03/23  15:58:08  ralf
+ * Revision 1.5  1998/11/04 13:39:40  glehner
+ * Changed ON-Flag to 0x4000 for little int compilers.
+ *
+ * Revision 1.4  1998/07/03 07:10:10  glehner
+ * updated for latex2rtf V1.7
+ *
+ * Revision 1.3  1997/02/15 20:59:48  ralf
+ * Mainly lclint-suggested changes
+ *
+ * Revision 1.2  1995/03/23 15:58:08  ralf
  * Reworked version by Friedrich Polzer and Gerhard Trisko
  *
  * Revision 1.1  1994/06/17  11:26:29  ralf
@@ -40,7 +49,7 @@ void CmdBeginEnd(int code);
 #define PAR_RIGHT 2
 #define PAR_LEFT 3
 #define PAR_CENTERLINE 4
-#define ON 0x8000
+#define ON 0x4000
 #define OFF 0x0000
 void Paragraph(int code);
 
@@ -49,10 +58,10 @@ void CmdToday(int code);
 void CmdFontSize(int code);
 
 void CmdC(int code);
-void CmdUmlaute(int code);
+void CmdUmlaute(void);
 void CmdLApostrophChar(int code);
 void CmdRApostrophChar(int code);
-void CmdSpitzeChar(int code);
+void CmdSpitzeChar();
 void CmdTildeChar(int code);
 
 #define CMD_TEX 1
@@ -98,7 +107,6 @@ void CmdFormula(int code);
 void CmdQuote(int code);
 
 #define RESET 0
-void CmdItem(int code);
 
 void CmdList(int code);
 
@@ -115,13 +123,13 @@ void CmdInclude(int code);
 void CmdVerb(int code);
 
 void CmdVerbatim(int code);
-void CmdIgnoreDef(int code);
+
 void CmdVerse(int code);
 
 void TranslateGerman(void);
 void CmdPrintRtf(int code);
 
-void GetParam(char **string);
+/*@only@*/ char *GetParam();
 
 void GermanPrint(int code);
 #define GP_CK 1
@@ -137,6 +145,25 @@ void IgnoreNewCmd(int code);
 #define LABEL 1
 #define REF 2
 #define PAGEREF 3
+/*LEG190498 Start*/
+#define HYPER 100
+#define HYPERREF HYPER+REF
+#define HYPERPAGEREF HYPER+PAGEREF
+/*LEG190498 End*/
+
 void CmdLabel(int code);
 
+void CmdUsepackage(int code);
+
+void CmdIgnoreDef(int code);
+
+void CmdItem(int code);
+
 void ConvertString(char *string);
+
+/*LEG030598 Start*/
+#define RIGHT_SIDE 347
+#define BOTH_SIDES  348
+#define LEFT_SIDE  349
+/*LEG030598 End*/
+

@@ -1,10 +1,19 @@
-.\" $Id: latex2rtf.1,v 1.3 2001/08/12 15:56:56 prahl Exp $
+.\" $Id: latex2rtf.1,v 1.4 2001/08/12 17:29:00 prahl Exp $
 .\" History:
 .\" $Log: latex2rtf.1,v $
-.\" Revision 1.3  2001/08/12 15:56:56  prahl
-.\" latex2rtf version 1.5 by Ralf Schlatterbeck
+.\" Revision 1.4  2001/08/12 17:29:00  prahl
+.\" latex2rtf version 1.8aa by Georg Lehner
 .\"
-.\" Revision 1.9  1995/03/23  15:58:08  ralf
+.\" Revision 1.11  1998/07/03 06:47:24  glehner
+.\" Changed maintainer, added reference to other docs
+.\"
+.\" Revision 1.10  1997/02/15 20:50:20  ralf
+.\" Added Section on bug reports
+.\" Corrected some wording
+.\" Corrected description of config files to match the implementation :-(
+.\" Corrected some incorrect (or non-portable?) troff
+.\"
+.\" Revision 1.9  1995/03/23 15:58:08  ralf
 .\" Reworked version by Friedrich Polzer and Gerhard Trisko
 .\"
 .\" Revision 1.8  1994/06/29  06:35:28  ralf
@@ -45,11 +54,21 @@ latex2rtf [-V] [-l] [ -o
 .I inputfile
 ]
 .PP
+.SH WARNING
+This man page is not supported by me (the maintainer of the programm).
+For complete, current documentation, refer to the Info file
+.B latex2rtf.info,
+the PDF file
+.B latex2rtf.pdf
+or the HTML file
+.B l2r.html
+which are made from the Texinfo source file
+.BR latex2rtf.texi.
 .SH DESCRIPTION
 The
-.PN latex2rtf
-command
-converts a LaTeX file into RTF text format. The text and much of the formatting
+.I latex2rtf
+command converts a LaTeX file into RTF text format. The text and much
+of the formatting 
 information is translated to RTF making the new file look very similar to the
 original. 
 .PP
@@ -77,7 +96,7 @@ If
 .I inputfile
 is not specified, standard input is read. 
 .PP
-User defined LaTex commands are ignored. If you are familiar with the
+User defined LaTeX commands are ignored. If you are familiar with the
 RTF format and
 the commands can be translated by simply inserting a format string
 into the RTF
@@ -94,7 +113,7 @@ should be converted to RTF. See format description below.
 .PP
 LaTeX variables and user defined commands are not evaluated.
 They will be simply ignored. To let
-.PN latex2rtf
+.I latex2rtf
 know the names of variables you can add them in the 
 .B ignore.cfg
 file.
@@ -112,7 +131,7 @@ the resulting file in the target word processor.
 .SH CAUTION
 Please make sure that the input file is a correct LaTeX file. Use LaTeX
 to find and correct errors before using
-.PN latex2rtf.
+.I latex2rtf.
 The conversion command does not properly handle all
 errors because of corrupt input files.
 .PP
@@ -127,12 +146,15 @@ or
 .B direct.cfg
 to suit your needs.
 .SH CONFIGURATION FILES
+The file
 .B direct.cfg
-is used for converting LaTeX commands by simple text exchange.
-Write the LaTex command with backslash, followed by comma.
-The rest of the line until the '.' character will be written to the RTF file
+is used for converting LaTeX commands by simple text replacement.
+The format consists of lines with a LaTeX command with backslash
+followed by comma.
+The rest of the line until a '.' character will be written to the RTF file
 when the command is recognized in the LaTeX file.
-After the '#' character everything is ignored until end of line.
+Lines starting with a '#' character are ignored.
+After the '.' everything is ignored to end of line.
 To select a specific font use 
 .I *fontname*.
 Make sure that the font name 
@@ -140,14 +162,16 @@ Make sure that the font name
 is listed in the fonts configuration file at least as dummy.
 To write the '*' character use "**".
 example:
-.EX
+.PP
 \\alpha,{\\f*Symbol* a}. #alpha under Windows Symbol Font
+.PP
 \\copyright,{\\ansi\\'a9\\pc}.
-.EE
+.PP
+The file
 .B fonts.cfg
 contains the fonts conversion table.
 A line consists of a font name in LaTeX followed by comma and a font
-name in RTF. The end is marked by a dot.
+name in RTF. The end is marked by a '.'.
 No spaces are allowed.
 The LaTeX font will be converted to the RTF font if encountered in the
 LaTeX file.
@@ -157,47 +181,56 @@ All fonts in a LaTeX file that are not in this file will be mapped to the
 default font.
 All RTF fonts listed in this file will be in every RTF file header whether
 used or not.
-After the '#' character everything is ignored till end of line.
+Lines starting with a '#' character are ignored.
+After the '.' everything is ignored to end of line.
 To add a RTF font not used as substitute for a LaTeX font \- for example
 a Symbol font used in 
 .B direct.cfg
 \- use a dummy LaTeX name like in the following example:
-.EX
+.PP
 Dummy3,MathematicalSymbols.
-.EE
+.PP
 Make sure you use the correct font name. Take care of spaces in font names.
 The default fonts are named Roman (command \\rm), Slanted (command \\sl),
 Sans Serif (command \\sf), Typewriter (command \\tt).
 .PP
+The file
 .B ignore.cfg
-is the file for defining how to ignore certain commands.
+is used for defining how to ignore certain commands.
 This file is used for recognition of LaTeX-variables, user defined variables,
 and some simple commands.
 All variables are ignored but the converter must know the names to correctly
 ignore assignments to variables.
-Write the variable-name with backslash, followed by comma
-then write the type of the variable followed by '.'.
+Lines in this file consist of a variable-name with backslash, followed
+by comma and the type of the variable followed by '.'.
 Possible Types are:
-.br
-NUMBER : simple numeric value
-.br
-MEASURE : numeric value with following unit of measure
-.br
-OTHER: ignores anything to the first character after '='
-and from there to next space. eg. \\setbox\\bak=\\hbox
-.br
-COMMAND: ignores anything to next '\\' and from there to occurence
-of anything but a letter. eg. \\newbox\\bak
-.br
-SINGLE: ignore single command. eg. \\noindent
-.br
-Please write the type in upper case exactly as above.
+.PP
+.TP
+.B NUMBER
+simple numeric value
+.TP
+.B MEASURE
+numeric value with following unit of measure
+.TP
+.B OTHER
+ignores anything to the first character after '=' and from there to next
+space. eg. \\setbox\\bak=\\hbox
+.TP
+.B COMMAND
+ignores anything to next '\\' and from there to occurence of anything
+but a letter. eg. \\newbox\\bak
+.TP
+.B SINGLE
+ignore single command. eg. \\noindent
+.PP
+The types are in upper case exactly as above.
 Do not use spaces.
-After the '#' character everything is ignored till end of line.
+Lines starting with a '#' character are ignored.
+After the '.' everything is ignored to end of line.
 Example:
-.EX
-\\pagelenght,MEASURE.
-.EE
+.PP
+\\pagelength,MEASURE.
+.PP
 .SH BUGS
 Some environments like figure are currently ignored. It would be nice to scan
 the included information and convert things if possible.
@@ -208,5 +241,49 @@ possible when reading from stdin.
 Some of the generated table can confuse Word, the problem may be corrected 
 by editing the offending table within Word.
 .PP
+.SH REPORTING BUGS
+Report bugs to glehner@unanleon.edu.ni (Georg Lehner). Please give the
+following information and observe the following guidelines when
+reporting a bug in the program:
+.PP
+Tell me the version of the program. For the executable you get the version by
+specifying the \-V option to 
+.I latex2rtf.
+For the sources the version is
+the version number of the file
+.B version.h.
+.PP
+The Operating System and version number where you are running or
+trying to install
+.I latex2rtf.
+Be sure to check the file 
+.B Makefile
+for settings that may be specific to your machine, especially for some
+versions of
+.B SunOS
+there may be settings which are needed to compile
+successfully. Do this
+.I before
+writing to me.
+.PP 
+For problems with the DOS version, report installation problems to the
+mainainer of the DOS port, Vladimir Menkov, vmenkov@cs.indiana.edu
+.PP
+If the program produces wrong output or does not work for you, include
+a 
+.I short
+latex file along with a description of the problem.
+.I Do not
+send me large latex or rtf files, I simply do not have the time to
+wade through large files to search for a bug! If necessary (i.e., the
+program produces wrong or invalid rtf), send the rtf file that is
+produced along with the latex input file.
+.PP
+Be patient with me. I am maintaining the program in my free time. I
+did not write most of the code. Often I do not have the time to answer
+to your question. I will, however, try to fix reported bugs in
+upcoming releases.
 .SH SEE ALSO
 rtf2LaTeX(1), LaTeX User's Guide & Reference Manual by Leslie Lamport
+
+

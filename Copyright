@@ -1,5 +1,40 @@
+LaTeX2rtf is ``free,'' this means that everyone is free to use it and
+free to redistribute it on certain conditions. LaTeX2rtf is not in the
+public domain; it is copyrighted and there are restrictions on its
+distribution.
+  
+In 1998 Georg Lehner <glehner@unanleon.edu.ni> updated and extended
+the program and took over maintainence from Ralf Schlatterbeck
+<ralf@zoo.priv.at>.
+
+The changes from Version 1.7 upwards will fall under the GNU General
+Public License and are
+
+Copyright (c) Georg Lehner.
+
+For the authors of the older versions and their copying policy see
+their Copyright Note at the bottom of this file.
+
+--- GPL Stuff --->
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or (at
+your option) any later version.
+     
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+    
+A copy of the GNU General Public License is available with the sources
+in the file "doc/copying.txt".  You can also obtain it by writing to
+the Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139,
+USA.
+--- original Copyright note form the authors -->
+
 All files in this distribution are
 Copyright (c) 1994 Andreas Granzer and Fernando Dorner
+              1995 Friedrich Polzer and Gerhard Trisko
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -24,4 +59,8 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
 LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 SUCH DAMAGE. 
+
+
+
+
 
