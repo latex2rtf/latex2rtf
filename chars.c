@@ -231,6 +231,69 @@ void CmdRApostrophChar(int code)
     free(cParam);
 }
 
+static void put_unicode_char(unsigned char b1, unsigned char b2)
+{
+		if (b1==0)
+			fprintRTF("\\'%ux",b1);
+		else if (b1<128)
+			fprintRTF("\\u%d*",b1*256+b2);
+		else
+			fprintRTF("\\u%d*",b1*256+b2-65536);
+}
+
+/******************************************************************************
+ purpose: converts \H{c}  must
+ ******************************************************************************/
+void CmdDoubleGraveChar(int code)
+{
+    char *cParam = getBraceParam();
+
+    if (cParam == NULL)
+        return;
+
+    switch (cParam[0]) {
+        case 'A':
+        	put_unicode_char(0x02,0x00);
+            break;
+        case 'a':
+        	put_unicode_char(0x02,0x01);
+            break;
+        case 'E':
+        	put_unicode_char(0x02,0x04);
+            break;
+        case 'e':
+        	put_unicode_char(0x02,0x05);
+            break;
+        case 'I':
+        	put_unicode_char(0x02,0x08);
+            break;
+        case 'i':
+        	put_unicode_char(0x02,0x09);
+            break;
+        case 'O':
+        	put_unicode_char(0x02,0x0C);
+            break;
+        case 'o':
+        	put_unicode_char(0x02,0x0D);
+            break;
+        case 'R':
+        	put_unicode_char(0x02,0x10);
+        	break;
+        case 'r':
+        	put_unicode_char(0x02,0x11);
+        	break;
+        case 'U':
+        	put_unicode_char(0x02,0x14);
+            break;
+        case 'u':
+        	put_unicode_char(0x02,0x15);
+            break;
+        default:
+            break;
+    }
+    free(cParam);
+}
+
 void CmdMacronChar(int code)
 
 /******************************************************************************
@@ -504,21 +567,60 @@ void CmdBreveChar(int code)
  ******************************************************************************/
 {
     int upsize, num;
-    char *cParam;
+    char *cParam = getBraceParam();
 
-    num = RtfFontNumber("MT Extra");
-    cParam = getBraceParam();
     if (cParam == NULL)
         return;
 
-    upsize = CurrentFontSize() / 2;
-    if (!g_processing_fields)
-        fprintRTF("{\\field{\\*\\fldinst EQ ");
-    fprintRTF("\\\\O(");
-    ConvertString(cParam);
-    fprintRTF("%c\\\\S({\\up%d\\f%d \\\\(}))", g_field_separator, upsize, num);
-    if (!g_processing_fields)
-        fprintRTF("}{\\fldrslt }}");
+    switch (cParam[0]) {
+        case 'A':
+        	put_unicode_char(0x01,0x02);
+            break;
+        case 'a':
+        	put_unicode_char(0x01,0x03);
+            break;
+        case 'E':
+        	put_unicode_char(0x01,0x14);
+            break;
+        case 'e':
+        	put_unicode_char(0x01,0x15);
+            break;
+        case 'G':
+        	put_unicode_char(0x01,0x1e);
+        	break;
+        case 'g':
+        	put_unicode_char(0x01,0x1f);
+        	break;
+        case 'I':
+        	put_unicode_char(0x01,0x2c);
+            break;
+        case 'i':
+        	put_unicode_char(0x01,0x2d);
+            break;
+        case 'O':
+        	put_unicode_char(0x01,0x4e);
+            break;
+        case 'o':
+        	put_unicode_char(0x01,0x4f);
+            break;
+        case 'U':
+        	put_unicode_char(0x01,0x6c);
+            break;
+        case 'u':
+        	put_unicode_char(0x01,0x6d);
+            break;
+        default:
+			num = RtfFontNumber("MT Extra");
+			upsize = CurrentFontSize() / 2;
+			if (!g_processing_fields)
+				fprintRTF("{\\field{\\*\\fldinst EQ ");
+			fprintRTF("\\\\O(");
+			ConvertString(cParam);
+			fprintRTF("%c\\\\S({\\up%d\\f%d \\\\(}))", g_field_separator, upsize, num);
+			if (!g_processing_fields)
+				fprintRTF("}{\\fldrslt }}");
+            break;
+    }
     free(cParam);
 }
 

@@ -1132,7 +1132,7 @@ purpose: writes header info for the RTF file
     diagnostics(4, "Writing header for RTF file");
 
 /*	fprintRTF("{\\rtf1\\ansi\\fs%d\\deff%d\\deflang1024\n", size, family); */
-    fprintRTF("{\\rtf1\\ansi\\deff%d\\deflang1024\n", family);
+    fprintRTF("{\\rtf1\\ansi\\uc1\\deff%d\\deflang1024\n", family);
     WriteFontHeader();
     WriteColorTable();
     WriteStyleHeader();

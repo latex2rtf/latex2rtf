@@ -11,6 +11,7 @@ void CmdCedillaChar(int code);
 void CmdUmlauteChar(int code);
 void CmdLApostrophChar(int code);
 void CmdRApostrophChar(int code);
+void CmdDoubleGraveChar(int code);
 void CmdTildeChar(int code);
 void CmdSymbolChar(int code);
 void CmdUnderdotChar(int code);
