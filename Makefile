@@ -1,7 +1,6 @@
-# $Id: Makefile,v 1.41 2002/03/17 19:05:28 prahl Exp $
+# $Id: Makefile,v 1.42 2002/03/18 01:38:32 prahl Exp $
 
 CC=gcc
-INSTALL=install
 LIBS=
 
 CFLAGS:=-DUNIX
@@ -65,7 +64,7 @@ DOCS= doc/latex2rtf.1 doc/latex2rtf.texi doc/latex2rtf.pdf doc/latex2rtf.txt \
 README= README README.DOS README.Mac Copyright ChangeLog 
 
 SCRIPTS= scripts/version scripts/latex2png_1 scripts/latex2png_2 \
-         scripts/latex2png_3 scripts/latex2png_4 scripts/l2r.bat scripts/cvs2cl
+         scripts/latex2png_3 scripts/latex2png_4 scripts/l2r.bat
 
 TEST=   test/Makefile test/bracecheck \
 	test/accentchars.tex test/array.tex test/cite.tex test/cite.bib \
@@ -87,7 +86,7 @@ OBJS=l2r_fonts.o direct.o encode.o commands.o stack.o funct1.o tables.o \
 	preamble.o letterformat.o equation.o convert.o xref.o definitions.o graphics.o \
 	optind.o mygetopt.o
 
-all : checkdir latex2rtf doc
+all : checkdir latex2rtf
 	touch stamp-build
 
 latex2rtf: $(OBJS) $(HDRS)
@@ -131,14 +130,21 @@ dist: $(SRCS) $(HDRS) $(CFGS) $(README) Makefile $(SCRIPTS) $(DOCS) $(TEST)
 doc: doc/latex2rtf.texi doc/Makefile
 	cd doc && $(MAKE) -k
 
-install: latex2rtf latex2rtf.1 $(CFGS) scripts/latex2png
-	$(INSTALL) -c -d $(BIN_INSTALL) latex2rtf
-	$(INSTALL) -c -d $(BIN_INSTALL) scripts/latex2png
-	$(INSTALL) -c -d $(MAN_INSTALL) -m 644 doc/latex2rtf.1
-	$(INSTALL) -c -d $(CFG_INSTALL) -m 644 $(CFGS)
+install: latex2rtf doc/latex2rtf.1 $(CFGS) scripts/latex2png
+	mkdir -p $(BIN_INSTALL)
+	mkdir -p $(MAN_INSTALL)
+	mkdir -p $(CFG_INSTALL)
+	cp latex2rtf         $(BIN_INSTALL)
+	cp scripts/latex2png $(BIN_INSTALL)
+	cp doc/latex2rtf.1   $(MAN_INSTALL)
+	cp $(CFGS)           $(CFG_INSTALL)
+	chmod 0755 $(BIN_INSTALL)/latex2rtf
+	chmod 0755 $(BIN_INSTALL)/latex2png
+	@echo "Now set the environment variable RTFPATH to $(CFG_INSTALL)"
 
 install_info: doc/latex2rtf.info
-	$(INSTALL) -c -d $(INFO_INSTALL) -m 644 doc/latex2rtf.info
+	mkdir -p $(INFO_INSTALL)
+	cp -p doc/latex2rtf.info $(BIN_INSTALL)
 	install-info --info-dir=$(INFO_INSTALL) doc/latex2rtf.info
 
 realclean: checkdir clean

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.63 2002/03/17 18:42:45 prahl Exp $ */
+/* $Id: main.c,v 1.64 2002/03/18 01:38:32 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -188,27 +188,21 @@ int main(int argc, char **argv)
 		diagnostics(ERROR,   " Type \"latex2rtf -h\" for help");
 	}
 	
-	if (argc == 1) {
+	basename = NULL;
+	
+	if (argc == 1 && strcmp(*argv,"-")!=0) { /* texname exists and != "-" */
 		char           *s, *t;
 
-		s = strrchr(*argv, PATHSEP);
-		if (s == NULL) s = *argv;
+		basename = strdup(*argv);			/* full path name */
+		s = strrchr(basename, PATHSEP);		/* s points to name */
+		if (s == NULL) s = basename;
 
-		if (strcmp(s,"-")!=0) {
-			t = strstr(s, ".tex");			/* remove .tex if present */
-			if (t != NULL) 
-				*t = '\0';
-				
-			basename = strdup(s);			
-			s = strchr(basename, '.');		/* check for dot in name */
-			
-			if (t == NULL && s != NULL)
-				TexName = strdup(basename);
-			else
-				TexName = strdup_together(basename, ".tex");
-				
-			RtfName = strdup_together(basename, ".rtf");
-		}
+		t = strstr(s, ".tex");				/* remove .tex if present */
+		if (t != NULL) 
+			*t = '\0';
+		
+		TexName = strdup_together(basename, ".tex");
+		RtfName = strdup_together(basename, ".rtf");
 	} 
 	
 	if (AuxName == NULL && basename != NULL) 
