@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.35 2001/10/27 14:02:09 prahl Exp $ */
+/* $Id: main.c,v 1.36 2001/11/03 17:30:38 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -60,7 +60,7 @@ int             g_enumerate_depth = 0;
 bool            g_suppress_equation_number = FALSE;
 bool            g_aux_file_missing = FALSE;	/* assume that it exists */
 
-bool			g_safety_braces = TRUE;
+int				g_safety_braces = TRUE;
 bool            g_processing_equation = FALSE;
 bool            g_document_type = FORMAT_ARTICLE;
 bool            g_processing_tabular = FALSE;
@@ -103,7 +103,7 @@ globals: initializes in- and outputfile fRtf,
 
 	progname = argv[0];
 	optind = 1;
-	while ((c = getopt(argc, argv, "lhvVWZo:a:b:d:i:o:")) != EOF) {
+	while ((c = getopt(argc, argv, "lhvVWZ:o:a:b:d:i:")) != EOF) {
 		switch (c) {
 		case 'a':
 			AuxName = optarg;
@@ -145,6 +145,12 @@ globals: initializes in- and outputfile fRtf,
 			break;
 		case 'Z':
 			g_safety_braces = FALSE;
+			g_safety_braces = *optarg - '0';
+			if (g_safety_braces < 0 || g_safety_braces > 9) {
+				printhelp();
+				diagnostics(ERROR, "Added number of braces must be 0--9");
+			}
+			break;
 			break;
 		default:
 			errflag = TRUE;
@@ -263,7 +269,7 @@ printhelp(void)
 		fprintf(stderr, "\t -C codepage   : input encoding (latin1, cp850, etc.)\n");
 		fprintf(stderr, "\t -V            : version information\n");
 		fprintf(stderr, "\t -W            : include warnings in RTF\n");
-		fprintf(stderr, "\t -Z            : do not add safety }}}}} at end of rtf file\n\n");
+		fprintf(stderr, "\t -Z#           : add # of '}'s at end of rtf file (# is 0-9)\n\n");
 		fprintf(stderr, "RTFPATH designates the directory for configuration files (*.cfg)\n");
 		fprintf(stderr, "\t RTFPATH = '%s'\n\n", getenv("RTFPATH"));
 }
@@ -450,10 +456,11 @@ params: f - pointer to filepointer to invalidate
 globals: progname;
  ****************************************************************************/
 {
+	int i;
 	CmdEndParagraph(0);
 	fprintf(*f, "}\n");
-	if (g_safety_braces)
-		fprintf(*f, "}}}}}");
+	for (i=0; i<g_safety_braces; i++)
+		fprintf(*f, "}");
 	if (*f != stdout) {
 		if (fclose(*f) == EOF) {
 			diagnostics(WARNING, "Error closing RTF-File");
