@@ -1,34 +1,44 @@
 \documentclass{article}
 \begin{document}
 
-This is a tabular environment in which the three types of alignment are
-tested.  There is a new paragraph before this starts.
-
-\begin{tabular}{lcr}
-left & center & right \\
-left & center & right \\
-left & center & right \\
-left & center & right \\
-\end{tabular}
-
-This is a tabular environment in which the three types of alignment are
-tested.  There is a not a new paragraph before this starts.
-\begin{tabular}{lcr}
-left & center & right \\
-left & center & right \\
-left & center & right \\
-left & center & right \\
-\end{tabular}
-
-This is a tabular environment should be centered and tests the three types of alignment are
-tested.  There is a not a new paragraph before this starts.
+\begin{table}
 \begin{center}
 \begin{tabular}{lcr}
 left & center & right \\
-left & center & right \\
-left & center & right \\
-left & center & right \\
+1 & 123 & 1 \\
+12 & 12 & 12 \\
+123 & 1 & 123 \\
+one & space & \\
+no & spaces &\\
+&& blank\\
+&&&\\
+one & last & line
 \end{tabular}
+\caption{Simple tabular environment to test three types of alignment.}
 \end{center}
+\end{table}
+
+\begin{table}
+\begin{center}
+\begin{tabular}{|r||r@{--}l|p{1.25in}|}
+\hline
+\multicolumn{4}{|c|}{GG\&A Hoofed Stock}\\
+\hline\hline
+&\multicolumn{2}{c|}{Price}&\\
+\cline{2-3}
+\multicolumn{1}{|c||}{Year} & \multicolumn{1}{r@{\,\vline\,}}{low}
+& high & \multicolumn{1}{c|}{Comments} \\
+\hline
+1971 & 97  & 245 & Bad year for farmers in the west \\
+\hline
+  72 & 245 & 245 &  Light trading due to a heavy winter \\
+\hline
+  72 & 245 & 2001 & No gnus was very good gnus this year \\
+\hline
+\end{tabular}
+\caption{The classic example from the \LaTeX{} manual.}
+\end{center}
+\end{table}
+
 \end{document}
 

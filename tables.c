@@ -1,4 +1,4 @@
-/* $Id: tables.c,v 1.20 2002/05/02 14:47:20 prahl Exp $
+/* $Id: tables.c,v 1.21 2002/05/03 05:39:31 prahl Exp $
 
    Translation of tabbing and tabular environments
 */
@@ -426,25 +426,25 @@ static char *
 TabularNextAmpersand(char *t)
 {
 	char *s;
-	int slash=0;
+	int escaped=0;
 	
 	s=t;
 	
-	while (s && *s != '\0' && *s != '&' && !(*s=='&' && slash)) {
-		slash = (*s == '\\') ? 1 : 0;
+	while (s && *s != '\0' && (*s != '&' || (*s=='&' && escaped))) {
+		escaped = (*s == '\\') ? 1 : 0;
 		s++;
 	}
 	return s;
 }
 
 static void
-TabularBeginCell(int column)
+TabularBeginCell(char align)
 {
-	fprintRTF("\\pard\\intbl\\q%c ", colFmt[column]);
+	fprintRTF("\\pard\\intbl\\q%c ", align);
 }
 
 static void
-TabularEndCell(int column)
+TabularEndCell(void)
 {
 	fprintRTF("\\cell\n");
 }
@@ -471,39 +471,57 @@ TabularNextCell(char *cell_start, char **cell_end)
 }
 
 static void
+TabularMultiParameters(char *cell, int *n, char *align)
+{
+	char *multi, *format, *mformat, *num;
+			
+	*n=0;
+	*align='\0';
+	
+	multi=strstr(cell,"\\multicolumn");
+	if (multi == NULL) return;
+	
+	PushSource(NULL,multi+strlen("\\multicolumn"));
+	num     = getBraceParam();
+	format  = getBraceParam();
+	PopSource();
+	*n = atoi(num);
+	mformat=ConvertFormatString(format);
+	*align = mformat[0];
+	free(num);
+	free(mformat);
+	free(format);
+	diagnostics(5, "TabularMultiParameters n=%d, align=%c",*n, *align); 
+}
+
+static void
 TabularBeginRow(char *arow)
 /******************************************************************************
  purpose:  emit RTF to start one row of a table
  ******************************************************************************/
 {
 	int i,n,column;
-	char *cell_start, *cell_end, *cell,*num,*format,*multi,*row;
+	char align;
+	char *cell_start, *cell_end, *cell,*row;
 
 	row=arow;
 	fprintRTF("\\trowd");
 
 	cell_start = row;
 	column = 0;
-	while (cell_start && *cell_start != '\0') {  /*for each cell */
+	while (cell_start) {  /*for each cell */
 
 		cell = TabularNextCell(cell_start, &cell_end);
+		TabularMultiParameters(cell,&n,&align);
+
+		if (n>1) fprintRTF("\\clmgf");
+			
+		fprintRTF("\\cellx%d", TabularColumnPosition(column));
+		column++;
 		
-		multi=strstr(cell,"\\multicolumn");
-		if (multi == NULL) {
-			fprintRTF("\\cellx%d", TabularColumnPosition(column));
+		for (i=1; i<n; i++) {
+			fprintRTF("\\clmrg\\cellx%d", TabularColumnPosition(column));
 			column++;
-		} else {
-			PushSource(NULL,multi+strlen("\\multicolumn"));
-			num     = getBraceParam();
-			format  = getBraceParam();
-			PopSource();
-			n = atoi(num);
-			fprintRTF("\\clmgf\\cellx%d", TabularColumnPosition(column));
-			for (i=1; i<n; i++)
-				fprintRTF("\\clmrg\\cellx%d", TabularColumnPosition(column+i));
-			column+=n;
-			free(num);
-			free(format);
 		}	
 		
 		free(cell);
@@ -511,6 +529,7 @@ TabularBeginRow(char *arow)
 	}
 	fprintRTF("\n");
 }
+
 static void
 TabularEndRow(void)
 /******************************************************************************
@@ -520,10 +539,18 @@ TabularEndRow(void)
 	fprintRTF("\\row\n");
 }
 
+char 
+TabularColumnAlignment(int column)
+{
+	return colFmt[column];
+}
+
 static void
 TabularWriteRow(char *row, int height)
 {
 	char *cell, *cell_start, *cell_end;
+	char align;
+	int n;
 	
 	actCol=0;
 	if (row==NULL || strlen(row)==0) return;
@@ -534,19 +561,33 @@ TabularWriteRow(char *row, int height)
 	cell_start = row;
 	while (cell_start && *cell_start != '\0') {
 
-		TabularBeginCell(actCol);
 		cell = TabularNextCell(cell_start, &cell_end);
-		if (cell !=NULL && *cell != '\0') {
-			diagnostics(4, "TabularWriteRow cell=<%s>",cell); 
+		
+		/* establish cell alignment */
+		TabularMultiParameters(cell,&n,&align);
+		if (n == 0) {
+			align=TabularColumnAlignment(actCol);
+			n = 1;
+		}
+
+		TabularBeginCell(align);
+		if (cell !=NULL) {
+			diagnostics(5, "TabularWriteRow align=%c n=%d cell=<%s>",align,n,cell); 
 			fprintRTF("{");
 			ConvertString(cell);
 			fprintRTF("}");
 		}
-		if (cell != NULL) free(cell);
-		
-		actCol++;
+		TabularEndCell();
+				
+		actCol+=n;
 		cell_start = cell_end;
-		TabularEndCell(actCol);
+		if (cell != NULL) free(cell);
+	}
+
+	if (actCol < colCount) {
+		align=TabularColumnAlignment(actCol);
+		TabularBeginCell(align);
+		TabularEndCell();
 	}
 
 	TabularEndRow();
@@ -659,36 +700,27 @@ CmdMultiCol(int code)
  ******************************************************************************/
 {
 	long            numCol, i;
-	char            *num, *format, *content, *colFormat, *noblank_content;
+	char            *num, *format, *content, *bcontent;
 
 	num     = getBraceParam();
 	format  = getBraceParam();
-	content = getBraceParam();
+	bcontent = getBraceParam();
 	
-	noblank_content = strdup_noendblanks(content);
-	free(content);
-	content=noblank_content;
+	content = strdup_noendblanks(bcontent);
+	free(bcontent);
 
 	diagnostics(1,"CmdMultiCol cols=%s format=<%s> content=<%s>",num,format,content);
 	numCol = atoi(num);
 	free(num);
 	
-	colFormat=ConvertFormatString(format);
-	free(format);
-	
-	fprintRTF("}{\\q%c ", colFormat[0]);
-
 	diagnostics(4, "Entering Convert() from CmdMultiCol()");
 	ConvertString(content);
 	diagnostics(4, "Exiting Convert() from CmdMultiCol()");
 
-	fprintRTF("}\\cell\n");
+	for (i = 1; i < numCol; i++) {
+		fprintRTF("}\\cell\n");
+		fprintRTF("\\pard\\intbl{");
+	}
 
-	for (i = 2; i < numCol; i++)
-		fprintRTF("\\pard\\intbl\\cell\n");
-
-	fprintRTF("\\pard\\intbl{");
-	actCol+=numCol-1;  /*TabularWriteRow will automatically add one */
 	free(content);
-	free(colFormat);
 }
