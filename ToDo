@@ -26,11 +26,6 @@ Potential Features:
 		add style support for enumerate environment
  		add back style support for \section, \subsection
 
-	revise the table code
-		Suppress empty column that sometimes appears in tabular environments
-		Suppress empty row when a final // is present
-
 	support \hsize
 	add support for \vspace
 	add support for \hspace
-	add support for \hline
