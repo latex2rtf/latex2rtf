@@ -1,4 +1,4 @@
-/* $Id: tables.h,v 1.5 2002/08/05 04:06:00 prahl Exp $ */
+/* $Id: tables.h,v 1.6 2002/09/23 14:34:42 prahl Exp $ */
 
 #define TABBING   5
 #define TABULAR   1
@@ -12,6 +12,7 @@
 void            CmdTabjump(void);
 void            CmdTabset(void);
 void            CmdTabular(int code);
+void            CmdTabbing(int code);
 void            CmdTable(int code);
 void            CmdMultiCol(int code);
 void 			CmdHline(int code);

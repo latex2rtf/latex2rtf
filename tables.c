@@ -69,6 +69,24 @@ void            CmdTabset(void)
 {
 }
 
+static void
+BeginCell(char align)
+/******************************************************************************
+ purpose:  emit RTF code to start each cell
+ ******************************************************************************/
+{
+	fprintRTF("\\pard\\intbl\\q%c ", align);
+}
+
+static void
+EndCell(void)
+/******************************************************************************
+ purpose:  emit RTF code to end each cell
+ ******************************************************************************/
+{
+	fprintRTF("\\cell\n");
+}
+
 static char *
 ConvertFormatString(char *s)
 /******************************************************************************
@@ -298,24 +316,6 @@ TabularNextAmpersand(char *t)
 		s++;
 	}
 	return s;
-}
-
-static void
-TabularBeginCell(char align)
-/******************************************************************************
- purpose:  emit RTF code to start each cell
- ******************************************************************************/
-{
-	fprintRTF("\\pard\\intbl\\q%c ", align);
-}
-
-static void
-TabularEndCell(void)
-/******************************************************************************
- purpose:  emit RTF code to end each cell
- ******************************************************************************/
-{
-	fprintRTF("\\cell\n");
 }
 
 static char *
@@ -576,14 +576,14 @@ TabularWriteRow(TabularT tabular, char *this_row, char *next_row, int height, in
 			n = 1;
 		}
 
-		TabularBeginCell(align);
+		BeginCell(align);
 		if (cell !=NULL) {
 			diagnostics(5, "TabularWriteRow align=%c n=%d cell=<%s>",align,n,cell); 
 			fprintRTF("{");
 			ConvertString(cell);
 			fprintRTF("}");
 		}
-		TabularEndCell();
+		EndCell();
 				
 		actCol+=n;
 		cell_start = cell_end;
@@ -592,8 +592,8 @@ TabularWriteRow(TabularT tabular, char *this_row, char *next_row, int height, in
 
 	if (actCol < colCount) {
 		align=TabularColumnAlignment(actCol);
-		TabularBeginCell(align);
-		TabularEndCell();
+		BeginCell(align);
+		EndCell();
 	}
 
 	TabularEndRow();
@@ -675,30 +675,140 @@ CmdTabular(int code)
 	free(tabular.width);
 }
 
-static void
-TabbingWriteRow(char *this_row, char *next_row, int height, int first_row)
+static int
+TabbingColumnPosition(int n, int total)
+/******************************************************************************
+ purpose:  return position of nth column 
+ ******************************************************************************/
 {
-	if (this_row==NULL || strlen(this_row)==0) return;
-	
-	diagnostics(4, "TabbingWriteRow height=%d twpi, row <%s>",height, this_row); 
-	if (strstr(this_row,"\\kill")) return;
-	ConvertString(this_row);
+	int colWidth = getLength("textwidth")/colCount;
+	return colWidth * (n+1);
 }
 
 static void
-TabbingGetRow(char *table, char **row, char **next_row, int *height)
+TabbingNextCellEnd(char *t, char **cell_end, char **next_cell)
+/******************************************************************************
+ purpose:  find the next ampersand while avoiding \&
+ ******************************************************************************/
+{
+	char *s;	
+	s=t;
+	
+	while (s) {
+	
+		if (*s == '\0') {
+			*cell_end = s;
+			*next_cell = s;
+			return;
+		}
+		
+		if (*s == '\\') {
+			s++;
+			if (*s=='=' || *s=='>' || *s=='<' || *s=='\'' || *s=='`') {
+				*cell_end = s-2;
+				*next_cell = s+1;
+				return;
+			}
+		}
+		s++;
+	}
+}
+
+static char *
+TabbingNextCell(char *cell_start, char **cell_end)
+/******************************************************************************
+ purpose:  scan and duplicate contents of the next cell
+ ******************************************************************************/
+{	
+	char *end, *dup, *dup2, *next_cell, *p;
+	
+	TabbingNextCellEnd(cell_start, &end, &next_cell);
+
+	if (end<cell_start) end=cell_start;
+	dup = strndup(cell_start, end-cell_start);
+	
+	if (*next_cell=='\0')
+		*cell_end = NULL;
+	else
+		*cell_end = next_cell;
+	
+	/* remove \- and \+ from string */
+	while( ((p=strstr(dup,"\\+")) != NULL) || ((p=strstr(dup,"\\-")) != NULL)) {
+		*p=' ';
+		p++;
+		*p=' ';
+	}
+		
+	dup2 = strdup_noendblanks(dup);
+	free(dup);
+	return dup2;
+}
+
+static void
+TabbingBeginRow(int n, char *align)
+/******************************************************************************
+ purpose:  emit RTF to start one row of a tabbing environment           
+ ******************************************************************************/
+{
+	int i;
+	
+	if (n==0) return;
+	
+	fprintRTF("\\trowd");
+
+	for(i=0; i<n; i++)
+		fprintRTF("\\cellx%d", TabbingColumnPosition(i,n));
+		
+	fprintRTF("\n");
+	for(i=0; i<g_tabbing_left_position; i++) {
+		BeginCell(align[i]);
+		EndCell();
+	}
+	
+}
+
+static void
+TabbingWriteRow(char *this_row, int n, char *align)
+{
+	char *start, *end, *cell;
+	int i;
+	
+	if (this_row==NULL || n==0) return;
+	
+	diagnostics(4, "TabbingWriteRow n=%d <%s> [%s]",n, align, this_row); 
+	if (strstr(this_row,"\\kill")) return;
+	
+	TabbingBeginRow(n,align);
+	
+	start=this_row;
+	end=this_row+strlen(this_row);
+	
+	for(i=g_tabbing_left_position; i<n; i++) {
+		BeginCell(align[i]);
+		cell=TabbingNextCell(start,&end);
+		if (cell) {
+			diagnostics(1,"cell=<%s>",cell);
+			ConvertString(cell);
+			free(cell);
+		}
+		EndCell();
+		start=end;
+	}
+}
+
+static void
+TabbingGetRow(char *table, char **row, char **next_row)
 /******************************************************************************
  purpose:  scan and duplicate the next row from the tabbing environment
   ******************************************************************************/
 {
-	char *s;
+	char *s,*arow;
 	int row_chars=0;
 	bool slash = FALSE;
 	
 	s=table;
 	*row=NULL;
 	*next_row=NULL;
-	*height=0;
 	
 	if (!s) return;
 
@@ -708,56 +818,57 @@ TabbingGetRow(char *table, char **row, char **next_row, int *height)
        3) \kill is encountered */
 	while (!(*s == '\0') &&
 		   !(*s == '\\' && slash) &&
-		   !((row_chars>6) && strncmp(s-6,"\\kill",5) == 0 && !isalpha((int) *s))
+		   !((row_chars>6) && strncmp(s-5,"\\kill",5) == 0 && !isalpha((int) *s))
 		  ) {
 		row_chars++;
-		s++;
         slash = (*s == '\\') ? 1 : 0;
+		s++;
 	}
-	
-	*row = (char *)malloc((row_chars+1)*sizeof(char));
-	strncpy(*row, table, row_chars);
-	(*row)[row_chars]='\0';
 
-	diagnostics(4,"row =<%s>",*row);
+	if (*s != '\0') *next_row = s+1;
+	if (*s == '\\' && slash) row_chars--;
+	
+	arow = (char *)malloc((row_chars+1)*sizeof(char));
+	strncpy(arow, table, row_chars);
+	arow[row_chars]='\0';
+
+	*row = strdup_noendblanks(arow);
+	free(arow);
 }
 
-/*
 static void
-TabbingSetStops(char *row)
+TabbingGetColumnAlignments(char* row, char *align, int *n, int *next_left)
 {
-	char *arow, *next_left;
-	int i,len,num_cols;
-	
-	arow = strdup_noendblanks(row);
-	len = strlen(arow)-1;				//no commands begin with last character
+	int i;
 	
 	*next_left = g_tabbing_left_position;
+	*n         = *next_left+1;	
 	
-	for (i=0; i<len-1; i++) {
-		if (arow[i] != '\\') 
-			continue;
+	for (i=0; i<*n; i++) align[i]='l';
+	
+	while (row && *row) {
+
+		if (*row != '\\') {row++; continue;}
 		
-		i++;
-		switch (arow[i]) {
+		row++;
+		switch (*row) {
 		
-			case '=' :	num_cols++;
-						cols[num_cols]='l';
-						pos[num_cols] = i;
+			case '=' :	align[*n]='l';
+						(*n)++;
 						break;
 						
-			case '<' :	num_cols++;
-						cols[num_cols]='l';
+			case '>' :	align[*n]='l';
+						(*n)++;
 						break;
 						
-			case '>' :	num_cols++;
-						cols[num_cols]='r';
+			case '<' :	break;
+						
+			case '\'' :	align[*n-2]='r';
+						align[*n-1]='l';
 						break;
 						
-			case '\'' :	set_tab;
-						break;
-						
-			case '`' :	set_tab;
+			case '`' :	align[*n]='r';
+						(*n)++;
 						break;
 						
 			case '+' :	(*next_left)++;
@@ -766,13 +877,13 @@ TabbingSetStops(char *row)
 			case '-' :	(*next_left)--;
 						break;
 						
-			default:
-						break;
+			default:	break;
 		}
 	}
+	align[*n]='\0';
 	
 }
-*/
+
 
 void 
 CmdTabbing(int code)
@@ -780,9 +891,10 @@ CmdTabbing(int code)
  purpose: 	\begin{tabbing} ... \end{tabbing}
  ******************************************************************************/
 {
-	int             this_height, next_height, first_row;
-	char           *cols,*pos,*end,*width,*this_row, *next_row, *next_row_start, *row_start;
+	int             n,next_left;
+	char           *end,*this_row, *next_row_start, *row_start;
 	char   		   *table=NULL;
+	char		   align[31];
 	
 	if (!(code & ON)) {
 		diagnostics(4, "Exiting CmdTabbing");
@@ -792,37 +904,36 @@ CmdTabbing(int code)
 		return;
 	}
 
-	width = NULL;
-	pos=NULL;
-	cols=NULL;
-
+	n=0;
+	g_tabbing_left_position=0;
+	strcpy(align,"l");
+	
 	end = strdup("\\end{tabbing}");
 	table = getTexUntil(end,FALSE);
 	diagnostics(3, "Entering CmdTabbing()"); 
+
 	row_start=table;
-	TabbingGetRow(row_start,&this_row,&next_row_start,&this_height);
+	TabbingGetRow(row_start, &this_row, &next_row_start);
 
 	diagnostics(2, "tabbing_tabbing_tabbing\n%s\ntabbing_tabbing_tabbing",table);
 	
-	first_row = TRUE;
 	while (this_row) {
+		diagnostics(1,"row=<%s>",this_row);
+		
+		TabbingGetColumnAlignments(this_row, align, &n, &next_left);
+		diagnostics(4,"this row n=%d <%s> left_tab=%d",n,align,g_tabbing_left_position);
+		
+		TabbingWriteRow(this_row, n, align);
+
+		g_tabbing_left_position=next_left;		
 		row_start=next_row_start;
-		TabbingGetRow(row_start,&next_row,&next_row_start,&next_height);
-		diagnostics(1,"this row=<%s>",this_row);
-		diagnostics(1,"next row=<%s>",next_row);
-		TabbingWriteRow(this_row, next_row, this_height, first_row);
 
 		free(this_row);
-		this_row = next_row;
-		this_height = next_height;
-		first_row = FALSE;
+		TabbingGetRow(row_start, &this_row, &next_row_start);
 	}
 	
 	ConvertString(end);
 
-	if (pos  ) free(pos);
-	if (width) free(width);
-	if (cols ) free(cols);
 	free(table);
 	free(end);
 }

@@ -367,7 +367,7 @@ usage(void)
 	fprintf(stderr, "\t -v               : version information\n");
 	fprintf(stderr, "\t -se#             : scale factor for bitmap equations\n");
 	fprintf(stderr, "\t -sf#             : scale factor for bitmap figures\n");
-	fprintf(stderr, "\t -C codepage      : input encoding (latin1, cp850, etc.)\n");
+	fprintf(stderr, "\t -C codepage      : input encoding (latin1, cp850, raw, etc.)\n");
 	fprintf(stderr, "\t -D#              : dots per inch for bitmaps\n");
 	fprintf(stderr, "\t -M#              : math equation handling\n");
 	fprintf(stderr, "\t      -M1         :  displayed equations to RTF\n");

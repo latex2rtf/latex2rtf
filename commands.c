@@ -512,7 +512,7 @@ static CommandArray params[] = {
 	{"flushright", CmdAlign, PAR_RIGHT},
 	{"flushleft", CmdAlign, PAR_LEFT},
 	{"document", Environment, DOCUMENT},
-	{"tabbing", CmdTabular, TABBING},
+	{"tabbing", CmdTabbing, TABBING},
 	{"figure", CmdFigure, FIGURE},
 	{"figure*", CmdFigure, FIGURE_1},
 	{"picture", CmdPicture, 0},
