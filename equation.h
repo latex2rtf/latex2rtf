@@ -19,17 +19,19 @@
 #define LEFT_LEFT 5
 #define RIGHT_RIGHT 6
 
-void			CmdEquation(int code);
-void            CmdFraction(int code);
-void            CmdRoot(int code);
-void            CmdLim(int code);
-void            CmdIntegral(int code);
-void            CmdSuperscript(int code);
-void            CmdSubscript(int code);
-void            CmdNonumber(int code);
-void			CmdArray(int code);
-void			CmdLeftRight(int code);
-void			CmdMatrix(int code);
-void			CmdStackrel(int code);
-void			CmdArrows(int code);
-void			WriteLatexAsBitmap(char *pre, char *eq, char *post);
+void CmdEquation(int code);
+void CmdFraction(int code);
+void CmdRoot(int code);
+void CmdLim(int code);
+void CmdIntegral(int code);
+void CmdSuperscript(int code);
+void CmdSubscript(int code);
+void CmdNonumber(int code);
+void CmdArray(int code);
+void CmdLeftRight(int code);
+void CmdMatrix(int code);
+void CmdStackrel(int code);
+void CmdArrows(int code);
+void WriteLatexAsBitmap(char *pre, char *eq, char *post);
+int  script_shift(void);
+int  script_size(void);

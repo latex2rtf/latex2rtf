@@ -533,8 +533,13 @@ void CmdUsepackage(int code)
         setPackageFont(package);
 
     else if (strcmp(package, "natbib") == 0) {
-        if (strstr(options, ""))
+        if (options && strstr(options, ""))
             set_longnamesfirst();
+        if (options && strstr(options, "super"))
+            set_bibpunct_style_super();
+        if (options && strstr(options, "comma"))
+            set_bibpunct_style_sep_comma();
+
         PushEnvironment(NATBIB_MODE);
         g_document_bibstyle = BIBSTYLE_NATBIB;
     } else
