@@ -1,4 +1,4 @@
-/* $Id: biblio.c,v 1.1 2001/09/06 04:43:04 prahl Exp $ 
+/* $Id: biblio.c,v 1.2 2001/09/16 05:11:19 prahl Exp $ 
  
 This file contains routines to handle bibliographic and cite commands
 */
@@ -62,12 +62,12 @@ parameter: if FALSE (0) work as normal
 	char            *reference;
 	char           *str1, *str2;
 
-	fprintf(fRtf, "[");
+	fprintRTF("[");
 
 	if (code == HYPERLATEX) {
 		if (hyperref == NULL) {
 			fprintf(stderr, "ERROR: \\Cite called before \\link\n");
-			fprintf(fRtf, "?]");
+			fprintRTF("?]");
 			return;
 		}
 		reference=strdup(hyperref);
@@ -79,14 +79,14 @@ parameter: if FALSE (0) work as normal
 		*str2 = '\0';	/* replace ',' with '\0' */
 		if (ScanAux("bibcite", str1, 0))
 			bCite = TRUE;
-		fprintf(fRtf, ",");
+		fprintRTF(",");
 		str1 = str2 + 1;
 	}
 
 	if (ScanAux("bibcite", str1, 0))
 		bCite = TRUE;
 
-	fprintf(fRtf, "]");
+	fprintRTF("]");
 	free(reference);
 }
 
@@ -131,12 +131,12 @@ MakeBiblio(FILE * fBbl)
 	int             refcount = 0;
 	char           *str;
 
-	fprintf(fRtf, "\\par\\par\\pard{\\fs28 \\b ");
+	fprintRTF("\\par\\par\\pard{\\fs28 \\b ");
 	if (article)
 		ConvertBabelName("REFNAME");
 	else
 		ConvertBabelName("BIBNAME");
-	fprintf(fRtf, "}\n");
+	fprintRTF("}\n");
 
 	while (fgets(BblLine, 255, fBbl) != NULL) {
 		if (strstr(BblLine, "\\begin{thebibliography}"))
@@ -144,7 +144,7 @@ MakeBiblio(FILE * fBbl)
 		if (strstr(BblLine, "\\end{thebibliography}")) {
 			if (allBblLine != NULL) {
 				ConvertString(allBblLine);
-				fprintf(fRtf, " ");
+				fprintRTF(" ");
 				free(allBblLine);
 				allBblLine = NULL;
 			}
@@ -155,11 +155,11 @@ MakeBiblio(FILE * fBbl)
 			char           *label;
 			if (allBblLine != NULL) {
 				ConvertString(allBblLine);
-				fprintf(fRtf, " ");
+				fprintRTF(" ");
 				free(allBblLine);
 				allBblLine = NULL;
 			}
-			fprintf(fRtf, "\\par \\par \\pard ");
+			fprintRTF("\\par \\par \\pard ");
 			if ((label = strchr(BblLine, '[')) != NULL) {
 				for (; *label != '\0' && *label != ']'; label++)
 					if (fputc(*label, fRtf) != (int) *label)
@@ -171,13 +171,13 @@ MakeBiblio(FILE * fBbl)
 				if (fputc(' ', fRtf) != (int) ' ')
 					diagnostics(ERROR, "WriteRefList: Failed fputc(' ')");
 			} else
-				fprintf(fRtf, "[%d] ", ++refcount);
+				fprintRTF("[%d] ", ++refcount);
 			continue;
 		} else if ((str = strstr(BblLine, "\\newblock")) != NULL) {
 			str += strlen("\\newblock");
 			if (allBblLine != NULL) {
 				ConvertString(allBblLine);
-				fprintf(fRtf, " ");
+				fprintRTF(" ");
 				free(allBblLine);
 				allBblLine = NULL;
 			}

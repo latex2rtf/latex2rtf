@@ -1,4 +1,4 @@
-/* $Id: main.h,v 1.16 2001/09/09 19:41:40 prahl Exp $ */
+/* $Id: main.h,v 1.17 2001/09/16 05:11:19 prahl Exp $ */
 
 #undef HAS_NO_GETOPT
 
@@ -139,5 +139,8 @@ extern bool     g_show_equation_number;
 extern int      g_enumerate_depth;
 extern bool     g_suppress_equation_number;
 extern bool     g_aux_file_missing;
+
+void fprintRTF(char *format, ...);
+void putRtfChar(char cThis);
 
 #endif				/* __MAIN_H */

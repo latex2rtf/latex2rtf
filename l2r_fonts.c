@@ -1,14 +1,61 @@
-/* $Id: l2r_fonts.c,v 1.14 2001/09/10 03:14:06 prahl Exp $
+/* $Id: l2r_fonts.c,v 1.15 2001/09/16 05:11:19 prahl Exp $
 
 	All changes to font size, font style, and font face are 
 	handled in this file.  Explicit changing of font characteristics
 	should not be done elsewhere.
 	
+	Font handling in LaTeX uses five independent parameters 
+	
+		* Font encoding    --- OT1, OT
+		* Font family      --- roman, typewriter, sans serif
+		* Font size        --- normal, large, ...
+		* Font shape       --- upright, italics, small caps
+		* Font series      --- medium, bold
+		
+	Font changes in LaTeX use commands that fall into three categories.  
+	
+		commands that are independent of the previous state, e.g.,
+		{\sc before {\it some text}} will typeset in "some text"
+		in italics 
+		
+		commands that add to the previous state {\sc before \textit{some text}}
+		will typeset "some text" in italic small caps (if available)
+		
+		commands that are affected by the previous state {\it before \emph{some text}}
+		will typeset "some text" in an upright font
+		
+	RTF has no commands to directly emulate this third type of command.  The first
+	type is readily simulated by resetting the font properties before setting the
+	desired setting.  The second type of command is the normal way that RTF handles
+	fonts, and therefore is not a problem.
+
+	Limiting the extent of font changes is handled by braces in the RTF file.  This
+	leads to the following problem,
+	
+		\textit{some text {\em roman text} more italic text {\em more roman text}} 
+		
+	which should be translated to
+	
+		{\i some text {\i0 roman text} more italic text {\i0 more roman text}}
+		
+	when \em is encountered by latex2rtf, the extent of the emphasis is unknown:
+	it may continue to the next brace, it may continue to the end of an environment
+	\end{center}, or it may continue to the end of the document.  In the example above,
+	the text will be reset to italics by the first closing brace.  This is easy, but
+	the problem is that the at the next \em, it is necessary to know that the font has 
+	been changed back.
+	
+	Consequently, it is necessary to know the current latex font setting *for each
+	RTF brace level*.  The easiest way to do this is to filter everything fprintf'ed 
+	to the RTF file
+				
 */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
+
 #include "main.h"
 #include "convert.h"
 #include "l2r_fonts.h"
@@ -18,29 +65,17 @@
 #include "parser.h"
 #include "stack.h"
 
-static char     sitiny[20] = "\\tiny";
-static char     siscriptsize[20] = "\\scriptsize";
-static char     sifootnotesize[20] = "\\footnotesize";
-static char     sismall[20] = "\\small";
-static char     sinormalsize[20] = "\\normalsize";
-static char     silarge[20] = "\\large";
-static char     siLarge[20] = "\\Large";
-static char     siLARGE[20] = "\\LARGE";
-static char     sihuge[20] = "\\huge";
-static char     siHuge[20] = "\\Huge";
-static char     siHUGE[20] = "\\HUGE";
+typedef struct RtfFontInfoType
+{
+	int family;
+	int shape;
+	int series;
+	int size;
+} RtfFontInfoType;
 
-int		 default_document_font_size = 22;
-int		 default_document_font_family = 0;
-
-int      FontFamily[MAXENVIRONS];
-int      FontShape[MAXENVIRONS];
-int      FontSeries[MAXENVIRONS];
-int      FontSize[MAXENVIRONS];
-char    *LatexFontSize[MAXENVIRONS];
-
-void 	ResetFontSeries(void);
-void 	ResetFontShape(void);
+#define MAX_FONT_INFO_DEPTH 101
+static RtfFontInfoType RtfFontInfo[MAX_FONT_INFO_DEPTH];
+static int FontInfoDepth=0;
 
 int 
 RtfFontNumber(char *Fname)
@@ -72,29 +107,31 @@ TexFontNumber(char *Fname)
 }
 
 void 
-CmdSetFontFamily(int code)
+CmdFontFamily(int code)
 /******************************************************************************
   purpose: selects the appropriate font family
+     			F_FAMILY_ROMAN    for \rmfamily
+     			F_FAMILY_ROMAN_1  for \rm
+     			F_FAMILY_ROMAN_2  for \textrm{...}
+     			F_FAMILY_ROMAN_3  for \begin{rmfamily} or \end{rmfamily}
  ******************************************************************************/
 {
-	int          	num,old_family,temp;
 	char           *s;
-	int             iEnvCount = CurrentEnvironmentCount();
-	temp = code;
-	if (code & ON) code &= ~(ON);
+	int				num, true_code;
 	
-	if ((code == F_FAMILY_CALLIGRAPHIC_3 || code ==F_FAMILY_TYPEWRITER_3 ||
-	     code == F_FAMILY_SANSSERIF_3    || code == F_FAMILY_ROMAN_3       ) && !(temp & ON)) 
-	{
-	     fprintf(fRtf, "}");
-	     return;
-	}
+	true_code = code & ~ON;
+	
+	diagnostics(4,"CmdFontFamily (before) depth=%d, family=%d, size=%d, shape=%d, series=%d",\
+				   FontInfoDepth, RtfFontInfo[FontInfoDepth].family, \
+	               RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape,\
+	               RtfFontInfo[FontInfoDepth].series);
 
-	old_family = FontFamily[iEnvCount];
-	FontFamily[iEnvCount] = code;
-	
-	diagnostics(4, "Entering CmdSetFontFamily");
-	switch (code) {
+	if (!(code & ON) &&
+	    (true_code == F_FAMILY_CALLIGRAPHIC_3 || true_code ==F_FAMILY_TYPEWRITER_3 ||
+	     true_code == F_FAMILY_SANSSERIF_3    || true_code == F_FAMILY_ROMAN_3       ) ) 
+	     return;
+
+	switch (true_code) {
 		case F_FAMILY_ROMAN:
 		case F_FAMILY_ROMAN_1:
 		case F_FAMILY_ROMAN_2:
@@ -125,420 +162,246 @@ CmdSetFontFamily(int code)
 	}
 	
 	
-	switch (code) {
+	switch (true_code) {
 		case F_FAMILY_ROMAN:   
 		case F_FAMILY_SANSSERIF:
 		case F_FAMILY_TYPEWRITER:
 		case F_FAMILY_CALLIGRAPHIC:
-			fprintf(fRtf, "\\plain\\f%d ", num);          
+		case F_FAMILY_ROMAN_3:   
+		case F_FAMILY_SANSSERIF_3:
+		case F_FAMILY_TYPEWRITER_3:
+		case F_FAMILY_CALLIGRAPHIC_3:
+			fprintRTF("\\f%d ", num);          
 			break;
 			
 		case F_FAMILY_ROMAN_1:   
 		case F_FAMILY_SANSSERIF_1:
 		case F_FAMILY_TYPEWRITER_1:
 		case F_FAMILY_CALLIGRAPHIC_1:
-			fprintf(fRtf, "{\\f%d ", num);
-			FontSeries[iEnvCount] = F_SERIES_MEDIUM;
-			FontShape[iEnvCount] = F_SHAPE_UPRIGHT;
-			Convert();
-			fprintf(fRtf, "}");
+			fprintRTF("\\i0\\scaps0\\b0\\f%d ", num);          
 			break;
 
 		case F_FAMILY_ROMAN_2:   
 		case F_FAMILY_SANSSERIF_2:
 		case F_FAMILY_TYPEWRITER_2:
 		case F_FAMILY_CALLIGRAPHIC_2:
-			fprintf(fRtf, "{\\f%d ", num);          
+			fprintRTF("{\\f%d ", num);          
 			s = getParam();
 			ConvertString(s);
 			free(s);
-			fprintf(fRtf, "}");
-			FontFamily[iEnvCount] = old_family;
-			break;
-
-		case F_FAMILY_ROMAN_3:   
-		case F_FAMILY_SANSSERIF_3:
-		case F_FAMILY_TYPEWRITER_3:
-		case F_FAMILY_CALLIGRAPHIC_3:
-			fprintf(fRtf, "{\\plain\\f%d ", num);
-			FontSeries[iEnvCount] = F_SERIES_MEDIUM;
-			FontShape[iEnvCount] = F_SHAPE_UPRIGHT;
+			fprintRTF("}");
 			break;
 	}
 
-	diagnostics(4, "Exiting CmdSetFontFamily");
-}
-
-int 
-CurrentFontFamily(void)
-/******************************************************************************
-  purpose: returns the current font style being used
- ******************************************************************************/
-{
-	int i;
-	int             iEnvCount = CurrentEnvironmentCount();
-	
-	for (i=iEnvCount; i>=0; i--)
-		diagnostics(3, "iEnvCount=%d Family=%d", i, FontFamily[i]);
-		
-	return FontFamily[iEnvCount-1];
-}
-
-int 
-CurrentFontNumber(void)
-/******************************************************************************
-  purpose: returns the current RTF number for the font family being used
- ******************************************************************************/
-{
-	int             iEnvCount, Family, FontNumber;
-	
-	iEnvCount = CurrentEnvironmentCount();
-	Family = FontFamily[iEnvCount];
-	
-	switch (Family) {
-		case F_FAMILY_ROMAN:
-		case F_FAMILY_ROMAN_1:
-		case F_FAMILY_ROMAN_2:
-		case F_FAMILY_ROMAN_3:
-			FontNumber = TexFontNumber("Roman");
-			break;
-			
-		case F_FAMILY_SANSSERIF:
-		case F_FAMILY_SANSSERIF_1:
-		case F_FAMILY_SANSSERIF_2:
-		case F_FAMILY_SANSSERIF_3:
-			FontNumber = TexFontNumber("Sans Serif");
-			break;
-			
-		case F_FAMILY_TYPEWRITER:
-		case F_FAMILY_TYPEWRITER_1:
-		case F_FAMILY_TYPEWRITER_2:
-		case F_FAMILY_TYPEWRITER_3:
-			FontNumber = TexFontNumber("Typewriter");
-			break;
-			
-		case F_FAMILY_CALLIGRAPHIC:
-		case F_FAMILY_CALLIGRAPHIC_1:
-		case F_FAMILY_CALLIGRAPHIC_2:
-		case F_FAMILY_CALLIGRAPHIC_3:
-			FontNumber = TexFontNumber("Calligraphic");
-			break;
-	}
-	return FontNumber;
+	diagnostics(4,"CmdFontFamily (after) depth=%d, family=%d, size=%d, shape=%d, series=%d",\
+				   FontInfoDepth, RtfFontInfo[FontInfoDepth].family, \
+	               RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape,\
+	               RtfFontInfo[FontInfoDepth].series);
 }
 
 void 
-CmdSetFontShape(int code)
+CmdFontShape(int code)
 /****************************************************************************
      purpose : sets the font to upright, italic, or small caps
-     			F_SHAPE_ITALIC    for \begin{itshape}
-     			F_SHAPE_ITALIC_1  for \it and \itfamily
+     			F_SHAPE_ITALIC    for \itshape
+     			F_SHAPE_ITALIC_1  for \it
      			F_SHAPE_ITALIC_2  for \textit{...}
+     			F_SHAPE_ITALIC_3  for \begin{itshape}
  ****************************************************************************/
 {
-	int             iEnvCount, old_shape, temp, font;
+	int true_code  = code & ~ON;
 	
-	iEnvCount = CurrentEnvironmentCount();
-	old_shape = FontShape[iEnvCount];
-	font = CurrentFontNumber();
-	
-	temp = code;
-	if (code & ON) code &= ~(ON);
-	
-	if ((code == F_SHAPE_UPRIGHT_3 || code ==F_SHAPE_ITALIC_3 ||
-	     code == F_SHAPE_SLANTED_3 || code == F_SHAPE_CAPS_3    ) && !(temp & ON)) 
-	{
-	     fprintf(fRtf, "}");
+	diagnostics(4,"CmdFontShape (before) depth=%d, family=%d, size=%d, shape=%d, series=%d",\
+				   FontInfoDepth, RtfFontInfo[FontInfoDepth].family, \
+	               RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape,\
+	               RtfFontInfo[FontInfoDepth].series);
+
+	/* \end{itshape}, \end{scshape} ... */
+	if (!(code & ON) && 
+	    (true_code == F_SHAPE_UPRIGHT_3 || true_code ==F_SHAPE_ITALIC_3 ||
+	     true_code == F_SHAPE_SLANTED_3 || true_code == F_SHAPE_CAPS_3    ) ) 
 	     return;
-	}
-
-	FontShape[iEnvCount] = code;
 	
-	diagnostics(4, "Entering CmdSetFontShape shape=%d",code);
+	switch (true_code) {
+		
+		case F_SHAPE_UPRIGHT:   fprintRTF("\\i0\\scaps0 ");  break;
+		case F_SHAPE_UPRIGHT_1: fprintRTF("\\i0\\b0\\scaps0 ");  break;
+		case F_SHAPE_UPRIGHT_2:	fprintRTF("{\\i0\\b0\\scaps0 ");  break;
+		case F_SHAPE_UPRIGHT_3: fprintRTF("\\i0\\scaps0 ");  break;
 	
-	switch (code) {
-		case F_SHAPE_UPRIGHT:   fprintf(fRtf, "\\plain\\f%d ",font);  break;
-		case F_SHAPE_UPRIGHT_1: fprintf(fRtf, "{\\plain\\f%d ",font);  break;
-		case F_SHAPE_UPRIGHT_2: 
-		case F_SHAPE_UPRIGHT_3: fprintf(fRtf, "{\\plain\\f%d ",font);  break;
-	
-		case F_SHAPE_ITALIC:    fprintf(fRtf, "\\i ");         break;
-		case F_SHAPE_ITALIC_1:  fprintf(fRtf, "{\\plain\\f%d\\i ",font);  break;
-		case F_SHAPE_ITALIC_2:
-		case F_SHAPE_ITALIC_3:  fprintf(fRtf, "{\\f%d\\i ",font);        break;
-	
-		case F_SHAPE_SLANTED:   fprintf(fRtf, "\\i ");         break;
-		case F_SHAPE_SLANTED_1: fprintf(fRtf, "{\\plain\\f%d\\i ",font);  break;
+		case F_SHAPE_SLANTED:
+		case F_SHAPE_ITALIC:	fprintRTF("\\scaps0\\i ");        break;
+		
+		case F_SHAPE_SLANTED_1:
+		case F_SHAPE_ITALIC_1:  fprintRTF("\\scaps0\\b0\\i ");  break;
+		
 		case F_SHAPE_SLANTED_2:
-		case F_SHAPE_SLANTED_3: fprintf(fRtf, "{\\f%d\\i ",font);        break;
-	
-		case F_SHAPE_CAPS:      fprintf(fRtf, "\\scaps ");         break;
-		case F_SHAPE_CAPS_1:    fprintf(fRtf, "{\\plain\\f%d\\scaps ",font);  break;
-		case F_SHAPE_CAPS_2:
-		case F_SHAPE_CAPS_3:    fprintf(fRtf, "{\\f%d\\scaps ",font);        break;
+		case F_SHAPE_ITALIC_2:  fprintRTF("{\\i ");        break;
+
+		case F_SHAPE_SLANTED_3:
+		case F_SHAPE_ITALIC_3:  fprintRTF("\\scaps0\\i ");        break;
+
+		case F_SHAPE_CAPS:   	fprintRTF("\\scaps ");        break;
+		case F_SHAPE_CAPS_1:    fprintRTF("{\\i0\\b0\\scaps ");  break;
+		case F_SHAPE_CAPS_2:    fprintRTF("{\\scaps ");        break;
+		case F_SHAPE_CAPS_3:    fprintRTF("\\scaps ");        break;
 	}
 
-	if (code == F_SHAPE_UPRIGHT_1 || code == F_SHAPE_ITALIC_1 || 
-	    code == F_SHAPE_SLANTED_1 || code == F_SHAPE_CAPS_1)
-				FontSeries[iEnvCount] = F_SERIES_MEDIUM;
-
-	if (code == F_SHAPE_UPRIGHT_2 || code == F_SHAPE_ITALIC_2 || 
-	    code == F_SHAPE_SLANTED_2 || code == F_SHAPE_CAPS_2)
+	if (true_code == F_SHAPE_UPRIGHT_2 || true_code == F_SHAPE_ITALIC_2 || 
+	    true_code == F_SHAPE_SLANTED_2 || true_code == F_SHAPE_CAPS_2)
 	{
 		char *s;
 		s = getParam();
 		ConvertString(s);
-		fprintf(fRtf, "}");
-		FontShape[iEnvCount] = old_shape;
+		fprintRTF("}");
 		free(s);
-	} else 	if (code == F_SHAPE_UPRIGHT_1 || code == F_SHAPE_ITALIC_1 || 
-	            code == F_SHAPE_SLANTED_1 || code == F_SHAPE_CAPS_1) 
-	{
-		Convert();
-		fprintf(fRtf,"}");
-		FontShape[iEnvCount] = old_shape;
 	} 
 
-	diagnostics(4, "Exiting CmdSetFontShape");
-}
-
-int 
-CurrentFontShape(void)
-/******************************************************************************
-  purpose: returns the current font style being used
- ******************************************************************************/
-{
-	int             iEnvCount = CurrentEnvironmentCount();
-	return FontShape[iEnvCount];
+	diagnostics(4,"CmdFontShape (after) depth=%d, family=%d, size=%d, shape=%d, series=%d",\
+				   FontInfoDepth, RtfFontInfo[FontInfoDepth].family, \
+	               RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape,\
+	               RtfFontInfo[FontInfoDepth].series);
 }
 
 void 
-CmdSetFontSeries(int code)
+CmdFontSeries(int code)
 /****************************************************************************
      purpose : sets the font weight to medium or bold
      
-     F_SERIES_BOLD        for  {\bfseries ... }
-	 F_SERIES_BOLD_1      for  {\bf ... }
+     F_SERIES_BOLD        for  \bfseries ... 
+	 F_SERIES_BOLD_1      for  \bf ... 
 	 F_SERIES_BOLD_2      for  \textbf{...}
 	 F_SERIES_BOLD_3      for  \begin{bfseries} ... \end{bfseries}
 
  ****************************************************************************/
 {
-	int iEnvCount, old_series, temp, font;
-	
-	iEnvCount = CurrentEnvironmentCount();
-	old_series = FontSeries[iEnvCount];
-	FontSeries[iEnvCount] = code;
-	font = CurrentFontNumber();
-	
-	temp = code;
-	if (code & ON) code &= ~(ON);
-	
-	if ((code == F_SERIES_MEDIUM_3 || code == F_SERIES_BOLD_3) && !(temp & ON)) 
-	{
-	     fprintf(fRtf, "}");
-	     return;
-	}
+	int true_code  = code & ~ON;
 
-	diagnostics(4, "Entering CmdSetFontSeries");
+	diagnostics(4,"CmdFontSeries (before) depth=%d, family=%d, size=%d, shape=%d, series=%d",\
+				   FontInfoDepth, RtfFontInfo[FontInfoDepth].family, \
+	               RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape,\
+	               RtfFontInfo[FontInfoDepth].series);
+
+	/* either \end{bfseries} or \end{mdseries} */
+	if ((true_code == F_SERIES_MEDIUM_3 || true_code == F_SERIES_BOLD_3) && !(code & ON)) 
+	     return;
+
 	
 	switch (code) {
-		case F_SERIES_MEDIUM:   CmdSetFontShape(F_SHAPE_UPRIGHT); 
+		case F_SERIES_MEDIUM_3: 
+		case F_SERIES_MEDIUM:   fprintRTF("\\b0 "); 
 		 						break;
 		 						
 		case F_SERIES_MEDIUM_1: 
+								fprintRTF("\\i0\\scaps0\\b0 ");  
+								break;
+
 		case F_SERIES_MEDIUM_2:
-		case F_SERIES_MEDIUM_3: 
-								fprintf(fRtf, "{\\f%d ",font);   
-								CmdSetFontShape(F_SHAPE_UPRIGHT); 
+								fprintRTF("{\\b0 ");   
 								break;
 	
-		case F_SERIES_BOLD:    	fprintf(fRtf, "\\b ");         
+		case F_SERIES_BOLD:    	
+		case F_SERIES_BOLD_3:   fprintRTF("\\b ");         
 								break;
 								
 		case F_SERIES_BOLD_1:  	
-		                        fprintf(fRtf, "{\\f%d ",font);
-								CmdSetFontShape(F_SHAPE_UPRIGHT); 
-								fprintf(fRtf, "\\b ");  
+								fprintRTF("\\i0\\scaps0\\b ");  
 								break;
 								
 		case F_SERIES_BOLD_2:      
-		case F_SERIES_BOLD_3:   
-		                        fprintf(fRtf, "{\\f%d\\b ",font);        
+		                        fprintRTF("{\\b ");        
 								break;
 	}
 	
-	if (code == F_SERIES_BOLD_2 || code == F_SERIES_MEDIUM_2){
+	if (true_code == F_SERIES_BOLD_2 || true_code == F_SERIES_MEDIUM_2){
 		char *s; 
 		s = getParam();
 		ConvertString(s);
-		fprintf(fRtf, "}");
-		FontSeries[iEnvCount] = old_series;
+		fprintRTF("}");
 		free(s);
-	} else if (code == F_SERIES_BOLD_2 || code == F_SERIES_MEDIUM_2){
-		Convert();
-		fprintf(fRtf,"}");
-		FontSeries[iEnvCount] = old_series;
-	} 
+	}
 
-	diagnostics(4, "Exiting CmdSetFontSeries");
-}
-
-int 
-CurrentFontSeries(void)
-/******************************************************************************
-  purpose: returns the current font style being used
- ******************************************************************************/
-{
-	int             iEnvCount = CurrentEnvironmentCount();
-	return FontSeries[iEnvCount];
+	diagnostics(4,"CmdFontShape (after) depth=%d, family=%d, size=%d, shape=%d, series=%d",\
+				   FontInfoDepth, RtfFontInfo[FontInfoDepth].family, \
+	               RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape,\
+	               RtfFontInfo[FontInfoDepth].series);
 }
 
 void 
-CmdSetFontSize(int code)
+CmdFontSize(int code)
 /******************************************************************************
- purpose : sets the fontsize to the point-size given by the LaTex-\fs_size-command
- globals : fontsize : includes the actual fontsize in the document
-           heavily modified from D Taupin who would probably not approve
-           and certainly should not be blamed.
- ******************************************************************************/
+ purpose : handles LaTeX commands that change the font size
+******************************************************************************/
 {
-	int             iEnvCount, old_size, scaled_code;
-	scaled_code = code;
-	iEnvCount = CurrentEnvironmentCount();
-    old_size = 	FontSize[iEnvCount];
+	int             scaled_size;
 
-	diagnostics(4, "Entering CmdSetFontSize");
-	LatexFontSize[iEnvCount] = sitiny;
-	if (code >= 14)
-		LatexFontSize[iEnvCount] = siscriptsize;
-	if (code >= 16)
-		LatexFontSize[iEnvCount] = sifootnotesize;
-	if (code >= 18)
-		LatexFontSize[iEnvCount] = sismall;
-	if (code >= 20)
-		LatexFontSize[iEnvCount] = sinormalsize;
-	if (code >= 24)
-		LatexFontSize[iEnvCount] = silarge;
-	if (code >= 28)
-		LatexFontSize[iEnvCount] = siLarge;
-	if (code >= 34)
-		LatexFontSize[iEnvCount] = siLARGE;
-	if (code >= 40)
-		LatexFontSize[iEnvCount] = sihuge;
-	if (code >= 50)
-		LatexFontSize[iEnvCount] = siHuge;
-	if (code >= 60)
-		LatexFontSize[iEnvCount] = siHUGE;
+	diagnostics(4,"CmdFontSize (before) depth=%d, family=%d, size=%d, shape=%d, series=%d",\
+				   FontInfoDepth, RtfFontInfo[FontInfoDepth].family, \
+	               RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape,\
+	               RtfFontInfo[FontInfoDepth].series);
 
-	scaled_code = (code * DefaultFontSize()) / 20;
+	if (code == F_SMALLER) 
+		scaled_size = CurrentFontSize() / 1.2 + 0.5;
+	else if (code == F_LARGER) 
+		scaled_size = CurrentFontSize() * 1.2 + 0.5;
+	else
+		scaled_size = (code * DefaultFontSize()) / 20.0 + 0.5;
 
-	fprintf(fRtf, "\\fs%d ", scaled_code);
-	FontSize[iEnvCount] = scaled_code;
-	Convert();
-	FontSize[iEnvCount] = old_size;
+	fprintRTF("\\fs%d ", scaled_size);
 
-	diagnostics(4, "Exiting CmdSetFontSize");
+	diagnostics(4,"CmdFontSize (after) depth=%d, family=%d, size=%d, shape=%d, series=%d",\
+				   FontInfoDepth, RtfFontInfo[FontInfoDepth].family, \
+	               RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape,\
+	               RtfFontInfo[FontInfoDepth].series);
 }
-
-int 
-CurrentFontSize(void)
-/******************************************************************************
-  purpose: returns the current font size being used
- ******************************************************************************/
-{
-	int             iEnvCount = CurrentEnvironmentCount();
-	return FontSize[iEnvCount];
-}
-
-void
-InitializeDocumentFont(int size)
-/******************************************************************************
-  purpose: Initialize the basic font properties for a document
- ******************************************************************************/
-{
-	int             iEnvCount = CurrentEnvironmentCount();
-	
-	FontSize[iEnvCount] = size;
-	LatexFontSize[iEnvCount] = sinormalsize;
-	FontShape[iEnvCount] = F_SHAPE_UPRIGHT;
-	FontSeries[iEnvCount] = F_SERIES_MEDIUM;
-	FontFamily[iEnvCount] = TexFontNumber("Roman");
-
-	default_document_font_size = FontSize[iEnvCount];
-	default_document_font_family = FontFamily[iEnvCount];
-}
-
 
 void 
 CmdEmphasize(int code)
 /****************************************************************************
- purpose: handle \em, \emph, and \begin{em} ... \end{em}
+ purpose: LaTeX commands \em, \emph, and \begin{em} ... \end{em}
  
- 		  EMPAHSIZE_IMMEDIATE refers to the \emph{string} construction
- 		  and is handled as \textit{string} or \textup{string}
+ 		  the \emph{string} construction is handled by \textit{string} or \textup{string}
  		  
  		  {\em string} should be properly localized by brace mechanisms
  		  
  		  \begin{em} ... \end{em} will be localized by environment mechanisms
+
+	 F_EMPHASIZE_1        for  \em ... 
+	 F_EMPHASIZE_2        for  \emph{...}
+	 F_EMPHASIZE_3        for  \begin{em} ... \end{em}
  ******************************************************************************/
 {
-	int temp = code;
+	int true_code  = code & ~ON;
 	
-	if (code & ON) code &= ~(ON);  /* mask MSB */
-	diagnostics(4,"Entering CmdEmphasize, curr shape=%d, code=%d", CurrentFontShape(), code);
-	
-	if (code == F_EMPHASIZE) {
+	diagnostics(4,"CmdEmphasize (before) depth=%d, family=%d, size=%d, shape=%d, series=%d",\
+				   FontInfoDepth, RtfFontInfo[FontInfoDepth].family, \
+	               RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape,\
+	               RtfFontInfo[FontInfoDepth].series);
+	               
+	if (true_code == F_EMPHASIZE_3 && !(code & ON)) 
+	     return;
 
-		if (temp & ON) {
-		
-			fprintf(fRtf,"{");	
-			switch (CurrentFontShape()) {
-				case F_SHAPE_UPRIGHT:
-				case F_SHAPE_UPRIGHT_1:
-				case F_SHAPE_UPRIGHT_2:
-					CmdSetFontShape(F_SHAPE_ITALIC);
-					break;
-		
-				case F_SHAPE_ITALIC:
-				case F_SHAPE_SLANTED:
-				case F_SHAPE_ITALIC_1:
-				case F_SHAPE_ITALIC_2:	
-				case F_SHAPE_SLANTED_1:
-				case F_SHAPE_SLANTED_2:
-					CmdSetFontShape(F_SHAPE_UPRIGHT);
-					break;	
-			}
-		} else
-			fprintf(fRtf,"}");
+	if (true_code == F_EMPHASIZE_2) {
+
+		if (CurrentFontShape() == F_SHAPE_UPRIGHT) 
+			CmdFontShape(F_SHAPE_ITALIC_2);
+		else
+			CmdFontShape(F_SHAPE_UPRIGHT_2);
 	
 	} else {
-
-		switch (CurrentFontShape()) {
-		
-			case F_SHAPE_UPRIGHT:
-			case F_SHAPE_UPRIGHT_1:
-			case F_SHAPE_UPRIGHT_2:
-				if (code == F_EMPHASIZE_IMMEDIATE)
-					CmdSetFontShape(F_SHAPE_ITALIC_2);
-				else
-					CmdSetFontShape(F_SHAPE_ITALIC_1);
-				break;
 	
-			case F_SHAPE_ITALIC:
-			case F_SHAPE_SLANTED:
-			case F_SHAPE_ITALIC_1:
-			case F_SHAPE_ITALIC_2:	
-			case F_SHAPE_SLANTED_1:
-			case F_SHAPE_SLANTED_2:
-				if (code == F_EMPHASIZE_IMMEDIATE)
-					CmdSetFontShape(F_SHAPE_UPRIGHT_2);
-				else 
-					CmdSetFontShape(F_SHAPE_UPRIGHT_1);
-				break;	
-		}
+		if (CurrentFontShape() == F_SHAPE_UPRIGHT)
+			fprintRTF("\\i ");
+		else
+			fprintRTF("\\i0 ");
+
 	}
-	diagnostics(4,"Exiting CmdEmphasize");
+
+	diagnostics(4,"CmdEmphasize (after) depth=%d, family=%d, size=%d, shape=%d, series=%d",\
+				   FontInfoDepth, RtfFontInfo[FontInfoDepth].family, \
+	               RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape,\
+	               RtfFontInfo[FontInfoDepth].series);
+	               
 }
 
 void 
@@ -550,131 +413,267 @@ CmdUnderline(int code)
 	char *s;
 	diagnostics(4,"Entering CmdUnderline");
 	
-	fprintf(fRtf, "{\\ul ");          
+	fprintRTF("{\\ul ");          
 	s = getParam();
 	ConvertString(s);
 	free(s);
-	fprintf(fRtf, "}");
+	fprintRTF("}");
 	diagnostics(4,"Exiting CmdUnderline");
 }
 
 void 
 CmdTextNormal(int code)
 /****************************************************************************
- purpose: handle \rm, \textnormal{text}  {\normalfont ...}
+ purpose: handle \textnormal{text}  {\normalfont ...} commands
+
+     F_TEXT_NORMAL        for  \normalfont ... 
+	 F_TEXT_NORMAL_1
+	 F_TEXT_NORMAL_2      for  \textnormal{...}
+	 F_TEXT_NORMAL_3      for  \begin{normalfont} ... \end{normalfont}
+
  ******************************************************************************/
 {
-	char *s;
-	diagnostics(4,"Entering CmdTextNormal");
+	int true_code  = code & ~ON;
 	
+	diagnostics(4,"CmdTextNormal (before) depth=%d, family=%d, size=%d, shape=%d, series=%d",\
+				   FontInfoDepth, RtfFontInfo[FontInfoDepth].family, \
+	               RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape,\
+	               RtfFontInfo[FontInfoDepth].series);
+	               
+	if (true_code == F_TEXT_NORMAL_3 && !(code & ON)) 
+	     return;
+	
+	if (code==F_TEXT_NORMAL_2)
+		fprintRTF("{");
+
+	if (CurrentFontShape()  != DefaultFontShape())
+		CmdFontShape(DefaultFontShape());
+		
+	if (CurrentFontSeries() != DefaultFontSeries())
+		CmdFontSeries(DefaultFontSeries());
+		
+	if (CurrentFontSize()   != DefaultFontSize())
+		CmdFontSize(DefaultFontSize());
+		
+	if (CurrentFontFamily() != DefaultFontFamily())
+		CmdFontFamily(DefaultFontFamily());
+
 	if (code==F_TEXT_NORMAL_2) {
-		fprintf(fRtf, "{");
-		CmdSetFontFamily(F_FAMILY_ROMAN);
-		CmdSetFontSeries(F_SERIES_MEDIUM);
+		char *s;
 		s = getParam();
 		ConvertString(s);
 		free(s);
-		fprintf(fRtf, "}");
-	
-	} else {
-		CmdSetFontFamily(F_FAMILY_ROMAN);
-		CmdSetFontSeries(F_SERIES_MEDIUM);
-		CmdSetFontShape(F_SHAPE_UPRIGHT);
-	}
+		fprintRTF("}");
+	} 
 
-	diagnostics(4,"Exiting CmdTextNormal");
+	diagnostics(4,"CmdTextNormal (after) depth=%d, family=%d, size=%d, shape=%d, series=%d",\
+				   FontInfoDepth, RtfFontInfo[FontInfoDepth].family, \
+	               RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape,\
+	               RtfFontInfo[FontInfoDepth].series);
 }
 
-void    
-DupPrevFontEnvironment(void)
-{
-	int iEnvCount = CurrentEnvironmentCount();
-	
-	if (iEnvCount <= 1) {
-		FontSize[iEnvCount]   = 22;
-		FontSeries[iEnvCount] = F_SERIES_MEDIUM;
-		FontShape[iEnvCount]  = F_SHAPE_UPRIGHT;
-		FontFamily[iEnvCount] = F_FAMILY_ROMAN;
-	} else {
-		FontSize[iEnvCount]   = FontSize[iEnvCount - 1];
-		FontSeries[iEnvCount] = FontSeries[iEnvCount - 1];
-		FontShape[iEnvCount]  = FontShape[iEnvCount - 1];
-		FontFamily[iEnvCount] = FontFamily[iEnvCount - 1];
+static bool 
+strstart(char *text, char *str)
+/* returns true if text begins with str */
+{	
+	while (*str && (*str == *text)){
+		str++;
+		text++;
 	}
+	
+	if (*str) 
+		return FALSE;
+	else
+		return TRUE;
+}
+
+static bool 
+strstartnum(char *text, char *str, int *num)
+/* returns true if text begins with str and followed by an integer*/
+{
+	char * 	numptr;
+	*num = 0;
+	
+	if (!strstart(text,str))
+		return FALSE;
+		
+	text += strlen(str);
+	numptr = text;
+
+	while (isdigit(*numptr)) {
+		*num = (*num * 10) + (*numptr - '0');
+		numptr++;
+	}
+
+	if (numptr == text)
+		return FALSE;
+	else
+		return TRUE;
+}
+
+
+void
+InitializeDocumentFont(int family, int size, int shape, int series)
+/******************************************************************************
+  purpose: Initialize the basic font properties for a document
+ ******************************************************************************/
+{	
+	RtfFontInfo[0].size = size;
+	RtfFontInfo[0].family = family;
+	RtfFontInfo[0].shape = shape;
+	RtfFontInfo[0].series = series;
+
+	diagnostics(4,"PushFontSettings depth=%d, family=%d, size=%d, shape=%d, series=%d",\
+				   0, RtfFontInfo[0].family, \
+	               RtfFontInfo[0].size, RtfFontInfo[0].shape,\
+	               RtfFontInfo[0].series);
 }
 
 int
 DefaultFontFamily(void)
 {
-	return default_document_font_family;
+	diagnostics(4,"DefaultFontFamily -- series=%d", RtfFontInfo[0].family);
+	return RtfFontInfo[0].family;
 }
 
 int
 DefaultFontSize(void)
 {
-	return default_document_font_size;
+	diagnostics(4,"DefaultFontSize -- size=%d", RtfFontInfo[0].size);
+	return RtfFontInfo[0].size;
 }
 
-void 
-ResetFontSeries(void)
-/****************************************************************************
-     purpose : resets the current font series
- ****************************************************************************/
+int
+DefaultFontShape(void)
 {
-	switch (CurrentFontSeries()) {
-		case F_SERIES_MEDIUM:   break;
-		case F_SERIES_MEDIUM_1: break;
-		case F_SERIES_MEDIUM_2: break;
+	diagnostics(4,"DefaultFontShape -- shape=%d", RtfFontInfo[0].shape);
+	return RtfFontInfo[0].shape;
+}
+
+int
+DefaultFontSeries(void)
+{
+	diagnostics(4,"DefaultFontSeries -- series=%d", RtfFontInfo[0].series);
+	return RtfFontInfo[0].series;
+}
+
+int 
+CurrentFontFamily(void)
+/******************************************************************************
+  purpose: returns the current RTF family
+ ******************************************************************************/
+{
+	diagnostics(4,"CurrentFontFamily -- family=%d", RtfFontInfo[FontInfoDepth].family);
+	return RtfFontInfo[FontInfoDepth].family;
+}
+
+int 
+CurrentFontShape(void)
+/******************************************************************************
+  purpose: returns the current RTF shape
+ ******************************************************************************/
+{
+	diagnostics(4,"CurrentFontShape -- shape=%d", RtfFontInfo[FontInfoDepth].shape);
+	return RtfFontInfo[FontInfoDepth].shape;
+}
+
+int 
+CurrentFontSize(void)
+/******************************************************************************
+  purpose: returns the current RTF size
+ ******************************************************************************/
+{
+	diagnostics(4,"CurrentFontSize -- size=%d", RtfFontInfo[FontInfoDepth].size);
+
+	return RtfFontInfo[FontInfoDepth].size;
+}
+
+int 
+CurrentFontSeries(void)
+/******************************************************************************
+  purpose: returns the current RTF series
+ ******************************************************************************/
+{
+	diagnostics(4,"CurrentFontSeries -- series=%d", RtfFontInfo[FontInfoDepth].series);
+	return RtfFontInfo[FontInfoDepth].series;
+}
+
+void
+PushFontSettings(void)
+{
+	if (FontInfoDepth == MAX_FONT_INFO_DEPTH)
+		error("FontInfoDepth too large, cannot PushFontSettings()!");
 	
-		case F_SERIES_BOLD:
-		case F_SERIES_BOLD_1:
-		case F_SERIES_BOLD_2:  fprintf(fRtf, "\\b ");
+	RtfFontInfo[FontInfoDepth+1].size = RtfFontInfo[FontInfoDepth].size;
+	RtfFontInfo[FontInfoDepth+1].family = RtfFontInfo[FontInfoDepth].family;
+	RtfFontInfo[FontInfoDepth+1].shape = RtfFontInfo[FontInfoDepth].shape;
+	RtfFontInfo[FontInfoDepth+1].series = RtfFontInfo[FontInfoDepth].series;
+	FontInfoDepth++;
+
+	diagnostics(5,"PushFontSettings depth=%d, family=%d, size=%d, shape=%d, series=%d",\
+				   FontInfoDepth, RtfFontInfo[FontInfoDepth].family, \
+	               RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape,\
+	               RtfFontInfo[FontInfoDepth].series);
+}
+
+void
+PopFontSettings(void)
+{
+	if (FontInfoDepth == 0)
+		error("FontInfoDepth = 0, cannot PopFontSettings()!");
+	
+	FontInfoDepth--;
+	diagnostics(5,"PopFontSettings depth=%d, family=%d, size=%d, shape=%d, series=%d",\
+				   FontInfoDepth, RtfFontInfo[FontInfoDepth].family, \
+	               RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape,\
+	               RtfFontInfo[FontInfoDepth].series);
+}
+
+void
+MonitorFontChanges(char *text)
+{	
+	int n;
+	
+	diagnostics(5, "\nMonitorFont %10s\n", text);
+	diagnostics(5,"MonitorFont before depth=%d, family=%d, size=%d, shape=%d, series=%d",\
+				   FontInfoDepth, RtfFontInfo[FontInfoDepth].family, \
+	               RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape,\
+	               RtfFontInfo[FontInfoDepth].series);
+	
+	if (strstart(text, "\\b0"))
+		RtfFontInfo[FontInfoDepth].series = F_SERIES_MEDIUM;
+		
+	else if (strstart(text, "\\b ") || strstart(text, "\\b\\"))
+		RtfFontInfo[FontInfoDepth].series = F_SERIES_BOLD;
+		
+	else if (strstart(text, "\\i0"))
+		RtfFontInfo[FontInfoDepth].shape = F_SHAPE_UPRIGHT;
+
+	else if (strstart(text, "\\i ") || strstart(text, "\\i\\"))
+		RtfFontInfo[FontInfoDepth].shape = F_SHAPE_ITALIC;
+
+	else if (strstart(text, "\\scaps0"))
+		RtfFontInfo[FontInfoDepth].shape = F_SHAPE_UPRIGHT;
+	
+	else if (strstart(text, "\\scaps ") || strstart(text, "\\scaps\\"))
+		RtfFontInfo[FontInfoDepth].shape = F_SHAPE_CAPS;
+		
+	else if (strstartnum(text, "\\fs", &n))
+		RtfFontInfo[FontInfoDepth].size = n;
+		
+	else if (strstartnum(text, "\\f", &n))
+		RtfFontInfo[FontInfoDepth].family = n;
+
+	else if (strstart(text, "\\plain")) {
+		RtfFontInfo[FontInfoDepth].size = RtfFontInfo[0].size;
+		RtfFontInfo[FontInfoDepth].family = RtfFontInfo[0].family;
+		RtfFontInfo[FontInfoDepth].shape = RtfFontInfo[0].shape;
+		RtfFontInfo[FontInfoDepth].series = RtfFontInfo[0].series;
 	}
-}
-
-void 
-RestoreFont(void)
-/****************************************************************************
-     purpose : resets the current font characteristics
- ****************************************************************************/
-{
-	int i;
-	int iEnvCount = CurrentEnvironmentCount();
-	for (i=iEnvCount; i>=0; i--)
-		diagnostics(3," iEnv=%d Family=%d Size=%d Series=%d Shape=%d", i, FontFamily[i], FontSize[i], FontSeries[i], FontShape[i]);
-	diagnostics(3,"");
-	fprintf(fRtf, "\\f%d", CurrentFontNumber());          
-	fprintf(fRtf, "\\fs%d", CurrentFontSize());          
-	ResetFontSeries();
-	ResetFontShape();
-}
-
-void 
-ResetFontShape(void)
-/****************************************************************************
-     purpose : resets the font to italic or small caps
- ****************************************************************************/
-{
-	diagnostics(4, "Entering ResetFontShape shape=%d",CurrentFontShape());
-
-	switch (CurrentFontShape()) {
-		case F_SHAPE_UPRIGHT:   
-		case F_SHAPE_UPRIGHT_1:
-		case F_SHAPE_UPRIGHT_2: break;
 	
-		case F_SHAPE_ITALIC: 
-		case F_SHAPE_ITALIC_1: 
-		case F_SHAPE_ITALIC_2: 
-	
-		case F_SHAPE_SLANTED: 
-		case F_SHAPE_SLANTED_1:
-		case F_SHAPE_SLANTED_2: fprintf(fRtf, "\\i ");        break;
-	
-		case F_SHAPE_CAPS: 
-		case F_SHAPE_CAPS_1:  
-		case F_SHAPE_CAPS_2:    fprintf(fRtf, "\\scaps ");        break;
-	}
+	diagnostics(5,"MonitorFont after depth=%d, family=%d, size=%d, shape=%d, series=%d",\
+				   FontInfoDepth, RtfFontInfo[FontInfoDepth].family, \
+	               RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape,\
+	               RtfFontInfo[FontInfoDepth].series);
 
-	diagnostics(4, "Exiting ResetFontShape");
 }
-

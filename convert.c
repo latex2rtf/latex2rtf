@@ -1,4 +1,4 @@
-/* $Id: convert.c,v 1.4 2001/09/10 05:40:26 prahl Exp $ 
+/* $Id: convert.c,v 1.5 2001/09/16 05:11:19 prahl Exp $ 
 	purpose: routines to */
 
 #include <stdio.h>
@@ -138,13 +138,13 @@ globals: fTex, fRtf and all global flags for convert (see above)
 		case '{':
 			bBlankLine = FALSE;
 			PushBrace();
-			fprintf(fRtf, "{");
+			fprintRTF("{");
 			break;
 			
 		case '}':
 			bBlankLine = FALSE;
 			ret = RecursionLevel - PopBrace();
-			fprintf(fRtf, "}");
+			fprintRTF("}");
 			if (ret > 0) {
 				ret--;
 				RecursionLevel--;
@@ -158,15 +158,15 @@ globals: fTex, fRtf and all global flags for convert (see above)
 			if ( (cLast != ' ') && (cLast != '\n') ) { 
 				if (!mbox)
 					/* if (bNewPar == FALSE) */
-					fprintf(fRtf, " ");
+					fprintRTF(" ");
 				else
-					fprintf(fRtf, "\\~");
+					fprintRTF("\\~");
 			}
 			break;
 			
 		case '~':
 			bBlankLine = FALSE;
-			fprintf(fRtf, "\\~");
+			fprintRTF("\\~");
 			break;
 			
 		case '\r':
@@ -190,12 +190,12 @@ globals: fTex, fRtf and all global flags for convert (see above)
 					break;
 				}
 				if (cLast != ' ')
-					fprintf(fRtf, " ");	/* treat as 1 space */
+					fprintRTF(" ");	/* treat as 1 space */
 				else if (bBlankLine)
-					fprintf(fRtf, "\n\\par\\fi0\\li%d ", indent);
+					fprintRTF("\n\\par\\fi0\\li%d ", indent);
 			} else {
 				if (cLast2 != '\n') {
-					fprintf(fRtf, "\n\\par\\fi0\\li%d ", indent);
+					fprintRTF("\n\\par\\fi0\\li%d ", indent);
 				}
 			}
 			bBlankLine = TRUE;
@@ -207,9 +207,9 @@ globals: fTex, fRtf and all global flags for convert (see above)
 			{
 				char           *s = NULL;
 				if ((s = getMathParam())) {
-					fprintf(fRtf, "{\\up6 \\fs20 ");
+					fprintRTF("{\\up6 \\fs20 ");
 					ConvertString(s);
-					fprintf(fRtf, "}");
+					fprintRTF("}");
 					free(s);
 				}
 			}
@@ -221,9 +221,9 @@ globals: fTex, fRtf and all global flags for convert (see above)
 				char           *s = NULL;
 				if ((s = getMathParam())) {
 					diagnostics(5, "subscript parameter is <%s>",s);
-					fprintf(fRtf, "{\\dn6 \\fs20 ");
+					fprintRTF("{\\dn6 \\fs20 ");
 					ConvertString(s);
-					fprintf(fRtf, "}");
+					fprintRTF("}");
 					free(s);
 				}
 			}
@@ -261,16 +261,16 @@ globals: fTex, fRtf and all global flags for convert (see above)
 
 		case '&':
 			if (g_processing_tabular && g_processing_equation) {	/* in an eqnarray */
-				fprintf(fRtf, "\\tab ");
+				fprintRTF("\\tab ");
 				break;
 			}
 			if (g_processing_tabular) {	/* in tabular */
-				fprintf(fRtf, " \\cell \\pard \\intbl ");
+				fprintRTF(" \\cell \\pard \\intbl ");
 				actCol++;
-				fprintf(fRtf, "\\q%c ", colFmt[actCol]);
+				fprintRTF("\\q%c ", colFmt[actCol]);
 				break;
 			}
-			fprintf(fRtf, "&");
+			fprintRTF("&");
 			break;
 
 		case '-':
@@ -281,18 +281,18 @@ globals: fTex, fRtf and all global flags for convert (see above)
 			ungetTexChar(cNext);	/* reread last character */
 			switch (count) {
 			case 1:
-				fprintf(fRtf, "-");
+				fprintRTF("-");
 				break;
 			case 2:
-				fprintf(fRtf, "\\endash ");
+				fprintRTF("\\endash ");
 				break;
 			case 3:
-				fprintf(fRtf, "\\emdash ");
+				fprintRTF("\\emdash ");
 				break;
 			default:
 				{
 					for (i = count - 1; i >= 0; i--)
-						fprintf(fRtf, "-");
+						fprintRTF("-");
 				}
 			}
 			count = 0;
@@ -301,7 +301,7 @@ globals: fTex, fRtf and all global flags for convert (see above)
 		case '\'':
 			bBlankLine = FALSE;
 			if (g_processing_equation)
-					fprintf(fRtf, "'");
+					fprintRTF("'");
 			else {
 				count++;
 				while ((cNext = getTexChar()) && cNext == '\'')
@@ -309,9 +309,9 @@ globals: fTex, fRtf and all global flags for convert (see above)
 				ungetTexChar(cNext);
 				if (count != 2) {
 					for (i = count - 1; i >= 0; i--)
-						fprintf(fRtf, "\\rquote ");
+						fprintRTF("\\rquote ");
 				} else
-					fprintf(fRtf, "\\rdblquote ");
+					fprintRTF("\\rdblquote ");
 				count = 0;
 			}
 			break;
@@ -324,9 +324,9 @@ globals: fTex, fRtf and all global flags for convert (see above)
 			ungetTexChar(cNext);
 			if (count != 2) {
 				for (i = count - 1; i >= 0; i--)
-					fprintf(fRtf, "\\lquote ");
+					fprintRTF("\\lquote ");
 			} else
-				fprintf(fRtf, "\\ldblquote ");
+				fprintRTF("\\ldblquote ");
 			count = 0;
 			break;
 			
@@ -335,7 +335,7 @@ globals: fTex, fRtf and all global flags for convert (see above)
 			if (GermanMode)
 				TranslateGerman();
 			else
-				fprintf(fRtf, "\"");
+				fprintRTF("\"");
 			break;
 
 		case '?':
@@ -345,11 +345,11 @@ globals: fTex, fRtf and all global flags for convert (see above)
 				bBlankLine = FALSE;
 				if ((ch = getTexChar()) && ch == '`') {
 					if (cThis == '?')
-						fprintf(fRtf, "{\\'bf}");
+						fprintRTF("{\\'bf}");
 					else
-						fprintf(fRtf, "{\\'a1}");
+						fprintRTF("{\\'a1}");
 				} else {
-						fprintf(fRtf, "%c", cThis);
+						fprintRTF("%c", cThis);
 						ungetTexChar(ch);
 				}
 			}
@@ -359,7 +359,7 @@ globals: fTex, fRtf and all global flags for convert (see above)
 			bBlankLine = FALSE;
 
 			if (isupper((int)cThis) && ((cLast == '.') || (cLast == '!') || (cLast == '?') || (cLast == ':')))
-				fprintf(fRtf, " ");
+				fprintRTF(" ");
 
 			if (TexCharSet == ISO_8859_1)
 				Write_ISO_8859_1(cThis);
@@ -398,25 +398,25 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 
 	switch (cThis) {
 	case '}':
-		fprintf(fRtf, "\\}");
+		fprintRTF("\\}");
 		return TRUE;
 	case '{':
-		fprintf(fRtf, "\\{");
+		fprintRTF("\\{");
 		return TRUE;
 	case '#':
-		fprintf(fRtf, "#");
+		fprintRTF("#");
 		return TRUE;
 	case '$':
-		fprintf(fRtf, "$");
+		fprintRTF("$");
 		return TRUE;
 	case '&':
-		fprintf(fRtf, "&");
+		fprintRTF("&");
 		return TRUE;
 	case '%':
-		fprintf(fRtf, "%%");
+		fprintRTF("%%");
 		return TRUE;
 	case '_':
-		fprintf(fRtf, "_");
+		fprintRTF("_");
 		return TRUE;
 		
 	case '\\':		/* \\[1mm] or \\*[1mm] possible */
@@ -427,12 +427,12 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 		getBracketParam(option_string, 99);	
 
 		if (g_processing_eqnarray) {	/* eqnarray */
-			fprintf(fRtf, "}");	/* close italics */
+			fprintRTF("}");	/* close italics */
 			if (g_show_equation_number && !g_suppress_equation_number) {
 				incrementCounter("equation");
-				fprintf(fRtf, "\\tab (%d)", getCounter("equation"));
+				fprintRTF("\\tab (%d)", getCounter("equation"));
 			}
-			fprintf(fRtf, "\n\\par\\tab {\\i ");
+			fprintRTF("\n\\par\\tab {\\i ");
 			g_suppress_equation_number = FALSE;
 			actCol = 1;
 			return TRUE;
@@ -440,14 +440,14 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 		
 		if (g_processing_tabular) {	/* tabular or array environment */
 			if (g_processing_equation) {	/* array */
-				fprintf(fRtf, "\n\\par\\tab ");
+				fprintRTF("\n\\par\\tab ");
 				return TRUE;
 			}
 			for (; actCol < colCount; actCol++) {
-				fprintf(fRtf, "\\cell\\pard\\intbl");
+				fprintRTF("\\cell\\pard\\intbl");
 			}
 			actCol = 1;
-			fprintf(fRtf, "\\cell\\pard\\intbl\\row\n\\pard\\intbl\\q%c ", colFmt[1]);
+			fprintRTF("\\cell\\pard\\intbl\\row\n\\pard\\intbl\\q%c ", colFmt[1]);
 			return TRUE;
 		}
 
@@ -457,7 +457,7 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 		}
 
 		/* simple end of line ... */
-		fprintf(fRtf, "\\par ");
+		fprintRTF("\\par ");
 		bNewPar = TRUE;
 		tabcounter = 0;
 		if (tabbing_on && (fgetpos(fRtf, &pos_begin_kill) != 0))
@@ -465,7 +465,7 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 		return TRUE;
 
 	case ' ':
-		fprintf(fRtf, " ");	/* ordinary interword space */
+		fprintRTF(" ");	/* ordinary interword space */
 		skipSpaces();
 		return TRUE;
 
@@ -476,7 +476,7 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 			(void) PopBrace();
 			PushBrace();
 		} else
-			fprintf(fRtf, "\\-");
+			fprintRTF("\\-");
 		return TRUE;
 
 	case '+':
@@ -570,7 +570,7 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 		CmdIgnore(0);	/* \@ produces an "end of sentence" space */
 		return TRUE;
 	case '3':
-		fprintf(fRtf, "{\\'df}");	/* german symbol 'á' */
+		fprintRTF("{\\'df}");	/* german symbol 'á' */
 		return TRUE;
 	}
 
@@ -602,14 +602,14 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 		return FALSE;
 		
 	if (strcmp(cCommand,"begin")==0){
-		fprintf(fRtf, "{");
+		fprintRTF("{");
 		PushBrace();
 	}
 		
 	if (CallCommandFunc(cCommand)){	/* call handling function for command */
 		if (strcmp(cCommand,"end")==0) {
 			ret = RecursionLevel - PopBrace();
-			fprintf(fRtf, "}");
+			fprintRTF("}");
 		}
 		return TRUE;
 	}

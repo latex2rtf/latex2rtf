@@ -1,4 +1,4 @@
-/* $Id: preamble.c,v 1.7 2001/09/10 03:14:06 prahl Exp $
+/* $Id: preamble.c,v 1.8 2001/09/16 05:11:19 prahl Exp $
 
 purpose : Handles LaTeX commands that should only occur in the preamble.
           These are gathered together because the entire preamble must be
@@ -116,11 +116,11 @@ setDocumentOptions(char *optionlist)
 	while (option) {
 		diagnostics(4, "                    option   %s", option);
 		if (strcmp(option, "10pt") == 0)
-			InitializeDocumentFont(20);
+	InitializeDocumentFont(TexFontNumber("Roman"), 20, F_SHAPE_UPRIGHT, F_SERIES_MEDIUM);
 		else if (strcmp(option, "11pt") == 0)
-			InitializeDocumentFont(22);
+	InitializeDocumentFont(TexFontNumber("Roman"), 22, F_SHAPE_UPRIGHT, F_SERIES_MEDIUM);
 		else if (strcmp(option, "12pt") == 0)
-			InitializeDocumentFont(24);
+	InitializeDocumentFont(TexFontNumber("Roman"), 24, F_SHAPE_UPRIGHT, F_SERIES_MEDIUM);
 		else if (strcmp(option, "a4")  == 0 ||
 			     strcmp(option, "a4paper") == 0 || 
 			     strcmp(option, "a4wide") == 0 || 
@@ -261,24 +261,24 @@ CmdMakeTitle(int code)
 	sprintf(author_begin, "%s%2d", "\\fs", (24 * CurrentFontSize()) / 20);
 	sprintf(date_begin, "%s%2d", "\\fs", (24 * CurrentFontSize()) / 20);
 
-	fprintf(fRtf, "\n\\par\\pard\\qc {%s ", title_begin);
+	fprintRTF("\n\\par\\pard\\qc {%s ", title_begin);
 	if (g_preambleTitle != NULL && strcmp(g_preambleTitle, "") != 0)
 		ConvertString(g_preambleTitle);
-	fprintf(fRtf, "}");
+	fprintRTF("}");
 
-	fprintf(fRtf, "\n\\par\\qc {%s ", author_begin);
+	fprintRTF("\n\\par\\qc {%s ", author_begin);
 	if (g_preambleAuthor != NULL && strcmp(g_preambleAuthor, "") != 0)
 		ConvertString(g_preambleAuthor);
-	fprintf(fRtf, "}");
+	fprintRTF("}");
 	
-	fprintf(fRtf, "\n\\par\\qc {%s ", date_begin);
+	fprintRTF("\n\\par\\qc {%s ", date_begin);
 	if (g_preambleDate != NULL && strcmp(g_preambleDate, "") != 0)
 		ConvertString(g_preambleDate);
-	fprintf(fRtf, "}");
+	fprintRTF("}");
 	
-	fprintf(fRtf, "\n\\par\n\\par\\pard\\q%c ", alignment);
+	fprintRTF("\n\\par\n\\par\\pard\\q%c ", alignment);
 	if (g_preambleTitlepage)
-		fprintf(fRtf, "\\page ");
+		fprintRTF("\\page ");
 }
 
 void 
@@ -309,16 +309,16 @@ PlainPagestyle(void)
 	pagenumbering = TRUE;
 	
 	if (g_preambleTwoside) {
-		fprintf(fRtf, "\n{\\footerr");
-		fprintf(fRtf, "\\pard\\plain\\f%d\\qc",fn);
-		fprintf(fRtf, "{\\field{\\*\\fldinst PAGE}{\\fldrslt ?}}\\par}");
-		fprintf(fRtf, "\n{\\footerl");
-		fprintf(fRtf, "\\pard\\plain\\f%d\\qc",fn);
-		fprintf(fRtf, "{\\field{\\*\\fldinst PAGE}{\\fldrslt ?}}\\par}");
+		fprintRTF("\n{\\footerr");
+		fprintRTF("\\pard\\plain\\f%d\\qc",fn);
+		fprintRTF("{\\field{\\*\\fldinst PAGE}{\\fldrslt ?}}\\par}");
+		fprintRTF("\n{\\footerl");
+		fprintRTF("\\pard\\plain\\f%d\\qc",fn);
+		fprintRTF("{\\field{\\*\\fldinst PAGE}{\\fldrslt ?}}\\par}");
 	} else {
-		fprintf(fRtf, "\n{\\footer");
-		fprintf(fRtf, "\\pard\\plain\\f%d\\qc",fn);
-		fprintf(fRtf, "{\\field{\\*\\fldinst PAGE}{\\fldrslt ?}}\\par}");
+		fprintRTF("\n{\\footer");
+		fprintRTF("\\pard\\plain\\f%d\\qc",fn);
+		fprintRTF("{\\field{\\*\\fldinst PAGE}{\\fldrslt ?}}\\par}");
 	}
 }
 
@@ -345,7 +345,7 @@ Needs to be terminated for:
 	style = getParam();
 	if (strcmp(style, "empty") == 0) {
 		if (pagenumbering) {
-			fprintf(fRtf, "{\\footer}");
+			fprintRTF("{\\footer}");
 			pagenumbering = FALSE;
 		}
 	} else if (strcmp(style, "plain") == 0)
@@ -390,7 +390,7 @@ void CmdThePage(int code)
 {  
   diagnostics(4,"CmdThePage");
   
-  fprintf(fRtf, "\\chpgn ");
+  fprintRTF("\\chpgn ");
 }
 
 void
@@ -405,13 +405,13 @@ RtfHeader(int where, char *what)
 	int fn = TexFontNumber("Roman");
 	switch (where) {
 		case RIGHT_SIDE:
-		fprintf(fRtf, "\n{\\headerr \\pard\\plain\\f%d ",fn);
+		fprintRTF("\n{\\headerr \\pard\\plain\\f%d ",fn);
 		break;
 	case LEFT_SIDE:
-		fprintf(fRtf, "\n{\\headerl \\pard\\plain\\f%d ",fn);
+		fprintRTF("\n{\\headerl \\pard\\plain\\f%d ",fn);
 		break;
 	case BOTH_SIDES:
-		fprintf(fRtf, "\n{\\header \\pard\\plain\\f%d ",fn);
+		fprintRTF("\n{\\header \\pard\\plain\\f%d ",fn);
 		break;
 	default:
 		diagnostics(ERROR, "\n error -> called RtfHeader with illegal parameter\n ");
@@ -420,9 +420,9 @@ RtfHeader(int where, char *what)
 		diagnostics(4, "Entering Convert() from RtfHeader");
 		Convert();
 		diagnostics(4, "Exiting Convert() from RtfHeader");
-		fprintf(fRtf, "}");
+		fprintRTF("}");
 	} else
-		fprintf(fRtf, "%s}", what);
+		fprintRTF("%s}", what);
 }
 
 
@@ -451,32 +451,25 @@ WriteFontHeader(void)
 	int                  num = 3;
 	ConfigEntryT       **config_handle;
 
-	fprintf(fRtf, "{\\fonttbl\n");
+	fprintRTF("{\\fonttbl\n");
 
 	config_handle = CfgStartIterate(FONT_A);
 	while ((config_handle = CfgNext(FONT_A, config_handle)) != NULL) {
 		if (strstr((*config_handle)->TexCommand, "MacRoman"))
-			fprintf(fRtf
-				," {\\f%u\\fnil\\fcharset1 %s;}\n"
-				,(unsigned int) num
-				,(*config_handle)->RtfCommand
-				);
+		
+			fprintRTF(" {\\f%d\\fnil\\fcharset1 %s;}\n",num,(*config_handle)->RtfCommand);
+				
 		else if (strstr((*config_handle)->RtfCommand, "Symbol"))
-			fprintf(fRtf
-				," {\\f%u\\fnil\\fcharset2 %s;}\n"
-				,(unsigned int) num
-				,(*config_handle)->RtfCommand
-				);
+
+			fprintRTF(" {\\f%d\\fnil\\fcharset2 %s;}\n",num,(*config_handle)->RtfCommand);
+
 		else
-			fprintf(fRtf
-				," {\\f%u\\fnil\\fcharset0 %s;}\n"
-				,(unsigned int) num
-				,(*config_handle)->RtfCommand
-				);
+			fprintRTF(" {\\f%d\\fnil\\fcharset0 %s;}\n",num,(*config_handle)->RtfCommand);
+
 		++num;
 	}
 
-	fprintf(fRtf, "}\n");
+	fprintRTF("}\n");
 }
 
 static void
@@ -500,17 +493,17 @@ WriteStyleHeader(void)
  ****************************************************************************/
 {
 	int DefFont = DefaultFontFamily();
-	fprintf(fRtf, "{\\stylesheet{\\fs%d\\lang1031\\snext0 Normal;}\n", CurrentFontSize());
-	fprintf(fRtf, "{%s\\f%d%s \\sbasedon0\\snext0 heading 1;}\n", HEADER11, DefFont, HEADER12);
-	fprintf(fRtf, "{%s\\f%d%s \\sbasedon0\\snext0 heading 2;}\n", HEADER21, DefFont, HEADER22);
-	fprintf(fRtf, "{%s\\f%d%s \\sbasedon0\\snext0 heading 3;}\n", HEADER31, DefFont, HEADER32);
-	fprintf(fRtf, "{%s\\f%d%s \\sbasedon0\\snext0 heading 4;}\n", HEADER41, DefFont, HEADER42);
+	fprintRTF("{\\stylesheet{\\fs%d\\lang1031\\snext0 Normal;}\n", CurrentFontSize());
+	fprintRTF("{%s\\f%d%s \\sbasedon0\\snext0 heading 1;}\n", HEADER11, DefFont, HEADER12);
+	fprintRTF("{%s\\f%d%s \\sbasedon0\\snext0 heading 2;}\n", HEADER21, DefFont, HEADER22);
+	fprintRTF("{%s\\f%d%s \\sbasedon0\\snext0 heading 3;}\n", HEADER31, DefFont, HEADER32);
+	fprintRTF("{%s\\f%d%s \\sbasedon0\\snext0 heading 4;}\n", HEADER41, DefFont, HEADER42);
 
-	fprintf(fRtf, "%s\n", HEADER03);
-	fprintf(fRtf, "%s\n", HEADER13);
-	fprintf(fRtf, "%s\n", HEADER23);
-	fprintf(fRtf, "%s\n", HEADER33);
-	fprintf(fRtf, "%s\n", HEADER43);
+	fprintRTF("%s\n", HEADER03);
+	fprintRTF("%s\n", HEADER13);
+	fprintRTF("%s\n", HEADER23);
+	fprintRTF("%s\n", HEADER33);
+	fprintRTF("%s\n", HEADER43);
 }
 
 static void
@@ -536,26 +529,26 @@ WritePageSize(void)
 {
 	int n;
 
-	fprintf(fRtf,"\\paperw%d", getLength("pagewidth"));
-	fprintf(fRtf,"\\paperh%d", getLength("pageheight"));
+	fprintRTF("\\paperw%d", getLength("pagewidth"));
+	fprintRTF("\\paperh%d", getLength("pageheight"));
 	if (g_preambleTwoside)
-		fprintf(fRtf,"\\facingp");
+		fprintRTF("\\facingp");
 	if (g_preambleLandscape)
-		fprintf(fRtf,"\\landscape");
+		fprintRTF("\\landscape");
 	if (g_preambleTwocolumn)
-		fprintf(fRtf, "\\cols2\\colsx709");	 /* two columns -- space between columns 709 */
+		fprintRTF("\\cols2\\colsx709");	 /* two columns -- space between columns 709 */
 
 	n = getLength("hoffset") + 72*20 + getLength("marginparsep");
-	fprintf(fRtf, "\\margl%d", n);
+	fprintRTF("\\margl%d", n);
 	n = getLength("pagewidth") - (n + getLength("textwidth"));
-	fprintf(fRtf, "\\margr%d", n);
+	fprintRTF("\\margr%d", n);
 	n = getLength("voffset") + 72*20 + getLength("topmargin") + getLength("headheight")+getLength("headsep");
-	fprintf(fRtf, "\\margt%d", n);
+	fprintRTF("\\margt%d", n);
 	n = getLength("pageheight") - (n + getLength("textheight") + getLength("footskip"));
-	fprintf(fRtf, "\\margb%d", n);
+	fprintRTF("\\margb%d", n);
 	
-	fprintf(fRtf,"\\pgnstart%d", getCounter("page"));
-	fprintf(fRtf,"\\widowctrl\n");
+	fprintRTF("\\pgnstart%d", getCounter("page"));
+	fprintRTF("\\widowctrl\n");
 }
 
 static void
@@ -569,42 +562,42 @@ WriteHeadFoot(void)
   \footerf        The footer is on the first page only.
 ****************************************************************************/
 {
-/*	fprintf(fRtf, "\\ftnbj\\sectd\\linex0\\endnhere\\qj\n"); */
+/*	fprintRTF("\\ftnbj\\sectd\\linex0\\endnhere\\qj\n"); */
 
   	if (g_preambleLFOOT || g_preambleCFOOT || g_preambleRFOOT) {
-  		fprintf(fRtf,"{\\footer\\pard\\plain\\tqc\\tx4320\\tqr\\tx8640");
+  		fprintRTF("{\\footer\\pard\\plain\\tqc\\tx4320\\tqr\\tx8640");
   		
 		if (g_preambleLFOOT)
 			ConvertString(g_preambleLFOOT);
 		
-		fprintf(fRtf,"\\tab ");
+		fprintRTF("\\tab ");
 		if (g_preambleCFOOT)
 			ConvertString(g_preambleCFOOT);
 		
 		if (g_preambleRFOOT) {
-			fprintf(fRtf,"\\tab ");
+			fprintRTF("\\tab ");
 			ConvertString(g_preambleRFOOT);
 		}
   		
-        fprintf(fRtf,"\\par}\n");
+        fprintRTF("\\par}\n");
     }
 
   	if (g_preambleLHEAD || g_preambleCHEAD || g_preambleRHEAD) {
-  		fprintf(fRtf,"{\\header\\pard\\plain\\tqc\\tx4320\\tqr\\tx8640");
+  		fprintRTF("{\\header\\pard\\plain\\tqc\\tx4320\\tqr\\tx8640");
   		
 		if (g_preambleLHEAD)
 			ConvertString(g_preambleLHEAD);
 		
-		fprintf(fRtf,"\\tab ");
+		fprintRTF("\\tab ");
 		if (g_preambleCHEAD)
 			ConvertString(g_preambleCHEAD);
 		
 		if (g_preambleRHEAD) {
-			fprintf(fRtf,"\\tab ");
+			fprintRTF("\\tab ");
 			ConvertString(g_preambleRHEAD);
 		}
   		
-        fprintf(fRtf,"\\par}\n");
+        fprintRTF("\\par}\n");
     }
 }
 
@@ -662,17 +655,18 @@ purpose: writes header info for the RTF file
 \rtf1 <charset> \deff? <fonttbl> <filetbl>? <colortbl>? <stylesheet>? <listtables>? <revtbl>?
  ****************************************************************************/
 {
-	int fn = TexFontNumber("Roman");
+	int family = DefaultFontFamily();
+	int size   = DefaultFontSize();
 
 	diagnostics(4, "Writing header for RTF file");
 
-	fprintf(fRtf, "{\\rtf1\\ansi\\fs%d\\deff%d\\deflang1024\n", CurrentFontSize(),fn);
+	fprintRTF("{\\rtf1\\ansi\\fs%d\\deff%d\\deflang1024\n", size, family);
 	WriteFontHeader();
 	WriteStyleHeader();
 	WriteInfo();
 	WritePageSize();
 	WriteHeadFoot();
-/*	fprintf(fRtf, "\\f%d\\ansi ", TexFontNumber("Roman"));*/
+/*	fprintRTF("\\f%d\\ansi ", TexFontNumber("Roman"));*/
 }
 
 

@@ -1,4 +1,4 @@
-/* $Id: ignore.c,v 1.14 2001/09/06 04:43:04 prahl Exp $
+/* $Id: ignore.c,v 1.15 2001/09/16 05:11:19 prahl Exp $
 
   purpose : ignores variable-name-commands which can't be converted from LaTeX2Rtf
 	    (variable-command-formats must be added by the user in the file
@@ -137,19 +137,19 @@ parameter: searchstring : includes the string to search for
 			}	/* for */
 
 			if (!found) {
-				fprintf(fRtf, "\\\\");
+				fprintRTF("\\\\");
 				for (j = 0; j < i; j++)
 					switch (searchstring[j]) {
 					case '\n':
-						fprintf(fRtf, "\\par \n");
+						fprintRTF("\\par \n");
 						break;
 					case '\\':
 					case '{':
 					case '}':
-						fprintf(fRtf, "\\%c",searchstring[j]);
+						fprintRTF("\\%c",searchstring[j]);
 						break;
 					default:
-						fprintf(fRtf, "%c", searchstring[j]);
+						fprintRTF("%c", searchstring[j]);
 						break;
 					}
 			}
@@ -158,15 +158,15 @@ parameter: searchstring : includes the string to search for
 		if ((thechar != '%') && !found)
 			switch (thechar) {
 			case '\n':
-				fprintf(fRtf, "\\par \n");
+				fprintRTF("\\par \n");
 				break;
 			case '\\':
 			case '{':
 			case '}':
-				fprintf(fRtf, "\\%c", thechar);
+				fprintRTF("\\%c", thechar);
 				break;
 			default:
-				fprintf(fRtf, "%c", thechar);
+				fprintRTF("%c", thechar);
 				break;
 			}
 	}

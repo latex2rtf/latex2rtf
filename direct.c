@@ -1,4 +1,4 @@
-/* $Id: direct.c,v 1.14 2001/08/22 05:50:23 prahl Exp $ 
+/* $Id: direct.c,v 1.15 2001/09/16 05:11:19 prahl Exp $ 
 
   purpose : Convert simple LaTeX commands using direct.cfg
 */
@@ -30,7 +30,7 @@ globals:   progname
 	size_t          fnumber;
 
 	if (**buffpoint == '*') {
-		fprintf(fRtf, "*");
+		fprintRTF("*");
 		return TRUE;
 	}
 	i = 0;
@@ -50,7 +50,7 @@ globals:   progname
 		fprintf(stderr, "\nprogram aborted\n");
 		exit(EXIT_FAILURE);
 	} else {
-		fprintf(fRtf, "%u", (unsigned int) fnumber);
+		fprintRTF("%u", (unsigned int) fnumber);
 		return TRUE;
 	}
 }
@@ -97,7 +97,7 @@ TryDirectConvert(char *command, FILE * fRtf)
 			 * progname); return FALSE; }
 			 */
 		} else {
-			fprintf(fRtf, "%c", *buffpoint);
+			fprintRTF("%c", *buffpoint);
 		}
 
 		++buffpoint;

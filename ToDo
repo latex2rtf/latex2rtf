@@ -1,14 +1,15 @@
 Bugs:
+	Fix wrong page sizes in some headers
+	Fix german and include german.tex in testing 
 	Fix the breve and \u in accentchars.tex for non-Macintoshes
 	Fix \right. and \left.
-	Screwy extra space that shows up unexpectedly
+	Screwy extra space that goes missing after environments
 	Adapt margins for letterpaper and a4paper on font size
 	Suppress empty column that sometimes appears in tabular environments
 	Suppress empty row when a final // is present
 	Few fraction bugs present in misc3.tex 
 	Typeset digits in math mode using roman font
 	Wierdness with strdup under SunOS with -Wall -ansi -pedantic
-	move Convert() and ConvertString() to convert.c
 	
 Features:
 	Add full support for \usepackage[encoding]{inputenc}

@@ -3,6 +3,9 @@
 
 \section{Font commands}
 
+First the trickiest bit.  \textit{This is in italics \emph{this is emphasized} but
+this is italics and \emph{this final bit is emphasized} but this is not.}
+
 This is roman, testing \verb#itshape# {\itshape italics} more roman text.
 This is roman, testing \verb#\begin{itshape}# \begin{itshape} italics\end{itshape} more roman text.
 This is roman, testing \verb#\textit# \textit{italics} more roman text.
@@ -50,18 +53,17 @@ this is some text {\em with some emphasized text} in the middle.
 \section{Miscellaneous}
 what about \it some italics \bf some bold \rm followed by roman
 
-{\it here is italics \tt followed by typewriter}
+{\it here is italics \tt followed by plain typewriter}
 
-{\it here is italics \sf followed by sans serif}
+{\it here is italics \sf followed by plain sans serif}
 
-\textbf{here is bold \sf followed by sans serif}
+\textbf{here is bold roman \sf followed by plain sans serif}
 
-{\bf here is bold \textsf{followed by sans serif}}
+{\bf here is bold roman \textsf{followed by bold sans serif}}
 
-\textbf{\textit{bold italics \sf followed by sans serif}}
+\textbf{\textit{bold italics \sf followed by plain sans serif}}
 
-\textbf{\textit{bold italics \textsf{followed by sans serif}}}
-
+\textbf{\textit{bold italics \textsf{followed by bold italics sans serif}}}
 
 \section{Normal roman font}
 

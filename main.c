@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.19 2001/09/10 03:14:06 prahl Exp $ */
+/* $Id: main.c,v 1.20 2001/09/16 05:11:19 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -223,7 +223,7 @@ globals: initializes in- and outputfile fTex, fRtf,
 
 	InitializeStack();
 	InitializeLatexLengths();
-	InitializeDocumentFont(20);
+	InitializeDocumentFont(TexFontNumber("Roman"), 20, F_SHAPE_UPRIGHT, F_SERIES_MEDIUM);
 
 	PushEnvironment(PREAMBLE);
     ConvertLatexPreamble();
@@ -533,6 +533,57 @@ globals: progname;
 	diagnostics(4,"Closed RTF file");
 }
 
+void
+putRtfChar(char cThis)
+/****************************************************************************
+purpose: output filter to escape characters written to an RTF file
+         all output to the RTF file passes through this routine or the one below
+ ****************************************************************************/
+{
+	if (cThis == '\\')
+		fprintf(fRtf, "\\\\");
+	else if (cThis == '{')
+		fprintf(fRtf, "\\{");
+	else if (cThis == '}')
+		fprintf(fRtf, "\\}");
+	else if (cThis == '\n') 
+		fprintf(fRtf, "\n\\par ");
+	else
+		fputc(cThis, fRtf);
+}
+
+void
+fprintRTF(char *format, ...)
+/****************************************************************************
+purpose: output filter to track of brace depth and font settings
+         all output to the RTF file passes through this routine or the one above
+ ****************************************************************************/
+{
+	char buffer[1024];
+	char *text;
+	va_list       apf;
+
+	va_start(apf, format);
+	vsprintf(buffer, format, apf);
+	va_end(apf);
+	text = buffer;
+	
+	while ( *text ) {
+	
+		fputc(*text, fRtf);
+		
+		if (*text == '{')
+			PushFontSettings();
+		
+		if (*text == '}')
+			PopFontSettings();
+			
+		if (*text == '\\')
+			MonitorFontChanges(text);
+		
+		text++;
+	}			
+}
 
 /****************************************************************************
 purpose: get number of actual line (do not use global linenumber, because

@@ -27,7 +27,7 @@ CmdFormula(int code)
 {
 
 	if (code & ON) {	/* this is only true if starting \begin{math} */
-		fprintf(fRtf, "{\\i ");
+		fprintRTF("{\\i ");
 		g_processing_equation = TRUE;
 		diagnostics(4, "Switching g_processing_equation on with \\begin{math}");
 		return;
@@ -41,43 +41,43 @@ CmdFormula(int code)
 
 	case FORM_DOLLAR:
 		if (g_processing_equation) {
-			fprintf(fRtf, "}");
+			fprintRTF("}");
 			g_processing_equation = FALSE;
 			diagnostics(4, "Switching g_processing_equation off with $");
 		} else {
-			fprintf(fRtf, "{\\i ");
+			fprintRTF("{\\i ");
 			g_processing_equation = TRUE;
 			diagnostics(4, "Switching g_processing_equation on with $");
 		}
 		break;
 
 	case FORM_RND_OPEN:	/* \( */
-		fprintf(fRtf, "{\\i ");
+		fprintRTF("{\\i ");
 		g_processing_equation = TRUE;
 		diagnostics(4, "Switching g_processing_equation on with \\(");
 		break;
 
 	case FORM_RND_CLOSE:	/* \) */
-		fprintf(fRtf, "}");
+		fprintRTF("}");
 		g_processing_equation = FALSE;
 		diagnostics(4, "Switching g_processing_equation off with \\)");
 		break;
 
 	case FORM_ECK_OPEN:	/* \[ */
-		fprintf(fRtf, "\n\\par{\\i  ");
+		fprintRTF("\n\\par{\\i  ");
 		g_processing_equation = TRUE;
 		diagnostics(4, "Switching g_processing_equation on with \\[");
 		break;
 
 	case FORM_ECK_CLOSE:	/* \] */
-		fprintf(fRtf, "}\n\\par ");
+		fprintRTF("}\n\\par ");
 		g_processing_equation = FALSE;
 		bNewPar = TRUE;
 		diagnostics(4, "Switching g_processing_equation off with \\]");
 		break;
 
 	case FORM_MATH:	/* will only be encountered for \end{math} */
-		fprintf(fRtf, "}");
+		fprintRTF("}");
 		g_processing_equation = FALSE;
 		diagnostics(4, "Switching g_processing_equation off with \\end{math}");
 		break;
@@ -100,18 +100,18 @@ CmdFormula2(int code)
 		g_processing_equation = TRUE;
 		g_suppress_equation_number = FALSE;
 		
-		fprintf(fRtf, "\n\\par\n\\par\\pard");
+		fprintRTF("\n\\par\n\\par\\pard");
 		switch (code) {
 		case FORM_DOLLAR:	/* $$ or displaymath */
 		case EQUATION_1:	/* equation* */
 			g_show_equation_number = FALSE;
-			fprintf(fRtf, "\\tqc\\tx4320\n");
+			fprintRTF("\\tqc\\tx4320\n");
 			diagnostics(4,"Entering CmdFormula2 -- displaymath");
 			break;
 
 		case EQUATION:	/* equation */
 			g_show_equation_number = TRUE;
-			fprintf(fRtf, "\\tqc\\tx4320\\tqr\\tx8640\n");
+			fprintRTF("\\tqc\\tx4320\\tqr\\tx8640\n");
 			diagnostics(4,"Entering CmdFormula2 -- equation");
 			break;
 
@@ -121,7 +121,7 @@ CmdFormula2(int code)
 			g_processing_tabular = TRUE;
 			actCol = 1;
 			diagnostics(4,"Entering CmdFormula2 -- eqnarray* ");
-			fprintf(fRtf, "\\tqr\\tx2880\\tqc\\tx3240\\tql\\tx3600\n");
+			fprintRTF("\\tqr\\tx2880\\tqc\\tx3240\\tql\\tx3600\n");
 			break;
 
 		case EQNARRAY:	/* eqnarray */
@@ -130,26 +130,26 @@ CmdFormula2(int code)
 			g_processing_tabular = TRUE;
 			actCol = 1;
 		    diagnostics(4,"Entering CmdFormula2 --- eqnarray ");
-			fprintf(fRtf, "\\tqr\\tx2880\\tqc\\tx3240\\tql\\tx3600\\tqr\\tx8640\n");
+			fprintRTF("\\tqr\\tx2880\\tqc\\tx3240\\tql\\tx3600\\tqr\\tx8640\n");
 			break;
 
 		default:;
 		}
-		fprintf(fRtf, "\\tab {\\i ");
+		fprintRTF("\\tab {\\i ");
 				
 		
 	} else {		/* off switch */
 		diagnostics(4,"Exiting CmdFormula2");
 		code &= ~(OFF);	/* mask MSB */
 		g_processing_equation = FALSE;
-		fprintf(fRtf, "}");
+		fprintRTF("}");
 		
 /* close the equation environment properly */
 		if (g_show_equation_number && !g_suppress_equation_number) {
 			incrementCounter("equation");
-			fprintf(fRtf, "\\tab (%d)", getCounter("equation"));
+			fprintRTF("\\tab (%d)", getCounter("equation"));
 		}
-		fprintf(fRtf, "\n\\par\n\\par");
+		fprintRTF("\n\\par\n\\par");
 
 		if (code == EQNARRAY || code == EQNARRAY_1) {
 			g_processing_tabular = FALSE;
@@ -169,12 +169,12 @@ CmdRoot(int code)
 
 	getBracketParam(power, 49);
 	root = getParam();
-	fprintf(fRtf, "{\\field{\\*\\fldinst  EQ \\\\R(");
+	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\R(");
 	if (strlen(power)>0)
 		ConvertString(power);
-	fprintf(fRtf,"%c", FORMULASEP);
+	fprintRTF("%c", FORMULASEP);
 	ConvertString(root);
-	fprintf(fRtf, ")}{\\fldrslt }}");
+	fprintRTF(")}{\\fldrslt }}");
 	free(root);
 }
 
@@ -189,11 +189,11 @@ CmdFraction(int code)
 	numerator = getParam();
 	denominator = getParam();
 
-	fprintf(fRtf, "{\\field{\\*\\fldinst  EQ \\\\F(");
+	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\F(");
 	ConvertString(numerator);
-	fprintf(fRtf, "%c", FORMULASEP);
+	fprintRTF("%c", FORMULASEP);
 	ConvertString(denominator);
-	fprintf(fRtf, ")}{\\fldrslt }}");
+	fprintRTF(")}{\\fldrslt }}");
 
 	free(numerator);
 	free(denominator);
@@ -230,21 +230,21 @@ parameter: type of operand
 			ungetTexChar(cThis);
 	}
 
-	fprintf(fRtf, "{\\field{\\*\\fldinst  EQ \\\\I");
+	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\I");
 	  switch(code)
 	  {
-		case 0 : fprintf(fRtf,"\\\\in("); break;	
-		case 1 : fprintf(fRtf,"\\\\su("); break;
-		case 2 : fprintf(fRtf,"\\\\pr("); break;
+		case 0 : fprintRTF("\\\\in("); break;	
+		case 1 : fprintRTF("\\\\su("); break;
+		case 2 : fprintRTF("\\\\pr("); break;
 		default: error("Illegal code to CmdIntegral");
 	  }
 
 	if (lower_limit)
 		ConvertString(lower_limit);
-	fprintf(fRtf, "%c", FORMULASEP);
+	fprintRTF("%c", FORMULASEP);
 	if (upper_limit)
 		ConvertString(upper_limit);
-	fprintf(fRtf, "%c)}{\\fldrslt }}", FORMULASEP);
+	fprintRTF("%c)}{\\fldrslt }}", FORMULASEP);
 
 	if (lower_limit)
 		free(lower_limit);

@@ -1,4 +1,4 @@
-/* $Id: tables.c,v 1.1 2001/09/06 04:43:04 prahl Exp $
+/* $Id: tables.c,v 1.2 2001/09/16 05:11:19 prahl Exp $
 
    Translation of tabbing and tabular environments
 */
@@ -43,7 +43,7 @@ parameter: code : on/off at begin/end-environment
 
 			PushEnvironment(code);
 			PushBrace();
-			fprintf(fRtf, "\\par\\line ");
+			fprintRTF("\\par\\line ");
 			if (fgetpos(fRtf, &pos_begin_kill) != 0)
 				diagnostics(ERROR, "Failed fgetpos; funct2.c (Tabbing): errno %d", errno);
 			/* Test ConvertTabbing(); */
@@ -56,7 +56,7 @@ parameter: code : on/off at begin/end-environment
 		(void) PopBrace();
 		PopEnvironment();
 
-		fprintf(fRtf, "\\par\\pard\\line\\q%c ", alignment);
+		fprintRTF("\\par\\pard\\line\\q%c ", alignment);
 		diagnostics(4, "Exiting CmdTabbing");
 	}
 }
@@ -72,7 +72,7 @@ globals:  tabcounter: specifies the tabstop-position
 	tabstop = (tabcounter / 6) * 567;
 	tabstoparray[number_of_tabstops] = tabstop;
 	number_of_tabstops++;
-	fprintf(fRtf, "\\tx%d ", tabstop);	/* Tab at tabstop/567
+	fprintRTF("\\tx%d ", tabstop);	/* Tab at tabstop/567
 						 * centimeters */
 }
 
@@ -82,7 +82,7 @@ CmdTabjump()
  purpose: jumps to an tabstop
  ******************************************************************************/
 {
-	fprintf(fRtf, "\\tab ");
+	fprintRTF("\\tab ");
 }
 
 void 
@@ -98,7 +98,7 @@ CmdTabkill( /* @unused@ */ int code)
 		diagnostics(ERROR, "Failed fsetpos; funct2.c (CmdTabkill): errno %d", errno);
 
 	for (i = 0; i < number_of_tabstops; i++) {
-		fprintf(fRtf, "\\tx%d ", tabstoparray[i]);	/* Tab at tabstop/567 centimeters */
+		fprintRTF("\\tx%d ", tabstoparray[i]);	/* Tab at tabstop/567 centimeters */
 	}
 
 	number_of_tabstops = 0;
@@ -349,15 +349,15 @@ parameter: type of array-environment
 		actCol = 1;
 
 		if (code == TABULAR_2) {
-			fprintf(fRtf, "\n\\par\\pard");
-			fprintf(fRtf, "\\tqc\\tx1000\\tx2000\\tx3000\\tx4000\\tx5000\\tx6000\\tx7000\n\\tab");
+			fprintRTF("\n\\par\\pard");
+			fprintRTF("\\tqc\\tx1000\\tx2000\\tx3000\\tx4000\\tx5000\\tx6000\\tx7000\n\\tab");
 			return;
 		}
-		fprintf(fRtf, "\\par\\trowd\\trqc\\trrh0");
+		fprintRTF("\\par\\trowd\\trqc\\trrh0");
 		for (i = 1; i <= colCount; i++) {
-			fprintf(fRtf, "\\cellx%d ", (7236 / colCount) * i);	/* 7236 twips in A4 page */
+			fprintRTF("\\cellx%d ", (7236 / colCount) * i);	/* 7236 twips in A4 page */
 		}
-		fprintf(fRtf, "\n\\pard\\intbl\\q%c ", colFmt[1]);
+		fprintRTF("\n\\pard\\intbl\\q%c ", colFmt[1]);
 	} else {		/* off switch */
 		diagnostics(4, "Exiting CmdTabular");
 		code &= ~(OFF);	/* mask MSB */
@@ -371,10 +371,10 @@ parameter: type of array-environment
 			return;
 
 		for (; actCol < colCount; actCol++) {
-			fprintf(fRtf, "\\cell\\pard\\intbl ");
+			fprintRTF("\\cell\\pard\\intbl ");
 		}
-		fprintf(fRtf, "\\cell\\pard\\intbl\\row\n");
-		fprintf(fRtf, "\n\\pard\\par\\pard\\q%c\n", alignment);
+		fprintRTF("\\cell\\pard\\intbl\\row\n");
+		fprintRTF("\n\\pard\\par\\pard\\q%c\n", alignment);
 
 	}
 }

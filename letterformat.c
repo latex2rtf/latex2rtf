@@ -74,17 +74,17 @@ CmdOpening(int code)
 /* put return address and date at the top right */
 	g_letterOpened = TRUE;
 	alignment = RIGHT;
-	fprintf(fRtf, "\n\\par\\pard\\q%c ", alignment);
+	fprintRTF("\n\\par\\pard\\q%c ", alignment);
 	diagnostics(5, "Entering ConvertString() from CmdAddress");
 	ConvertString(g_letterReturnAddress);
 	diagnostics(5, "Exiting ConvertString() from CmdAddress");
 
 /* put the date on the right */
-	fprintf(fRtf, "\\par\\chdate ");
+	fprintRTF("\\par\\chdate ");
 	
 /* put addressee on the left */
 	alignment = LEFT;
-	fprintf(fRtf, "\n\\par\\pard\\q%c ", alignment);
+	fprintRTF("\n\\par\\pard\\q%c ", alignment);
 	diagnostics(4, "Entering Convert() from CmdOpening");
 	ConvertString(g_letterToAddress);	
 	diagnostics(4, "Exiting Convert() from CmdOpening");
@@ -95,7 +95,7 @@ CmdOpening(int code)
 	free(s);
 	
 	alignment = oldalignment;
-	fprintf(fRtf, "\n\\par\\pard\\q%c ", alignment);
+	fprintRTF("\n\\par\\pard\\q%c ", alignment);
 }
 
 void 
@@ -113,7 +113,7 @@ CmdClosing( /* @unused@ */ int code)
 
 /* print closing on the right */
 	alignment = RIGHT;
-	fprintf(fRtf, "\n\\par\\pard\\q%c ", alignment);	
+	fprintRTF("\n\\par\\pard\\q%c ", alignment);	
 	diagnostics(5, "Entering ConvertString() from CmdClosing");
 	s = getParam();
 	ConvertString(s);
@@ -121,7 +121,7 @@ CmdClosing( /* @unused@ */ int code)
 	diagnostics(5, "Exiting ConvertString() from CmdClosing");
 
 /* print signature a couple of lines down */
-	fprintf(fRtf, "\n\\par\\par\\par ");
+	fprintRTF("\n\\par\\par\\par ");
 
 	diagnostics(5, "Entering ConvertString() from CmdSignature");
 	ConvertString(g_letterSignature);
@@ -129,7 +129,7 @@ CmdClosing( /* @unused@ */ int code)
 
 	g_letterOpened = FALSE;
 	alignment = oldalignment;
-	fprintf(fRtf, "\n\\par\\pard\\q%c ", alignment);
+	fprintRTF("\n\\par\\pard\\q%c ", alignment);
 }
 
 void 

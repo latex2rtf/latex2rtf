@@ -1,4 +1,4 @@
-/* $Id: l2r_fonts.h,v 1.11 2001/09/10 03:14:06 prahl Exp $ */
+/* $Id: l2r_fonts.h,v 1.12 2001/09/16 05:11:19 prahl Exp $ */
 
 #define F_FAMILY_ROMAN          1
 #define F_FAMILY_ROMAN_1        2
@@ -48,35 +48,38 @@
 #define F_TEXT_NORMAL_2    3
 #define F_TEXT_NORMAL_3    4
 
-#define F_EMPHASIZE_NORMAL      1
-#define F_EMPHASIZE_IMMEDIATE   2
-#define F_EMPHASIZE             3
+#define F_EMPHASIZE_1      2
+#define F_EMPHASIZE_2      3
+#define F_EMPHASIZE_3      4
 
-void	InitializeDocumentFont(int size);
+#define F_SMALLER           -1
+#define F_LARGER            -2
 
-void	CmdSetFontFamily(int code);
+void	InitializeDocumentFont(int family, int size, int shape, int series);
+
+void	CmdFontFamily(int code);
 int		CurrentFontFamily(void);
-int 	CurrentFontNumber(void);
+int		DefaultFontFamily(void);
 
-void	CmdSetFontShape(int code);
+void	CmdFontShape(int code);
 int		CurrentFontShape(void);
+int		DefaultFontShape(void);
 
-void	CmdSetFontSeries(int code);
+void	CmdFontSeries(int code);
 int 	CurrentFontSeries(void);
+int 	DefaultFontSeries(void);
 
-void	CmdSetFontSize(int code);
+void	CmdFontSize(int code);
 int		CurrentFontSize(void);
+int		DefaultFontSize(void);
 
 void	CmdEmphasize(int code);
 void	CmdUnderline(int code);
 void	CmdTextNormal(int code);
 
-void    DupPrevFontEnvironment(void);
-
 int 	TexFontNumber(char *Fname);
 int 	RtfFontNumber(char *Fname);
 
-int		DefaultFontFamily(void);
-int		DefaultFontSize(void);
-
-void 	RestoreFont(void);
+void	PushFontSettings(void);
+void	PopFontSettings(void);
+void  	MonitorFontChanges(char *text);

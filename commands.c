@@ -1,4 +1,4 @@
-/*  $Id: commands.c,v 1.19 2001/09/10 03:14:06 prahl Exp $
+/*  $Id: commands.c,v 1.20 2001/09/16 05:11:19 prahl Exp $
 
     Defines subroutines to translate LaTeX commands to RTF
 */
@@ -36,69 +36,69 @@ static CommandArray commands[] = {
 	{"today", CmdToday, 0},
 	{"footnote", CmdFootNote, FOOTN},
 
-	{"rm",       CmdSetFontFamily, F_FAMILY_ROMAN},
-	{"rmfamily", CmdSetFontFamily, F_FAMILY_ROMAN_1},
-	{"mathrm",   CmdSetFontFamily, F_FAMILY_ROMAN_2},
-	{"textrm",   CmdSetFontFamily, F_FAMILY_ROMAN_2},
+	{"rmfamily", CmdFontFamily, F_FAMILY_ROMAN  },
+	{"rm",       CmdFontFamily, F_FAMILY_ROMAN_1},
+	{"mathrm",   CmdFontFamily, F_FAMILY_ROMAN_2},
+	{"textrm",   CmdFontFamily, F_FAMILY_ROMAN_2},
 
-	{"sf",       CmdSetFontFamily, F_FAMILY_SANSSERIF},
-	{"sffamily", CmdSetFontFamily, F_FAMILY_SANSSERIF_1},
-	{"mathsf",   CmdSetFontFamily, F_FAMILY_SANSSERIF_2},
-	{"textsf",   CmdSetFontFamily, F_FAMILY_SANSSERIF_2},
+	{"sffamily", CmdFontFamily, F_FAMILY_SANSSERIF  },
+	{"sf",       CmdFontFamily, F_FAMILY_SANSSERIF_1},
+	{"mathsf",   CmdFontFamily, F_FAMILY_SANSSERIF_2},
+	{"textsf",   CmdFontFamily, F_FAMILY_SANSSERIF_2},
 
-	{"tt",       CmdSetFontFamily, F_FAMILY_TYPEWRITER},
-	{"ttfamily", CmdSetFontFamily, F_FAMILY_TYPEWRITER},
-	{"mathtt",   CmdSetFontFamily, F_FAMILY_TYPEWRITER_2},
-	{"texttt",   CmdSetFontFamily, F_FAMILY_TYPEWRITER_2},
+	{"ttfamily", CmdFontFamily, F_FAMILY_TYPEWRITER},
+	{"tt",       CmdFontFamily, F_FAMILY_TYPEWRITER_1},
+	{"mathtt",   CmdFontFamily, F_FAMILY_TYPEWRITER_2},
+	{"texttt",   CmdFontFamily, F_FAMILY_TYPEWRITER_2},
 
-	{"cal",      CmdSetFontFamily, F_FAMILY_CALLIGRAPHIC_1},
-	{"mathcal",  CmdSetFontFamily, F_FAMILY_CALLIGRAPHIC_2},
+	{"cal",      CmdFontFamily, F_FAMILY_CALLIGRAPHIC_1},
+	{"mathcal",  CmdFontFamily, F_FAMILY_CALLIGRAPHIC_2},
 
-	{"bf",       CmdSetFontSeries, F_SERIES_BOLD},
-	{"bfseries", CmdSetFontSeries, F_SERIES_BOLD_1},
-	{"textbf",   CmdSetFontSeries, F_SERIES_BOLD_2},
-	{"mathbf",   CmdSetFontSeries, F_SERIES_BOLD_2},
+	{"bfseries", CmdFontSeries, F_SERIES_BOLD  },
+	{"bf",       CmdFontSeries, F_SERIES_BOLD_1},
+	{"textbf",   CmdFontSeries, F_SERIES_BOLD_2},
+	{"mathbf",   CmdFontSeries, F_SERIES_BOLD_2},
 
-	{"mdseries", CmdSetFontSeries, F_SERIES_MEDIUM_1},
-	{"textmd",   CmdSetFontSeries, F_SERIES_MEDIUM_2},
-	{"mathmd",   CmdSetFontSeries, F_SERIES_MEDIUM_2},
+	{"mdseries", CmdFontSeries, F_SERIES_MEDIUM  },
+	{"textmd",   CmdFontSeries, F_SERIES_MEDIUM_2},
+	{"mathmd",   CmdFontSeries, F_SERIES_MEDIUM_2},
 
-	{"it",       CmdSetFontShape, F_SHAPE_ITALIC},
-	{"itshape",  CmdSetFontShape, F_SHAPE_ITALIC_1},
-	{"mit",      CmdSetFontShape, F_SHAPE_ITALIC_1},
-	{"textit",   CmdSetFontShape, F_SHAPE_ITALIC_2},
-	{"mathit",   CmdSetFontShape, F_SHAPE_ITALIC_2},
+	{"itshape",  CmdFontShape, F_SHAPE_ITALIC  },
+	{"it",       CmdFontShape, F_SHAPE_ITALIC_1},
+	{"mit",      CmdFontShape, F_SHAPE_ITALIC_1},
+	{"textit",   CmdFontShape, F_SHAPE_ITALIC_2},
+	{"mathit",   CmdFontShape, F_SHAPE_ITALIC_2},
 
-	{"upshape",  CmdSetFontShape, F_SHAPE_UPRIGHT_1},
-	{"textup",   CmdSetFontShape, F_SHAPE_UPRIGHT_2},
-	{"mathup",   CmdSetFontShape, F_SHAPE_UPRIGHT_2},
+	{"upshape",  CmdFontShape, F_SHAPE_UPRIGHT  },
+	{"textup",   CmdFontShape, F_SHAPE_UPRIGHT_2},
+	{"mathup",   CmdFontShape, F_SHAPE_UPRIGHT_2},
 
-	{"sc",       CmdSetFontShape, F_SHAPE_CAPS},
-	{"scfamily", CmdSetFontShape, F_SHAPE_CAPS_1},
-	{"scshape",  CmdSetFontShape, F_SHAPE_CAPS_1},
-	{"textsc",   CmdSetFontShape, F_SHAPE_CAPS_2},
-	{"mathsc",   CmdSetFontShape, F_SHAPE_CAPS_2},
+	{"scfamily", CmdFontShape, F_SHAPE_CAPS  },
+	{"scshape",  CmdFontShape, F_SHAPE_CAPS  },
+	{"sc",       CmdFontShape, F_SHAPE_CAPS_1},
+	{"textsc",   CmdFontShape, F_SHAPE_CAPS_2},
+	{"mathsc",   CmdFontShape, F_SHAPE_CAPS_2},
 
-	{"sl",       CmdSetFontShape, F_SHAPE_SLANTED},
-	{"slshape",  CmdSetFontShape, F_SHAPE_SLANTED_1},
-	{"textsl",   CmdSetFontShape, F_SHAPE_SLANTED_2},
-	{"mathls",   CmdSetFontShape, F_SHAPE_SLANTED_2},
+	{"slshape",  CmdFontShape, F_SHAPE_SLANTED  },
+	{"sl",       CmdFontShape, F_SHAPE_SLANTED_1},
+	{"textsl",   CmdFontShape, F_SHAPE_SLANTED_2},
+	{"mathsl",   CmdFontShape, F_SHAPE_SLANTED_2},
 	
-	{"tiny",         CmdSetFontSize, 10},
-	{"scriptsize",   CmdSetFontSize, 14},
-	{"footnotesize", CmdSetFontSize, 16},
-	{"small",        CmdSetFontSize, 18},
-	{"normalsize",   CmdSetFontSize, 20},
-	{"large",        CmdSetFontSize, 24},
-	{"Large",        CmdSetFontSize, 28},
-	{"LARGE",        CmdSetFontSize, 34},
-	{"huge",         CmdSetFontSize, 40},
-	{"Huge",         CmdSetFontSize, 50},
-    {"HUGE",         CmdSetFontSize, 60 },
+	{"tiny",         CmdFontSize, 10},
+	{"scriptsize",   CmdFontSize, 14},
+	{"footnotesize", CmdFontSize, 16},
+	{"small",        CmdFontSize, 18},
+	{"normalsize",   CmdFontSize, 20},
+	{"large",        CmdFontSize, 24},
+	{"Large",        CmdFontSize, 28},
+	{"LARGE",        CmdFontSize, 34},
+	{"huge",         CmdFontSize, 40},
+	{"Huge",         CmdFontSize, 50},
+    {"HUGE",         CmdFontSize, 60 },
 	
 	/* ---------- OTHER FONT STUFF ------------------- */
-	{"em",           CmdEmphasize, F_EMPHASIZE_NORMAL},
-	{"emph",         CmdEmphasize, F_EMPHASIZE_IMMEDIATE},
+	{"em",           CmdEmphasize, F_EMPHASIZE_1},
+	{"emph",         CmdEmphasize, F_EMPHASIZE_2},
 	{"underline",    CmdUnderline, 0},
 	{"textnormal",   CmdTextNormal, F_TEXT_NORMAL_2},
 	{"normalfont",   CmdTextNormal, F_TEXT_NORMAL_2},
@@ -395,16 +395,16 @@ static CommandArray params[] = {
 	{"thebibliography", CmdConvertBiblio, 0},
 	{"abstract", CmdAbstract, 0},
 	{"titlepage", CmdTitlepage, 0},
-	{"em", CmdEmphasize, F_EMPHASIZE},
-	{"rmfamily", CmdSetFontFamily, F_FAMILY_ROMAN_3},
-	{"sffamily", CmdSetFontFamily, F_FAMILY_SANSSERIF_3},
-	{"ttfamily", CmdSetFontFamily, F_FAMILY_TYPEWRITER_3},
-	{"bfseries", CmdSetFontSeries, F_SERIES_BOLD_3},
-	{"mdseries", CmdSetFontSeries, F_SERIES_MEDIUM_3},
-	{"itshape",  CmdSetFontShape, F_SHAPE_ITALIC_3},
-	{"scshape",  CmdSetFontShape, F_SHAPE_CAPS_3},
-	{"slshape",  CmdSetFontShape, F_SHAPE_SLANTED_3},
-	{"upshape",  CmdSetFontShape, F_SHAPE_UPRIGHT_3},
+	{"em", CmdEmphasize, F_EMPHASIZE_3},
+	{"rmfamily", CmdFontFamily, F_FAMILY_ROMAN_3},
+	{"sffamily", CmdFontFamily, F_FAMILY_SANSSERIF_3},
+	{"ttfamily", CmdFontFamily, F_FAMILY_TYPEWRITER_3},
+	{"bfseries", CmdFontSeries, F_SERIES_BOLD_3},
+	{"mdseries", CmdFontSeries, F_SERIES_MEDIUM_3},
+	{"itshape",  CmdFontShape, F_SHAPE_ITALIC_3},
+	{"scshape",  CmdFontShape, F_SHAPE_CAPS_3},
+	{"slshape",  CmdFontShape, F_SHAPE_SLANTED_3},
+	{"upshape",  CmdFontShape, F_SHAPE_UPRIGHT_3},
 	{"", NULL, 0}
 };				/* end of list */
 
@@ -569,7 +569,6 @@ globals: changes Environment - array of active environments
 	}
 
 	iEnvCount++;
-	DupPrevFontEnvironment();
 	diagnostics(3, "Entered %s environment, iEnvCount now = %d", diag, iEnvCount);
 }
 

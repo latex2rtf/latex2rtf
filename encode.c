@@ -1,7 +1,13 @@
 /*
- * $Id: encode.c,v 1.1 2001/08/12 21:15:46 prahl Exp $
+ * $Id: encode.c,v 1.2 2001/09/16 05:11:19 prahl Exp $
  * History:
  * $Log: encode.c,v $
+ * Revision 1.2  2001/09/16 05:11:19  prahl
+ * Gave up and completely revised font handling.  latex2rtf now uses an output
+ * filter to keep track of the brace level and font changes in the RTF file.
+ * This allows \emph to be handled properly.  This will also allow digits to
+ * be typeset upright in math mode, but this has not been implemented yet.
+ *
  * Revision 1.1  2001/08/12 21:15:46  prahl
  *         Removed last two // comments
  *         Explicitly cast char to int in isalpha() and isdigit()
@@ -56,313 +62,313 @@ Write_ISO_8859_1(char theChar)
 		 * because in decimal notation it did not convert. Ask me
 		 * why????
 		 */
-		/* case 246:fprintf(fRtf, "\\ansi\\'f6\\pc"); */
-		case 0366:fprintf(fRtf, "{\ansi\\'f6}");
+		/* case 246:fprintRTF("\\ansi\\'f6\\pc"); */
+		case 0366:fprintRTF("{\ansi\\'f6}");
 		break;		/* "o */
 	case 214:
-		fprintf(fRtf, "{\ansi\\'d6}");
+		fprintRTF("{\ansi\\'d6}");
 		break;		/* "O */
 	case 228:
-		fprintf(fRtf, "{\ansi\\'e4}");
+		fprintRTF("{\ansi\\'e4}");
 		break;		/* "a */
 	case 196:
-		fprintf(fRtf, "{\ansi\\'c4}");
+		fprintRTF("{\ansi\\'c4}");
 		break;		/* "A */
 	case 252:
-		fprintf(fRtf, "{\ansi\\'fc}");
+		fprintRTF("{\ansi\\'fc}");
 		break;		/* "u */
 	case 220:
-		fprintf(fRtf, "{\ansi\\'dc}");
+		fprintRTF("{\ansi\\'dc}");
 		break;		/* "U */
 	case 203:
-		fprintf(fRtf, "{\ansi\\'cb}");
+		fprintRTF("{\ansi\\'cb}");
 		break;		/* "E */
 	case 207:
-		fprintf(fRtf, "{\ansi\\'cf}");
+		fprintRTF("{\ansi\\'cf}");
 		break;		/* "I */
 	case 235:
-		fprintf(fRtf, "{\ansi\\'eb}");
+		fprintRTF("{\ansi\\'eb}");
 		break;		/* "e */
 	case 239:
-		fprintf(fRtf, "{\ansi\\'ef}");
+		fprintRTF("{\ansi\\'ef}");
 		break;		/* "i */
 	case 255:
-		fprintf(fRtf, "{\ansi\\'ff}");
+		fprintRTF("{\ansi\\'ff}");
 		break;		/* "y */
 		/* LEG140498End */
 
 	case 192:
-		fprintf(fRtf, "{\ansi\\'c0}");
+		fprintRTF("{\ansi\\'c0}");
 		break;		/* `A */
 	case 200:
-		fprintf(fRtf, "{\ansi\\'c8}");
+		fprintRTF("{\ansi\\'c8}");
 		break;		/* `E */
 	case 204:
-		fprintf(fRtf, "{\ansi\\'cc}");
+		fprintRTF("{\ansi\\'cc}");
 		break;		/* `I */
 	case 210:
-		fprintf(fRtf, "{\ansi\\'d2}");
+		fprintRTF("{\ansi\\'d2}");
 		break;		/* `O */
 	case 217:
-		fprintf(fRtf, "{\ansi\\'d9}");
+		fprintRTF("{\ansi\\'d9}");
 		break;		/* `U */
 	case 224:
-		fprintf(fRtf, "{\ansi\\'e0}");
+		fprintRTF("{\ansi\\'e0}");
 		break;		/* `a */
 	case 232:
-		fprintf(fRtf, "{\ansi\\'e8}");
+		fprintRTF("{\ansi\\'e8}");
 		break;		/* `e */
 	case 236:
-		fprintf(fRtf, "{\ansi\\'ec}");
+		fprintRTF("{\ansi\\'ec}");
 		break;		/* `i */
 	case 242:
-		fprintf(fRtf, "{\ansi\\'f2}");
+		fprintRTF("{\ansi\\'f2}");
 		break;		/* `o */
 	case 249:
-		fprintf(fRtf, "{\ansi\\'f9}");
+		fprintRTF("{\ansi\\'f9}");
 		break;		/* `u */
 
 	case 193:
-		fprintf(fRtf, "{\ansi\\'c1}");
+		fprintRTF("{\ansi\\'c1}");
 		break;		/* 'A */
 	case 201:
-		fprintf(fRtf, "{\ansi\\'c9}");
+		fprintRTF("{\ansi\\'c9}");
 		break;		/* 'E */
 	case 205:
-		fprintf(fRtf, "{\ansi\\'cd}");
+		fprintRTF("{\ansi\\'cd}");
 		break;		/* 'I */
 	case 211:
-		fprintf(fRtf, "{\ansi\\'d3}");
+		fprintRTF("{\ansi\\'d3}");
 		break;		/* 'O */
 	case 218:
-		fprintf(fRtf, "{\ansi\\'da}");
+		fprintRTF("{\ansi\\'da}");
 		break;		/* 'U */
 	case 225:
-		fprintf(fRtf, "{\ansi\\'e1}");
+		fprintRTF("{\ansi\\'e1}");
 		break;		/* 'a */
 	case 233:
-		fprintf(fRtf, "{\ansi\\'e9}");
+		fprintRTF("{\ansi\\'e9}");
 		break;		/* 'e */
 	case 237:
-		fprintf(fRtf, "{\ansi\\'ed}");
+		fprintRTF("{\ansi\\'ed}");
 		break;		/* 'i */
 	case 243:
-		fprintf(fRtf, "{\ansi\\'f3}");
+		fprintRTF("{\ansi\\'f3}");
 		break;		/* 'o */
 	case 250:
-		fprintf(fRtf, "{\ansi\\'fa}");
+		fprintRTF("{\ansi\\'fa}");
 		break;		/* 'u */
 	case 221:
-		fprintf(fRtf, "{\ansi\\'dd}");
+		fprintRTF("{\ansi\\'dd}");
 		break;		/* 'Y */
 	case 253:
-		fprintf(fRtf, "{\ansi\\'fd}");
+		fprintRTF("{\ansi\\'fd}");
 		break;		/* 'y */
 
 	case 194:
-		fprintf(fRtf, "{\ansi\\'c2}");
+		fprintRTF("{\ansi\\'c2}");
 		break;		/* ^A */
 	case 202:
-		fprintf(fRtf, "{\ansi\\'ca}");
+		fprintRTF("{\ansi\\'ca}");
 		break;		/* ^E */
 	case 206:
-		fprintf(fRtf, "{\ansi\\'ce}");
+		fprintRTF("{\ansi\\'ce}");
 		break;		/* ^I */
 	case 212:
-		fprintf(fRtf, "{\ansi\\'d4}");
+		fprintRTF("{\ansi\\'d4}");
 		break;		/* ^O */
 	case 219:
-		fprintf(fRtf, "{\ansi\\'db}");
+		fprintRTF("{\ansi\\'db}");
 		break;		/* ^U */
 	case 226:
-		fprintf(fRtf, "{\ansi\\'e2}");
+		fprintRTF("{\ansi\\'e2}");
 		break;		/* ^a */
 	case 234:
-		fprintf(fRtf, "{\ansi\\'ea}");
+		fprintRTF("{\ansi\\'ea}");
 		break;		/* ^e */
 	case 238:
-		fprintf(fRtf, "{\ansi\\'ee}");
+		fprintRTF("{\ansi\\'ee}");
 		break;		/* ^i */
 	case 244:
-		fprintf(fRtf, "{\ansi\\'f4}");
+		fprintRTF("{\ansi\\'f4}");
 		break;		/* ^o */
 	case 251:
-		fprintf(fRtf, "{\ansi\\'fb}");
+		fprintRTF("{\ansi\\'fb}");
 		break;		/* ^u */
 
 	case 195:
-		fprintf(fRtf, "{\ansi\\'c3}");
+		fprintRTF("{\ansi\\'c3}");
 		break;		/* ~A */
 	case 213:
-		fprintf(fRtf, "{\ansi\\'d5}");
+		fprintRTF("{\ansi\\'d5}");
 		break;		/* ~O */
 	case 227:
-		fprintf(fRtf, "{\ansi\\'e3}");
+		fprintRTF("{\ansi\\'e3}");
 		break;		/* ~a */
 	case 245:
-		fprintf(fRtf, "{\ansi\\'f5}");
+		fprintRTF("{\ansi\\'f5}");
 		break;		/* ~o */
 	case 209:
-		fprintf(fRtf, "{\ansi\\'d1}");
+		fprintRTF("{\ansi\\'d1}");
 		break;		/* ~N */
 	case 241:
-		fprintf(fRtf, "{\ansi\\'f1}");
+		fprintRTF("{\ansi\\'f1}");
 		break;		/* ~n */
 
 	case 223:
-		fprintf(fRtf, "{\ansi\\'df}");
+		fprintRTF("{\ansi\\'df}");
 		break;		/* sz */
 	case 161:
-		fprintf(fRtf, "{\ansi\\'a1}");
+		fprintRTF("{\ansi\\'a1}");
 		break;		/* ! */
 	case 162:
-		fprintf(fRtf, "{\ansi\\'a2}");
+		fprintRTF("{\ansi\\'a2}");
 		break;		/* cent */
 	case 163:
-		fprintf(fRtf, "{\ansi\\'a3}");
+		fprintRTF("{\ansi\\'a3}");
 		break;		/* pound */
 	case 164:
-		fprintf(fRtf, "{\ansi\\'a4}");
+		fprintRTF("{\ansi\\'a4}");
 		break;		/* */
 	case 165:
-		fprintf(fRtf, "{\ansi\\'a5}");
+		fprintRTF("{\ansi\\'a5}");
 		break;		/* Yen */
 	case 166:
-		fprintf(fRtf, "{\ansi\\'a6}");
+		fprintRTF("{\ansi\\'a6}");
 		break;		/* pipe */
 	case 167:
-		fprintf(fRtf, "{\ansi\\'a7}");
+		fprintRTF("{\ansi\\'a7}");
 		break;		/* paragraph */
 	case 168:
-		fprintf(fRtf, "{\ansi\\'a8}");
+		fprintRTF("{\ansi\\'a8}");
 		break;		/* dots */
 	case 169:
-		fprintf(fRtf, "{\ansi\\'a9}");
+		fprintRTF("{\ansi\\'a9}");
 		break;		/* copyright */
 	case 170:
-		fprintf(fRtf, "{\ansi\\'aa}");
+		fprintRTF("{\ansi\\'aa}");
 		break;		/* a_ */
 	case 171:
-		fprintf(fRtf, "{\ansi\\'ab}");
+		fprintRTF("{\ansi\\'ab}");
 		break;		/* << */
 	case 172:
-		fprintf(fRtf, "{\ansi\\'ac}");
+		fprintRTF("{\ansi\\'ac}");
 		break;		/* -| */
 	case 173:
-		fprintf(fRtf, "{\ansi\\'ad}");
+		fprintRTF("{\ansi\\'ad}");
 		break;		/* - */
 	case 174:
-		fprintf(fRtf, "{\ansi\\'ae}");
+		fprintRTF("{\ansi\\'ae}");
 		break;		/* registered */
 	case 175:
-		fprintf(fRtf, "{\ansi\\'af}");
+		fprintRTF("{\ansi\\'af}");
 		break;		/* highscore */
 	case 176:
-		fprintf(fRtf, "{\ansi\\'b0}");
+		fprintRTF("{\ansi\\'b0}");
 		break;		/* degree */
 	case 177:
-		fprintf(fRtf, "{\ansi\\'b1}");
+		fprintRTF("{\ansi\\'b1}");
 		break;		/* +- */
 	case 178:
-		fprintf(fRtf, "{\ansi\\'b2}");
+		fprintRTF("{\ansi\\'b2}");
 		break;		/* ^2 */
 	case 179:
-		fprintf(fRtf, "{\ansi\\'b3}");
+		fprintRTF("{\ansi\\'b3}");
 		break;		/* ^3 */
 	case 180:
-		fprintf(fRtf, "{\ansi\\'b4}");
+		fprintRTF("{\ansi\\'b4}");
 		break;		/* ' */
 	case 181:
-		fprintf(fRtf, "{\ansi\\'b5}");
+		fprintRTF("{\ansi\\'b5}");
 		break;		/* my */
 	case 182:
-		fprintf(fRtf, "{\ansi\\'b6}");
+		fprintRTF("{\ansi\\'b6}");
 		break;		/* pi */
 	case 183:
-		fprintf(fRtf, "{\ansi\\'b7}");
+		fprintRTF("{\ansi\\'b7}");
 		break;		/* bullet */
 	case 184:
-		fprintf(fRtf, "{\ansi\\'b8}");
+		fprintRTF("{\ansi\\'b8}");
 		break;		/* dot */
 	case 185:
-		fprintf(fRtf, "{\ansi\\'b9}");
+		fprintRTF("{\ansi\\'b9}");
 		break;		/* ^1 */
 	case 186:
-		fprintf(fRtf, "{\ansi\\'ba}");
+		fprintRTF("{\ansi\\'ba}");
 		break;		/* ^0_ */
 	case 187:
-		fprintf(fRtf, "{\ansi\\'bb}");
+		fprintRTF("{\ansi\\'bb}");
 		break;		/* >> */
 	case 188:
-		fprintf(fRtf, "{\ansi\\'bc}");
+		fprintRTF("{\ansi\\'bc}");
 		break;		/* 1/4 */
 	case 189:
-		fprintf(fRtf, "{\ansi\\'bd}");
+		fprintRTF("{\ansi\\'bd}");
 		break;		/* 1/2 */
 	case 190:
-		fprintf(fRtf, "{\ansi\\'be}");
+		fprintRTF("{\ansi\\'be}");
 		break;		/* 3/4 */
 	case 191:
-		fprintf(fRtf, "{\ansi\\'bf}");
+		fprintRTF("{\ansi\\'bf}");
 		break;		/* ? */
 
 	case 197:
-		fprintf(fRtf, "{\ansi\\'c5}");
+		fprintRTF("{\ansi\\'c5}");
 		break;		/* oA */
 	case 198:
-		fprintf(fRtf, "{\ansi\\'c6}");
+		fprintRTF("{\ansi\\'c6}");
 		break;		/* AE */
 	case 199:
-		fprintf(fRtf, "{\ansi\\'c7}");
+		fprintRTF("{\ansi\\'c7}");
 		break;		/* french C */
 
 	case 208:
-		fprintf(fRtf, "{\ansi\\'d0}");
+		fprintRTF("{\ansi\\'d0}");
 		break;		/* D */
 
 	case 215:
-		fprintf(fRtf, "{\ansi\\'d7}");
+		fprintRTF("{\ansi\\'d7}");
 		break;		/* x */
 	case 216:
-		fprintf(fRtf, "{\ansi\\'d8}");
+		fprintRTF("{\ansi\\'d8}");
 		break;		/* /O */
 
 	case 222:
-		fprintf(fRtf, "{\ansi\\'de}");
+		fprintRTF("{\ansi\\'de}");
 		break;		/* */
 
 	case 229:
-		fprintf(fRtf, "{\ansi\\'e5}");
+		fprintRTF("{\ansi\\'e5}");
 		break;		/* oa */
 	case 230:
-		fprintf(fRtf, "{\ansi\\'e6}");
+		fprintRTF("{\ansi\\'e6}");
 		break;		/* ae */
 	case 231:
-		fprintf(fRtf, "{\ansi\\'e7}");
+		fprintRTF("{\ansi\\'e7}");
 		break;		/* french c */
 
 	case 240:
-		fprintf(fRtf, "{\ansi\\'f0}");
+		fprintRTF("{\ansi\\'f0}");
 		break;		/* */
 
 	case 247:
-		fprintf(fRtf, "{\ansi\\'f7}");
+		fprintRTF("{\ansi\\'f7}");
 		break;		/* / */
 	case 248:
-		fprintf(fRtf, "{\ansi\\'f8}");
+		fprintRTF("{\ansi\\'f8}");
 		break;		/* /o */
 
 	case 254:
-		fprintf(fRtf, "{\ansi\\'fe}");
+		fprintRTF("{\ansi\\'fe}");
 		break;		/* */
 
 	case 127:
-		fprintf(fRtf, " ");	/* tilde should be translated to a
+		fprintRTF(" ");	/* tilde should be translated to a
 					 * space */
 		break;		/* ~ */
 
 	default:
-		fprintf(fRtf, "%c", theChar);	/* other characters are
+		fprintRTF("%c", theChar);	/* other characters are
 						 * written out unchanged */
 	}
 }
@@ -377,12 +383,12 @@ Write_Default_Charset(char theChar)
  ******************************************************************************/
 {
 	switch ((unsigned char) theChar) {
-		case '~':fprintf(fRtf, " ");	/* tilde should be translated
+		case '~':fprintRTF(" ");	/* tilde should be translated
 						 * to a space */
 		break;
 
 	default:
-		fprintf(fRtf, "%c", theChar);	/* other characters are
+		fprintRTF("%c", theChar);	/* other characters are
 						 * written out unchanged */
 	}
 }

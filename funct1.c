@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.19 2001/09/10 05:40:26 prahl Exp $ 
+/* $Id: funct1.c,v 1.20 2001/09/16 05:11:19 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -43,7 +43,6 @@ static void     CmdLabel1_4(int code, char *text);
 static void     CmdLabelOld(int code, char *text);
 void            CmdPagestyle( /* @unused@ */ int code);
 void            CmdHeader(int code);
-void            putRtfChar(char cThis);
 
 void 
 CmdBeginEnd(int code)
@@ -92,45 +91,45 @@ Paragraph(int code)
 	case (PAR_CENTERLINE):
 		old_alignment_before_centerline = alignment;
 		alignment = CENTERED;
-		fprintf(fRtf, "\\par\n{\\pard\\q%c ", alignment);
+		fprintRTF("\\par\n{\\pard\\q%c ", alignment);
 		diagnostics(4,"Entering Convert from Paragraph");
 		Convert();
 		diagnostics(4,"Exiting Convert from Paragraph");
 		alignment = old_alignment_before_centerline;
-		fprintf(fRtf, "\\par}\n\\pard\\q%c ", alignment);
+		fprintRTF("\\par}\n\\pard\\q%c ", alignment);
 		bNewPar = TRUE;
 		break;
 
 	case (PAR_CENTER | ON):
 		old_alignment_before_center = alignment;
 		alignment = CENTERED;
-		fprintf(fRtf, "{\\pard\\q%c ", alignment);
+		fprintRTF("{\\pard\\q%c ", alignment);
 		break;
 	case (PAR_CENTER | OFF):
 		alignment = old_alignment_before_center;
-		fprintf(fRtf, "\\par}\n\\pard\\q%c ", alignment);
+		fprintRTF("\\par}\n\\pard\\q%c ", alignment);
 		bNewPar = TRUE;
 		break;
 
 	case (PAR_RIGHT | ON):
 		old_alignment_before_right = alignment;
 		alignment = RIGHT;
-		fprintf(fRtf, "{\\pard\\q%c ", alignment);
+		fprintRTF("{\\pard\\q%c ", alignment);
 		break;
 	case (PAR_RIGHT | OFF):
 		alignment = old_alignment_before_right;
-		fprintf(fRtf, "\\par}\n\\pard\\q%c ", alignment);
+		fprintRTF("\\par}\n\\pard\\q%c ", alignment);
 		bNewPar = TRUE;
 		break;
 
 	case (PAR_LEFT | ON):
 		old_alignment_before_left = alignment;
 		alignment = LEFT;
-		fprintf(fRtf, "{\\pard\\q%c ", alignment);
+		fprintRTF("{\\pard\\q%c ", alignment);
 		break;
 	case (PAR_LEFT | OFF):
 		alignment = old_alignment_before_left;
-		fprintf(fRtf, "\\par}\n\\pard\\q%c ", alignment);
+		fprintRTF("\\par}\n\\pard\\q%c ", alignment);
 		bNewPar = TRUE;
 		break;
 	}
@@ -143,7 +142,7 @@ CmdToday( /* @unused@ */ int code)
 	     prints the current date into an document
  ******************************************************************************/
 {
-	fprintf(fRtf, "\\chdate ");
+	fprintRTF("\\chdate ");
 }
 
 
@@ -163,7 +162,7 @@ CmdLdots( /* @unused@ */ int code)
  globals : fRtf
  ******************************************************************************/
 {
-	fprintf(fRtf, "...");
+	fprintRTF("...");
 }
 
 void 
@@ -214,12 +213,12 @@ parameter: code: type of section-recursion-level
 	switch (code) {
 	case SECT_PART:
 		incrementCounter("part");
-		fprintf(fRtf, "\\par\\pard\\page");
-		fprintf(fRtf, "{\\qc\\b\\fs40 ");
+		fprintRTF("\\par\\pard\\page");
+		fprintRTF("{\\qc\\b\\fs40 ");
 		ConvertBabelName("PARTNAME");
-		fprintf(fRtf, "%d\\par ", getCounter("part"));
+		fprintRTF("%d\\par ", getCounter("part"));
 		ConvertString(heading);
-		fprintf(fRtf, "\\par}\n\\page");
+		fprintRTF("\\par}\n\\page");
 		break;
 
 	case SECT_CHAPTER:
@@ -227,11 +226,11 @@ parameter: code: type of section-recursion-level
 		setCounter("section",0);
 		setCounter("subsection",0);
 		setCounter("subsubsection",0);
-		fprintf(fRtf, "\\par\\pard\\page\\pard{\\pntext\\pard\\plain\\b\\fs32\\kerning28 ");
-		fprintf(fRtf, "%d\\par \\par }\\pard\\plain\n", getCounter("chapter"));
-		fprintf(fRtf, "%s\\f%d%s{", HEADER11, DefFont, HEADER12);
+		fprintRTF("\\par\\pard\\page\\pard{\\pntext\\pard\\plain\\b\\fs32\\kerning28 ");
+		fprintRTF("%d\\par \\par }\\pard\\plain\n", getCounter("chapter"));
+		fprintRTF("%s\\f%d%s{", HEADER11, DefFont, HEADER12);
 		ConvertString(heading);
-		fprintf(fRtf, "}\n");
+		fprintRTF("}\n");
 		bNewPar = FALSE;
 		bBlankLine = TRUE;
 		break;
@@ -240,17 +239,17 @@ parameter: code: type of section-recursion-level
 		incrementCounter("section");
 		setCounter("subsection",0);
 		setCounter("subsubsection",0);
-		fprintf(fRtf, "{\\par\\pard\\pntext\\pard\\plain\\b");
+		fprintRTF("{\\par\\pard\\pntext\\pard\\plain\\b");
 		if (article) {
-			fprintf(fRtf, "\\fs32\\kerning28 %d\\tab}\\pard\\plain\n", getCounter("section"));
-			fprintf(fRtf, "%s\\f%d%s{", HEADER11, DefFont, HEADER12);
+			fprintRTF("\\fs32\\kerning28 %d\\tab}\\pard\\plain\n", getCounter("section"));
+			fprintRTF("%s\\f%d%s{", HEADER11, DefFont, HEADER12);
 		} else {
-			fprintf(fRtf, "\\fs24 %d.%d\\tab}\\pard\\plain\n", getCounter("chapter"),getCounter("section"));
-			fprintf(fRtf, "%s\\f%d%s{", HEADER21, DefFont, HEADER22);
+			fprintRTF("\\fs24 %d.%d\\tab}\\pard\\plain\n", getCounter("chapter"),getCounter("section"));
+			fprintRTF("%s\\f%d%s{", HEADER21, DefFont, HEADER22);
 		}
 
 		ConvertString(heading);
-		fprintf(fRtf, "}\n");
+		fprintRTF("}\n");
 		bNewPar = FALSE;
 		bBlankLine = TRUE;
 		break;
@@ -258,42 +257,42 @@ parameter: code: type of section-recursion-level
 	case SECT_SUB:
 		incrementCounter("subsection");
 		setCounter("subsubsection",0);
-		fprintf(fRtf, "{\\par\\pard\\pntext\\pard\\plain\\b");
+		fprintRTF("{\\par\\pard\\pntext\\pard\\plain\\b");
 		if (article) {
-			fprintf(fRtf, "\\fs24 %d.%d\\tab}\\pard\\plain\n", getCounter("section"), getCounter("subsection"));
-			fprintf(fRtf, "%s\\f%d%s{", HEADER21, DefFont, HEADER22);
+			fprintRTF("\\fs24 %d.%d\\tab}\\pard\\plain\n", getCounter("section"), getCounter("subsection"));
+			fprintRTF("%s\\f%d%s{", HEADER21, DefFont, HEADER22);
 		} else {
-			fprintf(fRtf, "\\fs24 %d.%d.%d\\tab}\\pard\\plain\n", getCounter("chapter"), getCounter("section"), getCounter("subsection"));
-			fprintf(fRtf, "%s\\f%d%s{", HEADER31, DefFont, HEADER32);
+			fprintRTF("\\fs24 %d.%d.%d\\tab}\\pard\\plain\n", getCounter("chapter"), getCounter("section"), getCounter("subsection"));
+			fprintRTF("%s\\f%d%s{", HEADER31, DefFont, HEADER32);
 		}
 
 		ConvertString(heading);
-		fprintf(fRtf, "}\n");
+		fprintRTF("}\n");
 		bNewPar = FALSE;
 		bBlankLine = TRUE;
 		break;
 
 	case SECT_SUBSUB:
 		incrementCounter("subsubsection");
-		fprintf(fRtf, "{\\par\\pard\\pntext\\pard\\plain\\b");
+		fprintRTF("{\\par\\pard\\pntext\\pard\\plain\\b");
 		if (article) {
-			fprintf(fRtf, "\\fs24 %d.%d.%d\\tab}\\pard\\plain\n", getCounter("section"), getCounter("subsection"), getCounter("subsubsection"));
-			fprintf(fRtf, "%s\\f%d%s{", HEADER31, DefFont, HEADER32);
+			fprintRTF("\\fs24 %d.%d.%d\\tab}\\pard\\plain\n", getCounter("section"), getCounter("subsection"), getCounter("subsubsection"));
+			fprintRTF("%s\\f%d%s{", HEADER31, DefFont, HEADER32);
 		} else {
-			fprintf(fRtf, "\\fs24 %d.%d.%d.%d\\tab}\\pard\\plain\n", getCounter("chapter"), getCounter("section"), getCounter("subsection"), getCounter("subsubsection"));
-			fprintf(fRtf, "%s\\f%d%s{", HEADER41, DefFont, HEADER42);
+			fprintRTF("\\fs24 %d.%d.%d.%d\\tab}\\pard\\plain\n", getCounter("chapter"), getCounter("section"), getCounter("subsection"), getCounter("subsubsection"));
+			fprintRTF("%s\\f%d%s{", HEADER41, DefFont, HEADER42);
 		}
 
 		ConvertString(heading);
-		fprintf(fRtf, "}\n");
+		fprintRTF("}\n");
 		bNewPar = FALSE;
 		bBlankLine = TRUE;
 		break;
 	}
 	
-	fprintf(fRtf, "\\par\\pard");
+	fprintRTF("\\par\\pard");
 	CmdTextNormal(F_TEXT_NORMAL);
-	fprintf(fRtf, "\\f%d\\q%c\n", DefFont, alignment);
+	fprintRTF("\\f%d\\q%c\n", DefFont, alignment);
 	if (heading) free(heading);
 	c = getNonBlank();
 	ungetTexChar(c);
@@ -316,21 +315,21 @@ CmdCaption(int code)
 
 	if (g_processing_figure) {
 		incrementCounter("figure");
-		fprintf(fRtf, "\\par\n{\\pard\\qc ");
+		fprintRTF("\\par\n{\\pard\\qc ");
 		ConvertBabelName("FIGURENAME");
-		fprintf(fRtf, " %d: ",getCounter("figure"));
+		fprintRTF(" %d: ",getCounter("figure"));
 	} else {
 		incrementCounter("table");
-		fprintf(fRtf, "\\par\n{\\pard\\qc ");
+		fprintRTF("\\par\n{\\pard\\qc ");
 		ConvertBabelName("TABLENAME");
-		fprintf(fRtf, " %d: ",getCounter("table"));
+		fprintRTF(" %d: ",getCounter("table"));
 	}
 
 	thecaption = getParam();
 	diagnostics(4, "in CmdCaption [%s]", thecaption);
 	ConvertString(thecaption);
 	free(thecaption);
-	fprintf(fRtf, "\\par}\n\\pard\\q%c\n", alignment);
+	fprintRTF("\\par}\n\\pard\\q%c\n", alignment);
 	diagnostics(4, "exiting CmdCaption");
 }
 
@@ -453,13 +452,13 @@ CmdFootNote(int code)
 
 	if (code == THANKS) {
 		thankno++;
-		fprintf(fRtf, "{\\up%d %d}\n", text_ref_upsize, thankno);
-		fprintf(fRtf, "{\\*\\footnote \\pard\\plain\\s246\\f%d",DefFont);
-		fprintf(fRtf, "\\fs%d {\\up%d %d}", CurrentFontSize(), foot_ref_upsize, thankno);
+		fprintRTF("{\\up%d %d}\n", text_ref_upsize, thankno);
+		fprintRTF("{\\*\\footnote \\pard\\plain\\s246\\f%d",DefFont);
+		fprintRTF("\\fs%d {\\up%d %d}", CurrentFontSize(), foot_ref_upsize, thankno);
 	} else {
-		fprintf(fRtf, "{\\up%d\\chftn}\n", text_ref_upsize);
-		fprintf(fRtf, "{\\*\\footnote \\pard\\plain\\s246\\f%d",DefFont);
-		fprintf(fRtf, "\\fs%d {\\up%d\\chftn}", CurrentFontSize(), foot_ref_upsize);
+		fprintRTF("{\\up%d\\chftn}\n", text_ref_upsize);
+		fprintRTF("{\\*\\footnote \\pard\\plain\\s246\\f%d",DefFont);
+		fprintRTF("\\fs%d {\\up%d\\chftn}", CurrentFontSize(), foot_ref_upsize);
 	}
 
 	footnote = getParam();
@@ -468,7 +467,7 @@ CmdFootNote(int code)
 		free(footnote);
 	}
 	diagnostics(4,"Exiting CmdFootNote");
-	fprintf(fRtf, "}\n ");
+	fprintRTF("}\n ");
 }
 
 void 
@@ -488,7 +487,7 @@ parameter: code: QUOTE and QUOTATION On/Off
 		PushBrace();
 		indent += 512;
 		NoNewLine = TRUE;
-		fprintf(fRtf, "\n{\\par\\li%d ", indent);
+		fprintRTF("\n{\\par\\li%d ", indent);
 		break;
 		
 	case (QUOTATION | OFF):
@@ -498,9 +497,9 @@ parameter: code: QUOTE and QUOTATION On/Off
 		indent -= 512;
 		NoNewLine = FALSE;
 		if (indent>0)
-			fprintf(fRtf, "\\par}\n\\li%d ", indent);
+			fprintRTF("\\par}\n\\li%d ", indent);
 		else
-	    	fprintf(fRtf, "\\par}\n\\pard\\q%c ", alignment);
+	    	fprintRTF("\\par}\n\\pard\\q%c ", alignment);
 		break;
 	}
 }
@@ -528,7 +527,7 @@ parameter : code : type of environment and on/off-state
 		PopEnvironment();
 		indent -= 512;
 		NoNewLine = FALSE;
-		fprintf(fRtf, "\n\\par\\fi0\\li%d ", indent);
+		fprintRTF("\n\\par\\fi0\\li%d ", indent);
 		bNewPar = TRUE;
 		break;
 	case (ENUMERATE | ON):
@@ -544,7 +543,7 @@ parameter : code : type of environment and on/off-state
 		g_enumerate_depth--;
 		indent -= 512;
 		NoNewLine = FALSE;
-		fprintf(fRtf, "\n\\par\\fi0\\li%d ", indent);
+		fprintRTF("\n\\par\\fi0\\li%d ", indent);
 		bNewPar = TRUE;
 		break;
 	case (DESCRIPTION | ON):
@@ -557,7 +556,7 @@ parameter : code : type of environment and on/off-state
 		PopEnvironment();
 		indent -= 512;
 		NoNewLine = FALSE;
-		fprintf(fRtf, "\n\\par\\fi0\\li%d ", indent);
+		fprintRTF("\n\\par\\fi0\\li%d ", indent);
 		bNewPar = TRUE;
 		break;
 	}
@@ -584,48 +583,48 @@ parameter : code : type of environment and on/off-state
 	}
 
 	diagnostics(4, "Entering CmdItem depth=%d item=%d",g_enumerate_depth,item_number[g_enumerate_depth]);
-	fprintf(fRtf, "\n\\par\\fi0\\li%d ", indent);
+	fprintRTF("\n\\par\\fi0\\li%d ", indent);
 
 	if (getBracketParam(itemlabel, 99)) {	/* \item[label] */
 
-		fprintf(fRtf, "{\\b ");	/* bold on */
+		fprintRTF("{\\b ");	/* bold on */
 		diagnostics(5,"Entering ConvertString from CmdItem");
 		ConvertString(itemlabel);
 		diagnostics(5,"Exiting ConvertString from CmdItem");
-		fprintf(fRtf, "}\\tab ");	/* bold off */
+		fprintRTF("}\\tab ");	/* bold off */
 		
 	}
 	
 	switch (code) {
 	case ITEMIZE:
-		fprintf(fRtf, "\\bullet\\tab ");
+		fprintRTF("\\bullet\\tab ");
 		break;
 
 	case ENUMERATE:
 		switch (g_enumerate_depth) {
 		case 1:
-			fprintf(fRtf, "%d.", item_number[g_enumerate_depth]);
+			fprintRTF("%d.", item_number[g_enumerate_depth]);
 			break;
 
 		case 2:
-			fprintf(fRtf, "(%c)", 'a' + item_number[g_enumerate_depth] - 1);
+			fprintRTF("(%c)", 'a' + item_number[g_enumerate_depth] - 1);
 			break;
 
 		case 3:
 			roman_item(item_number[g_enumerate_depth], itemlabel);
-			fprintf(fRtf, "%s.", itemlabel);
+			fprintRTF("%s.", itemlabel);
 			break;
 
 		case 4:
-			fprintf(fRtf, "%c.", 'A' + item_number[g_enumerate_depth] - 1);
+			fprintRTF("%c.", 'A' + item_number[g_enumerate_depth] - 1);
 			break;
 		}
-		fprintf(fRtf, "\\tab ");
+		fprintRTF("\\tab ");
 		item_number[g_enumerate_depth]++;
 		break;
 
 	case DESCRIPTION:
-		fprintf(fRtf, "\\tab ");	/* indent */
+		fprintRTF("\\tab ");	/* indent */
 		break;
 	}
 	
@@ -645,7 +644,7 @@ CmdBox( /* @unused@ */ int code)
 	
 	if (g_processing_equation) {
 		g_processing_equation = FALSE;
-		fprintf(fRtf, "}");	/* close math italics */
+		fprintRTF("}");	/* close math italics */
 
 		mbox = TRUE;
 		s = getParam();
@@ -656,7 +655,7 @@ CmdBox( /* @unused@ */ int code)
 		
 		mbox = FALSE;
 		g_processing_equation = TRUE;
-		fprintf(fRtf, "{\\i ");	/* reopen math italics */
+		fprintRTF("{\\i ");	/* reopen math italics */
 	} else {
 		mbox = TRUE;
 		Convert();
@@ -753,24 +752,6 @@ CmdInclude(int code)
 	free(fname);
 }
 
-void
-putRtfChar(char cThis)
-/****************************************************************************
-purpose: filter for characters being written to RTF file
- ****************************************************************************/
-{
-	if (cThis == '\\')
-		fprintf(fRtf, "\\\\");
-	else if (cThis == '{')
-		fprintf(fRtf, "\\{");
-	else if (cThis == '}')
-		fprintf(fRtf, "\\}");
-	else if (cThis == '\n') 
-		fprintf(fRtf, "\n\\par ");
-	else
-		fprintf(fRtf, "%c", cThis);
-}
-
 void 
 CmdVerb(int code)
 /******************************************************************************
@@ -789,12 +770,12 @@ CmdVerb(int code)
 	}
 
 	num = TexFontNumber("Typewriter");
-	fprintf(fRtf, "{\\plain\\f%d ", num);
+	fprintRTF("{\\b0\\i0\\scaps0\\f%d ", num);
 
 	while ((cThis = getRawTexChar()) && cThis != markingchar) 
 		putRtfChar(cThis);
 	
-	fprintf(fRtf, "}");
+	fprintRTF("}");
 }
 
 void 
@@ -811,7 +792,7 @@ CmdVerbatim(int code)
 	if (code & ON) {
 		diagnostics(4, "Entering CmdVerbatim");
 		num = TexFontNumber("Typewriter");
-		fprintf(fRtf, "{\\plain\\f%d ", num);
+		fprintRTF("{\\b0\\i0\\scaps0\\f%d ", num);
 	
 		for (;;) {
 			cThis = getRawTexChar();
@@ -838,7 +819,7 @@ CmdVerbatim(int code)
 		}
 	} else {
 		diagnostics(4, "Exiting CmdVerbatim");
-		fprintf(fRtf, "}");
+		fprintRTF("}");
 	}
 		
 }
@@ -854,12 +835,12 @@ parameter: code: turns on/off handling routine
 {
 	switch (code) {
 		case ON:
-		fprintf(fRtf, "\\par\n\\pard\\q%c\\fi-567\\li1134\\ri1134\\keep ", alignment);
+		fprintRTF("\\par\n\\pard\\q%c\\fi-567\\li1134\\ri1134\\keep ", alignment);
 		NoNewLine = FALSE;
 		bNewPar = TRUE;
 		break;
 	case OFF:
-		fprintf(fRtf, "\\par\n\\pard\\q%c ", alignment);
+		fprintRTF("\\par\n\\pard\\q%c ", alignment);
 		bNewPar = TRUE;
 		break;
 	}
@@ -895,16 +876,16 @@ globals: reads from fTex and writes to fRtf
 
 	switch (cThis) {
 	case 'a':
-		fprintf(fRtf, "{\\'e4}");
+		fprintRTF("{\\'e4}");
 		break;
 	case 'o':
-		fprintf(fRtf, "{\\'f6}");
+		fprintRTF("{\\'f6}");
 		break;
 	case 'u':
-		fprintf(fRtf, "{\\'fc}");
+		fprintRTF("{\\'fc}");
 		break;
 	case 's':
-		fprintf(fRtf, "{\\'df}");
+		fprintRTF("{\\'df}");
 		break;
 	case '|':
 		break;		/* ignore */
@@ -913,17 +894,17 @@ globals: reads from fTex and writes to fRtf
 	case '"':
 		break;		/* ignore */
 	case '\'':
-		fprintf(fRtf, "\\ldblquote ");
+		fprintRTF("\\ldblquote ");
 		break;
 	case '`':
-		fprintf(fRtf, "\\rdblquote ");
+		fprintRTF("\\rdblquote ");
 		break;
 	case '<':
 		break;
 	case '>':
 		break;
 	default:
-		fprintf(fRtf, "%c", cThis);
+		fprintRTF("%c", cThis);
 	}
 }
 
@@ -934,26 +915,26 @@ purpose: writes string to RTF file
 globals: writes to fRtf
  ***************************************************************************/
 {
-	fprintf(fRtf, (char *) code);
+	fprintRTF((char *) code);
 }
 
 void 
 GermanPrint(int code)
 {
 	switch (code) {
-		case GP_CK:fprintf(fRtf, "ck");
+		case GP_CK:fprintRTF("ck");
 		break;
 	case GP_LDBL:
-		fprintf(fRtf, "\\ldblquote");
+		fprintRTF("\\ldblquote");
 		break;
 	case GP_L:
-		fprintf(fRtf, "\\lquote");
+		fprintRTF("\\lquote");
 		break;
 	case GP_R:
-		fprintf(fRtf, "\\rquote");
+		fprintRTF("\\rquote");
 		break;
 	case GP_RDBL:
-		fprintf(fRtf, "\\rdblquote");
+		fprintRTF("\\rdblquote");
 	}
 }
 
@@ -1002,7 +983,7 @@ ScanAux(char *token, char *reference, int code)
 	char           *s;
 
 	if (g_aux_file_missing || strlen(reference) == 0) {
-		fprintf(fRtf, "?");
+		fprintRTF("?");
 		return 0;
 	}
 	if (fAux == NULL && (fAux = fopen(AuxName, "r")) == NULL) {	/* open .aux file if not
@@ -1010,7 +991,7 @@ ScanAux(char *token, char *reference, int code)
 		fprintf(stderr, "Error opening AUX-file: %s\n", AuxName);
 		fprintf(stderr, "Try running LaTeX first\n");
 		g_aux_file_missing = TRUE;
-		fprintf(fRtf, "?");
+		fprintRTF("?");
 		return 0;
 	}
 	rewind(fAux);
@@ -1027,7 +1008,7 @@ ScanAux(char *token, char *reference, int code)
 				if (s == NULL) {	/* no parameter found,
 							 * just print '?' and
 							 * return */
-					fprintf(fRtf, "?");
+					fprintRTF("?");
 					return 0;
 				}
 				s++;
@@ -1035,14 +1016,14 @@ ScanAux(char *token, char *reference, int code)
 
 			while (*s != closebrace && *s != '\0')	/* print the number and
 								 * exit */
-				fprintf(fRtf, "%c", *s++);
+				fprintRTF("%c", *s++);
 
 			return 1;
 		}
 	}
 
 	diagnostics(WARNING, "\\%s{%s} not found in %s", token, reference, AuxName);
-	fprintf(fRtf, "?");
+	fprintRTF("?");
 	return 0;
 }
 
@@ -1103,17 +1084,17 @@ CmdLabel1_4(int code, char *text)
 		 * encountered it's a severe bug
 		 */
 
-		fprintf(fRtf, "{\\*\\bkmkstart %s} {\\*\\bkmkend %s}", text, text);
+		fprintRTF("{\\*\\bkmkstart %s} {\\*\\bkmkend %s}", text, text);
 		break;
 	case REF:
 	case HYPERREF:
-		fprintf(fRtf, "{\\field\\fldlock{\\*\\fldinst REF %s  \\\\n}{\\fldrslt ", text);
+		fprintRTF("{\\field\\fldlock{\\*\\fldinst REF %s  \\\\n}{\\fldrslt ", text);
 		ScanAux("newlabel", text, 1);
-		fprintf(fRtf, "}}");
+		fprintRTF("}}");
 		break;
 	case PAGEREF:
 	case HYPERPAGEREF:
-		fprintf(fRtf, "{\\field{\\*\\fldinst PAGEREF %s}{\\fldrslt ?}}", text);
+		fprintRTF("{\\field{\\*\\fldinst PAGEREF %s}{\\fldrslt ?}}", text);
 		break;
 	default:
 		diagnostics(ERROR, "Called CmdLabel with wrong Code %d", code);
@@ -1130,15 +1111,15 @@ CmdLabelOld(int code, char *text)
 {
 	switch (code) {
 		case LABEL:
-		fprintf(fRtf, "{\\v[LABEL: %s]}", text);
+		fprintRTF("{\\v[LABEL: %s]}", text);
 		break;
 	case REF:
 	case HYPERREF:
-		fprintf(fRtf, "{\\v[REF: %s]}", text);
+		fprintRTF("{\\v[REF: %s]}", text);
 		break;
 	case PAGEREF:
 	case HYPERPAGEREF:
-		fprintf(fRtf, "{\\v[PAGEREF: %s]}", text);
+		fprintRTF("{\\v[PAGEREF: %s]}", text);
 		break;
 	default:
 		diagnostics(ERROR, "Called CmdLabel with wrong Code %d", code);
@@ -1170,9 +1151,9 @@ void CmdQuad(int kk)
  ******************************************************************************/
 {
 	int z;	
-	fprintf(fRtf,"{\\emspace ");
-	for (z=0; z<kk; z++) fprintf(fRtf," ");
-	fprintf(fRtf,"}");
+	fprintRTF("{\\emspace ");
+	for (z=0; z<kk; z++) fprintRTF(" ");
+	fprintRTF("}");
 }
 
 void CmdSpace(float kk)
@@ -1181,7 +1162,7 @@ void CmdSpace(float kk)
  ******************************************************************************/
 {
 	int size = CurrentFontSize()*kk;
-	fprintf(fRtf,"{\\fs%d  }", size);
+	fprintRTF("{\\fs%d  }", size);
 }
 
 void 
@@ -1314,11 +1295,11 @@ parameter: number of columns
  ******************************************************************************/
 {
 	switch (code) {
-		case One_Column:fprintf(fRtf, "\\page \\colsx709\\endnhere ");	/* new page & one column */
+		case One_Column:fprintRTF("\\page \\colsx709\\endnhere ");	/* new page & one column */
 		twocolumn = FALSE;
 		break;
 	case Two_Column:
-		fprintf(fRtf, "\\page \\cols2\\colsx709\\endnhere ");	/* new page & two
+		fprintRTF("\\page \\cols2\\colsx709\\endnhere ");	/* new page & two
 									 * columns */
 		twocolumn = TRUE;
 		break;
@@ -1334,13 +1315,13 @@ parameter: code: newpage or newcolumn-option
  ******************************************************************************/
 {
 	switch (code) {
-		case NewPage:fprintf(fRtf, "\\page ");	/* causes new page */
+		case NewPage:fprintRTF("\\page ");	/* causes new page */
 		break;
 	case NewColumn:
 		if (twocolumn)
-			fprintf(fRtf, "\\column ");	/* new column */
+			fprintRTF("\\column ");	/* new column */
 		else
-			fprintf(fRtf, "\\page ");	/* causes new page */
+			fprintRTF("\\page ");	/* causes new page */
 		break;
 	}			/* switch */
 }
@@ -1392,21 +1373,21 @@ CmdAbstract(int code)
 {
 	static char     oldalignment;
 
-	fprintf(fRtf, "\n\\par\n\\par\\pard ");
+	fprintRTF("\n\\par\n\\par\\pard ");
 	if (code == ON) {
 		if (!article || !titlepage) 
-			fprintf(fRtf, "\\page");
+			fprintRTF("\\page");
 
-		fprintf(fRtf, "\\pard\\qj ");
-		fprintf(fRtf, "{\\b\\fs%d ", CurrentFontSize());
+		fprintRTF("\\pard\\qj ");
+		fprintRTF("{\\b\\fs%d ", CurrentFontSize());
 		ConvertBabelName("ABSTRACTNAME");
-		fprintf(fRtf, "}\\par ");
+		fprintRTF("}\\par ");
 		oldalignment = alignment;
 		alignment = JUSTIFIED;
 	} else {
-		fprintf(fRtf, "\\pard ");
+		fprintRTF("\\pard ");
 		alignment = oldalignment;
-		fprintf(fRtf, "\n\\par\\q%c ", alignment);
+		fprintRTF("\n\\par\\q%c ", alignment);
 	}
 }
 
@@ -1419,12 +1400,12 @@ CmdTitlepage(int code)
 {
 	switch (code) {
 		case ON:
-		fprintf(fRtf, "\n\\par\\pard \\page ");	/* new page */
-		fprintf(fRtf, "\n\\par\\q%c ", alignment);
+		fprintRTF("\n\\par\\pard \\page ");	/* new page */
+		fprintRTF("\n\\par\\q%c ", alignment);
 		break;
 	case OFF:
-		fprintf(fRtf, "\\pard ");
-		fprintf(fRtf, "\n\\par\\q%c \\page ", alignment);
+		fprintRTF("\\pard ");
+		fprintRTF("\n\\par\\q%c \\page ", alignment);
 		break;
 	}			/* switch */
 }
@@ -1491,16 +1472,16 @@ CmdMultiCol( /* @unused@ */ int code)
 	}
 
 	for (i = 1; i < toBeInserted; i++, actCol++) {
-		fprintf(fRtf, " \\cell \\pard \\intbl ");
+		fprintRTF(" \\cell \\pard \\intbl ");
 	}
-	fprintf(fRtf, "\\q%c ", colFmtChar);
+	fprintRTF("\\q%c ", colFmtChar);
 
 	diagnostics(4, "Entering Convert() from CmdMultiCol()");
 	Convert();
 	diagnostics(4, "Exiting Convert() from CmdMultiCol()");
 
 	for (i = toBeInserted; (i < numCol) && (actCol < colCount); i++, actCol++) {
-		fprintf(fRtf, " \\cell \\pard \\intbl ");
+		fprintRTF(" \\cell \\pard \\intbl ");
 	}
 
 
@@ -1513,20 +1494,20 @@ CmdColsep(int code)
  ***************************************************************************/
 {
 	if (!g_processing_tabular) {
-		fprintf(fRtf, "{\\'a7}");
+		fprintRTF("{\\'a7}");
 		return;
 	}
 	actCol++;
 
 	if (g_processing_equation) {	/* means that we are in an eqnarray
 					 * or array */
-		fprintf(fRtf, "\\tab ");
+		fprintRTF("\\tab ");
 	} else {
-		fprintf(fRtf, " \\cell \\pard \\intbl ");
+		fprintRTF(" \\cell \\pard \\intbl ");
 		if (colFmt == NULL)
 			diagnostics(WARNING, "Fatal, Fatal! CmdColsep called whith colFmt == NULL.");
 		else
-			fprintf(fRtf, "\\q%c ", colFmt[actCol]);
+			fprintRTF("\\q%c ", colFmt[actCol]);
 	}
 }
 
@@ -1577,18 +1558,18 @@ CmdGraphics(int code)
 				fclose(fp);
 				return;
 			}
-		fprintf(fRtf, "\n{\\pict\\macpict\\picw%d\\pich%d\n", right - left, bottom - top);
+		fprintRTF("\n{\\pict\\macpict\\picw%d\\pich%d\n", right - left, bottom - top);
 
 		i = 0;
 		while ((cc = fgetc(fp)) != EOF) {
-			fprintf(fRtf, "%.2x", cc);
+			fprintRTF("%.2x", cc);
 			if (++i > 126) {
 				i = 0;
-				fprintf(fRtf, "\n");
+				fprintRTF("\n");
 			}	/* keep lines 254 chars long */
 		}
 
-		fprintf(fRtf, "}\n");
+		fprintRTF("}\n");
 		fclose(fp);
 		free(filename);
 	}
