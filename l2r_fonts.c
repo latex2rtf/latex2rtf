@@ -794,8 +794,8 @@ void MonitorFontChanges(char *text)
 {
     int n;
 
-    diagnostics(6, "\nMonitorFont %10s\n", text);
-    diagnostics(6, "MonitorFont before depth=%d, family=%d, size=%d, shape=%d, series=%d",
+    diagnostics(2, "\nMonitorFont %10s\n", text);
+    diagnostics(2, "MonitorFont before depth=%d, family=%d, size=%d, shape=%d, series=%d",
       FontInfoDepth, RtfFontInfo[FontInfoDepth].family,
       RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape, RtfFontInfo[FontInfoDepth].series);
 
@@ -805,14 +805,23 @@ void MonitorFontChanges(char *text)
     else if (strstart(text, "\\b ") || strstart(text, "\\b\\"))
         RtfFontInfo[FontInfoDepth].series = F_SERIES_BOLD;
 
-    else if (strstart(text, "\\i0"))
-        RtfFontInfo[FontInfoDepth].shape = F_SHAPE_UPRIGHT;
-
+    else if (strstart(text, "\\i0")) {
+        int mode=GetTexMode();
+        if (mode==MODE_MATH || mode==MODE_DISPLAYMATH)
+        	RtfFontInfo[FontInfoDepth].shape = F_SHAPE_MATH_UPRIGHT;
+        else
+        	RtfFontInfo[FontInfoDepth].shape = F_SHAPE_UPRIGHT;
+	}
     else if (strstart(text, "\\i ") || strstart(text, "\\i\\"))
         RtfFontInfo[FontInfoDepth].shape = F_SHAPE_ITALIC;
 
-    else if (strstart(text, "\\scaps0"))
-        RtfFontInfo[FontInfoDepth].shape = F_SHAPE_UPRIGHT;
+    else if (strstart(text, "\\scaps0")){
+        int mode=GetTexMode();
+        if (mode==MODE_MATH || mode==MODE_DISPLAYMATH)
+        	RtfFontInfo[FontInfoDepth].shape = F_SHAPE_MATH_UPRIGHT;
+        else
+        	RtfFontInfo[FontInfoDepth].shape = F_SHAPE_UPRIGHT;
+	}
 
     else if (strstart(text, "\\scaps ") || strstart(text, "\\scaps\\"))
         RtfFontInfo[FontInfoDepth].shape = F_SHAPE_CAPS;
@@ -830,7 +839,7 @@ void MonitorFontChanges(char *text)
         RtfFontInfo[FontInfoDepth].series = RtfFontInfo[0].series;
     }
 
-    diagnostics(6, "MonitorFont after depth=%d, family=%d, size=%d, shape=%d, series=%d",
+    diagnostics(2, "MonitorFont after depth=%d, family=%d, size=%d, shape=%d, series=%d",
       FontInfoDepth, RtfFontInfo[FontInfoDepth].family,
       RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape, RtfFontInfo[FontInfoDepth].series);
 

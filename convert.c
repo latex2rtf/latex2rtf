@@ -538,10 +538,16 @@ globals: fTex, fRtf and all global flags for convert (see above)
 
             default:
                 if (mode == MODE_MATH || mode == MODE_DISPLAYMATH) {
-                    if (('a' <= cThis && cThis <= 'z') || ('A' <= cThis && cThis <= 'Z'))
-                        fprintRTF("{\\i %c}", cThis);
-                    else
+                	if (('a' <= cThis && cThis <= 'z') || ('A' <= cThis && cThis <= 'Z')) {
+                    	if (CurrentFontSeries() == F_SERIES_BOLD)    /* do not italicize */
+                        	fprintRTF("%c", cThis);
+                        else if (CurrentFontShape() == F_SHAPE_MATH_UPRIGHT)
+                        	fprintRTF("%c", cThis);
+						else
+                        	fprintRTF("{\\i %c}", cThis);
+                	} else
                         fprintRTF("%c", cThis);
+                
 
                 } else {
 

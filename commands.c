@@ -789,7 +789,7 @@ globals: command-functions have side effects or recursive calls
     int i, j;
     char *macro_string;
 
-    diagnostics(3, "CallCommandFunc seeking <%s>, iAllCommands = %d", cCommand, iAllCommands);
+    diagnostics(5, "CallCommandFunc seeking <%s>, iAllCommands = %d", cCommand, iAllCommands);
 
     i = existsDefinition(cCommand);
     if (i > -1) {
@@ -804,9 +804,9 @@ globals: command-functions have side effects or recursive calls
         i = 0;
         while (strcmp(All_Commands[j][i].cpCommand, "") != 0) {
 
-            if (i<5)
+ /*           if (i<5)
             	diagnostics(3,"CallCommandFunc (%d,%3d) Trying %s",j,i,All_Commands[j][i].cpCommand);
-
+*/
             if (strcmp(All_Commands[j][i].cpCommand, cCommand) == 0) {
                 if (All_Commands[j][i].func == NULL)
                     return FALSE;
@@ -814,7 +814,7 @@ globals: command-functions have side effects or recursive calls
                     diagnostics(WARNING, "Command \\%s ignored", cCommand);
                 }
 
-                diagnostics(3, "CallCommandFunc Found %s iAllCommands=%d number=%d", All_Commands[j][i].cpCommand, j, i);
+                diagnostics(5, "CallCommandFunc Found %s iAllCommands=%d number=%d", All_Commands[j][i].cpCommand, j, i);
                 (*All_Commands[j][i].func) ((All_Commands[j][i].param));
                 return TRUE;    /* Command Function found */
             }

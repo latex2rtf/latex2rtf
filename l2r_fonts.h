@@ -1,4 +1,4 @@
-/* $Id: l2r_fonts.h,v 1.15 2004/05/12 06:11:25 prahl Exp $ */
+/* $Id: l2r_fonts.h,v 1.16 2004/10/03 22:35:25 prahl Exp $ */
 
 #define F_FAMILY_ROMAN          1
 #define F_FAMILY_ROMAN_1        2
@@ -39,6 +39,7 @@
 #define F_SHAPE_UPRIGHT_1    14
 #define F_SHAPE_UPRIGHT_2    15
 #define F_SHAPE_UPRIGHT_3    16
+#define F_SHAPE_MATH_UPRIGHT 17
 
 #define F_SERIES_MEDIUM      1
 #define F_SERIES_MEDIUM_1    2

@@ -1,5 +1,178 @@
-Changes since version 1.9.14
+2004-10-03 12:25  prahl
 
+ Fix for mis-numbering of figures and tables in reports
+	
+2004-10-02 22:21  prahl
+
+ support for \bibpunct in the natbib package
+	
+2004-10-02 20:26  prahl
+
+ Fix bizzare way that commands are searched.  It is now possible to replace
+	command behavior by pushing a new Environment.
+	
+2004-10-02 16:23  prahl
+
+ support for revtex \begin{acknowledge} \end{acknowledge} as well as
+	\onlinecite and \citeonline (from RevTeX).  (This is untested currently)
+	patches from Marin Chicoine.
+	
+2004-10-02 11:52  prahl
+
+ avoid possible overrun in cCommand in TranslateCommand
+	security flaw pointed out by D. J. Bernstein
+	
+2004-10-02 11:31  prahl
+
+ avoid buffer overruns in macro expansion that can be security holes
+	reported by D. J. Bernstein
+	
+2004-10-01 07:20  prahl
+
+ More fixes for the harvard bibliography style.  There is lots more work
+	to be done.  These fixes specifically address problems with more than
+	one author in the bibliography.
+	
+2004-09-30 22:11  prahl
+
+ add test/bib_harvard.tex to distribution
+	
+2004-09-30 22:03  prahl
+
+ Added basic support for harvard style bibliographies.  Not complete, but
+	most of the simple commands are supported.
+	
+2004-09-19 13:09  prahl
+
+ Patch by Jason Copenhaver to fix problem with statically allocated buffer
+	in expandmacro. (I do not think that the other files touched by this
+	check-in have substantive changes.)
+	
+2004-06-30 01:01  whennings
+
+ WH: updated test/subsup.tex with the definition of \textsubscript from the TeX FAQ
+	
+2004-06-28 22:56  prahl
+
+ Fix for \cite[e.g.][]{author89} style of citation
+	
+2004-06-08 00:53  whennings
+
+ WH: updated documentation for MS-DOS and MS-Win
+	
+2004-06-07 01:14  whennings
+
+ WH: added (to documentation) info about MS-DOS "out of environment space"
+	
+2004-06-05 10:34  prahl
+
+ whitespace cleanup
+	
+2004-06-04 22:31  prahl
+
+ Some support for endnotes.sty patch by Reuben Thomas.  Still could use some
+	work, but the basic functionality is now present.
+	
+2004-06-03 17:06  prahl
+
+ Add non-breaking space to \og
+	
+2004-06-03 16:38  prahl
+
+ Add commands \og and \fg in for french.  Patch by Reuben Thomas
+	
+2004-05-20 21:07  prahl
+
+ Fix indentation after \]
+	
+2004-05-20 19:58  prahl
+
+ Fix to allow \renewcommand{\refname} other latex names are not supported yet
+	
+2004-05-20 19:33  prahl
+
+ Stop latex2rtf from processing text after \end{document}
+	
+2004-05-16 14:21  prahl
+
+ fix for post-notes in natbib cites
+	
+2004-05-16 13:09  prahl
+
+ fix for same year, same author, \citep bug (similar problem for \citet)
+	still exists when translating natbib citatisons
+	
+2004-05-16 12:21  prahl
+
+ Fixes for repeated names when using natbib package.
+	
+2004-05-11 23:11  prahl
+
+ Support for latin2/cp1250/cp852.  Needs testing but seems to work
+	
+2004-05-10 22:19  prahl
+
+ add comment to so that bib_apacite can be processed by newer versions
+	of apacite.  Changes that prevent backward compatibility have been made
+	to apacite cause problems because we use premade .bbl files.  They have
+	a work-around for newer versions, but that does not work with older
+	version...
+	
+2004-05-10 21:57  prahl
+
+ removing one last file
+	
+2004-05-10 21:50  prahl
+
+ more clean-up
+	
+2004-05-10 21:46  prahl
+
+ renaming files in test directory
+	
+2004-05-10 01:42  whennings
+
+ WH: added cyrillic fonts to old fonts.cfg (were missing, copied from newer fonts_pc.cfg)
+	
+2004-04-25 12:16  prahl
+
+ Better handling of \newpage
+	Supprt for \eqref
+	Add ngerman in \documentclass[ngerman]{article}
+	Improve handling of dimensions e.g., "1 true cm"
+	Add infrastructure to for \tableofcontents (not complete)
+	
+2004-03-22 06:13  whennings
+
+ WH: reactivated old fonts.cfg for better compatibility of rtf file across different systems
+	
+2004-03-02 20:14  prahl
+
+ Remake documentation
+	
+2004-03-02 20:11  prahl
+
+ Fixes and vms_make.com to port latex2rtf to openvms
+	Thanks to Martin <zinser@zinser.no-ip.info>
+	Start of new code needed to improve tabular spacing
+	definitely not finished yet (this is by me)
+	
+2004-02-09 21:04  prahl
+
+ Bumping version number to 1.9.16
+	
+2004-02-09 02:49  whennings
+
+ WH: added missing file test/figtestc.pdf (from 1.9.15 tarball)
+	
+2004-02-08 18:30  prahl
+
+ Update to changelog before 1.9.15 release
+	
+2004-02-08 18:28  prahl
+
+ add \ldots test to eqns.tex
+	
 2004-02-08 18:12  prahl
 
  Update file dependencies
@@ -533,4 +706,1620 @@ Changes since version 1.9.14
 
  WH: changed name "latex2png.bat" to "latex2pn.bat" in cvs and in Makefile
 	WH: updated documentation for installing version 1.9.14 under DOS/Windows
+	
+2002-11-28 14:17  prahl
+
+ Final set of changes for 1.9.14 release.
+	
+2002-11-28 10:36  prahl
+
+ Add support fo \abstract{}
+	
+2002-11-28 10:08  prahl
+
+ Remove control characters from .hlp files
+	
+2002-11-28 09:29  prahl
+
+ Documentation updates.
+	
+2002-11-26 20:09  prahl
+
+ add linux.tex as a test file.  Add list environment with braces
+	
+2002-11-25 20:55  prahl
+
+ Ensure that bookmarks begin with letters BM
+	
+2002-11-25 19:33  prahl
+
+ Fix attribution in russian.cfg.  Documentation tweaks.
+	
+2002-11-25 08:05  prahl
+
+ Add mygetopt.h to Makefile
+	
+2002-11-25 08:01  prahl
+
+ Adding mygetopt.h to distribution
+	
+2002-11-25 07:59  prahl
+
+ Adding test files
+	
+2002-11-25 07:22  prahl
+
+ Eliminate extra tab in description environment
+	
+2002-11-24 22:36  prahl
+
+ Support for xlink.
+	Adding test cases to existing test files
+	Fix crashing bug when graphics file is not found
+	
+2002-11-24 19:54  prahl
+
+ Fix segfault when including files that cannot be opened
+	
+2002-11-24 16:46  prahl
+
+ Properly ignore \limits and \nolimits
+	Increase stack size so misc2.tex continues to translate
+	
+2002-11-23 23:04  prahl
+
+ Add support for leftrightarrows and kin (found in amssymb)
+	
+2002-11-23 21:15  prahl
+
+ Fix for \left and \right
+	Add proper parsing for plain tex \matrix command
+	
+2002-11-23 15:35  prahl
+
+ Add CzechMode and \uv{quote} command for czech
+	
+2002-11-23 11:02  prahl
+
+ Add comments and rename EXESFX to EXE_SUFFIX
+	
+2002-11-23 08:52  prahl
+
+ Remove optind.c from distribution
+	
+2002-11-23 08:40  prahl
+
+ Simplify Makefile by eliminating HAS_DOS_SEP and HAS_NO_GETOPT
+	
+2002-11-21 08:19  prahl
+
+ Add \up to work just like \fup
+	
+2002-11-21 08:11  prahl
+
+ Allow -C 850 as well as -C cp580 (patch by D. Taupin)
+	
+2002-11-21 08:06  prahl
+
+ Make equation option -M default to more sensible behavior
+	
+2002-11-21 07:54  prahl
+
+ different conventions for calling latex2png under MSDOS
+	
+2002-11-20 08:30  prahl
+
+ Add missing test files to CVS
+	
+2002-11-20 08:25  prahl
+
+ Remove proffois.tex from CVS and tarball
+	
+2002-11-20 08:19  prahl
+
+ Remove extra header file from mygetopt.c
+	
+2002-11-20 08:08  prahl
+
+ Fix for bad footnote processing.
+	
+2002-11-20 07:56  prahl
+
+ Fix broken -C command line option
+	
+2002-11-19 21:26  prahl
+
+ Fixed indentation bug in second paragraph of list item
+	
+2002-11-19 21:12  prahl
+
+ Fix to properly create .pbm files when inline equation flag is present
+	
+2002-11-19 21:08  prahl
+
+ Add readme for scripts directory
+	
+2002-11-19 21:07  prahl
+
+ Add Makefile and test files for latex2png script.  Removed old scripts
+	added files to main Makefile for packaging.
+	
+2002-11-19 18:43  prahl
+
+ Make -fsigned-char the default (mostly for AIX)
+	
+2002-11-19 04:04  prahl
+
+ Hack to work around \begin{multicols} ... \end{multicols} bug.  There is no
+	support, but create a valid RTF file.
+	
+2002-11-19 03:55  prahl
+
+ Use endash and not bullet in itemize environment
+	
+2002-11-19 03:28  prahl
+
+ Fix indentation bugs in bibliography environment
+	
+2002-11-18 20:09  prahl
+
+ update credits, todo list
+	
+2002-11-18 20:06  prahl
+
+ Various fixes to improve equation handling by C. Bernard.
+	
+2002-11-18 17:38  prahl
+
+ Adding a few more commands from french.sty
+	
+2002-11-18 09:16  prahl
+
+ Fix indenting of paragraphs following section in FrenchMode
+	
+2002-11-17 21:43  prahl
+
+ Fix for duplicated labels in apalike bibliographies.
+	Explicitly handle \bibliographystyle
+	Fix bug in opening .bbl file
+	Provide warning if file has not be latexed enough times
+	Ensure that name of bibliography is discarded.
+	
+2002-11-17 17:45  prahl
+
+ Fixes to make list environments (enumerate, itemize, and description) align
+	better.
+	
+2002-11-17 08:52  prahl
+
+ Fix broken -o option
+	
+2002-11-16 22:20  prahl
+
+ Changes to make inline equations align properly.  This required changes to
+	the latex2png script and how png files are placed.
+	
+2002-11-08 08:03  prahl
+
+ Add -c -g -m and -i options to all scripts.  Make default, _1 and _2
+	scripts work with included eps files.  -i support not implemented.
+	latex2png was contributed by B. Horeni, but mangled by me so it probably
+	does not work on any platform at the moment.
+	
+	Finally, -i support will be added when the inline equation option
+	is added to the latex2rtf source.
+	
+2002-11-06 18:06  prahl
+
+ Support for processing figures using latex and including the result as a
+	png in the RTF file.  This is the new (undocumented) option -F.  This
+	check-in also adds support for processing \begin{music}...\end{music}
+	in the same way.  I also see that some of the partially enhanced latex2png
+	files have also made their way into this check-in as well.
+	
+2002-11-05 07:17  prahl
+
+ Removed -ansi and added -fsigned-char to CFLAGS
+	Add need explict cast in parser.c to avoid warning
+	Explicitly set tabbing and tabular in those environments
+	latex russian.tex before testing
+	
+2002-10-15 00:17  whennings
+
+ In Makefile
+	option "-ansi" deactivated
+	option "-fsigned-char" added, needed on IBM SP/2 (AIX)
+	
+2002-10-07 07:55  prahl
+
+ Added examples to help message.  Added tabbing.tex to tarball
+	
+2002-09-30 02:18  whennings
+
+ Updated documentation:
+	In Makefile, default compiler being "gcc".
+	On IBM AIX, use "gmake" instead of "make".
+	DOS/Windows: Using 4NT.exe probably causes problem.
+	
+2002-09-29 21:16  prahl
+
+ Slight reorganization of texinfo.
+	Changes to -v and -h commands in preparation for using help2man to automate
+	creation of man pages.
+	
+2002-09-24 18:34  prahl
+
+ rename strndup to mystrndup to avoid function found on some systems
+	
+2002-09-24 17:22  prahl
+
+ Fix typo in Makefile
+	
+2002-09-24 06:59  prahl
+
+ Another test case for tabbing.tex
+	
+2002-09-24 06:54  prahl
+
+ Another round of patches for tabbing.  Works now, but column widths still
+	need work.  Added tabbing.tex to files used for testing.
+	
+2002-09-23 07:34  prahl
+
+ Another set of code changes to support tabbing.  Still not fully functional.
+	
+2002-09-22 14:53  prahl
+
+ Fix to use \fcharset255 with codepage 852
+	
+2002-09-22 14:48  prahl
+
+ Added support of -se and -sf switches to scale equations and figures.  Patch
+	by Bohumir Horeni.  Also change to xref, improved bitmap sizing in graphics.c
+	and added \bmod operator to direct.cfg.
+	
+2002-09-21 17:47  prahl
+
+ Add HAS_DOS_SEP for OS2 support.  By Bohumir Horeni
+	
+2002-09-21 16:56  prahl
+
+ added raw1253 (greek) and raw437 (ibm pc) to codepage support
+	
+2002-09-21 16:26  prahl
+
+ Added raw, raw852, and raw1250 as options for -C
+	base on suggestion and patch by Bohumir Horeni
+	
+2002-09-21 11:20  prahl
+
+ Makefile improvements for OS2 and win32 by Bohumir Horeni
+	More work on the tabbing environment.  Still needs work.
+	
+2002-09-21 08:13  prahl
+
+ Bugfixes from Bohumir Horeni
+	
+2002-09-10 02:34  whennings
+
+ Added to documentation that calling latex2png.bat
+	may not work under DOS/Win when using command processor
+	other than command.com
+	
+2002-09-02 04:36  whennings
+
+ latex2png.bat changed to avoid unnecessary error messages
+	like "Bad command or file name"
+	caused by "del %fn%.dvi" and "del %fn%.png" commands:
+	"IF EXIST %fn%.dvi " added.
+	
+2002-08-04 21:05  prahl
+
+ First round of corrections for tabbing environment
+	
+2002-07-27 15:04  prahl
+
+ Added better support for \lim, \liminf, and \limsup when subscript is present
+	Patch based on suggestions by ninov
+	
+2002-07-25 03:00  whennings
+
+ added to documentation recommendation to use gcc and gmake in case of problems
+	
+2002-07-25 02:09  whennings
+
+ added "#include <stdio.h>" to solve compile error on IBM AIX
+	
+2002-07-23 09:08  whennings
+
+ added to documentation how to install under WinNT and XP
+	
+2002-06-23 08:06  prahl
+
+ Assign copyright to The Free Software Foundation
+	
+2002-06-23 08:00  prahl
+
+ Add GNU copyright to all source files
+	
+2002-06-22 17:10  prahl
+
+ Support for \cline in tabular environment
+	
+2002-05-07 22:07  prahl
+
+ Enhancements to file inclusion.
+	wmf inclusion tested and working
+	eps_to_pict tested and working but not as hoped
+	
+2002-05-05 23:02  prahl
+
+ Skeleton for eps_to_wmf function added.
+	
+2002-05-05 15:40  prahl
+
+ Untested routine to convert eps files to pict format
+	
+2002-05-05 12:37  prahl
+
+ Fixed bugs in EMF file handling
+	
+2002-05-05 11:11  prahl
+
+ Added support for including wmf and emf files.
+	
+2002-05-04 20:45  prahl
+
+ Added structs for embedding EPS files in EMF to graphics.c
+	
+2002-05-04 11:41  prahl
+
+ A few more changes for cyrillic support
+	
+2002-05-04 11:12  prahl
+
+ Remove debugging messages
+	Remove some unneeded warnings
+	
+2002-05-04 10:52  prahl
+
+ Tabular support for horiz and vert rules
+	More test cases in test/tabular.tex
+	
+2002-05-02 22:39  prahl
+
+ Yet more fixes for \multicolumn
+	Improved tabular.tex as a test file
+	
+2002-05-02 07:47  prahl
+
+ Added strndup
+	Fixed bug in strdup_noendblanks
+	Improved handling of \multicolumn
+	
+2002-04-28 11:45  prahl
+
+ Changes to allow cp1252 (latin1) and cp1251 (cyrillic) to coexist.
+	
+2002-04-27 15:53  prahl
+
+ Leak fixes.
+	
+2002-04-27 09:05  prahl
+
+ Fix for $1\over2$ trashing memory
+	
+2002-04-26 20:55  prahl
+
+ Mihail Baikov's fixes for cyrillic support
+	
+2002-04-24 07:31  prahl
+
+ First pass at support for cyrillic fonts.  These don't quite work yet.
+	
+2002-04-21 15:49  prahl
+
+ More tabular fixes.
+	Weird malloc problem under OSX
+	Added man file for latex2png
+	More robust code for user environment expansions
+	
+2002-04-13 12:59  prahl
+
+ Small fixes for tabular environment
+	
+2002-04-13 11:38  prahl
+
+ Fixes for letter format
+	
+2002-04-13 11:20  prahl
+
+ Fix bug opening file in another directory
+	Begin cleaning up table translation code
+	Change PushSource to return 0 when successful
+	Change memcpy to memmove for safety
+	
+2002-04-05 20:37  prahl
+
+ Eliminate more warnings
+	Fix bugs when using my_getopt
+	Create my_fopen to gather path mangling in one place
+	
+2002-04-03 19:11  prahl
+
+ Remove diagnostic label warning
+	support \dfrac (mostly)
+	Eliminate spurious make problem #define in main.h
+	Fix warnings for gcc 2.95.2 on solaris
+	
+2002-04-03 07:44  prahl
+
+ By default use our own strdup.  Simplifies porting.
+	
+2002-04-03 07:30  prahl
+
+ Finishing last CVS checkin
+	
+2002-04-03 07:28  prahl
+
+ Fixes by Wilfried for latex2rtf.bat
+	Fixes by Wilfried for documentation
+	Explictly request single .html file from makeinfo
+	Update Makefile for single .html file
+	
+2002-04-01 22:37  prahl
+
+ More updates before 1.9.13 release
+	
+2002-04-01 22:16  prahl
+
+ Split bitmap version of eqnarray environment into pieces so that each equation
+	numbering would be correct
+	
+2002-04-01 07:21  prahl
+
+ Fix regression in figure and table numbering
+	Expand font and source depths
+	
+2002-03-31 20:54  prahl
+
+ Updating ToDo
+	
+2002-03-31 20:41  prahl
+
+ More cross-referencing fixes
+	
+2002-03-31 12:17  prahl
+
+ Fixes to cross referencing.
+	
+2002-03-31 09:13  prahl
+
+ Updated documentation
+	Fixed a subtle bug in handling of \item
+	Improved line number reporting
+	Improved handling of latex2rtf dir/before/file.tex
+	
+2002-03-25 07:45  prahl
+
+ Adding batch file to convert latex to png.  Written by Wilfried.
+	
+2002-03-25 07:43  prahl
+
+ Changes to getTmpPath for DOS/MACOS
+	
+2002-03-25 07:35  prahl
+
+ Wilfried's changes to README.DOS
+	
+2002-03-20 20:56  prahl
+
+ Added -H option to latex2png.  Removed -t option
+	
+2002-03-20 19:43  prahl
+
+ Update ToDo
+	Downsize equations so that width and height do not exceed 32767 twips
+	This is a Word bug.
+	Move some equation graphics stuff to graphics.c
+	remove legacy l2r.bat
+	remove l2r.bat from Makefile
+	Start of fix for eqnarray's with referenced equation numbers
+	
+2002-03-19 08:17  prahl
+
+ Portability enhancements for DOS.
+	Removing SEMICOLONSEP stuff
+	
+2002-03-19 07:23  prahl
+
+ Add script/latex2png to the Makefile
+	
+2002-03-18 21:36  prahl
+
+ Added some comments to main Makefile
+	Remove proffois.tex from routine tests ... awaiting multicol implementation
+	Removed some debugging comments from parser.c
+	Changed test/Makefile to use cfg files in current distribution
+	
+2002-03-17 22:45  prahl
+
+ Quick change to misc4.tex to make the error go away.  Need to add
+	item to ToDo list to make getTexUtil handle % correctly when raw
+	characters are being read
+	
+2002-03-17 22:31  prahl
+
+ Previous fix for getSection was to severe.  This allows sections to be
+	slurped one-at-a-time again.  Still have a parsing problem with misc4
+	
+2002-03-17 17:38  prahl
+
+ Yet more portability fixes to the Makefile
+	We no longer rely on install
+	
+2002-03-17 13:05  prahl
+
+ Yet more fixes to get reported linenumbers in synch
+	
+2002-03-17 11:05  prahl
+
+ Separate .c and .h files in Makefile
+	
+2002-03-17 10:42  prahl
+
+ Fixes to improve reporting line numbers
+	Major overhaul of main Makefile
+	Move latex2rtf.1 to doc directory
+	Create latex2png in scripts directory (will be standard script installed)
+	Various fixes to the texinfo documentation
+	Newest makeinfo --html creates directory and Makefile needed to adapt
+	New target in Makefile to install info file
+	New Makefile permits non-root installations
+	
+2002-03-16 21:09  prahl
+
+ removing debian files per Chris Lawrence the current debian maintainer
+	who says they are in "the ancient 1.0 packaging format"
+	Updates to the man page to describe new functionality
+	
+2002-03-16 08:08  prahl
+
+ LaTeX fixes to encoding files so that they are processed correctly by
+	pdflatex.  Thanks to Peter Dyballa for figuring out the correct preamble
+	
+2002-03-15 21:12  prahl
+
+ Fix so that png files get processed correctly.
+	
+2002-03-15 08:52  prahl
+
+ Fix bug in cross-references
+	Improve error handling in the latex2png scripts so that old .png
+	files are not inserted erroneously
+	
+2002-03-14 22:00  prahl
+
+ Fix for \input in preamble with filename ending in .tex
+	added hsize and lettersize to length commands
+	expanded getdimension to handle to80pt or spread50in
+	
+2002-03-14 08:39  prahl
+
+ Fix errors when parsing test/essential.tex and test/misc4.tex
+	
+2002-03-13 23:21  prahl
+
+ Improvements to the way that temporary directories are used.
+	latex2rtf now uses the directory specified on the command line
+	if that is absent, then the directory specified by TMPDIR is used,
+	if that is absent, the directory "/tmp" is used.
+	
+2002-03-13 22:50  prahl
+
+ Eliminate unnecessary subshell in shell script
+	
+2002-03-13 22:42  prahl
+
+ Added function to determine endianness of machine
+	Added macros to convert little endian ints to network order
+	Added code to convert sizes of graphics files on little endian machines
+	Fixed typo in error message in cfg.c
+	Added font encoding to enc_applemac.tex
+	Added \textunderscore to direct.cfg
+	Fixed stderr to allow redirection.
+	Removed logfile stuff
+	Removed errfile
+	
+2002-03-11 22:42  prahl
+
+ Fixed bus error when RTFPATH is not defined
+	Fixed bug in diagnostics() when an error was reported
+	Fixed bug in diagnostics() when closing an unopened file
+	Improved error message when latex2rtf cannot open .cfg files
+	Added verbage to latex2rtf.texi about stdin/stdout redirection
+	
+2002-03-11 07:58  prahl
+
+ Fixes for -h option
+	
+2002-03-11 07:45  prahl
+
+ Documentation updates.
+	Updated help using -h
+	
+2002-03-10 21:40  prahl
+
+ Update ToDo
+	
+2002-03-10 21:28  prahl
+
+ Support for \begin{picture} ... \end{picture}
+	New test file
+	
+2002-03-10 20:41  prahl
+
+ More equation to bitmap improvements.
+	Added global flags for inline_rtf and display_rtf for equation conversion.
+	Fixed bugs in handling of \over
+	
+2002-03-10 11:08  prahl
+
+ adding these files to scripts directory
+	
+2002-03-10 11:05  prahl
+
+ Adding imaging scripts to scripts directory
+	
+2002-03-10 11:02  prahl
+
+ Update version.h to 1.9.13
+	Updated ChangeLog
+	Fixes to equation number for bitmap equations
+	
+2002-03-10 08:36  prahl
+
+ Moving scripts to script directory
+	Previous check-in also wrapped optind.c and mygetopt.c in #ifdef's
+	
+2002-03-10 08:19  prahl
+
+ Makefile changes.  New make targets realclean and depend
+	Updated dependencies in Makefile
+	changed name of shell script from tex2png to latex2png
+	
+2002-03-08 21:29  prahl
+
+ Improvements to shell scripts to create files in directory that
+	the latex file is in rather than the current working directory.
+	
+2002-03-07 22:46  prahl
+
+ Bitmap conversion of equations now works.  To use this feature you must
+	get one of the scripts tex2png_* working and installed as tex2png.  This
+	means that in addition of needing latex installed, you will probably need
+	dvips and ImageMagick also installed.  In any case, there still remain bugs
+	in how equation numbers are handled as well as inline equation conversion
+	activation.
+	
+2002-03-03 21:30  prahl
+
+ Minimal support for .eps, .ps, .gif, and .tiff files.  This assumes that
+	you have Imagemagick installed and the shell command convert file.eps file.png
+	will actually create a .png file.
+	
+2002-03-02 22:29  prahl
+
+ Basic support for incorporating .pict, .jpg, and .png files in RTF
+	
+2002-03-02 12:16  prahl
+
+ Creating graphic.c and graphic.h in anticipation of code for better
+	graphics capabilities.  Currently, just moving existing CmdGraphics()
+	routine.
+	
+2002-02-26 20:32  prahl
+
+ Fixes for \mbox{if $x$} within an equation that uses fields
+	
+2002-02-25 21:02  prahl
+
+ Adding \parallel to direct.cfg
+	
+2002-02-24 18:13  prahl
+
+ Added support for \stackrel command
+	
+2002-02-24 12:48  prahl
+
+ support for \iint and \iiint
+	
+2002-02-24 12:28  prahl
+
+ Minimal support for \htmlref
+	
+2002-02-24 11:48  prahl
+
+ Support for \newtheorem and a file to test the new functionality
+	
+2002-02-18 22:32  prahl
+
+ Update to ToDo list.
+	
+2002-02-18 21:58  prahl
+
+ Final step in removing makefile --- add back original Makefile
+	
+2002-02-18 21:57  prahl
+
+ Trying to remove makefile
+	
+2002-02-18 21:55  prahl
+
+ Trying to remove "makefile"
+	
+2002-02-18 21:43  prahl
+
+ Added some support for \htmladdnormalref{text}{ref}
+	Fixed various bugs in citation code
+	Now support \nobreakspace
+	
+2002-02-18 13:14  prahl
+
+ Support \input and \include in preamble (in previous checkin)
+	
+2002-02-18 13:00  prahl
+
+ Fix for improper parsing of complicated citation references.
+	Improve handling of cross-reference labels
+	
+2002-02-18 10:03  prahl
+
+ Fix for \over matching \overline.
+	Enhance bracecheck to report number of files tested
+	
+2002-02-18 09:43  prahl
+
+ Fix to make test in fprintRTF of high bit characters more portable.
+	Shift -M options around slightly.
+	
+2002-02-17 22:36  prahl
+
+ Set default equation processing to how it used to be.
+	
+2002-02-17 21:54  prahl
+
+ Fix for \'{\i} and \`{\i}.
+	
+2002-02-17 21:43  prahl
+
+ Support for stdin and stdout.  Fix bug using latex2rtf without arguments.
+	
+2002-02-17 14:01  prahl
+
+ Fix for problems compiling on Linux by Michael Y. Brukman.  Eliminates
+	non-constant initialization to stdin.
+	
+2002-02-17 13:37  prahl
+
+ #ifdef fix by Michael Y. Brukman to Linux
+	
+2002-02-17 13:32  prahl
+
+ Fix missing -C switch when parsing options.
+	
+2002-02-17 09:17  prahl
+
+ New field for each equation in eqnarray.
+	
+2002-02-17 09:08  prahl
+
+ Convert {A \over B} to \frac{A}{B} so that fractions can be handled by
+	fields.
+	
+2002-02-17 07:42  prahl
+
+ Warn user when open braces remain in translated document.
+	
+2002-02-17 06:55  prahl
+
+ Allow redefinition of equation commands (e.g., \be for \begin{equation})
+	by properly handling macro expansion in getSection().  Add new test file
+	that verifies this behavior.
+	
+2002-02-16 22:19  prahl
+
+ Fix bug in macro expansion in getSection in parser.c
+	
+2002-02-16 21:12  prahl
+
+ Major changes to improve processing of equations.  This is the first step.
+	To get the old default handling of equations use -M1 for now.  More changes
+	to come, but this parses all the test files.
+	
+2001-12-08 13:20  prahl
+
+ Added \\* MERGEFORMAT to prevent references from changing style
+	
+2001-12-06 21:03  prahl
+
+ Add commandline support for directory for .cfg files
+	Add command line support for using a semicolon to separate arguements
+	in a field
+	Fixed a few problems with latex2rtf.texi
+	Fixed \"i and \"\i to do the right thing
+	Changed \include to be \input in include2.tex
+	
+2001-12-02 20:44  prahl
+
+ Remove all uses of ftell and most fseeks
+	
+2001-11-29 21:14  prahl
+
+ Minor changes before 1.9.12 release
+	
+2001-11-27 22:36  prahl
+
+ Fix for \sum and \prod to use EQ fields
+	Change qualisex to use cp850
+	Remove \centerline test from align
+	Changes to man page
+	
+2001-11-23 13:43  prahl
+
+ Support for \include{file}
+	Support for \char 'xxx
+	Test files for each
+	
+2001-11-21 06:08  prahl
+
+ Make array.tex latex properly.  (Wilfried Hennings)
+	
+2001-11-20 21:10  prahl
+
+ Fix off-by-one error reported by spago
+	
+2001-11-16 17:09  prahl
+
+ Support for \^\i{}
+	
+2001-11-16 17:01  prahl
+
+ add \usepackage[cp850]{inputenc}
+	
+2001-11-16 16:58  prahl
+
+ Small tweaks to font size and spacing of chapter/section titles
+	
+2001-11-15 21:16  prahl
+
+ Section labels finally work.  Added a few more test files.
+	
+2001-11-14 07:57  prahl
+
+ Parsing of labels now done, but not hooked up yet
+	
+2001-11-13 21:18  prahl
+
+ Eliminate warning about rtf_restrict by removing code until it gets fixed
+	
+2001-11-13 21:00  prahl
+
+ Added \footnotetext
+	
+2001-11-13 20:31  prahl
+
+ Fix for \cite[text]{citation}
+	
+2001-11-13 19:52  prahl
+
+ Support for secnumdepth
+	First try at better spacing around sections
+	improved handling of \paragraph
+	
+2001-11-12 21:43  prahl
+
+ Support for << and >> in french mode
+	
+2001-11-11 22:08  prahl
+
+ Add support for \def with parameters.  (Simple macro expansion only).
+	
+2001-11-11 20:50  prahl
+
+ Changing version and version.h to use the version number that I choose
+	and not something concocted by CVS.  New version number scheme will start
+	with 1.9.12.  Eventually we will get to 2.0
+	
+2001-11-11 11:01  prahl
+
+ Setting new version number
+	
+2001-11-11 10:57  prahl
+
+ Improve line numbers in errors a bit (still needs work)
+	
+2001-11-10 22:17  prahl
+
+ Dynamic resizing of buffer for sections
+	Improved handling of % in LaTeX files
+	
+2001-11-10 11:31  prahl
+
+ Remove unnecessary wildcards for portablity
+	
+2001-11-10 11:31  prahl
+
+ Fix unescaped @ in indexing section
+	
+2001-11-10 08:03  prahl
+
+ Split files at \section* \subsection* \subsubsection* also
+	
+2001-11-10 07:12  prahl
+
+ Fixed bold equation numbers
+	
+2001-11-04 22:01  prahl
+
+ Update latex2rtf cross-referencing information to be accurate for the next
+	released tarball.
+	
+2001-11-04 21:43  prahl
+
+ Fix to make footnotes appear at the bottom of the page.
+	
+2001-11-04 21:28  prahl
+
+ Support for indexing \index and \printindex work reasonably well now.
+	
+2001-11-04 12:39  prahl
+
+ Basic support for \section* and friends, I can't believe it wasn't here before
+	
+2001-11-04 11:46  prahl
+
+ Properly escape commas/semicolons in field structures
+	
+2001-11-04 11:20  prahl
+
+ Next phase in section label support.  Now split documents into chunks for
+	each numbered section
+	
+2001-11-03 09:30  prahl
+
+ Added support for command line option -Z# to specify the number of close
+	braces to append to the end of the RTF file.
+	
+2001-10-30 07:20  prahl
+
+ First stab at better support of section labels, not hooked up yet
+	
+2001-10-28 21:25  prahl
+
+ Edited todo lists and added name to credits
+	
+2001-10-28 21:00  prahl
+
+ Removed l2r.html
+	Updated Makefile to create latex2rtf.txt, latex2rtf.info, latex2rtf.pdf, and
+	latex2rtf.html
+	
+2001-10-28 17:15  prahl
+
+ Documenting current cross-reference implementation.
+	
+2001-10-28 14:27  prahl
+
+ Added support for \ref to sections, subsection, ...
+	
+2001-10-28 08:45  prahl
+
+ Support for cross-referencing of equations and eqnarrays
+	
+2001-10-27 21:02  prahl
+
+ Fixed table and figure cross-references
+	Fixed bug in getTexUntil when used on strings
+	
+2001-10-27 14:56  prahl
+
+ First round of fixes for \cite \label and \pageref
+	Fix for \url (% is a valid url character)
+	
+2001-10-27 10:42  prahl
+
+ Better fix for spaces in optionlist in \documentclass and \usepackage
+	
+2001-10-27 08:25  prahl
+
+ \begin{verbatim} ... \end{verbatim} are no longer justified
+	added \bot to direct.cfg
+	fixed regression caused by -W option
+	
+2001-10-27 07:26  prahl
+
+ Updated to reflect changes to command line options
+	
+2001-10-27 07:19  prahl
+
+ Fixed \d{o}
+	Added support for encoded chars with dot above
+	
+2001-10-27 07:02  prahl
+
+ Added color table to RTF header
+	Added support for -W option
+	Reverted -l lang to -i lang and restored -l
+	Updated -h output
+	
+2001-10-26 23:16  prahl
+
+ Change to cite.tex to remove damage that I did to it to test
+	whitespace tolerance patch
+	
+2001-10-26 23:13  prahl
+
+ Tolerate whitespace in citations
+	Move strdup strdup_noblanks strdup_nobadchars to util.c
+	Add $\sim$, \~{} to oddchars.tex
+	
+2001-10-25 08:50  prahl
+
+ Finished my first pass editing latex2rtf.texi.  It now has fewer blatant
+	errors and lies. :-)
+	
+2001-10-25 07:59  prahl
+
+ More editing fixes
+	
+2001-10-25 07:41  prahl
+
+ More clean-up of main.h
+	Collect defines at the top of the file
+	Banish various unnecessary globals to individual files
+	Remove a couple of unneeded includes in util.c
+	
+2001-10-24 22:53  prahl
+
+ Slight change in how HAS_NO_STRDUP is handled
+	
+2001-10-24 22:48  prahl
+
+ Updated Texconv URL
+	Revised another couple of chapters.  Only the last two remain!
+	
+2001-10-24 12:38  prahl
+
+ Changes to l2r.html in this checkin and the last are a mistake.
+	However latex2rtf passes pretty cleanly through both makeindex
+	and through texi2dvi --pdf.  There is still quite a bit of clean-up
+	needed in the chapters on configuration, errors, and development.
+	I just added the sections on installation, and these could use some
+	review as well.
+	
+2001-10-24 07:30  prahl
+
+ Changes to make latex2rtf pass cleanly through makeinfo.  It still
+	fails to pass through pdftex
+	
+2001-10-23 23:34  prahl
+
+ Yet more changes to try and beat latex2rtf.texi into shape
+	Still needs quite a bit of work and updating. A couple of node
+	bugs still remain.
+	
+2001-10-23 23:32  prahl
+
+ First set of fixes to the texinfo file by Scott
+	
+2001-10-23 23:31  prahl
+
+ Initial reconstruction of latex2rtf.texi by Georg
+	
+2001-10-23 07:35  prahl
+
+ Added command line switches -v -h -Z
+	renamed language switch from -i lang to -l lang
+	previous encoding switch -l is now -C codepage
+	renamed debugging switch from -v# to -d# to minimize initial confusion
+	the switch -h prints an improved help message
+	the switch -Z suppresses extra }'s at end of rtf file that are added
+	just to make sure that improper latex2rtf parsing still creates a file
+	that is readable by Word
+	
+2001-10-22 21:24  prahl
+
+ Added new option to command line to specify the input encoding.  Use
+	latex2rtf -C cp850 text
+	to translate text assuming standard codepage 850 encoding.
+	
+2001-10-22 20:47  prahl
+
+ Fix bug with $x=$$y+z$
+	
+2001-10-21 21:35  prahl
+
+ Files for \newcommand support that I forgot to add
+	Also improved output of diagnostics slightly
+	
+2001-10-21 21:33  prahl
+
+ Support for \newcommand, \renewcommand
+	Support for \newenvironment, \renewenvironment
+	Fixed bug in PopBrace()
+	Fixed bug in \begin{alltt} ... \end{alltt}
+	
+2001-10-20 14:17  prahl
+
+ support \begin{alltt} ... \end{alltt}
+	support \url
+	support \begin{latexonly} ... \end{latexonly}
+	support \begin{htmlonly}  ... \end{htmlonly}
+	support \begin{rawhtml}   ... \end{rawhtml}
+	eliminate no italics markup for numbers in mathmode
+	
+2001-10-18 20:58  prahl
+
+ Added support for \left and \right which unfortunately does not properly
+	handle \left. or \right.
+	Changed italicization of formula from always italic with ocassional
+	forays into roman, to default to roman and italicize letters.
+	Added support for \prime in direct.cfg and removed entries for \left
+	and \right from that file.
+	Check out tests in eqns.tex to see how this stuff works.
+	
+2001-10-16 21:43  prahl
+
+ Much better support for \begin{array} ... \end{array}
+	
+2001-10-16 19:50  prahl
+
+ Eliminated error() function.  Use diagnostics(ERROR, ) instead.
+	
+2001-10-16 19:48  prahl
+
+ Starting cross referencing implementation.  This begins the process by
+	renaming biblio.c to xref.c and moving all cross referencing code to
+	xref.c.  I also moved declarations for a couple of variables from main.c
+	to table.c
+	
+2001-10-14 20:43  prahl
+
+ Fixed breve accents once and for all by escaping ) in MT Extra font.
+	
+2001-10-14 11:24  prahl
+
+ Eliminated use of temporary files.
+	
+2001-10-13 13:31  prahl
+
+ Eliminate spurious space in bibliography and improve alignment.
+	
+2001-10-13 13:11  prahl
+
+ Eliminated getMathParam since it was identical to getBraceParam
+	
+2001-10-13 13:04  prahl
+
+ Renamed getParam to getBraceParam
+	
+2001-10-13 12:19  prahl
+
+ Converted all getBracketParam() to dynamically allocate strings
+	
+2001-10-11 22:45  prahl
+
+ Fixed non-portable use of ungetc
+	Eliminated fgetpos and fsetpos
+	Revised CmdVerbatim to be portable
+	added \begin{Verbatim} ... \end{Verbatim}
+	eliminated extra <stdio.h> in many places
+	Fixed code so that it works under Mac OS Classic again
+	
+2001-10-11 08:16  prahl
+
+ More fixes for accented math characters
+	
+2001-10-11 07:43  prahl
+
+ Fixed obscure equation numbering bug (\noindent in array environment
+	in an equation)
+	
+2001-10-11 07:06  prahl
+
+ Improved/Fixed \begin{abstract} ... \end{abstract}
+	tweaked placement of \bar with capital letters
+	Fixed bug with getParam and a newline before the parameter
+	
+2001-10-10 22:42  prahl
+
+ fixed \bar\psi to work properly
+	fixed \vec and tildes.  More work needed.
+	Rewired \ref so that it looks in the aux file for a number
+	This needs more work also
+	Modified the way that getParam works, does not *seem* to have busted
+	anything.
+	
+2001-10-10 21:27  prahl
+
+ added \Upsilon \varepsilon \varrho \L and \l to direct.cfg
+	(only the first has a real translation).  I decided that the epsilon
+	in the Symbol font was just like \varepsilon and so now \varepsilon
+	maps to the epsilon in the Symbol font and \epsilon -> [epsilon]
+	added encoding_tables.h to the Makefile
+	moved \hoffset and friends to the preamble commands
+	fixed a factor of two bug in getDimension
+	
+2001-10-07 22:06  prahl
+
+ added \textmonetary  \texttrademark  \guillemotleft \guillemotright
+	      \guilsinglleft \guilsinglright \quotedblbase  \quotesinglbase
+	added support for various lengths to be set using \parindent=0pt method
+	
+2001-10-07 19:43  prahl
+
+ added support for \vskip, \smallskip, \medskip, \bigskip
+	ignores \displaystyle now in ignore.cfg
+	removed \noindent from ignore.cfg
+	
+2001-10-07 18:59  prahl
+
+ Made vspace more robust
+	
+2001-10-07 14:20  prahl
+
+ Added support for \vspace and \vspace*
+	Fixed another bug in implementation of \usepackage{helvetica}
+	
+2001-10-07 11:29  prahl
+
+ fixed bug so that \usepackage{helvetica} will work with unknown package options
+	
+2001-10-07 10:48  prahl
+
+ Added support for \usepackage{helvetica} and others
+	Eliminated extra space after RTF characters written using \'xx
+	
+2001-10-07 08:10  prahl
+
+ Fixed bug with leading spaces in \documentclass[option1, option2]
+	
+2001-10-06 22:42  prahl
+
+ Support for different input encodings.  Much more work needed, but
+	this provides basic support for all input encodings available for latex2e.
+	
+2001-09-26 07:02  prahl
+
+ Patch by Chris Lawrence to fix off-by-one error in cfg.c
+	This fixes bug when LIBDIR does not end with a '/'
+	
+2001-09-25 22:34  prahl
+
+ Updated changelog.  Added box.tex as test file.  Updated ToDo
+	Updated version.h to 1.9i.  Modified Makefile to not use -Wall
+	This is the last check-in before 1.9i tarball is released.
+	
+2001-09-25 20:31  prahl
+
+ Rewrote paragraph handling completely.  Far fewer bugs in indentation
+	of paragraphs.  Support for \indent and \noindent.  Infrastructure
+	support to handle \vskip and \vspace.  Added reasonable hanging indent
+	for bibliographies.  All test files now have matching opening and
+	closing braces in the created RTF files.  Fixed bugs for \chapter.
+	Eliminated a handful of global variables.
+	
+2001-09-18 22:06  prahl
+
+ Fixed brace bug in equations.c
+	Fixed tabbing in equations.c
+	Fixed alignment of equation numbers
+	Typeset equation numbers in roman
+	Add bracecheck utility --- all rtf files should have level zero
+	
+2001-09-17 22:20  prahl
+
+ Fixed bug in IgnoreEnvironment
+	Fixed bug in IgnoreParameter
+	Added feature! insert \verbositylevel{5} in a LaTeX document and
+	dynamically increase the verbosity of debugging output.  Of course
+	the 5 can be replaced by any number from 0 to 6
+	
+2001-09-17 20:40  prahl
+
+ Default alignment is once again justified
+	Fixed bug with \mbox{}
+	Fixed bug with \footnote{}
+	Added support for german language
+	Some support for french
+	
+2001-09-16 09:33  prahl
+
+ Fixed bug in RTF output for papesize.
+	Added support for b5paper, a5paper
+	Enhanced support for all page sizes
+	
+2001-09-15 22:11  prahl
+
+ Gave up and completely revised font handling.  latex2rtf now uses an output
+	filter to keep track of the brace level and font changes in the RTF file.
+	This allows \emph to be handled properly.  This will also allow digits to
+	be typeset upright in math mode, but this has not been implemented yet.
+	
+2001-09-09 22:40  prahl
+
+ Eliminated many mysterious spaces that crept into the RTF file
+	Added braces to localize the effects of environments
+	There are still problems with identifying the current font when
+	environments are closed.   This is probably insoluble give the
+	current constraints on the problem.
+	Added align.tex to test the center, flushright, and flushleft environments
+	
+2001-09-09 20:14  prahl
+
+ Fixed \sffamily and others
+	Forced \plain in verb environments
+	Eliminated extra document environment
+	
+2001-09-09 12:43  prahl
+
+ added fancy.tex to test simple header commands
+	
+2001-09-09 12:41  prahl
+
+ Added support for \cfoot \lfoot \rfoot \chead \lhead \rhead
+	
+2001-09-05 21:43  prahl
+
+ separated convert routines into convert.c
+	separated bibliographic routines into biblio.c
+	separated tabular and tabbing routines into tables.c
+	eliminated funct2 by merging routines with funct1
+	moved ignore routines to ignore.c
+	Improved support for \emph and \em
+	Problems still remain with test files misc3 and misc4
+	
+2001-08-23 07:26  prahl
+
+ Just cleaning up the header for funct2.c.
+	
+2001-08-22 22:35  prahl
+
+ Yet more changes to font handling.  Added \upshape \textup and \begin{upshape}
+	Added \begin{Verbatim} as well as \Frac.  Tried to add \prod and \sum,
+	but these don't yet work.  Seems that there are problems with processing
+	frac.tex.  These will be worked on.
+	
+2001-08-21 22:50  prahl
+
+ More improvements in handling of font family, shape, series, and size.
+	LaTeX2RTF infrastructure now mimicks the LaTeX view of fonts.  This
+	check-in fixes problems with fonts.tex and fontsize.tex.  It also adds
+	support for \em, \emph, and \begin{em}...\end{em}.  Support for the
+	relatively unusual \begin{itshape}...\end{itshape} and others is also
+	included.
+	
+	Problems remain with misc3.tex and misc4.tex
+	
+2001-08-19 18:12  prahl
+
+ Fixed subtle bug in ConvertString().  This was the real cause of the last
+	problem with fonts.tex.  Basically, ConvertString() called Convert() only
+	once, however if the string contained any open/close brace pairs e.g.,
+	'the {\it italic} string' then everything after the closing brace would
+	be discarded.
+	
+	I also fixed a problem with discarding the first space sent to Convert().
+	
+	The fix to ConvertString() and the initial space conversion require some
+	careful testing.
+	
+2001-08-19 17:02  prahl
+
+ Fixed problem with processing fonts.tex
+	Added support for a variety French abbreviations
+	
+2001-08-12 16:39  prahl
+
+ Abbreviated comments at the beginning of funct1.c
+	
+2001-08-12 16:24  prahl
+
+ Added my ToDo list
+	
+2001-08-12 15:56  prahl
+
+ Revised fonts.cfg, removed Ferdsch, now set the default font correctly
+	and begun the process of eliminating the $Log: ChangeLog,v $
+	and begun the process of eliminating the Revision 1.22  2004/10/03 22:35:24  prahl
+	and begun the process of eliminating the fix font handling in equations so that ${\rm A}$ typesets in roman.
+	and begun the process of eliminating the Update ToDo and ChangeLog
+	and begun the process of eliminating the comments in files.
+	
+2001-08-12 14:15  prahl
+
+         Removed last two // comments
+	        Explicitly cast char to int in isalpha() and isdigit()
+	        Began the process of supporting Babel better
+	
+2001-08-12 12:48  prahl
+
+ 1.9h
+		Turned hyperlatex back on.  Still not tested
+		Turned isolatin1 back on.  Still not tested.
+		Eliminated use of \\ in code for comments
+		Eliminated \* within comments
+		Eliminated silly char comparison to EOF
+		Revised README to eliminate DOS stuff
+		Added support for \pagebreak
+		Added support for \quad, \qquad, \, \; and \> (as spaces)
+		Improved support for \r accent
+		Made minor changes to accentchars.tex
+		fixed bugs in \textit{s_$c$} and $\bf R$
+		fixed longstanding bugs in stack cleaning
+		fixed ' in math mode
+		log-like functions now typeset in roman
+		Added test cases to eqns.tex
+		default compiler options empty until code is more portable
+	
+2001-08-12 12:40  prahl
+
+ 1.9g
+	        Added commands to read and set TeX lengths
+	        Added commands to read and set TeX counters
+	        Fixed bug in handling of \item[text]
+	        Eliminated comparison of fpos_t variables
+	        Revised getLinenumber ... this is not perfect
+	        Fixed bug in getTexChar() routine
+	        Clearly separate preamble from the document in hopes that
+	          one day more appropriate values for page size, margins,
+	          paragraph spacing etc, will be used in the RTF header
+	        I have added initial support for page sizes still needs testing
+	        added two more test files misc3.tex and misc4.tex
+	        misc4.tex produces a bad rtf file currently
+	        separated all letter commands into letterformat.c
+	        cleaned up warning calls throughout code
+	        added \neq \leq \geq \mid commands to direct.cfg
+	        collected and added commands to write RTF header in preamble.c
+	        broke isolatin1 and hyperlatex support, these will be fixed next version
+	
+2001-08-12 12:32  prahl
+
+ 1.9f
+		Reformatted all source files ---
+		    previous hodge-podge replaced by standard GNU style
+		Compiles cleanly using -Wall under gcc
+	
+		added better translation of \frac, \sqrt, and \int
+		forced all access to the LaTeX file to use getTexChar() or ungetTexChar()
+		    allows better handling of %
+		    simplified and improved error checking
+		    eliminates the need for WriteTemp
+		    potentially allows elimination of getLineNumber()
+	
+		added new verbosity level -v5 for more detail
+		fixed bug with in handling documentclass options
+		consolidated package and documentclass options
+		fixed several memory leaks
+		enabled the use of the babel package *needs testing*
+		fixed bug in font used in header and footers
+		minuscule better support for french
+		Added testing file for % comment support
+		Enhanced frac.tex to include \sqrt and \int tests also
+		Fixed bugs associated with containing font changes in
+		    equations, tabbing, and quote environments
+		Added essential.tex to the testing suite --- pretty comprehensive test.
+		Perhaps fix missing .bbl crashing bug
+		Fixed ?` and !`
+	
+2001-08-12 12:00  prahl
+
+ 1.9e
+	        Revised all the accented character code using ideas borrowed from ltx2rtf.
+	        Comparing ltx2rtf and latex2rtf indicates that Taupin and Lehner tended to work on
+	        different areas of the latex->rtf conversion process.  Adding
+	        accented characters is the first step in the merging process.
+	
+	        Added MacRoman font handling (primarily to get the breve accent)
+	        Now supports a wide variety of accented characters.
+	        (compound characters only work under more recent versions of word)
+	        Reworked the code to change font sizes.
+	        Added latex logo code from ltx2rtf
+	        Extracted character code into separate file chars.c
+	        Fixed bug with \sf reverting to roman
+	        Added two new testing files fontsize.tex and accentchars.tex
+	
+2001-08-12 11:53  prahl
+
+ 1.9d
+	        Rewrote the \cite code.
+	        No crashes when .aux missing.
+	        Inserts '?' for unknown citations
+	        Added cite.tex and cite.bib to for testing \cite commands
+	        hyperref not tested since I don't use it.
+	        A small hyperref test file would be nice
+	        Revised treatment of \oe and \OE per Wilfried Hennings suggestions
+	        Added support for MT Extra in direct.cfg and fonts.cfg so that
+	        more math characters will be translated e.g., \ell (see oddchars.tex)
+	        added and improved font changing commands e.g., \texttt, \it
+	
+2001-08-12 11:41  prahl
+
+ latex2rtf 1.9c
+	
+		Added support for \frac
+		Complete support for all characters in the symbol font now
+		Better support for unusual ansi characters (e.g., \dag and \ddag)
+		Gave direct.cfg a spring cleaning
+		Added support for \~n and \~N
+		New file oddchars.tex for testing many of these translations.
+		New file frac.tex to test \frac and \over
+		Removed a lot of annoying warning messages that weren't very helpful
+	
+2001-08-12 11:25  prahl
+
+ latex2rtf version 1.9c
+	
+		Added support for \frac
+		Complete support for all characters in the symbol font now
+		Better support for unusual ansi characters (e.g., \dag and \ddag)
+		Gave direct.cfg a spring cleaning
+		Added support for \~n and \~N
+		New file oddchars.tex for testing many of these translations.
+		New file frac.tex to test \frac and \over
+		Removed a lot of annoying warning messages that weren't very helpful
+	
+2001-08-12 10:50  prahl
+
+ latex2rtf version 1.9b by Scott Prahl
+	1.9b
+		Improved enumerate environment so that it may be nested and
+		    fixed labels in nested enumerate environments
+		Improved handling of description and itemize environments
+		Improved eqnarray environment
+		Improved array environment
+		Improved \verb handling
+		Improved handling of \mbox and \hbox in math mode
+		Improved handling of \begin{array} environment
+		Improved handling of some math characters on the mac
+		Fixed handling of \( \) and \begin{math} \end{math} environments
+		Fixed bugs in equation numbering
+		Made extensive changes to character translation so that the RTF
+		     documents work under Word 5.1 and Word 98 on the Mac
+	
+	1.9a
+		Fixed bug with 'p{width}' in tabular environment
+			not fully implemented, but no longer creates bad RTF code
+	
+	1.9
+		Fixed numbering of equations
+		Improved/added support for all types of equations
+		Now includes PICT files in RTF
+		Fixed \include to work (at least a single level of includes)
+	
+	1.8
+		Fixed problems with \\[1mm]
+		Fixed handling of tabular environments
+		Fixed $x^\alpha$ and $x_\alpha$
+	
+2001-08-12 10:29  prahl
+
+ latex2rtf version 1.8aa by Georg Lehner
+	
+2001-08-12 08:56  prahl
+
+ latex2rtf version 1.5 by Ralf Schlatterbeck
+	
+2001-08-12 08:47  prahl
+
+ latex2rtf version 1.1 by Ralf Schlatterbeck
+	
+2001-08-12 08:32  prahl
+
+ Initial revision
+	
+2001-08-12 08:32  prahl
+
+ Initial release of latex2rtf version 1.0 by Ralf Schlatterbeck
 	

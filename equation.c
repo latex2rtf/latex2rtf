@@ -663,7 +663,9 @@ static void WriteEquationAsRTF(int code, char **eq)
 
     PrepareRtfEquation(code, EQ_Needed);
     ConvertOverToFrac(eq);
+    fprintRTF("{");
     ConvertString(*eq);
+    fprintRTF("}");
     FinishRtfEquation(code, EQ_Needed);
 }
 
