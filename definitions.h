@@ -7,6 +7,6 @@ char *	expandDefinition(int thedef);
 int		existsEnvironment(char * s);
 void	newEnvironment(char *name, char *begdef, char *enddef, int params);
 void	renewEnvironment(char *name, char *begdef, char *enddef, int params);
-void	expandEnvironment(int thedef, int starting);
+char *	expandEnvironment(int thedef, int starting);
 
 

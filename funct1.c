@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.52 2001/12/07 05:03:48 prahl Exp $ 
+/* $Id: funct1.c,v 1.53 2002/02/17 14:55:26 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -338,14 +338,17 @@ CmdBeginEnd(int code)
  ***************************************************************************/
 {
 	int i;
+	char * str;
 	char           *s = getBraceParam();
 
 	i=existsEnvironment(s);
-	if (i>-1) 
+	if (i>-1) {
 	
-		expandEnvironment(i,code);
+		str = expandEnvironment(i,code);
+		ConvertString(str);
+		free(str);
 
-	else {
+	} else {
 	
 		switch (code) {
 		case CMD_BEGIN:

@@ -1,4 +1,4 @@
-/*  $Id: parser.c,v 1.40 2002/02/17 06:19:56 prahl Exp $
+/*  $Id: parser.c,v 1.41 2002/02/17 14:55:26 prahl Exp $
 
    Contains declarations for a generic recursive parser for LaTeX code.
 */
@@ -822,32 +822,44 @@ getSection(char **body, char **header, char **label)
 	char cNext, *s,*text,*next_header,*str;
 	int i;
 	long delta;
-	int  match[23];
-	char * command[23] = {"",  /* 0 entry is for user definitions */
+	int  match[29];
+	char * command[29] = {"",  /* 0 entry is for user definitions */
 						  "\\begin{verbatim}", "\\begin{figure}", "\\begin{equation}", 
 						  "\\begin{eqnarray}", "\\begin{table}", "\\begin{description}",
+						  "\\end{verbatim}", "\\end{figure}", "\\end{equation}", 
+						  "\\end{eqnarray}", "\\end{table}", "\\end{description}",
 	                     "\\part", "\\chapter", "\\section", "\\subsection", "\\subsubsection", 
 	                     "\\section*", "\\subsection*", "\\subsubsection*", 
 	                     "\\label", "\\input", "\\include", "\\verb", "\\url",
 	                     "\\newcommand", "\\def" , "\\renewcommand"};
 
-	char * ecommand[7] = {"",
-						  "\\end{verbatim}", "\\end{figure}", "\\end{equation}", 
-						  "\\end{eqnarray}", "\\end{table}", "\\end{description}"};
-	int ncommands = 23;
-	int ecommands =7;
+	int ncommands = 29;
 
-	const int label_item   = 15;
-	const int input_item   = 16;
-	const int include_item = 17;
-	const int verb_item    = 18;
-	const int url_item     = 19;
-	const int new_item     = 20;
-	const int def_item     = 21;
-	const int renew_item   = 22;
+	const int b_verbatim_item   = 1;
+	const int b_figure_item     = 2;
+	const int b_equation_item   = 3;
+	const int b_eqnarray_item   = 4;
+	const int b_table_item      = 5;
+	const int b_description_item= 6;
+	const int e_verbatim_item   = 7;
+	const int e_figure_item     = 8;
+	const int e_equation_item   = 9;
+	const int e_eqnarray_item   =10;
+	const int e_table_item      =11;
+	const int e_description_item=12;
+
+	const int label_item   = 21;
+	const int input_item   = 22;
+	const int include_item = 23;
+	const int verb_item    = 24;
+	const int url_item     = 25;
+	const int new_item     = 26;
+	const int def_item     = 27;
+	const int renew_item   = 28;
 
 	int bs_count = 0;
 	int index = 0;
+	int label_depth = 0;
 	
 	if (section_buffer == NULL) {
 		section_buffer = malloc(section_buffer_size+1);
@@ -944,11 +956,10 @@ getSection(char **body, char **header, char **label)
 					}
 					
 					delta -= index+1;  		/* remove \macroname */
-	    diagnostics(4,"calling expandDefinition from getSection");
 					str = expandDefinition(i);
-	    diagnostics(4,"expanded macro string is <%s>", str);
 					PushSource(NULL,str);   /* memory leak :-( */
 					index = 0;
+	    			diagnostics(4,"getSection() expanded macro string is <%s>", str);
 					continue;
 				}
 			}
@@ -967,7 +978,7 @@ getSection(char **body, char **header, char **label)
 			cNext = getRawTexChar();
 			ungetTexChar(cNext);
 
-			if (i >= ecommands && i <= include_item && cNext != ' ' && cNext != '{') {
+			if (i > e_description_item && i <= include_item && cNext != ' ' && cNext != '{') {
 				found = FALSE;
 				match[i] = FALSE;
 				diagnostics(5, "oops! did not match %s", command[i]);
@@ -1062,7 +1073,7 @@ getSection(char **body, char **header, char **label)
 			delta += strlen(s)+1;
 			*(section_buffer+delta) = '}';
 
-			if (!(*label) && strlen(s)) 
+			if (!(*label) && strlen(s) && label_depth==0) 
 				*label = strdup_nobadchars(s);
 				
 			free(s);
@@ -1090,18 +1101,32 @@ getSection(char **body, char **header, char **label)
 			continue;
 		}
 			
-		if (i<ecommands) {			/* slurp environment to avoid \labels within */
-			delta++;
-			s=getTexUntil(ecommand[i],TRUE);
+		if (i==b_figure_item || i==b_equation_item || i==b_eqnarray_item ||
+			i==b_table_item  || i==b_description_item){
+			label_depth++;		/* labels now will not be the section label */
+			index = 0;
+			continue;
+		}
 
-			while (delta+strlen(s)+strlen(ecommand[i])+1 >= section_buffer_size)
+		if (i==e_figure_item || i==e_equation_item || i==e_eqnarray_item ||
+			i==e_table_item  || i==e_description_item){
+			label_depth--;		/* labels may now be the section label */
+			index = 0;
+			continue;
+		}
+
+		if (i==b_verbatim_item) {			/* slurp environment to avoid inside */
+			delta++;
+			s=getTexUntil(command[e_verbatim_item],TRUE);
+
+			while (delta+strlen(s)+strlen(command[e_verbatim_item])+1 >= section_buffer_size)
 				increase_buffer_size();
 
 			strcpy(section_buffer+delta,s);				/* append s */
 			delta += strlen(s);
 			
-			strcpy(section_buffer+delta,ecommand[i]);	/* append ecommand[i] */
-			delta += strlen(ecommand[i])-1;
+			strcpy(section_buffer+delta,command[e_verbatim_item]);	/* append command[i] */
+			delta += strlen(command[e_verbatim_item])-1;
 			free(s);
 			index = 0;				/* keep looking */
 			continue;

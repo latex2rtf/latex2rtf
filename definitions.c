@@ -133,15 +133,15 @@ maybeDefinition(char * s, int n)
 {
 	int i;
 	
-	if (n==0) return (int) TRUE;
+	if (n==0) return TRUE;
 	
 	for (i=0; i<iDefinitionCount; i++) {
 		diagnostics(6, "seeking=<%s>, i=%d, current=<%s>", s,i,Definitions[i].name);
 		if (strncmp(s,Definitions[i].name,n) == 0) 
-			return (int) TRUE;
+			return TRUE;
 	}
 
-	return (int) FALSE;
+	return FALSE;
 }
 
 int
@@ -315,7 +315,7 @@ renewEnvironment(char *name, char *begdef, char *enddef, int params)
 	}
 }
 
-void
+char *
 expandEnvironment(int thedef, int code)
 /**************************************************************************
      purpose: retrieves and expands a \newenvironment 
@@ -325,12 +325,12 @@ expandEnvironment(int thedef, int code)
 	
 		diagnostics(4, "\\begin{%s} <%s>", NewEnvironments[thedef].name, \
 										   NewEnvironments[thedef].begdef);
-		expandmacro(NewEnvironments[thedef].begdef, NewEnvironments[thedef].params);
+		return expandmacro(NewEnvironments[thedef].begdef, NewEnvironments[thedef].params);
 	
 	} else {
 
 		diagnostics(4, "\\end{%s} <%s>", NewEnvironments[thedef].name, \
 										 NewEnvironments[thedef].enddef);
-		expandmacro(NewEnvironments[thedef].enddef, 0);
+		return expandmacro(NewEnvironments[thedef].enddef, 0);
 	}
 }
