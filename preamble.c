@@ -905,6 +905,7 @@ static void WritePageSize(void)
 ****************************************************************************/
 {
     int n;
+    int family = DefaultFontFamily();
 
     fprintRTF("\\paperw%d", getLength("pagewidth"));
     fprintRTF("\\paperh%d", getLength("pageheight"));
@@ -929,7 +930,7 @@ static void WritePageSize(void)
     diagnostics(4, "Writepagesize bottom margin =%d pt", n / 20);
 
     fprintRTF("\\pgnstart%d", getCounter("page"));
-    fprintRTF("\\widowctrl\\qj\\ftnbj\\aftnnar\n");
+    fprintRTF("\\widowctrl\\qj\\ftnbj\\f%d\\aftnnar\n", family);
 }
 
 static void WriteHeadFoot(void)
