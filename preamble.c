@@ -1,4 +1,4 @@
-/* $Id: preamble.c,v 1.34 2002/04/27 03:55:39 prahl Exp $
+/* $Id: preamble.c,v 1.35 2002/04/28 18:45:53 prahl Exp $
 
 purpose : Handles LaTeX commands that should only occur in the preamble.
           These are gathered together because the entire preamble must be
@@ -691,35 +691,37 @@ WriteFontHeader(void)
 /****************************************************************************
  *   purpose: writes fontnumbers and styles for headers into Rtf-File
  
- \fcharset0:    ANSI coding
+ \fcharset0:    ANSI coding (codepage 1252)
  \fcharset1:    MAC coding
- \fcharset2:    PC coding (implies CodePage 437)
- \fcharset3:    PCA coding (implies CodePage 850)
+ \fcharset2:    PC coding   (codepage 437)
+ \fcharset3:    PCA coding  (codepage 850)
+ \fcharset204:  Cyrillic    (codepage 1251)
  ****************************************************************************/
 {
-	int                  num = 3;
+	int                  i;
 	ConfigEntryT       **config_handle;
+	char                *font_type, *font_name;
+	int					 charset;
 
 	fprintRTF("{\\fonttbl\n");
 
 	config_handle = CfgStartIterate(FONT_A);
+	i=3;
 	while ((config_handle = CfgNext(FONT_A, config_handle)) != NULL) {
-		if (strstr((*config_handle)->RtfCommand, "Symbol"))
-
-			fprintRTF(" {\\f%d\\fnil\\fcharset2 %s;}\n",num,(*config_handle)->RtfCommand);
-
-		else if (RussianMode) {
-			
-			if (strcmp(((*config_handle)->RtfCommand),"Times")==0 ||
-			    strcmp(((*config_handle)->RtfCommand),"Courier")==0 ||
-				strcmp(((*config_handle)->RtfCommand),"Helvetica")==0)
-				fprintRTF(" {\\f%d\\fnil\\fcharset204 %s;}\n",num,(*config_handle)->RtfCommand);
-
-		} else
+	
+		font_type = (char *)(*config_handle)->TexCommand;
+		font_name = (char *)(*config_handle)->RtfCommand;
+		charset = 0;
 		
-			fprintRTF(" {\\f%d\\fnil\\fcharset0 %s;}\n",num,(*config_handle)->RtfCommand);
+		if (strncmp(font_name, "Symbol", 6)==0)
+			charset = 2;
+			
+		if (strncmp(font_type, "Cyrillic", 8)==0)	
+			charset = 204;
+					
+		fprintRTF(" {\\f%d\\fnil\\fcharset%d %s;}\n",i, charset, font_name);
 
-		++num;
+		i++;
 	}
 
 	fprintRTF("}\n");

@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.54 2002/04/27 16:05:41 prahl Exp $
+# $Id: Makefile,v 1.55 2002/04/28 18:45:52 prahl Exp $
 
 CC=cc
 MKDIR=mkdir -p
@@ -73,7 +73,7 @@ TEST=   test/Makefile test/bracecheck \
 	test/enc_koi8-u.tex test/enc_maccyr.tex test/enc_macukr.tex \
 	test/defs.tex test/proffois.tex test/excalibur.tex test/qualisex.tex test/include.tex \
 	test/include1.tex test/include2.tex test/include3.tex test/ch.tex test/spago1.tex \
-	test/theorem.tex test/picture.tex test/russian.tex
+	test/theorem.tex test/picture.tex test/russian.tex test/eqns-koi8.tex
 
 OBJS=l2r_fonts.o direct.o encode.o commands.o stack.o funct1.o tables.o \
 	chars.o ignore.o cfg.o main.o util.o parser.o lengths.o counters.o \

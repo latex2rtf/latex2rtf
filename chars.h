@@ -22,12 +22,13 @@ void            CmdBreveChar(int code);
 void            CmdDotChar(int code);
 void            CmdUnderbarChar(int code);
 void            CmdDotlessChar(int code);
-void            CmdCyrillicChar(int code);
 void            CmdChar(int code);
 
 void            CmdLogo(int code);
 
-void CmdFrenchAbbrev(int code);
+void 			CmdFrenchAbbrev(int code);
+void            CmdCyrillicChar(int code);
+void 			CmdCyrillicStrChar(char *s);
 
 #define IERF 1
 #define IEREF 2

@@ -1,4 +1,4 @@
-/* $Id: chars.c,v 1.23 2002/04/27 03:55:39 prahl Exp $
+/* $Id: chars.c,v 1.24 2002/04/28 18:45:53 prahl Exp $
 
    purpose : handles special characters and logos
 */
@@ -898,5 +898,32 @@ void CmdCyrillicChar(int code)
  * purpose : insert cyrillic character into RTF stream
  * ******************************************************************************/
 {
-	fprintRTF("\\\'%.2X", code);
+	int n;
+	
+	if (code<=0 || code >= 255) return;
+	
+	n = CurrentCyrillicFontFamily();
+	
+	if (n>=0)
+		fprintRTF("{\\f%d\\\'%.2X}", n, code);
+	else										/* already using Cyrillic Font */
+		fprintRTF("\\\'%.2X", code);
 }
+
+void CmdCyrillicStrChar(char *s)
+/******************************************************************************
+ * purpose : insert cyrillic character into RTF stream
+ * ******************************************************************************/
+{
+	int n;
+	
+	if (s==NULL || strlen(s)!=2) return;
+
+	n = CurrentCyrillicFontFamily();
+	
+	if (n>=0)
+		fprintRTF("{\\f%d\\\'%s}", n, s);
+	else										/* already using Cyrillic Font */
+		fprintRTF("\\\'%s", s);
+}
+

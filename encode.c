@@ -1,4 +1,4 @@
-/* $Id: encode.c,v 1.10 2002/04/24 14:31:16 prahl Exp $ 
+/* $Id: encode.c,v 1.11 2002/04/28 18:45:53 prahl Exp $ 
    Translate high bit characters into RTF assuming that
    the default codepage is ansi (1252)
    
@@ -12,6 +12,7 @@
 #include "funct1.h"
 #include "encode.h"
 #include "encode_tables.h"
+#include "chars.h"
 
 static void put_breve_char(char c)
 {
@@ -1757,70 +1758,49 @@ static void cp1251_enc(int index)
 {
 	char *s;
 	s = cp1251_2_cp1251[index];
-	if (s[0]!='0'){
-		fprintRTF("\\'%s",s);
-		return;
-	}
+	CmdCyrillicStrChar(s);
 }
 
 static void cp855_enc(int index)
 {
 	char *s;
 	s = cp855_2_cp1251[index];
-	if (s[0]!='0'){
-		fprintRTF("\\'%s",s);
-		return;
-	}
+	CmdCyrillicStrChar(s);
 }
 
 static void cp866_enc(int index)
 {
 	char *s;
 	s = cp866_2_cp1251[index];
-	if (s[0]!='0'){
-		fprintRTF("\\'%s",s);
-		return;
-	}
+	CmdCyrillicStrChar(s);
 }
 
 static void koi8r_enc(int index)
 {
 	char *s;
 	s = koi8r_2_cp1251[index];
-	if (s[0]!='0'){
-		fprintRTF("\\'%s",s);
-		return;
-	}
+	CmdCyrillicStrChar(s);
 }
 
 static void koi8u_enc(int index)
 {
 	char *s;
 	s = koi8u_2_cp1251[index];
-	if (s[0]!='0'){
-		fprintRTF("\\'%s",s);
-		return;
-	}
+	CmdCyrillicStrChar(s);
 }
 
 static void maccyr_enc(int index)
 {
 	char *s;
 	s = maccyr_2_cp1251[index];
-	if (s[0]!='0'){
-		fprintRTF("\\'%s",s);
-		return;
-	}
+	CmdCyrillicStrChar(s);
 }
 
 static void macukr_enc(int index)
 {
 	char *s;
 	s = macukr_2_cp1251[index];
-	if (s[0]!='0'){
-		fprintRTF("\\'%s",s);
-		return;
-	}
+	CmdCyrillicStrChar(s);
 }
 
 void WriteEightBitChar(char cThis)

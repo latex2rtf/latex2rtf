@@ -1,4 +1,4 @@
-/* $Id: l2r_fonts.c,v 1.24 2002/04/04 03:11:24 prahl Exp $
+/* $Id: l2r_fonts.c,v 1.25 2002/04/28 18:45:53 prahl Exp $
 
 	All changes to font size, font style, and font face are 
 	handled in this file.  Explicit changing of font characteristics
@@ -590,6 +590,42 @@ CurrentFontFamily(void)
 {
 	diagnostics(4,"CurrentFontFamily -- family=%d", RtfFontInfo[FontInfoDepth].family);
 	return RtfFontInfo[FontInfoDepth].family;
+}
+
+int 
+CurrentCyrillicFontFamily(void)
+/******************************************************************************
+  purpose: returns the cyrillic font that should be used ... 
+           if the current font is cyrillic font then -1 is returned
+ ******************************************************************************/
+{
+	int            num,i;
+	char          *font_type;
+	ConfigEntryT **font_handle;
+
+	num = CurrentFontFamily();
+
+/* obtain name and type of current active font */
+	font_handle = CfgStartIterate(FONT_A);
+	for (i=0; i<=num-3; i++)
+		font_handle = CfgNext(FONT_A, font_handle);
+		
+	font_type = (char *) (*font_handle)->TexCommand;
+	diagnostics(6,"CurrentCyrillicFontFamily current active font type =<%s>", font_type);
+	
+	if (strncmp(font_type, "Cyrillic", 8)==0)
+		return -1;
+		
+	if (strcmp(font_type, "Slanted")==0) 
+		return TexFontNumber("Cyrillic Slanted");
+		
+	if (strcmp(font_type, "Sans Serif")==0) 
+		return TexFontNumber("Cyrillic Sans Serif");
+
+	if (strcmp(font_type, "Typewriter")==0) 
+		return TexFontNumber("Cyrillic Typewriter");
+
+	return TexFontNumber("Cyrillic Roman");
 }
 
 int 
