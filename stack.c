@@ -1,9 +1,15 @@
 /*
- * $Id: stack.c,v 1.2 2001/08/12 15:47:04 prahl Exp $
+ * $Id: stack.c,v 1.3 2001/08/12 15:56:56 prahl Exp $
  * History:
  * $Log: stack.c,v $
- * Revision 1.2  2001/08/12 15:47:04  prahl
- * latex2rtf version 1.1 by Ralf Schlatterbeck
+ * Revision 1.3  2001/08/12 15:56:56  prahl
+ * latex2rtf version 1.5 by Ralf Schlatterbeck
+ *
+ * Revision 1.3  1995/05/10  06:37:43  ralf
+ * Added own includefile (for consistency checking of decls)
+ *
+ * Revision 1.2  1995/03/23  15:58:08  ralf
+ * Reworked version by Friedrich Polzer and Gerhard Trisko
  *
  * Revision 1.1  1994/06/17  11:26:29  ralf
  * Initial revision
@@ -19,6 +25,7 @@
 /********************************* includes **********************************/
 #include <stdio.h>
 #include <stdlib.h>
+#include "stack.h"
 /******************************************************************************/
 
 
@@ -44,6 +51,7 @@ int Push(int lev, int brack)
   purpose: pushes the parameter lev and brack on the stack
 parameter: lev...level
 	   brack...brackets
+  globals: progname
  return: top of stack
  ******************************************************************************/
 {
@@ -66,6 +74,9 @@ int Pop(int *lev, int *brack)
   purpose: pops the parameter lev and brack from the stack
 parameter: lev...level
 	   brack...brackets
+  globals: progname
+           latexname
+           linenumber
  return: top of stack
  ******************************************************************************/
 {
@@ -73,9 +84,11 @@ parameter: lev...level
   --top;
   *lev = stack[top];
   --top;
+
+ 
   if (top < 0)
   {
-    fprintf(stderr,"\n%s: ERROR: error in LaTeX-File: %s at linenumber: %ld\n-> internal stack-overflow",progname,latexname,linenumber);
+    fprintf(stderr,"\n%s: ERROR: error in LaTeX-File: %s at linenumber: %ld\n-> internal stack-underflow",progname,latexname,getLinenumber());
     fprintf(stderr,"\nprogram aborted\n");
     exit(-1);
   }

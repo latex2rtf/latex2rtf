@@ -1,9 +1,13 @@
 /*
- * $Id: direct.c,v 1.2 2001/08/12 15:47:04 prahl Exp $
+ * $Id: direct.c,v 1.3 2001/08/12 15:56:56 prahl Exp $
  * History:
  * $Log: direct.c,v $
- * Revision 1.2  2001/08/12 15:47:04  prahl
- * latex2rtf version 1.1 by Ralf Schlatterbeck
+ * Revision 1.3  2001/08/12 15:56:56  prahl
+ * latex2rtf version 1.5 by Ralf Schlatterbeck
+ *
+ * Revision 1.4  1995/03/23  15:58:08  ralf
+ * Reworked version by Friedrich Polzer and Gerhard Trisko
+ *
  *
  * Revision 1.3  1994/06/21  08:14:11  ralf
  * Corrected Bug in keyword search
@@ -18,6 +22,8 @@
 /***************************************************************************
      name : direct.c
    author : DORNER Fernando, GRANZER Andreas
+            POLZER Friedrich,TRISKO Gerhard
+  * changed TryDirectConvert: use search on sorted array
   purpose : This file is used for converting LaTeX commands by simply text exchange
  ******************************************************************************/
 
@@ -27,6 +33,7 @@
 #include "main.h"
 #include "direct.h"
 #include "fonts.h"
+#include "cfg.h"
 /******************************************************************************/
 
 /*******************************  extern variables ****************************/
@@ -41,11 +48,11 @@ extern char *progname;
 /******************************************************************************/
 BOOL WriteFontName(char **buffpoint, FILE *fRtf)
 /******************************************************************************
-  purpose: reads from the file fonts.cfg how some easy LaTex-commands can be
-	   converted into Rtf-commands by text exchange
-	   especially font-number-type-convertions
+  purpose: reads from the font-array to write correct font-number into
+           Rtf-File
 parameter: buffpoint: font and number
 	   fRtf: File-Pointer to Rtf-File
+globals:   progname
  ******************************************************************************/
 {
   char buffer[MAXFONTLEN+1];
@@ -88,91 +95,55 @@ parameter: buffpoint: font and number
 /******************************************************************************/
 BOOL TryDirectConvert(char *command, FILE *fRtf)
 /******************************************************************************
-  purpose: reads from the file direct.cfg how some easy LaTex-commands can be
+  purpose: reads from the direct-array how some easy LaTex-commands can be
 	   converted into Rtf-commands by text exchange
 parameter: command: LaTex-command and Rtf-command
 	   fRtf: File-Pointer to Rtf-File
+globals:   progname
  ******************************************************************************/
 {
-  FILE *fp;
-  char buffer[512];
   int i;
   char *buffpoint;
+  char *RtfCommand;
+  char TexCommand[128];
 
   if (strlen(command) >= 100)
-      {
-      fprintf(stderr,"\n%s: WARNING: Command %s is too long in direct.cfg.\n",progname,command);
-      return FALSE;    /* command too long */
-      }
-  fp = open_cfg("direct.cfg");
-  for(;;)
   {
-    if ( (fgets( buffer, 512, fp )) == NULL)
-    {
-      fclose(fp);
-      return FALSE;
-    }
-    if (strlen(buffer) > 500)
-    {
-      fprintf(stderr, "\n%s: WARNING: line too long in DIRECT.CFG - only 500 characters\n",progname);
-      fclose(fp);
-      return FALSE;
-    }
-    buffpoint = buffer;
-    while (*buffpoint != '\\')
-    {
-      if ( (*buffpoint == '#') || (*buffpoint == '\0') )
-	break;
-      ++buffpoint;
-    }
-    if (*buffpoint != '\\')
-      continue;
-    ++buffpoint;
-    for ((int)i = 0; (int)i < (int)strlen(command); i++)
-    {
-      if (buffpoint[i] == '\0')
-	break;
-      if (buffpoint[i] != command[i])
-	break;
-    }
-    if ((int)i == (int)strlen(command) && buffpoint[i] == ',')   /* found */
-    {
-      buffpoint += i;
-      while (*buffpoint != ',')
-      {
-	if ( (*buffpoint == '#') || (*buffpoint == '\0') )
-	{
-	  fprintf(stderr, "\n%s: WARNING: error in direct command file - missing , \n",progname);
-	  fclose(fp);
-	  return FALSE;
-	}
-	++buffpoint;
-      }
-      ++buffpoint;
-      while (*buffpoint != '.')
-      {
-	if ( (*buffpoint == '#') || (*buffpoint == '\0') )
-	{
-	  fprintf(stderr, "\n%s: WARNING: error in direct command file - missing , \n",progname);
-	  fclose(fp);
-	  return FALSE;
-	}
-	if (*buffpoint == '*')
-	{
-	  ++buffpoint;
-	  if (WriteFontName(&buffpoint, fRtf)==FALSE)
-	  {
-	    fprintf(stderr, "\n%s: WARNING: error in direct command file - invalid font name , \n",progname);
-	    fclose(fp);
-	    return FALSE;
-	  }
-	}
-	else
-	  fprintf(fRtf,"%c",*buffpoint);
-	++buffpoint;
-      }
-      fclose(fp);
-      return TRUE;
-    } /* end found */
+      fprintf(stderr,"\n%s: WARNING: Command %s is too long in LaTeX-File.\n",progname,command);
+      return FALSE;    /* command too long */
+  }
+
+  TexCommand[0] = '\\';
+  TexCommand[1] = '\0';
+  strcat (TexCommand, command);
+
+  RtfCommand = search (TexCommand, DIRECT_A);
+  if (RtfCommand == NULL)
+     return FALSE;
+
+  buffpoint = RtfCommand;
+
+  while (buffpoint[0] != '\0')
+  {
+     if (buffpoint[0] == '*')
+     {
+        ++buffpoint;
+        if (WriteFontName(&buffpoint, fRtf)==FALSE)
+        {
+           fprintf(stderr, "\n%s: WARNING: error in direct command file - invalid font name , \n",progname);
+           return FALSE;
+        }
+     }
+     else
+     {
+        fprintf(fRtf,"%c",*buffpoint);
+     }
+
+     ++buffpoint;
+     
   }  /* end while */
+
+  return TRUE;
 }
+
+

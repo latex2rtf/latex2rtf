@@ -1,9 +1,12 @@
 /*
- * $Id: funct1.h,v 1.2 2001/08/12 15:47:04 prahl Exp $
+ * $Id: funct1.h,v 1.3 2001/08/12 15:56:56 prahl Exp $
  * History:
  * $Log: funct1.h,v $
- * Revision 1.2  2001/08/12 15:47:04  prahl
- * latex2rtf version 1.1 by Ralf Schlatterbeck
+ * Revision 1.3  2001/08/12 15:56:56  prahl
+ * latex2rtf version 1.5 by Ralf Schlatterbeck
+ *
+ * Revision 1.2  1995/03/23  15:58:08  ralf
+ * Reworked version by Friedrich Polzer and Gerhard Trisko
  *
  * Revision 1.1  1994/06/17  11:26:29  ralf
  * Initial revision
@@ -11,16 +14,23 @@
  */
 /*** prototypes fof functions in funct1 ***/
 
+
 #define AST_FORM 100
 
 #define CMD_BOLD 1
 #define CMD_ITALIC 2
 #define CMD_UNDERLINE 3
 #define CMD_CAPS 4
+/* ----------------------------------- */
+#define CMD_CENTERED 5
+/* ----------------------------------- */
 void CmdCharFormat(int);
 
 #define EMPHASIZE 1
 void Format(int code);
+
+#define FOOTN 1
+#define THANKS 2
 
 #define CMD_BEGIN 1
 #define CMD_END 2
@@ -29,6 +39,7 @@ void CmdBeginEnd(int code);
 #define PAR_CENTER 1
 #define PAR_RIGHT 2
 #define PAR_LEFT 3
+#define PAR_CENTERLINE 4
 #define ON 0x8000
 #define OFF 0x0000
 void Paragraph(int code);
@@ -37,6 +48,7 @@ void CmdToday(int code);
 
 void CmdFontSize(int code);
 
+void CmdC(int code);
 void CmdUmlaute(int code);
 void CmdLApostrophChar(int code);
 void CmdRApostrophChar(int code);
@@ -66,6 +78,9 @@ void CmdDocumentStyle(int code);
 #define SECT_NORM 1
 #define SECT_SUB 2
 #define SECT_SUBSUB 3
+#define SECT_CAPTION 4
+#define SECT_CHAPTER 5
+#define SECT_PART 6
 void CmdSection(int code);
 
 void CmdFootNote(int code);
@@ -106,7 +121,7 @@ void CmdVerse(int code);
 void TranslateGerman(void);
 void CmdPrintRtf(int code);
 
-void GetParam(char *string, int size);
+void GetParam(char **string);
 
 void GermanPrint(int code);
 #define GP_CK 1

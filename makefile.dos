@@ -1,0 +1,74 @@
+# This version of the latex2rtf makefile is for use with TCC and TLIB
+# under MS DOS. It is much simplified, as comared to the original UNIX
+# version.
+
+# Adapted for MS DOS by Vladimir Menkov, based on the orignal (UNIX) 
+# latex2rtf makefile
+
+CC=tcc       # C Compiler
+TLIB=tlib    # Libarian program
+CFLAGS=  -DHAS_NO_FPOS -ml -P- # Use -O here if you want it optimized
+
+# LIBDIR= directory where the program is looking for its
+# configuration files (*.cfg).
+# that's right, it needs 4 backlslashes per every real one.
+LIBDIR="c:\\\\latex2rt"
+
+# Where the executable is to be placed
+BININSTALL=c:\exe
+
+#######################################################################
+# Nothing to change below this line
+
+AUXOBJ = fonts.obj direct.obj commands.obj stack.obj funct1.obj funct2.obj \
+        ignore.obj my_getop.obj optind.obj cfg.obj encode.obj
+
+all: latex2rt
+
+latex2rt: main.obj l2rtf.lib
+        $(CC) $(CFLAGS) -e$(BININSTALL)\latex2rt.exe main.obj l2rtf.lib
+
+l2rtf.lib: $(AUXOBJ)
+        $(TLIB) /E l2rtf.lib +-fonts.obj +-direct.obj +-commands.obj
+        $(TLIB) /E l2rtf.lib +-stack.obj +-funct1.obj +-funct2.obj \
+           +-ignore.obj +-my_getopt.obj +-optind.obj +-cfg.obj +-encode.obj
+
+fonts.obj: fonts.c main.h fonts.h cfg.h
+        $(CC) $(CFLAGS) -c fonts.c
+
+direct.obj: direct.c main.h direct.h fonts.h cfg.h
+        $(CC) $(CFLAGS) -c direct.c
+
+stack.obj: stack.c
+        $(CC) $(CFLAGS) -c stack.c
+
+funct1.obj: funct1.c main.h funct1.h funct2.h commands.h stack.h fonts.h
+        $(CC) $(CFLAGS) -c funct1.c
+
+funct2.obj: funct2.c main.h funct1.h commands.h funct2.h stack.h
+        $(CC) $(CFLAGS) -c funct2.c
+
+ignore.obj: ignore.c main.h direct.h fonts.h cfg.h
+        $(CC) $(CFLAGS) -c ignore.c
+
+main.obj: main.c main.h commands.h funct1.h fonts.h stack.h funct2.h \
+        direct.h ignore.h version.h cfg.h
+        $(CC) $(CFLAGS) -DLIBDIR=$(LIBDIR) -Dgetopt=my_getopt -c main.c
+
+commands.obj: commands.c main.h funct1.h commands.h funct2.h
+        $(CC) $(CFLAGS) -c commands.c
+
+cfg.obj: cfg.c cfg.h
+        $(CC) $(CFLAGS) -c cfg.c
+
+encode.obj: encode.c main.h fonts.h funct1.h
+        $(CC) $(CFLAGS) -c encode.c
+
+my_getop.obj: my_getop.c
+        $(CC) $(CFLAGS) -c my_getop.c
+
+optind.obj: optind.c
+        $(CC) $(CFLAGS) -c optind.c
+
+clean:
+        del *.obj

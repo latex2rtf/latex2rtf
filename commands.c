@@ -1,22 +1,31 @@
 /*
- * $Id: commands.c,v 1.2 2001/08/12 15:47:04 prahl Exp $
+ * $Id: commands.c,v 1.3 2001/08/12 15:56:56 prahl Exp $
  * History:
  * $Log: commands.c,v $
- * Revision 1.2  2001/08/12 15:47:04  prahl
- * latex2rtf version 1.1 by Ralf Schlatterbeck
+ * Revision 1.3  2001/08/12 15:56:56  prahl
+ * latex2rtf version 1.5 by Ralf Schlatterbeck
+ *
+ * Revision 1.3  1995/05/24  15:35:32  ralf
+ * Changes by Vladimir Menkov for DOS port
+ * Added include of stdlib.h
+ *
+ * Revision 1.2  1995/03/23  15:58:08  ralf
+ * Reworked version by Friedrich Polzer and Gerhard Trisko
  *
  * Revision 1.1  1994/06/17  11:26:29  ralf
  * Initial revision
- *
  */
 /***************************************************************************
      name : commands.c
    author : DORNER Fernando, GRANZER Andreas
+            POLZER Friedrich,TRISKO Gerhard
+  * \centerline, \c, commands for citation, table & title
   purpose : includes all LaTex-Commands which can be converted into Rtf-Commands
  ******************************************************************************/
 
 /****************************** includes ************************************/
 #include <stdio.h>
+#include <stdlib.h>
 #include "main.h"
 #include "funct1.h"
 #include "commands.h"
@@ -44,9 +53,13 @@ CommandArray commands[300] = {
    { "begin", CmdBeginEnd, CMD_BEGIN },
    { "end", CmdBeginEnd, CMD_END },
    { "today", CmdToday, 0 },
-   { "footnote", CmdFootNote, 0 },
+   { "footnote", CmdFootNote, FOOTN },
    { "bf", CmdCharFormat, CMD_BOLD },
    { "it", CmdCharFormat, CMD_ITALIC },
+/* ------------------------------------------ */
+   { "centerline", Paragraph, PAR_CENTERLINE },
+   { "c", CmdC, 0},
+/* ------------------------------------------ */
    { "underline", CmdCharFormat, CMD_UNDERLINE },
    { "tiny", CmdFontSize, 10 },
    { "scriptsize", CmdFontSize, 12 },
@@ -71,13 +84,13 @@ CommandArray commands[300] = {
    { "maketitle", CmdTitle, TITLE_MAKE },
    { "section", CmdSection, SECT_NORM },
    { "section*", CmdSection, SECT_NORM },
-   { "caption", CmdSection, SECT_SUB },
-   { "chapter", CmdSection, SECT_SUB },
+   { "caption", CmdSection, SECT_CAPTION },
+   { "chapter", CmdSection, SECT_CHAPTER },
    { "subsection", CmdSection, SECT_SUB },
    { "subsection*", CmdSection, SECT_SUB },
    { "subsubsection", CmdSection, SECT_SUBSUB },
    { "subsubsection*", CmdSection, SECT_SUBSUB },
-   { "part", CmdSection, SECT_SUBSUB },
+   { "part", CmdSection, SECT_PART },
    { "appendix",CmdIgnore,0},
    { "protect", CmdIgnore,0},
    { "paragraph", CmdSection, SECT_SUB },
@@ -130,7 +143,7 @@ CommandArray commands[300] = {
    { "typeout", CmdIgnoreParameter, No_Opt_One_NormParam },
    { "Typein", CmdIgnoreParameter, One_Opt_One_NormParam },
    { "includeonly", CmdIgnoreParameter, No_Opt_One_NormParam },
-   { "nocite", CmdIgnoreParameter, No_Opt_One_NormParam },
+   { "nocite", CmdNoCite, No_Opt_One_NormParam },
    { "bibliography", CmdIgnoreParameter, No_Opt_One_NormParam },
    { "stepcounter", CmdIgnoreParameter, No_Opt_One_NormParam },
    { "refstepcounter", CmdIgnoreParameter, No_Opt_One_NormParam },
@@ -168,7 +181,7 @@ CommandArray commands[300] = {
    { "linebreak", CmdIgnoreParameter, One_Opt_No_NormParam },
    { "nolinebreak", CmdIgnoreParameter, One_Opt_No_NormParam },
    { "typein", CmdIgnoreParameter, One_Opt_One_NormParam },
-   { "cite", CmdIgnoreParameter, One_Opt_One_NormParam },
+   { "cite", CmdCite, 0 },
    { "marginpar", CmdIgnoreParameter, One_Opt_One_NormParam },
    { "caption", CmdIgnoreParameter, One_Opt_One_NormParam },
    { "addtocounter", CmdIgnoreParameter, No_Opt_Two_NormParam },
@@ -183,10 +196,16 @@ CommandArray commands[300] = {
    { "pagenumbering", CmdIgnoreParameter, No_Opt_One_NormParam },
    { "markboth", CmdIgnoreParameter, No_Opt_Two_NormParam},
    { "markright", CmdIgnoreParameter, No_Opt_One_NormParam},
-   { "thanks", CmdIgnoreParameter, No_Opt_One_NormParam },
+   { "thanks", CmdFootNote, THANKS },
    { "bibliographystyle", CmdIgnoreParameter,No_Opt_One_NormParam },
    { "let", CmdIgnoreLet, 0},
    { "cline",CmdIgnoreParameter,No_Opt_One_NormParam},
+/* begin pftg 23.11.94 ----------------------------------- */
+   { "title", CmdTitle, TITLE_TITLE },
+   { "author", CmdTitle, TITLE_AUTHOR },
+   { "date", CmdTitle, TITLE_DATE },
+/* end pftg ---------------------------------- */
+   { "multicolumn", CmdMultiCol, 0 },
    { "", NULL } };
 
 CommandArray HeaderCommands[100] = {
@@ -299,13 +318,13 @@ CommandArray params[100] = {
    { "verse", CmdVerse, 0 },
    { "tabular", CmdTabular, TABULAR },
    { "tabular*", CmdTabular, TABULAR_1 },
+   { "multicolumn", CmdMultiCol, 0 },
    { "math", CmdFormula2, 0 },
    { "displaymath" , CmdFormula2, 0 },
    { "equation", CmdFormula2, 0 },
    { "letter", CmdLetter, 0 },
    { "table", CmdTable, TABLE },
    { "table*", CmdTable, TABLE_1 },
-   { "caption", CmdSection, SECT_SUB },
    { "thebibliography", CmdIgnoreEnvironment, BIBLIOGRAPHY },
    { "abstract", CmdAbstract, 0},
    { "titlepage", CmdTitlepage, 0},
@@ -327,10 +346,16 @@ globals: command-functions have side effects or recursive calls
 {
   int i=0, j;
 
+/* ------------------------------------
+fprintf(stderr,"%s %d\n ",cCommand,iEnvCount-1);
+ ------------------------------------ */
   for (j = iEnvCount-1; j >= 0; j--, i = 0)
   {
     while (strcmp(Environments[j][i].cpCommand,"")!= 0)
     {
+/* ------------------------------------ 
+fprintf(stderr,"%s ",Environments[j][i].cpCommand);
+ ------------------------------------ */
       if (strcmp(Environments[j][i].cpCommand,cCommand)== 0)
       {
 	if (Environments[j][i].func == NULL)
@@ -373,8 +398,8 @@ globals: command-functions have side effects or recursive calls
   if (AddParam == ON)
       {
       sprintf(unknown_environment,"%s%s%s","end{",cCommand,"}");
-      Ignore_Environment(unknown_environment);
-      fprintf(stderr,"\n%s: WARNING: Environment %s ignored, because it's not defined in the command-list\n",progname,cCommand);
+/*      Ignore_Environment(unknown_environment); */
+      fprintf(stderr,"\n%s: WARNING: Environment \"%s\" ignored, because it's not defined in the command-list\n",progname,cCommand);
       }
 
   return FALSE;

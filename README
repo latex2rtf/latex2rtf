@@ -4,7 +4,7 @@ Word for Windows. It was written by Fernando Dorner and Andreas Granzer
 in a one-semester course in our department. For the Copyright of the
 Program see the file Copyright.
 
-To install
+To install (on a UNIX system)
 - Edit Makefile for your local configuration. The install part supports
   multiple directories to install to, you will normally only need one.
   Be sure to correctly configure the LIBDIR variable to the directory
@@ -16,7 +16,40 @@ To install
   doesn't support the -p option) and you do not need multiple install
   targets, try:
   make simple_install
+- If this is not your first-time installation, you may want to preserve
+  you configuration (*.cfg) files. Copy them to a safe place and issue
+  the command
+  make install_and_delete_old_cfg
+  (If you have problems with mkdir or other problems as above, use the
+  make-target "simple_cfg_install")
 - Try the program and report any errors to the address below.
+
+On an MS DOS system:
+- Uncompress and untar the tar file.
+- Download all the files to your DOS machine, to the directory
+  where you plan to keep the source code and the configuration files.
+- Edit the file "makefile.dos", setting LIBDIR to be your source
+  directory (note quotes and 4 slashes), and BININSTALL to be
+  the name of the directory where you want to put the executable
+  file.
+- Run
+        make -f makefile.dos
+  You need Borland C compiler and librarian (e.g. tcc and tlib)
+  to do this.
+
+Note 1: The configuration files (*.cfg) are not copied or
+  moved anywhere. They stay in the source directory. Therefore, you
+  should not remove the source directory.
+
+Note 2: The version of MS DOS I am using (6.20) allows using `/'
+  in file names instead of `\\'. If your version does not allow
+  this, you will have to replace the two occurence of "/" in
+  "main.c" with "\\".
+
+The MS DOS adaptation is by Vladimir Menkov, vmenkov@cs.indiana.edu.
+Lindley Hall 215,
+Blooomington, IN 47405
+USA
 
 --
 Ralf Schlatterbeck

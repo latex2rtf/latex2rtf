@@ -1,8 +1,11 @@
-.\" $Id: latex2rtf.1,v 1.2 2001/08/12 15:47:04 prahl Exp $
+.\" $Id: latex2rtf.1,v 1.3 2001/08/12 15:56:56 prahl Exp $
 .\" History:
 .\" $Log: latex2rtf.1,v $
-.\" Revision 1.2  2001/08/12 15:47:04  prahl
-.\" latex2rtf version 1.1 by Ralf Schlatterbeck
+.\" Revision 1.3  2001/08/12 15:56:56  prahl
+.\" latex2rtf version 1.5 by Ralf Schlatterbeck
+.\"
+.\" Revision 1.9  1995/03/23  15:58:08  ralf
+.\" Reworked version by Friedrich Polzer and Gerhard Trisko
 .\"
 .\" Revision 1.8  1994/06/29  06:35:28  ralf
 .\" Corrected some '\' to '\\'
@@ -32,8 +35,12 @@
 .SH NAME
 latex2rtf \- Converts LaTeX file to RTF text-format
 .SH SYNTAX
-latex2rtf [-V] [ -o
+latex2rtf [-V] [-l] [ -o
 .I outputfile
+] [ -a
+.I auxfile
+] [ -b
+.I bblfile
 ] [
 .I inputfile
 ]
@@ -44,12 +51,31 @@ The
 command
 converts a LaTeX file into RTF text format. The text and much of the formatting
 information is translated to RTF making the new file look very similar to the
-original. If 
-.I inputfile
-is not specified, standard input is read. Unless an 
-.I outputfile
-is specified the resulting RTF is produced on standard output.
+original. 
+.PP
 The \-V option prints version information on standard output and exits.
+.PP
+The -l option enables you to convert ISO 8859-1 (Latin-1) special characters in the LaTeX source. 
+.PP
+Unless an 
+.I outputfile
+is specified with the -o option, the resulting RTF is produced on standard output.
+.PP
+You can specify an 
+.I auxfile 
+(for citations) with the -a option. If this is omitted, the
+.I inputfile
+with the suffix .aux will be taken.
+.PP
+You can specify an 
+.I bblfile 
+(for citations) with the -b option. If this is omitted, the
+.I inputfile
+with the suffix .bbl will be taken.
+.PP
+If 
+.I inputfile
+is not specified, standard input is read. 
 .PP
 User defined LaTex commands are ignored. If you are familiar with the
 RTF format and
@@ -176,8 +202,11 @@ Example:
 Some environments like figure are currently ignored. It would be nice to scan
 the included information and convert things if possible.
 .PP
-The configuration files are reopened for each token, there should really
-be an internal representation of the configuration files that is read
-once and then consulted by more efficient mechanisms.
+Because the seek-command is used on input there are only file-redirections 
+possible when reading from stdin. 
+.PP
+Some of the generated table can confuse Word, the problem may be corrected 
+by editing the offending table within Word.
+.PP
 .SH SEE ALSO
 rtf2LaTeX(1), LaTeX User's Guide & Reference Manual by Leslie Lamport

@@ -1,8 +1,23 @@
-# $Id: Makefile,v 1.2 2001/08/12 15:47:04 prahl Exp $
+# $Id: Makefile,v 1.3 2001/08/12 15:56:56 prahl Exp $
 # History:
 # $Log: Makefile,v $
-# Revision 1.2  2001/08/12 15:47:04  prahl
-# latex2rtf version 1.1 by Ralf Schlatterbeck
+# Revision 1.3  2001/08/12 15:56:56  prahl
+# latex2rtf version 1.5 by Ralf Schlatterbeck
+#
+# Revision 1.14  1995/05/24  16:10:45  ralf
+# Added rules for additional files for DOS port
+#
+# Revision 1.13  1995/05/24  12:00:43  ralf
+# Corrected dependencies, added LIBS for configuring system libraries
+#
+# Revision 1.12  1995/03/23  17:19:27  ralf
+# Changed installation default to not automatically remove .cfg files
+#
+# Revision 1.11  1995/03/23  16:20:27  ralf
+# changed the LIBDIR default
+#
+# Revision 1.10  1995/03/23  15:58:08  ralf
+# Reworked version by Friedrich Polzer and Gerhard Trisko
 #
 # Revision 1.9  1994/07/13  09:27:31  ralf
 # Corrected fpos/SEEK_SET bug for SunOs 4.3.1 reported by Ulrich Schmid
@@ -40,6 +55,7 @@ COPY=cp
 #
 # Where support files are searched for by the executable
 LIBDIR=/usr/local/lib/latex2rtf
+#LIBDIR=`pwd`
 # You can give several Directories separated by ':' for the following
 # install targets
 #
@@ -58,27 +74,33 @@ MANINSTALL=/usr/local/man/man1
 XCFLAGS=
 #XCFLAGS=-DHAS_NO_FPOS
 
+# Sometimes additional system libraries are needed, they can be defined
+# here
+# LIBS=libdebug_malloc.a
+LIBS=
+
 # Nothing to change below this line
-SOURCES=commands.c commands.h direct.c direct.h fonts.c fonts.h \
-    funct1.c funct1.h funct2.c funct2.h ignore.c ignore.h main.c main.h \
-    stack.c stack.h version.h Makefile README Copyright
+SOURCES=commands.c commands.h direct.c direct.h encode.c encode.h fonts.c \
+    fonts.h funct1.c funct1.h funct2.c funct2.h ignore.c ignore.h main.c \
+    main.h stack.c stack.h version.h cfg.c cfg.h Makefile README \
+    Copyright makefile.dos my_getopt.c optind.c
 SUPPORT=direct.cfg fonts.cfg ignore.cfg
 MANUALS=latex2rtf.1
 
 all: latex2rtf
 
-latex2rtf: fonts.o direct.o commands.o stack.o funct1.o funct2.o \
-	ignore.o main.o
-	$(CC) $(CFLAGS) fonts.o direct.o commands.o stack.o funct1.o funct2.o \
-	main.o ignore.o -o latex2rtf
+latex2rtf: fonts.o direct.o encode.o commands.o stack.o funct1.o funct2.o \
+	ignore.o cfg.o main.o
+	$(CC) $(CFLAGS) fonts.o direct.o encode.o commands.o stack.o \
+	funct1.o funct2.o cfg.o main.o ignore.o $(LIBS) -o latex2rtf
 
-fonts.o: fonts.c main.h fonts.h
+fonts.o: fonts.c main.h fonts.h cfg.h
 	$(CC) $(CFLAGS) -c fonts.c -o fonts.o
 
-direct.o: direct.c main.h direct.h fonts.h
+direct.o: direct.c main.h direct.h fonts.h cfg.h
 	$(CC) $(CFLAGS) -c direct.c -o direct.o
 
-stack.o: stack.c
+stack.o: stack.c stack.h
 	$(CC) $(CFLAGS) -c stack.c -o stack.o
 
 funct1.o: funct1.c main.h funct1.h funct2.h commands.h stack.h fonts.h
@@ -87,11 +109,17 @@ funct1.o: funct1.c main.h funct1.h funct2.h commands.h stack.h fonts.h
 funct2.o: funct2.c main.h funct1.h commands.h funct2.h stack.h
 	$(CC) $(CFLAGS) -c funct2.c -o funct2.o
 
-ignore.o: ignore.c main.h direct.h fonts.h
+ignore.o: ignore.c main.h direct.h fonts.h cfg.h ignore.h
 	$(CC) $(CFLAGS) -c ignore.c -o ignore.o
 
+encode.o: encode.c encode.h main.h funct1.h fonts.h
+	$(CC) $(CFLAGS) -c encode.c -o encode.o
+
+cfg.o: cfg.c cfg.h
+	$(CC) $(CFLAGS) -c cfg.c -o cfg.o
+
 main.o: main.c main.h commands.h funct1.h fonts.h stack.h funct2.h \
-	direct.h ignore.h version.h
+	direct.h ignore.h version.h cfg.h encode.h
 	$(CC) $(CFLAGS) -DLIBDIR=\"$(LIBDIR)\" -c main.c -o main.o
 
 commands.o: commands.c main.h funct1.h commands.h funct2.h
@@ -99,7 +127,7 @@ commands.o: commands.c main.h funct1.h commands.h funct2.h
 
 clean:
 	rm -f stack.o main.o funct1.o funct2.o ignore.o commands.o \
-	direct.o fonts.o core latex2rtf.tar.gz
+	encode.o direct.o fonts.o cfg.o core latex2rtf.tar.gz
 	rm -rf latex2rtf
 
 $(SOURCES) $(SUPPORT) $(MANUALS):
@@ -111,7 +139,7 @@ dist: $(SOURCES) $(SUPPORT) $(MANUALS) clean
 	tar cvf - latex2rtf | gzip -best > latex2rtf.tar.gz
 	rm -rf latex2rtf
 
-install: $(SUPPORT) latex2rtf install.man
+install_and_delete_old_cfg: $(SUPPORT)
 	IFS=: ; for i in $(LIBINSTALL) ; do \
 	    mkdir -p $$i; \
 	    for j in $(SUPPORT) ; do \
@@ -119,6 +147,8 @@ install: $(SUPPORT) latex2rtf install.man
 	    done ;\
 	    $(COPY) $(SUPPORT) $$i; \
 	done
+
+install: latex2rtf install.man
 	IFS=: ; for i in $(BININSTALL) ; do \
 	    mkdir -p $$i; \
 	    $(COPY) latex2rtf $$i; \
@@ -133,8 +163,10 @@ install.man: $(MANUALS)
 	    done ;\
 	done
 
-simple_install: $(MANUALS) $(SUPPORT) latex2rtf
-	-mkdir $(LIBINSTALL)
+simple_cfg_install: $(SUPPORT)
 	$(COPY) $(SUPPORT) $(LIBINSTALL)
+
+simple_install: $(MANUALS) latex2rtf
+	-mkdir $(LIBINSTALL)
 	$(COPY) latex2rtf $(BININSTALL)
 	$(COPY) $(MANUALS) $(MANINSTALL)

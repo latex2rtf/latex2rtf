@@ -1,9 +1,15 @@
 /*
- * $Id: fonts.c,v 1.2 2001/08/12 15:47:04 prahl Exp $
+ * $Id: fonts.c,v 1.3 2001/08/12 15:56:56 prahl Exp $
  * History:
  * $Log: fonts.c,v $
- * Revision 1.2  2001/08/12 15:47:04  prahl
- * latex2rtf version 1.1 by Ralf Schlatterbeck
+ * Revision 1.3  2001/08/12 15:56:56  prahl
+ * latex2rtf version 1.5 by Ralf Schlatterbeck
+ *
+ * Revision 1.4  1995/05/24  15:32:22  ralf
+ * Changes by Vladimir Menkov for DOS port
+ *
+ * Revision 1.3  1995/03/23  15:58:08  ralf
+ * Reworked version by Friedrich Polzer and Gerhard Trisko
  *
  * Revision 1.2  1994/06/17  14:19:41  ralf
  * Corrected various bugs, for example interactive read of arguments
@@ -15,128 +21,73 @@
 /***************************************************************************
      name : fonts.c
    author : DORNER Fernando, GRANZER Andreas
-  purpose : The LaTeX font will be converted to the RTF font
+            POLZER Friedrich,TRISKO Gerhard
+ * uses now sorted array instead of fonts.cfg and chained list
+ *
+ purpose : The LaTeX font will be converted to the RTF font
  ******************************************************************************/
 
 /****************************************** includes ************************/
 #include <stdio.h>
-#include "main.h"
-#include "fonts.h"
 #include <malloc.h>
 #include <stdlib.h>
+#include "main.h"
+#include "fonts.h"
+#include "cfg.h" 
 /******************************************************************************/
 void error(char *);
 
 /************************************* extern variables *********************/
 extern char *progname;
+
+extern struct ArrayElementT *FontArray;
+extern int FontArraySize;
+extern int fontsize;
+extern int DefFont;
+
 /******************************************************************************/
 
 
 /********************* defines and structures ********************************/
 #define MAXLEN 80
-struct FontListTag { char texName[MAXLEN];
-		     char rtfName[MAXLEN];
-		     struct FontListTag *next;
-		   } *FontList;
 /****************************************************************************/
 
-/****************************** global variables ****************************/
-int fontcount = 0;
-/****************************************************************************/
 
 /****************************************************************************/
 BOOL WriteFontHeader(FILE* fRtf)
 /****************************************************************************
-  purpose: reads from the file fonts.cfg how some easy LaTex-commands can be
-	   converted into Rtf-commands by text exchange
-	   especially font-number-type-convertions
+  purpose: writes fontnumbers and styles for headers into Rtf-File 
 parameter: fRtf: File-Pointer to Rtf-File
+  globals: fontsize
+           DefFont (default font number)
+           FontArray (contains list of fonts defined in fonts.cfg)
+           FontArraySize (number of elements in FontArray)
  ****************************************************************************/
 {
-  FILE *fp;
-  char buffer[512];
-  char *buffpoint;
-  char *mempoint;
-  struct FontListTag *ListElem, *TmpElem;
-  int count;
+  int i;
 
   fprintf(fRtf,"{\\fonttbl");
 
-  FontList = (struct FontListTag*)malloc(sizeof (struct FontListTag));
-  if (FontList == NULL)
-    error(" malloc error -> out of memory\n");
-  FontList->next = NULL;
-  ListElem = FontList;
-
-  fp = open_cfg("fonts.cfg");
-  for(;;)
+  for(i = 0; i < FontArraySize; i++)
   {
-    if ( (fgets(buffer, 512, fp )) == NULL)
-      break;
-    if (strlen(buffer) > 500)
-    {
-      fprintf(stderr, "\n%s: ERROR:line too long in FONTS.CFG - only 500 characters",progname);
-      fprintf(stderr,"\nprogram aborted\n");
-      fclose(fp);
-      exit(-1);
-    }
-    buffpoint = buffer;
-    /* on empty lines the value of *buffpoint is 10 (LF) therfore < 32 */
-    if ((*buffpoint == '#') || (*buffpoint < 32))
-      continue; 		   /* read next line */
+    fprintf(fRtf,"{\\f%d\\fnil %s;}", i, FontArray[i].RtfCommand);
+  }; /* end for */
 
-    mempoint = ListElem->texName;
-    count = 0;
-    while (*buffpoint != ',')
-    {
-      *mempoint = *buffpoint;
-      mempoint++;
-      buffpoint++;
-      count++;
-      if (count >= MAXLEN)
-      {
-	fprintf(stderr, "\n%s: ERROR: error in file FONTS.CFG - missing comma at font %d",
-	    progname,fontcount+1);
-	fprintf(stderr,"\nprogram aborted\n");
-	fclose(fp);
-	exit(-1);
-      }
-    }
-    *mempoint = '\0';
-    buffpoint++;
+  fprintf(fRtf,"}\\f%d\n", DefFont = GetFontNumber("Roman"));
 
-    mempoint = ListElem->rtfName;
-    count = 0;
-    while (*buffpoint != '.')
-    {
-      *mempoint = *buffpoint;
-      mempoint++;
-      buffpoint++;
-      count++;
-      if (count >= MAXLEN)
-      {
-	fprintf(stderr, "\n%s: ERROR: error in file FONTS.CFG - missing '.' at font %d",
-	    progname,fontcount+1);
-	fclose(fp);
-	fprintf(stderr,"\nprogram aborted\n");
-	exit(-1);
-      }
-    }
-    *mempoint = '\0';
-    ++fontcount;
+  fprintf(fRtf,"{\\stylesheet{\\fs%d\\lang1031\\snext0 Normal;}",fontsize);
 
-    fprintf(fRtf,"{\\f%d\\fnil %s;}",fontcount-1,ListElem->rtfName);
+  fprintf(fRtf,"{%s%d%s \\sbasedon0\\snext0 heading 1;}\n", HEADER11,DefFont,HEADER12);
+  fprintf(fRtf,"{%s%d%s \\sbasedon0\\snext0 heading 2;}\n", HEADER21,DefFont,HEADER22);
+  fprintf(fRtf,"{%s%d%s \\sbasedon0\\snext0 heading 3;}\n", HEADER31,DefFont,HEADER32);
+  fprintf(fRtf,"{%s%d%s \\sbasedon0\\snext0 heading 4;}\n", HEADER41,DefFont,HEADER42);
 
-    TmpElem = (struct FontListTag*)malloc(sizeof (struct FontListTag));
-    TmpElem->next = NULL;
-    TmpElem->rtfName[0] = '\0';
-    TmpElem->texName[0] = '\0';
-    ListElem->next = TmpElem;
-    ListElem = TmpElem;
+  fprintf(fRtf,"%s\n", HEADER03);
+  fprintf(fRtf,"%s\n", HEADER13);
+  fprintf(fRtf,"%s\n", HEADER23);
+  fprintf(fRtf,"%s\n", HEADER33);
+  fprintf(fRtf,"%s\n", HEADER43);
 
-
-  }; /* end while */
-  fprintf(fRtf,"}");
   return TRUE;
 }
 
@@ -146,64 +97,47 @@ int GetFontNumber(char * Fname)
 /****************************************************************************
   purpose: gets the font number Rtf
 parameter: Fname: fontname in Rtf
- return: fontnumber from Rtf
+  globals: FontArray (contains list of fonts defined in fonts.cfg)
+           FontArraySize (number of elements in FontArray)
+   return: fontnumber from Rtf
  ****************************************************************************/
 {
   int num = 0;
-  struct FontListTag *list = FontList;
 
-
-  while (list != NULL)
+  for (num=0; num < FontArraySize; num++)
   {
-
-    if (strcmp(list->rtfName,Fname)==0)
-      return num;
-    num++;
-    list = list->next;
+     if (strcmp (FontArray[num].RtfCommand, Fname) == 0)
+        return num;  
   }
 
-  return 0;
+  return GetTexFontNumber ("Roman");  /* default font */
 }
+
+
+
 
 /****************************************************************************/
 int GetTexFontNumber(char * Fname)
 /****************************************************************************
   purpose: gets the font number LaTex
 parameter: Fname: fontname in LaTex
- return: fontnumber from LaTex
+  globals: FontArray (contains list of fonts defined in fonts.cfg)
+           FontArraySize (number of elements in FontArray)
+   return: fontnumber from LaTex
  ****************************************************************************/
 {
-  int num = 0;
-  struct FontListTag *list = FontList;
+  struct ArrayElementT *help;
 
-  while (list != NULL)
-  {
 
-    if (strcmp(list->texName,Fname)==0)
-      return num;
-    num++;
-    list = list->next;
-  }
+  help = (struct ArrayElementT *) bsearch (Fname, FontArray, FontArraySize,
+                                   sizeof(struct ArrayElementT), (fptr)compare);
+  if (help == NULL)
+     return 0;
+  else
+     return help->number;
 
-  return 0;
 }
 
-/****************************************************************************/
-void RemoveFontlist(void)
-/****************************************************************************
- purpose: free all memory resources needed for font-exchange (LaTex-Rtf)
- ****************************************************************************/
-{
-  struct FontListTag *oldelem = FontList, *list;
 
-  if (oldelem == NULL) return;
-  FontList = NULL;
-  list = oldelem->next;
-  while (oldelem != NULL)
-  {
-    free(oldelem);
-    oldelem = list;
-    if (list != NULL)
-      list = list->next;
-  }
-}
+
+
