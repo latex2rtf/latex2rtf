@@ -14,7 +14,7 @@ all:	accentchars.rtf array.rtf cite.rtf eqns.rtf fonts.rtf fontsize.rtf \
 LATEX= latex
 BIBTEX= bibtex
 LATEX2RTF= ../latex2rtf
-OPTIONS  = -Z3
+OPTIONS  = -Z3 -M1
 
 %.rtf:	%.tex
 	$(LATEX2RTF) $(OPTIONS) $<
@@ -43,7 +43,9 @@ ttgfsr7.rtf: ttgfsr7.tex
 
 check:
 	./bracecheck
+	
 clean:
 	rm -f *.dvi *.rtf *.aux *.blg *.bbl *.log *.pdf *.toc *.lot *.idx *.ilg *.ind
+	rm -f l2r*tex
 
 .PHONY: clean all

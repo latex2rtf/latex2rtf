@@ -12,8 +12,7 @@
 #define EQN_DOLLAR_DOLLAR 14  /* \begin{displaymath} ... \end{displaymath} */
 #define EQN_NO_NUMBER     15	/* \nonumber */
 
-void            CmdMath(int code);
-void            CmdDisplayMath(int code);
+void			CmdEquation(int code);
 void            CmdFraction(int code);
 void            CmdRoot(int code);
 void            CmdIntegral(int code);

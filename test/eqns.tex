@@ -130,7 +130,10 @@ Case 6 Same as above but using \verb#\begin{equation}# to enter a math environme
 Case 7 Same as above but using \verb#\begin{eqnarray}# to enter a math environment
 \begin{eqnarray}a+ \bf R\end{eqnarray} roman type follows
 
-Case 8 Same as above but using \verb#$$# to enter a math environment
+Case 8 Same as above but using \verb#\begin{equation*}# to enter a math environment
+\begin{equation*}a+ \bf R\end{equation*} roman type follows
+
+Case 9 Same as above but using \verb#$$# to enter a math environment
 $$a+ \bf R$$ roman type follows
 
 
@@ -148,12 +151,12 @@ a_{m1} & a_{m2} & \cdots & a_{mn}
 $$
 
 \subsection{Mixed Delimiters}
-
-w = \[ \left| 4 x^3 + \left( x + \frac{42}{1+x^4} \right) \right|.\] 
-
+$$
+w =  \left| 4 x^3 + \left( (x-y) + \frac{42}{1+x^4} \right) \right|.
+$$
 
 \subsection{Submatrices}
-
+$$
 A = \left[ \begin{array}{cccc}
 \left|\begin{array}{cc}
 b_{11}&b_{12}\\
@@ -164,5 +167,5 @@ a_{21} & a_{22} & \cdots & a_{2n}\\
 \vdots & \vdots & \ddots & \vdots\\
 a_{m1} & a_{m2} & \cdots & a_{mn}
 \end{array} \right]
-
+$$
 \end{document}

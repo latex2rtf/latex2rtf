@@ -1,4 +1,4 @@
-/*  $Id: commands.c,v 1.40 2001/11/28 06:36:04 prahl Exp $
+/*  $Id: commands.c,v 1.41 2002/02/17 05:12:59 prahl Exp $
  
     Defines subroutines to translate LaTeX commands to RTF
 */
@@ -425,12 +425,14 @@ static CommandArray params[] = {
 	{"longtable*", CmdTabular, TABULAR_1},
 	{"array", CmdArray, 1},
 
+	{"displaymath", CmdEquation, EQN_DISPLAYMATH},
+	{"equation", CmdEquation, EQN_EQUATION},
+	{"equation*", CmdEquation, EQN_EQUATION_STAR},
+	{"eqnarray*", CmdEquation, EQN_ARRAY_STAR},
+	{"eqnarray", CmdEquation, EQN_ARRAY},
+	{"math", CmdEquation, EQN_MATH},
+
 	{"multicolumn", CmdMultiCol, 0},
-	{"displaymath", CmdDisplayMath, EQN_DISPLAYMATH},
-	{"equation", CmdDisplayMath, EQN_EQUATION},
-	{"equation*", CmdDisplayMath, EQN_EQUATION_STAR},
-	{"eqnarray*", CmdDisplayMath, EQN_ARRAY_STAR},
-	{"eqnarray", CmdDisplayMath, EQN_ARRAY},
 	{"letter", CmdLetter, 0},
 	{"table", CmdTable, TABLE},
 	{"table*", CmdTable, TABLE_1},
@@ -438,7 +440,6 @@ static CommandArray params[] = {
 	{"abstract", CmdAbstract, 0},
 	{"titlepage", CmdTitlepage, 0},
 	
-	{"math", CmdMath, EQN_MATH},
 	{"em", CmdEmphasize, F_EMPHASIZE_3},
 	{"rmfamily", CmdFontFamily, F_FAMILY_ROMAN_3},
 	{"sffamily", CmdFontFamily, F_FAMILY_SANSSERIF_3},
@@ -489,12 +490,16 @@ globals: command-functions have side effects or recursive calls
  ****************************************************************************/
 {
 	int             i, j;
-
+	char * macro_string;
+	
 	diagnostics(5,"CallCommandFunc <%s>, iEnvCount = %d",cCommand,iEnvCount);
 	
 	i=existsDefinition(cCommand);
 	if (i>-1) {
-		expandDefinition(i);
+		macro_string=expandDefinition(i);
+	    diagnostics(3,"CallCommandFunc <%s> expanded to <%s>", cCommand, macro_string);
+		ConvertString(macro_string);
+		free(macro_string);
 		return TRUE;
 	}
 

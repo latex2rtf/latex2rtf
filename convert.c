@@ -1,4 +1,4 @@
-/* $Id: convert.c,v 1.24 2001/12/07 05:03:48 prahl Exp $ 
+/* $Id: convert.c,v 1.25 2002/02/17 05:12:59 prahl Exp $ 
 	purpose: ConvertString(), Convert(), TranslateCommand() 
 	
 TeX has six modes according to the TeX Book:
@@ -87,13 +87,13 @@ ConvertString(char *string)
 	strncpy(temp,string,50);
 
 	if (PushSource(NULL, string)) {
-		diagnostics(5, "Entering Convert() from StringConvert() <%s>",temp);
+		diagnostics(4, "Entering Convert() from StringConvert() <%s>",temp);
 
 		while (StillSource())
 			Convert();
 			
 		PopSource();
-		diagnostics(5, "Exiting Convert() from StringConvert()");
+		diagnostics(4, "Exiting Convert() from StringConvert()");
 	}
 }
 
@@ -248,10 +248,10 @@ globals: fTex, fRtf and all global flags for convert (see above)
 			diagnostics(5,"Processing $, next char <%c>",cNext);
 
 			if (cNext == '$' && GetTexMode() != MODE_MATH)
-				CmdDisplayMath(EQN_DOLLAR_DOLLAR);
+				CmdEquation(EQN_DOLLAR_DOLLAR | ON);
 			else {
 				ungetTexChar(cNext);
-				CmdMath(EQN_DOLLAR);
+				CmdEquation(EQN_DOLLAR | ON);
 			}
 
 			/* 
@@ -259,6 +259,7 @@ globals: fTex, fRtf and all global flags for convert (see above)
 			   This works for \begin{equation} but not $$ since the BraceLevel
 			   and environments don't get pushed properly.  We do it explicitly here.
 			*/
+			/*
 			if (GetTexMode() == MODE_MATH || GetTexMode() == MODE_DISPLAYMATH)
 				PushBrace();
 			else {
@@ -270,7 +271,7 @@ globals: fTex, fRtf and all global flags for convert (see above)
 					return;
 				}
 			}
-			
+			*/
 			break;
 
 		case '&':
@@ -447,22 +448,33 @@ globals: fTex, fRtf and all global flags for convert (see above)
 			cThis = ' ';
 			break;
 
-
-#ifdef SEMICOLONSEP
-		case ';':
+		case '(':
 			if (g_processing_fields)
+				fprintRTF("\\\\(");
+			else
+				fprintRTF("(");
+			break;
+			
+		case ')':
+			if (g_processing_fields)
+				fprintRTF("\\\\)");
+			else
+				fprintRTF(")");
+			break;
+
+		case ';':
+			if (g_field_separator == ';' && g_processing_fields)
 				fprintRTF("\\\\;");
 			else
 				fprintRTF(";");
 		break;
-#else
+
 		case ',':
-			if (g_processing_fields)
+			if (g_field_separator == ',' && g_processing_fields)
 				fprintRTF("\\\\,");
 			else
 				fprintRTF(",");
 			break;
-#endif
 			
 		default:
 			if (mode == MODE_MATH || mode == MODE_DISPLAYMATH) {
@@ -630,20 +642,20 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 		CmdUmlauteChar(0);
 		return TRUE;
 	case '(':
-		CmdMath(EQN_RND_OPEN);
-		PushBrace();
+		CmdEquation(EQN_RND_OPEN | ON);
+		/*PushBrace();*/
 		return TRUE;
 	case '[':
-		CmdDisplayMath(EQN_BRACKET_OPEN);
-		PushBrace();
+		CmdEquation(EQN_BRACKET_OPEN | ON);
+		/*PushBrace();*/
 		return TRUE;
 	case ')':
-		CmdMath(EQN_RND_CLOSE);
-		ret = RecursionLevel - PopBrace();
+		CmdEquation(EQN_RND_CLOSE | OFF);
+		/*ret = RecursionLevel - PopBrace();*/
 		return TRUE;
 	case ']':
-		CmdDisplayMath(EQN_BRACKET_CLOSE);
-		ret = RecursionLevel - PopBrace();
+		CmdEquation(EQN_BRACKET_CLOSE | OFF);
+		/*ret = RecursionLevel - PopBrace();*/
 		return TRUE;
 	case '/':
 		CmdIgnore(0);		/* italic correction */

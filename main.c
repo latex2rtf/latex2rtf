@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.45 2001/12/07 05:03:48 prahl Exp $ */
+/* $Id: main.c,v 1.46 2002/02/17 05:12:59 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -66,7 +66,14 @@ int				g_processing_arrays = 0;
 int 			g_processing_fields = 0;
 bool			g_RTF_warnings = FALSE;
 char           *g_config_path = NULL;
-extern char     g_field_separator = ',';
+char		   *g_tmp_path = NULL;
+char           *g_preamble = NULL;
+char     		g_field_separator = ',';
+
+bool 			g_equation_rtf = FALSE;
+bool			g_equation_inline_bitmap = FALSE;
+bool			g_equation_display_bitmap = FALSE;
+bool			g_equation_comment = FALSE;
 
 int             indent = 0;
 char            alignment = JUSTIFIED;	/* default for justified: */
@@ -96,14 +103,14 @@ globals: initializes in- and outputfile fRtf,
 	int
 	                main(int argc, char **argv)
 {
-	int             c;
+	int             c,x;
 	bool            errflag = FALSE;
 
 	fRtf = stdout;
 
 	progname = argv[0];
 	optind = 1;
-	while ((c = getopt(argc, argv, "lhvVWZ:o:a:b:d:i:P:")) != EOF) {
+	while ((c = getopt(argc, argv, "lhSvVWZ:o:a:b:d:i:M:P:T:")) != EOF) {
 		switch (c) {
 		case 'a':
 			AuxName = optarg;
@@ -136,11 +143,22 @@ globals: initializes in- and outputfile fRtf,
 		case 'C':
 			setPackageInputenc(optarg);
 			break;
+		case 'M':
+			sscanf(optarg, "%d", &x);
+			diagnostics(WARNING, "Math option = %s x=%d",optarg,x);
+			g_equation_rtf            = x & 1;
+			g_equation_inline_bitmap  = x & 2;
+			g_equation_display_bitmap = x & 4;
+			g_equation_comment        = x & 8;
+			break;
 		case 'P':
 			g_config_path = strdup(optarg);
 			break;
 		case 'S':
 			g_field_separator = ';';
+			break;
+		case 'T':
+			g_tmp_path = strdup(optarg);
 			break;
 		case 'V':
 			fprintf(stderr, "%s: %s\n", progname, Version);
@@ -156,7 +174,6 @@ globals: initializes in- and outputfile fRtf,
 				printhelp();
 				diagnostics(ERROR, "Added number of braces must be 0--9");
 			}
-			break;
 			break;
 		default:
 			errflag = TRUE;
@@ -305,9 +322,10 @@ printhelp(void)
 		fprintf(stderr, "\t -o outputfile    : RTF output other than input.rtf\n");
 		fprintf(stderr, "\t -v               : version information\n");
 		fprintf(stderr, "\t -C codepage      : input encoding (latin1, cp850, etc.)\n");
-		fprintf(stderr, "\t -P /path/to/cfg/ : version information\n");
+		fprintf(stderr, "\t -P /path/to/cfg  : directory containing .cfg files\n");
 		fprintf(stderr, "\t -V               : version information\n");
 		fprintf(stderr, "\t -S               : use ';' to separate args in RTF fields\n");
+		fprintf(stderr, "\t -T /path/to/tmp  : temporary directory\n");
 		fprintf(stderr, "\t -W               : include warnings in RTF\n");
 		fprintf(stderr, "\t -Z#              : add # of '}'s at end of rtf file (# is 0-9)\n\n");
 		fprintf(stderr, "RTFPATH designates the directory for configuration files (*.cfg)\n");
@@ -437,21 +455,19 @@ purpose: reads the LaTeX preamble (to \begin{document} ) for the file
  ****************************************************************************/
 {
 	FILE * hidden;
-	char * s;
 	char t[] = "\\begin{document}";
 	
 	diagnostics(4, "Reading LaTeX Preamble");
 	hidden = fRtf;
 	fRtf = stderr;
 	 
-	s = getTexUntil(t,0);
+	g_preamble = getTexUntil(t,0);
 	
-	diagnostics(4, "Entering ConvertString() from ConvertLatexPreamble <%s>",s);
-	ConvertString(s);
+	diagnostics(4, "Entering ConvertString() from ConvertLatexPreamble <%s>",g_preamble);
+	ConvertString(g_preamble);
 	diagnostics(4, "Exiting ConvertString() from ConvertLatexPreamble");
 	
 	fRtf = hidden;
-	free(s);
 }
 
 

@@ -1,4 +1,4 @@
-/* $Id: stack.c,v 1.17 2001/10/22 04:33:03 prahl Exp $
+/* $Id: stack.c,v 1.18 2002/02/17 05:12:59 prahl Exp $
 
   purpose : code that implements a stack to handle braces and recursive calls
 	        created by environments, and open and closing-braces
@@ -8,7 +8,7 @@
 #include "main.h"
 #include "stack.h"
 
-#define STACKSIZE 300
+#define STACKSIZE 500
 
 static int      stack[STACKSIZE];
 static int      top = 0;

@@ -12,8 +12,9 @@ Scott Prahl, October 2001
 #include "parser.h"
 #include "funct1.h"
 #include "util.h"
+#include "cfg.h"
 
-#define MAX_DEFINITIONS 50
+#define MAX_DEFINITIONS 200
 
 struct {
 	char * name;
@@ -46,6 +47,19 @@ strequal(char *a, char *b)
 }
 
 static void
+printDefinitions(void)
+{
+int i=0;
+	fprintf(stderr, "\n");
+	while(i < iDefinitionCount ) {
+		fprintf(stderr, "[%d] name   =<%s>\n",i, Definitions[i].name);
+		fprintf(stderr, "    def    =<%s>\n", Definitions[i].def);
+		fprintf(stderr, "    params =<%d>\n", Definitions[i].params);
+		i++;
+	}
+}
+
+static char *
 expandmacro(char *macro, int params)
 /**************************************************************************
      purpose: retrieves and expands a defined macro 
@@ -53,17 +67,13 @@ expandmacro(char *macro, int params)
 {
 	int i,param;
 	char * args[9], *dmacro, *macro_piece, *next_piece, *expanded, buffer[1024], *cs;
-		
-	diagnostics(5, "expandmacro macro=<%s>, params=%d", macro, params);
 
-	if (params == 0) {
-		ConvertString(macro);
-		return;
-	}
-
+	if (params<=0) 
+		return strdup(macro);
+	
 	for (i=0; i<params; i++) {
 		args[i] = getBraceParam();
-		diagnostics(6, "argument #%d <%s>", i+1, args[i]);
+		diagnostics(3, "argument #%d <%s>", i+1, args[i]);
 	}
 	
 	expanded = buffer;
@@ -88,24 +98,48 @@ expandmacro(char *macro, int params)
 		} else
 			param = -1;
 			
-		diagnostics(6, "expandmacro piece =<%s>", macro_piece);
+		diagnostics(3, "expandmacro piece =<%s>", macro_piece);
 		strcpy(expanded,macro_piece);
 		expanded += strlen(macro_piece);
 		if (param > -1) {
-			diagnostics(6, "expandmacro arg =<%s>", args[param]);
-			strcpy(expanded,args[param]);
-			expanded += strlen(args[param]);
+			if (param<params) {
+				diagnostics(3, "expandmacro arg =<%s>", args[param]);
+				strcpy(expanded,args[param]);
+				expanded += strlen(args[param]);
+			} else
+				diagnostics(WARNING,"confusing definition in macro=<%s>", macro);
 		}
 		
 		macro_piece = next_piece;
 	}
 	
-	diagnostics(4, "expandmacro expanded=<%s>", buffer);
-	ConvertString(buffer);
+	
+/*	ConvertString(buffer);*/
 	for (i=0; i< params; i++)
 		if (args[i]) free(args[i]);
 
 	if (dmacro) free(dmacro);
+
+	diagnostics(3, "expandmacro expanded=<%s>", buffer);
+	return strdup(buffer);
+}
+
+int
+maybeDefinition(char * s, int n)
+/**************************************************************************
+     purpose: checks to see if a named TeX definition possibly exists
+     returns: the array index of the named TeX definition
+**************************************************************************/
+{
+	int i;
+	
+	for (i=0; i<iDefinitionCount; i++) {
+		diagnostics(6, "seeking=<%s>, i=%d, current=<%s>", s,i,Definitions[i].name);
+		if (strncmp(s,Definitions[i].name,n) == 0) 
+			return TRUE;
+	}
+
+	return FALSE;
 }
 
 int
@@ -115,12 +149,11 @@ existsDefinition(char * s)
      returns: the array index of the named TeX definition
 **************************************************************************/
 {
-	int n, i=0;
+	int i;
 	
-	n = strlen(s);
-	while(i < iDefinitionCount && !strequal(s,Definitions[i].name)) {
+	for (i=0; i<iDefinitionCount; i++) {
 		diagnostics(6, "seeking=<%s>, i=%d, current=<%s>", s,i,Definitions[i].name);
-		i++;
+		if (strcmp(s,Definitions[i].name) == 0) break;
 	}
 
 	if (i==iDefinitionCount) 
@@ -137,8 +170,17 @@ newDefinition(char *name, char *def, int params)
               define \hd, name = "hd"
 **************************************************************************/
 {
+	diagnostics(3,"Adding macro <%s>=<%s>",name,def);
+
+	if (strcmp(name,"LaTeX")==0) return;
+	if (strcmp(name,"TeX")==0) return;
+	if (strcmp(name,"AmSTeX")==0) return;
+	if (strcmp(name,"BibTex")==0) return;
+	if (strcmp(name,"LaTeXe")==0) return;
+	if (strcmp(name,"AmSLaTeX")==0) return;
+	
 	if (iDefinitionCount==MAX_DEFINITIONS){
-		fprintf(stderr,"Too many definitions, ignoring %s", name);
+		diagnostics(WARNING,"Too many definitions, ignoring %s", name);
 		return;
 	}
 	
@@ -147,15 +189,13 @@ newDefinition(char *name, char *def, int params)
 	Definitions[iDefinitionCount].name=strdup(name); 
 	
 	if (Definitions[iDefinitionCount].name==NULL) {
-		fprintf(stderr, "\nCannot allocate name for definition \\%s\n", name);
-		exit(1);
+		diagnostics(ERROR, "\nCannot allocate name for definition \\%s\n", name);
 	}
 
 	Definitions[iDefinitionCount].def=strdup(def); 
 
 	if (Definitions[iDefinitionCount].def==NULL) {
-		fprintf(stderr, "\nCannot allocate def for definition \\%s\n", name);
-		exit(1);
+		diagnostics(ERROR, "\nCannot allocate def for definition \\%s\n", name);
 	}
 	
 	iDefinitionCount++;
@@ -168,6 +208,8 @@ renewDefinition(char * name, char * def, int params)
 **************************************************************************/
 {
 	int i;
+
+	diagnostics(3,"renewDefinition seeking <%s>\n",name);
 	i = existsDefinition(name);
 	
 	if (i<0) {
@@ -185,16 +227,18 @@ renewDefinition(char * name, char * def, int params)
 	}
 }
 
-void
+char *
 expandDefinition(int thedef)
 /**************************************************************************
      purpose: retrieves and expands a \newcommand macro 
 **************************************************************************/
 {
-	diagnostics(5, "expandDefinition name=<%s>", Definitions[thedef].name);
-	diagnostics(5, "expandDefinition def =<%s>", Definitions[thedef].def);
 
-	expandmacro(Definitions[thedef].def, Definitions[thedef].params);
+	diagnostics(3, "expandDefinition name   =<%s>", Definitions[thedef].name);
+	diagnostics(3, "expandDefinition def    =<%s>", Definitions[thedef].def);
+	diagnostics(3, "expandDefinition params =<%d>", Definitions[thedef].params);
+
+	return expandmacro(Definitions[thedef].def, Definitions[thedef].params);
 }
 
 int
@@ -288,6 +332,3 @@ expandEnvironment(int thedef, int code)
 		expandmacro(NewEnvironments[thedef].enddef, 0);
 	}
 }
-
-
-

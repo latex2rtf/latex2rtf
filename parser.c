@@ -1,4 +1,4 @@
-/*  $Id: parser.c,v 1.38 2001/12/03 04:44:13 prahl Exp $
+/*  $Id: parser.c,v 1.39 2002/02/17 05:12:59 prahl Exp $
 
    Contains declarations for a generic recursive parser for LaTeX code.
 */
@@ -16,6 +16,8 @@
 #include "parser.h"
 #include "l2r_fonts.h"
 #include "lengths.h"
+#include "definitions.h"
+#include "funct1.h"
 
 typedef struct InputStackType
 {
@@ -817,26 +819,32 @@ getSection(char **body, char **header, char **label)
 **************************************************************************/
 {
 	int possible_match, found;
-	char cNext, *s,*text,*next_header;
+	char cNext, *s,*text,*next_header,*str;
 	int i;
 	long delta;
-	int  match[19];
-	char * command[19] = {"\\begin{verbatim}", "\\begin{figure}", "\\begin{equation}", 
+	int  match[23];
+	char * command[23] = {"",  /* 0 entry is for user definitions */
+						  "\\begin{verbatim}", "\\begin{figure}", "\\begin{equation}", 
 						  "\\begin{eqnarray}", "\\begin{table}", "\\begin{description}",
 	                     "\\part", "\\chapter", "\\section", "\\subsection", "\\subsubsection", 
 	                     "\\section*", "\\subsection*", "\\subsubsection*", 
-	                     "\\label", "\\input", "\\include", "\\verb", "\\url" };
+	                     "\\label", "\\input", "\\include", "\\verb", "\\url",
+	                     "\\newcommand", "\\def" , "\\renewcommand"};
 
-	char * ecommand[6] = {"\\end{verbatim}", "\\end{figure}", "\\end{equation}", 
+	char * ecommand[7] = {"",
+						  "\\end{verbatim}", "\\end{figure}", "\\end{equation}", 
 						  "\\end{eqnarray}", "\\end{table}", "\\end{description}"};
-	int ncommands = 19;
-	int ecommands = 6;
+	int ncommands = 23;
+	int ecommands =7;
 
-	const int label_item   = 14;
-	const int input_item   = 15;
-	const int include_item = 16;
-	const int verb_item    = 17;
-	const int url_item     = 18;
+	const int label_item   = 15;
+	const int input_item   = 16;
+	const int include_item = 17;
+	const int verb_item    = 18;
+	const int url_item     = 19;
+	const int new_item     = 20;
+	const int def_item     = 21;
+	const int renew_item   = 22;
 
 	int bs_count = 0;
 	int index = 0;
@@ -858,17 +866,26 @@ getSection(char **body, char **header, char **label)
 	
 		if (delta+2 >= section_buffer_size) increase_buffer_size();
 		
-		*(section_buffer+delta) = getRawTexChar();
-		if (*(section_buffer+delta)=='\0')
-			diagnostics(2,"char=\\0");
-		else if (*(section_buffer+delta)=='\n')
-			diagnostics(2,"char=\\n");
+		cNext = getRawTexChar();
+		while (cNext == '\0' && g_parser_depth>0) {
+			PopSource();
+			cNext = getRawTexChar();
+		}
+		
+		if (cNext == '\0')
+			diagnostics(5,"char=000 \\0");
+		else if (cNext =='\n')
+			diagnostics(5,"char=012 \\n");
 		else
-			diagnostics(2,"char=%d %c",(int)*(section_buffer+delta),*(section_buffer+delta));
+			diagnostics(5,"char=%03d %c", (int) cNext, cNext);
+				
+		/* add character to buffer */
+		*(section_buffer+delta) = cNext;
 		
 		if (*(section_buffer+delta) == '\0') break;
-		
-		if (*(section_buffer+delta) == '%' && bs_count % 2) {	/* slurp TeX comments */
+
+		/* slurp TeX comments */
+		if (*(section_buffer+delta) == '%' && bs_count % 2) {	
 			delta++;
 			while ((cNext=getRawTexChar()) != '\n') {
 				if (delta+2 >= section_buffer_size) increase_buffer_size();
@@ -878,7 +895,8 @@ getSection(char **body, char **header, char **label)
 			*(section_buffer+delta) = cNext;
 		}
 
-		if (*(section_buffer+delta) == '\\') {				/* begin search if backslash found */
+		/* begin search if backslash found */
+		if (*(section_buffer+delta) == '\\') {
 			bs_count++;
 			if (bs_count % 2) {		/* avoid "\\section" and "\\\\section" */
 				for(i=0; i<ncommands; i++) match[i]=TRUE;
@@ -891,7 +909,12 @@ getSection(char **body, char **header, char **label)
 		if (index == 0) continue;
 			
 		possible_match = FALSE;	
-		for (i=0; i<ncommands; i++) {	/* test each command for match */
+
+/* slow... */
+		if (match[0])  	/* do any user defined commands possibly match? */
+			match[0] = maybeDefinition(section_buffer+delta-index+1, index-1);
+			
+		for (i=1; i<ncommands; i++) {	/* test each command for match */
 			if (!match[i]) continue;
 				
 			if (*(section_buffer+delta)!=command[i][index]) {
@@ -904,7 +927,32 @@ getSection(char **body, char **header, char **label)
 		}
 
 		found = FALSE;
-		for (i=0; i<ncommands; i++) {	/* discover any exact matches */
+		
+		if (match[0]) {						/* expand user macros */
+			cNext = getRawTexChar();		/* wrong when cNext == '%' */
+			ungetTexChar(cNext);
+			if (!isalpha(cNext) && index>1) {	/* is macro name complete? */
+					
+				*(section_buffer+delta+1) = '\0';
+				i=existsDefinition(section_buffer+delta-index+1);
+				if (i>-1) {
+					if (cNext == ' ') {
+						cNext=getNonSpace();
+						ungetTexChar(cNext);
+					}
+					
+					delta -= index+1;  		/* remove \macroname */
+	    diagnostics(4,"calling expandDefinition from getSection");
+					str = expandDefinition(i);
+	    diagnostics(4,"expanded macro string is <%s>", str);
+					PushSource(NULL,str);   /* memory leak :-( */
+					index = 0;
+					continue;
+				}
+			}
+		}
+		
+		for (i=1; i<ncommands; i++) {	/* discover any exact matches */
 			if (!match[i]) continue;
 			if (index+1 == strlen(command[i])) {
 				found = TRUE;
@@ -1020,6 +1068,26 @@ getSection(char **body, char **header, char **label)
 			continue;
 		}
 		
+		/* process any new definitions */
+		if (i==def_item || i==new_item || i==renew_item){
+			cNext = getRawTexChar();		/* wrong when cNext == '%' */
+			ungetTexChar(cNext);
+			if (isalpha(cNext)) 			/* is macro name complete? */
+				continue;
+				
+			delta -= strlen(command[i]);    /* do not include in buffer */
+			
+			if (i==def_item)
+				CmdNewDef(DEF_DEF);
+			else if (i==new_item)
+				CmdNewDef(DEF_NEW);
+			else 
+				CmdNewDef(DEF_RENEW);
+
+			index = 0;				/* keep looking */
+			continue;
+		}
+			
 		if (i<ecommands) {			/* slurp environment to avoid \labels within */
 			delta++;
 			s=getTexUntil(ecommand[i],TRUE);
@@ -1028,7 +1096,7 @@ getSection(char **body, char **header, char **label)
 				increase_buffer_size();
 
 			strcpy(section_buffer+delta,s);				/* append s */
-			delta += strlen(s)-1;
+			delta += strlen(s);
 			
 			strcpy(section_buffer+delta,ecommand[i]);	/* append ecommand[i] */
 			delta += strlen(ecommand[i])-1;

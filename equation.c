@@ -12,6 +12,7 @@
 #include "counters.h"
 #include "funct1.h"
 #include "lengths.h"
+#include "util.h"
 
 int g_equation_column = 1;
 
@@ -26,16 +27,539 @@ CmdNonumber(int code)
 }
 
 void
-BeginEquation(char * start, char * end)
+SlurpEquation(int code, char **pre, char **eq, char **post)
 {
-
-/* slurp entire equation */
-/* write entire equation as comment if desired */
-/* write bitmap of equation if desired */
-/* write equation with fields */
-/* write EQ if necessary */
-
+	int true_code = code & ~ON;
+	
+	switch (true_code) {
+	
+		case EQN_MATH:
+			diagnostics(4, "SlurpEquation() ... \\begin{math}");
+			*pre  = strdup("\\begin{math}");
+			*post = strdup("\\end{math}");
+			*eq = getTexUntil(*post,0);
+			break;
+			
+		case EQN_DOLLAR:
+			diagnostics(4, "SlurpEquation() ... $");
+			*pre  = strdup("$");
+			*post = strdup("$");
+			*eq = getDelimitedText('$','$', 0);
+			break;
+	
+		case EQN_RND_OPEN:
+			diagnostics(4, "SlurpEquation() ... \\(");
+			*pre  = strdup("\\(");
+			*post = strdup("\\)");
+			*eq = getTexUntil(*post,0);
+			break;
+	
+		case EQN_DISPLAYMATH:
+			diagnostics(4,"SlurpEquation -- displaymath");
+			*pre  = strdup("\\begin{displaymath}");
+			*post = strdup("\\end{displaymath}");
+			*eq = getTexUntil(*post,0);
+			break;
+	
+		case EQN_EQUATION_STAR:
+			diagnostics(4,"SlurpEquation() -- equation*");
+			*pre  = strdup("\\begin{equation*}");
+			*post = strdup("\\end{equation*}");
+			*eq = getTexUntil(*post,0);
+			break;
+	
+		case EQN_DOLLAR_DOLLAR:
+			diagnostics(4,"SlurpEquation() -- $$");
+			*pre  = strdup("$$");
+			*post = strdup("$$");
+			*eq = getTexUntil(*post,0);
+			break;
+	
+		case EQN_BRACKET_OPEN:
+			diagnostics(4,"SlurpEquation()-- \\[");
+			*pre  = strdup("\\[");
+			*post = strdup("\\]");
+			*eq = getTexUntil(*post,0);
+			break;
+	
+		case EQN_EQUATION:
+			diagnostics(4,"SlurpEquation() -- equation");
+			*pre  = strdup("\\begin{equation}");
+			*post = strdup("\\end{equation}");
+			*eq = getTexUntil(*post,0);
+			break;
+	
+		case EQN_ARRAY_STAR:
+			diagnostics(4,"Entering CmdDisplayMath -- eqnarray* ");
+			*pre  = strdup("\\begin{eqnarray*}");
+			*post = strdup("\\end{eqnarray*}");
+			*eq = getTexUntil(*post,0);
+			break;
+	
+		case EQN_ARRAY:
+			diagnostics(4,"SlurpEquation() --- eqnarray");
+			*pre  = strdup("\\begin{eqnarray}");
+			*post = strdup("\\end{eqnarray}");
+			*eq = getTexUntil(*post,0);
+			break;
+	}
 }
+
+int
+EquationNeedsFields(char *eq)
+/******************************************************************************
+ purpose   : Determine if equation needs EQ field for RTF conversion
+ ******************************************************************************/
+{
+	if (strstr(eq,"\\frac")) return 1;
+	if (strstr(eq,"\\sum")) return 1;
+	if (strstr(eq,"\\int")) return 1;
+	if (strstr(eq,"\\prod")) return 1;
+	if (strstr(eq,"\\array")) return 1;
+	if (strstr(eq,"\\left")) return 1;
+	if (strstr(eq,"\\right")) return 1;
+	if (strstr(eq,"\\root")) return 1;
+	if (strstr(eq,"\\sqrt")) return 1;
+	return 0;
+}
+
+void
+WriteEquationAsComment(char *pre, char *eq, char *post)
+/******************************************************************************
+ purpose   : Writes equation to RTF file as text of COMMENT field
+ ******************************************************************************/
+{
+	fprintRTF("{\\field{\\*\\fldinst{ COMMENTS \"\" ");
+ 	while (*pre)  putRtfChar(*pre++);
+	while (*eq)   putRtfChar(*eq++);
+	while (*post) putRtfChar(*post++);
+	fprintRTF("}{ }}{\\fldrslt }}");
+}
+
+char *
+getTmpPath(void)
+{
+	return strdup("");
+}
+
+char *
+SaveEquationAsFile(char *pre, char *eq, char *post)
+{	
+	FILE * f;
+	char filename[15];
+	char * path, *fullname, *fullname1;
+	static int file_number = 0;
+	
+	path = getTmpPath();
+	
+	file_number++;
+	sprintf(filename, "l2r_%04d", file_number);
+	fullname1 = strdup_together(path,filename);
+	fullname = strdup_together(fullname1,".tex");
+	free(path);
+	
+	diagnostics(2, "SaveEquationAsFile =%s", fullname);
+	
+	f = fopen(fullname,"w");
+	while (eq && (*eq == '\n' || *eq == ' ')) eq++;  /* skip whitespace */
+	if (f) {
+		fprintf(f, "%s", g_preamble);
+		fprintf(f, "\\thispagestyle{empty}\n");
+		fprintf(f, "\\begin{document}\n");
+		fprintf(f, "\\setcounter{equation}{%d}\n",getCounter("equation"));
+		fprintf(f, "%s%s%s", pre, eq, post);
+		fprintf(f, "\n\\end{document}");
+		fclose(f);
+	} else {
+		free(fullname1);
+		fullname1 = NULL;
+	}
+	
+	free(fullname);
+	return fullname1;
+}
+
+	
+void
+WriteEquationAsBitmap(char *pre, char *eq, char *post)
+/******************************************************************************
+ purpose   : Convert Equation to Bitmap and write to RTF file
+ ******************************************************************************/
+{
+	char * filename, *script, *bitmap_name;
+	filename = SaveEquationAsFile(pre,eq,post);
+	if (!filename) return;
+	script = strdup_together("/Users/prahl/Documents/l2r/latex2rtf/tex2png ", filename);
+/*	system(script);*/
+	bitmap_name = strdup_together(filename, ".png");
+/*	PrepareBitmapEquation(code,EQ_Needed);
+	WriteBitmap(bitmap_name);
+	FinishBitmapEquation(code,EQ_Needed);
+*/
+	free(bitmap_name);
+	free(script);
+	free(filename);
+}
+
+void 
+PrepareRtfEquation(int code, int EQ_Needed)
+{
+	int width,a,b,c;
+		
+	width = getLength("textwidth");
+	a = 0.45 * width;
+	b = 0.50 * width;
+	c = 0.55 * width;
+	
+	switch (code) {
+	
+		case EQN_MATH:
+			diagnostics(4, "PrepareRtfEquation ... \\begin{math}");
+			SetTexMode(MODE_MATH);
+			break;
+	
+		case EQN_DOLLAR:
+			diagnostics(4, "PrepareRtfEquation ... $");
+			fprintRTF("{");
+			SetTexMode(MODE_MATH);
+			break;
+	
+		case EQN_RND_OPEN:
+			diagnostics(4, "PrepareRtfEquation ... \\(");
+			fprintRTF("{");
+			SetTexMode(MODE_MATH);
+			break;
+	
+		case EQN_DOLLAR_DOLLAR:
+			diagnostics(4,"PrepareRtfEquation -- $$");
+			CmdEndParagraph(0);
+			SetTexMode(MODE_DISPLAYMATH);
+			g_show_equation_number = FALSE;
+			fprintRTF("{\\pard\\tqc\\tx%d\\tab ", b);
+			break;
+	
+		case EQN_BRACKET_OPEN:
+			diagnostics(4,"PrepareRtfEquation -- \\[");
+			SetTexMode(MODE_DISPLAYMATH);
+			g_show_equation_number = TRUE;
+			fprintRTF("\\par\\par\n{\\pard\\tqc\\tx%d\\tqr\\tx%d\n\\tab ", b, width);
+			break;
+
+		case EQN_DISPLAYMATH:
+			diagnostics(4,"PrepareRtfEquation -- displaymath");
+			g_show_equation_number = FALSE;
+			fprintRTF("\\par\\par\n\\pard");
+			fprintRTF("\\tqc\\tx%d", b);
+			fprintRTF("\\tab ");
+			SetTexMode(MODE_DISPLAYMATH);
+			break;
+
+		case EQN_EQUATION_STAR:
+			diagnostics(4,"PrepareRtfEquation -- equation*");
+			g_show_equation_number = FALSE;
+			fprintRTF("\\par\\par\n\\pard");
+			fprintRTF("\\tqc\\tx%d", b);
+			fprintRTF("\\tab ");
+			SetTexMode(MODE_DISPLAYMATH);
+			break;
+
+		case EQN_EQUATION:
+			diagnostics(4,"PrepareRtfEquation -- equation");
+			g_equation_column = 5;				/* avoid adding \tabs when finishing */
+			g_show_equation_number = TRUE;
+			fprintRTF("\\par\\par\n\\pard");
+			fprintRTF("\\tqc\\tx%d\\tqr\\tx%d", b, width);
+			fprintRTF("\\tab ");
+			SetTexMode(MODE_DISPLAYMATH);
+			break;
+
+		case EQN_ARRAY_STAR:
+			diagnostics(4,"PrepareRtfEquation -- eqnarray* ");
+			g_show_equation_number = FALSE;
+			g_processing_eqnarray = TRUE;
+			g_processing_tabular = TRUE;
+			g_equation_column = 1;
+			fprintRTF("\\par\\par\n\\pard");
+			fprintRTF("\\tqr\\tx%d\\tqc\\tx%d\\tql\\tx%d", a, b, c);
+			fprintRTF("\\tab ");
+			SetTexMode(MODE_DISPLAYMATH);
+			break;
+
+		case EQN_ARRAY:
+		    diagnostics(4,"PrepareRtfEquation --- eqnarray");
+			g_show_equation_number = TRUE;
+			g_processing_eqnarray = TRUE;
+			g_processing_tabular = TRUE;
+			g_equation_column = 1;
+			fprintRTF("\\par\\par\n\\pard");
+			fprintRTF("\\tqr\\tx%d\\tqc\\tx%d\\tql\\tx%d\\tqr\\tx%d", a, b, c, width);
+			fprintRTF("\\tab ");
+			SetTexMode(MODE_DISPLAYMATH);
+			break;
+			
+		default:
+			diagnostics(ERROR, "calling PrepareRtfEquation with OFF code");
+			break;
+		}
+
+	if (EQ_Needed) {
+		fprintRTF("{\\field{\\*\\fldinst{ EQ ");
+		g_processing_fields++;	
+	}
+	
+}
+
+void 
+FinishRtfEquation(int code, int EQ_Needed)
+{
+	if (EQ_Needed) {
+		fprintRTF("}}{\\fldrslt }}");
+		g_processing_fields--;	
+	}
+	
+	switch (code) {
+	
+		case EQN_MATH:
+			diagnostics(4,"FinishRtfEquation -- \\end{math}");
+			CmdIndent(INDENT_INHIBIT);
+			SetTexMode(MODE_HORIZONTAL);
+			break;
+	
+		case EQN_DOLLAR:
+			diagnostics(4,"FinishRtfEquation -- $");
+			fprintRTF("}");
+			SetTexMode(MODE_HORIZONTAL);
+			break;
+	
+		case EQN_RND_OPEN:	
+			diagnostics(4,"FinishRtfEquation -- \\)");
+			fprintRTF("}");
+			SetTexMode(MODE_HORIZONTAL);
+			break;
+	
+		case EQN_DOLLAR_DOLLAR:
+			diagnostics(4,"FinishRtfEquation -- $$");
+			CmdEndParagraph(0);
+			CmdIndent(INDENT_INHIBIT);
+			fprintRTF("}");
+			break;
+	
+		case EQN_BRACKET_OPEN:
+			diagnostics(4,"FinishRtfEquation -- \\[");
+			SetTexMode(MODE_VERTICAL);
+			fprintRTF("\\par\\par\n}");
+			break;
+
+		case EQN_DISPLAYMATH:
+			diagnostics(4,"FinishRtfEquation -- displaymath");
+			CmdEndParagraph(0);
+			CmdIndent(INDENT_INHIBIT);
+			break;
+
+		case EQN_EQUATION_STAR:
+			diagnostics(4,"FinishRtfEquation -- equation*");
+			CmdEndParagraph(0);
+			CmdIndent(INDENT_INHIBIT);
+			break;
+
+		case EQN_ARRAY_STAR:
+			diagnostics(4,"FinishRtfEquation -- eqnarray* ");
+			CmdEndParagraph(0);
+			CmdIndent(INDENT_INHIBIT);
+			g_processing_eqnarray = FALSE;
+			g_processing_tabular = FALSE;
+			break;
+
+		case EQN_EQUATION:
+		case EQN_ARRAY:
+		    diagnostics(4,"FinishRtfEquation --- equation or eqnarray");
+			if (g_show_equation_number && !g_suppress_equation_number) {
+				incrementCounter("equation");
+				for (; g_equation_column < 3; g_equation_column++)
+						fprintRTF("\\tab ");
+				fprintRTF("\\tab{\\b0 (");
+				if (g_equation_label) 
+					fprintRTF("{\\*\\bkmkstart LBL_%s}",g_equation_label);
+				fprintRTF("%d", getCounter("equation"));
+				if (g_equation_label) 
+					fprintRTF("{\\*\\bkmkend LBL_%s}",g_equation_label);
+				fprintRTF(")}");
+				if (g_equation_label) 
+					free(g_equation_label);
+				g_equation_label = NULL;
+			}
+			g_processing_eqnarray = FALSE;
+			g_processing_tabular = FALSE;
+			CmdEndParagraph(0);
+			CmdIndent(INDENT_INHIBIT);
+			break;
+			
+		default:
+			diagnostics(ERROR, "calling FinishRtfEquation with OFF code");
+			break;
+		}
+}
+
+char *
+scanback(char *s, char *t)
+/******************************************************************************
+ purpose   : Find '{' that starts a fraction designated by \over 
+ 			 Consider \int_0 { \{a_{x+y} + b \} \over a_{x+y} }
+ 	                  ^		 ^                  ^
+ 	                  s    result               t
+ ******************************************************************************/
+{
+	int braces = 1;
+	if (!s || !t || t < s) return NULL;
+	
+	while (braces && s < t) {
+		if (*t=='{' && 
+		    !(*(t-1) == '\\') &&						/* avoid \{ */
+		    !(s+5 <= t && !strncmp(t-5,"\\left",5)) &&	/* avoid \left{ */
+		    !(s+6 <= t && !strncmp(t-6,"\\right",6))	/* avoid \right{ */
+		    ) braces--;
+
+		if (*t=='}' && 
+		    !(*(t-1) == '\\') &&						/* avoid \} */
+		    !(s+5 <= t && !strncmp(t-5,"\\left",5)) &&	/* avoid \left} */
+		    !(s+6 <= t && !strncmp(t-6,"\\right",6))	/* avoid \right} */
+		    ) braces++;
+
+		if (braces) t--;
+	}
+	return t;
+}
+
+char *
+scanahead(char *s)
+/******************************************************************************
+ purpose   : Find '}' that ends a fraction designated by \over 
+ 			 Consider \int_0 { \{a_{x+y} + b \} \over a_{x+y} }
+ 	                                            ^             ^ 
+ 	                                            s             t
+ ******************************************************************************/
+{
+	char *t;
+	int braces =  1;
+	int slashes = 0;
+	if (!s) return NULL;
+	t = s;
+	
+	while (braces && t && *t != '\0') {
+
+		if (slashes % 2 == 0) {
+			if (*t=='}' &&
+		    	!(s+5 <= t && !strncmp(t-5,"\\left",5)) &&	/* avoid \left} */
+		    	!(s+6 <= t && !strncmp(t-6,"\\right",6))	/* avoid \right} */
+			) braces--;
+			
+			if (*t=='{' &&
+				!(s+5 <= t && !strncmp(t-5,"\\left",5)) &&	/* avoid \left{ */
+				!(s+6 <= t && !strncmp(t-6,"\\right",6))	/* avoid \right{ */
+			) braces++;
+		}
+		
+		if (*t=='\\') slashes++; else slashes = 0;	
+		if (braces) t++;
+	}
+
+	return t;
+}
+
+void
+ConvertOverToFrac(char ** equation)
+/******************************************************************************
+ purpose   : Convert {A \over B} to \frac{A}{B} 
+ ******************************************************************************/
+{
+	char *eq, *mid, *first, *last, *s;
+	eq = *equation;
+	while (0 && (mid = strstr(eq,"\\over")) != NULL) {
+
+		first = scanback(eq, mid);
+		diagnostics(WARNING, "first = <%s>", first);
+		last  = scanahead(mid);
+		diagnostics(WARNING, "last = <%s>", last);
+
+		strncpy(mid,"  }{ ",5);
+		diagnostics(WARNING, "mid = <%s>", mid);
+		s = (char *) malloc(strlen(eq)+7);
+		strncpy(s, eq, first-eq);
+		strncpy(s + (long) (first - eq), "\\frac", 5);
+		strncpy(s + (long) (first - eq + 5), first, last-first);
+		strncpy(s + (long) (last  - eq + 5), "}", 1);
+		strcpy(s + (long) (last  - eq + 6), last );
+		free(eq);
+		eq = s;
+	}
+	*equation = eq;
+}
+
+void 
+WriteEquationAsRTF(int code, char **eq)
+/******************************************************************************
+ purpose   : Translate equation to RTF 
+ ******************************************************************************/
+{
+	int EQ_Needed;
+
+	EQ_Needed = EquationNeedsFields(*eq);
+
+	PrepareRtfEquation(code,EQ_Needed);
+	/*ConvertOverToFrac(eq);*/
+	ConvertString(*eq);
+	FinishRtfEquation(code,EQ_Needed);
+}
+
+void
+CmdEquation(int code)
+/******************************************************************************
+ purpose   : Handle everything associated with equations
+ ******************************************************************************/
+{
+	char *pre, *eq, *post;
+	int inline_equation, number, true_code;
+
+	true_code = code & ~ON;	
+	
+/*	if (code & ON) fprintRTF("[xx ");*/
+		
+	if (!(code & ON)) return ;
+
+	SlurpEquation(code,&pre,&eq,&post);
+	
+	diagnostics(4, "Entering CmdEquation --------%x\n<%s>\n<%s>\n<%s>",code,pre,eq,post);
+
+	inline_equation = (code == EQN_MATH) || (code == EQN_DOLLAR) || (code == EQN_RND_OPEN);
+	
+	number=getCounter("equation");
+	
+	if (g_equation_comment)
+		WriteEquationAsComment(pre,eq,post);
+	
+	if ((inline_equation && g_equation_inline_bitmap)  || 
+		(!inline_equation && g_equation_display_bitmap) )
+		WriteEquationAsBitmap(pre,eq,post);
+
+	if (g_equation_rtf) {
+		setCounter("equation",number);
+		WriteEquationAsRTF(true_code,&eq);	
+	}
+
+/*	fprintRTF(" xx]");*/
+
+/* balance \begin{xxx} with \end{xxx} call */	
+	if (true_code == EQN_MATH     || true_code == EQN_DISPLAYMATH   ||
+		true_code == EQN_EQUATION || true_code == EQN_EQUATION_STAR ||
+		true_code == EQN_ARRAY    || true_code == EQN_ARRAY_STAR      )
+			ConvertString(post);
+	
+	free(pre);
+	free(eq);
+	free(post);
+	
+}
+
 
 void
 CmdMath(int code)
@@ -221,14 +745,16 @@ CmdRoot(int code)
 
 	power = getBracketParam();
 	root = getBraceParam();
-	g_processing_fields++;
-	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\R(");
+/*	g_processing_fields++;*/
+/*	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\R(");*/
+	fprintRTF(" \\\\R(");
 	if (power && strlen(power)>0)
 		ConvertString(power);
 	fprintRTF("%c", g_field_separator);
 	ConvertString(root);
-	fprintRTF(")}{\\fldrslt }}");
-	g_processing_fields--;
+/*	fprintRTF(")}{\\fldrslt }}");*/
+	fprintRTF(")");
+/*	g_processing_fields--;*/
 	
 	if (power) free(power);
 	free(root);
@@ -249,13 +775,15 @@ CmdFraction(int code)
 	diagnostics(4,"CmdFraction -- numerator   = <%s>", numerator);
 	diagnostics(4,"CmdFraction -- denominator = <%s>", denominator);
 
-	g_processing_fields++;
-	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\F(");
+/*	g_processing_fields++; */
+/*	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\F(");*/
+	fprintRTF(" \\\\F(");
 	ConvertString(numerator);
 	fprintRTF("%c", g_field_separator);
 	ConvertString(denominator);
-	fprintRTF(")}{\\fldrslt }}");
-	g_processing_fields--;
+/*	fprintRTF(")}{\\fldrslt }}");*/
+	fprintRTF(")");
+/*	g_processing_fields--; */
 
 	free(numerator);
 	free(denominator);
@@ -292,8 +820,9 @@ parameter: type of operand
 			ungetTexChar(cThis);
 	}
 
-	g_processing_fields++;
-	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\I");
+/*	g_processing_fields++; */
+/*	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\I");*/
+	fprintRTF(" \\\\I");
 	  switch(code)
 	  {
 		case 0 : fprintRTF("\\\\in("); break;	
@@ -307,8 +836,9 @@ parameter: type of operand
 	fprintRTF("%c", g_field_separator);
 	if (upper_limit)
 		ConvertString(upper_limit);
-	fprintRTF("%c )}{\\fldrslt }}", g_field_separator);
-	g_processing_fields--;
+/*	fprintRTF("%c )}{\\fldrslt }}", g_field_separator);*/
+	fprintRTF("%c )", g_field_separator);
+/*	g_processing_fields--; */
 
 	if (lower_limit)
 		free(lower_limit);
@@ -375,9 +905,10 @@ CmdLeftRight(int code)
 
 		if (delim == '.')
 			diagnostics(WARNING, "\\left. not supported");
-		g_processing_fields++;
+/*		g_processing_fields++;*/
 		
-		fprintRTF("{\\field{\\*\\fldinst{EQ \\\\b ");
+/*		fprintRTF("{\\field{\\*\\fldinst{EQ \\\\b ");*/
+		fprintRTF(" \\\\b ");
 		if (delim == '(' || delim == '.')
 			fprintRTF("(");
 		else if (delim == '{')
@@ -386,8 +917,9 @@ CmdLeftRight(int code)
 			fprintRTF("\\\\bc\\\\%c (", delim);
 
 	} else {
-		g_processing_fields--;
-		fprintRTF(")}}{\\fldrslt{0}}}");
+/*		g_processing_fields--;*/
+/*		fprintRTF(")}}{\\fldrslt{0}}}");*/
+		fprintRTF(")");
 		if (delim == '.')
 			diagnostics(WARNING, "\\right. not supported");
 		diagnostics(4, "CmdLeftRight() ... \\right <%c>", delim);
@@ -416,14 +948,16 @@ int n=0;
 		}
 		free(col_align);
 		
-		fprintRTF("{\\field{\\*\\fldinst{EQ \\\\a \\\\ac \\\\co%d (", n);
-		g_processing_fields++;
+/*		fprintRTF("{\\field{\\*\\fldinst{EQ \\\\a \\\\ac \\\\co%d (", n);*/
+		fprintRTF(" \\\\a \\\\ac \\\\co%d (", n);
+/*		g_processing_fields++;*/
 		g_processing_arrays++;
 		
 	} else {
-		fprintRTF(")}}{\\fldrslt{0}}}");
+/*		fprintRTF(")}}{\\fldrslt{0}}}");*/
+		fprintRTF(")");
 		diagnostics(4, "CmdArray() ... \\end{array}");
-		g_processing_fields--;
+/*		g_processing_fields--;*/
 		g_processing_arrays--;
 	}
 }

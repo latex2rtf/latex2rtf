@@ -1,4 +1,4 @@
-/* $Id: main.h,v 1.34 2001/12/07 05:03:48 prahl Exp $ */
+/* $Id: main.h,v 1.35 2002/02/17 05:12:59 prahl Exp $ */
 #ifndef __MAIN_H
 #define __MAIN_H
 
@@ -113,7 +113,15 @@ extern char		*g_table_label;
 extern char		*g_equation_label;
 extern char  	*g_section_label;
 extern char		*g_config_path;
+extern char		*g_tmp_path;
 extern char     g_field_separator;
+extern char    *g_preamble;
+
+extern bool 	g_equation_rtf;
+extern bool		g_equation_inline_bitmap;
+extern bool		g_equation_display_bitmap;
+extern bool		g_equation_comment;
+
 
 void fprintRTF(char *format, ...);
 void putRtfChar(char cThis);

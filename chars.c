@@ -1,4 +1,4 @@
-/* $Id: chars.c,v 1.20 2001/12/07 05:03:48 prahl Exp $
+/* $Id: chars.c,v 1.21 2002/02/17 05:12:59 prahl Exp $
 
    purpose : handles special characters and logos
 */
@@ -70,10 +70,13 @@ CmdUmlauteChar(int code)
 		}
 
 		num = RtfFontNumber("MT Extra");
-		fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(");
+		if (!g_processing_fields)
+			fprintRTF("{\\field{\\*\\fldinst EQ ");
+		fprintRTF("\\\\O(");
 		ConvertString(cParam);
-		fprintRTF("%c\\\\S(\\f%d\\'26\\'26))}", g_field_separator, num);
-		fprintRTF("{\\fldrslt }}");
+		fprintRTF("%c\\\\S({\\f%d\\'26\\'26}))", g_field_separator, num);
+		if (!g_processing_fields)
+			fprintRTF("}{\\fldrslt }}");
 		break;
 
 	}
@@ -124,10 +127,13 @@ CmdLApostrophChar( int code)
 		break;
 	default:
 		num = RtfFontNumber("MT Extra");
-		fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(");
+		if (!g_processing_fields)
+			fprintRTF("{\\field{\\*\\fldinst EQ ");
+		fprintRTF("\\\\O(");
 		ConvertString(cParam);
-		fprintRTF("%c\\\\S(\\f%d\\'23))}", g_field_separator, num);
-		fprintRTF("{\\fldrslt }}");
+		fprintRTF("%c\\\\S({\\f%d\\'23}))", g_field_separator, num);
+		if (!g_processing_fields)
+		fprintRTF("}{\\fldrslt }}");
 		break;
 	}
 	free(cParam);
@@ -181,10 +187,13 @@ CmdRApostrophChar(int code)
 		fprintRTF("\\'dd");
 		break;
 	default:
-		fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(");
+		if (!g_processing_fields)
+			fprintRTF("{\\field{\\*\\fldinst EQ ");
+		fprintRTF("\\\\O(");
 		ConvertString(cParam);
-		fprintRTF("%c\\\\S(\\'b4))}", g_field_separator);
-		fprintRTF("{\\fldrslt }}");
+		fprintRTF("%c\\\\S(\\'b4))", g_field_separator);
+		if (!g_processing_fields)
+			fprintRTF("}{\\fldrslt }}");
 		break;
 
 	}
@@ -201,10 +210,13 @@ CmdMacronChar(int code)
 	if (cParam == NULL)
 		return;
 
-	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(");
+	if (!g_processing_fields)
+		fprintRTF("{\\field{\\*\\fldinst EQ ");
+	fprintRTF("\\\\O(");
 	ConvertString(cParam);
-	fprintRTF("%c\\\\S(\\'af))}", g_field_separator);
-	fprintRTF("{\\fldrslt }}");
+	fprintRTF("%c\\\\S(\\'af))", g_field_separator);
+	if (!g_processing_fields)
+		fprintRTF("}{\\fldrslt }}");
 
 	free(cParam);
 }
@@ -258,10 +270,13 @@ CmdHatChar(int code)
 			break;
 		}
 		num = RtfFontNumber("MT Extra");
-		fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(");
+		if (!g_processing_fields)
+			fprintRTF("{\\field{\\*\\fldinst EQ ");
+		fprintRTF("\\\\O(");
 		ConvertString(cParam);
-		fprintRTF("%c\\\\S(\\f%d\\'24))}", g_field_separator, num);
-		fprintRTF("{\\fldrslt }}");
+		fprintRTF("%c\\\\S({\\f%d\\'24}))", g_field_separator, num);
+		if (!g_processing_fields)
+			fprintRTF("}{\\fldrslt }}");
 		break;
 	}
 
@@ -297,10 +312,13 @@ CmdOaccentChar(int code)
 		break;
 
 	default:
-		fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(");
+		if (!g_processing_fields)
+			fprintRTF("{\\field{\\*\\fldinst EQ ");
+		fprintRTF("\\\\O(");
 		ConvertString(cParam);
-		fprintRTF("%c\\\\S(\\'b0))}", g_field_separator);
-		fprintRTF("{\\fldrslt }}");
+		fprintRTF("%c\\\\S(\\'b0))", g_field_separator);
+		if (!g_processing_fields)
+			fprintRTF("}{\\fldrslt }}");
 		break;
 	}
 
@@ -341,10 +359,11 @@ CmdTildeChar( int code)
 		break;
 	default:
 		num = RtfFontNumber("MT Extra");
-		fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(");
+		if (!g_processing_fields) fprintRTF("{\\field{\\*\\fldinst EQ ");
+		fprintRTF("\\\\O(");
 		ConvertString(cParam);
-		fprintRTF("%c\\\\S(\\f%d\\'25))}", g_field_separator, num);
-		fprintRTF("{\\fldrslt }}");
+		fprintRTF("%c\\\\S({\\f%d\\'25}))", g_field_separator, num);
+		if (!g_processing_fields) fprintRTF("}{\\fldrslt }}");
 		break;
 	}
 	free(cParam);
@@ -371,10 +390,13 @@ CmdCedillaChar(int code)
 
 	default:
 		down = CurrentFontSize() / 4;
-		fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(");
+		if (!g_processing_fields)
+			fprintRTF("{\\field{\\*\\fldinst EQ ");
+		fprintRTF("\\\\O(");
 		ConvertString(cParam);
-		fprintRTF("%c\\dn%d\\'b8)}", g_field_separator,down);
-		fprintRTF("{\\fldrslt }}");
+		fprintRTF("%c\\dn%d\\'b8)", g_field_separator,down);
+		if (!g_processing_fields)
+			fprintRTF("}{\\fldrslt }}");
 		break;
 	}
 
@@ -423,10 +445,13 @@ CmdVecChar(int code)
 
 	num = RtfFontNumber("MT Extra");
 
-	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(");
+	if (!g_processing_fields)
+		fprintRTF("{\\field{\\*\\fldinst EQ ");
+	fprintRTF("\\\\O(");
 	ConvertString(cParam);
-	fprintRTF("%c\\\\S(\\up%d\\f%d\\'72))}", g_field_separator, upsize, num);
-	fprintRTF("{\\fldrslt }}");
+	fprintRTF("%c\\\\S({\\up%d\\f%d\\'72}))", g_field_separator, upsize, num);
+		if (!g_processing_fields)
+			fprintRTF("}{\\fldrslt }}");
 	free(cParam);
 }
 
@@ -437,7 +462,7 @@ CmdBreveChar(int code)
  		  there is no breve in codepage 1252
  		  there is one \'f9 in the MacRoman, but that is not so portable
 		  there is one in MT Extra, but the RTF parser for word mistakes
-		  \'28 as a '(' and goes bananas.
+		  \'28 as a '(' and goes bananas.  Therefore need the extra \\\\
 		  the only solution is to encode with unicode --- perhaps later
 		  Now we just fake it with a u
  ******************************************************************************/
@@ -451,11 +476,13 @@ CmdBreveChar(int code)
 		return;
 
 	upsize = CurrentFontSize()/2;
-	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(");
+	if (!g_processing_fields)
+		fprintRTF("{\\field{\\*\\fldinst EQ ");
+	fprintRTF("\\\\O(");
 	ConvertString(cParam);
-/*	fprintRTF("%c\\\\S(\\up%d u))}", g_field_separator, upsize);*/
-	fprintRTF("%c\\\\S(\\up%d\\f%d \\\\())}", g_field_separator, upsize, num);
-	fprintRTF("{\\fldrslt }}");
+	fprintRTF("%c\\\\S({\\up%d\\f%d \\\\(}))", g_field_separator, upsize, num);
+	if (!g_processing_fields)
+		fprintRTF("}{\\fldrslt }}");
 	free(cParam);
 }
 
@@ -472,10 +499,13 @@ CmdUnderdotChar(int code)
 
 	dnsize = (0.4 * CurrentFontSize()) + 0.45;
 
-	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(");
+	if (!g_processing_fields)
+		fprintRTF("{\\field{\\*\\fldinst EQ ");
+	fprintRTF("\\\\O(");
 	ConvertString(cParam);
-	fprintRTF("%c\\\\S(\\dn%d\\'2e))}", g_field_separator, dnsize);
-	fprintRTF("{\\fldrslt }}");
+	fprintRTF("%c\\\\S(\\dn%d\\'2e))", g_field_separator, dnsize);
+	if (!g_processing_fields)
+		fprintRTF("}{\\fldrslt }}");
 
 	free(cParam);
 }
@@ -498,10 +528,13 @@ CmdHacekChar(int code)
 	upsize = (0.4 * CurrentFontSize()) + 0.45;
 	num = RtfFontNumber("Symbol");
 
-	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(");
+	if (!g_processing_fields)
+		fprintRTF("{\\field{\\*\\fldinst EQ ");
+	fprintRTF("\\\\O(");
 	ConvertString(cParam);
-	fprintRTF("%c\\\\S(\\up%d\\f%d\\'da))}", g_field_separator, upsize, num);
-	fprintRTF("{\\fldrslt }}");
+	fprintRTF("%c\\\\S({\\up%d\\f%d\\'da}))", g_field_separator, upsize, num);
+		if (!g_processing_fields)
+			fprintRTF("}{\\fldrslt }}");
 
 	free(cParam);
 }
@@ -522,10 +555,13 @@ CmdDotChar(int code)
 
 	num = RtfFontNumber("MT Extra");
 
-	fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(");
+	if (!g_processing_fields)
+		fprintRTF("{\\field{\\*\\fldinst EQ ");
+	fprintRTF("\\\\O(");
 	ConvertString(cParam);
-	fprintRTF("%c\\\\S(\\f%d\\'26))}", g_field_separator, num);
-	fprintRTF("{\\fldrslt }}");
+	fprintRTF("%c\\\\S({\\f%d\\'26}))", g_field_separator, num);
+	if (!g_processing_fields)
+		fprintRTF("}{\\fldrslt }}");
 
 	free(cParam);
 }
@@ -537,20 +573,20 @@ CmdUnderbarChar(int code)
           need something that looks like \\O(a,\\S(\f2\'26)) in RTF file
  ******************************************************************************/
  {
-	int             num;
 	char           *cParam;
 	
 	cParam = getBraceParam();
 	if (cParam == NULL)
 		return;
 
-	num = RtfFontNumber("MT Extra");
-
 	if (cParam[0]) {
-		fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(");
+		if (!g_processing_fields)
+			fprintRTF("{\\field{\\*\\fldinst EQ ");
+		fprintRTF("\\\\O(");
 		ConvertString(cParam);
-		fprintRTF("%c_)}", g_field_separator);
-		fprintRTF("{\\fldrslt }}");
+		fprintRTF("%c_)", g_field_separator);
+		if (!g_processing_fields)
+			fprintRTF("}{\\fldrslt }}");
 	}
 	free(cParam);
 }
