@@ -43,7 +43,7 @@ fi
 name=`basename "$1" ".tex"`
 dir=`dirname "$1"`
 
-(
+
 #need to search the current working directory for \input or \include
 TEXINPUTS=`pwd`":"
 cd $dir
@@ -61,4 +61,4 @@ if [ $opt_k -eq 0 ] ; then
 fi
 
 exit 0
-)
+
