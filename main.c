@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.64 2002/03/18 01:38:32 prahl Exp $ */
+/* $Id: main.c,v 1.65 2002/03/25 15:43:41 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -574,6 +574,12 @@ getTmpPath(void)
 purpose: return the directory to store temporary files
  ****************************************************************************/
 {
+#if defined(MSDOS) || defined(MACINTOSH) || defined(__MWERKS__)
+
+	return strdup("");
+
+#else
+
 	char * t, *u;
 	
 	/* first use any temporary directory specified as an option */
@@ -596,6 +602,7 @@ purpose: return the directory to store temporary files
 	}
 	
 	return t;
+#endif
 }
 
 
