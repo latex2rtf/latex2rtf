@@ -1,5 +1,7 @@
 \def\LaTeX{L\kern-.36em\raise.3ex\hbox{\sc a}\kern-.15em\TeX}
 \def\LaTeXe{\LaTeX\kern.15em 2$_\varepsilon$}
+\def\BibTeX{B\kern-.05em{\sc i\kern-.025em b}\kern-.08em\TeX}
+
 \input texinfo  
 @c -*-texinfo-*-
 @c %**start of header
@@ -20,6 +22,15 @@ LaTeX
 @end ifnottex
 @iftex
 @LaTeX{}
+@end iftex
+@end macro
+
+@macro bibtex {}
+@ifnottex
+BibTeX
+@end ifnottex
+@iftex
+@BibTeX{}
 @end iftex
 @end macro
 
@@ -46,7 +57,7 @@ LaTeX2RTF
 @subtitle 
 A converter from @latex{} to RTF
 
-Edition 0.7
+Edition 0.7.1
 @author Georg Lehner,
 updated by Wilfried Hennings and Scott Prahl,
 with contributions by Mikhail Polianski
@@ -112,7 +123,7 @@ into another language, under the above conditions for modified versions,
 except that this permission notice may be stated in a translation
 approved by the Free Software Foundation.
 
-@c This document applies to version 1.9.15 of @ltor{}.
+@c This document applies to version 1.9.16 of @ltor{}.
 @end ifnottex
 
 
@@ -141,6 +152,10 @@ You know somebody who frequently sends you very fine @latex{} documents. Unfortu
 you are ``on the other side'' and need to import her files, steal some part, and then
 desktop publish it in your fine MS-@dots{} environment.
       
+@item
+You like @latex{} and @bibtex{}.  You interact with the rest of the world.  You
+know someone that wants to include your writing in a her Word document.
+
 @end enumerate
 
 There are drawbacks to the conversion process. In fact, don't expect any @latex{} file to
@@ -207,7 +222,7 @@ an i386 processor or better.
 The Win32 distribution (starting from @ltor{} 1.9.15) is the MS-DOS version 
 plus Win32 GUI program (l2rshell).
 
-There are a couple of people working on the @ltor{}, coordinated by
+There is one person working on @ltor{}, coordinated by
 Wilfried Hennings (W.Hennings "at" fz-juelich.de). 
 See the @uref{http://sourceforge.net/projects/latex2rtf/,SourceForge} 
 project pages for the latest news.
@@ -244,7 +259,7 @@ On IBM AIX, the IBM make utility does not support some of the commands
 used in Makefile. In this case use @code{gmake} (from GNU) instead.
 
 Sun has decided to support the XPG4 standard on Solaris by an
-alternative set of binaries.  So allow bitmap conversion of equations, two
+alternative set of binaries.  To allow bitmap conversion of equations, two
 things are needed.  First, change the first line of latex2png to @code{#!/usr/xpg4/bin/sh}
 Second, define the XPG4_GREP environment variable accordingly,
 for bash-like shells @code{XPG4_GREP=/usr/xpg4/bin/grep; export XPG4_GREP} or
@@ -274,7 +289,8 @@ program.
 
 You no longer need to define the environment variable @env{RTFPATH}. This
 is only necessary if you move the directory containing the @file{.cfg} files.  
-Just define @env{RTFPATH} to be the path to the new location.
+Just define @env{RTFPATH} to be the path for the new location of the @file{cfg}
+directory.
 
 
 @node DOS or Windows, Win32 systems, UNIX, Installation
@@ -436,15 +452,13 @@ Shutdown and reboot the PC.
 @section Macintosh
 
 If you want a MacOS X version, make sure that you have installed the developer tools CD
-that is appropriate for your OS version, and then follow the directions above for
-@acronym{UNIX} installation.
+that is appropriate for your OS version, and then follow the directions above for a
+@acronym{UNIX} installation.  Alternatively you can install using fink
+@uref{http://fink.sourceforge.net/} or as an i-installer package 
+@uref{http://www.rna.nl/ii.html}.
 
-There is a classic MacOS PPC port of the 1.9k of @ltor{} and I have made a binary
-distribution of this application.  Unfortunately, because I (Scott Prahl) do all
-development under MacOS X, the binaries for the Classic version often lag (far) behind the
-current @acronym{UNIX} version.
-
-To convert a @latex{} file, just drag the file onto the @ltor{} application icon.  The
+There is a PPC port of an old version 1.9k for Classic MacOS @ltor{}. 
+To convert a @latex{} file using this version,  drag the file onto the @ltor{} icon.  The
 translation is best if there are @file{.aux} and @file{.bbl} files in the same folder as
 the @file{.tex} file to be converted.  These should be generated using @latex{} and
 @file{bibtex}.
@@ -765,6 +779,10 @@ Viena University) makes @ltor{} behave like that: German Quotes, German
 Umlauts by @code{"a}, etc@enddots{}  This support is programmed directly 
 into @ltor{} and supporting similar features for other languages will require 
 patching the source code.
+
+There is similar support for @option{french} packages.
+
+There is reasonable support for english, latin1, latin2, and cyrillic languages.
 
 @xref{Language Configuration}, for details on how to write a @file{language.cfg} file
 for your language by yourself.
@@ -1113,7 +1131,7 @@ For subscription to these lists:
 or
 @email{latex2rtf-developers-request@@lists.sourceforge.net?subject=subscribe}
 
-As of October 2002, version 1.9.14 of @ltor{} is available. 
+As of October 2004, version 1.9.16 of @ltor{} is available. 
 One day there shall be a jump to Version 2.0, but this is not history but future ...
 
 The contents of this manual were composed by copying shamelessly what was
@@ -1134,9 +1152,7 @@ available in the original sources and documentation.
 @section Unimplemented Features
 
 @itemize @bullet
-@item @ltor{} ignores some of the optional parameters of @code{\documentstyle} 
-@item Need to finish code page support.  Some characters that need to be
-      constructed using RTF @code{\field} commands are not implemented.
+@item @ltor{} ignores some optional parameters of @code{\documentstyle} 
 @item Add the code to produce the corresponding chapter, section,
       and page numbering with headings and myheadings pagestyles. Implement
       @code{\markboth} and @code{\markright}.
@@ -1145,7 +1161,6 @@ available in the original sources and documentation.
       reader. Scan and label all of the sectioning commands while reading and
       then construct the sectioning information using these labels. Needs two
       passes on @latex{} input.
-@item Include the GNU gettext package to internationalize @ltor{}'s Messages.
 @end itemize
 
 @node Missing options, Known Bugs, Unimplemented Features, LaTeX2RTF under Development
@@ -1154,34 +1169,16 @@ available in the original sources and documentation.
 Missing or buggy command line options.
 
 @table @option
-@item -V
-The version information output is not compatible with the GNU Coding
-Standards.
 
 @item -d
 Information logging and Error reporting is not implemented consistently.
 Need to test and track problems with the linenumber and with the file name.
-
-@item -?
-There should be an option to intersperse RTF-Output with the @latex{} input
-that produced it to aid debugging.
-
-@item -q
-There should be a @option{-q} (quiet) option, to suppress Warning Messages. By
-now this can be achieved by the @option{-d0} option.
-
-@item -rmajor.minor
-There should be an option that restrict the generation of RTF code with
-version greater than major,minor. Actually this is done at compile time.
-There are some Warning messages if ``newer'' RTF Code is generated, but it
-is not consistent at all.
 
 @item --long_names
 It would be useful to implement the GNU long option names, e.g.: `--debug',
 `--output_file', `--quiet', etc.  This could be done by switching to the GNU
 getopt package.
 @end table
-
 
 @node Known Bugs, Reporting Bugs, Missing options, LaTeX2RTF under Development
 @section Known Bugs 
