@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.47 2002/02/17 15:42:39 prahl Exp $ */
+/* $Id: main.c,v 1.48 2002/02/17 17:08:30 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -505,7 +505,7 @@ globals: progname;
 	int i;
 	CmdEndParagraph(0);
 	if (BraceLevel>1) 
-		diagnostics(WARNING,"Mismatched { in RTF file, translation suspect");
+		diagnostics(WARNING,"Mismatched '{' in RTF file, Conversion may cause problems.");
 
 	if (BraceLevel-1>g_safety_braces) 
 		diagnostics(WARNING,"Try translating with 'latex2rtf -Z%d %s'", BraceLevel-1,input);

@@ -120,6 +120,7 @@ EquationNeedsFields(char *eq)
 	if (strstr(eq,"\\right")) return 1;
 	if (strstr(eq,"\\root")) return 1;
 	if (strstr(eq,"\\sqrt")) return 1;
+	if (strstr(eq,"\\over")) return 1;
 	return 0;
 }
 
@@ -474,25 +475,28 @@ ConvertOverToFrac(char ** equation)
 {
 	char *eq, *mid, *first, *last, *s;
 	eq = *equation;
-	while (0 && (mid = strstr(eq,"\\over")) != NULL) {
+	diagnostics(5,"ConvertOverToFrac before <%s>",eq);
+	while ((mid = strstr(eq,"\\over")) != NULL) {
 
 		first = scanback(eq, mid);
-		diagnostics(WARNING, "first = <%s>", first);
+		diagnostics(5, "first = <%s>", first);
 		last  = scanahead(mid);
-		diagnostics(WARNING, "last = <%s>", last);
+		diagnostics(5, "last = <%s>", last);
 
 		strncpy(mid,"  }{ ",5);
-		diagnostics(WARNING, "mid = <%s>", mid);
+		diagnostics(5, "mid = <%s>", mid);
 		s = (char *) malloc(strlen(eq)+7);
 		strncpy(s, eq, first-eq);
 		strncpy(s + (long) (first - eq), "\\frac", 5);
 		strncpy(s + (long) (first - eq + 5), first, last-first);
-		strncpy(s + (long) (last  - eq + 5), "}", 1);
-		strcpy(s + (long) (last  - eq + 6), last );
+/*		strncpy(s + (long) (last  - eq + 5), "}", 1);*/
+		strcpy(s + (long) (last  - eq + 5), last );
 		free(eq);
 		eq = s;
+	diagnostics(5,"ConvertOverToFrac inter <%s>",eq);
 	}
 	*equation = eq;
+	diagnostics(5,"ConvertOverToFrac after <%s>",eq);
 }
 
 void 
@@ -506,7 +510,7 @@ WriteEquationAsRTF(int code, char **eq)
 	EQ_Needed = EquationNeedsFields(*eq);
 
 	PrepareRtfEquation(code,EQ_Needed);
-	/*ConvertOverToFrac(eq);*/
+	ConvertOverToFrac(eq);
 	ConvertString(*eq);
 	FinishRtfEquation(code,EQ_Needed);
 }
