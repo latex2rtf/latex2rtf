@@ -641,7 +641,7 @@ Footnotes are implemented and appear at the bottom of each page.
 
 Indexing is reasonable well supported.  The simple mark-up of @code{makeindex}
 @example
-\index@{topic!subtopic@\textit@{subtopic@}@}
+\index@{topic!subtopic@@\textit@{subtopic@}@}
 @end example
 is supported.  The rest of the fancy indexing stuff is not implemented.
 The index is created at the location of the @code{\printindex} command.
