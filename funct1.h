@@ -193,3 +193,5 @@ void CmdEndInput(int code);
 void CmdIf(int code);
 void CmdKern(int code);
 void CmdResizeBox(int code);
+void CmdTextFont(int code);
+void CmdThe(int code);
