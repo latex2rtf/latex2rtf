@@ -1,4 +1,4 @@
-/*  $Id: parser.c,v 1.29 2001/10/30 15:20:52 prahl Exp $
+/*  $Id: parser.c,v 1.30 2001/11/04 19:20:44 prahl Exp $
 
    Contains declarations for a generic recursive parser for LaTeX code.
 */
@@ -689,7 +689,7 @@ getDimension(void)
 #define BUFFER_SIZE 32000
 
 void
-getSection(char *text, char *next_header)
+getSection(char **body, char **header)
 /*
 	purpose: obtain next chunk of latex file that has the same label
 	
@@ -698,27 +698,35 @@ getSection(char *text, char *next_header)
 */
 
 {
-	int match[7], any_match, found;
-	char cNext, *p, *s, buffer[BUFFER_SIZE];
+	int possible_match, found;
+	char cNext, *p, *s, buffer[BUFFER_SIZE],*text,*next_header;
 	int i;
-	char * command[7] = {"\\verb", "\\begin{verbatim}",
+	int  match[9];
+	char * command[9] = {"\\verb", "\\begin{verbatim}", "\\url", "\\begin{figure}",
 	                     "\\section", "\\subsection", "\\subsubsection", 
 	                     "\\chapter", "\\part"};
-	int ncommands = 7;
-	int verb = 0;
-	int verbatim = 1;
+	int ncommands = 9;
+	const int verb = 0;
+	const int verbatim = 1;
+	const int url = 2;
+	const int figure = 3;
 	int bs_count = 0;
 	int index = 0;
 	char * bufend = buffer + BUFFER_SIZE;
 
 	text = NULL;			
 	next_header = NULL;  /* typically becomes \subsection{Cows eat grass}  */
+	*body=NULL;
+	*header=NULL;
+	
 	for (p = buffer; p < bufend; p++) {
 		
 		*p = getTexChar();
+		diagnostics(6,"char=%d %c",(int)*p,*p);
+		
 		if (*p == '\0') break;
 
-		if (*p == '\\') {				/* restart search if backslash found */
+		if (*p == '\\') {				/* begin search if backslash found */
 			bs_count ++;
 			if (bs_count % 2) {		/* avoid "\\section" and "\\\\section" */
 				for(i=0; i<ncommands; i++) match[i]=TRUE;
@@ -730,7 +738,7 @@ getSection(char *text, char *next_header)
 		
 		if (index == 0) continue;
 			
-		any_match = FALSE;
+		possible_match = FALSE;
 		found = FALSE;
 		
 		for (i=0; i<ncommands; i++) {	/* check each command for match */
@@ -738,58 +746,73 @@ getSection(char *text, char *next_header)
 				
 			if (*p!=command[i][index]) {
 				match[i] = FALSE;
-				continue;
+/*				diagnostics(5,"index = %d, char = %c, failed to match %s, size=%d", \
+				index,*p,command[i],strlen(command[i]));
+*/				continue;
 			}
-			any_match = TRUE;
-			if (index == strlen(command[i])) {
+			possible_match = TRUE;
+			if (index == strlen(command[i])-1) {
 				found = TRUE;
 				break;
 			}
 		}
 		
-		if (found) {			/* make sure the next char is the right sort */
+		if (found) {				/* make sure the next char is the right sort */
+			diagnostics(5,"matched %s", command[i]);
 			cNext = getTexChar();
 			ungetTexChar(cNext);
-			if (!(cNext == ' ' || cNext == '{' || (i==verb) || (i==verbatim && !isalpha(cNext)))) {
-				any_match = FALSE;
+			if (!(cNext == ' ' || cNext == '{' || (i==verb) || (i==url) || (i==verbatim && !isalpha(cNext)))) {
+				possible_match = FALSE;
 			}
 		}
 		
-		if (!any_match) {			/* no possible matches, reset and wait for next '\\'*/
+		if (!possible_match) {		/* no possible matches, reset and wait for next '\\'*/
 			index = 0;
 			continue;
-		}
+		} else
+			index++;
 					
 		if (!found) continue;
 			
-		if (i==verb) {				/* slurp \verb#text# */
-			*p++ = getTexChar();
+		if (i==verb || i==url) {				/* slurp \verb#text# */
+			if (i==url && cNext=='{') cNext = '}';
+			p++;
+			*p++= getTexChar();
 			while ((*p=getRawTexChar()) != '\0' && *p != cNext && p <bufend) p++;
 			index = 0;				/* keep looking */
 			continue;
 		}
 
-		if (i==verbatim) {			/* slurp \begin{verbatim} ... \end{verbatim} */
-			s=getTexUntil("\\end{verbatim}",TRUE);
-			if (p+strlen(s)>=bufend)
+		if (i==verbatim || i==figure) {			/* slurp \begin{verbatim} ... \end{verbatim} */
+			p++;
+			if (i==verbatim)
+				s=getTexUntil("\\end{verbatim}",TRUE);
+			else if (i==figure)
+				s=getTexUntil("\\end{figure}",TRUE);
+
+			if (p+strlen(s)  >=bufend)
 				diagnostics(ERROR, "out of buffer memory in getSection");
 			strcpy(p,s);
 			p += strlen(s);
 			free(s);
+			p--;
 			index = 0;				/* keep looking */
 			continue;
 		} 
 		
 		/* actually found command to end the section */
 		s = getBraceParam();
-		next_header = malloc(strlen(command[i])+strlen(s)+1);
+		next_header = malloc(strlen(command[i])+strlen(s)+3);
 		strcpy(next_header, command[i]);
-		strcpy(next_header+strlen(command[i]),s);
+		strcpy(next_header+strlen(command[i]), "{");
+		strcpy(next_header+strlen(command[i])+1,s);
+		strcpy(next_header+strlen(command[i])+1+strlen(s),"}");
 		free(s);
-		p-=strlen(command[i]);
+		p= p - strlen(command[i])+1;
 		*p='\0';
 		break;
 	}
-	
-	text = strdup(buffer);		
+	text = strdup(buffer);
+	*body = text;
+	*header = next_header;
 }

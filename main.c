@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.36 2001/11/03 17:30:38 prahl Exp $ */
+/* $Id: main.c,v 1.37 2001/11/04 19:20:44 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -60,7 +60,7 @@ int             g_enumerate_depth = 0;
 bool            g_suppress_equation_number = FALSE;
 bool            g_aux_file_missing = FALSE;	/* assume that it exists */
 
-int				g_safety_braces = TRUE;
+int				g_safety_braces = 0;
 bool            g_processing_equation = FALSE;
 bool            g_document_type = FORMAT_ARTICLE;
 bool            g_processing_tabular = FALSE;
@@ -83,6 +83,7 @@ static void		printhelp(void);
 static bool     rtf_restrict(int major, int minor);
 
 void           *GetCommandFunc(char *cCommand);
+static void 	ConvertWholeDocument(void);
 
 extern char *optarg;
 extern int   optind;
@@ -235,22 +236,43 @@ globals: initializes in- and outputfile fRtf,
 		InitializeLatexLengths();
 		InitializeDocumentFont(TexFontNumber("Roman"), 20, F_SHAPE_UPRIGHT, F_SERIES_MEDIUM);
 	
-		PushEnvironment(PREAMBLE);
-		SetTexMode(MODE_VERTICAL);
-		ConvertLatexPreamble(); 
-		WriteRtfHeader();
-		
-		g_processing_preamble = FALSE;
-		diagnostics(4,"Entering Convert from main");
-		Convert();
-		diagnostics(4,"Exiting Convert from main");
-	
+		ConvertWholeDocument();	
 		PopSource();
 		CloseRtf(&fRtf);
 		printf("\n");
 		return 0;
 	} else
 		return 1;
+}
+
+static void
+ConvertWholeDocument(void)
+{
+char * text, *sec_head, *sec_head2;
+
+		PushEnvironment(PREAMBLE);
+		SetTexMode(MODE_VERTICAL);
+		ConvertLatexPreamble(); 
+		WriteRtfHeader();
+		
+		g_processing_preamble = FALSE;
+		getSection(&text,&sec_head);
+		diagnostics(2,"*******************\ntext=%s",text);
+		diagnostics(2,"*******************\nsec_head=%s",sec_head);
+		ConvertString(text);
+		free(text);
+		while(sec_head) {
+			getSection(&text,&sec_head2);
+		diagnostics(2,"\n========this section head==========\n%s",sec_head);
+		diagnostics(2,"\n==============body=================\n%s",text);
+		diagnostics(2,"\n========next section head==========\n%s",sec_head2);
+/*			g_section_label = getSectionLabel(text); */
+			ConvertString(sec_head);
+			ConvertString(text);
+			free(text);
+			free(sec_head);
+			sec_head = sec_head2;
+		}
 }
 
 static void

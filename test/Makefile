@@ -13,7 +13,7 @@ all:	accentchars.rtf array.rtf cite.rtf eqns.rtf fonts.rtf fontsize.rtf \
 LATEX= latex
 BIBTEX= bibtex
 LATEX2RTF= ../latex2rtf
-OPTIONS  = -Z
+OPTIONS  = -Z3
 
 %.rtf:	%.tex
 	$(LATEX2RTF) $(OPTIONS) $<
