@@ -890,6 +890,8 @@ parameter: type of operand
 	char           *upper_limit = NULL;
 	char           *lower_limit = NULL;
 	char            cThis;
+	int				no_limits = FALSE;
+	int				limits = FALSE;
 	
 	/* is there an exponent/subscript ? */
 	cThis = getNonBlank();
@@ -898,10 +900,16 @@ parameter: type of operand
 		char *command;
 		ungetTexChar(cThis);
 		command=getSimpleCommand();	
-		if (!(strstr(command,"\\limits")==0) && !(strstr(command,"\\nolimits")==0))
-			PushSource(NULL,command);
-		else 
+		if (strcmp(command,"\\nolimits")==0) {
+			no_limits = TRUE;
+			diagnostics(WARNING,"no limits found");
 			free(command);
+		} else if (strcmp(command,"\\limits")==0) {
+			limits = TRUE;
+			diagnostics(WARNING,"limits found");
+			free(command);
+		} else 
+			PushSource(NULL,command);
 		cThis = getNonBlank();
 	}
 	
@@ -925,14 +933,26 @@ parameter: type of operand
 	if (g_fields_use_EQ){
 	
 		fprintRTF(" \\\\I");
-			switch(code) {
-			case 4 : fprintRTF("\\\\in( %c %c )\\\\I", g_field_separator, g_field_separator); /*\iiint --- fall through*/
-			case 3 : fprintRTF("\\\\in( %c %c )\\\\I", g_field_separator, g_field_separator); /* \iint --- fall through*/
-			case 0 : fprintRTF("\\\\in("); break;	
-			case 1 : fprintRTF("\\\\su("); break;
-			case 2 : fprintRTF("\\\\pr("); break;
-			default: diagnostics(ERROR, "Illegal code to CmdIntegral");
-		  }
+		switch(code) {
+		case 4 : if (limits)
+					fprintRTF("( %c %c )\\\\I", g_field_separator, g_field_separator);
+				 else
+					fprintRTF("\\\\in( %c %c )\\\\I", g_field_separator, g_field_separator); 
+				/*\iiint --- fall through*/
+		case 3 : if (limits)
+					fprintRTF("( %c %c )\\\\I", g_field_separator, g_field_separator); 
+				 else
+					fprintRTF("\\\\in( %c %c )\\\\I", g_field_separator, g_field_separator); 
+				/*\iint --- fall through*/
+		case 0 : if (limits)
+					fprintRTF("(", g_field_separator, g_field_separator); 
+				 else
+					fprintRTF("\\\\in(", g_field_separator, g_field_separator); 
+				break;	
+		case 1 : fprintRTF("\\\\su("); break;
+		case 2 : fprintRTF("\\\\pr("); break;
+		default: diagnostics(ERROR, "Illegal code to CmdIntegral");
+	  }
 	
 		if (lower_limit)
 			ConvertString(lower_limit);
