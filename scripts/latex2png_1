@@ -1,96 +1,115 @@
 #!/bin/sh
+# Part of latex2rtf by Scott Prahl (Nov 2002)
+#
 # This version uses latex and dvips
+#			   with ps2ps (part of Ghostscript)
 #              with convert (Part of ImageMagick)
 #
+
+DVIPS="dvips -E -R"
+LATEX="latex --interaction batchmode"
+CONVERT="convert -crop 0x0"
+PS2PS="ps2ps"
+TEXINPSEP=":"
+
 help()
 {
     cat <<HELP
 latex2png -- convert latex file to PNG image
 
-USAGE: latex2png [-d density] [-h] [-k] [-H home dir] latex_file
+USAGE: latex2png [-d density] [-h] [-k] [-c] [-g] [-m] [-H home dir] latex_file
 
 OPTIONS: 
-         -c             color images
-         -d density 	(where density is in pixels per inch)
-         -g             gray images
-         -i             inline equations with leading dot
-         -h         	this help text
-         -k         	keep intermediate files (for debugging)
-         -H /home/dir	directory to be included in search path
+         -c color image
+         -g gray image  
+         -m monochrome  (default)
 
-EXAMPLE: latex2png -d 144 -H /usr/home /tmp/eqn  (to create /tmp/eqn.png)
+         -d density     (default 144 dpi)
+         -h help        (default '.')
+         -H /home/dir	directory to be included in search path
+         -i             used to locate baseline of equations
+         -k         	keep intermediate files (for debugging)
+
+EXAMPLE: 
+		 latex2png -d 144 /tmp/file   #create /tmp/file.png at 144 dpi
+         latex2png -H . /tmp/file     #search the cwd for image files
 
 HELP
     exit 0
 }
 
-LATEX=latex
 opt_d=144
 opt_i=0
 opt_k=0
 home_dir="."
-device="pngmono"
-mult="0.9"
+device=""
+
 while [ -n "$1" ]; do
 case $1 in
-    -g) device="pnggray" ; shift 1;;
-    -c) device="png16m" ; shift 1;;
-    -i) opt_i=1 ; shift 1;;
-    -h) help;shift 1;;
-    -k) opt_k=1;shift 1;; # variable opt_f is set
-    -d) opt_d=$2;shift 2;; # -d takes an argument -> shift by 2
-    -H) home_dir=$2;shift 2;;
+    -g) device="-depth 8";    shift 1;; #gray
+    -c) device="";            shift 1;; #color
+    -m) device="-depth 1"; shift 1;; #monochrome
+    -h) help;        shift 1;;
+    -i) opt_i=1;     shift 1;;
+    -k) opt_k=1;     shift 1;; 
+    -d) opt_d=$2;    shift 2;; #shift by 2 due to argument
+    -H) home_dir=$2; shift 2;;
     --) break;;
-    -*) echo "error: no such option $1. -h for help";exit 1;;
+    -*) echo "error: no such option $1"; exit 1;;
     *)  break;;
 esac
 done
 
 # input check:
 if [ -z "$1" ] ; then
- error "ERROR: you must specify a file, use -h for help"
- exit 1
+	error "no latex_file specified"
+	exit 1
 fi
 
 #process 'latex2png file.tex' and 'latex2png file' equivalently
 name=`basename "$1" ".tex"`
 dir=`dirname "$1"`
-start_dir=`pwd`
 
-#need to search the current working directory for \input or \include
+#add $home_dir to latex/dvips search path
 cd $home_dir
-TEXINPUTS=`pwd`":"
+TEXINPUTS=`pwd`${TEXINPSEP}
 export TEXINPUTS
-cd $start_dir
 cd $dir
-rm -f $name.png
-rm -f $name.dvi
-$LATEX  --interaction batchmode $1 > /dev/null
+
+$LATEX $name > /dev/null
 
 if [ ! -e "$name.dvi" ] ; then
- 	error "ERROR: latex failed to create $name.dvi from $name.tex"
+ 	echo "error: latex failed to translate $name.tex to $name.dvi"
 	exit 1
 fi
 
-dvips -E -o $name.eps $name.dvi >& /dev/null
+$DVIPS -o $name.tmp.ps $name.dvi >& /dev/null
 
-if [ ! -e "$name.eps" ] ; then
- 	error "ERROR: dvips failed to create $name.eps from $name.dvi"
+if [ ! -e "$name.tmp.ps" ] ; then
+ 	echo "error: dvips failed to translate $name.dvi to $name.tmp.ps"
 	exit 1
 fi
 
-convert -crop 0x0 -density ${opt_d}x${opt_d} $name.eps $name.png
+#helps convert work with eps figures
+$PS2PS $name.tmp.ps $name.ps
+if [ ! -e "$name.ps" ] ; then
+ 	echo "error: ps2ps (Ghostscript) failed to translate $name.tmp.ps from $name.ps"
+ 	exit 1
+fi
+
+$CONVERT ${device} -density ${opt_d}x${opt_d} $name.ps $name.png
 
 if [ ! -e "$name.png" ] ; then
- 	error "ERROR: ImageMagick convert failed to create $name.png from $name.eps"
-	exit 1
+ 	echo "error: convert (ImageMagick) failed to translate $name.ps from $name.png"
+ 	exit 1
 fi
 
 if [ $opt_k -eq 0 ] ; then
 	rm -f $name.dvi
 	rm -f $name.aux
 	rm -f $name.log
-	rm -f $name.eps
+	rm -f $name.ps
+	rm -f $name.tmp.ps
 fi
 
 exit 0

@@ -1,90 +1,1 @@
-#!/bin/sh
-# This version uses latex and dvips
-#              with ghostscript
-#              and  pnmcrop and pnmtopng
-#
-help()
-{
-    cat <<HELP
-latex2png -- convert latex file to PNG image
-
-USAGE: latex2png [-d density] [-h] [-k] [-H home dir] latex_file
-
-OPTIONS: -d density (where density is in pixels per inch)
-         -h         	this help text
-         -k         	keep intermediate files (for debugging)
-         -H /home/dir	directory to be included in search path
-
-EXAMPLE: latex2png -d 144 -H /usr/home /tmp/eqn  (to create /tmp/eqn.png)
-
-HELP
-    exit 0
-}
-
-opt_d=144
-opt_k=0
-home_dir="."
-while [ -n "$1" ]; do
-case $1 in
-    -h) help;shift 1;;
-    -k) opt_k=1;shift 1;; # variable opt_f is set
-    -d) opt_d=$2;shift 2;; # -d takes an argument -> shift by 2
-    -H) home_dir=$2;shift 2;;
-    --) break;;
-    -*) echo "error: no such option $1. -h for help";exit 1;;
-    *)  break;;
-esac
-done
-
-# input check:
-if [ -z "$1" ] ; then
- error "ERROR: you must specify a file, use -h for help"
- exit 1
-fi
-
-#process 'latex2png file.tex' and 'latex2png file' equivalently
-name=`basename "$1" ".tex"`
-dir=`dirname "$1"`
-start_dir=`pwd`
-
-#need to search the current working directory for \input or \include
-cd $home_dir
-TEXINPUTS=`pwd`":"
-export TEXINPUTS
-cd $start_dir
-cd $dir
-rm -f $name.png
-rm -f $name.dvi
-
-latex  --interaction batchmode $name > /dev/null
-
-if [ ! -e "$name.dvi" ] ; then
- 	error "ERROR: latex failed to create $name.dvi from $name.tex"
-	exit 1
-fi
-
-dvips -E -o $name.eps $name.dvi >& /dev/null
-
-if [ ! -e "$name.eps" ] ; then
- 	error "ERROR: dvips failed to create $name.eps from $name.dvi"
-	exit 1
-fi
-
-gs -dNOPAUSE -sDEVICE=pbmraw -r${opt_d} -sOutputFile=$name.pbm $name.eps -c quit.ps >& /dev/null
-pnmcrop $name.pbm | pnmtopng > $name.png 2> /dev/null
- 
-if [ ! -e "$name.png" ] ; then
- 	error "ERROR: gs/pnmcrop/pnmtopng failed to create $name.eps from $name.png"
-	exit 1
-fi
-
-if [ $opt_k -eq 0 ] ; then
-	rm -f $name.dvi
-	rm -f $name.aux
-	rm -f $name.log
-	rm -f $name.eps
-	rm -f $name.pbm
-fi
-
-exit 0
-
+#!/bin/sh# Part of latex2rtf by B. Horeni (Nov 2002)#         hacked so it does not work by Scott Prahl## This version uses latex and dvips#              with ghostscript#              and  epsbb and png2png## for os2#   rename latex2png to latex2png.cmd #   insert first line "extproc sh" (without ")#   use these definitions#   GS="gsos2"#   TEXINPSEP=";"#   LATEX="tex -progname=cslatex -default-translate-file=cp852-cs"#GHOSTSCRIPT="gs -dQUIET -dNOPAUSE -dBATCH -dSAFER"LATEX="latex --interaction batchmode"DVIPS="dvips -E -R"TEXINPSEP=":"help(){    cat <<HELPlatex2png -- convert latex file to PNG imageUSAGE: latex2png [-d density] [-h] [-k] [-c] [-g] [-m] [-H home dir] latex_fileOPTIONS:          -c color image         -g gray image           -m monochrome  (default)         -d density     (default 144 dpi)         -h help        (default '.')         -H /home/dir   directory to be included in search path         -i             used to locate baseline of equations         -k             keep intermediate files (for debugging)EXAMPLE:          latex2png -d 144 /tmp/file   #create /tmp/file.png at 144 dpi         latex2png -H . /tmp/file     #search the cwd for image filesHELP    exit 0}opt_d=144opt_k=0opt_i="off"home_dir="."device="pngmono"while [ -n "$1" ]; docase $1 in    -g) device="pnggray" ; shift 1;; #gray    -c) device="png16m" ;  shift 1;; #color    -m) device="pngmono";  shift 1;; #monochrome    -h) help;shift 1;;    -i) opt_i="on" ; shift 1;;    -k) opt_k=1;shift 1;;    -d) opt_d=$2;shift 2;; # -d takes an argument -> shift by 2    -H) home_dir=$2;shift 2;;    --) break;;    -*) echo "error: no such option $1"; exit 1;;    *)  break;;esacdone# input check:if [ -z "$1" ] ; then echo "error: no latex_file specified" exit 1fi#process 'latex2png file.tex' and 'latex2png file' equivalentlyname=`basename "$1" ".tex"`dir=`dirname "$1"`#add $home_dir to latex/dvips search pathcd $home_dirTEXINPUTS=`pwd`${TEXINPSEP}export TEXINPUTScd $dir$LATEX $name > /dev/nullif [ ! -e "$name.dvi" ] ; then    echo "error: latex failed to convert $name.tex from $name.dvi"    exit 1fi$DVIPS -o $name.eps $name.dvi > /dev/null 2>&1if [ ! -e "$name.eps" ] ; then    echo "error: dvips failed to create $name.dvi from $name.eps"    exit 1fiGSOPT=`epsbb -r${opt_d} -l $name.eps` $GHOSTSCRIPT -sDEVICE=${device} -sOutputFile=$name.map ${GSOPT} 2> /dev/nullif [ $opt_i -eq 1 ] ; then        png2png -b -Y $mult $name.map $name.png $name.off   # 2> /dev/nullelse        png2png $name.map $name.png    # 2> /dev/null       fiif [ ! -e "$name.png" ] ; then    echo "error: ghostscript or png2png failed to create $name.eps from $name.png"    exit 1fiif [ $opt_k -eq 0 ] ; then    rm -f $pathname.dvi    rm -f $pathname.aux    rm -f $pathname.log    rm -f $pathname.eps    rm -f $pathname.mapfiexit 0

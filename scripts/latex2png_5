@@ -1,13 +1,15 @@
 #!/bin/sh
 # Part of latex2rtf by Scott Prahl (Nov 2002)
 #
-# This version uses pdflatex and convert that comes with ImageMagick
+# This version uses pdflatex
+#              and  pstoimg that comes with latex2html
 #
 # this version does not work with included eps graphics unless pdflatex has
 # supports the eps graphic format.  Works fine for for including equations.
+#
 
 PDFLATEX="pdflatex --interaction batchmode"
-CONVERT="convert -crop 0x0"
+PSTOIMG="pstoimg"
 TEXINPSEP=":"
 
 help()
@@ -40,27 +42,27 @@ opt_d=144
 opt_i=0
 opt_k=0
 home_dir="."
-device="-monochrome"
+device="1"                      #black & white
 
 while [ -n "$1" ]; do
 case $1 in
-    -g) device="-depth 8";    shift 1;; #gray
-    -c) device="";            shift 1;; #color
-    -m) device="-monochrome"; shift 1;; #monochrome
+    -g) device="8";  shift 1;; #gray
+    -c) device="24"; shift 1;; #color
+    -m) device="1";  shift 1;; #monochrome
     -h) help;        shift 1;;
     -i) opt_i=1;     shift 1;;
     -k) opt_k=1;     shift 1;; 
     -d) opt_d=$2;    shift 2;; #shift by 2 due to argument
     -H) home_dir=$2; shift 2;;
     --) break;;
-    -*) echo "error: no such option $1"; exit 1;;
+    -*) echo "error:no such option $1"; exit 1;;
     *)  break;;
 esac
 done
 
 # input check:
 if [ -z "$1" ] ; then
- echo "error: no latex_file specified"
+ echo "no latex_file specified"
  exit 1
 fi
 
@@ -68,7 +70,7 @@ fi
 name=`basename "$1" ".tex"`
 dir=`dirname "$1"`
 
-#add $home_dir to pdflatex search path
+#need to search the current working directory for \input or \include
 cd $home_dir
 TEXINPUTS=`pwd`${TEXINPSEP}
 export TEXINPUTS
@@ -81,10 +83,10 @@ if [ ! -e "$name.pdf" ] ; then
     exit 1
 fi
 
-$CONVERT ${device} -density ${opt_d}x${opt_d} $name.pdf $name.png
+$PSTOIMG -crop lbtr -color ${device} -density ${opt_d} -type png $name.pdf >& /dev/null
 
 if [ ! -e "$name.png" ] ; then
-    echo "error: convert (ImageMagick) failed to translate $name.pdf to $name.png"
+    echo "error: pstoimg (from latex2html) failed to translate $name.pdf to $name.png"
     exit 1
 fi
 
@@ -93,4 +95,3 @@ if [ $opt_k -eq 0 ] ; then
     rm -f $name.log
     rm -f $name.pdf
 fi
-exit 0
