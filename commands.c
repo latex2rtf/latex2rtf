@@ -1,4 +1,4 @@
-/*  $Id: commands.c,v 1.22 2001/09/18 05:20:10 prahl Exp $
+/*  $Id: commands.c,v 1.23 2001/09/19 05:06:51 prahl Exp $
 
     Defines subroutines to translate LaTeX commands to RTF
 */
@@ -238,7 +238,7 @@ static CommandArray commands[] = {
     {"Frac", CmdFraction, 0},
 	{"sqrt", CmdRoot, 0},
     {"int",  CmdIntegral, 0},
-	{"nonumber",CmdFormula, FORM_NO_NUMBER},
+	{"nonumber",CmdFormula, EQN_NO_NUMBER},
 	{"", NULL, 0}
 };
 
@@ -389,12 +389,12 @@ static CommandArray params[] = {
 	{"array", CmdTabular, TABULAR_2},
 
 	{"multicolumn", CmdMultiCol, 0},
-	{"math", CmdFormula, FORM_MATH},
-	{"displaymath", CmdFormula2, FORM_DOLLAR},
-	{"equation", CmdFormula2, EQUATION},
-	{"equation*", CmdFormula2, EQUATION_1},
-	{"eqnarray*", CmdFormula2, EQNARRAY_1},
-	{"eqnarray", CmdFormula2, EQNARRAY},
+	{"math", CmdFormula, EQN_MATH},
+	{"displaymath", CmdFormula2, EQN_DISPLAYMATH},
+	{"equation", CmdFormula2, EQN_EQUATION},
+	{"equation*", CmdFormula2, EQN_EQUATION_STAR},
+	{"eqnarray*", CmdFormula2, EQN_ARRAY_STAR},
+	{"eqnarray", CmdFormula2, EQN_ARRAY},
 	{"letter", CmdLetter, 0},
 	{"table", CmdTable, TABLE},
 	{"table*", CmdTable, TABLE_1},

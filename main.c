@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.22 2001/09/18 05:20:10 prahl Exp $ */
+/* $Id: main.c,v 1.23 2001/09/19 05:06:51 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -343,30 +343,6 @@ diagnostics(int level, char *format,...)
 				 * let's use a second one for safety */
 	FILE           *errfile;
 	int            i;
-
-	/*
-	 * output always to stderr on level 0 and 1 but observe quiet option
-	 */
-/*
-	va_start(ap, format);
-
-	if ((level <= 1) && (g_verbosity_level != 0)) {
-		switch (level) {
-		case 0:
-			fprintf(stderr, "\nError! ");
-			break;
-		case 1:
-			fprintf(stderr, "\nWarning! ");
-			break;
-		default:
-			fprintf(stderr, "\n   ");
-		}
-		fprintf(stderr, "%s (%ld) ", input, linenumber);
-		
-		vfprintf(stderr, format, ap);
-	}
-	va_end(ap);
-*/	
 	
 	if (logfile != NULL)
 		errfile = logfile;
@@ -537,7 +513,7 @@ params: f - pointer to filepointer to invalidate
 globals: progname;
  ****************************************************************************/
 {
-	fprintf(*f, "}}\n");
+	fprintf(*f, "}\n");
 	if (*f != stdout) {
 		if (fclose(*f) == EOF) {
 			diagnostics(WARNING, "Error closing RTF-File");

@@ -1,4 +1,4 @@
-/* $Id: tables.c,v 1.2 2001/09/16 05:11:19 prahl Exp $
+/* $Id: tables.c,v 1.3 2001/09/19 05:06:51 prahl Exp $
 
    Translation of tabbing and tabular environments
 */
@@ -41,8 +41,6 @@ parameter: code : on/off at begin/end-environment
 			tabbing_on = TRUE;
 			/* tabbing_on_itself = FALSE; */
 
-			PushEnvironment(code);
-			PushBrace();
 			fprintRTF("\\par\\line ");
 			if (fgetpos(fRtf, &pos_begin_kill) != 0)
 				diagnostics(ERROR, "Failed fgetpos; funct2.c (Tabbing): errno %d", errno);
@@ -53,8 +51,6 @@ parameter: code : on/off at begin/end-environment
 		 * tabbing_return = TRUE; tabbing_on_itself = TRUE;
 		 */
 		tabbing_on = FALSE;
-		(void) PopBrace();
-		PopEnvironment();
 
 		fprintRTF("\\par\\pard\\line\\q%c ", alignment);
 		diagnostics(4, "Exiting CmdTabbing");

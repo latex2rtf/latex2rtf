@@ -1,4 +1,4 @@
-/* $Id: convert.c,v 1.7 2001/09/18 05:20:10 prahl Exp $ 
+/* $Id: convert.c,v 1.8 2001/09/19 05:06:51 prahl Exp $ 
 	purpose: ConvertString(), Convert(), TranslateCommand() */
 
 #include <stdio.h>
@@ -232,10 +232,10 @@ globals: fTex, fRtf and all global flags for convert (see above)
 			diagnostics(5,"Processing $, next char <%c>",cNext);
 
 			if (cNext == '$')	/* check for $$ */
-				CmdFormula2(FORM_DOLLAR);
+				CmdFormula2(EQN_DOLLAR_DOLLAR);
 			else {
 				ungetTexChar(cNext);
-				CmdFormula(FORM_DOLLAR);
+				CmdFormula(EQN_DOLLAR);
 			}
 
 			/* 
@@ -259,12 +259,13 @@ globals: fTex, fRtf and all global flags for convert (see above)
 		case '&':
 			if (g_processing_tabular && g_processing_equation) {	/* in an eqnarray */
 				fprintRTF("\\tab ");
+				actCol++;
 				break;
 			}
 			if (g_processing_tabular) {	/* in tabular */
 				fprintRTF(" \\cell \\pard \\intbl ");
-				actCol++;
 				fprintRTF("\\q%c ", colFmt[actCol]);
+				actCol++;
 				break;
 			}
 			fprintRTF("&");
@@ -424,12 +425,15 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 		getBracketParam(option_string, 99);	
 
 		if (g_processing_eqnarray) {	/* eqnarray */
-			fprintRTF("}");	/* close italics */
+
 			if (g_show_equation_number && !g_suppress_equation_number) {
+				for (; actCol < 3; actCol++)
+					fprintRTF("\\tab ");
 				incrementCounter("equation");
-				fprintRTF("\\tab (%d)", getCounter("equation"));
+				
+				fprintRTF("\\tab {\\i0 (%d)}", getCounter("equation"));
 			}
-			fprintRTF("\n\\par\\tab {\\i ");
+			fprintRTF("\\par\n\\tab ");
 			g_suppress_equation_number = FALSE;
 			actCol = 1;
 			return TRUE;
@@ -539,19 +543,19 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 		CmdUmlauteChar(0);
 		return TRUE;
 	case '(':
-		CmdFormula(FORM_RND_OPEN);
+		CmdFormula(EQN_RND_OPEN);
 		PushBrace();
 		return TRUE;
 	case '[':
-		CmdFormula2(FORM_DOLLAR);
+		CmdFormula2(EQN_BRACKET_OPEN);
 		PushBrace();
 		return TRUE;
 	case ')':
-		CmdFormula(FORM_RND_CLOSE);
+		CmdFormula(EQN_RND_CLOSE);
 		ret = RecursionLevel - PopBrace();
 		return TRUE;
 	case ']':
-		CmdFormula2(FORM_DOLLAR);
+		CmdFormula2(EQN_BRACKET_CLOSE);
 		ret = RecursionLevel - PopBrace();
 		return TRUE;
 	case '/':

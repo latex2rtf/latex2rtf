@@ -14,6 +14,7 @@
 #include "equation.h"
 #include "counters.h"
 #include "funct1.h"
+#include "lengths.h"
 
 extern bool     g_processing_equation;	/* true at a formula-convertion */
 
@@ -25,62 +26,49 @@ CmdFormula(int code)
  globals   : g_processing_equation
  ******************************************************************************/
 {
-
-	if (code & ON) {	/* this is only true if starting \begin{math} */
-		fprintRTF("{\\i ");
-		g_processing_equation = TRUE;
-		diagnostics(4, "Switching g_processing_equation on with \\begin{math}");
-		return;
-	}
+	int true_code = code & ~ON;
 	
-	switch (code) {
-	case FORM_NO_NUMBER:
-		if (g_processing_eqnarray)
-			g_suppress_equation_number = TRUE;
-		break;
-
-	case FORM_DOLLAR:
-		if (g_processing_equation) {
-			fprintRTF("}");
-			g_processing_equation = FALSE;
-			diagnostics(4, "Switching g_processing_equation off with $");
-		} else {
+	switch (true_code) {
+	
+		case EQN_MATH:
+			if (code & ON) {
+				fprintRTF("\\i ");
+				g_processing_equation = TRUE;
+				diagnostics(4, "Switching g_processing_equation on with \\begin{math}");
+			} else {
+				g_processing_equation = FALSE;
+				diagnostics(4, "Switching g_processing_equation off with \\end{math}");
+			}
+			break;
+	
+		case EQN_NO_NUMBER:
+			if (g_processing_eqnarray)
+				g_suppress_equation_number = TRUE;
+			break;
+		
+		case EQN_DOLLAR:
+			if (g_processing_equation) {
+				fprintRTF("}");
+				g_processing_equation = FALSE;
+				diagnostics(4, "Switching g_processing_equation off with $");
+			} else {
+				fprintRTF("{\\i ");
+				g_processing_equation = TRUE;
+				diagnostics(4, "Switching g_processing_equation on with $");
+			}
+			break;
+	
+		case EQN_RND_OPEN:	/* \( */
 			fprintRTF("{\\i ");
 			g_processing_equation = TRUE;
-			diagnostics(4, "Switching g_processing_equation on with $");
-		}
-		break;
-
-	case FORM_RND_OPEN:	/* \( */
-		fprintRTF("{\\i ");
-		g_processing_equation = TRUE;
-		diagnostics(4, "Switching g_processing_equation on with \\(");
-		break;
-
-	case FORM_RND_CLOSE:	/* \) */
-		fprintRTF("}");
-		g_processing_equation = FALSE;
-		diagnostics(4, "Switching g_processing_equation off with \\)");
-		break;
-
-	case FORM_ECK_OPEN:	/* \[ */
-		fprintRTF("\n\\par{\\i  ");
-		g_processing_equation = TRUE;
-		diagnostics(4, "Switching g_processing_equation on with \\[");
-		break;
-
-	case FORM_ECK_CLOSE:	/* \] */
-		fprintRTF("}\n\\par ");
-		g_processing_equation = FALSE;
-		bNewPar = TRUE;
-		diagnostics(4, "Switching g_processing_equation off with \\]");
-		break;
-
-	case FORM_MATH:	/* will only be encountered for \end{math} */
-		fprintRTF("}");
-		g_processing_equation = FALSE;
-		diagnostics(4, "Switching g_processing_equation off with \\end{math}");
-		break;
+			diagnostics(4, "Switching g_processing_equation on with \\(");
+			break;
+	
+		case EQN_RND_CLOSE:	/* \) */
+			fprintRTF("}");
+			g_processing_equation = FALSE;
+			diagnostics(4, "Switching g_processing_equation off with \\)");
+			break;
 	}
 }
 
@@ -92,66 +80,106 @@ CmdFormula2(int code)
           \begin{displaymath} gets no equation number
           \[ gets no equation number
           $$ gets no equation number
-
  ******************************************************************************/
 {
-	if ((code & ON) || ((code == FORM_DOLLAR) && !g_processing_equation)) {	/* on switch */
-		code &= ~(ON);	/* mask MSB */
+	int width, mid, true_code,a,b,c;
+	width = getLength("textwidth");
+	mid = width/2;
+	true_code = code & ~ON;
+	
+	if (true_code == EQN_DOLLAR_DOLLAR) {
+		if (!g_processing_equation) {
+			g_processing_equation = TRUE;
+			g_show_equation_number = FALSE;
+			fprintRTF("\\par\\par\n{\\pard\\i\\tqc\\tx%d\n\\tab ", mid);
+			diagnostics(4,"Entering CmdFormula2 -- $$");
+		} else {
+			g_processing_equation = FALSE;
+			fprintRTF("\\par\\par\n}");
+			diagnostics(4,"Exiting CmdFormula2 -- $$");
+		}
+		return;
+	}
+	
+	if (true_code == EQN_BRACKET_OPEN) {
+		g_processing_equation = TRUE;
+		g_show_equation_number = TRUE;
+		fprintRTF("\\par\\par\n{\\pard\\i\\tqc\\tx%d\\tqr\\tx%d\n\\tab ", mid, width);
+		diagnostics(4,"Entering CmdFormula2 -- \\[");
+		return;
+	}
+
+	if (true_code == EQN_BRACKET_CLOSE) {
+		g_processing_equation = FALSE;
+		fprintRTF("\\par\\par\n}");
+		diagnostics(4,"Exiting CmdFormula2 -- \\]");
+		return;
+	}
+
+	if (code & ON) {  /* \begin{equation}, etc. */
+
 		g_processing_equation = TRUE;
 		g_suppress_equation_number = FALSE;
 		
-		fprintRTF("\n\\par\n\\par\\pard");
-		switch (code) {
-		case FORM_DOLLAR:	/* $$ or displaymath */
-		case EQUATION_1:	/* equation* */
+		a = 0.25 *width;
+		b = 0.3 * width;
+		c = 0.35 * width;
+		fprintRTF("\\par\\par\n\\pard\\i");
+		switch (true_code) {
+		case EQN_DISPLAYMATH:
 			g_show_equation_number = FALSE;
-			fprintRTF("\\tqc\\tx4320\n");
+			fprintRTF("\\tqc\\tx%d", mid);
 			diagnostics(4,"Entering CmdFormula2 -- displaymath");
 			break;
 
-		case EQUATION:	/* equation */
+		case EQN_EQUATION_STAR:
+			g_show_equation_number = FALSE;
+			fprintRTF("\\tqc\\tx%d", mid);
+			diagnostics(4,"Entering CmdFormula2 -- equation*");
+			break;
+
+		case EQN_EQUATION:
+			actCol = 5;							/* avoid adding \tabs */
 			g_show_equation_number = TRUE;
-			fprintRTF("\\tqc\\tx4320\\tqr\\tx8640\n");
+			fprintRTF("\\tqc\\tx%d\\tqr\\tx%d", mid, width);
 			diagnostics(4,"Entering CmdFormula2 -- equation");
 			break;
 
-		case EQNARRAY_1:	/* eqnarray* */
+		case EQN_ARRAY_STAR:
 			g_show_equation_number = FALSE;
 			g_processing_eqnarray = TRUE;
 			g_processing_tabular = TRUE;
 			actCol = 1;
 			diagnostics(4,"Entering CmdFormula2 -- eqnarray* ");
-			fprintRTF("\\tqr\\tx2880\\tqc\\tx3240\\tql\\tx3600\n");
+			fprintRTF("\\tqr\\tx%d\\tqc\\tx%d\\tql\\tx%d", a, b, c);
 			break;
 
-		case EQNARRAY:	/* eqnarray */
+		case EQN_ARRAY:
 			g_show_equation_number = TRUE;
 			g_processing_eqnarray = TRUE;
 			g_processing_tabular = TRUE;
 			actCol = 1;
-		    diagnostics(4,"Entering CmdFormula2 --- eqnarray ");
-			fprintRTF("\\tqr\\tx2880\\tqc\\tx3240\\tql\\tx3600\\tqr\\tx8640\n");
+		    diagnostics(4,"Entering CmdFormula2 --- eqnarray");
+			fprintRTF("\\tqr\\tx%d\\tqc\\tx%d\\tql\\tx%d\\tqr\\tx%d ", a, b, c, width);
 			break;
-
-		default:;
 		}
-		fprintRTF("\\tab {\\i ");
+		fprintRTF("\n\\tab ");
 				
 		
-	} else {		/* off switch */
+	} else {
+	
 		diagnostics(4,"Exiting CmdFormula2");
-		code &= ~(OFF);	/* mask MSB */
 		g_processing_equation = FALSE;
-		fprintRTF("}");
 		
-/* close the equation environment properly */
 		if (g_show_equation_number && !g_suppress_equation_number) {
 			incrementCounter("equation");
-			fprintRTF("\\tab (%d)", getCounter("equation"));
+			for (; actCol < 3; actCol++)
+					fprintRTF("\\tab ");
+			fprintRTF("\\tab{\\i0 (%d)}", getCounter("equation"));
 		}
-		fprintRTF("\n\\par\n\\par");
+		fprintRTF("\\par\\par\n");
 
-		if (code == EQNARRAY || code == EQNARRAY_1) {
+		if (true_code == EQN_ARRAY || true_code == EQN_ARRAY_STAR) {
 			g_processing_tabular = FALSE;
 			g_processing_eqnarray = FALSE;
 		}
