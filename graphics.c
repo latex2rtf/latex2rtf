@@ -817,7 +817,7 @@ PutTiffFile(char *s)
 	sprintf(cmd, "convert %s %s", tiff, tmp_png);	
 	system(cmd);
 	
-	PutPngFile(tmp_png,1.0, TRUE);
+	PutPngFile(tmp_png, 1.0, TRUE);
 	my_unlink(tmp_png);
 	
 	free(tmp_png);
@@ -848,7 +848,7 @@ PutGifFile(char *s)
 	sprintf(cmd, "convert %s %s", gif, tmp_png);	
 	system(cmd);
 	
-	PutPngFile(tmp_png, TRUE, 1.0);
+	PutPngFile(tmp_png, 1.0, TRUE);
 	my_unlink(tmp_png);
 
 	free(tmp_png);
@@ -896,7 +896,7 @@ PutLatexFile(char *s)
 	} while (!err && resolution>10 && ( (width>max) || (height>max)) );
 	
 	if (err==0)
-		PutPngFile(png,TRUE,72.0/resolution);
+		PutPngFile(png, 72.0/resolution, TRUE);
 	
 	free(png);
 	free(cmd);
