@@ -89,6 +89,18 @@ bib_authordate.rtf: bib_authordate.tex
 	$(LATEX) bib_authordate > latex.log
 	$(LATEX2RTF) $(OPTIONS) bib_authordate
 
+bibentry_plain.rtf: bibentry_plain.tex bibentry_plain.bib
+	$(LATEX) bibentry_plain > latex.log
+	$(BIBTEX) bibentry_plain > bibtex.log
+	$(LATEX) bibentry_plain > latex.log
+	$(LATEX2RTF) $(OPTIONS) bibentry_plain
+
+bibentry_apalike.rtf: bibentry_apalike.tex bibentry_apalike.bib
+	$(LATEX) bibentry_apalike > latex.log
+	$(BIBTEX) bibentry_apalike > bibtex.log
+	$(LATEX) bibentry_apalike > latex.log
+	$(LATEX2RTF) $(OPTIONS) bibentry_apalike
+
 misc2.rtf: misc2.tex
 	$(LATEX) misc2 > latex.log
 	$(LATEX) misc2 > latex.log
