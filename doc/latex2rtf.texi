@@ -220,9 +220,8 @@ Edit @file{Makefile} for your local configuration.  In particular, pay attention
 to the @env{PREFIX} variable.  If you do not have root access you might wish 
 to set the makefile variable @env{PREFIX} to be your home directory. 
 
-On some machines the cc compiler will issue errors. 
-In this case, better use the gcc compiler (from GNU). 
-Edit @file{Makefile} and change the line @code{CC=cc} into @code{CC=gcc}.
+On some machines the cc compiler will issue errors. Therefore the 
+default compiler command in the Makefile is @code{CC=gcc}.
 
 @item
 As of version 1.9.13, @ltor{} supports conversion of @latex{} equations to
@@ -244,7 +243,7 @@ used in Makefile. In this case use @code{gmake} (from GNU) instead.
 @item @code{make check}
 
 [OPTIONAL] This tests @ltor{} on a variety of @latex{} files.  Expect
-a whole lot of warnings, but no outright errors.
+a whole lot of warnings, but no outright errors. (On IBM AIX, use @code{gmake check}.)
 
 @item @code{make install}
 
@@ -386,8 +385,8 @@ SET GSDIR=C:\gs\gs7.04\bin
 the equation to be converted. It then sends the call for latex2png.bat to
 the operating system. One user had problems that this didn't work although
 manually calling latex2png.bat from the command prompt worked.@*
-I guess the problem was caused by using 4NT.exe as command processor instead
-of the (default) command.com, but he not (yet) confirmed this.
+The problem was probably caused by using @file{4NT.exe} as command processor 
+instead of the (default) @file{command.com}.
 
 
 @node Macintosh, Problems Compiling, DOS or Windows, Installation
