@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.42 2002/03/18 01:38:32 prahl Exp $
+# $Id: Makefile,v 1.43 2002/03/18 06:31:13 prahl Exp $
 
 CC=gcc
 LIBS=
@@ -138,13 +138,11 @@ install: latex2rtf doc/latex2rtf.1 $(CFGS) scripts/latex2png
 	cp scripts/latex2png $(BIN_INSTALL)
 	cp doc/latex2rtf.1   $(MAN_INSTALL)
 	cp $(CFGS)           $(CFG_INSTALL)
-	chmod 0755 $(BIN_INSTALL)/latex2rtf
-	chmod 0755 $(BIN_INSTALL)/latex2png
 	@echo "Now set the environment variable RTFPATH to $(CFG_INSTALL)"
 
 install_info: doc/latex2rtf.info
 	mkdir -p $(INFO_INSTALL)
-	cp -p doc/latex2rtf.info $(BIN_INSTALL)
+	cp doc/latex2rtf.info $(BIN_INSTALL)
 	install-info --info-dir=$(INFO_INSTALL) doc/latex2rtf.info
 
 realclean: checkdir clean

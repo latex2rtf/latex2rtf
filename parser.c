@@ -1,4 +1,4 @@
-/*  $Id: parser.c,v 1.48 2002/03/17 21:05:51 prahl Exp $
+/*  $Id: parser.c,v 1.49 2002/03/18 06:31:13 prahl Exp $
 
    Contains declarations for a generic recursive parser for LaTeX code.
 */
@@ -47,7 +47,7 @@ static void     parseBracket();
 void
 SetScanAhead(int flag)
 /***************************************************************************
- purpose:     allows getSection to avoid incrementing line number
+ purpose:     allows scanning source without incrementing line number
 ****************************************************************************/
 {
 	g_parser_scan_ahead = flag;
@@ -56,8 +56,8 @@ SetScanAhead(int flag)
 static int
 GetScanAhead(void)
 /***************************************************************************
- purpose:     allows getSection to avoid incrementing line number
-****************************************************************************/
+ purpose:     determine if linenumbers are being incremented or not
+ ***************************************************************************/
 {
 	return g_parser_scan_ahead;
 }
@@ -74,7 +74,7 @@ CurrentLineNumber(void)
 void 
 AdvanceLineNumber(char *s) 
 /***************************************************************************
- purpose:    advances the line number according to the number of '\n' in s
+ purpose:    advances the line number for each '\n' in s
 ****************************************************************************/
 {
 	if (s == NULL) return;
@@ -1194,7 +1194,10 @@ getSection(char **body, char **header, char **label)
 			continue;
 		} 
 		
-		if (label_depth >= 0) 	/* still in a \begin{xxx} environment? */
+		diagnostics(1, "possible end of section");
+		diagnostics(1, "label_depth = %d", label_depth);
+		
+		if (label_depth > 0) 	/* still in a \begin{xxx} environment? */
 			continue;
 		
 		/* actually found command to end the section */
