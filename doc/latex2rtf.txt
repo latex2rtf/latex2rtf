@@ -103,13 +103,10 @@ and for MS-DOS, including all versions of MS Windows.
 on CTAN sites: e.g., `http://www.dante.de' or `http://www.ctan.org'.
 
    The MS-DOS version (1.8aa and up) will also run under all MS Windows
-versions. It requires an i386 processor or better. The Win32 Version
-requires Cygnus-Cygwin32 (http://sources.redhat.com/cygwin/). As the
-MS-DOS version (1.8aa and up) will also run under all MS windows
-versions, the Win32 version has been discontinued.
+versions. It requires an i386 processor or better.
 
-   The MS-DOS version starting from 1.9.14a has an optional Win32 GUI
-interface (LaTeX2RTF Shell).
+   The Win32 distribution (starting from LaTeX2RTF  1.9.15) is the
+MS-DOS version plus Win32 GUI program (l2rshell).
 
    There are a couple of people working on the LaTeX2RTF , coordinated
 by Wilfried Hennings <W.Hennings@fz-juelich.de>.  See the SourceForge
@@ -292,30 +289,12 @@ store the needed variables.
 Win32 systems
 =============
 
-   The DOS distribution contains a graphical interface program which
-should run under win32 systems (Win9x, WinME, WinNT, Win2000, WinXP).
+   To install LaTeX2RTF  on a Win32 system (Win9x, WinME, WinNT,
+Win2000, WinXP), execute the `latex2rtf-x.x.x_win.exe' and follow the
+instructions.
 
-   To install latex2rtf on a win32 system, extract all files from the
-zip archive to `C:\l2r' or to another folder (i.e. directory) of your
-choice, preserving the folder structure (winzip: check "use folder
-names").  If you extracted them to another folder (e.g. `C:\Program
-Files\l2r'), edit the file `L2R.BAT' and change the folder `C:\l2r' to
-where you put them.  If there is a blank in any of the folder names (as
-in e.g. "Program Files"), then you need to enclose both the file-ID and
-the cfg path in double quotes, e.g.
-`"C:\Program Files\l2r\latex2rt" -P "C:\Program Files\l2r\cfg" %1 %2
-...'
-or use the DOS filename equivalent instead, e.g.
-`C:\Progra~1\l2r\latex2rt -P C:\Progra~1\l2r\cfg %1 %2 ...'
-
-   If you install LaTeX2RTF  under WinNT, Win2000 or WinXP and you want
-other users to be able to use LaTeX2RTF , you must assign the files and
-folders appropriate user permissions (at least read & execute).  If you
-don't know about user permissions, put LaTeX2RTF  into `C:\Program
-Files\l2r' or what else the standard folder for installing applications
-is named (e.g. in the German version it is `C:\Programme\l2r').
-
-   To start the program execute `l2rshell.exe'
+   To start the program double-click the LaTeX2RTF  icon, or drag and
+drop a `.tex' file onto the icon.
 
    If your LaTeX  document refers to external graphic files, e.g. eps,
 or you want to use the option to convert equations to bitmaps, you must
@@ -323,11 +302,8 @@ have LaTeX, ImageMagick and Ghostscript installed. These programs are
 freely available for download at `http://www.miktex.org/',
 `http://www.imagemagick.org' and `http://www.ghostscript.com'
 
-   Paths to LaTeX, ImageMagick and Ghostscript executables has to be
-specified in the "Environment" tab of the LaTeX2RTF Shell program. Path
-to the `l2r.bat' is optional, it is used if `l2rshell.exe' and
-`l2r.bat' are located in different directories (this option will be
-suppressed in the next versions of LaTeX2RTF Shell).
+   Paths to LaTeX, ImageMagick and Ghostscript executables have to be
+specified in the "Environment" tab of the LaTeX2RTF  window.
 
 Macintosh
 =========
@@ -471,14 +447,14 @@ syntax is:
            editors are being used to view the RTF output.
 
     `-f1'
-          	use fields for equations but not `\ref' and `\cite'.
+          use fields for equations but not `\ref' and `\cite'.
 
     `-f2'
-          	use fields for `\ref' and `\cite' but not equations.  This
+          use fields for `\ref' and `\cite' but not equations.  This
           will be useful for versions of OpenOffice that import
-          cross-references 	properly (as of Sept 2003 in a
-          soon-to-be released version) but do not properly
-          handle fields in equations.
+          cross-references     properly (as of Sept 2003 in a
+          soon-to-be released version) but do not properly     handle
+          fields in equations.
 
     `-f3'
           use fields when possible.  This is the default and is most
@@ -526,8 +502,9 @@ syntax is:
 
     `-M16'
           insert Word comment field that contains the original equation
-          text     These switches can be added together to get the
-     desired conversion.  Handy examples are
+          text
+     These switches can be added together to get the desired
+     conversion.  Handy examples are
     `-M3'
           convert both inline and displayed equations to RTF (default)
 
@@ -575,6 +552,7 @@ syntax is:
      add the specified number of extra `}' to the end of the RTF file.
      This is useful for files that are not cleanly converted by
      LaTeX2RTF .
+
 
    With no arguments other than switches starting with a "-", LaTeX2RTF
 acts as a filter, i.e., it reads from `stdin' and writes to `stdout'.

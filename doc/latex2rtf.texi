@@ -203,11 +203,10 @@ The latest version of @ltor{} is available at
 CTAN sites: e.g., @uref{http://www.dante.de} or @uref{http://www.ctan.org}.
 
 The MS-DOS version (1.8aa and up) will also run under all MS Windows versions. It requires
-an i386 processor or better. The Win32 Version requires
-@uref{http://sources.redhat.com/cygwin/,Cygnus-Cygwin32}. As the MS-DOS version (1.8aa and
-up) will also run under all MS windows versions, the Win32 version has been discontinued.
+an i386 processor or better.  
 
-The MS-DOS version starting from 1.9.14a has an optional Win32 GUI interface (LaTeX2RTF Shell).
+The Win32 distribution (starting from @ltor{} 1.9.15) is the MS-DOS version 
+plus Win32 GUI program (l2rshell).
 
 There are a couple of people working on the @ltor{}, coordinated by
 @email{W.Hennings@@fz-juelich.de, Wilfried Hennings}. 
@@ -397,30 +396,10 @@ variables.
 @node Win32 systems, Macintosh, DOS or Windows, Installation
 @section Win32 systems
 
-The DOS distribution contains a graphical interface program which should run 
-under win32 systems (Win9x, WinME, WinNT, Win2000, WinXP).
+To install @ltor{} on a Win32 system (Win9x, WinME, WinNT, Win2000, WinXP), execute the 
+@file{latex2rtf-x.x.x_win.exe} and follow the instructions.
 
-To install latex2rtf on a win32 system, extract all files from the zip archive to @file{C:\l2r}
-or to another folder (i.e. directory) of your choice,
-preserving the folder structure (winzip: check "use folder names"). 
-If you extracted them to another folder (e.g. @file{C:\Program Files\l2r}),
-edit the file @file{L2R.BAT} and change the folder @file{C:\l2r} to where you put them.
-If there is a blank in any of the folder names
-(as in e.g. "Program Files"), then you need to enclose both
-the file-ID and the cfg path in double quotes, e.g. @*
-@file{"C:\Program Files\l2r\latex2rt" -P "C:\Program Files\l2r\cfg" %1 %2 ...}@*
-or use the DOS filename equivalent instead, e.g. @*
-@file{C:\Progra~1\l2r\latex2rt -P C:\Progra~1\l2r\cfg %1 %2 ...}
-
-If you install @ltor{} under WinNT, Win2000 or WinXP and 
-you want other users to be able to use @ltor{}, you must assign the
-files and folders appropriate user permissions (at least read & execute).
-If you don't know about user permissions, put @ltor{} into
-@file{C:\Program Files\l2r} or what else the standard folder 
-for installing applications is named (e.g. in the German version it 
-is @file{C:\Programme\l2r}). 
-
-To start the program execute @file{l2rshell.exe}
+To start the program double-click the @ltor{} icon, or drag and drop a @file{.tex} file onto the icon.
 
 If your @latex{} document refers to external graphic files, e.g. eps, 
 or you want to use the option to convert equations to bitmaps,
@@ -428,10 +407,8 @@ you must have LaTeX, ImageMagick and Ghostscript installed. These programs are
 freely available for download at @uref{http://www.miktex.org/}, 
 @uref{http://www.imagemagick.org} and @uref{http://www.ghostscript.com}
 
-Paths to LaTeX, ImageMagick and Ghostscript executables has to be specified in the 
-"Environment" tab of the LaTeX2RTF Shell program. Path to the @file{l2r.bat} is optional, 
-it is used if @file{l2rshell.exe} and @file{l2r.bat} are located in different directories 
-(this option will be suppressed in the next versions of LaTeX2RTF Shell).
+Paths to LaTeX, ImageMagick and Ghostscript executables have to be specified in the 
+"Environment" tab of the @ltor{} window.
 
 
 @node Macintosh, Problems Compiling, Win32 systems, Installation
@@ -574,12 +551,12 @@ where # selects which fields to use during conversion:
     do not use fields in RTF.  This is handy when primitive RTF 
     editors are being used to view the RTF output.
     @item -f1  
-	use fields for equations but not @code{\ref} and @code{\cite}.  
+    use fields for equations but not @code{\ref} and @code{\cite}.  
     @item -f2 
-	use fields for @code{\ref} and @code{\cite} but not equations.  This
-	will be useful for versions of OpenOffice that import cross-references
-	properly (as of Sept 2003 in a soon-to-be released version) but do not properly
-	handle fields in equations.
+    use fields for @code{\ref} and @code{\cite} but not equations.  This
+    will be useful for versions of OpenOffice that import cross-references
+    properly (as of Sept 2003 in a soon-to-be released version) but do not properly
+    handle fields in equations.
     @item -f3
     use fields when possible.  This is the default and is most useful when
     the RTF file is being exported to be used in Word.  This retains the most
