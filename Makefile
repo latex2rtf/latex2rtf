@@ -26,7 +26,7 @@ CFLAGS:=-DUNIX
 #CFLAGS:=$(CFLAGS) -DHAS_NO_GETOPT
 
 #Comment out if you don't want warnings
-CFLAGS:=$(CFLAGS) -g -Wall -ansi -pedantic
+#CFLAGS:=$(CFLAGS) -g -Wall -ansi -pedantic
 
 #Base directory
 PREFIX=/usr/local
@@ -109,7 +109,7 @@ MSDOS=l2r.bat l2r.exe
 DOCS= doc/latex2rtf.texi doc/latex2rtf.html doc/latex2rtf.pdf doc/latex2rtf.txt \
 	  doc/latex2rtf.info doc/credits doc/copying.txt doc/Makefile
 
-TEST=   test/Makefile \
+TEST=   test/Makefile test/bracecheck \
 	test/accentchars.tex test/array.tex test/cite.tex test/cite.bib \
 	test/eqns.tex test/fonts.tex test/fontsize.tex test/frac.tex \
 	test/list.tex test/logo.tex test/misc1.tex test/misc2.tex \
@@ -158,7 +158,7 @@ clean: checkdir
 
 checkout checkdir: $(SOURCES) $(SUPPORT) $(MANUALS) $(TEST)
 
-dist source: $(SOURCES) $(SUPPORT) $(MANUALS) $(DOCS) $(TEST) clean
+dist source: $(SOURCES) $(SUPPORT) $(MANUALS) $(DOCS) $(TEST)
 	mkdir latex2rtf-$(VERSION)
 	mkdir latex2rtf-$(VERSION)/cfg
 	mkdir latex2rtf-$(VERSION)/doc

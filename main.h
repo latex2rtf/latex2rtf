@@ -1,8 +1,26 @@
-/* $Id: main.h,v 1.32 2001/11/13 05:43:57 prahl Exp $ */
+/* $Id: main.h,v 1.33 2001/11/30 05:14:42 prahl Exp $ */
 #ifndef __MAIN_H
 #define __MAIN_H
 
-#ifdef __MWERKS__
+#ifdef UNIX
+#ifndef ENVSEP
+#define ENVSEP ':'
+#endif
+#ifndef PATHSEP
+#define PATHSEP '/'
+#endif 
+#endif
+
+#ifdef MSDOS
+#ifndef ENVSEP
+#define ENVSEP ';'
+#endif
+#ifndef PATHSEP
+#define PATHSEP '\\'
+#endif 
+#endif
+
+#ifdef MACINTOSH || __MWERKS__
 #define HAS_NO_GETOPT
 #define HAS_NO_STRDUP
 #define ENVSEP '^'
@@ -14,23 +32,15 @@
 #define getopt my_getopt
 #endif
 
-#ifndef ENVSEP
-#define ENVSEP ':'
-#endif
-
-#ifndef PATHSEP
-#define PATHSEP '/'
-#endif 
-
-#ifndef SEEK_SET
-#define SEEK_SET 0
-#define SEEK_CUR 1
-#endif
-
 #ifdef SEMICOLONSEP
 #define FORMULASEP ';'
 #else
 #define FORMULASEP ','
+#endif
+
+#ifndef SEEK_SET
+#define SEEK_SET 0
+#define SEEK_CUR 1
 #endif
 
 #define ERROR 0

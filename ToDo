@@ -2,7 +2,6 @@ Bugs:
  	Fix line numbering better
 	Reset footnote numbering at each new chapter
 	Missing references in misc4.tex
-	Mysterious 0.8 in misc4.rtf
 
 	Extra paragraph at
 		- in misc1.tex, near the end, after the italic text before the comma in:
