@@ -1,5 +1,5 @@
 /*
- * $Id: util.c,v 1.17 2001/10/28 04:02:44 prahl Exp $ 
+ * $Id: util.c,v 1.18 2001/11/23 21:43:48 prahl Exp $ 
  */
 #include <stdlib.h>
 #include <string.h>
@@ -20,6 +20,23 @@ strdup(const char *str)
 	return s;
 }
 #endif
+
+char *  
+strdup_together(char *s, char *t)
+/******************************************************************************
+ purpose:  returns a new string consisting of s+t
+******************************************************************************/
+{
+	char * both;
+	
+	both = malloc(strlen(s) + strlen(t) + 1);
+	if (both == NULL)
+		diagnostics(ERROR, "Could not allocate memory for both strings.");
+
+	strcpy(both, s);
+	strcat(both, t);
+	return both;
+}
 
 char *
 strdup_noblanks(char *s)

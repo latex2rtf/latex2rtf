@@ -1,15 +1,14 @@
 Bugs:
  	Fix line numbering better
-	Improve spacing before and after \section etc.
-	Improve font sizes in \section etc.
-	Possible malloc problem in .cfg
-	Input/Include files is buggy
 	Reset footnote numbering at each new chapter
-	Fix default pagenumbers
+	Missing references in misc4.tex
 
 Features:
-	Add support for using the local cfg directory
-	Add final scanning routine for section labels
+	Add default page numbering
+	
+	Add support for a local cfg directory
+	Add more complete support for \input
+	finish special cases for \char 'xxx
 
 	Add support for \usepackage{fullpage}
 	Add support for \usepackage{doublespace}
@@ -17,6 +16,10 @@ Features:
 
 	Add rendering of equations as in ltx2rtf
 
+	Add support for \mark commands
+	
+	Add autonumbering of equations using fields
+	
 	Figure out style stuff in rtf header
 	add style support for quote environment
 	add style support for enumerate environment
@@ -26,5 +29,11 @@ Features:
 	Suppress empty column that sometimes appears in tabular environments
 	Suppress empty row when a final // is present
 
-	add support for hspace
+	add support for \hspace
 	add support for \hline
+
+	Improve spacing before and after \section etc.
+	Improve font sizes in \section etc.
+
+	Figure out how much translation is possible when no .aux
+	file is present.  

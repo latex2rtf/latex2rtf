@@ -1,4 +1,4 @@
-/*  $Id: parser.c,v 1.36 2001/11/16 05:16:27 prahl Exp $
+/*  $Id: parser.c,v 1.37 2001/11/23 21:43:48 prahl Exp $
 
    Contains declarations for a generic recursive parser for LaTeX code.
 */
@@ -9,6 +9,7 @@
 #include <ctype.h>
 
 #include "main.h"
+#include "commands.h"
 #include "cfg.h"
 #include "stack.h"
 #include "util.h"
@@ -31,6 +32,7 @@ static int              g_parser_depth = -1;
 static char            *g_parser_string = "stdin";
 static FILE            *g_parser_file   = stdin;
 static int 				g_parser_line   = 1;
+static int 				g_parser_include_level=0;
 
 static long				g_parser_file_pos;
 static char            *g_parser_string_pos;
@@ -45,17 +47,27 @@ static void     parseBracket();
 
 static void
 SetScanAhead(int flag)
+/***************************************************************************
+ purpose:     allows getSection to avoid incrementing line number
+****************************************************************************/
 {
 	g_parser_scan_ahead = flag;
 }
 
-int CurrentLineNumber(void) 
+int 
+CurrentLineNumber(void) 
+/***************************************************************************
+ purpose:     returns the current line number of the text being processed
+****************************************************************************/
 {
 	return g_parser_line;
 }
 
 char *
 CurrentFileName(void)
+/***************************************************************************
+ purpose:     returns the filename of the text being processed
+****************************************************************************/
 {
 	return g_parser_stack[g_parser_depth].file_name;
 }
@@ -66,6 +78,10 @@ CurrentFileName(void)
 
 int 
 PushSource(char * filename, char * string)
+/***************************************************************************
+ purpose:     change the source used by getRawTexChar() to either file or string
+ 			  pass NULL for unused argument
+****************************************************************************/
 {
 	char       s[50];
 	FILE *p    = NULL;
@@ -74,8 +90,8 @@ PushSource(char * filename, char * string)
 	int line   = 1;
 	
 	if (0) {
-		diagnostics(1,"Before PushSource** line=%d, g_parser_depth=%d",
-		g_parser_line,g_parser_depth);
+		diagnostics(1,"Before PushSource** line=%d, g_parser_depth=%d, g_parser_include_level=%d",
+		g_parser_line,g_parser_depth,g_parser_include_level);
 		for (i=0; i<=g_parser_depth; i++) {
 			if (g_parser_stack[i].file)
 				diagnostics(1,"i=%d file   =%s, line=%d", i, g_parser_stack[i].file_name,
@@ -101,6 +117,7 @@ PushSource(char * filename, char * string)
            diagnostics(WARNING, "Cannot open <%s>\n", filename);
            return 0;
        }
+       g_parser_include_level++;
        g_parser_line=1;
     } else {
     	name = CurrentFileName();
@@ -129,8 +146,8 @@ PushSource(char * filename, char * string)
 	}
 
 	if (0) {
-		diagnostics(1,"After  PushSource** line=%d, g_parser_depth=%d",
-		g_parser_line,g_parser_depth);
+		diagnostics(1,"After PushSource** line=%d, g_parser_depth=%d, g_parser_include_level=%d",
+		g_parser_line,g_parser_depth,g_parser_include_level);
 		for (i=0; i<=g_parser_depth; i++) {
 			if (g_parser_stack[i].file)
 				diagnostics(1,"i=%d file   =%s, line=%d", i, g_parser_stack[i].file_name,
@@ -147,6 +164,9 @@ PushSource(char * filename, char * string)
 
 int 
 StillSource(void)
+/***************************************************************************
+ purpose:     figure out if text remains to be processed
+****************************************************************************/
 {
 	if (g_parser_file)
 		return (!feof(g_parser_file));
@@ -156,12 +176,16 @@ StillSource(void)
 
 void 
 PopSource(void)
+/***************************************************************************
+ purpose:     return to the previous source 
+****************************************************************************/
 {
 	char       s[50];
 	int i;
 
 	if (0) {
-		diagnostics(1,"Before PopSource** line=%d",g_parser_line);
+		diagnostics(1,"Before PopSource** line=%d, g_parser_depth=%d, g_parser_include_level=%d",
+		g_parser_line,g_parser_depth,g_parser_include_level);
 		for (i=0; i<=g_parser_depth; i++) {
 			if (g_parser_stack[i].file)
 				diagnostics(1,"i=%d file   =%s, line=%d", i, g_parser_stack[i].file_name,
@@ -186,6 +210,7 @@ PopSource(void)
 	if (g_parser_file) {
 		fclose(g_parser_file);
 		free(g_parser_stack[g_parser_depth].file_name);
+		g_parser_include_level--;
 	}
 		
 	g_parser_depth--;
@@ -207,7 +232,8 @@ PopSource(void)
 	}
 
 	if (0) {
-		diagnostics(1,"After PopSource** line=%d",g_parser_line);
+		diagnostics(1,"After PopSource** line=%d, g_parser_depth=%d, g_parser_include_level=%d",
+		g_parser_line,g_parser_depth,g_parser_include_level);
 		for (i=0; i<=g_parser_depth; i++) {
 			if (g_parser_stack[i].file)
 				diagnostics(1,"i=%d file   =%s, line=%d", i, g_parser_stack[i].file_name,
@@ -240,7 +266,10 @@ getRawTexChar()
 		if (thechar == EOF)
 			if(!feof(g_parser_file)) 
 				diagnostics(ERROR, "Unknown file I/O error reading latex file\n");
-			else
+			else if (g_parser_include_level > 1) {
+				PopSource();				/* go back to parsing parent */
+				thechar = getRawTexChar();  /* get next char from parent file */
+			} else
 				thechar = '\0';
 		else if (thechar == CR){                  /* convert CR, CRLF, or LF to \n */
 			thechar = getc(g_parser_file);
@@ -804,32 +833,41 @@ static void increase_buffer_size(void)
 
 void
 getSection(char **body, char **header, char **label)
-/*
-	purpose: obtain next chunk of latex file that has the same label
+/**************************************************************************
+	purpose: obtain the next section of the latex file
 	
-	along the way, beware of \verb and \begin{verbatim} ... \end{verbatim}
-	                               and \begin{figure}   ... \end{figure}
-*/
-
+	This is now the preparsing routine.  Ideally, macro expansion would
+	occur here as well.  The whole reason for this routine was to properly
+	handle \label for a sections.  This routine reads text until a new
+	section heading is found.  The text is returned in body and the *next*
+	header is returned in header.  If header is NULL then there is no next
+	header.  
+	
+	\include{file} is handled in this section here as well.
+**************************************************************************/
 {
 	int possible_match, found;
 	char cNext, *s,*text,*next_header;
 	int i;
 	long delta;
-	int  match[17];
-	char * command[17] = {"\\begin{verbatim}", "\\begin{figure}", "\\begin{equation}", 
+	int  match[19];
+	char * command[19] = {"\\begin{verbatim}", "\\begin{figure}", "\\begin{equation}", 
 						  "\\begin{eqnarray}", "\\begin{table}", "\\begin{description}",
 	                     "\\part", "\\chapter", "\\section", "\\subsection", "\\subsubsection", 
 	                     "\\section*", "\\subsection*", "\\subsubsection*", 
-	                     "\\verb", "\\url", "\\label"};
+	                     "\\label", "\\input", "\\include", "\\verb", "\\url" };
 
 	char * ecommand[6] = {"\\end{verbatim}", "\\end{figure}", "\\end{equation}", 
 						  "\\end{eqnarray}", "\\end{table}", "\\end{description}"};
-	int ncommands = 17;
+	int ncommands = 19;
 	int ecommands = 6;
-	const int verb = 14;
-	const int url = 15;
-	const int label_item = 16;
+
+	const int label_item   = 14;
+	const int input_item   = 15;
+	const int include_item = 16;
+	const int verb_item    = 17;
+	const int url_item     = 18;
+
 	int bs_count = 0;
 	int index = 0;
 	
@@ -851,10 +889,15 @@ getSection(char **body, char **header, char **label)
 		if (delta+2 >= section_buffer_size) increase_buffer_size();
 		
 		*(section_buffer+delta) = getRawTexChar();
-		diagnostics(6,"char=%d %c",(int)*(section_buffer+delta),*(section_buffer+delta));
+		if (*(section_buffer+delta)=='\0')
+			diagnostics(2,"char=\\0");
+		else if (*(section_buffer+delta)=='\n')
+			diagnostics(2,"char=\\n");
+		else
+			diagnostics(2,"char=%d %c",(int)*(section_buffer+delta),*(section_buffer+delta));
 		
 		if (*(section_buffer+delta) == '\0') break;
-
+		
 		if (*(section_buffer+delta) == '%' && bs_count % 2) {	/* slurp TeX comments */
 			delta++;
 			while ((cNext=getRawTexChar()) != '\n') {
@@ -904,10 +947,7 @@ getSection(char **body, char **header, char **label)
 			cNext = getRawTexChar();
 			ungetTexChar(cNext);
 
-			if (!(  (cNext == ' ') || (cNext == '{') || 
-			        (i == verb)    || (i == url) || (i<ecommands)
-/*			         || (i==verbatim && !isalpha(cNext)) */
-			        )) {
+			if (i >= ecommands && i <= include_item && cNext != ' ' && cNext != '{') {
 				found = FALSE;
 				match[i] = FALSE;
 				diagnostics(5, "oops! did not match %s", command[i]);
@@ -922,8 +962,8 @@ getSection(char **body, char **header, char **label)
 					
 		if (!found) continue;
 			
-		if (i==verb || i==url) {				/* slurp \verb#text# */
-			if (i==url && cNext=='{') cNext = '}';
+		if (i==verb_item || i==url_item) {				/* slurp \verb#text# */
+			if (i==url_item && cNext=='{') cNext = '}';
 			delta++;
 			*(section_buffer+delta)= getRawTexChar();
 			delta++;
@@ -935,6 +975,61 @@ getSection(char **body, char **header, char **label)
 			continue;
 		}
 
+		if (i==input_item || i==include_item) {
+			char *s, *s2;
+			
+			s = getBraceParam();
+			if (i==input_item) 
+				diagnostics(4,"\\input{%s}",s);
+			else
+				diagnostics(4,"\\include{%s}",s);
+			
+			if (strstr(s, "german.sty") != NULL) {
+				GermanMode = TRUE;
+				PushEnvironment(GERMAN_MODE);
+
+			} else if (strstr(s, "french.sty") != NULL) {
+				FrenchMode = TRUE;
+				PushEnvironment(FRENCH_MODE);
+				
+			} else if (strcmp(s, "") == 0) {
+				diagnostics(WARNING, "Empty or invalid filename in \\include{}");
+
+			} else {
+			
+				if (strstr(s, ".tex") == NULL) {
+					/* extension .tex is appended automatically if missing*/
+					s2 = strdup_together(s, ".tex");
+					free(s);
+					s = s2;
+				}
+	
+				/* Classic MacOS because of how DropUnix handles directories */
+				#ifdef __MWERKS__
+					{
+						char            fullpath[1024];
+						char           *dp;
+						strcpy(fullpath, latexname);
+						dp = strrchr(fullpath, ':');
+						if (dp != NULL) {
+							dp++;
+							*dp = '\0';
+						} else
+							strcpy(fullpath, "");
+						s2 = strdup_together(fullpath, s);
+						free(s);
+						s = s2;
+					}
+				#endif
+				
+				PushSource(s, NULL);
+			}
+			delta -=  (i==input_item) ? 6 : 8;  /* remove \input or \include */
+			free(s);
+			index = 0;				/* keep looking */
+			continue;
+		}
+		
 		if (i==label_item) {
 			s = getBraceParam();
 			diagnostics(4,"\\label{%s}",s);
@@ -970,6 +1065,7 @@ getSection(char **body, char **header, char **label)
 		} 
 		
 		/* actually found command to end the section */
+		diagnostics(2,"getSection found command to end section");
 		s = getBraceParam();
 		next_header = malloc(strlen(command[i])+strlen(s)+3);
 		strcpy(next_header, command[i]);

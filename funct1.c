@@ -1,4 +1,4 @@
-/* $Id: funct1.c,v 1.49 2001/11/17 00:58:49 prahl Exp $ 
+/* $Id: funct1.c,v 1.50 2001/11/23 21:43:48 prahl Exp $ 
  
 This file contains routines that interpret various LaTeX commands and produce RTF
 
@@ -139,6 +139,9 @@ CmdVspace(int code)
 
 void
 CmdNewDef(int code)
+/******************************************************************************
+     purpose : handles \def \newcommand \renewcommand
+ ******************************************************************************/
 {
 	char * name, *def, cThis;
 	char * params=NULL;
@@ -1013,66 +1016,6 @@ CmdBox(int code)
 
 	SetTexMode(mode);
 	diagnostics(4, "Exited CmdBox()");
-}
-
-void
-CmdInclude(int code)
-/******************************************************************************
- purpose: handles the LaTeX command \include(file)
- 		  still need to convert path separators
- 		  need to handle \includeonly somehow...
- globals: GermanMode: is set if germanstyles are included
- ******************************************************************************/
-{
-	char            *fname;
-
-	fname = getBraceParam();
-	
-	if (strstr(fname, "german.sty") != NULL) {
-		GermanMode = TRUE;
-		PushEnvironment(GERMAN_MODE);
-		return;
-	}
-
-	if (strstr(fname, "french.sty") != NULL) {
-		PushEnvironment(FRENCH_MODE);
-		return;
-	}
-
-	if (strcmp(fname, "") == 0) {
-		diagnostics(WARNING, "Empty or invalid filename in \\include{filename}");
-		return;
-	}
-	
-	/* extension .tex is appended automatically if missing*/
-	if (strchr(fname, '.') == NULL)
-		strcat(fname, ".tex");
-
-/* Classic MacOS because of how DropUnix handles directories */
-#ifdef __MWERKS__
-	{
-	char            fullpath[1024];
-		char           *dp;
-		strcpy(fullpath, latexname);
-		dp = strrchr(fullpath, ':');
-		if (dp != NULL) {
-			dp++;
-			*dp = '\0';
-		} else
-			strcpy(fullpath, "");
-		strcat(fullpath, fname);
-		strcpy(fname, fullpath);
-	}
-#endif
-
-	if (PushSource(fname, NULL)) {
-		diagnostics(4, "Entering Convert() from CmdInclude");
-		Convert();
-		diagnostics(4, "Exiting Convert() from CmdInclude");
-		PopSource();
-	}
-
-	free(fname);
 }
 
 void 

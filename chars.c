@@ -1,4 +1,4 @@
-/* $Id: chars.c,v 1.18 2001/11/17 01:09:21 prahl Exp $
+/* $Id: chars.c,v 1.19 2001/11/23 21:43:48 prahl Exp $
 
    purpose : handles special characters and logos
 */
@@ -563,6 +563,144 @@ CmdDotlessChar(int code)
 		fprintRTF("i");
 	else
 		fprintRTF("j");
+}
+
+void
+CmdChar(int code)
+{
+	char cThis;
+	int num;
+	int symfont = RtfFontNumber("Symbol");
+	
+	cThis = getNonSpace();
+	if (cThis != '\'') { ungetTexChar(cThis); return; }
+	
+	num  = 64 * ((int) getTexChar() - (int) '0');
+	num += 8  * ((int) getTexChar() - (int) '0');
+	num +=      ((int) getTexChar() - (int) '0');
+	
+	switch (num) {
+		case 0:   fprintRTF("{\\f%d G}", symfont); /* Gamma */
+				  break;
+				  
+		case 1:   fprintRTF("{\\f%d D}", symfont); /* Delta */
+				  break;
+	
+		case 2:   fprintRTF("{\\f%d Q}", symfont); /* Theta */
+				  break;
+	
+		case 3:   fprintRTF("{\\f%d L}", symfont); /* Lambda */
+				  break;
+	
+		case 4:   fprintRTF("{\\f%d X}", symfont); /* Xi */
+				  break;
+	
+		case 5:   fprintRTF("{\\f%d P}", symfont); /* Pi */
+				  break;
+	
+		case 6:   fprintRTF("{\\f%d S}", symfont); /* Sigma */
+				  break;
+	
+		case 7:   fprintRTF("{\\f%d U}", symfont); /* Upsilon */
+				  break;
+	
+		case 8:   fprintRTF("{\\f%d F}", symfont); /* Phi */
+				  break;
+	
+		case 9:   fprintRTF("{\\f%d Y}", symfont); /* Psi */
+				  break;
+	
+		case 10:  fprintRTF("{\\f%d W}", symfont); /* Omega */
+				  break;
+	
+		case 11:  fprintRTF("ff");
+				  break;
+	
+		case 12:  fprintRTF("fi");
+				  break;
+	
+		case 13:  fprintRTF("fl");
+				  break;
+	
+		case 14:  fprintRTF("ffi");
+				  break;
+	
+		case 15:  fprintRTF("ffl");
+				  break;
+	
+		case 16:  fprintRTF("i");  /* Dotless i */
+				  break;
+	
+		case 17:  fprintRTF("j");  /* Dotless j */
+				  break;
+	
+		case 18:  fprintRTF("`");
+				  break;
+	
+		case 19:  fprintRTF("'");
+				  break;
+	
+		case 20:  fprintRTF("v");
+				  break;
+	
+		case 21:  fprintRTF("u");
+				  break;
+	
+		case 22:  fprintRTF("-"); /* overbar */
+				  break;
+	
+		case 23:  fprintRTF("{\\f%d \\'b0}", symfont); /* degree */
+				  break;
+	
+		case 24:  fprintRTF("\\'b8"); /*cedilla*/
+				  break;
+	
+		case 25:  fprintRTF("\\'df"); /*§*/
+				  break;
+	
+		case 26:  fprintRTF("\\'e6"); /* ae */
+				  break;
+	
+		case 27:  fprintRTF("\\'8c"); /* oe */
+				  break;
+	
+		case 28:  fprintRTF("\\'f8"); /*oslash*/
+				  break;
+	
+		case 29:  fprintRTF("\\'c6"); /*AE*/
+				  break;
+	
+		case 30:  fprintRTF("\\'8c"); /*OE*/
+				  break;
+	
+		case 31:  fprintRTF("\\'d8"); /* capital O with stroke*/
+				  break;
+	
+		case 32:  fprintRTF(" "); /*space differs with font*/
+				  break;
+	
+		case 60:  fprintRTF("<"); /* less than differs with font*/
+				  break;
+				  
+		case 62:  fprintRTF(">"); /* greater than differs with font*/
+				  break;
+				  
+		case 123: fprintRTF("\\{"); /* open brace differs with font*/
+				  break;
+				  
+		case 124: fprintRTF("\\\\"); /* backslash differs with font*/
+				  break;
+				  
+		case 125: fprintRTF("\\}"); /*close brace differs with font*/
+				  break;
+				  
+		case 127: fprintRTF("\\'a8"); /*diaeresis differs with font*/
+				  break;
+		
+		default:
+				  putRtfChar((char) num);
+				  break;
+	}
 }
 
 void 

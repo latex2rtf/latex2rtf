@@ -1,4 +1,4 @@
-/* $Id: funct1.h,v 1.26 2001/11/04 20:39:11 prahl Exp $ */
+/* $Id: funct1.h,v 1.27 2001/11/23 21:43:48 prahl Exp $ */
 
 #define THANKS 2
 
@@ -83,7 +83,6 @@ void            CmdCounter(int code);
 void            CmdLength(int code);
 void            CmdCaption(int code);
 void            CmdBox(int code);
-void            CmdInclude(int code);
 void            CmdVerb(int code);
 void            CmdVerbatim(int code);
 void            CmdVerse(int code);

@@ -52,7 +52,7 @@ expandmacro(char *macro, int params)
 **************************************************************************/
 {
 	int i,param;
-	char * args[9], *dmacro, *macro_piece, *next_piece, *expanded, buffer[1024];
+	char * args[9], *dmacro, *macro_piece, *next_piece, *expanded, buffer[1024], *cs;
 		
 	diagnostics(5, "expandmacro macro=<%s>, params=%d", macro, params);
 
@@ -69,6 +69,12 @@ expandmacro(char *macro, int params)
 	expanded = buffer;
 	dmacro = strdup(macro);
 	macro_piece = dmacro;
+	
+	/* convert "\csname" to "\" */
+	while ((cs=strstr(dmacro, "\\csname")) != NULL) strcpy(cs+1,cs+7);
+		
+	/* remove "\endcsname" */
+	while ((cs=strstr(dmacro, "\\endcsname")) != NULL) strcpy(cs,cs+10);
 	
 	/* do not use strtok because it may be used elsewhere */
 	while (macro_piece && *macro_piece) {

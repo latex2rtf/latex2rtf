@@ -1,4 +1,4 @@
-/*  $Id: commands.c,v 1.38 2001/11/14 05:00:23 prahl Exp $
+/*  $Id: commands.c,v 1.39 2001/11/23 21:43:48 prahl Exp $
  
     Defines subroutines to translate LaTeX commands to RTF
 */
@@ -171,8 +171,8 @@ static CommandArray commands[] = {
 	{"vbox", CmdBox, 0},
 	{"frenchspacing", CmdIgnore, 0},
 	{"nonfrenchspacing", CmdIgnore, 0},
-	{"include", CmdInclude, 0},	/* include Latex file */
-	{"input", CmdInclude, 0},	/* include Latex file */
+	{"include", CmdIgnoreParameter, No_Opt_One_NormParam},	/* should not happen*/
+	{"input", CmdIgnoreParameter, No_Opt_One_NormParam},	/* should not happen*/
 	{"verb", CmdVerb, VERB_VERB},
 	{"verb*", CmdVerb, VERB_STAR},
 	{"url", CmdVerb, VERB_URL},
@@ -261,6 +261,7 @@ static CommandArray commands[] = {
     {"left", CmdLeftRight, 0},
     {"right", CmdLeftRight, 1},
 	{"nonumber",CmdNonumber, EQN_NO_NUMBER},
+	{"char",CmdChar,0},
 	{"", NULL, 0}
 };
 

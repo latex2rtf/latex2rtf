@@ -9,7 +9,7 @@ all:	accentchars.rtf array.rtf cite.rtf eqns.rtf fonts.rtf fontsize.rtf \
 		enc_applemac.rtf enc_cp437.rtf enc_cp865.rtf    enc_latin2.rtf enc_latin5.rtf \
 		enc_cp1250.rtf   enc_cp850.rtf enc_decmulti.rtf enc_latin3.rtf enc_latin9.rtf\
 		enc_cp1252.rtf   enc_cp852.rtf enc_latin1.rtf   enc_latin4.rtf enc_next.rtf\
-		proffois.rtf defs.rtf qualisex.rtf ttgfsr7.rtf excalibur.rtf
+		proffois.rtf defs.rtf qualisex.rtf ttgfsr7.rtf excalibur.rtf include.rtf ch.rtf
 
 LATEX= latex
 BIBTEX= bibtex
