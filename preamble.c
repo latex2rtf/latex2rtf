@@ -532,10 +532,11 @@ void CmdUsepackage(int code)
       strstr(package, "avant") || strstr(package, "newcen") || strstr(package, "helvet"))
         setPackageFont(package);
 
-    else if (strcmp(package, "cite") == 0)
+    else if (strcmp(package, "cite") == 0) {
        set_sorted_citations();
+       set_compressed_citations();
 
-    else if (strcmp(package, "natbib") == 0) {
+    } else if (strcmp(package, "natbib") == 0) {
         if (options && strstr(options, ""))
             set_longnamesfirst();
         if (options && strstr(options, "super"))
@@ -554,6 +555,8 @@ void CmdUsepackage(int code)
             set_bibpunct_style_paren("<",">");
         if (options && strstr(options, "sort"))
             set_sorted_citations();
+        if (options && strstr(options, "compress"))
+        	set_compressed_citations();
 
         PushEnvironment(NATBIB_MODE);
         g_document_bibstyle = BIBSTYLE_NATBIB;

@@ -88,6 +88,7 @@ void set_bibpunct_style_number(void);
 void set_bibpunct_style_separator(char *s);
 void set_bibpunct_style_paren(char *open, char *close);
 void set_sorted_citations(void);
+void set_compressed_citations(void);
 
 void CmdCiteName(int code);
 void CmdNumberLine(int code);

@@ -52,6 +52,8 @@ int g_suppress_name = FALSE;
 #define BIB_STYLE_SUPER  1
 #define BIB_STYLE_NUMBER 2
 
+char *BIB_DASH_MARKER="%dash%";
+
 char *g_label_list[MAX_LABELS];
 int g_label_list_number = -1;
 
@@ -71,6 +73,7 @@ static char g_last_year_cited[51];
 static int g_citation_longnamesfirst = 0;
 static int g_current_cite_item = 0;
 static int g_sorted_citations = FALSE;
+static int g_compressed_citations = FALSE;
 
 static char *g_bibpunct_open = NULL;
 static char *g_bibpunct_close = NULL;
@@ -124,6 +127,11 @@ void set_bibpunct_style_paren(char *open, char *close)
 void set_sorted_citations(void)
 {
 	g_sorted_citations = TRUE;
+}
+
+void set_compressed_citations(void)
+{
+	g_compressed_citations = TRUE;
 }
 
 /*************************************************************************
@@ -652,6 +660,7 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first)
     author_repeated = FALSE;
     year_repeated = FALSE;
 
+	/* for numbers just write and then exit */
 	if (g_bibpunct_style != BIB_STYLE_ALPHA){
 		if (!first) {
 			ConvertString(g_bibpunct_cite_sep);
@@ -1035,20 +1044,21 @@ static int CmpFunc( const void * _a, const void * _b)
 	return -1;
 }
 
-static char * reorder_citations(char *keys)
+static char * reorder_citations(char *keys, int scan_aux_code)
 {
     char *key, *remaining_keys,*ordered_keys,*a,*b;
     int n,i; 
+    int dash;
     citekey_type names[100];
 
-	diagnostics(3,"unordered list <%s>",keys);
+	diagnostics(4,"original list <%s> scan aux code=%d",keys,scan_aux_code);
 	
-/* gather citekeys and numbers into list */
+    /* gather citekeys and numbers into list */
     key = keys;
     remaining_keys = popCommaName(key);
 	n=0;
     while (key  && n < 100) {
-		char *s = ScanAux("bibcite", key, 0); /* look up bibliographic * reference */
+		char *s = ScanAux("bibcite", key, scan_aux_code); 
 		if (s) {
 			int number;
 			sscanf(s,"%d",&number);
@@ -1067,20 +1077,34 @@ static char * reorder_citations(char *keys)
  		return ordered_keys;
  	}
  	
-/* sort list according to the numbers */
+    /* sort list according to the numbers */
  	qsort(names, n, sizeof(citekey_type), CmpFunc);
 
-/* write the sorted list of keys into a string */
+    /* write the sorted list of keys into a string */
 	ordered_keys=strdup(names[0].key);
+	dash = FALSE;
+
 	for (i=1; i<n; i++) {
+		if (g_compressed_citations && dash && i!=n-1 && names[i].number+1==names[i+1].number) 
+			continue;		/* skip intermediate numbers */
+
 		a = strdup_together(ordered_keys, ",");
-		b = strdup_together(a, names[i].key);
+		
+		if (g_compressed_citations && !dash && i!=n-1 && names[i-1].number+2==names[i+1].number) {
+			/* insert dash */
+			dash = TRUE;
+			b = strdup_together(a, BIB_DASH_MARKER);
+		} else {
+			/* normal case */
+			dash = FALSE;
+			b = strdup_together(a, names[i].key);
+		}
 		free(a);
 		free(ordered_keys);
 		ordered_keys=b;
 	}
 	
-	diagnostics(3,"reordered list <%s>",ordered_keys);
+	diagnostics(4,"compressed list <%s>",ordered_keys);
 	return ordered_keys;    
 }
 
@@ -1150,7 +1174,7 @@ void CmdCite(int code)
     keys = strdup_noblanks(text);
     free(text);
     if (g_sorted_citations){
-    	text = reorder_citations(keys);
+    	text = reorder_citations(keys,0);
     	free(keys);
     	keys = text;
     }
@@ -1165,6 +1189,14 @@ void CmdCite(int code)
 
         g_current_cite_item++;
 
+		if (strcmp(key,BIB_DASH_MARKER)==0) {
+			fprintRTF("-");
+        	first_key = TRUE;				/* inhibit comma after dash */
+        	key = next_keys;
+        	next_keys = popCommaName(key);  /* key modified to be a * single key */
+			continue;
+		}
+		
 		s = ScanAux("bibcite", key, 0); /* look up bibliographic * reference */
             
         if (g_document_bibstyle == BIBSTYLE_APALIKE) {  /* can't use Word refs for APALIKE or APACITE */
@@ -1280,7 +1312,8 @@ void CmdNatbibCite(int code)
     free(text);
     text = str1;
         
-    if (strlen(text) == 0) {
+	/* no citation, just clean up and exit */
+	if (strlen(text) == 0) {
         free(text);
         if (pretext)
             free(pretext);
@@ -1289,59 +1322,64 @@ void CmdNatbibCite(int code)
         return;
     }
 
+	/* superscript style */
 	if (g_bibpunct_style == BIB_STYLE_SUPER)
         fprintRTF("{\\up%d\\fs%d ", script_shift(), script_size());
     
-    /* output text before citation */
-    if (g_current_cite_paren) {
-        fprintRTF("\n"); 
+    /* write open parenthesis before citation starts */
+    if (g_current_cite_paren) 
         ConvertString(g_bibpunct_open);
-    }
 
     /* clean-up keys and sort if necessary */
     keys = strdup_noblanks(text);
     free(text);
     if (g_sorted_citations){
-    	text = reorder_citations(keys);
+    	text = reorder_citations(keys,1);
     	free(keys);
     	keys = text;
     }
 
-    /* now start processing keys */
+    /* now process each citation key */
+    g_current_cite_item = 0;
     key = keys;
     next_keys = popCommaName(key);
-
-    g_current_cite_item = 0;
+    
     while (key) {
         char *s;
 
         g_current_cite_item++;
 
-		s = ScanAux("bibcite", key, 0); /* look up bibliographic reference */
-            
-		diagnostics(2, "natbib key=[%s] <%s> ", key, s);
-		if (s) {
-			g_current_cite_seen = citation_used(key);
-			ConvertNatbib(s, code, pretext, option, first_key);
+		if (strcmp(key,BIB_DASH_MARKER)==0) { /* a citation, not a dash */
+		
+			fprintRTF("-");    /* just write a dash */
+	        first_key = TRUE;  /* no comma after dash */
+			
 		} else {
-            if (!first_key) {
-            	ConvertString(g_bibpunct_cite_sep);
-                fprintRTF(" ");
-            }
-			ConvertString(key);
-		}
+		
+			/* look up citation and write it to the RTF stream */
+			s = ScanAux("bibcite", key, 0);
+				
+			diagnostics(3, "natbib key=[%s] <%s> ", key, s);
+			if (s) {
+				g_current_cite_seen = citation_used(key);
+				ConvertNatbib(s, code, pretext, option, first_key);
+			} else {
+				if (!first_key) {
+					ConvertString(g_bibpunct_cite_sep);
+					fprintRTF(" ");
+				}
+				ConvertString(key);
+			}
+        	if (s) free(s);
+        	first_key = FALSE;
+        }
         
-        first_key = FALSE;
         key = next_keys;
-        next_keys = popCommaName(key);  /* key modified to be a single key */
-        if (s)
-            free(s);
+        next_keys = popCommaName(key);
     }
 
-    if (g_current_cite_paren) {
-        fprintRTF("\n"); 
+    if (g_current_cite_paren)
         ConvertString(g_bibpunct_close);
-    }
 
 	if (g_bibpunct_style == BIB_STYLE_SUPER)
         fprintRTF("}"); 
@@ -1399,7 +1437,7 @@ void CmdHarvardCite(int code)
     keys = strdup_noblanks(text);
     free(text);
     if (g_sorted_citations){
-    	text = reorder_citations(keys);
+    	text = reorder_citations(keys,0);
     	free(keys);
     	keys = text;
     }
@@ -1413,6 +1451,14 @@ void CmdHarvardCite(int code)
         char *s;
 
         g_current_cite_item++;
+
+		if (strcmp(key,BIB_DASH_MARKER)==0) {
+			fprintRTF("-");
+        	first_key = TRUE;
+        	key = next_keys;
+        	next_keys = popCommaName(key); 
+			continue;
+		}
 
         s = ScanAux("harvardcite", key, 2); /* look up bibliographic reference */
             
@@ -1431,7 +1477,7 @@ void CmdHarvardCite(int code)
         
         first_key = FALSE;
         key = next_keys;
-        next_keys = popCommaName(key);  /* key modified to be a single key */
+        next_keys = popCommaName(key);
         if (s)
             free(s);
     }
