@@ -756,7 +756,7 @@ char *getBraceParam(void)
         text = getSimpleCommand();
 
     } else if (s[0] == '{')
-        text = getDelimitedText('{', '}', TRUE);
+        text = getDelimitedText('{', '}', FALSE);
 
     else {
         s[1] = '\0';
