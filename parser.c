@@ -1,4 +1,4 @@
-/*  $Id: parser.c,v 1.46 2002/03/15 06:00:19 prahl Exp $
+/*  $Id: parser.c,v 1.47 2002/03/17 18:42:45 prahl Exp $
 
    Contains declarations for a generic recursive parser for LaTeX code.
 */
@@ -40,7 +40,7 @@ static char             g_parser_currentChar;	/* Global current character */
 static char             g_parser_lastChar;
 static char             g_parser_penultimateChar;
 static int				g_parser_backslashes;
-static bool				g_parser_scan_ahead;
+static bool				g_parser_scan_ahead = FALSE;
 
 static void     parseBracket();
 
@@ -51,6 +51,15 @@ SetScanAhead(int flag)
 ****************************************************************************/
 {
 	g_parser_scan_ahead = flag;
+}
+
+static int
+GetScanAhead(void)
+/***************************************************************************
+ purpose:     allows getSection to avoid incrementing line number
+****************************************************************************/
+{
+	return g_parser_scan_ahead;
 }
 
 int 
@@ -598,7 +607,10 @@ getBracketParam(void)
  ******************************************************************************/
 {
 	char            c, *text;
-
+	int				scan_ahead_state;
+	
+	scan_ahead_state = GetScanAhead();
+	SetScanAhead(TRUE);
 	c = getNonBlank();
 
 	if (c == '[') {
@@ -611,6 +623,7 @@ getBracketParam(void)
 		diagnostics(5, "getBracketParam []");
 	}
 	
+	SetScanAhead(scan_ahead_state);
 	return text;
 }
 
@@ -631,7 +644,10 @@ getBraceParam(void)
  **************************************************************************/
 {
 	char            s[2], *text;
-
+	int				scan_ahead_state;
+	
+	scan_ahead_state = GetScanAhead();
+	SetScanAhead(TRUE);
 	s[0] = getNonSpace();			/*skip spaces and one possible newline */
 	if (s[0] == '\n')
 		s[0] = getNonSpace();	
@@ -648,6 +664,7 @@ getBraceParam(void)
 		text = strdup(s);
 	}
 		
+	SetScanAhead(scan_ahead_state);
 	diagnostics(5, "Leaving getBraceParam {%s}", text);
 	return text;
 }
@@ -665,7 +682,9 @@ getTexUntil(char * target, int raw)
 	int             j   = 0;       /* number of found characters */
 	bool			end_of_file_reached = FALSE;
 	int             len = strlen(target);
-
+	int				scan_ahead_state;
+	
+	scan_ahead_state = GetScanAhead();
 	SetScanAhead(TRUE);
 	diagnostics(3, "getTexUntil target = <%s> raw_search = %d ", target, raw);
 
@@ -698,7 +717,7 @@ getTexUntil(char * target, int raw)
 	if (!end_of_file_reached) /* do not include target in returned string*/
 		buffer[i-len] = '\0';
 	
-	SetScanAhead(FALSE);
+	SetScanAhead(scan_ahead_state);
 	s = strdup(buffer);
 	diagnostics(3,"strdup result = %s",s);
 	return s;
@@ -836,14 +855,15 @@ getSection(char **body, char **header, char **label)
 /**************************************************************************
 	purpose: obtain the next section of the latex file
 	
-	This is now the preparsing routine.  Ideally, macro expansion would
-	occur here as well.  The whole reason for this routine was to properly
-	handle \label for a sections.  This routine reads text until a new
-	section heading is found.  The text is returned in body and the *next*
-	header is returned in header.  If header is NULL then there is no next
-	header.  
+	This is now a preparsing routine that breaks a file up into sections.  
+	Macro expansion happens here as well.  \input and \include is also
+	handled here.  The reason for this routine is allow \labels to refer
+	to sections.  
 	
-	\include{file} is handled in this section here as well.
+	This routine reads text until a new section heading is found.  The text 
+	is returned in body and the *next* header is returned in header.  If 
+	no header follows then NULL is returned.
+	
 **************************************************************************/
 {
 	int possible_match, found;

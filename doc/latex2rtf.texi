@@ -36,11 +36,9 @@ LaTeX2RTF
 @end macro
 
 @ifinfo
-This file documents @ltor{}, a converter from the @latex{} markup language
-for document typesetting into rtf, which does the same thing, but in
-another way and mood.
+This file documents @ltor{}, a converter that translates @latex{} to RTF.
 
-Copyright 1998-2001 Georg Lehner minor updates by Wilfried Hennings and
+Copyright 1998-2002 Georg Lehner minor updates by Wilfried Hennings and
 Scott Prahl
 
 Permission is granted to make and distribute verbatim copies of this
@@ -77,7 +75,7 @@ updated by Wilfried Hennings and Scott Prahl
 
 @page
 @vskip 0pt plus 1filll
-Copyright @copyright{} 1998-2001 Georg Lehner, Wilfried Hennings, Scott Prahl
+Copyright @copyright{} 1998-2002 Georg Lehner, Wilfried Hennings, Scott Prahl
 
 Permission is granted to make and distribute verbatim copies of this
 manual provided the copyright notice and this permission notice are
@@ -100,11 +98,9 @@ approved by the Free Software Foundation.
 @node Top, History, (dir), (dir)
 @top @ltor{}
 
-This file documents @ltor{}, a converter from the @latex{} markup
-language for document typesetting into rtf, which does the same thing,
-but in another way and mood.
+This file documents @ltor{}, a converter that translates @latex{} to RTF.
 
-@c This document applies to version 1.9.12 of @ltor{}.
+@c This document applies to version 1.9.13 of @ltor{}.
 
 @end ifnottex
 
@@ -1042,6 +1038,7 @@ Scott's ToDo list
 @itemize @bullet
 @item  Add support for pagestyle
 @item  Add better graphic/graphicx support
+@item  Better support for ignoring commands
 @end itemize
 
 Georg's todo list
@@ -1054,16 +1051,6 @@ Georg's todo list
 @item  Add a chapter with lists of all @latex{} commands that convert, and that do
       not convert to RTF, including their status (for future releases, never,
       partially functional, ...).
-@end itemize
-
-The following comes from Ralf: 
-@itemize @bullet  
-@item For ignored commands the number of arguments to ignore should also be given 
-@item Environment definition produced with @code{\newtheorem} should be supported 
-@item  Change how the current version is
-computed (currently version.h defines the version of the whole package
-this should change to a CVS (or RCS) version tag from which a version.h
-file should automatically be generated).
 @end itemize
 
 @node Index of Commandline and Configuration file Options,,, Top

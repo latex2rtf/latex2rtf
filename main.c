@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.62 2002/03/17 05:09:24 prahl Exp $ */
+/* $Id: main.c,v 1.63 2002/03/17 18:42:45 prahl Exp $ */
 
 #include <stdio.h>
 #include <ctype.h>
@@ -458,7 +458,7 @@ purpose: reads the LaTeX preamble (to \begin{document} ) for the file
 	hidden = fRtf;
 	fRtf = stderr;
 	 
-	g_preamble = getTexUntil(t,0);
+	g_preamble = getTexUntil(t,1);
 	
 	diagnostics(4, "Entering ConvertString() from ConvertLatexPreamble <%s>",g_preamble);
 	ConvertString(g_preamble);
