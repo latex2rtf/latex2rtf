@@ -1,4 +1,4 @@
-/* $Id: chars.c,v 1.21 2002/02/17 05:12:59 prahl Exp $
+/* $Id: chars.c,v 1.22 2002/02/18 05:54:03 prahl Exp $
 
    purpose : handles special characters and logos
 */
@@ -126,6 +126,11 @@ CmdLApostrophChar( int code)
 		fprintRTF("\\'f9");
 		break;
 	default:
+		if (strcmp(cParam,"\\i")==0) {
+			fprintRTF("\\'ec");
+			break;
+		}
+
 		num = RtfFontNumber("MT Extra");
 		if (!g_processing_fields)
 			fprintRTF("{\\field{\\*\\fldinst EQ ");
@@ -187,6 +192,11 @@ CmdRApostrophChar(int code)
 		fprintRTF("\\'dd");
 		break;
 	default:
+		if (strcmp(cParam,"\\i")==0) {
+			fprintRTF("\\'ed");
+			break;
+		}
+
 		if (!g_processing_fields)
 			fprintRTF("{\\field{\\*\\fldinst EQ ");
 		fprintRTF("\\\\O(");
