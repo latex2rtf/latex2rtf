@@ -38,7 +38,7 @@ help()
 cat <<HELP
 latex2png -- convert latex file to PNG image
 
-USAGE: latex2png [-d density] [-h] [-k] [-c] [-g] [-m] [-H home dir] file[.tex|.eps]
+USAGE: latex2png [-d density] [-o offset] [-h] [-k] [-c] [-g] [-m] [-H home dir] file[.tex|.eps]
 
 OPTIONS: 
          -c color image
@@ -46,6 +46,7 @@ OPTIONS:
          -m monochrome  (default)
 
          -d density     (default 144 dpi)
+         -o offset      = density/72+2
          -h help        (default '.')
          -H /home/dir	directory to be included in search path
          -k         	keep intermediate files (for debugging)
@@ -67,6 +68,7 @@ exit 0
 }
 
 opt_d=144		# default to 144 dpi
+opt_o=4			# default for 144 dpi
 opt_k=0			# default to killing intermediate files
 home_dir="."	# default to current directory
 ext="tex"		# default to latex input
@@ -81,6 +83,7 @@ case $1 in
     -h) help;        shift 1;;
     -k) opt_k=1;     shift 1;; 
     -d) opt_d=$2;    shift 2;; #shift by 2 due to argument
+    -o) opt_o=$2;    shift 2;;
     -H) home_dir=$2; shift 2;;
     -v) version;     shift 1;;
     --) break;;
@@ -157,8 +160,8 @@ if [ $inline -eq 1 ] ; then
 
 	$PNMCUT -width 1 $name.tmp.$out | $PPMTOPGM | $PGMTOPBM > $name.pbm
 
-	offset=`expr ${opt_d} / 72 + 2`
-	$PNMCUT -left $offset $name.tmp.$out | $PNMCROP | $PNMTOPNG > $name.png
+#	offset=`expr ${opt_d} / 72 + 2`
+	$PNMCUT -left $opt_o $name.tmp.$out | $PNMCROP | $PNMTOPNG > $name.png
 	
 	if [ $opt_k -eq 0 ] ; then
 		rm -f $name.tmp.$out

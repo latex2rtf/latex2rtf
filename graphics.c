@@ -1193,7 +1193,7 @@ static char *get_latex2png_name()
 void PutLatexFile(char *s, double height0, double width0, double scale, char *pre)
 {
     char *png, *cmd, *l2p;
-    int err, baseline, second_pass;
+    int err, baseline, second_pass, bmoffset;
     size_t cmd_len;
     unsigned long width, height, rw, rh;
     unsigned long maxsize = (unsigned long) (32767.0 / 20.0);
@@ -1203,19 +1203,22 @@ void PutLatexFile(char *s, double height0, double width0, double scale, char *pr
 
     png = strdup_together(s, ".png");
     l2p = get_latex2png_name();
+    bmoffset = resolution / 72 + 2;
 
-    cmd_len = strlen(l2p) + strlen(s) + 25;
+    cmd_len = strlen(l2p) + strlen(s) + 14;
     if (g_home_dir)
-        cmd_len += strlen(g_home_dir);
+        cmd_len += strlen(g_home_dir) + 6;
+    if (bmoffset > 9)
+        cmd_len += 1;
 
     cmd = (char *) malloc(cmd_len);
 
     do {
         second_pass = FALSE;    /* only needed if png is too large for Word */
         if (g_home_dir == NULL)
-            snprintf(cmd, cmd_len, "%s -d %d %s", l2p, resolution, s);
+            snprintf(cmd, cmd_len, "%s -d %d -o %d %s", l2p, resolution, bmoffset, s);
         else
-            snprintf(cmd, cmd_len, "%s -d %d -H \"%s\" %s", l2p, resolution, g_home_dir, s);
+            snprintf(cmd, cmd_len, "%s -d %d -o %d -H \"%s\" %s", l2p, resolution, bmoffset, g_home_dir, s);
 
         diagnostics(2, "system graphics command = [%s]", cmd);
         err = system(cmd);
