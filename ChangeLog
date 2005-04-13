@@ -1,3 +1,6 @@
+WH: in call of latex2png scripts, additionally output clipping offset parameter 
+    and support this parameter in the scripts.
+
 Squash another compiler warning
 
 Better error message when getTexUntil fails
