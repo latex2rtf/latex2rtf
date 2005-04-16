@@ -505,24 +505,8 @@ void CmdDocumentStyle(int code)
 /******************************************************************************
  purpose: handle \usepackage[option]{packagename}
 ******************************************************************************/
-void CmdUsepackage(int code)
+static void CmdUseOnepackage(char* package, char *options)
 {
-    char *package, *package_with_spaces;
-    char *options, *options_with_spaces;
-
-    options = NULL;
-    options_with_spaces = getBracketParam();
-    package_with_spaces = getBraceParam();
-    package = strdup_noblanks(package_with_spaces);
-    free(package_with_spaces);
-
-    if (options_with_spaces) {
-        options = strdup_noblanks(options_with_spaces);
-        free(options_with_spaces);
-        diagnostics(1, "Package {%s} with options [%s]", package, options);
-    } else
-        diagnostics(1, "Package {%s} with no options", package);
-
     if (strcmp(package, "inputenc") == 0 && options)
         setPackageInputenc(options);
 
@@ -591,10 +575,43 @@ void CmdUsepackage(int code)
     } else
         setDocumentOptions(package);
 
-    if (options)
-        free(options);
+}
+
+/******************************************************************************
+ purpose: handle \usepackage[option]{pack1,pack2,pack3}
+******************************************************************************/
+void CmdUsepackage(int code)
+{
+    char *package, *package_with_spaces;
+    char *options, *options_with_spaces;
+	char *p,*comma;
+	
+    options = NULL;
+    options_with_spaces = getBracketParam();
+    package_with_spaces = getBraceParam();
+    package = strdup_noblanks(package_with_spaces);
+    free(package_with_spaces);
+
+    if (options_with_spaces) {
+        options = strdup_noblanks(options_with_spaces);
+        free(options_with_spaces);
+        diagnostics(1, "Package {%s} with options [%s]", package, options);
+    } else
+        diagnostics(1, "Package {%s} with no options", package);
+        
+    /* process package names one at a time */
+    p = package;
+    do {
+    	comma = strchr(p,',');
+    	if (comma) *comma = '\0';	/* replace ',' by '\0' */
+    	CmdUseOnepackage(p,options);
+    	if (comma) p = comma+1;
+    } while (comma != NULL);
+    
+    if (options) free(options);
     free(package);
 }
+
 
 void CmdTitle(int code)
 
