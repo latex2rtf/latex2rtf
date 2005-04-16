@@ -203,9 +203,9 @@ static void setPackageFont(char *font)
     else if (strstr(font, "book"))
         fnumber = RtfFontNumber("Bookman");
 
-    InitializeDocumentFont(fnumber, -1, -1, -1);
+/*    InitializeDocumentFont(fnumber, -1, -1, -1); */
     if (fnumber == -1)
-        fprintf(stderr, "\n Font Package <%s> not supported yet", font);
+        diagnostics(1, "Font Package <%s> not supported.", font);
 }
 
 static void setThree(char *s, int ten, int eleven, int twelve)

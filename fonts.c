@@ -141,7 +141,10 @@ int TexFontNumber(char *Fname)
   example: TexFontNumber("Roman")
  ****************************************************************************/
 {
-    return SearchRtfIndex(Fname, FONT_A);
+    int index;
+    index= SearchRtfIndex(Fname, FONT_A);
+	diagnostics(4, "seeking <%s> which has value %d", Fname, index);
+	return index;
 }
 
 void CmdFontFamily(int code)
