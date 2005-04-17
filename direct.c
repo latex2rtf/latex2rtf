@@ -67,7 +67,7 @@ void WriteFontName(const char **buffpoint)
     }
 
     fontname[i] = '\0';
-    fnumber = RtfFontNumber(fontname);
+    fnumber = TexFontNumber(fontname);
 
     if (fnumber < 0)
         diagnostics(ERROR, "Unknown font <%s>\nFound in cfg file command <%s>", fontname, buff);
