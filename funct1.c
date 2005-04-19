@@ -1728,42 +1728,6 @@ void CmdFigure(int code)
     }
 }
 
-void CmdIgnoreEnviron(int code)
-
-/******************************************************************************
-  purpose: function to ignore \begin{environ} ... \end{environ}
- ******************************************************************************/
-{
-    char *endtag = NULL;
-    char *s = NULL;
-
-    if (code & ON) {
-
-        switch (code & ~(ON)) {
-
-            case IGNORE_MINIPAGE:
-                endtag = strdup("\\end{minipage}");
-                break;
-
-            case IGNORE_HTMLONLY:
-                endtag = strdup("\\end{htmlonly}");
-                break;
-
-            case IGNORE_RAWHTML:
-                endtag = strdup("\\end{rawhtml}");
-                break;
-        }
-
-        if (endtag) {
-            s = getTexUntil(endtag, 0);
-            ConvertString(endtag);
-            if (s)
-                free(s);
-            free(endtag);
-        }
-    }
-}
-
 void FixTildes(char *s)
 {
     char *p, *p3;
@@ -2223,3 +2187,57 @@ void CmdRule(int code)
 	free(height);
 }
 
+/******************************************************************************
+  purpose: handles \begin{sloppypar} ... \end{sloppypar} 
+                   \begin{landscape} ... \end{landscape} 
+  
+  This function is used to continue processing the contents of the environment,
+  without changing anything.  This is useful when the latex markup has no real
+  meaning for the RTF conversion, but the contents of the environment should still
+  be processed. 
+ ******************************************************************************/
+void CmdTolerateEnviron(int code)
+{
+    if (code == ON) {
+            diagnostics(4, "Entering CmdTolerateEnviron \\begin{environ}");
+    } 
+    
+    if (code == OFF) {
+            diagnostics(4, "Exiting CmdTolerateEnviron \\end{environ}");
+    }
+}
+
+/******************************************************************************
+  purpose: function to ignore \begin{environ} ... \end{environ}
+ ******************************************************************************/
+void CmdIgnoreEnviron(int code)
+{
+    char *endtag = NULL;
+    char *s = NULL;
+
+    if (code & ON) {
+
+        switch (code & ~(ON)) {
+
+            case IGNORE_MINIPAGE:
+                endtag = strdup("\\end{minipage}");
+                break;
+
+            case IGNORE_HTMLONLY:
+                endtag = strdup("\\end{htmlonly}");
+                break;
+
+            case IGNORE_RAWHTML:
+                endtag = strdup("\\end{rawhtml}");
+                break;
+        }
+
+        if (endtag) {
+            s = getTexUntil(endtag, 0);
+            ConvertString(endtag);
+            if (s)
+                free(s);
+            free(endtag);
+        }
+    }
+}
