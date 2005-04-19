@@ -348,7 +348,10 @@ static CommandArray commands[] = {
     {"numberline", CmdNumberLine, 0},
     {"contentsline", CmdContentsLine, 0},
     {"centering", CmdAlign, PAR_CENTERING},
-
+    {"pagestyle", CmdIgnoreParameter, No_Opt_One_NormParam},
+    {"pagenumbering", CmdIgnoreParameter, No_Opt_One_NormParam},
+    {"markboth", CmdIgnoreParameter, No_Opt_Two_NormParam},
+    {"markright", CmdIgnoreParameter, No_Opt_One_NormParam},
     {"", NULL, 0}
 };
 
@@ -885,7 +888,7 @@ globals: command-functions have side effects or recursive calls
                 if (All_Commands[j][i].func == NULL)
                     return FALSE;
                 if (*All_Commands[j][i].func == CmdIgnoreParameter) {
-                    diagnostics(WARNING, "Command \\%s ignored", cCommand);
+                    diagnostics(2, "Command \\%s ignored", cCommand);
                 }
 
                 diagnostics(5, "CallCommandFunc Found %s iAllCommands=%d number=%d", All_Commands[j][i].cpCommand, j, i);
