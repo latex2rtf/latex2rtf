@@ -2177,10 +2177,20 @@ void CmdThe(int code)
 void CmdRule(int code)
 {
 	char *raise, *width, *height;
+	int dim,n,i;
 	
 	raise = getBracketParam();
 	width = getBraceParam();
 	height = getBraceParam();
+	
+	PushSource(NULL,width);
+	dim = getDimension();
+	PopSource();
+	
+	n = dim / CurrentFontSize();
+	
+	for (i=0; i<n; i++) 
+		fprintRTF("_");
 	
 	if (raise) free(raise);
 	free(width);

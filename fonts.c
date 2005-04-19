@@ -763,7 +763,7 @@ int CurrentFontShape(void)
 int CurrentFontSize(void)
 
 /******************************************************************************
-  purpose: returns the current RTF size
+  purpose: returns the current RTF size in twips
  ******************************************************************************/
 {
     diagnostics(4, "CurrentFontSize -- size=%d", RtfFontInfo[FontInfoDepth].size);
