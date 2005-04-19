@@ -290,7 +290,7 @@ static CommandArray commands[] = {
     {"framebox", CmdIgnoreParameter, Two_Opt_One_NormParam},
     {"sbox", CmdIgnoreParameter, No_Opt_Two_NormParam},
     {"savebox", CmdIgnoreParameter, Two_Opt_Two_NormParam},
-    {"rule", CmdIgnoreParameter, One_Opt_Two_NormParam},
+    {"rule", CmdRule,0},
     {"raisebox", CmdIgnoreParameter, Two_Opt_Two_NormParam},
     {"newfont", CmdIgnoreParameter, No_Opt_Two_NormParam},
     {"settowidth", CmdIgnoreParameter, No_Opt_Two_NormParam},

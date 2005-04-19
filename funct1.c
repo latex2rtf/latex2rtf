@@ -2198,4 +2198,28 @@ void CmdThe(int code)
 
 }
 
+/******************************************************************************
+ purpose: reads \rule[raise-height]{width}{height} 
+
+ The \rule command generates a rectangular "blob of ink."  
+ It can be used to produce horizontal or vertical lines. The arguments are
+  	raise-height specifies how high to raise the rule (optional)
+ 	width specifies the length of the rule (mandatory)
+ 	height specifies the height of the rule (mandatory)
+ The default value for raise-height is zero; a negative value lowers the rule.
+
+ The reference point of the rule box is the lower left-hand corner.
+ ******************************************************************************/
+void CmdRule(int code)
+{
+	char *raise, *width, *height;
+	
+	raise = getBracketParam();
+	width = getBraceParam();
+	height = getBraceParam();
+	
+	if (raise) free(raise);
+	free(width);
+	free(height);
+}
 

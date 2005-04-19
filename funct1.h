@@ -195,3 +195,4 @@ void CmdKern(int code);
 void CmdResizeBox(int code);
 void CmdTextFont(int code);
 void CmdThe(int code);
+void CmdRule(int code);

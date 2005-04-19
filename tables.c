@@ -1104,10 +1104,17 @@ static void TabbingGetRow(char *table, char **row, char **next_row)
         s++;
     }
 
+    if (*s == '\\' && slash) {  /* line ends with \\ */
+        row_chars--;
+        
+        if (*(s+1)=='[') {  /* skip optional height parameter */
+        	s++;
+        	while (*s != '\0' && *s != ']') s++;
+        }
+    }
+
     if (*s != '\0')
         *next_row = s + 1;
-    if (*s == '\\' && slash)
-        row_chars--;
 
     arow = (char *) malloc((row_chars + 1) * sizeof(char));
     strncpy(arow, table, row_chars);
