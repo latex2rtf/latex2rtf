@@ -64,7 +64,7 @@ with contributions by Mikhail Polianski
 
 @page
 @vskip 0pt plus 1 filll
-Copyright @copyright{} 1998-2004 Georg Lehner, Wilfried Hennings, Scott Prahl
+Copyright @copyright{} 1998-2005 Georg Lehner, Wilfried Hennings, Scott Prahl
 
 Permission is granted to make and distribute verbatim copies of this
 manual provided the copyright notice and this permission notice are
@@ -104,7 +104,7 @@ This file documents @ltor{}, a converter that translates @latex{} to RTF.
 @ifnottex
 
 Copyright 1998-2002 Georg Lehner,@* 
-updates Copyright 1999-2004 by Wilfried Hennings and Scott Prahl,@* 
+updates Copyright 1999-2005 by Wilfried Hennings and Scott Prahl,@* 
 with contributions by Mikhail Polianski.
 
 Permission is granted to make and distribute verbatim copies of this
@@ -1127,23 +1127,22 @@ the Viena University supervised by Ralf Schlatterbeck in a one-semester course. 
 created a simple @latex{} parser and added most of the infrastructure for the program.
 This was version 1.0 of @ltor{}.  In 1995, work on @ltor{} was continued in another
 one-semester course by Friedrich Polzer and Gerhard Trisko. The result was @ltor{} version
-1.5.  @email{ralf@@zoo.priv.at,Ralf Schlatterbeck} maintained and extended @ltor{} until
+1.5.  Ralf Schlatterbeck (ralf "at" zoo.priv.at) maintained and extended @ltor{} until
 1998.
 
-In 1998 @email{jorge_lehner@@gmx.net,Georg Lehner} found the reference to @ltor{} on the
-@uref{http://tug.org/utilities/texconv/index.html, TeX Conversion Webpage}  of
+In 1998 Georg Lehner (jorge_lehner "at" gmx.net) found the reference to @ltor{} on the
+@uref{http://tug.org/utilities/texconv/index.html, TeX Conversion Webpage} of
 Wilfried Hennings and added some functionality and took
 over the maintainence of the program.  The last version release by Georg is 1.8aa.
 The bulk of development post 1.8aa was done by Scott Prahl.  
 Wilfried Hennings now coordinates the development of the program and maintains the project
 on @uref{http://sourceforge.net/projects/latex2rtf/,SourceForge} where there are also
-(low volume) mailing lists for users @email{latex2rtf-users@@lists.sourceforge.net}
-and developers
-@email{latex2rtf-developers@@lists.sourceforge.net}.
-For subscription to these lists:
-@email{latex2rtf-users-request@@lists.sourceforge.net?subject=subscribe}
+(low volume) mailing lists for users and developers. Mailing via one of these lists requires 
+subscription to the list (to prevent spam).
+For subscription to these lists visit the page:
+@uref{http://lists.sourceforge.net/lists/listinfo/latex2rtf-users, users list}
 or
-@email{latex2rtf-developers-request@@lists.sourceforge.net?subject=subscribe}
+@uref{http://lists.sourceforge.net/lists/listinfo/latex2rtf-developers, developers list}
 
 As of October 2004, version 1.9.16 of @ltor{} is available. 
 One day there shall be a jump to Version 2.0, but this is not history but future ...
