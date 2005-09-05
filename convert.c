@@ -198,14 +198,14 @@ globals: fTex, fRtf and all global flags for convert (see above)
 
     while ((cThis = getTexChar()) && cThis != '\0') {
 
+        mode = GetTexMode();
+
         if (cThis == '\n')
             diagnostics(5, "Current character is '\\n' mode = %d ret = %d level = %d", GetTexMode(), ret,
               RecursionLevel);
         else
             diagnostics(5, "Current character is '%c' mode = %d ret = %d level = %d", cThis, GetTexMode(), ret,
               RecursionLevel);
-
-        mode = GetTexMode();
 
         pending_new_paragraph--;
 

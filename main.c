@@ -791,6 +791,8 @@ purpose: output filter to track of brace depth and font settings
 {
     char buffer[1024];
     char *text;
+    char last='\0';
+    
     va_list apf;
 
     va_start(apf, format);
@@ -807,15 +809,16 @@ purpose: output filter to track of brace depth and font settings
         } else {
             fputc(*text, fRtf);
 
-            if (*text == '{')
+            if (*text == '{' && last != '\\')
                 PushFontSettings();
 
-            if (*text == '}')
+            if (*text == '}' && last != '\\')
                 PopFontSettings();
 
             if (*text == '\\')
                 MonitorFontChanges(text);
         }
+        last= *text;
         text++;
     }
 }
