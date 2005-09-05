@@ -770,7 +770,9 @@ purpose: output filter to escape characters written to an RTF file
 		 all output to the RTF file passes through this routine or the one below
  ****************************************************************************/
 {
-    if (cThis == '\\')
+	if ((unsigned char) cThis > 127)
+        WriteEightBitChar(cThis);
+    else if (cThis == '\\')
         fprintf(fRtf, "\\\\");
     else if (cThis == '{')
         fprintf(fRtf, "\\{");
