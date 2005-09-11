@@ -595,9 +595,9 @@ void CmdUsepackage(int code)
     if (options_with_spaces) {
         options = strdup_noblanks(options_with_spaces);
         free(options_with_spaces);
-        diagnostics(1, "Package {%s} with options [%s]", package, options);
+        diagnostics(2, "Package {%s} with options [%s]", package, options);
     } else
-        diagnostics(1, "Package {%s} with no options", package);
+        diagnostics(2, "Package {%s} with no options", package);
         
     /* process package names one at a time */
     p = package;

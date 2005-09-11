@@ -388,12 +388,12 @@ static char *eps_to_png(char *eps)
     char *cmd, *s1, *p, *png;
     size_t cmd_len;
 
-    diagnostics(1, "filename = <%s>", eps);
+    diagnostics(2, "filename = <%s>", eps);
 
     s1 = strdup(eps);
     if ((p = strstr(s1, ".eps")) == NULL && (p = strstr(s1, ".EPS")) == NULL &&
       (p = strstr(s1, ".ps")) == NULL && (p = strstr(s1, ".PS")) == NULL) {
-        diagnostics(1, "<%s> is not an EPS or PS file", eps);
+        diagnostics(2, "<%s> is not an EPS or PS file", eps);
         free(s1);
         return NULL;
     }
@@ -419,11 +419,11 @@ static char *pdf_to_png(char *pdf)
     char *cmd, *s1, *p, *png;
     size_t cmd_len;
 
-    diagnostics(1, "filename = <%s>", pdf);
+    diagnostics(2, "filename = <%s>", pdf);
 
     s1 = strdup(pdf);
     if ((p = strstr(s1, ".pdf")) == NULL && (p = strstr(s1, ".PDF")) == NULL) {
-        diagnostics(1, "<%s> is not a PDF file", pdf);
+        diagnostics(2, "<%s> is not a PDF file", pdf);
         free(s1);
         return NULL;
     }
@@ -453,11 +453,11 @@ static char *eps_to_emf(char *eps)
     char ans[50];
     long width, height;
 
-    diagnostics(1, "filename = <%s>", eps);
+    diagnostics(2, "filename = <%s>", eps);
 
     s1 = strdup(eps);
     if ((p = strstr(s1, ".eps")) == NULL && (p = strstr(s1, ".EPS")) == NULL) {
-        diagnostics(1, "<%s> is not an EPS file", eps);
+        diagnostics(2, "<%s> is not an EPS file", eps);
         free(s1);
         return NULL;
     }
@@ -502,7 +502,7 @@ static void AdjustScaling(double h, double w, double target_h, double target_w, 
 	if (s!=0) {
 		*sx = (int)(s * 100);
 		*sy = (int)(s * 100);
-	diagnostics(1,"AdjustScaling xscale=%d yscale=%d", *sx, *sy);
+	diagnostics(2,"AdjustScaling xscale=%d yscale=%d", *sx, *sy);
 		return;
 	}
 
@@ -518,7 +518,7 @@ static void AdjustScaling(double h, double w, double target_h, double target_w, 
 	if (target_h == 0 || h == 0)
 		*sy = *sx;
 
-	diagnostics(1,"AdjustScaling xscale=%d yscale=%d", *sx, *sy);
+	diagnostics(2,"AdjustScaling xscale=%d yscale=%d", *sx, *sy);
 }
 
 /******************************************************************************
@@ -554,7 +554,7 @@ static void PutPictFile(char *s, double height0, double width0, double scale, do
         pict = strdup(s);
     else
         pict = strdup_together(g_home_dir, s);
-    diagnostics(1, "PutPictFile <%s>", pict);
+    diagnostics(2, "PutPictFile <%s>", pict);
 
     fp = fopen(pict, "rb");
     free(pict);
@@ -660,7 +660,7 @@ void PutPngFile(char *s, double height0, double width0, double scale, double bas
 
     GetPngSize(png, &width, &height);
 
-    diagnostics(1, "width = %ld, height = %ld, baseline = %g", width, height, baseline);
+    diagnostics(2, "width = %ld, height = %ld, baseline = %g", width, height, baseline);
 
     if (width == 0 || height == 0)
         return;
@@ -674,7 +674,7 @@ void PutPngFile(char *s, double height0, double width0, double scale, double bas
     h = (unsigned long) (100000.0 * height) / (20 * POINTS_PER_M);
     b = (unsigned long) (100000.0 * baseline * scale) / (20 * POINTS_PER_M);
 
-    diagnostics(1, "width = %ld, height = %ld, baseline = %ld", w, h, b);
+    diagnostics(2, "width = %ld, height = %ld, baseline = %ld", w, h, b);
 
     fprintRTF("\n{");
     if (b)
@@ -782,7 +782,7 @@ static void PutEmfFile(char *s, double height0, double width0, double scale, dou
         emf = strdup(s);
     else
         emf = strdup_together(g_home_dir, s);
-    diagnostics(1, "PutEmfFile <%s>", emf);
+    diagnostics(2, "PutEmfFile <%s>", emf);
     fp = fopen(emf, "rb");
     free(emf);
     if (fp == NULL)
@@ -873,7 +873,7 @@ static void PutWmfFile(char *s, double height0, double width0, double scale, dou
 
     /* open the proper file */
     wmf = strdup_together(g_home_dir, s);
-    diagnostics(1, "PutWmfFile <%s>", wmf);
+    diagnostics(2, "PutWmfFile <%s>", wmf);
     fp = fopen(wmf, "rb");
     free(wmf);
     if (fp == NULL)
@@ -1012,7 +1012,7 @@ static void PutTiffFile(char *s, double height0, double width0, double scale, do
     char *cmd, *tiff, *png, *tmp_png;
     size_t cmd_len;
 
-    diagnostics(1, "filename = <%s>", s);
+    diagnostics(2, "filename = <%s>", s);
     png = strdup_new_extension(s, ".tiff", ".png");
     if (png == NULL) {
         png = strdup_new_extension(s, ".TIFF", ".png");
@@ -1046,7 +1046,7 @@ static void PutGifFile(char *s, double height0, double width0, double scale, dou
     char *cmd, *gif, *png, *tmp_png;
     size_t cmd_len;
 
-    diagnostics(1, "filename = <%s>", s);
+    diagnostics(2, "filename = <%s>", s);
     png = strdup_new_extension(s, ".gif", ".png");
     if (png == NULL) {
         png = strdup_new_extension(s, ".GIF", ".png");
@@ -1412,7 +1412,7 @@ static void split_string(char *s, char delim, int *n, char ***strings)
 		i++;
 		t=p+1;
 	}
-	diagnostics(1,"number of strings = %d",i+1);
+	diagnostics(2,"number of strings = %d",i+1);
 	*n = i+1;
 	*strings = malloc(sizeof(char *) * (i+1));
 
@@ -1455,7 +1455,7 @@ static void HandleGraphicsOptions(char *opt, char *opt2, double *h, double *w, d
 	*h=0;
 	*w=0;
 
-	diagnostics(1,"HandleGraphicsOptions <%s> <%s>",opt,opt2);
+	diagnostics(2,"HandleGraphicsOptions <%s> <%s>",opt,opt2);
 	
 	if (opt==NULL) return;
 	
@@ -1514,13 +1514,13 @@ static void HandleGraphicsOptions(char *opt, char *opt2, double *h, double *w, d
 	for (i=0; i<count; i++) {
 		char *value;
 		
-		diagnostics(1,"part[%d]=<%s>", i, part[i]);
+		diagnostics(2,"part[%d]=<%s>", i, part[i]);
 		
 		value=strchr(part[i],'=');
 		if (value==NULL) continue;
 		value++;
 		
-		diagnostics(1,"value=<%s>",value);
+		diagnostics(2,"value=<%s>",value);
 		
 		PushSource(NULL,value);
 		
@@ -1562,9 +1562,9 @@ static void HandleGraphicsOptions(char *opt, char *opt2, double *h, double *w, d
 		}
 
 		PopSource();			
-        diagnostics(1, "image scale  = %lf", *s);
-        diagnostics(1, "image height = %lf", *h);
-        diagnostics(1, "image width  = %lf", *w);
+        diagnostics(2, "image scale  = %lf", *s);
+        diagnostics(2, "image height = %lf", *h);
+        diagnostics(2, "image width  = %lf", *w);
 	}
 	free_strings(count,part);
 
@@ -1586,7 +1586,7 @@ static void HandlePsfigOptions(char *opt, char *filename, double *h, double *w, 
 	*h=0;
 	*w=0;
 
-	diagnostics(1,"HandlePsfigOptions <%s>",opt);
+	diagnostics(2,"HandlePsfigOptions <%s>",opt);
 	
 	if (opt==NULL) return;
 	
@@ -1594,13 +1594,13 @@ static void HandlePsfigOptions(char *opt, char *filename, double *h, double *w, 
 	
 	for (i=0; i<count; i++) {
 		
-		diagnostics(1,"part[%d]=<%s>", i, part[i]);
+		diagnostics(2,"part[%d]=<%s>", i, part[i]);
 		
 		value=strchr(part[i],'=');
 		if (value==NULL) continue;
 		value++;
 		
-		diagnostics(1,"value=<%s>",value);
+		diagnostics(2,"value=<%s>",value);
 				
 		if (strstr(part[i],"filename"))
 			filename=strdup(value);
