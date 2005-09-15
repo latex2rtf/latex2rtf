@@ -1,8 +1,26 @@
+This is latex2rtf.info, produced by makeinfo version 4.7 from
+latex2rtf.texi.
+
+
+File: latex2rtf.info,  Node: Top,  Next: Introduction,  Up: (dir)
+
 LaTeX2RTF
 *********
 
 This file documents LaTeX2RTF , a converter that translates LaTeX  to
 RTF.
+
+* Menu:
+
+* Introduction::
+* Installation::
+* Using LaTeX2RTF::
+* Features::
+* Configuration::
+* Error Messages and Logging ::
+* LaTeX2RTF under Development ::
+* History::
+* Index::
 
    Copyright 1998-2002 Georg Lehner,
 updates Copyright 1999-2005 by Wilfried Hennings and Scott Prahl,
@@ -23,6 +41,9 @@ notice identical to this one.
 manual into another language, under the above conditions for modified
 versions, except that this permission notice may be stated in a
 translation approved by the Free Software Foundation.
+
+
+File: latex2rtf.info,  Node: Introduction,  Next: Installation,  Prev: Top,  Up: Top
 
 1 Introduction
 **************
@@ -83,8 +104,25 @@ file that cannot be displayed by some/most word processors.  For more
 details on RTF the specification consult the links at
 `http://latex2rtf.sf.net/'
 
+
+File: latex2rtf.info,  Node: Installation,  Next: Using LaTeX2RTF,  Prev: Introduction,  Up: Top
+
 2 Installation
 **************
+
+* Menu:
+
+* General ::
+* Obtaining LaTeX2RTF ::
+* UNIX ::
+* DOS or Windows ::
+* Win32 systems ::
+* Macintosh ::
+* Problems Compiling ::
+* Problems with make check ::
+
+
+File: latex2rtf.info,  Node: General,  Next: Obtaining LaTeX2RTF,  Prev: Installation,  Up: Installation
 
 2.1 General
 ===========
@@ -92,6 +130,9 @@ details on RTF the specification consult the links at
 The documentation of the program is found in the `doc/' directory in the
 file `latex2rtf.texi' in the GNU TeXInfo format.  For your convenience,
 you can find HTML and PDF versions of the manual there as well.
+
+
+File: latex2rtf.info,  Node: Obtaining LaTeX2RTF,  Next: UNIX,  Prev: General,  Up: Installation
 
 2.2 Obtaining LaTeX2RTF
 =======================
@@ -113,6 +154,9 @@ MS-DOS version plus Win32 GUI program (l2rshell).
 Hennings (W.Hennings "at" fz-juelich.de).  See the SourceForge
 (http://sourceforge.net/projects/latex2rtf/) project pages for the
 latest news.
+
+
+File: latex2rtf.info,  Node: UNIX,  Next: DOS or Windows,  Prev: Obtaining LaTeX2RTF,  Up: Installation
 
 2.3 UNIX
 ========
@@ -179,6 +223,9 @@ To install,
 is only necessary if you move the directory containing the `.cfg' files.
 Just define `RTFPATH' to be the path for the new location of the `cfg'
 directory.
+
+
+File: latex2rtf.info,  Node: DOS or Windows,  Next: Win32 systems,  Prev: UNIX,  Up: Installation
 
 2.4 DOS or Windows
 ==================
@@ -296,6 +343,9 @@ add to your config.sys a line like the following
 or, if there already is such a line, modify it so that it supplies a
 sufficiently large environment space `/E:'.  Shutdown and reboot the PC.
 
+
+File: latex2rtf.info,  Node: Win32 systems,  Next: Macintosh,  Prev: DOS or Windows,  Up: Installation
+
 2.5 Win32 systems
 =================
 
@@ -325,6 +375,9 @@ add to your config.sys a line like the following
 or, if there already is such a line, modify it so that it supplies a
 sufficiently large environment space `/E:'.  Shutdown and reboot the PC.
 
+
+File: latex2rtf.info,  Node: Macintosh,  Next: Problems Compiling,  Prev: Win32 systems,  Up: Installation
+
 2.6 Macintosh
 =============
 
@@ -339,6 +392,9 @@ LaTeX2RTF .  To convert a LaTeX  file using this version,  drag the
 file onto the LaTeX2RTF  icon.  The translation is best if there are
 `.aux' and `.bbl' files in the same folder as the `.tex' file to be
 converted.  These should be generated using LaTeX  and `bibtex'.
+
+
+File: latex2rtf.info,  Node: Problems Compiling,  Next: Problems with make check,  Prev: Macintosh,  Up: Installation
 
 2.7 Problems Compiling
 ======================
@@ -355,6 +411,9 @@ The code for LaTeX2RTF  is standard ANSI C.  Some possible pitfalls are
      compiler options.
 
 
+
+File: latex2rtf.info,  Node: Problems with make check,  Prev: Problems Compiling,  Up: Installation
+
 2.8 Problems with `make check'
 ==============================
 
@@ -365,8 +424,20 @@ messages, but there should be no actual error messages.  If you do not
 have a working latex2png script, then some of the files will fail to be
 translated.
 
+
+File: latex2rtf.info,  Node: Using LaTeX2RTF,  Next: Features,  Prev: Installation,  Up: Top
+
 3 Using LaTeX2RTF
 *****************
+
+* Menu:
+
+* General Assumptions ::
+* LaTeX2RTF Options ::
+* Debugging::
+
+
+File: latex2rtf.info,  Node: General Assumptions,  Next: LaTeX2RTF Options,  Prev: Using LaTeX2RTF,  Up: Using LaTeX2RTF
 
 3.1 General Assumptions
 =======================
@@ -404,6 +475,9 @@ needs. *Note Configuration::.
 
    *Note Reporting Bugs::, for information on how to reach the
 maintainer.
+
+
+File: latex2rtf.info,  Node: LaTeX2RTF Options,  Next: Debugging,  Prev: General Assumptions,  Up: Using LaTeX2RTF
 
 3.2 LaTeX2RTF Options
 =====================
@@ -582,6 +656,9 @@ name of the input file. The file must have extension ".tex" but the
 extension is optional. The output file is constructed from the input
 file name by removing the extension ".tex" and adding ".rtf".
 
+
+File: latex2rtf.info,  Node: Debugging,  Prev: LaTeX2RTF Options,  Up: Using LaTeX2RTF
+
 3.3 Debugging
 =============
 
@@ -604,11 +681,30 @@ this file. Nonetheless Warnings and Errors are logged to stderr always.
 
   6. Show processing of characters as they are output as well
 
+
+File: latex2rtf.info,  Node: Features,  Next: Configuration,  Prev: Using LaTeX2RTF,  Up: Top
+
 4 Features
 **********
 
 In this chapter you find what styles is LaTeX2RTF  supposed to translate
 correctly to RTF.
+
+* Menu:
+
+* LaTeX2e::
+* Input Encoding ::
+* Language Support ::
+* Cross References ::
+* Equations ::
+* Math and Special Symbols ::
+* Tables ::
+* Graphics ::
+* Pagestyles ::
+* Hyperlatex ::
+
+
+File: latex2rtf.info,  Node: LaTeX2e,  Next: Input Encoding,  Prev: Features,  Up: Features
 
 4.1 LaTeX2e
 ===========
@@ -617,6 +713,9 @@ LaTeX2RTF  understands most of the commands introduced with LaTeX2e .
 It supports both the old 2.09 version of
 `\documentstyle[options]{format#}' and the newer
 `\documentclass[options]{format}'.
+
+
+File: latex2rtf.info,  Node: Input Encoding,  Next: Language Support,  Prev: LaTeX2e,  Up: Features
 
 4.2 Input Encoding
 ==================
@@ -630,6 +729,9 @@ cp1250, cp1252, latin1, latin2, latin3, latin4, latin5, latin9, next,
 koi8-r, koi8-u, cp1251, cp855, cp866, maccyr, and macukr.  The encoding
 used in RTF files is cp1252.  If cyrillic fonts are present, then these
 are represented in the RTF file using cp1251 (Windows Cyrillic).
+
+
+File: latex2rtf.info,  Node: Language Support,  Next: Cross References,  Prev: Input Encoding,  Up: Features
 
 4.3 Language Support
 ====================
@@ -663,6 +765,9 @@ cyrillic languages.
 
    *Note Language Configuration::, for details on how to write a
 `language.cfg' file for your language by yourself.
+
+
+File: latex2rtf.info,  Node: Cross References,  Next: Equations,  Prev: Language Support,  Up: Features
 
 4.4 Cross References
 ====================
@@ -719,6 +824,9 @@ there are multiple `\label' in a figure, table, or section environment
 then only the first gets processed.  It is also possible to confuse the
 LaTeX2RTF  in eqnarray environments.
 
+
+File: latex2rtf.info,  Node: Equations,  Next: Math and Special Symbols,  Prev: Cross References,  Up: Features
+
 4.5 Equations
 =============
 
@@ -741,6 +849,9 @@ correctly. You can check and set the separator in [Windows control panel
 - country settings - numbers - list separator]. By default, latex2rtf
 uses the comma as separator. If latex2rtf is called with the command
 line parameter -S , the semicolon is inserted as parameter delimiter.
+
+
+File: latex2rtf.info,  Node: Math and Special Symbols,  Next: Tables,  Prev: Equations,  Up: Features
 
 4.6 Math and Special Symbols
 ============================
@@ -770,10 +881,16 @@ Required fonts are:
      the rtf file is opened.
 
 
+
+File: latex2rtf.info,  Node: Tables,  Next: Graphics,  Prev: Math and Special Symbols,  Up: Features
+
 4.7 Tables
 ==========
 
 The table code is currently barely working.  It needs to be rewritten.
+
+
+File: latex2rtf.info,  Node: Graphics,  Next: Pagestyles,  Prev: Tables,  Up: Features
 
 4.8 Graphics
 ============
@@ -782,6 +899,9 @@ There is now rudimentary support for `\includegraphics'.  Three file
 types will be inserted into the RTF file without needing conversion:
 .pict, .jpeg, and .png files.  EPS files are converted to PNG using
 `convert' from the ImageMagick package.
+
+
+File: latex2rtf.info,  Node: Pagestyles,  Next: Hyperlatex,  Prev: Graphics,  Up: Features
 
 4.9 Pagestyles
 ==============
@@ -795,6 +915,9 @@ LaTeX  file if you don't want pagenumbers.  The headings and myheadings
 styles are silently ignored by now.  The twosided option to the
 \documentstyle or \documentclass produces the corresponding RTF tokens.
 Note that these features require RTF Version 1.4.
+
+
+File: latex2rtf.info,  Node: Hyperlatex,  Prev: Pagestyles,  Up: Features
 
 4.10 Hyperlatex
 ===============
@@ -820,8 +943,23 @@ Development::.
 since there are a lot of HTML oriented commands in Hyperlatex that we
 simply can `ignore'.
 
+
+File: latex2rtf.info,  Node: Configuration,  Next: Error Messages and Logging,  Prev: Features,  Up: Top
+
 5 Configuration
 ***************
+
+* Menu:
+
+* Input processing ::
+* Output formatting ::
+* Direct Conversion ::
+* Ignore Command ::
+* Font Configuration ::
+* Language Configuration ::
+
+
+File: latex2rtf.info,  Node: Input processing,  Next: Output formatting,  Prev: Configuration,  Up: Configuration
 
 5.1 Input processing
 ====================
@@ -851,6 +989,9 @@ character sets.  If the LaTeX  lacks the `\package[codepage]{inputenc}'
 definition, then you may need to use the command line switch to manually
 select the proper code page. *Note Input Encoding::.
 
+
+File: latex2rtf.info,  Node: Output formatting,  Next: Direct Conversion,  Prev: Input processing,  Up: Configuration
+
 5.2 Output formatting
 =====================
 
@@ -864,6 +1005,9 @@ RTF rendering should not be affected.
 are translated, but it does offer some.  This flexibility resides in
 four files `direct.cfg', `ignore.cfg', `fonts.cfg', and `language.cfg'.
 These filese are documented in the next four sections.
+
+
+File: latex2rtf.info,  Node: Direct Conversion,  Next: Ignore Command,  Prev: Output formatting,  Up: Configuration
 
 5.3 Direct Conversion
 =====================
@@ -892,6 +1036,9 @@ An alternative direct.cfg is available by which MT Extra is not used and
 the symbols are instead taken from Unicode. To use Unicode instead of
 MT Extra, rename direct.cfg (to e.g. direct_mt.cfg) and rename
 direct_ucs.cfg to direct.cfg.
+
+
+File: latex2rtf.info,  Node: Ignore Command,  Next: Font Configuration,  Prev: Direct Conversion,  Up: Configuration
 
 5.4 Ignore Command
 ==================
@@ -944,6 +1091,9 @@ Lines starting with a `#' character are ignored. After the `.'
 everything is ignored to end of line. Example:
      \pagelength,MEASURE.
 
+
+File: latex2rtf.info,  Node: Font Configuration,  Next: Language Configuration,  Prev: Ignore Command,  Up: Configuration
+
 5.5 Font Configuration
 ======================
 
@@ -970,6 +1120,9 @@ like in the following
 names. The default fonts are named Roman `\rm', Slanted `\sl', Sans
 Serif `\sf', Typewriter `\tt', or Calligraphic `\cal'.
 
+
+File: latex2rtf.info,  Node: Language Configuration,  Prev: Font Configuration,  Up: Configuration
+
 5.6 Language Configuration
 ==========================
 
@@ -982,6 +1135,9 @@ of LaTeX2RTF .
    It is unlikely that you will need to create a new `language.cfg'
 file.  However, just look at one of the existing files and follow the
 pattern.  The format is really simple.
+
+
+File: latex2rtf.info,  Node: Error Messages and Logging,  Next: History,  Prev: Configuration,  Up: Top
 
 6 Error Messages and Logging
 ****************************
@@ -1032,6 +1188,9 @@ change significantly between versions.
 through `\input' or `\include'.  The line may be also be wrong at
 times.  *Note Known Bugs::.
 
+
+File: latex2rtf.info,  Node: History,  Next: LaTeX2RTF under Development,  Prev: Error Messages and Logging,  Up: Top
+
 7 History & Copyright
 *********************
 
@@ -1066,8 +1225,22 @@ future ...
    The contents of this manual were composed by copying shamelessly
 what was available in the original sources and documentation.
 
+
+File: latex2rtf.info,  Node: LaTeX2RTF under Development,  Next: Index,  Prev: History,  Up: Top
+
 8 LaTeX2RTF under Development
 *****************************
+
+* Menu:
+
+* Unimplemented Features ::
+* Missing options ::
+* Known Bugs ::
+* Reporting Bugs ::
+* Todo List ::
+
+
+File: latex2rtf.info,  Node: Unimplemented Features,  Next: Missing options,  Prev: LaTeX2RTF under Development,  Up: LaTeX2RTF under Development
 
 8.1 Unimplemented Features
 ==========================
@@ -1085,6 +1258,9 @@ what was available in the original sources and documentation.
      sectioning information using these labels. Needs two       passes
      on LaTeX  input.
 
+
+File: latex2rtf.info,  Node: Missing options,  Next: Known Bugs,  Prev: Unimplemented Features,  Up: LaTeX2RTF under Development
+
 8.2 Missing options
 ===================
 
@@ -1099,6 +1275,9 @@ Missing or buggy command line options.
      It would be useful to implement the GNU long option names, e.g.:
      `-debug', `-output_file', `-quiet', etc.  This could be done by
      switching to the GNU getopt package.
+
+
+File: latex2rtf.info,  Node: Known Bugs,  Next: Reporting Bugs,  Prev: Missing options,  Up: LaTeX2RTF under Development
 
 8.3 Known Bugs
 ==============
@@ -1115,6 +1294,9 @@ Missing or buggy command line options.
 
   2. The diagnostics routine does not output the correct (actual)
      inputfilename. (`.aux', `.bbl', `\input').
+
+
+File: latex2rtf.info,  Node: Reporting Bugs,  Next: Todo List,  Prev: Known Bugs,  Up: LaTeX2RTF under Development
 
 8.4 Reporting Bugs
 ==================
@@ -1147,6 +1329,9 @@ reporting a bug in the program:
      your question. I will, however, try to fix reported bugs in
      upcoming releases.
 
+
+File: latex2rtf.info,  Node: Todo List,  Prev: Reporting Bugs,  Up: LaTeX2RTF under Development
+
 8.5 Todo List
 =============
 
@@ -1173,6 +1358,62 @@ Scott's ToDo list
      that do       not convert to RTF, including their status (for
      future releases, never,       partially functional, ...).
 
+
+File: latex2rtf.info,  Node: Index,  Prev: LaTeX2RTF under Development,  Up: Top
+
 9 Index
 *******
 
+ [index ]
+* Menu:
+
+* Copyright issues:                      History.               (line 6)
+* History of the programm:               History.               (line 6)
+
+
+
+Tag Table:
+Node: Top79
+Node: Introduction1375
+Node: Installation4306
+Node: General4603
+Node: Obtaining LaTeX2RTF4946
+Node: UNIX5876
+Node: DOS or Windows8654
+Node: Win32 systems14351
+Node: Macintosh15773
+Node: Problems Compiling16570
+Node: Problems with make check17268
+Node: Using LaTeX2RTF17794
+Node: General Assumptions17999
+Node: LaTeX2RTF Options19834
+Node: Debugging26935
+Node: Features27580
+Node: LaTeX2e27981
+Node: Input Encoding28297
+Node: Language Support29053
+Node: Cross References30579
+Node: Equations33210
+Node: Math and Special Symbols34479
+Node: Tables35799
+Node: Graphics35998
+Node: Pagestyles36362
+Node: Hyperlatex36966
+Node: Configuration38034
+Node: Input processing38325
+Node: Output formatting39707
+Node: Direct Conversion40460
+Node: Ignore Command41968
+Node: Font Configuration43681
+Node: Language Configuration44991
+Node: Error Messages and Logging45610
+Node: History47707
+Node: LaTeX2RTF under Development49585
+Node: Unimplemented Features49856
+Node: Missing options50682
+Node: Known Bugs51263
+Node: Reporting Bugs52154
+Node: Todo List53797
+Node: Index54631
+
+End Tag Table

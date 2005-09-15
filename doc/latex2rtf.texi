@@ -730,6 +730,7 @@ correctly to RTF.
 * Language Support ::          
 * Cross References ::            
 * Equations ::  
+* Math and Special Symbols ::
 * Tables ::
 * Graphics ::          
 * Pagestyles ::                  
@@ -838,7 +839,7 @@ mechanisms in the @latex{} and Word worlds.  In particular, if there are
 multiple @code{\label} in a figure, table, or section environment then only the first
 gets processed.  It is also possible to confuse the @ltor{} in eqnarray environments.
 
-@node Equations, Tables, Cross References, Features
+@node Equations, Math and Special Symbols, Cross References, Features
 @section Equations
 
 There are four separate levels of equation translation based on the -M switch, 
@@ -861,8 +862,38 @@ the comma as separator. If latex2rtf is called with the command line parameter -
 the semicolon is inserted as parameter delimiter. 
 
 
+@node Math and Special Symbols, Tables, Equations, Features
+@section Math and Special Symbols
 
-@node Tables, Graphics, Equations, Features
+Many mathematical and special symbols are supported by the conversion table
+in the file direct.cfg. However to display (or print) them correctly 
+from the rtf file, these symbols must be available in the fonts in the system
+in which the rtf file is opened.@*
+Required fonts are:
+
+@itemize
+
+@item "Times" / "Times New Roman", preferably with Unicode extension (i.e. 
+supporting all European languages including Cyrillic, Greek, and Hebrew). "Times" 
+or "Times New Roman" is standard on all systems, but not its Unicode extension.
+
+@item "Symbol", which is standard on all systems.
+
+@item "MT Extra". This font is installed with the Microsoft Equation Editor,
+which comes with Microsoft Word, or its full version MathType. 
+If you don't have Word or MathType, you can get this font from 
+@uref{http://www.mathtype.com/en/dl/fonts/}
+or (in German)
+@uref{http://www.mathtype.com/de/support/fonts/default.stm}
+
+@item "Lucida Sans Unicode" which contains many symbols that 
+aren't in the first three fonts. This is a new feature 
+in @ltor{} version 1.9.17 and may or may not work, depending 
+on the system in which the rtf file is opened.
+
+@end itemize
+
+@node Tables, Graphics, Math and Special Symbols, Features
 @section Tables
 
 The table code is currently barely working.  It needs to be rewritten.
@@ -978,6 +1009,19 @@ To write the @samp{*} character use @samp{**}.
 \alpha,@{\f*Symbol* a@}. #alpha in the Symbol Font
 \copyright,\'a9.
 @end example
+Changes in version 1.9.17:
+
+More math symbols are supported by using Unicode coding. 
+However many of these symbols are not (yet) contained in the standard 
+MS Windows fonts but only in Lucida Sans Unicode.
+So on the system where the rtf file is opened, this font must be available,
+or the symbols are not displayed correctly.@*
+As it seems that this font is not commonly supported, symbols which are available 
+in the standard fonts (Times / Times New Roman, Symbol, MT Extra) are taken
+from these fonts.@*
+An alternative direct.cfg is available by which MT Extra is not used and
+the symbols are instead taken from Unicode. To use Unicode instead of MT Extra,
+rename direct.cfg (to e.g. direct_mt.cfg) and rename direct_ucs.cfg to direct.cfg.
 
 @node Ignore Command, Font Configuration, Direct Conversion, Configuration
 @section Ignore Command 
