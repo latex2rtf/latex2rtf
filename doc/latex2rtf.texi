@@ -171,16 +171,15 @@ structure of a document, whilst RTF is meant to be a transport format for a fami
 Desktop Publishing Software, dealing mostly with the design of a text.
 
 Although the possible different commands and styles in @latex{} are much more flexible and
-standardized than in RTF, only a small subset of commands has been implemented to date. 
-@xref{Unimplemented Features}.
+standardized than in RTF, only a small subset of commands has been implemented to date 
+(@pxref{Unimplemented Features}).
 
-Some of the capabilities of @ltor{} are restricted in scope or buggy. @xref{Known Bugs}.
+Some of the capabilities of @ltor{} are restricted in scope or buggy (@pxref{Known Bugs}).
 
 RTF is a moving target, because Microsoft does not stop inventing new extensions and
 features, consequently you cannot view newer RTF files with older word processors.  
-The syntax and
-semantics of RTF are somewhat artistic, i.e., you can generate a syntactically correct RTF
-file that cannot be displayed by some/most word processors.
+The syntax and semantics of RTF are somewhat artistic, i.e., you can generate a 
+syntactically correct RTF file that cannot be displayed by some/most word processors.
 For more details on RTF the specification consult the links at @uref{http://latex2rtf.sf.net/}
 
 @node Installation, Using LaTeX2RTF, Introduction, Top
@@ -308,7 +307,7 @@ of any MS Windows system.@*
 
 The Win32 version starting from 1.9.14a has the same executable but 
 additionally an optional Win32 GUI interface (LaTeX2RTF Shell) 
-and is wrapped in an automatic installer, @xref{Win32 systems}.@*
+and is wrapped in an automatic installer, see @ref{Win32 systems}.@*
 
 To install latex2rtf, extract all files from the zip archive to @file{C:\l2r}
 or to another folder (i.e. directory) of your choice,
@@ -509,9 +508,9 @@ proverbial snowball's if the @file{.tex} file doesn't @code{latex} properly.  Us
 
 To correctly convert font names you must edit the @file{fonts.cfg} configuration file.
 This file is used to specify the needed font names and how the @latex{} default font names
-should be converted to RTF.  @xref{Font Configuration}. @latex{} variables and user
+should be converted to RTF (@pxref{Font Configuration}). @latex{} variables and user
 defined commands are not evaluated. They will be simply ignored. To let @ltor{} know the
-names of variables you can add them in the @file{ignore.cfg} file.  @xref{Ignore Command}.
+names of variables you can add them in the @file{ignore.cfg} file (@pxref{Ignore Command}).
 
 The environment variable RTFPATH may contain a search path for the support files (all
 files ending in @file{.cfg}). If no file is found during the search in the search-path or
@@ -524,7 +523,7 @@ of RTFPATH.
 
 Make sure that the configuration files are in the correct directory. @ltor{} will need at
 least @file{fonts.cfg}, @file{direct.cfg}, @file{ignore.cfg}, @file{english.cfg}. You may
-have to change one ore more of them to suit your needs. @xref{Configuration}.
+have to change one ore more of them to suit your needs (@pxref{Configuration}).
 
 @xref{Missing options}, for actual implementations irregularities.
 
@@ -613,7 +612,7 @@ specified in a @latexe{} document by including @code{\usepackage[language]@{babe
 languages listed in the babel system are supported so far as translations for ``Chapter,''
 ``References,'' and the like.  Furthermore, some commands found in the style files for
 german, french, russian, and czech style
-are supported. @xref{Language Configuration}.
+are supported (@pxref{Language Configuration}).
 
 @item -l
 same as @option{-i latin1} (Note that the default behavior is to use @option{ansinew}
@@ -843,7 +842,7 @@ gets processed.  It is also possible to confuse the @ltor{} in eqnarray environm
 @section Equations
 
 There are four separate levels of equation translation based on the -M switch, 
-@xref{LaTeX2RTF Options}.
+see @ref{LaTeX2RTF Options}.
 Each equation is now converted either to an EQ field or to a bitmap. 
 
 This is an interim solution (for some definition of ``interim''). 
@@ -866,9 +865,9 @@ the semicolon is inserted as parameter delimiter.
 @section Math and Special Symbols
 
 Many mathematical and special symbols are supported by the conversion table
-in the file direct.cfg. However to display (or print) them correctly 
-from the rtf file, these symbols must be available in the fonts in the system
-in which the rtf file is opened.@*
+in the file direct.cfg, see @ref{Direct Conversion}. However to display (or print) 
+them correctly from the rtf file, these symbols must be available in the fonts 
+in the system in which the rtf file is opened.@*
 Required fonts are:
 
 @itemize
@@ -889,7 +888,11 @@ or (in German)
 @item "Lucida Sans Unicode" which contains many symbols that 
 aren't in the first three fonts. This is a new feature 
 in @ltor{} version 1.9.17 and may or may not work, depending 
-on the system in which the rtf file is opened.
+on the system in which the rtf file is opened.@*
+If you need these symbols, don't have "Lucida Sans Unicode"
+but have another font containing these symbols, you can
+edit direct.cfg and fonts.cfg and replace the font name in 
+both files. For a description of direct.cfg see @ref{Direct Conversion}.
 
 @end itemize
 
@@ -927,14 +930,14 @@ Hyperlatex support is largely broken at the moment, but continues to improve.
 Otfried Schwarzkopf has created the ``Hyperlatex Markup Language'' which is a
 ``little package that allows you to use @latex{} to prepare documents in HTML.''
 It brings an Emacs lisp program with it to convert the Hyperlatex file to HTML.
-Hyperlatex can be obtained from the CTAN-sites, @xref{Obtaining LaTeX2RTF}.
+Hyperlatex can be obtained from the CTAN-sites, see @ref{Obtaining LaTeX2RTF}.
 There are two convenient commands that avoid typing: \link and \xlink that
 generate an ``internal'' label which then is used in the following \Ref and
 \Pageref commands.
 
 @latex{} makes it possible to write `\link@{anchor@}[ltx]@{label@}', which typesets:
 `anchor ltx'. @ltor{} does NOT support this aproach since the optional
-parameter is thrown away right now, @xref{LaTeX2RTF under Development}.
+parameter is thrown away right now, see @ref{LaTeX2RTF under Development}.
 
 Note that you have to update your @file{.cfg} files if you are upgrading, since
 there are a lot of HTML oriented commands in Hyperlatex that we simply can
@@ -978,7 +981,7 @@ which @ltor{} was compiled.
 The @latex{} file may have been created with a wide variety of character
 sets.  If the @latex{} lacks the @code{\package[codepage]@{inputenc@}}
 definition, then you may need to use the command line switch to manually
-select the proper code page. @xref{Input Encoding}.
+select the proper code page (@pxref{Input Encoding}).
 
 @node Output formatting, Direct Conversion, Input processing, Configuration
 @section Output formatting 
@@ -1009,19 +1012,19 @@ To write the @samp{*} character use @samp{**}.
 \alpha,@{\f*Symbol* a@}. #alpha in the Symbol Font
 \copyright,\'a9.
 @end example
-Changes in version 1.9.17:
-
+Changes in version 1.9.17:@*
 More math symbols are supported by using Unicode coding. 
 However many of these symbols are not (yet) contained in the standard 
-MS Windows fonts but only in Lucida Sans Unicode.
+MS Windows fonts but only in "Lucida Sans Unicode".
 So on the system where the rtf file is opened, this font must be available,
-or the symbols are not displayed correctly.@*
-As it seems that this font is not commonly supported, symbols which are available 
-in the standard fonts (Times / Times New Roman, Symbol, MT Extra) are taken
-from these fonts.@*
-An alternative direct.cfg is available by which MT Extra is not used and
-the symbols are instead taken from Unicode. To use Unicode instead of MT Extra,
-rename direct.cfg (to e.g. direct_mt.cfg) and rename direct_ucs.cfg to direct.cfg.
+otherwise the symbols are not displayed correctly.@*
+As it seems that this font is not commonly available or supported, symbols which are 
+available in the standard fonts ("Times" / "Times New Roman", "Symbol", "MT Extra") 
+are taken from these fonts (@pxref{Math and Special Symbols}).@*
+An alternative direct.cfg is available by which MT Extra is not used and the symbols 
+which normally are taken from MT Extra are instead taken from "Lucida Sans Unicode". 
+To use "Lucida Sans Unicode" instead of MT Extra, rename direct.cfg (to e.g. 
+direct_mt.cfg) and rename direct_ucs.cfg to direct.cfg.
 
 @node Ignore Command, Font Configuration, Direct Conversion, Configuration
 @section Ignore Command 
@@ -1119,7 +1122,7 @@ found on.
 @table @samp
 @item Fatal error messages
 indicate a bug in the source code. PLEASE report them, if they do not
-apear in the documentation. @xref{Reporting Bugs}.
+apear in the documentation (@pxref{Reporting Bugs}).
 
 @item Error messages
 always abort the program and are caused by conditions that prevent

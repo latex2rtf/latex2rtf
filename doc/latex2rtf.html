@@ -129,17 +129,16 @@ Desktop Publishing Software, dealing mostly with the design of a text.
 
    <p>Although the possible different commands and styles in LaTeX
  are much more flexible and
-standardized than in RTF, only a small subset of commands has been implemented to date. 
-See <a href="#Unimplemented-Features">Unimplemented Features</a>.
+standardized than in RTF, only a small subset of commands has been implemented to date
+(see <a href="#Unimplemented-Features">Unimplemented Features</a>).
 
    <p>Some of the capabilities of LaTeX2RTF
- are restricted in scope or buggy. See <a href="#Known-Bugs">Known Bugs</a>.
+ are restricted in scope or buggy (see <a href="#Known-Bugs">Known Bugs</a>).
 
    <p>RTF is a moving target, because Microsoft does not stop inventing new extensions and
 features, consequently you cannot view newer RTF files with older word processors. 
-The syntax and
-semantics of RTF are somewhat artistic, i.e., you can generate a syntactically correct RTF
-file that cannot be displayed by some/most word processors. 
+The syntax and semantics of RTF are somewhat artistic, i.e., you can generate a
+syntactically correct RTF file that cannot be displayed by some/most word processors. 
 For more details on RTF the specification consult the links at <a href="http://latex2rtf.sf.net/">http://latex2rtf.sf.net/</a>
 
 <div class="node">
@@ -307,7 +306,7 @@ of any MS Windows system.<br>
 
    <p>The Win32 version starting from 1.9.14a has the same executable but
 additionally an optional Win32 GUI interface (LaTeX2RTF Shell)
-and is wrapped in an automatic installer, See <a href="#Win32-systems">Win32 systems</a>.<br>
+and is wrapped in an automatic installer, see <a href="#Win32-systems">Win32 systems</a>.<br>
 
    <p>To install latex2rtf, extract all files from the zip archive to <span class="file">C:\l2r</span>
 or to another folder (i.e. directory) of your choice,
@@ -561,11 +560,11 @@ LaTeX
 <p>To correctly convert font names you must edit the <span class="file">fonts.cfg</span> configuration file. 
 This file is used to specify the needed font names and how the LaTeX
  default font names
-should be converted to RTF.  See <a href="#Font-Configuration">Font Configuration</a>. LaTeX
+should be converted to RTF (see <a href="#Font-Configuration">Font Configuration</a>). LaTeX
  variables and user
 defined commands are not evaluated. They will be simply ignored. To let LaTeX2RTF
  know the
-names of variables you can add them in the <span class="file">ignore.cfg</span> file.  See <a href="#Ignore-Command">Ignore Command</a>.
+names of variables you can add them in the <span class="file">ignore.cfg</span> file (see <a href="#Ignore-Command">Ignore Command</a>).
 
    <p>The environment variable RTFPATH may contain a search path for the support files (all
 files ending in <span class="file">.cfg</span>). If no file is found during the search in the search-path or
@@ -579,7 +578,7 @@ of RTFPATH.
    <p>Make sure that the configuration files are in the correct directory. LaTeX2RTF
  will need at
 least <span class="file">fonts.cfg</span>, <span class="file">direct.cfg</span>, <span class="file">ignore.cfg</span>, <span class="file">english.cfg</span>. You may
-have to change one ore more of them to suit your needs. See <a href="#Configuration">Configuration</a>.
+have to change one ore more of them to suit your needs (see <a href="#Configuration">Configuration</a>).
 
    <p>See <a href="#Missing-options">Missing options</a>, for actual implementations irregularities.
 
@@ -671,7 +670,7 @@ specified in a LaTeX2e
 languages listed in the babel system are supported so far as translations for &ldquo;Chapter,&rdquo;
 &ldquo;References,&rdquo; and the like.  Furthermore, some commands found in the style files for
 german, french, russian, and czech style
-are supported. See <a href="#Language-Configuration">Language Configuration</a>.
+are supported (see <a href="#Language-Configuration">Language Configuration</a>).
 
      <br><dt><code>-l</code><dd>same as <span class="option">-i latin1</span> (Note that the default behavior is to use <span class="option">ansinew</span>
 which is a superset of <span class="option">latin1</span>). Included for
@@ -948,7 +947,7 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Features">Features</a>
 <h3 class="section">4.5 Equations</h3>
 
 <p>There are four separate levels of equation translation based on the -M switch,
-See <a href="#LaTeX2RTF-Options">LaTeX2RTF Options</a>. 
+see <a href="#LaTeX2RTF-Options">LaTeX2RTF Options</a>. 
 Each equation is now converted either to an EQ field or to a bitmap.
 
    <p>This is an interim solution (for some definition of &ldquo;interim&rdquo;). 
@@ -977,9 +976,9 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Features">Features</a>
 <h3 class="section">4.6 Math and Special Symbols</h3>
 
 <p>Many mathematical and special symbols are supported by the conversion table
-in the file direct.cfg. However to display (or print) them correctly
-from the rtf file, these symbols must be available in the fonts in the system
-in which the rtf file is opened.<br>
+in the file direct.cfg, see <a href="#Direct-Conversion">Direct Conversion</a>. However to display (or print)
+them correctly from the rtf file, these symbols must be available in the fonts
+in the system in which the rtf file is opened.<br>
 Required fonts are:
 
      <ul>
@@ -1000,7 +999,11 @@ or (in German)
 aren't in the first three fonts. This is a new feature
 in LaTeX2RTF
  version 1.9.17 and may or may not work, depending
-on the system in which the rtf file is opened.
+on the system in which the rtf file is opened.<br>
+If you need these symbols, don't have "Lucida Sans Unicode"
+but have another font containing these symbols, you can
+edit direct.cfg and fonts.cfg and replace the font name in
+both files. For a description of direct.cfg see <a href="#Direct-Conversion">Direct Conversion</a>.
 
    </ul>
 
@@ -1067,7 +1070,7 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Features">Features</a>
 &ldquo;little package that allows you to use LaTeX
  to prepare documents in HTML.&rdquo;
 It brings an Emacs lisp program with it to convert the Hyperlatex file to HTML. 
-Hyperlatex can be obtained from the CTAN-sites, See <a href="#Obtaining-LaTeX2RTF">Obtaining LaTeX2RTF</a>. 
+Hyperlatex can be obtained from the CTAN-sites, see <a href="#Obtaining-LaTeX2RTF">Obtaining LaTeX2RTF</a>. 
 There are two convenient commands that avoid typing: \link and \xlink that
 generate an &ldquo;internal&rdquo; label which then is used in the following \Ref and
 \Pageref commands.
@@ -1076,7 +1079,7 @@ generate an &ldquo;internal&rdquo; label which then is used in the following \Re
  makes it possible to write `\link{anchor}[ltx]{label}', which typesets:
 `anchor ltx'. LaTeX2RTF
  does NOT support this aproach since the optional
-parameter is thrown away right now, See <a href="#LaTeX2RTF-under-Development">LaTeX2RTF under Development</a>.
+parameter is thrown away right now, see <a href="#LaTeX2RTF-under-Development">LaTeX2RTF under Development</a>.
 
    <p>Note that you have to update your <span class="file">.cfg</span> files if you are upgrading, since
 there are a lot of HTML oriented commands in Hyperlatex that we simply can
@@ -1142,7 +1145,7 @@ which LaTeX2RTF
 sets.  If the LaTeX
  lacks the <code>\package[codepage]{inputenc}</code>
 definition, then you may need to use the command line switch to manually
-select the proper code page. See <a href="#Input-Encoding">Input Encoding</a>.
+select the proper code page (see <a href="#Input-Encoding">Input Encoding</a>).
 
 <div class="node">
 <p><hr>
@@ -1191,19 +1194,19 @@ To write the <span class="samp">*</span> character use <span class="samp">**</sp
 <pre class="example">     \alpha,{\f*Symbol* a}. #alpha in the Symbol Font
      \copyright,\'a9.
 </pre>
-   <p>Changes in version 1.9.17:
-
-   <p>More math symbols are supported by using Unicode coding. 
+   <p>Changes in version 1.9.17:<br>
+More math symbols are supported by using Unicode coding. 
 However many of these symbols are not (yet) contained in the standard
-MS Windows fonts but only in Lucida Sans Unicode. 
+MS Windows fonts but only in "Lucida Sans Unicode". 
 So on the system where the rtf file is opened, this font must be available,
-or the symbols are not displayed correctly.<br>
-As it seems that this font is not commonly supported, symbols which are available
-in the standard fonts (Times / Times New Roman, Symbol, MT Extra) are taken
-from these fonts.<br>
-An alternative direct.cfg is available by which MT Extra is not used and
-the symbols are instead taken from Unicode. To use Unicode instead of MT Extra,
-rename direct.cfg (to e.g. direct_mt.cfg) and rename direct_ucs.cfg to direct.cfg.
+otherwise the symbols are not displayed correctly.<br>
+As it seems that this font is not commonly available or supported, symbols which are
+available in the standard fonts ("Times" / "Times New Roman", "Symbol", "MT Extra")
+are taken from these fonts (see <a href="#Math-and-Special-Symbols">Math and Special Symbols</a>).<br>
+An alternative direct.cfg is available by which MT Extra is not used and the symbols
+which normally are taken from MT Extra are instead taken from "Lucida Sans Unicode". 
+To use "Lucida Sans Unicode" instead of MT Extra, rename direct.cfg (to e.g. 
+direct_mt.cfg) and rename direct_ucs.cfg to direct.cfg.
 
 <div class="node">
 <p><hr>
@@ -1328,7 +1331,7 @@ found on.
 
      <dl>
 <dt><span class="samp">Fatal error messages</span><dd>indicate a bug in the source code. PLEASE report them, if they do not
-apear in the documentation. See <a href="#Reporting-Bugs">Reporting Bugs</a>.
+apear in the documentation (see <a href="#Reporting-Bugs">Reporting Bugs</a>).
 
      <br><dt><span class="samp">Error messages</span><dd>always abort the program and are caused by conditions that prevent
 further conversion of the input file.  Typically this is cause by

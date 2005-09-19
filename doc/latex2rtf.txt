@@ -70,10 +70,10 @@ mostly with the design of a text.
 
    Although the possible different commands and styles in LaTeX  are
 much more flexible and standardized than in RTF, only a small subset of
-commands has been implemented to date.  *Note Unimplemented Features::.
+commands has been implemented to date (*note Unimplemented Features::).
 
    Some of the capabilities of LaTeX2RTF  are restricted in scope or
-buggy. *Note Known Bugs::.
+buggy (*note Known Bugs::).
 
    RTF is a moving target, because Microsoft does not stop inventing
 new extensions and features, consequently you cannot view newer RTF
@@ -193,7 +193,7 @@ under plain DOS and also in the command prompt (or "console") of any MS
 Windows system.
 The Win32 version starting from 1.9.14a has the same executable but
 additionally an optional Win32 GUI interface (LaTeX2RTF Shell) and is
-wrapped in an automatic installer, *Note Win32 systems::.
+wrapped in an automatic installer, see *Note Win32 systems::.
 To install latex2rtf, extract all files from the zip archive to `C:\l2r'
 or to another folder (i.e. directory) of your choice, preserving the
 folder structure (winzip: check "use folder names").
@@ -379,11 +379,11 @@ using LaTeX2RTF .
 
 To correctly convert font names you must edit the `fonts.cfg'
 configuration file.  This file is used to specify the needed font names
-and how the LaTeX  default font names should be converted to RTF.
-*Note Font Configuration::. LaTeX  variables and user defined commands
-are not evaluated. They will be simply ignored. To let LaTeX2RTF  know
-the names of variables you can add them in the `ignore.cfg' file.
-*Note Ignore Command::.
+and how the LaTeX  default font names should be converted to RTF (*note
+Font Configuration::). LaTeX  variables and user defined commands are
+not evaluated. They will be simply ignored. To let LaTeX2RTF  know the
+names of variables you can add them in the `ignore.cfg' file (*note
+Ignore Command::).
 
    The environment variable RTFPATH may contain a search path for the
 support files (all files ending in `.cfg'). If no file is found during
@@ -398,7 +398,7 @@ separator may appear at the beginning or ending of RTFPATH.
    Make sure that the configuration files are in the correct directory.
 LaTeX2RTF  will need at least `fonts.cfg', `direct.cfg', `ignore.cfg',
 `english.cfg'. You may have to change one ore more of them to suit your
-needs. *Note Configuration::.
+needs (*note Configuration::).
 
    *Note Missing options::, for actual implementations irregularities.
 
@@ -495,7 +495,7 @@ the new file look similar to the original.  The command line syntax is:
      in the babel system are supported so far as translations for
      "Chapter," "References," and the like.  Furthermore, some commands
      found in the style files for german, french, russian, and czech
-     style are supported. *Note Language Configuration::.
+     style are supported (*note Language Configuration::).
 
 `-l'
      same as `-i latin1' (Note that the default behavior is to use
@@ -723,7 +723,7 @@ LaTeX2RTF  in eqnarray environments.
 =============
 
 There are four separate levels of equation translation based on the -M
-switch, *Note LaTeX2RTF Options::.  Each equation is now converted
+switch, see *Note LaTeX2RTF Options::.  Each equation is now converted
 either to an EQ field or to a bitmap.
 
    This is an interim solution (for some definition of "interim").
@@ -746,9 +746,9 @@ line parameter -S , the semicolon is inserted as parameter delimiter.
 ============================
 
 Many mathematical and special symbols are supported by the conversion
-table in the file direct.cfg. However to display (or print) them
-correctly from the rtf file, these symbols must be available in the
-fonts in the system in which the rtf file is opened.
+table in the file direct.cfg, see *Note Direct Conversion::. However to
+display (or print) them correctly from the rtf file, these symbols must
+be available in the fonts in the system in which the rtf file is opened.
 Required fonts are:
 
    * "Times" / "Times New Roman", preferably with Unicode extension
@@ -768,6 +768,10 @@ Required fonts are:
      the first three fonts. This is a new feature in LaTeX2RTF  version
      1.9.17 and may or may not work, depending on the system in which
      the rtf file is opened.
+     If you need these symbols, don't have "Lucida Sans Unicode" but
+     have another font containing these symbols, you can edit
+     direct.cfg and fonts.cfg and replace the font name in both files.
+     For a description of direct.cfg see *Note Direct Conversion::.
 
 
 4.7 Tables
@@ -806,15 +810,15 @@ improve.
 which is a "little package that allows you to use LaTeX  to prepare
 documents in HTML."  It brings an Emacs lisp program with it to convert
 the Hyperlatex file to HTML.  Hyperlatex can be obtained from the
-CTAN-sites, *Note Obtaining LaTeX2RTF::.  There are two convenient
+CTAN-sites, see *Note Obtaining LaTeX2RTF::.  There are two convenient
 commands that avoid typing: \link and \xlink that generate an
 "internal" label which then is used in the following \Ref and \Pageref
 commands.
 
    LaTeX  makes it possible to write `\link{anchor}[ltx]{label}', which
 typesets: `anchor ltx'. LaTeX2RTF  does NOT support this aproach since
-the optional parameter is thrown away right now, *Note LaTeX2RTF under
-Development::.
+the optional parameter is thrown away right now, see *Note LaTeX2RTF
+under Development::.
 
    Note that you have to update your `.cfg' files if you are upgrading,
 since there are a lot of HTML oriented commands in Hyperlatex that we
@@ -849,7 +853,7 @@ platform on which LaTeX2RTF  was compiled.
    The LaTeX  file may have been created with a wide variety of
 character sets.  If the LaTeX  lacks the `\package[codepage]{inputenc}'
 definition, then you may need to use the command line switch to manually
-select the proper code page. *Note Input Encoding::.
+select the proper code page (*note Input Encoding::).
 
 5.2 Output formatting
 =====================
@@ -879,18 +883,19 @@ the `*' character use `**'.
      \alpha,{\f*Symbol* a}. #alpha in the Symbol Font
      \copyright,\'a9.
    Changes in version 1.9.17:
-
-   More math symbols are supported by using Unicode coding.  However
-many of these symbols are not (yet) contained in the standard MS
-Windows fonts but only in Lucida Sans Unicode.  So on the system where
-the rtf file is opened, this font must be available, or the symbols are
-not displayed correctly.
-As it seems that this font is not commonly supported, symbols which are
-available in the standard fonts (Times / Times New Roman, Symbol, MT
-Extra) are taken from these fonts.
-An alternative direct.cfg is available by which MT Extra is not used and
-the symbols are instead taken from Unicode. To use Unicode instead of
-MT Extra, rename direct.cfg (to e.g. direct_mt.cfg) and rename
+More math symbols are supported by using Unicode coding.  However many
+of these symbols are not (yet) contained in the standard MS Windows
+fonts but only in "Lucida Sans Unicode".  So on the system where the
+rtf file is opened, this font must be available, otherwise the symbols
+are not displayed correctly.
+As it seems that this font is not commonly available or supported,
+symbols which are available in the standard fonts ("Times" / "Times New
+Roman", "Symbol", "MT Extra") are taken from these fonts (*note Math
+and Special Symbols::).
+An alternative direct.cfg is available by which MT Extra is not used
+and the symbols which normally are taken from MT Extra are instead
+taken from "Lucida Sans Unicode".  To use "Lucida Sans Unicode" instead
+of MT Extra, rename direct.cfg (to e.g.  direct_mt.cfg) and rename
 direct_ucs.cfg to direct.cfg.
 
 5.4 Ignore Command
@@ -994,7 +999,7 @@ found on.
 
 `Fatal error messages'
      indicate a bug in the source code. PLEASE report them, if they do
-     not apear in the documentation. *Note Reporting Bugs::.
+     not apear in the documentation (*note Reporting Bugs::).
 
 `Error messages'
      always abort the program and are caused by conditions that prevent
