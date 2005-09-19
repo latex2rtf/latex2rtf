@@ -33,5 +33,6 @@ char *	strdup_noblanks(char *s);
 char *	strdup_nocomments(char *s);
 char *	strdup_nobadchars(char *s);
 char *	strdup_noendblanks(char *s);
+char *  strdup_printable(char *s);
 char *	ExtractLabelTag(char *text);
 char *	ExtractAndRemoveTag(char *tag, char *text);

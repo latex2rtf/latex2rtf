@@ -183,6 +183,38 @@ char *strdup_nobadchars(char *text)
 }
 
 /******************************************************************************
+ purpose:  duplicates a string without newlines and CR replaced by '\n' or '\r'
+******************************************************************************/
+char *strdup_printable(char *s)
+{
+    char *dup;
+    int i;
+    
+    if (s == NULL) return NULL;
+
+    dup = malloc(2*strlen(s));
+
+    i=0;
+    while (*s) {
+        if (*s=='\r') {
+            dup[i++]='\\';
+            dup[i++]='r';
+         } else if (*s=='\n') {
+            dup[i++]='\\';
+            dup[i++]='n';
+         } else if (*s=='\t') {
+            dup[i++]='\\';
+            dup[i++]='t';
+         } else 
+            dup[i++]=*s;
+         s++;
+    }
+    dup[i]='\0';
+        
+    return dup;
+}
+
+/******************************************************************************
  purpose:  duplicates a string without spaces or newlines at front or end
 ******************************************************************************/
 char *strdup_noendblanks(char *s)
@@ -206,7 +238,6 @@ char *strdup_noendblanks(char *s)
         return strdup("");
     return my_strndup(t, (size_t) (p - t + 1));
 }
-
 /******************************************************************************
   purpose: return a copy of tag from \label{tag} in the string text
  ******************************************************************************/
