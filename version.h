@@ -1,1 +1,1 @@
-char *Version = "1.9.17 (Sat Sep 10 21:08:18 2005)";
+char *Version = "1.9.17 (Sun Sep 18 21:32:00 2005)";
