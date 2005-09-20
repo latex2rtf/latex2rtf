@@ -1061,14 +1061,17 @@ parameter: type of operand
         command = getSimpleCommand();
         if (strcmp(command, "\\nolimits") == 0) {
             no_limits = TRUE;
-            diagnostics(WARNING, "no limits found");
+            diagnostics(WARNING, "\\nolimits found");
             free(command);
         } else if (strcmp(command, "\\limits") == 0) {
             limits = TRUE;
-            diagnostics(WARNING, "limits found");
+            diagnostics(WARNING, "\\limits found");
             free(command);
-        } else
+        } else {
+            diagnostics(WARNING, "pushing <%s>",command);
             PushSource(NULL, command);
+        }    
+        
         cThis = getNonBlank();
     }
 
@@ -1301,9 +1304,12 @@ void CmdLeftRight(int code)
     char ldelim, rdelim;
     char *contents;
 
+    diagnostics(1, "CmdLeftRight() ... ");
     ldelim = getNonSpace();
     if (ldelim == '\\')         /* might be \{ or \} */
         ldelim = getTexChar();
+
+    diagnostics(1, "CmdLeftRight() ... \\left <%c> ", ldelim);
 
     contents = getLeftRightParam();
     rdelim = getNonSpace();
@@ -1314,7 +1320,7 @@ void CmdLeftRight(int code)
     if (code == 1)
         diagnostics(ERROR, "\\right without opening \\left");
 
-    diagnostics(4, "CmdLeftRight() ... \\left <%c> \\right <%c>", ldelim, rdelim);
+    diagnostics(1, "CmdLeftRight() ... \\left <%c> \\right <%c>", ldelim, rdelim);
 
     if (g_fields_use_EQ) {
 

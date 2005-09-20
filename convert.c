@@ -822,7 +822,9 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
 
     if (CallCommandFunc(cCommand)) {    /* call handling function for command */
         if (strcmp(cCommand, "end") == 0) {
+    		diagnostics(5, "before PopBrace()");
             ret = RecursionLevel - PopBrace();
+    		diagnostics(5, "after PopBrace(), ret=%d",ret);
             fprintRTF("}");
         }
         return;
