@@ -1304,12 +1304,18 @@ void CmdLeftRight(int code)
     char ldelim, rdelim;
     char *contents;
 
-    diagnostics(1, "CmdLeftRight() ... ");
+    diagnostics(4, "CmdLeftRight() ... ");
     ldelim = getNonSpace();
+    
+    if (ldelim=='\0') {
+        diagnostics(1,"right here");
+        PopSource();
+        ldelim = getNonSpace();
+     }
     if (ldelim == '\\')         /* might be \{ or \} */
         ldelim = getTexChar();
 
-    diagnostics(1, "CmdLeftRight() ... \\left <%c> ", ldelim);
+    diagnostics(4, "CmdLeftRight() ... \\left <%c> ", ldelim);
 
     contents = getLeftRightParam();
     rdelim = getNonSpace();
@@ -1320,7 +1326,7 @@ void CmdLeftRight(int code)
     if (code == 1)
         diagnostics(ERROR, "\\right without opening \\left");
 
-    diagnostics(1, "CmdLeftRight() ... \\left <%c> \\right <%c>", ldelim, rdelim);
+    diagnostics(4, "CmdLeftRight() ... \\left <%c> \\right <%c>", ldelim, rdelim);
 
     if (g_fields_use_EQ) {
 

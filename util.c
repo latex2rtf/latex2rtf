@@ -215,6 +215,35 @@ char *strdup_printable(char *s)
 }
 
 /******************************************************************************
+ purpose:  duplicates a string without newlines and CR replaced by '\n' or '\r'
+******************************************************************************/
+void strncpy_printable(char* dst, char *src, int n)
+{
+    int i=0;
+    
+    if (dst == NULL)
+        return;
+
+    while (i<n-1 && *src) {
+
+        if (*src=='\r') {
+            dst[i++]='\\';
+            dst[i++]='r';
+         } else if (*src=='\n') {
+            dst[i++]='\\';
+            dst[i++]='n';
+         } else if (*src=='\t') {
+            dst[i++]='\\';
+            dst[i++]='t';
+         } else 
+            dst[i++]=*src;
+         src++;
+    }
+    
+    dst[i]='\0';
+}
+
+/******************************************************************************
  purpose:  duplicates a string without spaces or newlines at front or end
 ******************************************************************************/
 char *strdup_noendblanks(char *s)

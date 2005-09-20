@@ -170,7 +170,7 @@ int PushSource(char *filename, char *string)
                 diagnostics(1, "i=%d file   =%s, line=%d", i, g_parser_stack[i].file_name, g_parser_stack[i].file_line);
 
             else {
-                strncpy(s, g_parser_stack[i].string, 25);
+                strncpy_printable(s, g_parser_stack[i].string, 25);
                 diagnostics(1, "i=%d string =%s, line=%d", i, s, g_parser_stack[i].file_line);
             }
         }
@@ -232,7 +232,7 @@ int PushSource(char *filename, char *string)
                 diagnostics(1, "i=%d file   =%s, line=%d", i, g_parser_stack[i].file_name, g_parser_stack[i].file_line);
 
             else {
-                strncpy(s, g_parser_stack[i].string, 25);
+                strncpy_printable(s, g_parser_stack[i].string, 25);
                 diagnostics(1, "i=%d string =%s, line=%d", i, s, g_parser_stack[i].file_line);
             }
         }
@@ -282,7 +282,7 @@ void PopSource(void)
                 diagnostics(1, "i=%d file   =%s, line=%d", i, g_parser_stack[i].file_name, g_parser_stack[i].file_line);
 
             else {
-                strncpy(s, g_parser_stack[i].string, 25);
+                strncpy_printable(s, g_parser_stack[i].string, 25);
                 diagnostics(1, "i=%d string =%s, line=%d", i, s, g_parser_stack[i].file_line);
             }
         }
@@ -335,7 +335,7 @@ void PopSource(void)
                 diagnostics(1, "i=%d file   =%s, line=%d", i, g_parser_stack[i].file_name, g_parser_stack[i].file_line);
 
             else {
-                strncpy(s, g_parser_stack[i].string, 25);
+                strncpy_printable(s, g_parser_stack[i].string, 25);
                 diagnostics(1, "i=%d string =%s, line=%d", i, s, g_parser_stack[i].file_line);
             }
         }
@@ -397,6 +397,11 @@ char getRawTexChar()
             	
             g_parser_currentChar = thechar;
             g_parser_string++;
+        } 
+        else if (g_parser_depth > 15) 
+        {
+             PopSource();    /* go back to parsing parent */
+             g_parser_currentChar = getRawTexChar();  /* get next char from parent file */
         } else
             g_parser_currentChar = '\0';
     }
@@ -406,6 +411,15 @@ char getRawTexChar()
 
     g_parser_penultimateChar = g_parser_lastChar;
     g_parser_lastChar = g_parser_currentChar;
+    if (0) {
+		if (g_parser_currentChar=='\n')
+			diagnostics(6,"getRawTexChar = <\\n>");
+		else if (g_parser_currentChar=='\0')
+			diagnostics(6,"getRawTexChar = <\\0> depth=%d, files=%d", g_parser_depth, g_parser_include_level);
+		else
+			diagnostics(6,"getRawTexChar = <%2c>",g_parser_currentChar);
+	}
+	/* if (g_parser_currentChar=='\0') exit(0);*/
     return g_parser_currentChar;
 }
 
@@ -466,7 +480,14 @@ char getTexChar()
         g_parser_backslashes++;
     else
         g_parser_backslashes = 0;
-    diagnostics(6, "after getTexChar=<%c> backslashes=%d line=%d", cThis, g_parser_backslashes, g_parser_line);
+	if (1) {
+		if (cThis=='\n')
+			diagnostics(6,"getRawTexChar = <\\n> backslashes=%d line=%ld", g_parser_backslashes, g_parser_line);
+		else if (cThis=='\0')
+			diagnostics(6,"getRawTexChar = <\\0> backslashes=%d line=%ld", g_parser_backslashes, g_parser_line);
+		else
+			diagnostics(6,"getRawTexChar = <%2c> backslashes=%d line=%ld",cThis, g_parser_backslashes, g_parser_line);
+	}
     return cThis;
 }
 
@@ -491,7 +512,9 @@ char getNonBlank(void)
 {
     char c;
 
-    while ((c = getTexChar()) && (c == ' ' || c == '\n')) {
+	c = getTexChar();
+    while (c == ' ' || c == '\n') {
+    	c = getTexChar();
     }
     return c;
 }
@@ -932,7 +955,7 @@ int getDimension(void)
 
     if (i == 19 || sscanf(buffer, "%f", &num) != 1) {
         diagnostics(WARNING, "Screwy number in TeX dimension");
-        diagnostics(1, "getDimension() number is <%s>", buffer);
+        diagnostics(WARNING, "getDimension() number is <%s>", buffer);
         return 0;
     }
 
