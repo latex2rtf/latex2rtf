@@ -27,6 +27,7 @@ Potential Features:
 	Add support for \usepackage{fullpage}
 	Add support for \usepackage{doublespace}
 	Add support for \usepackage{geometry}
+	Add support for \usepackage{endnote}
 	
 	Add autonumbering of equations using fields
 	

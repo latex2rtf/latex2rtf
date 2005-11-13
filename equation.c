@@ -420,6 +420,7 @@ static void PrepareRtfEquation(int code, int EQ_Needed)
             diagnostics(4, "PrepareRtfEquation -- equation");
             g_equation_column = 5;  /* avoid adding \tabs when finishing */
             g_show_equation_number = TRUE;
+            g_suppress_equation_number = FALSE;
             fprintRTF("\\par\\par\n\\pard");
             fprintRTF("\\tqc\\tx%d\\tqr\\tx%d", b, width);
             fprintRTF("\\tab ");
@@ -431,6 +432,7 @@ static void PrepareRtfEquation(int code, int EQ_Needed)
             g_show_equation_number = FALSE;
             g_processing_eqnarray = TRUE;
             g_processing_tabular = TRUE;
+            g_suppress_equation_number = FALSE;
             g_equation_column = 1;
             fprintRTF("\\par\\par\n\\pard");
             fprintRTF("\\tqr\\tx%d\\tqc\\tx%d\\tql\\tx%d", a, b, c);
@@ -467,6 +469,7 @@ static void PrepareRtfEquation(int code, int EQ_Needed)
             g_show_equation_number = TRUE;
             g_processing_eqnarray = TRUE;
             g_processing_tabular = TRUE;
+            g_suppress_equation_number = FALSE;
             g_equation_column = 1;
             fprintRTF("\\par\\par\n\\pard");
             fprintRTF("\\tqr\\tx%d\\tql\\tx%d\\tqr\\tx%d", a, b, width);
