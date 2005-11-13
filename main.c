@@ -817,7 +817,7 @@ purpose: output filter to track of brace depth and font settings
             if (*text == '}' && last != '\\')
                 PopFontSettings();
 
-            if (*text == '\\')
+            if (*text == '\\' && last != '\\')
                 MonitorFontChanges(text);
         }
         last= *text;
