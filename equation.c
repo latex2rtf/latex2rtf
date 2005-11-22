@@ -1296,16 +1296,55 @@ void CmdSubscript(int code)
 
 }
 
-void CmdLeftRight(int code)
+/* slight extension of getSimpleCommand to allow \{ and \| */
+static void getDelimOrCommand(char *delim, char **s)
+{
+    *delim = '\0';
+    
+    ungetTexChar('\\');
+    *s = getSimpleCommand();
+    
+/* handle special cases \{ \} and \| */
+    if (strlen(*s) == 1) {
+        free(*s);
+        *s = malloc(3 * sizeof(char));
+        (*s)[0] = '\\';
+        (*s)[1] = getTexChar();
+        (*s)[2] = '\0';
+    } 
+
+/* commands have a simple delimiter should just use the delimiter */
+    if (*s) {
+        if (strcmp(*s,"\\{")      ==0 || strcmp(*s,"\\lbrace")==0)
+            *delim = '{';
+        if (strcmp(*s,"\\}")      ==0 || strcmp(*s,"\\rbrace")==0)
+            *delim = '}';
+        if (strcmp(*s,"\\bracevert")==0)
+            *delim = '|';
+        if (strcmp(*s,"\\langle") ==0)
+            *delim = '<';
+        if (strcmp(*s,"\\rangle") ==0) {
+            *delim ='>';
+        }
+        
+        if (*delim) {
+            free (*s);
+            *s = NULL;
+        }
+    }
+}
 
 /******************************************************************************
  purpose   : Handles \left \right
  			 to properly handle \left. or \right. would require prescanning the
  			 entire equation.  
  ******************************************************************************/
+void CmdLeftRight(int code)
 {
     char ldelim, rdelim;
     char *contents;
+    char *lcommand = NULL;
+    char *rcommand = NULL;
 
     diagnostics(4, "CmdLeftRight() ... ");
     ldelim = getNonSpace();
@@ -1315,25 +1354,24 @@ void CmdLeftRight(int code)
         PopSource();
         ldelim = getNonSpace();
      }
-    if (ldelim == '\\')         /* might be \{ or \} */
-        ldelim = getTexChar();
 
-    diagnostics(4, "CmdLeftRight() ... \\left <%c> ", ldelim);
+    if (ldelim == '\\') getDelimOrCommand(&ldelim, &lcommand);
 
     contents = getLeftRightParam();
     rdelim = getNonSpace();
 
-    if (rdelim == '\\')         /* might be \{ or \} */
-        rdelim = getTexChar();
-
+    if (rdelim == '\\') getDelimOrCommand(&rdelim, &rcommand);
+    
     if (code == 1)
         diagnostics(ERROR, "\\right without opening \\left");
 
     diagnostics(4, "CmdLeftRight() ... \\left <%c> \\right <%c>", ldelim, rdelim);
-
+      
     if (g_fields_use_EQ) {
 
         fprintRTF(" \\\\b ");
+
+        /* these first four cases () {} [] <> are most common and work best without \lc and \rc */
         if (ldelim == '(' && rdelim == ')') {
             fprintRTF("(");
             goto finish;
@@ -1349,22 +1387,33 @@ void CmdLeftRight(int code)
             goto finish;
         }
 
-        if (ldelim == '{' || ldelim == '}') {
+        if (ldelim == '<' && rdelim == '>') {
+            fprintRTF("\\\\bc\\\\< (");
+            goto finish;
+        }
+
+        /* insert left delimiter if it is not a '.' */
+        if (ldelim == '{' || ldelim == '}' || ldelim == '(' || ldelim == ')')
             fprintRTF("\\\\lc\\\\\\%c", ldelim);
-        } else {
-            if (ldelim != '.')
-                fprintRTF("\\\\lc\\\\%c", ldelim);
+        else if (ldelim && ldelim != '.')
+            fprintRTF("\\\\lc\\\\%c", ldelim);
+        else if (lcommand) {
+            fprintRTF("\\\\lc\\\\");
+            ConvertString(lcommand);
         }
 
-        if (rdelim == '{' || rdelim == '}') {
-            fprintRTF("\\\\rc\\\\\\%c (", ldelim);
-
-        } else {
-            if (rdelim != '.')
-                fprintRTF("\\\\rc\\\\%c (", ldelim);
-            else
-                fprintRTF("(");
+        /* insert right delimiter if it is not a '.' */
+        if (rdelim == '{' || rdelim == '}' || rdelim == '(' || rdelim == ')')
+            fprintRTF("\\\\rc\\\\\\%c", rdelim);
+        else if (rdelim && rdelim != '.')
+            fprintRTF("\\\\rc\\\\%c", rdelim);
+        else if (rcommand) {
+             fprintRTF("\\\\rc\\\\");
+             ConvertString(rcommand);
         }
+        
+        /* start bracketed equation */
+        fprintRTF(" (");
 
       finish:
         ConvertString(contents);
@@ -1378,7 +1427,8 @@ void CmdLeftRight(int code)
         putRtfChar(rdelim);
     }
 
-
+    if (lcommand) free(lcommand);
+    if (rcommand) free(rcommand);
 }
 
 void CmdArray(int code)
