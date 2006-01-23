@@ -104,12 +104,12 @@ void CmdStartParagraph(int code)
 
     parindent = getLength("parindent");
 
-    diagnostics(5, "CmdStartParagraph mode = %s", TexModeName[GetTexMode()]);
-    diagnostics(5, "Noindent is         %s", (g_paragraph_no_indent) ? "TRUE" : "FALSE");
-    diagnostics(5, "Inhibit is          %s", (g_paragraph_inhibit_indent) ? "TRUE" : "FALSE");
-    diagnostics(5, "indent is           %d", g_left_margin_indent);
-    diagnostics(5, "right indent is     %d", g_right_margin_indent);
-    diagnostics(5, "paragraph indent is %d", getLength("parindent"));
+    diagnostics(4, "CmdStartParagraph mode = %s", TexModeName[GetTexMode()]);
+    diagnostics(4, "Noindent is         %s", (g_paragraph_no_indent) ? "TRUE" : "FALSE");
+    diagnostics(4, "Inhibit is          %s", (g_paragraph_inhibit_indent) ? "TRUE" : "FALSE");
+    diagnostics(4, "indent is           %d", g_left_margin_indent);
+    diagnostics(4, "right indent is     %d", g_right_margin_indent);
+    diagnostics(4, "paragraph indent is %d", getLength("parindent"));
 
     if (g_page_new) {
         fprintRTF("\\page{} ");   /* causes new page */
@@ -1137,19 +1137,20 @@ void CmdQuote(int code)
   globals:   indent which is the left-indent-position
  ******************************************************************************/
 {
+    int true_code = code & ~ON;
     CmdEndParagraph(0);
 
-    switch (code) {
-        case (QUOTATION | ON):
+    if (code & ON) {
+
+        if (true_code == QUOTATION) {
             PushEnvironment(QUOTE_MODE);
             diagnostics(4, "Entering \\begin{quotation}");
             CmdVspace(VSPACE_SMALL_SKIP);
             g_left_margin_indent += 512;
             g_right_margin_indent += 512;
             CmdIndent(INDENT_USUAL);
-            break;
-
-        case (QUOTE | ON):
+        }
+        else {
             PushEnvironment(QUOTATION_MODE);
             diagnostics(4, "Entering \\begin{quote}");
             CmdVspace(VSPACE_SMALL_SKIP);
@@ -1157,14 +1158,13 @@ void CmdQuote(int code)
             g_right_margin_indent += 512;
             setLength("parindent", 0);
             CmdIndent(INDENT_USUAL);
-            break;
-
-        case (QUOTATION | OFF):
-        case (QUOTE | OFF):
-            PopEnvironment();
-            diagnostics(4, "Exiting \\end{quote} or \\end{quotation}");
-            CmdIndent(INDENT_INHIBIT);
-            CmdVspace(VSPACE_SMALL_SKIP);
+        }
+	}
+	else {
+		PopEnvironment();
+        diagnostics(4, "Exiting \\end{quote} or \\end{quotation}");
+        CmdIndent(INDENT_INHIBIT);
+        CmdVspace(VSPACE_SMALL_SKIP);
     }
 }
 
@@ -2086,43 +2086,6 @@ void CmdNonBreakSpace(int code)
     fprintRTF("\\~");
 }
 
-void CmdInclude(int code)
-
-/******************************************************************************
- purpose: handles \input file, \input{file}, \include{file}
- ******************************************************************************/
-{
-    char name[50], *s, *t=NULL, cNext;
-    int i;
-
-    cNext = getNonSpace();
-
-    if (cNext == '{') {         /* \input{gnu} or \include{gnu} */
-        ungetTexChar(cNext);
-        s = getBraceParam();
-
-    } else {                    /* \input gnu */
-        name[0] = cNext;
-        for (i = 1; i < 50; i++) {
-            name[i] = getTexChar();
-            if (isspace((int) name[i])) {
-                name[i] = '\0';
-                break;
-            }
-        }
-        s = strdup(name);
-    }
-
-    if (strstr(s, ".tex") == NULL) {    /* append .tex if missing */
-        t = strdup_together(s, ".tex");
-        free(s);
-        s = t;
-    }
-
-    if (PushSource(s, NULL) == 0)
-        diagnostics(WARNING, "Including file <%s>", (t) ? t : "");
-    free(s);
-}
 
 void CmdIf(int code)
 

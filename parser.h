@@ -23,6 +23,7 @@ void	skipToEOL(void);
 void	skipSpaces(void);
 
 void	CmdIgnoreParameter(int);
+void    CmdInclude(int code);
 char	*getBraceParam(void);
 char	*getLeftRightParam(void);
 char	*getBracketParam(void);

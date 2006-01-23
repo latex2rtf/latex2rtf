@@ -1185,6 +1185,7 @@ void SubSupWorker(bool big)
     char *upper_limit = NULL;
     char *lower_limit = NULL;
 
+    diagnostics(4, "SubSupWorker() ... big=%d",big);
     for (;;) {
         cThis = getNonBlank();
         if (cThis == '_') {
@@ -1200,6 +1201,9 @@ void SubSupWorker(bool big)
             break;
         }
     }
+
+    diagnostics(4, "...subscript  ='%s'",lower_limit ? lower_limit : "");
+    diagnostics(4, "...superscript='%s'",upper_limit ? upper_limit : "");
 
     if (big)
         vertical_shift = CurrentFontSize() / 1.4;
@@ -1242,6 +1246,8 @@ void CmdSuperscript(int code)
 {
     char *s = NULL;
 
+    diagnostics(4, "CmdSuperscript() ... ");
+
     if (code == 0 && g_fields_use_EQ) {
         ungetTexChar('^');
         SubSupWorker(FALSE);
@@ -1267,7 +1273,9 @@ void CmdSubscript(int code)
     char *s = NULL;
     int size;
     
+
     if (code == 0) {
+        diagnostics(4, "CmdSubscript() code==0, equation ");
     	if (g_fields_use_EQ) {
 			ungetTexChar('_');
 			SubSupWorker(FALSE);
@@ -1275,6 +1283,7 @@ void CmdSubscript(int code)
     }
 
     if (code == 1) {
+        diagnostics(4, "CmdSubscript() code==1, \\textsubscript ");
         s=getBraceParam();
         fprintRTF("{\\dn%d\\fs%d ", script_shift(), script_size());
         ConvertString(s);
@@ -1283,6 +1292,7 @@ void CmdSubscript(int code)
     }
 
     if (code == 2) {
+        diagnostics(4, "CmdSubscript() code==2, \\lower ");
 		size = getDimension();  /* size is in half-points */
         fprintRTF("{\\dn%d ", size);
         s=getBraceParam();

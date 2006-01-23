@@ -194,6 +194,10 @@ static CommandArray commands[] = {
     {"subparagraph*", CmdSection, SECT_SUBSUBSUBSUB_STAR},
 
     {"ldots", CmdLdots, 0},
+    {"title", CmdTitle, TITLE_TITLE},
+    {"author", CmdTitle, TITLE_AUTHOR},
+    {"and", CmdAnd, 0},
+    {"date", CmdTitle, TITLE_DATE},
     {"maketitle", CmdMakeTitle, 0},
     {"par", CmdEndParagraph, 0},
     {"noindent", CmdIndent, INDENT_NONE},
@@ -363,9 +367,6 @@ static CommandArray PreambleCommands[] = {
     {"documentstyle", CmdDocumentStyle, 0},
     {"usepackage", CmdUsepackage, 0},
 /*    {"begin", CmdPreambleBeginEnd, CMD_BEGIN},*/
-    {"title", CmdTitle, TITLE_TITLE},
-    {"author", CmdTitle, TITLE_AUTHOR},
-    {"date", CmdTitle, TITLE_DATE},
     {"flushbottom", CmdBottom, 0},
     {"raggedbottom", CmdBottom, 0},
     {"addtolength", CmdLength, LENGTH_ADD},
@@ -420,7 +421,7 @@ static CommandArray PreambleCommands[] = {
     {"footnotetext", CmdFootNote, FOOTNOTE_TEXT},
     {"endnotetext", CmdFootNote, FOOTNOTE_TEXT | FOOTNOTE_ENDNOTE},
     {"include", CmdInclude, 0},
-    {"input", CmdInclude, 0},
+    {"input", CmdInclude, 1},
     {"htmladdnormallink", CmdHtml, LABEL_HTMLADDNORMALREF},
     {"htmlref", CmdHtml, LABEL_HTMLREF},
     {"nobreakspace", CmdNonBreakSpace, 0},
@@ -1040,6 +1041,8 @@ globals: changes Environment - array of active environments
     g_right_indent_array[iEnvCount] = g_right_margin_indent;
     g_align_array[iEnvCount] = alignment;
 
+    PushFontSettings();
+
     switch (code) {
         case PREAMBLE_MODE:
             Environments[iEnvCount] = PreambleCommands;
@@ -1125,7 +1128,8 @@ globals: changes Environment - array of active environments
     	All_Commands[iAllCommands] = Environments[iEnvCount];
     	iAllCommands++;
     }
-
+    
+    
     diag = EnvironmentName(Environments[iEnvCount]);
     iEnvCount++;
     diagnostics(2, "Entered %s environment iEnvCount=%d iAllCommands=%d", diag, iEnvCount, iAllCommands);
@@ -1155,6 +1159,7 @@ void PopEnvironment()
     g_left_margin_indent = g_left_indent_array[iEnvCount];
     g_right_margin_indent = g_right_indent_array[iEnvCount];
     alignment = g_align_array[iEnvCount];
+    PopFontSettings();
 
     /* if current ca is still in Environments list do not remove from All_Commands */    
     for (i=0; i<iEnvCount; i++) {

@@ -657,12 +657,20 @@ void CmdTableOfContents(int code)
 	CmdNewPage(NewPage);
 }
 
+/******************************************************************************
+  purpose: Handle \and in \author{A \and B}
+ ******************************************************************************/
+void CmdAnd(int code)
+{
+	CmdEndParagraph(0);
+	CmdStartParagraph(TITLE_PAR);
+}
 
-void CmdMakeTitle(int code)
 
 /******************************************************************************
   purpose: Creates a title page based on saved values for author, title, and date
  ******************************************************************************/
+void CmdMakeTitle(int code)
 {
     char title_begin[10];
     char author_begin[10];

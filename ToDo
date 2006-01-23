@@ -1,6 +1,7 @@
 Fit & Finish:
 	
 	Fix \cdots, \rightarrow, \in, and others
+	
 	Improve 'make check' target
 	last line tabular in one column mode
 	extra spaces around \hline in tabular

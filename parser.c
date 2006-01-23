@@ -411,7 +411,7 @@ char getRawTexChar()
 
     g_parser_penultimateChar = g_parser_lastChar;
     g_parser_lastChar = g_parser_currentChar;
-    if (0) {
+    if (1) {
 		if (g_parser_currentChar=='\n')
 			diagnostics(6,"getRawTexChar = <\\n>");
 		else if (g_parser_currentChar=='\0')
@@ -1027,6 +1027,63 @@ int getDimension(void)
 
 }
 
+void CmdInclude(int code)
+
+/******************************************************************************
+ purpose: handles \input file, \input{file}, \include{file}
+          code == 0 for \include
+          code == 1 for \input
+ ******************************************************************************/
+{
+    char name[50], cNext;
+    int i;
+    char *basename=NULL;
+    char *texname=NULL;
+
+    cNext = getNonSpace();
+
+    if (cNext == '{') {         /* \input{gnu} or \include{gnu} */
+        ungetTexChar(cNext);
+        basename = getBraceParam();
+
+    } else {                    /* \input gnu */
+        name[0] = cNext;
+        for (i = 1; i < 50; i++) {
+            name[i] = getTexChar();
+            if (isspace((int) name[i])) {
+                name[i] = '\0';
+                break;
+            }
+        }
+        basename = strdup(name);
+    }
+
+	if (strstr(basename, "german.sty") != NULL) {
+    	GermanMode = TRUE;
+     	PushEnvironment(GERMAN_MODE);
+     	free(basename);
+     	return;
+
+    } else if (strstr(basename, "french.sty") != NULL) {
+        FrenchMode = TRUE;
+        PushEnvironment(FRENCH_MODE);
+     	free(basename);
+     	return;
+	}
+	
+    if (basename && strstr(basename, ".tex") == NULL)         /* append .tex if missing */
+        texname = strdup_together(basename, ".tex");
+
+    if (texname && PushSource(texname, NULL) == 0)            /* Try the .tex name first*/
+        diagnostics(WARNING, "Including file <%s>", texname);
+      
+    else if (basename && PushSource(basename, NULL) == 0)     /* Try the basename second*/
+        diagnostics(WARNING, "Including file <%s>", basename);
+
+    if (basename) free(basename);
+    if (texname)  free(texname);
+}
+
 #define SECTION_BUFFER_SIZE 2048
 static char *section_buffer = NULL;
 static size_t section_buffer_size = SECTION_BUFFER_SIZE;
@@ -1335,38 +1392,9 @@ void getSection(char **body, char **header, char **label)
         }
 
         if (i == input_item || i == include_item) {
-            char *s, *s2;
-
-            s = getBraceParam();
-            if (i == input_item)
-                diagnostics(4, "\\input{%s}", s);
-            else
-                diagnostics(4, "\\include{%s}", s);
-
-            if (strstr(s, "german.sty") != NULL) {
-                GermanMode = TRUE;
-                PushEnvironment(GERMAN_MODE);
-
-            } else if (strstr(s, "french.sty") != NULL) {
-                FrenchMode = TRUE;
-                PushEnvironment(FRENCH_MODE);
-
-            } else if (strcmp(s, "") == 0) {
-                diagnostics(WARNING, "Empty or invalid filename in \\include{}");
-
-            } else {
-
-                if (strstr(s, ".ltx") == NULL && strstr(s, ".tex") == NULL) {
-                    /* extension .tex is appended automatically if missing */
-                    s2 = strdup_together(s, ".tex");
-                    free(s);
-                    s = s2;
-                }
-
-                PushSource(s, NULL);    /* ignore return value */
-            }
+            
+            CmdInclude(0);
             delta -= (i == input_item) ? 6 : 8; /* remove \input or \include */
-            free(s);
             index = 0;          /* keep looking */
             continue;
         }
