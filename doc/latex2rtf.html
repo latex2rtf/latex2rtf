@@ -295,7 +295,8 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Installation">Installation</a>
 <h3 class="section">2.4 DOS or Windows</h3>
 
 <p>The <acronym>UNIX</acronym> and Mac distributions do not contain an executable for DOS
-or Windows. Instead, get the DOS port as file <span class="file">latex2rtf-x.x.x_dos.zip</span>
+Windows. 
+Instead, get the DOS port as file <span class="file">latex2rtf-x.x.x_dos.zip</span>
 or the Windows (Win32 = Win95, Win98, WinME, WinNT, Win2000, WinXP) version as
 file <span class="file">latex2rtf-x.x.x_win.exe</span> (where x.x.x is the version number) from
 <a href="http://sourceforge.net/projects/latex2rtf/">SourceForge</a><br>
@@ -404,8 +405,8 @@ The other fix is now hardcoded in latex2rt.exe, making sure the DOS environment
 space in which latex2pn.bat is executed is large enough to store the needed
 variables.
 
-   <p>If you get the message "Out of environment space" (should occur only under plain
-DOS, Windows 3.1, Windows 95, Windows 98 or Windows ME) then<br>
+   <p>If you get the message "Out of environment space" (should occur only under
+plain DOS, Windows 3.1, Windows 95, Windows 98 or Windows ME) then<br>
 add to your config.sys a line like the following<br>
 <code>SHELL=C:\COMMAND.COM C:\ /E:4096 /P</code><br>
 or, if there already is such a line, modify it so that it supplies a
@@ -426,6 +427,12 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Installation">Installation</a>
  on a Win32 system (Win9x, WinME, WinNT, Win2000, WinXP),
 download and execute the <span class="file">latex2rtf-x.x.x_win.exe</span>
 (where x.x.x is the version number) and follow the instructions.
+
+   <p>If there is a newer version of LaTeX2RTF
+ for DOS but not for Windows,
+you can download the newer DOS package and unzip it to the same folder where
+the windows version is installed, thus overwriting the files with their newer
+versions. The GUI shell is not updated in this case.
 
    <p>To start the program double-click the LaTeX2RTF
  icon,
@@ -468,6 +475,9 @@ that is appropriate for your OS version, and then follow the directions above fo
 <acronym>UNIX</acronym> installation.  Alternatively you can install using fink
 <a href="http://fink.sourceforge.net/">http://fink.sourceforge.net/</a> or as an i-installer package
 <a href="http://www.rna.nl/ii.html">http://www.rna.nl/ii.html</a>.
+
+   <p>As of 2006-01-30 there also is a GUI shell for Macintosh.<br>
+See <a href="http://www.inf.ethz.ch/personal/fischerk/LaTeX2rtf/index.html">http://www.inf.ethz.ch/personal/fischerk/LaTeX2rtf/index.html</a>
 
    <p>There is a PPC port of an old version 1.9k for Classic MacOS LaTeX2RTF
 . 

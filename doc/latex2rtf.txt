@@ -183,9 +183,9 @@ directory.
 2.4 DOS or Windows
 ==================
 
-The UNIX and Mac distributions do not contain an executable for DOS or
-Windows. Instead, get the DOS port as file `latex2rtf-x.x.x_dos.zip' or
-the Windows (Win32 = Win95, Win98, WinME, WinNT, Win2000, WinXP)
+The UNIX and Mac distributions do not contain an executable for DOS
+Windows.  Instead, get the DOS port as file `latex2rtf-x.x.x_dos.zip'
+or the Windows (Win32 = Win95, Win98, WinME, WinNT, Win2000, WinXP)
 version as file `latex2rtf-x.x.x_win.exe' (where x.x.x is the version
 number) from SourceForge (http://sourceforge.net/projects/latex2rtf/)
 The DOS distribution contains a precompiled executable which should run
@@ -303,6 +303,12 @@ To install LaTeX2RTF  on a Win32 system (Win9x, WinME, WinNT, Win2000,
 WinXP), download and execute the `latex2rtf-x.x.x_win.exe' (where x.x.x
 is the version number) and follow the instructions.
 
+   If there is a newer version of LaTeX2RTF  for DOS but not for
+Windows, you can download the newer DOS package and unzip it to the
+same folder where the windows version is installed, thus overwriting
+the files with their newer versions. The GUI shell is not updated in
+this case.
+
    To start the program double-click the LaTeX2RTF  icon, or drag and
 drop a `.tex' file onto the icon.
 
@@ -333,6 +339,9 @@ developer tools CD that is appropriate for your OS version, and then
 follow the directions above for a UNIX installation.  Alternatively you
 can install using fink `http://fink.sourceforge.net/' or as an
 i-installer package `http://www.rna.nl/ii.html'.
+
+   As of 2006-01-30 there also is a GUI shell for Macintosh.
+See `http://www.inf.ethz.ch/personal/fischerk/LaTeX2rtf/index.html'
 
    There is a PPC port of an old version 1.9k for Classic MacOS
 LaTeX2RTF .  To convert a LaTeX  file using this version,  drag the

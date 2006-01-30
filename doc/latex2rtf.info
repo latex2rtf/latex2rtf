@@ -91,10 +91,10 @@ mostly with the design of a text.
 
    Although the possible different commands and styles in LaTeX  are
 much more flexible and standardized than in RTF, only a small subset of
-commands has been implemented to date.  *Note Unimplemented Features::.
+commands has been implemented to date (*note Unimplemented Features::).
 
    Some of the capabilities of LaTeX2RTF  are restricted in scope or
-buggy. *Note Known Bugs::.
+buggy (*note Known Bugs::).
 
    RTF is a moving target, because Microsoft does not stop inventing
 new extensions and features, consequently you cannot view newer RTF
@@ -230,9 +230,9 @@ File: latex2rtf.info,  Node: DOS or Windows,  Next: Win32 systems,  Prev: UNIX, 
 2.4 DOS or Windows
 ==================
 
-The UNIX and Mac distributions do not contain an executable for DOS or
-Windows. Instead, get the DOS port as file `latex2rtf-x.x.x_dos.zip' or
-the Windows (Win32 = Win95, Win98, WinME, WinNT, Win2000, WinXP)
+The UNIX and Mac distributions do not contain an executable for DOS
+Windows.  Instead, get the DOS port as file `latex2rtf-x.x.x_dos.zip'
+or the Windows (Win32 = Win95, Win98, WinME, WinNT, Win2000, WinXP)
 version as file `latex2rtf-x.x.x_win.exe' (where x.x.x is the version
 number) from SourceForge (http://sourceforge.net/projects/latex2rtf/)
 The DOS distribution contains a precompiled executable which should run
@@ -240,7 +240,7 @@ under plain DOS and also in the command prompt (or "console") of any MS
 Windows system.
 The Win32 version starting from 1.9.14a has the same executable but
 additionally an optional Win32 GUI interface (LaTeX2RTF Shell) and is
-wrapped in an automatic installer, *Note Win32 systems::.
+wrapped in an automatic installer, see *Note Win32 systems::.
 To install latex2rtf, extract all files from the zip archive to `C:\l2r'
 or to another folder (i.e. directory) of your choice, preserving the
 folder structure (winzip: check "use folder names").
@@ -353,6 +353,12 @@ To install LaTeX2RTF  on a Win32 system (Win9x, WinME, WinNT, Win2000,
 WinXP), download and execute the `latex2rtf-x.x.x_win.exe' (where x.x.x
 is the version number) and follow the instructions.
 
+   If there is a newer version of LaTeX2RTF  for DOS but not for
+Windows, you can download the newer DOS package and unzip it to the
+same folder where the windows version is installed, thus overwriting
+the files with their newer versions. The GUI shell is not updated in
+this case.
+
    To start the program double-click the LaTeX2RTF  icon, or drag and
 drop a `.tex' file onto the icon.
 
@@ -386,6 +392,9 @@ developer tools CD that is appropriate for your OS version, and then
 follow the directions above for a UNIX installation.  Alternatively you
 can install using fink `http://fink.sourceforge.net/' or as an
 i-installer package `http://www.rna.nl/ii.html'.
+
+   As of 2006-01-30 there also is a GUI shell for Macintosh.
+See `http://www.inf.ethz.ch/personal/fischerk/LaTeX2rtf/index.html'
 
    There is a PPC port of an old version 1.9k for Classic MacOS
 LaTeX2RTF .  To convert a LaTeX  file using this version,  drag the
@@ -450,11 +459,11 @@ using LaTeX2RTF .
 
 To correctly convert font names you must edit the `fonts.cfg'
 configuration file.  This file is used to specify the needed font names
-and how the LaTeX  default font names should be converted to RTF.
-*Note Font Configuration::. LaTeX  variables and user defined commands
-are not evaluated. They will be simply ignored. To let LaTeX2RTF  know
-the names of variables you can add them in the `ignore.cfg' file.
-*Note Ignore Command::.
+and how the LaTeX  default font names should be converted to RTF (*note
+Font Configuration::). LaTeX  variables and user defined commands are
+not evaluated. They will be simply ignored. To let LaTeX2RTF  know the
+names of variables you can add them in the `ignore.cfg' file (*note
+Ignore Command::).
 
    The environment variable RTFPATH may contain a search path for the
 support files (all files ending in `.cfg'). If no file is found during
@@ -469,7 +478,7 @@ separator may appear at the beginning or ending of RTFPATH.
    Make sure that the configuration files are in the correct directory.
 LaTeX2RTF  will need at least `fonts.cfg', `direct.cfg', `ignore.cfg',
 `english.cfg'. You may have to change one ore more of them to suit your
-needs. *Note Configuration::.
+needs (*note Configuration::).
 
    *Note Missing options::, for actual implementations irregularities.
 
@@ -569,7 +578,7 @@ the new file look similar to the original.  The command line syntax is:
      in the babel system are supported so far as translations for
      "Chapter," "References," and the like.  Furthermore, some commands
      found in the style files for german, french, russian, and czech
-     style are supported. *Note Language Configuration::.
+     style are supported (*note Language Configuration::).
 
 `-l'
      same as `-i latin1' (Note that the default behavior is to use
@@ -831,7 +840,7 @@ File: latex2rtf.info,  Node: Equations,  Next: Math and Special Symbols,  Prev: 
 =============
 
 There are four separate levels of equation translation based on the -M
-switch, *Note LaTeX2RTF Options::.  Each equation is now converted
+switch, see *Note LaTeX2RTF Options::.  Each equation is now converted
 either to an EQ field or to a bitmap.
 
    This is an interim solution (for some definition of "interim").
@@ -857,9 +866,9 @@ File: latex2rtf.info,  Node: Math and Special Symbols,  Next: Tables,  Prev: Equ
 ============================
 
 Many mathematical and special symbols are supported by the conversion
-table in the file direct.cfg. However to display (or print) them
-correctly from the rtf file, these symbols must be available in the
-fonts in the system in which the rtf file is opened.
+table in the file direct.cfg, see *Note Direct Conversion::. However to
+display (or print) them correctly from the rtf file, these symbols must
+be available in the fonts in the system in which the rtf file is opened.
 Required fonts are:
 
    * "Times" / "Times New Roman", preferably with Unicode extension
@@ -879,6 +888,10 @@ Required fonts are:
      the first three fonts. This is a new feature in LaTeX2RTF  version
      1.9.17 and may or may not work, depending on the system in which
      the rtf file is opened.
+     If you need these symbols, don't have "Lucida Sans Unicode" but
+     have another font containing these symbols, you can edit
+     direct.cfg and fonts.cfg and replace the font name in both files.
+     For a description of direct.cfg see *Note Direct Conversion::.
 
 
 
@@ -929,15 +942,15 @@ improve.
 which is a "little package that allows you to use LaTeX  to prepare
 documents in HTML."  It brings an Emacs lisp program with it to convert
 the Hyperlatex file to HTML.  Hyperlatex can be obtained from the
-CTAN-sites, *Note Obtaining LaTeX2RTF::.  There are two convenient
+CTAN-sites, see *Note Obtaining LaTeX2RTF::.  There are two convenient
 commands that avoid typing: \link and \xlink that generate an
 "internal" label which then is used in the following \Ref and \Pageref
 commands.
 
    LaTeX  makes it possible to write `\link{anchor}[ltx]{label}', which
 typesets: `anchor ltx'. LaTeX2RTF  does NOT support this aproach since
-the optional parameter is thrown away right now, *Note LaTeX2RTF under
-Development::.
+the optional parameter is thrown away right now, see *Note LaTeX2RTF
+under Development::.
 
    Note that you have to update your `.cfg' files if you are upgrading,
 since there are a lot of HTML oriented commands in Hyperlatex that we
@@ -987,7 +1000,7 @@ platform on which LaTeX2RTF  was compiled.
    The LaTeX  file may have been created with a wide variety of
 character sets.  If the LaTeX  lacks the `\package[codepage]{inputenc}'
 definition, then you may need to use the command line switch to manually
-select the proper code page. *Note Input Encoding::.
+select the proper code page (*note Input Encoding::).
 
 
 File: latex2rtf.info,  Node: Output formatting,  Next: Direct Conversion,  Prev: Input processing,  Up: Configuration
@@ -1023,18 +1036,19 @@ the `*' character use `**'.
      \alpha,{\f*Symbol* a}. #alpha in the Symbol Font
      \copyright,\'a9.
    Changes in version 1.9.17:
-
-   More math symbols are supported by using Unicode coding.  However
-many of these symbols are not (yet) contained in the standard MS
-Windows fonts but only in Lucida Sans Unicode.  So on the system where
-the rtf file is opened, this font must be available, or the symbols are
-not displayed correctly.
-As it seems that this font is not commonly supported, symbols which are
-available in the standard fonts (Times / Times New Roman, Symbol, MT
-Extra) are taken from these fonts.
-An alternative direct.cfg is available by which MT Extra is not used and
-the symbols are instead taken from Unicode. To use Unicode instead of
-MT Extra, rename direct.cfg (to e.g. direct_mt.cfg) and rename
+More math symbols are supported by using Unicode coding.  However many
+of these symbols are not (yet) contained in the standard MS Windows
+fonts but only in "Lucida Sans Unicode".  So on the system where the
+rtf file is opened, this font must be available, otherwise the symbols
+are not displayed correctly.
+As it seems that this font is not commonly available or supported,
+symbols which are available in the standard fonts ("Times" / "Times New
+Roman", "Symbol", "MT Extra") are taken from these fonts (*note Math
+and Special Symbols::).
+An alternative direct.cfg is available by which MT Extra is not used
+and the symbols which normally are taken from MT Extra are instead
+taken from "Lucida Sans Unicode".  To use "Lucida Sans Unicode" instead
+of MT Extra, rename direct.cfg (to e.g.  direct_mt.cfg) and rename
 direct_ucs.cfg to direct.cfg.
 
 
@@ -1150,7 +1164,7 @@ found on.
 
 `Fatal error messages'
      indicate a bug in the source code. PLEASE report them, if they do
-     not apear in the documentation. *Note Reporting Bugs::.
+     not apear in the documentation (*note Reporting Bugs::).
 
 `Error messages'
      always abort the program and are caused by conditions that prevent
@@ -1375,45 +1389,45 @@ File: latex2rtf.info,  Node: Index,  Prev: LaTeX2RTF under Development,  Up: Top
 Tag Table:
 Node: Top79
 Node: Introduction1375
-Node: Installation4306
-Node: General4603
-Node: Obtaining LaTeX2RTF4946
-Node: UNIX5876
-Node: DOS or Windows8654
-Node: Win32 systems14351
-Node: Macintosh15773
-Node: Problems Compiling16570
-Node: Problems with make check17268
-Node: Using LaTeX2RTF17794
-Node: General Assumptions17999
-Node: LaTeX2RTF Options19834
-Node: Debugging26935
-Node: Features27580
-Node: LaTeX2e27981
-Node: Input Encoding28297
-Node: Language Support29053
-Node: Cross References30579
-Node: Equations33210
-Node: Math and Special Symbols34479
-Node: Tables35799
-Node: Graphics35998
-Node: Pagestyles36362
-Node: Hyperlatex36966
-Node: Configuration38034
-Node: Input processing38325
-Node: Output formatting39707
-Node: Direct Conversion40460
-Node: Ignore Command41968
-Node: Font Configuration43681
-Node: Language Configuration44991
-Node: Error Messages and Logging45610
-Node: History47707
-Node: LaTeX2RTF under Development49585
-Node: Unimplemented Features49856
-Node: Missing options50682
-Node: Known Bugs51263
-Node: Reporting Bugs52154
-Node: Todo List53797
-Node: Index54631
+Node: Installation4307
+Node: General4604
+Node: Obtaining LaTeX2RTF4947
+Node: UNIX5877
+Node: DOS or Windows8655
+Node: Win32 systems14354
+Node: Macintosh16059
+Node: Problems Compiling16986
+Node: Problems with make check17684
+Node: Using LaTeX2RTF18210
+Node: General Assumptions18415
+Node: LaTeX2RTF Options20253
+Node: Debugging27355
+Node: Features28000
+Node: LaTeX2e28401
+Node: Input Encoding28717
+Node: Language Support29473
+Node: Cross References30999
+Node: Equations33630
+Node: Math and Special Symbols34903
+Node: Tables36524
+Node: Graphics36723
+Node: Pagestyles37087
+Node: Hyperlatex37691
+Node: Configuration38767
+Node: Input processing39058
+Node: Output formatting40441
+Node: Direct Conversion41194
+Node: Ignore Command42832
+Node: Font Configuration44545
+Node: Language Configuration45855
+Node: Error Messages and Logging46474
+Node: History48572
+Node: LaTeX2RTF under Development50450
+Node: Unimplemented Features50721
+Node: Missing options51547
+Node: Known Bugs52128
+Node: Reporting Bugs53019
+Node: Todo List54662
+Node: Index55496
 
 End Tag Table
