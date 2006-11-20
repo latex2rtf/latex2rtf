@@ -19,14 +19,14 @@ RTF=accentchars.rtf array.rtf eqns.rtf fonts.rtf fontsize.rtf \
 	enc_maccyr.rtf enc_macukr.rtf eqns-koi8.rtf \
 	defs.rtf qualisex.rtf ttgfsr7.rtf excalibur.rtf include.rtf ch.rtf\
 	spago1.rtf theorem.rtf picture.rtf tabbing.rtf \
-	fig_test.rtf fig_test2.rtf fig_size.rtf \
+	fig_test2.rtf fig_size.rtf \
 	chem.rtf subsup.rtf linux.rtf color.rtf \
 	head_book.rtf head_article.rtf head_report.rtf endnote.rtf report.rtf \
 	bibentry_apalike.rtf bibentry_plain.rtf
 
 RTFX=bib_apacite.rtf bib_apanat.rtf bib_authordate.rtf fig_test3.rtf bib_harvard.rtf \
      bib_apalike.rtf bib_apalike2.rtf bib_natbib1.rtf bib_natbib2.rtf bib_natbib3.rtf \
-     unicode.rtf
+     unicode.rtf fig_test.rtf
 
 all:
 	mkdir -p ../tmp

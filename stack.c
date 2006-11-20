@@ -30,7 +30,7 @@ Authors:
 #include "main.h"
 #include "stack.h"
 
-#define STACKSIZE 1000
+#define STACKSIZE 2000
 
 static int stack[STACKSIZE];
 static int top = 0;
