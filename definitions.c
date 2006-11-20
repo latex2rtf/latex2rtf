@@ -33,9 +33,9 @@ This file is available from http://sourceforge.net/projects/latex2rtf/
 #include "counters.h"
 #include "funct1.h"
 
-#define MAX_DEFINITIONS 200
-#define MAX_ENVIRONMENTS 20
-#define MAX_THEOREMS 20
+#define MAX_DEFINITIONS 2000
+#define MAX_ENVIRONMENTS 200
+#define MAX_THEOREMS 200
 
 struct {
     char *name;

@@ -6,13 +6,14 @@
 #define LABEL_LABEL 		1
 #define LABEL_HYPERREF		2
 #define LABEL_REF			3
-#define LABEL_HYPERCITE	4
+#define LABEL_HYPERCITE	    4
 #define LABEL_CITE			5
 #define LABEL_HYPERPAGEREF	6
 #define LABEL_PAGEREF		7
 #define LABEL_HTMLADDNORMALREF 8
 #define LABEL_HTMLREF       9
 #define LABEL_EQREF			10
+#define LABEL_VREF          11
 
 #define BIBSTYLE_STANDARD   1
 #define BIBSTYLE_APALIKE    2

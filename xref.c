@@ -654,6 +654,7 @@ void CmdLabel(int code)
         case LABEL_HYPERREF:
         case LABEL_REF:
         case LABEL_EQREF:
+        case LABEL_VREF:
             signet = strdup_nobadchars(text);
             s = ScanAux("newlabel", text, 1);
             if (code == LABEL_EQREF)
@@ -671,9 +672,21 @@ void CmdLabel(int code)
             if (code == LABEL_EQREF)
                 fprintRTF(")");
 
+            if (code == LABEL_VREF) {
+            	fprintRTF(" ");
+				if (g_fields_use_REF) {
+					fprintRTF("{\\field{\\*\\fldinst{\\lang1024 PAGEREF BM%s \\\\p }}", signet);
+					fprintRTF("{\\fldrslt{");
+				}
+				fprintRTF("%s", signet);
+				if (g_fields_use_REF)
+					fprintRTF("}}}");
+            }
+
             free(signet);
             if (s)
                 free(s);
+                            
             break;
 
         case LABEL_HYPERPAGEREF:
@@ -688,6 +701,8 @@ void CmdLabel(int code)
                 fprintRTF("}}}");
             free(signet);
             break;
+
+
     }
 
     free(text);

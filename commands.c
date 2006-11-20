@@ -238,6 +238,7 @@ static CommandArray commands[] = {
     {"endnotemark", CmdIgnoreParameter, One_Opt_No_NormParam},
     {"label", CmdLabel, LABEL_LABEL},
     {"ref", CmdLabel, LABEL_REF},
+    {"vref", CmdLabel, LABEL_VREF},
     {"eqref", CmdLabel, LABEL_EQREF},
     {"pageref", CmdLabel, LABEL_PAGEREF},
     {"cite", CmdCite, CITE_CITE},
