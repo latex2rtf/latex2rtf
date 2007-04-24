@@ -21,7 +21,7 @@
 #set -x  # uncomment for debugging
 #
 
-DVIPS="dvips -q -E -R"
+DVIPS="dvips -q -l 1 -E -R"
 GHOSTSCRIPT="gs -dQUIET -dNOPAUSE -dBATCH -dSAFER"
 LATEX="latex --interaction batchmode"
 PNMCROP="pnmcrop"

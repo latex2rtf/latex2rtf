@@ -60,7 +60,7 @@ latex -quiet --interaction batchmode %fn%
 set TEXINPUTS=
 IF NOT EXIST %fn%.dvi GOTO ERR2
 
-dvips -q -o %fn%.eps %fn%.dvi
+dvips -q -l 1 -o %fn%.eps %fn%.dvi
 
 :NOTEX
 IF NOT EXIST %fn%.eps GOTO ERR3
