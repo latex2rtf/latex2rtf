@@ -46,7 +46,7 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#dir">(dir)</a>
 </ul>
 
    <p>Copyright 1998-2002 Georg Lehner,<br>
-updates Copyright 1999-2005 by Wilfried Hennings and Scott Prahl,<br>
+updates Copyright 1999-2007 by Wilfried Hennings and Scott Prahl,<br>
 with contributions by Mikhail Polianski.
 
    <p>Permission is granted to make and distribute verbatim copies of this
@@ -195,8 +195,8 @@ all versions of MS Windows.
 <a href="http://sourceforge.net/projects/latex2rtf/">SourceForge</a> and &mdash; with some delay &mdash; on
 CTAN sites: e.g., <a href="http://www.dante.de">http://www.dante.de</a> or <a href="http://www.ctan.org">http://www.ctan.org</a>.
 
-   <p>The MS-DOS version (1.8aa and up) will also run under all MS Windows versions. It requires
-an i386 processor or better.
+   <p>The MS-DOS version (1.8aa and up) will also run under all MS Windows versions
+(probably except Windows Vista). It requires an i386 processor or better.
 
    <p>The Win32 distribution (starting from LaTeX2RTF
  1.9.15) is the MS-DOS version
@@ -295,21 +295,32 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Installation">Installation</a>
 <h3 class="section">2.4 DOS or Windows</h3>
 
 <p>The <acronym>UNIX</acronym> and Mac distributions do not contain an executable for DOS
-Windows. 
+or Windows. 
 Instead, get the DOS port as file <span class="file">latex2rtf-x.x.x_dos.zip</span>
 or the Windows (Win32 = Win95, Win98, WinME, WinNT, Win2000, WinXP) version as
 file <span class="file">latex2rtf-x.x.x_win.exe</span> (where x.x.x is the version number) from
 <a href="http://sourceforge.net/projects/latex2rtf/">SourceForge</a><br>
 
-   <p>The DOS distribution contains a precompiled executable which should run
-under plain DOS and also in the command prompt (or "console")
-of any MS Windows system.<br>
+   <p>The DOS distribution contains a precompiled executable (djgpp compiler)
+which should run under plain DOS and also in the command prompt
+(or "console") of any MS Windows system up to XP and Server 2003.<br>
+However in Windows Vista the DPMI memory is limited to 32 MB, and
+we yet don't know whether this is sufficient to run LaTeX2RTF
+ or not,
+so please tell us any experiences regarding Windows Vista.<br>
+If the memory limitation under Windows Vista turns out to be a problem,
+one can use an executable compiled with Cygwin,
+but for now this isn't provided in the distributions.<br>
+Moreover, the command processor "command.com" is not provided by Vista,
+so conversion of pictures and of equations to bitmaps will definitely
+not work under Vista.
 
    <p>The Win32 version starting from 1.9.14a has the same executable but
 additionally an optional Win32 GUI interface (LaTeX2RTF Shell)
 and is wrapped in an automatic installer, see <a href="#Win32-systems">Win32 systems</a>.<br>
 
-   <p>To install latex2rtf, extract all files from the zip archive to <span class="file">C:\l2r</span>
+   <p>To install LaTeX2RTF
+, extract all files from the zip archive to <span class="file">C:\l2r</span>
 or to another folder (i.e. directory) of your choice,
 preserving the folder structure (winzip: check "use folder names").<br>
 If you extracted them to another folder (e.g. <span class="file">C:\Program Files\l2r</span>),
@@ -392,7 +403,8 @@ before calling <span class="file">l2r</span>, <span class="file">l2rsem</span> o
 Under Windows you can create another command prompt link in which you
 can include the call to <span class="file">L2RPREP.BAT</span>.
 
-   <p>LaTeX2RTF
+   <p>When equations are to be converted to bitmaps, for each equation
+LaTeX2RTF
  first writes a temporary .tex file to disk which consists of only
 the equation to be converted. It then sends the call for latex2pn.bat to
 the operating system. There were problems that this didn't work although

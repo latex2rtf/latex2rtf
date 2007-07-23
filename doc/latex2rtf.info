@@ -23,7 +23,7 @@ RTF.
 * Index::
 
    Copyright 1998-2002 Georg Lehner,
-updates Copyright 1999-2005 by Wilfried Hennings and Scott Prahl,
+updates Copyright 1999-2007 by Wilfried Hennings and Scott Prahl,
 with contributions by Mikhail Polianski.
 
    Permission is granted to make and distribute verbatim copies of this
@@ -145,7 +145,8 @@ The latest version of LaTeX2RTF  is available at SourceForge
 on CTAN sites: e.g., `http://www.dante.de' or `http://www.ctan.org'.
 
    The MS-DOS version (1.8aa and up) will also run under all MS Windows
-versions. It requires an i386 processor or better.
+versions (probably except Windows Vista). It requires an i386 processor
+or better.
 
    The Win32 distribution (starting from LaTeX2RTF  1.9.15) is the
 MS-DOS version plus Win32 GUI program (l2rshell).
@@ -230,20 +231,30 @@ File: latex2rtf.info,  Node: DOS or Windows,  Next: Win32 systems,  Prev: UNIX, 
 2.4 DOS or Windows
 ==================
 
-The UNIX and Mac distributions do not contain an executable for DOS
+The UNIX and Mac distributions do not contain an executable for DOS or
 Windows.  Instead, get the DOS port as file `latex2rtf-x.x.x_dos.zip'
 or the Windows (Win32 = Win95, Win98, WinME, WinNT, Win2000, WinXP)
 version as file `latex2rtf-x.x.x_win.exe' (where x.x.x is the version
 number) from SourceForge (http://sourceforge.net/projects/latex2rtf/)
-The DOS distribution contains a precompiled executable which should run
-under plain DOS and also in the command prompt (or "console") of any MS
-Windows system.
-The Win32 version starting from 1.9.14a has the same executable but
+The DOS distribution contains a precompiled executable (djgpp compiler)
+which should run under plain DOS and also in the command prompt (or
+"console") of any MS Windows system up to XP and Server 2003.
+However in Windows Vista the DPMI memory is limited to 32 MB, and we
+yet don't know whether this is sufficient to run LaTeX2RTF  or not, so
+please tell us any experiences regarding Windows Vista.
+If the memory limitation under Windows Vista turns out to be a problem,
+one can use an executable compiled with Cygwin, but for now this isn't
+provided in the distributions.
+Moreover, the command processor "command.com" is not provided by Vista,
+so conversion of pictures and of equations to bitmaps will definitely
+not work under Vista.
+
+   The Win32 version starting from 1.9.14a has the same executable but
 additionally an optional Win32 GUI interface (LaTeX2RTF Shell) and is
 wrapped in an automatic installer, see *Note Win32 systems::.
-To install latex2rtf, extract all files from the zip archive to `C:\l2r'
-or to another folder (i.e. directory) of your choice, preserving the
-folder structure (winzip: check "use folder names").
+To install LaTeX2RTF , extract all files from the zip archive to
+`C:\l2r' or to another folder (i.e. directory) of your choice,
+preserving the folder structure (winzip: check "use folder names").
 If you extracted them to another folder (e.g. `C:\Program Files\l2r'),
 edit the files `L2R.BAT', `L2RSEM.BAT' and `L2RPREP.BAT' and change the
 folder `C:\l2r' to where you put them.  If there is a blank in any of
@@ -323,8 +334,9 @@ before calling `l2r', `l2rsem' or `latex2rt'.  Under Windows you can
 create another command prompt link in which you can include the call to
 `L2RPREP.BAT'.
 
-   LaTeX2RTF  first writes a temporary .tex file to disk which consists
-of only the equation to be converted. It then sends the call for
+   When equations are to be converted to bitmaps, for each equation
+LaTeX2RTF  first writes a temporary .tex file to disk which consists of
+only the equation to be converted. It then sends the call for
 latex2pn.bat to the operating system. There were problems that this
 didn't work although manually calling latex2pn.bat from the command
 prompt worked.
@@ -1392,42 +1404,42 @@ Node: Introduction1375
 Node: Installation4307
 Node: General4604
 Node: Obtaining LaTeX2RTF4947
-Node: UNIX5877
-Node: DOS or Windows8655
-Node: Win32 systems14354
-Node: Macintosh16059
-Node: Problems Compiling16986
-Node: Problems with make check17684
-Node: Using LaTeX2RTF18210
-Node: General Assumptions18415
-Node: LaTeX2RTF Options20253
-Node: Debugging27355
-Node: Features28000
-Node: LaTeX2e28401
-Node: Input Encoding28717
-Node: Language Support29473
-Node: Cross References30999
-Node: Equations33630
-Node: Math and Special Symbols34903
-Node: Tables36524
-Node: Graphics36723
-Node: Pagestyles37087
-Node: Hyperlatex37691
-Node: Configuration38767
-Node: Input processing39058
-Node: Output formatting40441
-Node: Direct Conversion41194
-Node: Ignore Command42832
-Node: Font Configuration44545
-Node: Language Configuration45855
-Node: Error Messages and Logging46474
-Node: History48572
-Node: LaTeX2RTF under Development50450
-Node: Unimplemented Features50721
-Node: Missing options51547
-Node: Known Bugs52128
-Node: Reporting Bugs53019
-Node: Todo List54662
-Node: Index55496
+Node: UNIX5909
+Node: DOS or Windows8687
+Node: Win32 systems15035
+Node: Macintosh16740
+Node: Problems Compiling17667
+Node: Problems with make check18365
+Node: Using LaTeX2RTF18891
+Node: General Assumptions19096
+Node: LaTeX2RTF Options20934
+Node: Debugging28036
+Node: Features28681
+Node: LaTeX2e29082
+Node: Input Encoding29398
+Node: Language Support30154
+Node: Cross References31680
+Node: Equations34311
+Node: Math and Special Symbols35584
+Node: Tables37205
+Node: Graphics37404
+Node: Pagestyles37768
+Node: Hyperlatex38372
+Node: Configuration39448
+Node: Input processing39739
+Node: Output formatting41122
+Node: Direct Conversion41875
+Node: Ignore Command43513
+Node: Font Configuration45226
+Node: Language Configuration46536
+Node: Error Messages and Logging47155
+Node: History49253
+Node: LaTeX2RTF under Development51131
+Node: Unimplemented Features51402
+Node: Missing options52228
+Node: Known Bugs52809
+Node: Reporting Bugs53700
+Node: Todo List55343
+Node: Index56177
 
 End Tag Table
