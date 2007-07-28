@@ -919,7 +919,8 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first)
 				ConvertString(g_bibpunct_author_date_sep);
 				fprintRTF(" ");			
 			} else {			
-				fprintRTF(", ");
+                ConvertString(g_bibpunct_numbers_sep);
+				fprintRTF(" ");
 			}
 			
 			ConvertString(year);
