@@ -549,7 +549,7 @@ static void CmdUseOnepackage(char* package, char *options)
        set_compressed_citations();
 
     } else if (strcmp(package, "natbib") == 0) {
-        if (options && strstr(options, ""))
+        if (options && strstr(options, "longnamesfirst"))
             set_longnamesfirst();
         if (options && strstr(options, "super"))
             set_bibpunct_style_super();
