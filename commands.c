@@ -773,11 +773,11 @@ static CommandArray natbibCommands[] = {
     {"citeauthor*", CmdNatbibCite, CITE_AUTHOR_STAR},
     {"citeyear", CmdNatbibCite, CITE_YEAR},
     {"citeyearpar", CmdNatbibCite, CITE_YEAR_P},
-    {"Citet", CmdNatbibCite, CITE_T},
-    {"Citep", CmdNatbibCite, CITE_P},
-    {"Citealt", CmdNatbibCite, CITE_ALT},
-    {"Citealp", CmdNatbibCite, CITE_ALP},
-    {"Citeauthor", CmdNatbibCite, CITE_AUTHOR},
+    {"Citet", CmdNatbibCite, CITE_T_CAP},
+    {"Citep", CmdNatbibCite, CITE_P_CAP},
+    {"Citealt", CmdNatbibCite, CITE_ALT_CAP},
+    {"Citealp", CmdNatbibCite, CITE_ALP_CAP},
+    {"Citeauthor", CmdNatbibCite, CITE_AUTHOR_CAP},
     {"bibpunct", CmdBibpunct, 0},
     {"", NULL, 0}
 };

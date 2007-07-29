@@ -50,6 +50,12 @@
 #define CITE_AUTHOR_STAR   26
 #define CITE_YEAR_P        27
 
+#define CITE_T_CAP         128
+#define CITE_P_CAP         129
+#define CITE_ALT_CAP       130
+#define CITE_ALP_CAP       131
+#define CITE_AUTHOR_CAP    132
+
 #define CITE_AS_NOUN            28
 #define CITE_POSSESSIVE         29
 #define CITE_AFFIXED            30

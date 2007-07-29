@@ -819,6 +819,7 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first)
 
         case CITE_T:
         case CITE_T_STAR:
+        case CITE_T_CAP:
             v = abbv;
             if (CITE_T == code && g_citation_longnamesfirst && !g_current_cite_seen)
                 if (!isEmptyName(full))
@@ -860,6 +861,7 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first)
 
         case CITE_ALT:
         case CITE_ALT_STAR:
+        case CITE_ALT_CAP:
             v = abbv;
 
             if (strcmp(v, g_last_author_cited) == 0)
@@ -897,6 +899,7 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first)
             break;
             
         case CITE_P:
+        case CITE_P_CAP:
             v = abbv;
 
             if (strcmp(v, g_last_author_cited) == 0)
@@ -939,6 +942,7 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first)
         case CITE_P_STAR:
         case CITE_ALP:
         case CITE_ALP_STAR:
+        case CITE_ALP_CAP:
             v = abbv;
             if (CITE_P == code && g_citation_longnamesfirst && !g_current_cite_seen)
                 if (!isEmptyName(full))
@@ -999,6 +1003,7 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first)
 
         case CITE_AUTHOR:
         case CITE_AUTHOR_STAR:
+        case CITE_AUTHOR_CAP:
             v = abbv;
             if (!first) {
             	ConvertString(g_bibpunct_cite_sep);
