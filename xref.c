@@ -810,7 +810,11 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first, i
             if (strcmp(v, g_last_author_cited) == 0)
                 author_repeated = TRUE;
 
+	    if (strncmp(year, g_last_year_cited, 4) == 0)   /* over simplistic test * ... */
+		year_repeated = TRUE;
+
             if (!first && !author_repeated) {
+		ConvertString(g_bibpunct_close);
             	ConvertString(g_bibpunct_cite_sep);
                 fprintRTF(" ");
             }
@@ -832,31 +836,43 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first, i
                 author_repeated = TRUE;
 
             if (!first && !author_repeated) {
+		ConvertString(g_bibpunct_close);
             	ConvertString(g_bibpunct_cite_sep);
                 fprintRTF(" ");
             }
 
-            if (!author_repeated) { /* suppress repeated names */
+	    if (!author_repeated) { /* suppress repeated names */
                 ConvertString(v);
                 strcpy(g_last_author_cited, v);
                 strcpy(g_last_year_cited, year);
-            }
-
-			if (g_bibpunct_style == BIB_STYLE_ALPHA){
+		if (g_bibpunct_style == BIB_STYLE_ALPHA) {
+			fprintRTF(" ");
+			ConvertString(g_bibpunct_open);
+			if (pre) {
+				ConvertString(pre);
 				fprintRTF(" ");
-				ConvertString(g_bibpunct_open);
-				
-				if (pre) {
-					ConvertString(pre);
-					fprintRTF(" "); 
-				}
-
-				ConvertString(year);
-				if (last && post && !isEmptyName(post)) {
-					ConvertString(g_bibpunct_postnote_sep);
-					ConvertString(post);
-				}
-				ConvertString(g_bibpunct_close);
+			}
+			ConvertString(year);
+		}
+	    } else if (g_bibpunct_style == BIB_STYLE_ALPHA) {
+		if (!year_repeated) {
+			ConvertString(g_bibpunct_numbers_sep);
+			fprintRTF(" ");
+			ConvertString(year);
+                } else {
+			char *s = strdup(year + 4);
+			ConvertString(g_bibpunct_numbers_sep);
+			ConvertString(s);
+			free(s);
+                }
+            }
+	    if (g_bibpunct_style == BIB_STYLE_ALPHA) {
+		if (last && post && !isEmptyName(post)) {
+			ConvertString(g_bibpunct_postnote_sep);
+			ConvertString(post);
+		}
+		if (last)
+			ConvertString(g_bibpunct_close);
             }
             break;
 
@@ -868,6 +884,9 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first, i
             if (strcmp(v, g_last_author_cited) == 0)
                 author_repeated = TRUE;
 
+	    if (strncmp(year, g_last_year_cited, 4) == 0)   /* over simplistic test * ... */
+                year_repeated = TRUE;
+
             if (!first && !author_repeated) {
             	ConvertString(g_bibpunct_cite_sep);
                 fprintRTF(" ");
@@ -877,17 +896,24 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first, i
                 ConvertString(v);
                 strcpy(g_last_author_cited, v);
                 strcpy(g_last_year_cited, year);
-            }
-
+		fprintRTF(" ");
+		if (pre) {
+			ConvertString(pre);
 			fprintRTF(" ");
-			
-			if (pre) {
-				ConvertString(pre);
-				fprintRTF(" ");
-			}
-
+		}
+		ConvertString(year);
+	    } else {
+		if (!year_repeated) {
+			ConvertString(g_bibpunct_numbers_sep);
+			fprintRTF(" ");
 			ConvertString(year);
-
+		} else {
+			char *s = strdup(year + 4);
+			ConvertString(g_bibpunct_numbers_sep);
+			ConvertString(s);
+			free(s);
+		}
+	    }
 			if (last && post && !isEmptyName(post)) {
 			        ConvertString(g_bibpunct_postnote_sep);
 				ConvertString(post);
@@ -900,6 +926,9 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first, i
 
             if (strcmp(v, g_last_author_cited) == 0)
                 author_repeated = TRUE;
+
+            if (strncmp(year, g_last_year_cited, 4) == 0)   /* over simplistic test * ... */
+                year_repeated = TRUE;
 
             if (!first && !author_repeated) {
             	ConvertString(g_bibpunct_cite_sep);
@@ -972,8 +1001,7 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first, i
                     ConvertString(year);
                 } else {
                     char *s = strdup(year + 4);
-
-                    fprintRTF(",");
+                    ConvertString(g_bibpunct_numbers_sep);
                     ConvertString(s);
                     free(s);
                 }
