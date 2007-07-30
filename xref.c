@@ -364,7 +364,7 @@ void CmdFootNote(int code)
     }
 
     ConvertString(text);
-    fprintRTF("}\n ");
+    fprintRTF("}\n");
     diagnostics(4, "Exiting CmdFootNote");
     free(text);
 }

@@ -194,6 +194,7 @@ static CommandArray commands[] = {
     {"subparagraph*", CmdSection, SECT_SUBSUBSUBSUB_STAR},
 
     {"ldots", CmdLdots, 0},
+    {"dotfill", CmdLdots, 0},
     {"title", CmdTitle, TITLE_TITLE},
     {"author", CmdTitle, TITLE_AUTHOR},
     {"and", CmdAnd, 0},

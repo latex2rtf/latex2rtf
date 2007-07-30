@@ -661,7 +661,7 @@ void CmdLdots( /* @unused@ */ int code)
     if (GetTexMode() != MODE_MATH && GetTexMode() != MODE_DISPLAYMATH)
         SetTexMode(MODE_HORIZONTAL);
 
-    fprintRTF("...");
+    fprintRTF("{\\'85}");
 }
 
 void Environment(int code)
