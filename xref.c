@@ -25,6 +25,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include "main.h"
 #include "util.h"
 #include "convert.h"
@@ -840,6 +841,10 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first, i
             	ConvertString(g_bibpunct_cite_sep);
                 fprintRTF(" ");
             }
+	    
+	    if (CITE_T_CAP == code) {
+	        v[1]=toupper(v[1]);
+	    }
 
 	    if (!author_repeated) { /* suppress repeated names */
                 ConvertString(v);
@@ -892,6 +897,10 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first, i
                 fprintRTF(" ");
             }
 
+	    if (CITE_ALT_CAP == code) {
+	        v[1]=toupper(v[1]);
+	    }
+
             if (!author_repeated) { /* suppress repeated names */
                 ConvertString(v);
                 strcpy(g_last_author_cited, v);
@@ -940,6 +949,10 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first, i
             	fprintRTF(" ");
             }
 
+	    if (CITE_P_CAP == code) {
+	        v[1]=toupper(v[1]);
+	    }
+
             if (!author_repeated) { /* suppress repeated names */
                 ConvertString(v);
                 strcpy(g_last_author_cited, v);
@@ -987,6 +1000,10 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first, i
                 fprintRTF(" ");
             }
 
+	    if (CITE_ALP_CAP == code) {
+	        v[1]=toupper(v[1]);
+	    }
+
             if (!author_repeated) { /* suppress repeated names */
                 ConvertString(v);
                 strcpy(g_last_author_cited, v);
@@ -1024,6 +1041,10 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first, i
             if (CITE_AUTHOR == code && g_citation_longnamesfirst && !g_current_cite_seen)
 	      if (!isEmptyName(full))
                 v = full;
+
+	    if (CITE_AUTHOR_CAP == code) {
+	        v[1]=toupper(v[1]);
+	    }
 
             if (CITE_AUTHOR_STAR == code)
                 if (!isEmptyName(full))
