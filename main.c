@@ -770,9 +770,7 @@ purpose: output filter to escape characters written to an RTF file
 		 all output to the RTF file passes through this routine or the one below
  ****************************************************************************/
 {
-	if ((unsigned char) cThis > 127)
-        WriteEightBitChar(cThis);
-    else if (cThis == '\\')
+	if (cThis == '\\')
         fprintf(fRtf, "\\\\");
     else if (cThis == '{')
         fprintf(fRtf, "\\{");
@@ -781,7 +779,7 @@ purpose: output filter to escape characters written to an RTF file
     else if (cThis == '\n')
         fprintf(fRtf, "\n\\par ");
     else
-        fputc(cThis, fRtf);
+        WriteEightBitChar(cThis);
 }
 
 void fprintRTF(char *format, ...)
@@ -804,24 +802,19 @@ purpose: output filter to track of brace depth and font settings
 
     while (*text) {
 
-        if ((unsigned char) *text > 127) {
-
-            WriteEightBitChar(text[0]);
-
-        } else {
-            fputc(*text, fRtf);
-
-            if (*text == '{' && last != '\\')
-                PushFontSettings();
-
-            if (*text == '}' && last != '\\')
-                PopFontSettings();
-
-            if (*text == '\\' && last != '\\')
-                MonitorFontChanges(text);
-        }
-        last= *text;
-        text++;
+		WriteEightBitChar(text[0]);
+	
+		if (*text == '{' && last != '\\')
+			PushFontSettings();
+	
+		if (*text == '}' && last != '\\')
+			PopFontSettings();
+	
+		if (*text == '\\' && last != '\\')
+			MonitorFontChanges(text);
+	
+		last= *text;
+		text++;
     }
 }
 

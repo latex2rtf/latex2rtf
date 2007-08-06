@@ -1297,6 +1297,11 @@ void WriteEightBitChar(char cThis)
 {
     int index = (int) cThis + 128;
 
+	if ( (unsigned char) cThis <= 127) {
+		fputc(cThis, fRtf);
+		return;
+	}
+
     diagnostics(5, "WriteEightBitChar char=%d index=%d encoding=%s", (int) cThis, index, g_charset_encoding_name);
 
     if (strcmp(g_charset_encoding_name, "raw") == 0)
