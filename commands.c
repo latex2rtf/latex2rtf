@@ -339,6 +339,20 @@ static CommandArray commands[] = {
     {"rightleftarrows", CmdArrows, RIGHT_LEFT},
     {"longleftrightarrows", CmdArrows, LONG_LEFTRIGHT},
     {"longrightleftarrows", CmdArrows, LONG_RIGHTLEFT},
+/*  used to sort out the horrible horrible things that Microsoft
+    has done to unicode
+    {"equiv",          CmdMathChar, EQN_MATH_EQUIV},
+    {"leftarrow",      CmdMathChar, EQN_MATH_LEFTARROW},
+    {"uparrow",        CmdMathChar, EQN_MATH_UPARROW},
+    {"rightarrow",     CmdMathChar, EQN_MATH_RIGHTARROW},
+    {"downarrow",      CmdMathChar, EQN_MATH_DOWNARROW},
+    {"leftrightarrow", CmdMathChar, EQN_MATH_LEFTRIGHTARROW},
+    {"updownarrow",    CmdMathChar, EQN_MATH_UPDOWNARROW},
+    {"nwarrow",        CmdMathChar, EQN_MATH_NWARROW},
+    {"nearrow",        CmdMathChar, EQN_MATH_NEARROW},
+    {"searrow",        CmdMathChar, EQN_MATH_SEARROW},
+    {"swarrow",        CmdMathChar, EQN_MATH_SWARROW},
+*/    
     {"nonumber", CmdNonumber, EQN_NO_NUMBER},
     {"notag", CmdNonumber, EQN_NO_NUMBER},
     {"char", CmdChar, 0},
