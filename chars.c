@@ -1092,7 +1092,7 @@ void CmdChar(int code)
             break;
 
         default:
-            putRtfChar((char) num);
+            putRtfCharEscaped((char) num);
             break;
     }
 }

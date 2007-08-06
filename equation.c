@@ -251,11 +251,11 @@ static void WriteEquationAsComment(char *pre, char *eq, char *post)
 {
     fprintRTF("{\\field{\\*\\fldinst{ COMMENTS \" ");
     while (*pre)
-        putRtfChar(*pre++);
+        putRtfCharEscaped(*pre++);
     while (*eq)
-        putRtfChar(*eq++);
+        putRtfCharEscaped(*eq++);
     while (*post)
-        putRtfChar(*post++);
+        putRtfCharEscaped(*post++);
     fprintRTF("\" }{ }}{\\fldrslt }}");
 }
 
@@ -1432,9 +1432,9 @@ void CmdLeftRight(int code)
 
     } else {                    /* g_fields_use_EQ */
 
-        putRtfChar(ldelim);
+        putRtfCharEscaped(ldelim);
         ConvertString(contents);
-        putRtfChar(rdelim);
+        putRtfCharEscaped(rdelim);
     }
 
     if (lcommand) free(lcommand);

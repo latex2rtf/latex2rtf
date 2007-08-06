@@ -1388,7 +1388,7 @@ void CmdVerb(int code)
             s = text;
             diagnostics(4, "CmdVerbatim \\url{%s}", text);
             while (*s) {
-                putRtfChar(*s);
+                putRtfCharEscaped(*s);
                 s++;
             }
             fprintRTF("}");
@@ -1411,7 +1411,7 @@ void CmdVerb(int code)
 
 
     while ((cThis = getRawTexChar()) && cThis != markingchar)
-        putRtfChar(cThis);
+        putRtfCharEscaped(cThis);
 
     fprintRTF("}");
 }
@@ -1469,7 +1469,7 @@ void CmdVerbatim(int code)
 
             while (*vptr) {
                 diagnostics(5, "Verbatim character <%c>", *vptr);
-                putRtfChar(*vptr++);
+                putRtfCharEscaped(*vptr++);
             }
         }
 

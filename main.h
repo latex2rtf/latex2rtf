@@ -142,7 +142,7 @@ extern bool		g_little_endian;
 extern bool		g_tableofcontents;
 
 void fprintRTF(char *format, ...);
-void putRtfChar(char cThis);
+void putRtfCharEscaped(char cThis);
 char *getTmpPath(void);
 char *my_strdup(const char *str);
 FILE *my_fopen(char *path, char *mode);

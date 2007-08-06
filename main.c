@@ -556,7 +556,7 @@ purpose: Writes the message to stderr depending on debugging level
                     vsnprintf(buffer, 512, format, apf);
                     fprintRTF("{\\plain\\cf2 [latex2rtf:");
                     while (*buff_ptr) {
-                        putRtfChar(*buff_ptr);
+                        putRtfCharEscaped(*buff_ptr);
                         buff_ptr++;
                     }
                     fprintRTF("]}");
@@ -763,30 +763,31 @@ globals: g_tex_name;
     diagnostics(4, "Closed RTF file");
 }
 
-void putRtfChar(char cThis)
+void putRtfCharEscaped(char cThis)
 
 /****************************************************************************
-purpose: output filter to escape characters written to an RTF file
-		 all output to the RTF file passes through this routine or the one below
+purpose: output a single escaped character to the RTF file
+         this is primarily useful for the verbatim-like enviroments
  ****************************************************************************/
 {
 	if (cThis == '\\')
-        fprintf(fRtf, "\\\\");
+        fprintRTF("%s","\\\\");
     else if (cThis == '{')
-        fprintf(fRtf, "\\{");
+        fprintRTF("%s", "\\{");
     else if (cThis == '}')
-        fprintf(fRtf, "\\}");
+        fprintRTF("%s", "\\}");
     else if (cThis == '\n')
-        fprintf(fRtf, "\n\\par ");
+        fprintRTF("%s", "\n\\par ");
     else
-        WriteEightBitChar(cThis);
+        fprintRTF("%c",cThis);
 }
 
 void fprintRTF(char *format, ...)
 
 /****************************************************************************
-purpose: output filter to track of brace depth and font settings
-		 all output to the RTF file passes through this routine or the one above
+purpose: output a formatted string to the RTF file.  It is assumed that the
+         formatted string has been properly escaped for the RTF file.  
+         *ALL* output to the RTF file passes through this routine.
  ****************************************************************************/
 {
     char buffer[1024];

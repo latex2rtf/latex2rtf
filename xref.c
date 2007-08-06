@@ -547,7 +547,7 @@ void CmdIndex(int code)
         if (r)
             s = r + 1;
         ConvertString(s);
-        /* while (*s && *s != '@') putRtfChar(*s++); */
+        /* while (*s && *s != '@') fprintRTF("%c",*s++); */
         if (t) {
             fprintRTF("\\:");
             t++;

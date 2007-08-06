@@ -171,7 +171,7 @@ void ConvertAllttString(char *s)
                     break;
 
                 default:
-                    putRtfChar(cThis);
+                    fprintRTF("%c",cThis);
                     break;
             }
         }

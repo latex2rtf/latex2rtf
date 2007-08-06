@@ -864,13 +864,13 @@ void CmdTabular(int code)
         fprintRTF("\\pard\\ql\\b0\\i0\\scaps0\\f%d ", num);
         p = begin;
         while (*p)
-            putRtfChar(*p++);
+            fprintRTF("%c",*p++);
         p = table;
         while (*p)
-            putRtfChar(*p++);
+            fprintRTF("%c",*p++);
         p = end;
         while (*p)
-            putRtfChar(*p++);
+            fprintRTF("%c",*p++);
 
     } else {
 
