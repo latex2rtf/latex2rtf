@@ -1,2 +1,2 @@
 bool TryDirectConvert(char *command);
-void WriteFontName(const char **buffpoint);
+int WriteFontName(const char **buffpoint);

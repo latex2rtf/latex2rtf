@@ -27,6 +27,7 @@ Authors:
 
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include "main.h"
 #include "direct.h"
 #include "fonts.h"
@@ -35,7 +36,7 @@ Authors:
 
 #define MAXFONTLEN 100
 
-void WriteFontName(const char **buffpoint)
+int WriteFontName(const char **buffpoint)
 
 /******************************************************************************
   purpose: reads the fontname at buffpoint and writes the appropriate font
@@ -53,7 +54,7 @@ void WriteFontName(const char **buffpoint)
     buff = *buffpoint;
     if (**buffpoint == '*') {
         fprintRTF("*");
-        return;
+        return -1;
     }
 
     i = 0;
@@ -73,6 +74,32 @@ void WriteFontName(const char **buffpoint)
         diagnostics(ERROR, "Unknown font <%s>\nFound in cfg file command <%s>", fontname, buff);
     else
         fprintRTF("%u", (unsigned int) fnumber);
+    
+    return fnumber;
+}
+
+/* skip something that looks like \u-1234 */
+void SkipUnicodeSequence(char **buffpoint)
+{
+    char *p;
+    p = *buffpoint + 1;
+    
+	if (*p != '\0' && *p == '\\') {
+		p++;
+		if (*p != '\0' && *p == 'u') {
+			p++;
+			if (*p != '\0' && *p == '-') {
+				p++;
+				
+				/* assume it is good ... skip all the numbers */
+				while (*p != '\0' && isdigit(*p) ) p++;
+				p--;
+				
+				/* only touch buffpoint if everything worked as expected */
+				*buffpoint = p;
+			}
+		}
+	}
 }
 
 bool TryDirectConvert(char *command)
@@ -85,6 +112,8 @@ bool TryDirectConvert(char *command)
     const char *buffpoint;
     const char *RtfCommand;
     char *TexCommand;
+    int font_number;
+    int symbol_font_number = RtfFontNumber("Symbol");
 
     TexCommand = strdup_together("\\", command);
     RtfCommand = SearchRtfCmd(TexCommand, DIRECT_A);
@@ -94,9 +123,19 @@ bool TryDirectConvert(char *command)
     buffpoint = RtfCommand;
     diagnostics(4, "Directly converting %s to %s", TexCommand, RtfCommand);
     while (buffpoint[0] != '\0') {
-        if (buffpoint[0] == '*')
-            WriteFontName(&buffpoint);
-        else
+        if (buffpoint[0] == '*') {
+            font_number = WriteFontName(&buffpoint);
+            
+            /* this is a hack for Word.  Basically Word is broken when 
+               characters from the Symbol font are used in equations with fields 
+               the extra bit of information needed to make them work is encoded
+               in direct.cfg, but the Unicode sequence is completely bogus.  
+               SO, it must only be emitted when g_processing_eqn_field is true 
+           */
+            if (font_number == symbol_font_number && !g_processing_fields) 
+            	SkipUnicodeSequence((char **) &buffpoint);
+
+        } else
             fprintRTF("%c", *buffpoint);
 
         ++buffpoint;
