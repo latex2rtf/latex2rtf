@@ -110,8 +110,9 @@ or better.
    The Win32 distribution (starting from LaTeX2RTF  1.9.15) is the
 MS-DOS version plus Win32 GUI program (l2rshell).
 
-   There is one person working on LaTeX2RTF , coordinated by Wilfried
-Hennings (W.Hennings "at" fz-juelich.de).  See the SourceForge
+   There is one person working on LaTeX2RTF , and some more make
+contributions, coordinated by Wilfried Hennings (W.Hennings "at"
+fz-juelich.de).  See the SourceForge
 (http://sourceforge.net/projects/latex2rtf/) project pages for the
 latest news.
 
@@ -455,14 +456,16 @@ the new file look similar to the original.  The command line syntax is:
      used to specify the character set (code page) used in the LaTeX
      document. This is only important when non-ansi characters are
      included in the LaTeX  document. Typically this is done in a
-     LaTeX2e  file by using `\usepackage[codepage]{inputenc}' This
-     command is not needed if the above command is already in the
-     LaTeX2e  file.  You may select any of the following code pages:
-     ansinew, applemac, cp437, cp437de, cp850, cp852, cp865, decmulti,
-     cp1250, cp1252, latin1, latin2, latin3, latin4, latin5, latin9,
-     next.  The default behavior is to use ansinew (code page 1252).
-     Cyrillic support includes conversion of koi8-r, koi8-u, cp1251,
-     cp855, cp866, maccyr, and macukr encodings.
+     LaTeX2e  file by using `\usepackage[codepage]{inputenc}' and in
+     this case you need not specify the -C codepage option.  If NO
+     `\usepackage[codepage]{inputenc}' is in the LaTeX2e  file, you must
+     inform the converter about the codepage by the -C codepage option.
+     You may select any of the following code pages: ansinew, applemac,
+     cp437, cp437de, cp850, cp852, cp865, decmulti, cp1250, cp1252,
+     latin1, latin2, latin3, latin4, latin5, latin9, next.  The default
+     behavior is to use ansinew (code page 1252).  Cyrillic support
+     includes conversion of koi8-r, koi8-u, cp1251, cp855, cp866,
+     maccyr, and macukr encodings.
 
 `-d debug_level'
      The `-d' option determines the amount of debugging information to
@@ -782,8 +785,7 @@ Required fonts are:
    * "MT Extra". This font is installed with the Microsoft Equation
      Editor, which comes with Microsoft Word, or its full version
      MathType.  If you don't have Word or MathType, you can get this
-     font from `http://www.mathtype.com/en/dl/fonts/' or (in German)
-     `http://www.mathtype.com/de/support/fonts/default.stm'
+     font from `http://www.mathtype.com/en/dl/fonts/'
 
    * "Lucida Sans Unicode" which contains many symbols that aren't in
      the first three fonts. This is a new feature in LaTeX2RTF  version

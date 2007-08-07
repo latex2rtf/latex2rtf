@@ -221,7 +221,8 @@ The MS-DOS version (1.8aa and up) will also run under all MS Windows versions
 The Win32 distribution (starting from @ltor{} 1.9.15) is the MS-DOS version 
 plus Win32 GUI program (l2rshell).
 
-There is one person working on @ltor{}, coordinated by
+There is one person working on @ltor{}, and some more make 
+contributions, coordinated by
 Wilfried Hennings (W.Hennings "at" fz-juelich.de). 
 See the @uref{http://sourceforge.net/projects/latex2rtf/,SourceForge} 
 project pages for the latest news.
@@ -578,8 +579,10 @@ created by running @file{inputfile.aux} through @file{bibtex}.
 @item -C codepage
 used to specify the character set (code page) used in the @latex{} document. This is only
 important when non-ansi characters are included in the @latex{} document. Typically this
-is done in a @latexe{} file by using @code{\usepackage[codepage]@{inputenc@}} This command
-is not needed if the above command is already in the @latexe{} file.  You may select any
+is done in a @latexe{} file by using @code{\usepackage[codepage]@{inputenc@}}
+and in this case you need not specify the -C codepage option.
+If NO @code{\usepackage[codepage]@{inputenc@}} is in the @latexe{} file, you must
+inform the converter about the codepage by the -C codepage option. You may select any
 of the following code pages: ansinew, applemac, cp437, cp437de, cp850, cp852, cp865,
 decmulti, cp1250, cp1252, latin1, latin2, latin3, latin4, latin5, latin9, next.  The
 default behavior is to use ansinew (code page 1252).  Cyrillic support includes
@@ -901,8 +904,6 @@ or "Times New Roman" is standard on all systems, but not its Unicode extension.
 which comes with Microsoft Word, or its full version MathType. 
 If you don't have Word or MathType, you can get this font from 
 @uref{http://www.mathtype.com/en/dl/fonts/}
-or (in German)
-@uref{http://www.mathtype.com/de/support/fonts/default.stm}
 
 @item "Lucida Sans Unicode" which contains many symbols that 
 aren't in the first three fonts. This is a new feature 
