@@ -1041,6 +1041,15 @@ parameter: 0=\lim, 1=\limsup, 2=\liminf
     free(s);
 }
 
+static void emit_symbol_char(int fontnum, int unicode, char *hex)
+{
+	if (g_processing_fields) 
+		fprintRTF("{\\f%d\\u%d\\'%s}", fontnum, unicode, hex);
+	else
+        fprintRTF("{\\f%d\\'%s}", fontnum, hex);
+}
+
+
 void CmdIntegral(int code)
 
 /******************************************************************************
@@ -1097,7 +1106,7 @@ parameter: type of operand
 
     if (g_fields_use_EQ) {
 
-        fprintRTF(" \\\\I");
+        fprintRTF(" \\\\i ");
         switch (code) {
             case 4:
                 if (limits)
@@ -1139,19 +1148,25 @@ parameter: type of operand
         int symfont = RtfFontNumber("Symbol");
 
         switch (code) {
-            case 4:
-                fprintRTF("{\\f%d\\'f2}", symfont); /* \iiint --- fall through */
-            case 3:
-                fprintRTF("{\\f%d\\'f2}", symfont); /* \iint --- fall through */
             case 0:
-                fprintRTF("{\\f%d\\'f2}", symfont);
+                emit_symbol_char(symfont, -3854, "f2");
                 break;
             case 1:
-                fprintRTF("{\\f%d\\'e5}", symfont);
+                emit_symbol_char(symfont, -3867, "e5");
                 break;
             case 2:
-                fprintRTF("{\\f%d\\'d5}", symfont);
+                emit_symbol_char(symfont, -3883, "d5");
                 break;
+            case 3:  /* \iint  */
+                emit_symbol_char(symfont, -3854, "f2");
+                emit_symbol_char(symfont, -3854, "f2");
+                break;
+            case 4:  /* \iiint  */
+                emit_symbol_char(symfont, -3854, "f2");
+                emit_symbol_char(symfont, -3854, "f2");
+                emit_symbol_char(symfont, -3854, "f2");
+                break;
+                
             default:
                 diagnostics(ERROR, "Illegal code to CmdIntegral");
         }
