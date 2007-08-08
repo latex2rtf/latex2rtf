@@ -36,6 +36,7 @@ void CmdLatin2Char(int code);
 void CmdCyrillicStrChar(char *s);
 void CmdEuro(int code);
 void CmdDegreeCelsius(int code);
+void CmdMTExtraChar(int code);
 
 #define IERF 1
 #define IEREF 2
@@ -70,3 +71,35 @@ void CmdDegreeCelsius(int code);
 #define FRENCH_OG 30
 #define FRENCH_FG 31
 
+#define MTEXTRA_TRIANGLELEFT   60
+#define MTEXTRA_TRIANGLERIGHT  62
+#define MTEXTRA_COPROD         67
+#define MTEXTRA_MHO            74
+#define MTEXTRA_CDOTS          76
+#define MTEXTRA_VDOTS          77
+#define MTEXTRA_DDOTS          79
+
+#define MTEXTRA_NEARROW        90
+#define MTEXTRA_SWARROW        91
+#define MTEXTRA_SEARROW        93
+#define MTEXTRA_NWARROW        94
+
+#define MTEXTRA_MAPSTO         97
+#define MTEXTRA_UPDOWNARROW    98
+#define MTEXTRA_HBAR          104
+#define MTEXTRA_ELL           108
+#define MTEXTRA_MP            109
+#define MTEXTRA_SUCC          102
+#define MTEXTRA_PREC          112
+
+#define MTEXTRA_SIMEQ             59
+#define MTEXTRA_LL                61
+#define MTEXTRA_GG                63
+#define MTEXTRA_DOTEQ             66
+#define MTEXTRA_BECAUSE           81
+#define MTEXTRA_MEASUREDANGLE     82
+#define MTEXTRA_DOUBLEUPDOWNARROW 99
+#define MTEXTRA_RIGHTLEFTARROWS   196
+#define MTEXTRA_RIGHTLEFTHARPOONS 201
+#define MTEXTRA_RIGHTHARPOONUP    220
+#define MTEXTRA_LEFTHARPOONDOWN   225

@@ -1441,3 +1441,16 @@ void CmdDegreeCelsius(int code)
 {
   fprintRTF("\\'b0C");
 }
+
+void CmdMTExtraChar(int code)
+{
+    if (g_processing_fields == 0) {
+    	int num = RtfFontNumber("MT Extra");
+    	fprintRTF("{\\f%d\\'%.2X}",num,code);
+
+    } else {
+    
+		fprintRTF("{\\field{\\*\\fldinst SYMBOL %u ", (unsigned int) code);
+		fprintRTF("\\\\f \"MT Extra\"}{\\fldrslt }}");
+	}
+}

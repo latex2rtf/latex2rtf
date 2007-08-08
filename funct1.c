@@ -658,10 +658,19 @@ void CmdLdots( /* @unused@ */ int code)
  purpose: converts the LaTeX-\ldots-command into "..." in Rtf
  ******************************************************************************/
 {
+    int num = RtfFontNumber("Symbol");
+    
     if (GetTexMode() != MODE_MATH && GetTexMode() != MODE_DISPLAYMATH)
         SetTexMode(MODE_HORIZONTAL);
 
-    fprintRTF("{\\'85}");
+/* every character from the symbol font must be accompanied by the unicode
+   value from Microsoft's Private User Area when used in a field */
+
+    if (!g_processing_fields) {
+    	fprintRTF("{\\f%d\\'85}",num);
+
+    } else
+    	fprintRTF("{\\f%d\\u-3908\\'85}",num);
 }
 
 void Environment(int code)
@@ -1628,14 +1637,14 @@ void CmdIgnoreLet( /* @unused@ */ int code)
 void CmdQuad(int kk)
 
 /******************************************************************************
- purpose: inserts kk quad spaces (D. Taupin)
+ purpose: inserts kk quad spaces
  ******************************************************************************/
 {
     int z;
 
-    fprintRTF("{\\emspace ");
-    for (z = 0; z < kk; z++)
-        fprintRTF(" ");
+    fprintRTF("{");
+    for (z = 0; z <= kk; z++)
+        fprintRTF("  ");
     fprintRTF("}");
 }
 
