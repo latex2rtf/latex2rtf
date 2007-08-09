@@ -6,6 +6,18 @@ Testing the tabbing environment
 \begin{table}
 \begin{center}
 \begin{tabbing}
+------\= ------------\=\kill
+\> this \> line will work \\
+\> this \> line will kill conversion \\ \\
+\> this \> line follows \\
+\end{tabbing}
+\end{center}
+\end{table}
+
+
+\begin{table}
+\begin{center}
+\begin{tabbing}
 \hspace*{1cm}\= $M_{38}=10^{38}-1=$ \= $3\times 3 \times 11 \times 909090909090909091$\\
                 \>                     \> $\times 1111111111111111111,$\\
                 \> $M_{39}= 10^{39}-1= 3 \times 3 \times 3 \times 3 \times 37 \times 53 \times 79$\\ 
@@ -94,9 +106,6 @@ three aligned columns}
 \t{oo} \> \verb|\t{oo}| \> \b{o}  \> \verb|\b{o}|  \\  \"{o} \> \verb|\"{o}| \>
 \u{o}  \> \verb|\u{o}|  \\
 \end{tabbing}
-\caption{This table only works with with Word 2004 for MacOSX.  Earlier versions fail
-to display the {\tt $\backslash$ H\{o\}} correctly because they do not really support unicode.
-Other RTF readers get the unicode right, but fail with the
-table formatting.}
+\caption{A bunch of different types of `o'.  This table may fail with older versions of Word.  Other RTF readers may get the unicode right, but fail with the table formatting.}
 \end{table}
 \end{document}

@@ -1051,10 +1051,11 @@ static void TabbingWriteRow(char *this_row, int n, int n_total, char *align)
     char *start, *end, *cell;
     int i;
 
+    diagnostics(4, "TabbingWriteRow n=%d <%s> [%s]", n, align, this_row);
+
     if (this_row == NULL || n == 0)
         return;
 
-    diagnostics(4, "TabbingWriteRow n=%d <%s> [%s]", n, align, this_row);
     if (strstr(this_row, "\\kill"))
         return;
 
@@ -1085,7 +1086,7 @@ static void TabbingGetRow(char *table, char **row, char **next_row)
 {
     char *s, *arow;
     size_t row_chars = 0;
-    bool slash = FALSE;
+    bool slash;
 
     s = table;
     *row = NULL;
@@ -1094,11 +1095,17 @@ static void TabbingGetRow(char *table, char **row, char **next_row)
     if (!s)
         return;
 
-    /* the end of a row is caused by one of three things 1) the buffer ends 2) the line ends \\ 3) \kill is encountered 
+    /* the end of a row is caused by one of three things 
+            1) the buffer ends 
+            2) the line ends \\ 
+            3) \kill is encountered 
      */
+     
+    slash = FALSE;
     while (!(*s == '\0') &&
-      !(*s == '\\' && slash) && !((row_chars > 6) && strncmp(s - 5, "\\kill", 5) == 0 && !isalpha((int) *s))
-      ) {
+           !(*s == '\\' && slash) && 
+           !((row_chars > 6) && strncmp(s - 5, "\\kill", 5) == 0 && !isalpha((int) *s))
+          ) {
         row_chars++;
         slash = (*s == '\\') ? 1 : 0;
         s++;
@@ -1119,6 +1126,8 @@ static void TabbingGetRow(char *table, char **row, char **next_row)
     arow = (char *) malloc((row_chars + 1) * sizeof(char));
     strncpy(arow, table, row_chars);
     arow[row_chars] = '\0';
+
+    diagnostics(4, "TabbingGetRow obtained=<%s> remaining[%s]", arow, *next_row);
 
     *row = strdup_noendblanks(arow);
     free(arow);
@@ -1217,7 +1226,7 @@ void CmdTabbing(int code)
 
     end = strdup("\\end{tabbing}");
     table = getTexUntil(end, FALSE);
-    diagnostics(3, "Entering CmdTabbing()");
+    diagnostics(2, "Entering CmdTabbing()");
 
     row_start = table;
     TabbingGetRow(row_start, &this_row, &next_row_start);
@@ -1232,7 +1241,7 @@ void CmdTabbing(int code)
     fprintRTF("\\par\n");
 
     n_total = 0;
-    while (this_row && strlen(this_row) > 0) {
+    while (this_row && strlen(this_row) >= 0) {
         diagnostics(4, "row=<%s>", this_row);
 
         TabbingGetColumnAlignments(this_row, align, &n, &next_left);
