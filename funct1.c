@@ -667,7 +667,7 @@ void CmdLdots( /* @unused@ */ int code)
    value from Microsoft's Private User Area when used in a field */
 
     if (!g_processing_fields) {
-    	fprintRTF("{\\f%d\\'85}",num);
+    	fprintRTF("\\'85",num);
 
     } else
     	fprintRTF("{\\f%d\\u-3908\\'85}",num);
