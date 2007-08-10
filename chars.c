@@ -1085,90 +1085,101 @@ void CmdDotChar(int code)
           need something that looks like \\O(a,\\S(\f2\'26)) in RTF file
  ******************************************************************************/
 {
-    int num;
     char *cParam;
-
+	int done=0;
+	
     cParam = getBraceParam();
+    
     if (cParam == NULL)
         return;
 
-    switch (cParam[0]) {
-        case 'A':
-            if (g_unicode) {
-                fprintRTF("\\u550A");
-                break;
-            }
-        case 'a':
-            if (g_unicode) {
-                fprintRTF("\\u551a");
-                break;
-            }
-        case 'C':
-            if (g_unicode) {
-                fprintRTF("\\u266C");
-                break;
-            }
-        case 'c':
-            if (g_unicode) {
-                fprintRTF("\\u267c");
-                break;
-            }
-        case 'E':
-            if (g_unicode) {
-                fprintRTF("\\u278E");
-                break;
-            }
-        case 'e':
-            if (g_unicode) {
-                fprintRTF("\\u279e");
-                break;
-            }
-        case 'G':
-            if (g_unicode) {
-                fprintRTF("\\u288G");
-                break;
-            }
-        case 'g':
-            if (g_unicode) {
-                fprintRTF("\\u289g");
-                break;
-            }
-        case 'I':
-            if (g_unicode) {
-                fprintRTF("\\u304I");
-                break;
-            }
-        case 'O':
-            if (g_unicode) {
-                fprintRTF("\\u558O");
-                break;
-            }
-        case 'o':
-            if (g_unicode) {
-                fprintRTF("\\u559o");
-                break;
-            }
-        case 'Z':
-            if (g_unicode) {
-                fprintRTF("\\u379Z");
-                break;
-            }
-        case 'z':
-            if (g_unicode) {
-                fprintRTF("\\u380z");
-                break;
-            }
+    diagnostics(4,"CmdDotChar letter='%c' in eq field=%d",cParam[0],
+                g_processing_fields);
+    
+    if (g_processing_fields==0) {
+		switch (cParam[0]) {
+			case 'A':
+					fprintRTF("\\u550A");
+					done = 1;
+					break;
+	
+			case 'a':
+					fprintRTF("\\u551a");
+					done = 1;
+					break;
+	
+			case 'C':
+					fprintRTF("\\u266C");
+					done = 1;
+					break;
+				
+			case 'c':
+					fprintRTF("\\u267c");
+					done = 1;
+					break;
+				
+			case 'E':
+					fprintRTF("\\u278E");
+					done = 1;
+					break;
+				
+			case 'e':
+					fprintRTF("\\u279e");
+					done = 1;
+					break;
+				
+			case 'G':
+					fprintRTF("\\u288G");
+					done = 1;
+					break;
+				
+			case 'g':
+					fprintRTF("\\u289g");
+					done = 1;
+					break;
+				
+			case 'I':
+					fprintRTF("\\u304I");
+					done = 1;
+					break;
+				
+			case 'O':
+					fprintRTF("\\u558O");
+					done = 1;
+					break;
+				
+			case 'o':
+					fprintRTF("\\u559o");
+					done = 1;
+					break;
+				
+			case 'Z':
+					fprintRTF("\\u379Z");
+					done = 1;
+					break;
+				
+			case 'z':
+					fprintRTF("\\u380z");
+					done = 1;
+					break;
+		}
+	}
+	
+	if (!done) {
 
-        default:
-            num = RtfFontNumber("MT Extra");
+		/* create the dotted character using the \O (overstrike) field */
+		/* in Word.  Only do this when in a formula, or if a unicode variant */
+		/* (see above) is not available */
+		
+		if (!g_processing_fields) fprintRTF("{\\field{\\*\\fldinst EQ ");
+			
+		fprintRTF("\\\\O(");
+		ConvertString(cParam);
+		fprintRTF("%c", g_field_separator);
+		fprintRTF("{\\field{\\*\\fldinst SYMBOL 38 \\\\f \"MT Extra\"}{\\fldrslt }}");
+		fprintRTF(")");
 
-            if (!g_processing_fields)
-                fprintRTF("{\\field{\\*\\fldinst EQ ");
-            fprintRTF("\\\\O(");
-            ConvertString(cParam);
-            fprintRTF("%c\\\\S({\\f%d\\'26}))", g_field_separator, num);
-            if (!g_processing_fields)
-                fprintRTF("}{\\fldrslt }}");
+		if (!g_processing_fields) fprintRTF("}{\\fldrslt }}");
     }
 
     free(cParam);
