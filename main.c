@@ -119,6 +119,8 @@ bool g_equation_display_bitmap = FALSE;
 bool g_equation_comment = FALSE;
 bool g_tableofcontents = FALSE;
 
+bool g_unicode = TRUE;
+
 double g_png_equation_scale = 1.22;
 double g_png_figure_scale = 1.35;
 bool g_latex_figures = FALSE;
@@ -161,7 +163,7 @@ int main(int argc, char **argv)
     InitializeLatexLengths();
 	InitializeBibliography();
 	
-    while ((c = my_getopt(argc, argv, "lhpvFSWZ:o:a:b:d:f:i:s:C:D:M:P:T:")) != EOF) {
+    while ((c = my_getopt(argc, argv, "lhpuvFSWZ:o:a:b:d:f:i:s:u:C:D:M:P:T:")) != EOF) {
         switch (c) {
             case 'a':
                 g_aux_name = optarg;
@@ -193,6 +195,11 @@ int main(int argc, char **argv)
                 break;
             case 'p':
                 g_escape_parent = FALSE;
+                break;
+            case 'u':
+                sscanf(optarg, "%d", &x);
+                diagnostics(2, "Unicode option = %s x=%d", optarg, x);
+                g_unicode = x ? TRUE : FALSE;
                 break;
             case 'v':
                 print_version();

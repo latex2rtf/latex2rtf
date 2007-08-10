@@ -167,6 +167,7 @@ static CommandArray commands[] = {
     {"vec", CmdVecChar, 0},
     {"dot", CmdDotChar, 0},
     {"ddot", CmdUmlauteChar, 0},
+    {"\"", CmdUmlauteChar, 0},
     {"u", CmdBreveChar, 0},
     {"d", CmdUnderdotChar, 0},
     {"v", CmdHacekChar, 0},
@@ -176,6 +177,8 @@ static CommandArray commands[] = {
     {"i", CmdDotlessChar, 0},
     {"j", CmdDotlessChar, 1},
 	{"H", CmdDoubleAcuteChar, 0},
+    {"l", CmdPolishL, 0},
+    {"L", CmdPolishL, 1},
 	
 /* sectioning commands */
     {"part", CmdSection, SECT_PART},

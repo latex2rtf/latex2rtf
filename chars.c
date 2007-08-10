@@ -41,7 +41,7 @@ void LaTeXlogo();
 void CmdUmlauteChar(int code)
 
 /*****************************************************************************
- purpose : converts characters with diaeresis from LaTeX to RTF
+ purpose : converts characters with diaeresis (\"{a}) from LaTeX to RTF
  ******************************************************************************/
 {
     int num;
@@ -82,6 +82,12 @@ void CmdUmlauteChar(int code)
             fprintRTF("\\'ff");
             break;
 
+        case 'Y':
+            if (g_unicode) {
+                fprintRTF("\\u376Y");
+                break;
+            }
+
         default:
             if (strcmp(cParam, "\\i") == 0) {
                 fprintRTF("\\'ef");
@@ -105,7 +111,7 @@ void CmdUmlauteChar(int code)
 void CmdLApostrophChar(int code)
 
 /******************************************************************************
- purpose: converts special symbols from LaTeX to RTF
+ purpose: converts symbols with grave accents (\`{a}) from LaTeX to RTF
  ******************************************************************************/
 {
     int num;
@@ -113,7 +119,6 @@ void CmdLApostrophChar(int code)
 
     if (cParam == NULL)
         return;
-
     switch (cParam[0]) {
         case 'A':
             fprintRTF("\\'c0");
@@ -145,9 +150,21 @@ void CmdLApostrophChar(int code)
         case 'u':
             fprintRTF("\\'f9");
             break;
+
+        case 'N':
+            if (g_unicode) {
+                fprintRTF("\\u504N");
+                break;
+            }
+        case 'n':
+            if (g_unicode) {
+                fprintRTF("\\u505n");
+                break;
+            }
+
         default:
             if (strcmp(cParam, "\\i") == 0) {
-                fprintRTF("\\'ec");
+                fprintRTF("\\'ed");
                 break;
             }
 
@@ -167,7 +184,7 @@ void CmdLApostrophChar(int code)
 void CmdRApostrophChar(int code)
 
 /******************************************************************************
- purpose: converts special symbols from LaTeX to RTF
+ purpose: converts symbols with acute accents (\'{a}) from LaTeX to RTF
  ******************************************************************************/
 {
     char *cParam = getBraceParam();
@@ -212,9 +229,81 @@ void CmdRApostrophChar(int code)
         case 'Y':
             fprintRTF("\\'dd");
             break;
+
+        case 'C':
+            if (g_unicode) {
+                fprintRTF("\\u262C");
+                break;
+            }
+        case 'c':
+            if (g_unicode) {
+                fprintRTF("\\u263c");
+                break;
+            }
+        case 'G':
+            if (g_unicode) {
+                fprintRTF("\\u500G");
+                break;
+            }
+        case 'g':
+            if (g_unicode) {
+                fprintRTF("\\u501g");
+                break;
+            }
+        case 'L':
+            if (g_unicode) {
+                fprintRTF("\\u313L");
+                break;
+            }
+        case 'l':
+            if (g_unicode) {
+                fprintRTF("\\u314l");
+                break;
+            }
+        case 'N':
+            if (g_unicode) {
+                fprintRTF("\\u323N");
+                break;
+            }
+        case 'n':
+            if (g_unicode) {
+                fprintRTF("\\u324n");
+                break;
+            }
+        case 'R':
+            if (g_unicode) {
+                fprintRTF("\\u340R");
+                break;
+            }
+        case 'r':
+            if (g_unicode) {
+                fprintRTF("\\u341r");
+                break;
+            }
+        case 'S':
+            if (g_unicode) {
+                fprintRTF("\\u346S");
+                break;
+            }
+        case 's':
+            if (g_unicode) {
+                fprintRTF("\\u347s");
+                break;
+            }
+        case 'Z':
+            if (g_unicode) {
+                fprintRTF("\\u377Z");
+                break;
+            }
+        case 'z':
+            if (g_unicode) {
+                fprintRTF("\\u378z");
+                break;
+            }
+
         default:
             if (strcmp(cParam, "\\i") == 0) {
-                fprintRTF("\\'ed");
+                fprintRTF("\\'ec");
                 break;
             }
 
@@ -375,9 +464,79 @@ void CmdHatChar(int code)
             fprintRTF("\\'fb");
             break;
 
+        case 'C':
+            if (g_unicode) {
+                fprintRTF("\\u264C");
+                break;
+            }
+        case 'c':
+            if (g_unicode) {
+                fprintRTF("\\u265c");
+                break;
+            }
+        case 'G':
+            if (g_unicode) {
+                fprintRTF("\\u284G");
+                break;
+            }
+        case 'g':
+            if (g_unicode) {
+                fprintRTF("\\u285g");
+                break;
+            }
+        case 'H':
+            if (g_unicode) {
+                fprintRTF("\\u292H");
+                break;
+            }
+        case 'h':
+            if (g_unicode) {
+                fprintRTF("\\u293h");
+                break;
+            }
+        case 'J':
+            if (g_unicode) {
+                fprintRTF("\\u308J");
+                break;
+            }
+        case 'S':
+            if (g_unicode) {
+                fprintRTF("\\u348S");
+                break;
+            }
+        case 's':
+            if (g_unicode) {
+                fprintRTF("\\u349s");
+                break;
+            }
+        case 'W':
+            if (g_unicode) {
+                fprintRTF("\\u372W");
+                break;
+            }
+        case 'w':
+            if (g_unicode) {
+                fprintRTF("\\u373w");
+                break;
+            }
+        case 'Y':
+            if (g_unicode) {
+                fprintRTF("\\u374Y");
+                break;
+            }
+        case 'y':
+            if (g_unicode) {
+                fprintRTF("\\u375y");
+                break;
+            }
+
         default:
             if (strcmp(cParam, "\\i") == 0) {
                 fprintRTF("\\'ee");
+                break;
+            }
+            if (g_unicode && strcmp(cParam, "\\j") == 0) {
+                fprintRTF("\\u309j");
                 break;
             }
             num = RtfFontNumber("MT Extra");
@@ -401,6 +560,7 @@ void CmdOaccentChar(int code)
  ******************************************************************************/
 {
     char *cParam;
+    int symfont = RtfFontNumber("Symbol");
 
     cParam = getBraceParam();
     if (cParam == NULL)
@@ -427,7 +587,7 @@ void CmdOaccentChar(int code)
                 fprintRTF("{\\field{\\*\\fldinst EQ ");
             fprintRTF("\\\\O(");
             ConvertString(cParam);
-            fprintRTF("%c\\\\S(\\'b0))", g_field_separator);
+            fprintRTF("%c\\\\S({\\f%d\\u-3920\\'b0}))", g_field_separator, symfont);
             if (!g_processing_fields)
                 fprintRTF("}{\\fldrslt }}");
             break;
@@ -468,7 +628,29 @@ void CmdTildeChar(int code)
         case 'N':
             fprintRTF("\\'d1");
             break;
+
+        case 'I':
+            if (g_unicode) {
+                fprintRTF("\\u296I");
+                break;
+            }
+        case 'U':
+            if (g_unicode) {
+                fprintRTF("\\u360U");
+                break;
+            }
+        case 'u':
+            if (g_unicode) {
+                fprintRTF("\\u361u");
+                break;
+            }
+
         default:
+            if (g_unicode && strcmp(cParam, "\\i") == 0) {
+                fprintRTF("\\u297i");
+                break;
+            }
+
             num = RtfFontNumber("MT Extra");
             if (!g_processing_fields)
                 fprintRTF("{\\field{\\*\\fldinst EQ ");
@@ -693,23 +875,76 @@ void CmdUnderdotChar(int code)
  purpose: converts chars with dots under from LaTeX to RTF
  ******************************************************************************/
 {
-    int dnsize;
-    char *cParam = getBraceParam();
+    int num;
+    int upsize;
+    char *cParam;
 
+    cParam = getBraceParam();
     if (cParam == NULL)
         return;
-
-    dnsize = (int) ((0.4 * CurrentFontSize()) + 0.45);
-
-    if (!g_processing_fields)
-        fprintRTF("{\\field{\\*\\fldinst EQ ");
-    fprintRTF("\\\\O(");
-    ConvertString(cParam);
-    fprintRTF("%c\\\\S(\\dn%d\\'2e))", g_field_separator, dnsize);
-    if (!g_processing_fields)
-        fprintRTF("}{\\fldrslt }}");
-
-    free(cParam);
+		
+	switch (cParam[0]) {
+		case 'A':
+				fprintRTF("\\u258A");
+				break;
+				
+		case 'a':
+				fprintRTF("\\u259a");
+				break;
+				
+		case 'E':
+				fprintRTF("\\u276E");
+				break;
+				
+		case 'e':
+				fprintRTF("\\u277e");
+				break;
+				
+		case 'G':
+				fprintRTF("\\u286G");
+				break;
+				
+		case 'g':
+				fprintRTF("\\u287g");
+				break;
+				
+		case 'I':
+				fprintRTF("\\u300I");
+				break;
+				
+		case 'O':
+				fprintRTF("\\u334O");
+				break;
+				
+		case 'o':
+				fprintRTF("\\u335o");
+				break;
+				
+		case 'U':
+				fprintRTF("\\u364U");
+				break;
+				
+		case 'u':
+				fprintRTF("\\u365u");
+				break;
+	
+		default:
+			if (g_unicode && strcmp(cParam, "\\i") == 0) {
+				fprintRTF("\\u301i");
+				break;
+			}
+	
+			upsize = CurrentFontSize() / 2;
+			if (!g_processing_fields)
+				fprintRTF("{\\field{\\*\\fldinst EQ ");
+			fprintRTF("\\\\O(");
+			ConvertString(cParam);
+			fprintRTF("%c\\\\S({\\up%d\\f%d \\\\(}))", g_field_separator, upsize, num);
+			if (!g_processing_fields)
+				fprintRTF("}{\\fldrslt }}");
+		   
+	 }
+	 free(cParam);
 }
 
 void CmdHacekChar(int code)
@@ -857,15 +1092,84 @@ void CmdDotChar(int code)
     if (cParam == NULL)
         return;
 
-    num = RtfFontNumber("MT Extra");
+    switch (cParam[0]) {
+        case 'A':
+            if (g_unicode) {
+                fprintRTF("\\u550A");
+                break;
+            }
+        case 'a':
+            if (g_unicode) {
+                fprintRTF("\\u551a");
+                break;
+            }
+        case 'C':
+            if (g_unicode) {
+                fprintRTF("\\u266C");
+                break;
+            }
+        case 'c':
+            if (g_unicode) {
+                fprintRTF("\\u267c");
+                break;
+            }
+        case 'E':
+            if (g_unicode) {
+                fprintRTF("\\u278E");
+                break;
+            }
+        case 'e':
+            if (g_unicode) {
+                fprintRTF("\\u279e");
+                break;
+            }
+        case 'G':
+            if (g_unicode) {
+                fprintRTF("\\u288G");
+                break;
+            }
+        case 'g':
+            if (g_unicode) {
+                fprintRTF("\\u289g");
+                break;
+            }
+        case 'I':
+            if (g_unicode) {
+                fprintRTF("\\u304I");
+                break;
+            }
+        case 'O':
+            if (g_unicode) {
+                fprintRTF("\\u558O");
+                break;
+            }
+        case 'o':
+            if (g_unicode) {
+                fprintRTF("\\u559o");
+                break;
+            }
+        case 'Z':
+            if (g_unicode) {
+                fprintRTF("\\u379Z");
+                break;
+            }
+        case 'z':
+            if (g_unicode) {
+                fprintRTF("\\u380z");
+                break;
+            }
 
-    if (!g_processing_fields)
-        fprintRTF("{\\field{\\*\\fldinst EQ ");
-    fprintRTF("\\\\O(");
-    ConvertString(cParam);
-    fprintRTF("%c\\\\S({\\f%d\\'26}))", g_field_separator, num);
-    if (!g_processing_fields)
-        fprintRTF("}{\\fldrslt }}");
+        default:
+            num = RtfFontNumber("MT Extra");
+
+            if (!g_processing_fields)
+                fprintRTF("{\\field{\\*\\fldinst EQ ");
+            fprintRTF("\\\\O(");
+            ConvertString(cParam);
+            fprintRTF("%c\\\\S({\\f%d\\'26}))", g_field_separator, num);
+            if (!g_processing_fields)
+                fprintRTF("}{\\fldrslt }}");
+    }
 
     free(cParam);
 }
@@ -895,16 +1199,79 @@ void CmdUnderbarChar(int code)
     free(cParam);
 }
 
+void CmdHungarianChar(int code)
+
+/******************************************************************************
+ purpose: converts \H{o} from LaTeX to RTF
+ ******************************************************************************/
+{
+    char *cParam;
+
+    cParam = getBraceParam();
+    if (cParam == NULL)
+        return;
+
+    switch (cParam[0]) {
+        case 'O':
+            if (g_unicode) {
+                fprintRTF("\\u336O");
+                break;
+            }
+        case 'o':
+            if (g_unicode) {
+                fprintRTF("\\u337o");
+                break;
+            }
+        case 'U':
+            if (g_unicode) {
+                fprintRTF("\\u368U");
+                break;
+            }
+        case 'u':
+            if (g_unicode) {
+                fprintRTF("\\u369u");
+                break;
+            }
+
+        default:
+            /* should really do some simulation like other accents */
+            fprintRTF("%c", cParam[0]);
+    }
+
+    free(cParam);
+}
+
 void CmdDotlessChar(int code)
 
 /******************************************************************************
- purpose: converts \i and \j to 'i' and 'j'
+ purpose: converts \i and \j to 'i' and 'j' or Unicode equivalent
  ******************************************************************************/
 {
     if (code == 0)
-        fprintRTF("i");
+        if (g_unicode)
+            fprintRTF("\\u305i");
+        else
+            fprintRTF("i");
     else
         fprintRTF("j");
+}
+
+void CmdPolishL(int code)
+
+/******************************************************************************
+ purpose: converts \l and \L to 'l' and 'L' or Unicode equivalent
+ ******************************************************************************/
+{
+    if (code == 1)
+        if (g_unicode)
+            fprintRTF("\\u322L");
+        else
+            fprintRTF("L");
+    else
+        if (g_unicode)
+            fprintRTF("\\u323l");
+        else
+            fprintRTF("l");
 }
 
 /******************************************************************************

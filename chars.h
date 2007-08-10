@@ -37,6 +37,7 @@ void CmdCyrillicStrChar(char *s);
 void CmdEuro(int code);
 void CmdDegreeCelsius(int code);
 void CmdMTExtraChar(int code);
+void CmdPolishL(int code);
 
 #define IERF 1
 #define IEREF 2
