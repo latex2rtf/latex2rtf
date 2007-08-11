@@ -41,7 +41,7 @@ void LaTeXlogo();
 /* create overstrike character using the \O (overstrike) field */
 /* in Word.  Only do this when in a formula, or if a unicode variant */
 /* (see above) is not available */
-void putOverstrikeChar(const char *font, char *s, unsigned int overstrike)
+static void putOverstrikeChar(const char *font, char *s, unsigned int overstrike)
 {
 	if (g_processing_fields==0) fprintRTF("{\\field{\\*\\fldinst EQ ");
 		
@@ -53,6 +53,19 @@ void putOverstrikeChar(const char *font, char *s, unsigned int overstrike)
 	fprintRTF(")");
 
 	if (g_processing_fields==0) fprintRTF("}{\\fldrslt }}");
+}
+
+/* this will emit a unicode character. 
+   RTF requires that unicode values above 2^15 be negative
+   The default character is what the RTF parser should use if it does not know
+   the unicode equivalent.
+*/
+static void putUnicodeChar(unsigned char b1, unsigned char b2, char default_char)
+{
+	if (b1<128)
+		fprintRTF("\\u%d%c",b1*256+b2,default_char);
+	else
+		fprintRTF("\\u%d%c",b1*256+b2-65536,default_char);
 }
 
 void CmdUmlauteChar(int code)
@@ -337,16 +350,6 @@ void CmdRApostrophChar(int code)
     free(cParam);
 }
 
-static void put_unicode_char(unsigned char b1, unsigned char b2)
-{
-		if (b1==0)
-			fprintRTF("\\'%ux",b1);
-		else if (b1<128)
-			fprintRTF("\\u%d*",b1*256+b2);
-		else
-			fprintRTF("\\u%d*",b1*256+b2-65536);
-}
-
 /******************************************************************************
  purpose: converts \H{c}  must
  ******************************************************************************/
@@ -359,16 +362,16 @@ void CmdDoubleAcuteChar(int code)
 
     switch (cParam[0]) {
         case 'O':
-        	put_unicode_char(0x01,0x50);
+        	putUnicodeChar(0x01,0x50,'O');
             break;
         case 'o':
-        	put_unicode_char(0x01,0x51);
+        	putUnicodeChar(0x01,0x51,'o');
             break;
         case 'U':
-        	put_unicode_char(0x01,0x70);
+        	putUnicodeChar(0x01,0x70,'U');
             break;
         case 'u':
-        	put_unicode_char(0x01,0x71);
+        	putUnicodeChar(0x01,0x71,'u');
             break;
         default:
             break;
@@ -389,40 +392,40 @@ void CmdMacronChar(int code)
 
     switch (cParam[0]) {
         case 'A':
-        	put_unicode_char(0x01,0x00);
+        	putUnicodeChar(0x01,0x00,'A');
             break;
         case 'a':
-        	put_unicode_char(0x01,0x01);
+        	putUnicodeChar(0x01,0x01,'a');
             break;
         case 'E':
-        	put_unicode_char(0x01,0x12);
+        	putUnicodeChar(0x01,0x12,'E');
             break;
         case 'e':
-        	put_unicode_char(0x01,0x13);
+        	putUnicodeChar(0x01,0x13,'e');
             break;
         case 'I':
-        	put_unicode_char(0x01,0x2A);
+        	putUnicodeChar(0x01,0x2A,'l');
             break;
         case 'i':
-        	put_unicode_char(0x01,0x2B);
+        	putUnicodeChar(0x01,0x2B,'i');
             break;
         case 'O':
-        	put_unicode_char(0x01,0x4C);
+        	putUnicodeChar(0x01,0x4C,'O');
             break;
         case 'o':
-        	put_unicode_char(0x01,0x4D);
+        	putUnicodeChar(0x01,0x4D,'o');
             break;
         case 'U':
-        	put_unicode_char(0x01,0x6A);
+        	putUnicodeChar(0x01,0x6A,'U');
             break;
         case 'u':
-        	put_unicode_char(0x01,0x6B);
+        	putUnicodeChar(0x01,0x6B,'u');
             break;
         case 'Y':
-        	put_unicode_char(0x02,0x32);
+        	putUnicodeChar(0x02,0x32,'Y');
             break;
         case 'y':
-        	put_unicode_char(0x02,0x33);
+        	putUnicodeChar(0x02,0x33,'y');
             break;
         default:
 			if (!g_processing_fields)
@@ -685,52 +688,52 @@ void CmdCedillaChar(int code)
             fprintRTF("\\'e7");
             break;
         case 'G':
-        	put_unicode_char(0x01,0x22);
+        	putUnicodeChar(0x01,0x22,'G');
             break;
         case 'g':
-        	put_unicode_char(0x01,0x23);
+        	putUnicodeChar(0x01,0x23,'g');
             break;
         case 'K':
-        	put_unicode_char(0x01,0x36);
+        	putUnicodeChar(0x01,0x36,'K');
             break;
         case 'k':
-        	put_unicode_char(0x01,0x37);
+        	putUnicodeChar(0x01,0x37,'k');
             break;
         case 'L':
-        	put_unicode_char(0x01,0x3C);
+        	putUnicodeChar(0x01,0x3C,'L');
             break;
         case 'l':
-        	put_unicode_char(0x01,0x3D);
+        	putUnicodeChar(0x01,0x3D,'l');
             break;
         case 'N':
-        	put_unicode_char(0x01,0x46);
+        	putUnicodeChar(0x01,0x46,'N');
             break;
         case 'n':
-        	put_unicode_char(0x01,0x47);
+        	putUnicodeChar(0x01,0x47,'n');
             break;
         case 'R':
-        	put_unicode_char(0x01,0x58);
+        	putUnicodeChar(0x01,0x58,'R');
             break;
         case 'r':
-        	put_unicode_char(0x01,0x59);
+        	putUnicodeChar(0x01,0x59,'r');
             break;
         case 'S':
-        	put_unicode_char(0x01,0x5E);
+        	putUnicodeChar(0x01,0x5E,'S');
             break;
         case 's':
-        	put_unicode_char(0x01,0x5F);
+        	putUnicodeChar(0x01,0x5F,'s');
             break;
         case 'T':
-        	put_unicode_char(0x01,0x62);
+        	putUnicodeChar(0x01,0x62,'T');
             break;
         case 't':
-        	put_unicode_char(0x01,0x63);
+        	putUnicodeChar(0x01,0x63,'t');
             break;
         case 'E':
-        	put_unicode_char(0x02,0x28);
+        	putUnicodeChar(0x02,0x28,'E');
             break;
         case 'e':
-        	put_unicode_char(0x02,0x29);
+        	putUnicodeChar(0x02,0x29,'e');
             break;
             
         default:
@@ -820,40 +823,40 @@ void CmdBreveChar(int code)
 
     switch (cParam[0]) {
         case 'A':
-        	put_unicode_char(0x01,0x02);
+        	putUnicodeChar(0x01,0x02,'A');
             break;
         case 'a':
-        	put_unicode_char(0x01,0x03);
+        	putUnicodeChar(0x01,0x03,'a');
             break;
         case 'E':
-        	put_unicode_char(0x01,0x14);
+        	putUnicodeChar(0x01,0x14,'E');
             break;
         case 'e':
-        	put_unicode_char(0x01,0x15);
+        	putUnicodeChar(0x01,0x15,'e');
             break;
         case 'G':
-        	put_unicode_char(0x01,0x1e);
+        	putUnicodeChar(0x01,0x1e,'G');
         	break;
         case 'g':
-        	put_unicode_char(0x01,0x1f);
+        	putUnicodeChar(0x01,0x1f,'g');
         	break;
         case 'I':
-        	put_unicode_char(0x01,0x2c);
+        	putUnicodeChar(0x01,0x2c,'I');
             break;
         case 'i':
-        	put_unicode_char(0x01,0x2d);
+        	putUnicodeChar(0x01,0x2d,'i');
             break;
         case 'O':
-        	put_unicode_char(0x01,0x4e);
+        	putUnicodeChar(0x01,0x4e,'O');
             break;
         case 'o':
-        	put_unicode_char(0x01,0x4f);
+        	putUnicodeChar(0x01,0x4f,'o');
             break;
         case 'U':
-        	put_unicode_char(0x01,0x6c);
+        	putUnicodeChar(0x01,0x6c,'U');
             break;
-        case 'u':
-        	put_unicode_char(0x01,0x6d);
+        case 'c':
+        	putUnicodeChar(0x01,0x0D,'c');
             break;
         default:
 			num = RtfFontNumber("MT Extra");
@@ -965,103 +968,103 @@ void CmdHacekChar(int code)
 
     switch (cParam[0]) {
         case 'C':
-        	put_unicode_char(0x01,0x0C);
+        	putUnicodeChar(0x01,0x0C,'C');
             break;
         case 'c':
-        	put_unicode_char(0x01,0x0D);
+        	putUnicodeChar(0x01,0x0D,'c');
             break;
         case 'D':
-        	put_unicode_char(0x01,0x0E);
+        	putUnicodeChar(0x01,0x0E,'D');
             break;
         case 'd':
-        	put_unicode_char(0x01,0x0F);
+        	putUnicodeChar(0x01,0x0F,'d');
             break;
         case 'E':
-        	put_unicode_char(0x01,0x1A);
+        	putUnicodeChar(0x01,0x1A,'E');
             break;
         case 'e':
-        	put_unicode_char(0x01,0x1B);
+        	putUnicodeChar(0x01,0x1B,'e');
             break;
         case 'L':
-        	put_unicode_char(0x01,0x3D);
+        	putUnicodeChar(0x01,0x3D,'L');
             break;
         case 'l':
-        	put_unicode_char(0x01,0x3E);
+        	putUnicodeChar(0x01,0x3E,'l');
             break;
         case 'N':
-        	put_unicode_char(0x01,0x47);
+        	putUnicodeChar(0x01,0x47,'N');
             break;
         case 'n':
-        	put_unicode_char(0x01,0x48);
+        	putUnicodeChar(0x01,0x48,'n');
             break;
         case 'R':
-        	put_unicode_char(0x01,0x58);
+        	putUnicodeChar(0x01,0x58,'R');
             break;
         case 'r':
-        	put_unicode_char(0x01,0x59);
+        	putUnicodeChar(0x01,0x59,'r');
             break;
         case 'S':
-        	put_unicode_char(0x01,0x60);
+        	putUnicodeChar(0x01,0x60,'S');
             break;
         case 's':
-        	put_unicode_char(0x01,0x61);
+        	putUnicodeChar(0x01,0x61,'s');
             break;
         case 'T':
-        	put_unicode_char(0x01,0x64);
+        	putUnicodeChar(0x01,0x64,'T');
             break;
         case 't':
-        	put_unicode_char(0x01,0x65);
+        	putUnicodeChar(0x01,0x65,'t');
             break;
         case 'Z':
-        	put_unicode_char(0x01,0x7D);
+        	putUnicodeChar(0x01,0x7D,'Z');
             break;
         case 'z':
-        	put_unicode_char(0x01,0x7E);
+        	putUnicodeChar(0x01,0x7E,'z');
             break;
         case 'A':
-        	put_unicode_char(0x01,0xCD);
+        	putUnicodeChar(0x01,0xCD,'A');
             break;
         case 'a':
-        	put_unicode_char(0x01,0xCE);
+        	putUnicodeChar(0x01,0xCE,'a');
             break;
         case 'I':
-        	put_unicode_char(0x01,0xCF);
+        	putUnicodeChar(0x01,0xCF,'I');
             break;
         case 'i':
-        	put_unicode_char(0x01,0xD0);
+        	putUnicodeChar(0x01,0xD0,'i');
             break;
         case 'O':
-        	put_unicode_char(0x01,0xD1);
+        	putUnicodeChar(0x01,0xD1,'O');
             break;
         case 'o':
-        	put_unicode_char(0x01,0xD2);
+        	putUnicodeChar(0x01,0xD2,'o');
             break;
         case 'U':
-        	put_unicode_char(0x01,0xD3);
+        	putUnicodeChar(0x01,0xD3,'U');
             break;
         case 'u':
-        	put_unicode_char(0x01,0xD4);
+        	putUnicodeChar(0x01,0xD4,'u');
             break;
         case 'G':
-        	put_unicode_char(0x01,0xE6);
+        	putUnicodeChar(0x01,0xE6,'G');
             break;
         case 'g':
-        	put_unicode_char(0x01,0xE7);
+        	putUnicodeChar(0x01,0xE7,'g');
             break;
         case 'K':
-        	put_unicode_char(0x01,0xE8);
+        	putUnicodeChar(0x01,0xE8,'K');
             break;
         case 'k':
-        	put_unicode_char(0x01,0xE9);
+        	putUnicodeChar(0x01,0xE9,'k');
             break;
         case 'j':
-        	put_unicode_char(0x01,0xF0);
+        	putUnicodeChar(0x01,0xF0,'j');
             break;
         case 'H':
-        	put_unicode_char(0x02,0x1E);
+        	putUnicodeChar(0x02,0x1E,'H');
             break;
         case 'h':
-        	put_unicode_char(0x02,0x1F);
+        	putUnicodeChar(0x02,0x1F,'h');
             break;
 
         default:
