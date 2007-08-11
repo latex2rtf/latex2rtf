@@ -22,19 +22,6 @@
 #define LEFT_LEFT 5
 #define RIGHT_RIGHT 6
 
-#define EQN_MATH_EQUIV       -3910
-
-#define EQN_MATH_LEFTARROW      -3924
-#define EQN_MATH_UPARROW        -3923
-#define EQN_MATH_RIGHTARROW     -3922
-#define EQN_MATH_DOWNARROW      -3921
-#define EQN_MATH_LEFTRIGHTARROW -3925
-#define EQN_MATH_UPDOWNARROW    -3919
-#define EQN_MATH_NWARROW        -3918
-#define EQN_MATH_NEARROW        -3917
-#define EQN_MATH_SEARROW        -3916
-#define EQN_MATH_SWARROW        -3915
-
 void CmdEquation(int code);
 void CmdFraction(int code);
 void CmdRoot(int code);
@@ -53,4 +40,3 @@ int  script_shift(void);
 int  script_size(void);
 void CmdEnsuremath(int code);
 void CmdOverLine(int code);
-void CmdMathChar(int code);
