@@ -838,13 +838,7 @@ void CmdVecChar(int code)
 void CmdBreveChar(int code)
 
 /*****************************************************************************
- purpose: converts \u{o} and \breve{o} from LaTeX to RTF
- 		  there is no breve in codepage 1252
- 		  there is one \'f9 in the MacRoman, but that is not so portable
-		  there is one in MT Extra, but the RTF parser for word mistakes
-		  \'28 as a '(' and goes bananas.  Therefore need the extra \\\\
-		  the only solution is to encode with unicode --- perhaps later
-		  Now we just fake it with a u
+ purpose: converts \u{o} and \breve{o} 
  ******************************************************************************/
 {
     char *cParam = getBraceParam();
@@ -912,18 +906,6 @@ void CmdBreveChar(int code)
 	if (!done) 
 		putOverstrikeChar("MT Extra", cParam, 252);
 
-/*        default:
-			num = RtfFontNumber("MT Extra");
-			upsize = CurrentFontSize() / 2;
-			if (!g_processing_fields)
-				fprintRTF("{\\field{\\*\\fldinst EQ ");
-			fprintRTF("\\\\O(");
-			ConvertString(cParam);
-			fprintRTF("%c\\\\S({\\up%d\\f%d \\\\(}))", g_field_separator, upsize, num);
-			if (!g_processing_fields)
-				fprintRTF("}{\\fldrslt }}");
-            break;
-    }*/
     free(cParam);
 }
 
