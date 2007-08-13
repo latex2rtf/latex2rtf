@@ -9,7 +9,7 @@
 
 void CmdCedillaChar(int code);
 void CmdUmlauteChar(int code);
-void CmdLApostrophChar(int code);
+void CmdGraveChar(int code);
 void CmdAcuteChar(int code);
 void CmdDoubleAcuteChar(int code);
 void CmdTildeChar(int code);

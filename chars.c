@@ -55,6 +55,7 @@ static void putOverstrikeChar(const char *font, char *s, unsigned int overstrike
 		fprintRTF("{\\field{\\*\\fldinst SYMBOL %u \\\\f ", overstrike);
 		fprintRTF("\"%s\"}{\\fldrslt }}", font);
 	}
+	
 	fprintRTF(")");
 
 	if (g_processing_fields==0) fprintRTF("}{\\fldrslt }}");
@@ -76,143 +77,151 @@ static void putUnicodeChar(unsigned char b1, unsigned char b2, char default_char
 void CmdUmlauteChar(int code)
 
 /*****************************************************************************
- purpose : converts characters with diaeresis (\"{a}) from LaTeX to RTF
+ purpose : converts characters with diaeresis, e.g., \"{a} or \ddot{a}
  ******************************************************************************/
 {
-    int num;
+    int done = 0;
     char *cParam = getBraceParam();
 
     if (cParam == NULL)
         return;
 
-    switch (cParam[0]) {
-        case 'o':
-            fprintRTF("\\'f6");
-            break;
-        case 'O':
-            fprintRTF("\\'d6");
-            break;
-        case 'a':
-            fprintRTF("\\'e4");
-            break;
-        case 'A':
-            fprintRTF("\\'c4");
-            break;
-        case 'u':
-            fprintRTF("\\'fc");
-            break;
-        case 'U':
-            fprintRTF("\\'dc");
-            break;
-        case 'E':
-            fprintRTF("\\'cb");
-            break;
-        case 'I':
-            fprintRTF("\\'cf");
-            break;
-        case 'e':
-            fprintRTF("\\'eb");
-            break;
-        case 'y':
-            fprintRTF("\\'ff");
-            break;
+	/* These encodings will fail in equation field translation */
+    if (g_processing_fields==0) {
+		switch (cParam[0]) {
+			case 'o':
+				fprintRTF("\\'f6");
+                done = 1;
+				break;
+			case 'O':
+				fprintRTF("\\'d6");
+                done = 1;
+				break;
+			case 'a':
+				fprintRTF("\\'e4");
+                done = 1;
+				break;
+			case 'A':
+				fprintRTF("\\'c4");
+                done = 1;
+				break;
+			case 'u':
+				fprintRTF("\\'fc");
+                done = 1;
+				break;
+			case 'U':
+				fprintRTF("\\'dc");
+                done = 1;
+				break;
+			case 'E':
+				fprintRTF("\\'cb");
+                done = 1;
+				break;
+			case 'I':
+				fprintRTF("\\'cf");
+                done = 1;
+				break;
+			case 'e':
+				fprintRTF("\\'eb");
+                done = 1;
+				break;
+			case 'y':
+				fprintRTF("\\'ff");
+                done = 1;
+				break;
+			case 'Y':
+				fprintRTF("\\u376Y");
+                done = 1;
+				break;
+		}
 
-        case 'Y':
-            if (g_unicode) {
-                fprintRTF("\\u376Y");
-                break;
-            }
+		if (strcmp(cParam, "\\i") == 0) {
+			fprintRTF("\\'ef");
+			done = 1;
+		}
+	}
 
-        default:
-            if (strcmp(cParam, "\\i") == 0) {
-                fprintRTF("\\'ef");
-                break;
-            }
+	if (!done)
+		putOverstrikeChar(NULL, cParam, 168);
 
-            num = RtfFontNumber("MT Extra");
-            if (!g_processing_fields)
-                fprintRTF("{\\field{\\*\\fldinst EQ ");
-            fprintRTF("\\\\O(");
-            ConvertString(cParam);
-            fprintRTF("%c\\\\S({\\f%d\\'26\\'26}))", g_field_separator, num);
-            if (!g_processing_fields)
-                fprintRTF("}{\\fldrslt }}");
-            break;
-
-    }
     free(cParam);
 }
 
-void CmdLApostrophChar(int code)
+void CmdGraveChar(int code)
 
 /******************************************************************************
  purpose: converts symbols with grave accents (\`{a}) from LaTeX to RTF
  ******************************************************************************/
 {
-    int num;
+    int done = 0;
     char *cParam = getBraceParam();
 
     if (cParam == NULL)
         return;
-    switch (cParam[0]) {
-        case 'A':
-            fprintRTF("\\'c0");
-            break;
-        case 'E':
-            fprintRTF("\\'c8");
-            break;
-        case 'I':
-            fprintRTF("\\'cc");
-            break;
-        case 'O':
-            fprintRTF("\\'d2");
-            break;
-        case 'U':
-            fprintRTF("\\'d9");
-            break;
-        case 'a':
-            fprintRTF("\\'e0");
-            break;
-        case 'e':
-            fprintRTF("\\'e8");
-            break;
-        case 'i':
-            fprintRTF("\\'ec");
-            break;
-        case 'o':
-            fprintRTF("\\'f2");
-            break;
-        case 'u':
-            fprintRTF("\\'f9");
-            break;
 
-        case 'N':
-            if (g_unicode) {
-                fprintRTF("\\u504N");
-                break;
-            }
-        case 'n':
-            if (g_unicode) {
-                fprintRTF("\\u505n");
-                break;
-            }
+	/* These encodings will fail in equation field translation */
+    if (g_processing_fields==0) {
+		switch (cParam[0]) {
+			case 'A':
+				fprintRTF("\\'c0");
+				done = 1;
+				break;
+			case 'E':
+				fprintRTF("\\'c8");
+				done = 1;
+				break;
+			case 'I':
+				fprintRTF("\\'cc");
+				done = 1;
+				break;
+			case 'O':
+				fprintRTF("\\'d2");
+				done = 1;
+				break;
+			case 'U':
+				fprintRTF("\\'d9");
+				done = 1;
+				break;
+			case 'a':
+				fprintRTF("\\'e0");
+				done = 1;
+				break;
+			case 'e':
+				fprintRTF("\\'e8");
+				done = 1;
+				break;
+			case 'i':
+				fprintRTF("\\'ec");
+				done = 1;
+				break;
+			case 'o':
+				fprintRTF("\\'f2");
+				done = 1;
+				break;
+			case 'u':
+				fprintRTF("\\'f9");
+				done = 1;
+				break;
+			case 'N':
+				fprintRTF("\\u504N");
+				done = 1;
+				break;            
+			case 'n':
+				fprintRTF("\\u505n");
+				done = 1;
+				break;
+		}
+	
+		if (strcmp(cParam, "\\i") == 0) {
+			fprintRTF("\\'ed");
+			done = 1;
+		}
 
-        default:
-            if (strcmp(cParam, "\\i") == 0) {
-                fprintRTF("\\'ed");
-                break;
-            }
+	}
 
-            num = RtfFontNumber("MT Extra");
-            if (!g_processing_fields)
-                fprintRTF("{\\field{\\*\\fldinst EQ ");
-            fprintRTF("\\\\O(");
-            ConvertString(cParam);
-            fprintRTF("%c\\\\S({\\f%d\\'23}))", g_field_separator, num);
-            if (!g_processing_fields)
-                fprintRTF("}{\\fldrslt }}");
-            break;
-    }
+	if (!done)
+		putOverstrikeChar("MT Extra", cParam, 35);
+
     free(cParam);
 }
 

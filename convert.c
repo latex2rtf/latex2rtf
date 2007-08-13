@@ -683,7 +683,7 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
                 (void) PopBrace();
                 PushBrace();
             } else
-                CmdLApostrophChar(0);
+                CmdGraveChar(0);
             return;
 
         case '\'':
