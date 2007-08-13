@@ -66,7 +66,7 @@ static void putOverstrikeChar(const char *font, char *s,
 	} else {  /* seems to only work for MT Extra */
 
 		fprintRTF("{\\field{\\*\\fldinst SYMBOL %u \\\\f ", overstrike);
-		fprintRTF("\"%s\"}{\\fldrslt }}", font);
+		fprintRTF("\"%s\" \\\\h}{\\fldrslt }}", font);
 
 	}
 	
@@ -1066,63 +1066,51 @@ void CmdDotChar(int code)
 			case 'A':
 					fprintRTF("\\u550A");
 					done=1;
-					break;
-	
+					break;	
 			case 'a':
 					fprintRTF("\\u551a");
 					done=1;
-					break;
-	
+					break;	
 			case 'C':
 					fprintRTF("\\u266C");
 					done=1;
-					break;
-				
+					break;				
 			case 'c':
 					fprintRTF("\\u267c");
 					done=1;
-					break;
-				
+					break;				
 			case 'E':
 					fprintRTF("\\u278E");
 					done=1;
-					break;
-				
+					break;				
 			case 'e':
 					fprintRTF("\\u279e");
 					done=1;
-					break;
-				
+					break;				
 			case 'G':
 					fprintRTF("\\u288G");
 					done=1;
-					break;
-				
+					break;				
 			case 'g':
 					fprintRTF("\\u289g");
 					done=1;
-					break;
-				
+					break;				
 			case 'I':
 					fprintRTF("\\u304I");
 					done=1;
-					break;
-				
+					break;				
 			case 'O':
 					fprintRTF("\\u558O");
 					done=1;
-					break;
-				
+					break;				
 			case 'o':
 					fprintRTF("\\u559o");
 					done=1;
-					break;
-				
+					break;				
 			case 'Z':
 					fprintRTF("\\u379Z");
 					done=1;
-					break;
-				
+					break;				
 			case 'z':
 					fprintRTF("\\u380z");
 					done=1;
@@ -1336,21 +1324,13 @@ void CmdUnderdotChar(int code)
 	 free(cParam);
 }
 
-void CmdVecChar(int code)
-
 /*****************************************************************************
- purpose: converts \vec{o} from LaTeX to RTF
+ purpose: half-height or full-height character
  ******************************************************************************/
+int isShort(char c) 
 {
-    int num;
-    int upsize;
-    char *cParam;
 
-    cParam = getBraceParam();
-    if (cParam == NULL)
-        return;
-
-    switch (cParam[0]) {
+    switch (c) {
         case 'a':
         case 'c':
         case 'e':
@@ -1370,21 +1350,30 @@ void CmdVecChar(int code)
         case 'x':
         case 'y':
         case 'z':
-            upsize = (3 * CurrentFontSize()) / 8;
-            break;
-        default:
-            upsize = (CurrentFontSize() * 3) / 4;
-    }
+			return 1;
+	}
+	
+	return 0;
+}
 
-    num = RtfFontNumber("MT Extra");
+void CmdVecChar(int code)
 
-    if (!g_processing_fields)
-        fprintRTF("{\\field{\\*\\fldinst EQ ");
-    fprintRTF("\\\\O(");
-    ConvertString(cParam);
-    fprintRTF("%c\\\\S({\\up%d\\f%d\\'72}))", g_field_separator, upsize, num);
-    if (!g_processing_fields)
-        fprintRTF("}{\\fldrslt }}");
+/*****************************************************************************
+ purpose: converts \vec{o} from LaTeX to RTF
+ ******************************************************************************/
+{
+    char *cParam = getBraceParam();
+
+    if (cParam == NULL) return;
+	
+    diagnostics(4,"CmdVecChar letter='%s' in eq field=%d",cParam,
+                g_processing_fields);
+    
+	if (isShort(cParam[0]))
+		putOverstrikeChar("MT Extra", cParam, 114, 0.750);
+	else
+		putOverstrikeChar("MT Extra", cParam, 114, 1.000);
+
     free(cParam);
 }
 
@@ -1421,10 +1410,7 @@ void CmdDotlessChar(int code)
  ******************************************************************************/
 {
     if (code == 0)
-        if (g_unicode)
-            fprintRTF("\\u305i");
-        else
-            fprintRTF("i");
+        fprintRTF("\\u305i");
     else
         fprintRTF("j");
 }
@@ -1436,15 +1422,9 @@ void CmdPolishL(int code)
  ******************************************************************************/
 {
     if (code == 1)
-        if (g_unicode)
-            fprintRTF("\\u322L");
-        else
-            fprintRTF("L");
+       fprintRTF("\\u322L");
     else
-        if (g_unicode)
-            fprintRTF("\\u323l");
-        else
-            fprintRTF("l");
+       fprintRTF("\\u323l");
 }
 
 /******************************************************************************
@@ -1897,44 +1877,6 @@ void CmdFrenchAbbrev(int code)
     }
 
     fprintRTF("}");
-}
-
-void CmdLatin1Char(int code)
-
-/******************************************************************************
- * purpose : insert Latin1 character into RTF stream
- * ******************************************************************************/
-{
-    int n;
-
-    if (code <= 0 || code >= 255)
-        return;
-
-    n = CurrentLatin1FontFamily();
-
-    if (n >= 0)
-        fprintRTF("{\\f%d\\\'%.2X}", n, code);
-    else                        /* already using Latin1 Font */
-        fprintRTF("\\\'%.2X", code);
-}
-
-void CmdLatin2Char(int code)
-
-/******************************************************************************
- * purpose : insert Latin2 character into RTF stream
- * ******************************************************************************/
-{
-    int n;
-
-    if (code <= 0 || code >= 255)
-        return;
-
-    n = CurrentLatin2FontFamily();
-
-    if (n >= 0)
-        fprintRTF("{\\f%d\\\'%.2X}", n, code);
-    else                        /* already using Latin2 Font */
-        fprintRTF("\\\'%.2X", code);
 }
 
 void CmdCyrillicChar(int code)
