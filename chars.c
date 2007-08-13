@@ -25,6 +25,7 @@ This file is available from http://sourceforge.net/projects/latex2rtf/
 #include <string.h>
 #include <ctype.h>
 #include "main.h"
+#include "math.h"
 #include "commands.h"
 #include "fonts.h"
 #include "cfg.h"
@@ -41,22 +42,35 @@ void LaTeXlogo();
 /* create overstrike character using the \O (overstrike) field */
 /* in Word.  Only do this when in a formula, or if a unicode variant */
 /* (see above) is not available */
-static void putOverstrikeChar(const char *font, char *s, unsigned int overstrike)
+static void putOverstrikeChar(const char *font, char *s, 
+                              unsigned int overstrike, double raise)
 {
 	if (g_processing_fields==0) fprintRTF("{\\field{\\*\\fldinst EQ ");
 		
 	fprintRTF("\\\\O(");
     ConvertString(s);
-	fprintRTF("%c", g_field_separator);
+	fprintRTF("%c {", g_field_separator);
 	
-	if (font == NULL) {
-		fprintRTF("\\u%u\\'%x",overstrike,overstrike);	
-	} else {
-		fprintRTF("{\\field{\\*\\fldinst SYMBOL %u \\\\f ", overstrike);
-		fprintRTF("\"%s\"}{\\fldrslt }}", font);
+	if (raise != 0) {
+		fprintRTF("\\up%d ", (int) floor(raise * CurrentFontSize()));
 	}
 	
-	fprintRTF(")");
+	if (strcmp(font,"simple")==0 ) {
+	
+		fprintRTF("\\'%x",overstrike);	
+		
+	} else if (strcmp(font,"unicode")==0 ) {
+	
+		fprintRTF("\\u%u\\'%x",overstrike,overstrike);
+
+	} else {  /* seems to only work for MT Extra */
+
+		fprintRTF("{\\field{\\*\\fldinst SYMBOL %u \\\\f ", overstrike);
+		fprintRTF("\"%s\"}{\\fldrslt }}", font);
+
+	}
+	
+	fprintRTF("})");
 
 	if (g_processing_fields==0) fprintRTF("}{\\fldrslt }}");
 }
@@ -142,7 +156,7 @@ void CmdUmlauteChar(int code)
 	}
 
 	if (!done)
-		putOverstrikeChar(NULL, cParam, 168);
+		putOverstrikeChar("unicode", cParam, 168, 0);
 
     free(cParam);
 }
@@ -220,7 +234,7 @@ void CmdGraveChar(int code)
 	}
 
 	if (!done)
-		putOverstrikeChar("MT Extra", cParam, 35);
+		putOverstrikeChar("MT Extra", cParam, 35, 0);
 
     free(cParam);
 }
@@ -356,7 +370,7 @@ void CmdAcuteChar(int code)
      is simple and at least shows up in Word                          */
 
 	if (!done)
-		putOverstrikeChar(NULL, cParam, 180);
+		putOverstrikeChar("unicode", cParam, 180, 0);
 
     free(cParam);
 }
@@ -395,7 +409,7 @@ void CmdDoubleAcuteChar(int code)
 	}
 	
 	if (!done)
-		putOverstrikeChar("MT Extra", cParam, 251);
+		putOverstrikeChar("MT Extra", cParam, 251, 0);
 		
     free(cParam);
 }
@@ -467,7 +481,7 @@ void CmdMacronChar(int code)
 	}
 	
 	if (!done)
-		putOverstrikeChar(NULL, cParam, 175);
+		putOverstrikeChar("unicode", cParam, 175, 0);
 
     free(cParam);
 }
@@ -586,7 +600,7 @@ void CmdHatChar(int code)
 	} 
 
 	if (!done)
-		putOverstrikeChar("MT Extra", cParam, 36);
+		putOverstrikeChar("MT Extra", cParam, 36, 0);
 		
 	free(cParam);
 }
@@ -626,7 +640,7 @@ void CmdOaccentChar(int code)
 	}
 
 	if (!done)
-		putOverstrikeChar("MT Extra", cParam, 254);
+		putOverstrikeChar("MT Extra", cParam, 254, 0);
 		
     free(cParam);
 }
@@ -693,7 +707,7 @@ void CmdTildeChar(int code)
 	}
 
 	if (!done) 
-		putOverstrikeChar("MT Extra", cParam, 37);
+		putOverstrikeChar("MT Extra", cParam, 37, 0);
 		
 	free(cParam);
 }
@@ -791,7 +805,7 @@ void CmdCedillaChar(int code)
     }
     
 	if (!done) 
-		putOverstrikeChar("MT Extra", cParam, 255);
+		putOverstrikeChar("MT Extra", cParam, 255, 0);
 
 
     free(cParam);
@@ -866,7 +880,7 @@ void CmdBreveChar(int code)
 	}
 	
 	if (!done) 
-		putOverstrikeChar("MT Extra", cParam, 252);
+		putOverstrikeChar("MT Extra", cParam, 252, 0);
 
     free(cParam);
 }
@@ -1026,7 +1040,7 @@ void CmdHacekChar(int code)
 	}
 	
 	if (!done)
-		putOverstrikeChar("MT Extra", cParam, 253);
+		putOverstrikeChar("MT Extra", cParam, 253, 0);
 
     free(cParam);
 }
@@ -1038,8 +1052,8 @@ void CmdDotChar(int code)
           need something that looks like \\O(a,\\S(\f2\'26)) in RTF file
  ******************************************************************************/
 {
-    char *cParam = getBraceParam();
 	int done = 0;
+    char *cParam = getBraceParam();
 	
     if (cParam == NULL) return;
 	
@@ -1117,7 +1131,7 @@ void CmdDotChar(int code)
 	}
 
 	if (!done) 
-		putOverstrikeChar("MT Extra", cParam, 38);
+		putOverstrikeChar("MT Extra", cParam, 38, 0);
 
 	free(cParam);
 }
@@ -1128,75 +1142,197 @@ void CmdUnderdotChar(int code)
  purpose: converts chars with dots underneath  \d{o}
  ******************************************************************************/
 {
-    int num;
-    int upsize;
-    char *cParam;
+	int done = 0;
+    char *cParam = getBraceParam();
 
-    cParam = getBraceParam();
-    if (cParam == NULL)
-        return;
+    if (cParam == NULL) return;
+	
+    diagnostics(4,"CmdUnderdotChar letter='%s' in eq field=%d",cParam,
+                g_processing_fields);
+    
+	/* These encodings will fail in equation field translation */
+    if (g_processing_fields==0) {
+		switch (cParam[0]) {
+			case 'B':
+					putUnicodeChar(0x1E,0x04,'B');
+					done = 1;
+					break;
+					
+			case 'b':
+					putUnicodeChar(0x1E,0x05,'b');
+					done = 1;
+					break;
+					
+			case 'D':
+					putUnicodeChar(0x1E,0x0C,'D');
+					done = 1;
+					break;
+					
+			case 'd':
+					putUnicodeChar(0x1E,0x0D,'d');
+					done = 1;
+					break;
+					
+			case 'H':
+					putUnicodeChar(0x1E,0x24,'H');
+					done = 1;
+					break;
+					
+			case 'h':
+					putUnicodeChar(0x1E,0x25,'h');
+					done = 1;
+					break;
+					
+			case 'K':
+					putUnicodeChar(0x1E,0x32,'K');
+					done = 1;
+					break;
+					
+			case 'k':
+					putUnicodeChar(0x1E,0x33,'k');
+					done = 1;
+					break;
+					
+			case 'L':
+					putUnicodeChar(0x1E,0x36,'L');
+					done = 1;
+					break;
+					
+			case 'l':
+					putUnicodeChar(0x1E,0x37,'l');
+					done = 1;
+					break;
+					
+			case 'M':
+					putUnicodeChar(0x1E,0x42,'M');
+					done = 1;
+					break;
+					
+			case 'm':
+					putUnicodeChar(0x1E,0x43,'m');
+					done = 1;
+					break;
+
+			case 'N':
+					putUnicodeChar(0x1E,0x46,'N');
+					done = 1;
+					break;
+					
+			case 'n':
+					putUnicodeChar(0x1E,0x47,'n');
+					done = 1;
+					break;
+
+			case 'R':
+					putUnicodeChar(0x1E,0x5A,'R');
+					done = 1;
+					break;
+					
+			case 'r':
+					putUnicodeChar(0x1E,0x5B,'r');
+					done = 1;
+					break;
+
+			case 'S':
+					putUnicodeChar(0x1E,0x61,'S');
+					done = 1;
+					break;
+					
+			case 's':
+					putUnicodeChar(0x1E,0x62,'s');
+					done = 1;
+					break;
+
+			case 'V':
+					putUnicodeChar(0x1E,0x7E,'V');
+					done = 1;
+					break;
+					
+			case 'v':
+					putUnicodeChar(0x1E,0x7F,'v');
+					done = 1;
+					break;
+
+			case 'W':
+					putUnicodeChar(0x1E,0x88,'W');
+					done = 1;
+					break;
+					
+			case 'w':
+					putUnicodeChar(0x1E,0x89,'w');
+					done = 1;
+					break;
+
+			case 'Z':
+					putUnicodeChar(0x1E,0x92,'Z');
+					done = 1;
+					break;
+					
+			case 'z':
+					putUnicodeChar(0x1E,0x93,'z');
+					done = 1;
+					break;
+
+			case 'A':
+					putUnicodeChar(0x1E,0xA0,'A');
+					done = 1;
+					break;
+					
+			case 'a':
+					putUnicodeChar(0x1E,0xA1,'a');
+					done = 1;
+					break;
+
+			case 'E':
+					putUnicodeChar(0x1E,0xB8,'E');
+					done = 1;
+					break;
+					
+			case 'e':
+					putUnicodeChar(0x1E,0xB9,'e');
+					done = 1;
+					break;
+
+			case 'I':
+					putUnicodeChar(0x1E,0xCA,'I');
+					done = 1;
+					break;
+					
+			case 'i':
+					putUnicodeChar(0x1E,0xCB,'i');
+					done = 1;
+					break;
+
+			case 'O':
+					putUnicodeChar(0x1E,0xCC,'O');
+					done = 1;
+					break;
+					
+			case 'o':
+					putUnicodeChar(0x1E,0xCD,'o');
+					done = 1;
+					break;
+
+			case 'U':
+					putUnicodeChar(0x1E,0xE5,'U');
+					done = 1;
+					break;
+					
+			case 'u':
+					putUnicodeChar(0x1E,0xE6,'u');
+					done = 1;
+					break;
+		}
 		
-	switch (cParam[0]) {
-		case 'A':
-				fprintRTF("\\u258A");
-				break;
-				
-		case 'a':
-				fprintRTF("\\u259a");
-				break;
-				
-		case 'E':
-				fprintRTF("\\u276E");
-				break;
-				
-		case 'e':
-				fprintRTF("\\u277e");
-				break;
-				
-		case 'G':
-				fprintRTF("\\u286G");
-				break;
-				
-		case 'g':
-				fprintRTF("\\u287g");
-				break;
-				
-		case 'I':
-				fprintRTF("\\u300I");
-				break;
-				
-		case 'O':
-				fprintRTF("\\u334O");
-				break;
-				
-		case 'o':
-				fprintRTF("\\u335o");
-				break;
-				
-		case 'U':
-				fprintRTF("\\u364U");
-				break;
-				
-		case 'u':
-				fprintRTF("\\u365u");
-				break;
+		if (strcmp(cParam, "\\i") == 0) {
+			fprintRTF("\\u301i");
+			done = 1;
+		}
+	}
 	
-		default:
-			if (g_unicode && strcmp(cParam, "\\i") == 0) {
-				fprintRTF("\\u301i");
-				break;
-			}
+	if (!done)
+		putOverstrikeChar("simple", cParam, 46, -0.25);
 	
-			upsize = CurrentFontSize() / 2;
-			if (!g_processing_fields)
-				fprintRTF("{\\field{\\*\\fldinst EQ ");
-			fprintRTF("\\\\O(");
-			ConvertString(cParam);
-			fprintRTF("%c\\\\S({\\up%d\\f%d \\\\(}))", g_field_separator, upsize, num);
-			if (!g_processing_fields)
-				fprintRTF("}{\\fldrslt }}");
-		   
-	 }
 	 free(cParam);
 }
 
