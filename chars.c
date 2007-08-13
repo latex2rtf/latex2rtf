@@ -48,8 +48,13 @@ static void putOverstrikeChar(const char *font, char *s, unsigned int overstrike
 	fprintRTF("\\\\O(");
     ConvertString(s);
 	fprintRTF("%c", g_field_separator);
-	fprintRTF("{\\field{\\*\\fldinst SYMBOL %u \\\\f ", overstrike);
-	fprintRTF("\"%s\"}{\\fldrslt }}", font);
+	
+	if (font == NULL) {
+		fprintRTF("\\u%u\\'%x",overstrike,overstrike);	
+	} else {
+		fprintRTF("{\\field{\\*\\fldinst SYMBOL %u \\\\f ", overstrike);
+		fprintRTF("\"%s\"}{\\fldrslt }}", font);
+	}
 	fprintRTF(")");
 
 	if (g_processing_fields==0) fprintRTF("}{\\fldrslt }}");
@@ -211,142 +216,139 @@ void CmdLApostrophChar(int code)
     free(cParam);
 }
 
-void CmdRApostrophChar(int code)
+void CmdAcuteChar(int code)
 
 /******************************************************************************
  purpose: converts symbols with acute accents (\'{a}) from LaTeX to RTF
  ******************************************************************************/
 {
+    int done = 0;
     char *cParam = getBraceParam();
 
     if (cParam == NULL)
         return;
 
-    switch (cParam[0]) {
-        case 'A':
-            fprintRTF("\\'c1");
-            break;
-        case 'E':
-            fprintRTF("\\'c9");
-            break;
-        case 'I':
-            fprintRTF("\\'cd");
-            break;
-        case 'O':
-            fprintRTF("\\'d3");
-            break;
-        case 'U':
-            fprintRTF("\\'da");
-            break;
-        case 'a':
-            fprintRTF("\\'e1");
-            break;
-        case 'e':
-            fprintRTF("\\'e9");
-            break;
-        case 'i':
-            fprintRTF("\\'ed");
-            break;
-        case 'o':
-            fprintRTF("\\'f3");
-            break;
-        case 'u':
-            fprintRTF("\\'fa");
-            break;
-        case 'y':
-            fprintRTF("\\'fd");
-            break;
-        case 'Y':
-            fprintRTF("\\'dd");
-            break;
+	/* These encodings will fail in equation field translation */
+    if (g_processing_fields==0) {
+		switch (cParam[0]) {
+			case 'A':
+				fprintRTF("\\'c1");
+				done=1;
+				break;
+			case 'E':
+				fprintRTF("\\'c9");
+				done=1;
+				break;
+			case 'I':
+				fprintRTF("\\'cd");
+				done=1;
+				break;
+			case 'O':
+				fprintRTF("\\'d3");
+				done=1;
+				break;
+			case 'U':
+				fprintRTF("\\'da");
+				done=1;
+				break;
+			case 'a':
+				fprintRTF("\\'e1");
+				done=1;
+				break;
+			case 'e':
+				fprintRTF("\\'e9");
+				done=1;
+				break;
+			case 'i':
+				fprintRTF("\\'ed");
+				done=1;
+				break;
+			case 'o':
+				fprintRTF("\\'f3");
+				done=1;
+				break;
+			case 'u':
+				fprintRTF("\\'fa");
+				done=1;
+				break;
+			case 'y':
+				fprintRTF("\\'fd");
+				done=1;
+				break;
+			case 'Y':
+				fprintRTF("\\'dd");
+				done=1;
+				break;	
+			case 'C':
+				fprintRTF("\\u262C");
+				done=1;
+				break;
+			case 'c':
+				fprintRTF("\\u263c");
+				done=1;
+				break;
+			case 'G':
+				fprintRTF("\\u500G");
+				done=1;
+				break;
+			case 'g':
+				fprintRTF("\\u501g");
+				done=1;
+				break;
+			case 'L':
+				fprintRTF("\\u313L");
+				done=1;
+				break;
+			case 'l':
+				fprintRTF("\\u314l");
+				done=1;
+				break;
+			case 'N':
+				fprintRTF("\\u323N");
+				done=1;
+				break;
+			case 'n':
+				fprintRTF("\\u324n");
+				done=1;
+				break;
+			case 'R':
+				fprintRTF("\\u340R");
+				done=1;
+				break;
+			case 'r':
+				fprintRTF("\\u341r");
+				done=1;
+				break;
+			case 'S':
+				fprintRTF("\\u346S");
+				done=1;
+				break;
+			case 's':
+				fprintRTF("\\u347s");
+				done=1;
+				break;
+			case 'Z':
+				fprintRTF("\\u377Z");
+				done=1;
+				break;
+			case 'z':
+				fprintRTF("\\u378z");
+				done=1;
+				break;
+		}
+			
+		if (strcmp(cParam, "\\i") == 0) {
+			fprintRTF("\\'ec");
+			done=1;
+		}
+	}
+			
+/*   Nothing seems to work when converting to an equation.  This
+     is simple and at least shows up in Word                          */
 
-        case 'C':
-            if (g_unicode) {
-                fprintRTF("\\u262C");
-                break;
-            }
-        case 'c':
-            if (g_unicode) {
-                fprintRTF("\\u263c");
-                break;
-            }
-        case 'G':
-            if (g_unicode) {
-                fprintRTF("\\u500G");
-                break;
-            }
-        case 'g':
-            if (g_unicode) {
-                fprintRTF("\\u501g");
-                break;
-            }
-        case 'L':
-            if (g_unicode) {
-                fprintRTF("\\u313L");
-                break;
-            }
-        case 'l':
-            if (g_unicode) {
-                fprintRTF("\\u314l");
-                break;
-            }
-        case 'N':
-            if (g_unicode) {
-                fprintRTF("\\u323N");
-                break;
-            }
-        case 'n':
-            if (g_unicode) {
-                fprintRTF("\\u324n");
-                break;
-            }
-        case 'R':
-            if (g_unicode) {
-                fprintRTF("\\u340R");
-                break;
-            }
-        case 'r':
-            if (g_unicode) {
-                fprintRTF("\\u341r");
-                break;
-            }
-        case 'S':
-            if (g_unicode) {
-                fprintRTF("\\u346S");
-                break;
-            }
-        case 's':
-            if (g_unicode) {
-                fprintRTF("\\u347s");
-                break;
-            }
-        case 'Z':
-            if (g_unicode) {
-                fprintRTF("\\u377Z");
-                break;
-            }
-        case 'z':
-            if (g_unicode) {
-                fprintRTF("\\u378z");
-                break;
-            }
+	if (!done)
+		putOverstrikeChar(NULL, cParam, 180);
 
-        default:
-            if (strcmp(cParam, "\\i") == 0) {
-                fprintRTF("\\'ec");
-                break;
-            }
-
-            if (!g_processing_fields)
-                fprintRTF("{\\field{\\*\\fldinst EQ ");
-            fprintRTF("\\\\O(");
-            ConvertString(cParam);
-            fprintRTF("%c\\\\S(\\'b4))", g_field_separator);
-            if (!g_processing_fields)
-                fprintRTF("}{\\fldrslt }}");
-            break;
-
-    }
     free(cParam);
 }
 

@@ -160,7 +160,7 @@ static CommandArray commands[] = {
     {"hat", CmdHatChar, 0},
     {"check", CmdHacekChar, 0},
     {"breve", CmdBreveChar, 0},
-    {"acute", CmdRApostrophChar, 0},
+    {"acute", CmdAcuteChar, 0},
     {"grave", CmdLApostrophChar, 0},
     {"tilde", CmdTildeChar, 0},
     {"bar", CmdMacronChar, 0},

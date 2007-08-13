@@ -583,8 +583,8 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
             if (!g_processing_tabbing) break;
             cNext = getTexChar();
             if (cNext=='=' ) {CmdMacronChar(0); return;}
-            if (cNext=='\'') {CmdRApostrophChar(0); return;}
-            if (cNext=='`' ) {CmdLApostrophChar(0); return;}
+            if (cNext=='\'') {CmdAcuteChar(0); return;}
+            if (cNext=='`' ) {CmdAcuteChar(0); return;}
             ungetTexChar(cNext);
             break;
         case '}':
@@ -694,7 +694,7 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
                 PushBrace();
                 return;
             } else
-                CmdRApostrophChar(0);   /* char ' =?= \' */
+                CmdAcuteChar(0);   /* char ' =?= \' */
             return;
 
         case '=':
