@@ -357,27 +357,37 @@ void CmdAcuteChar(int code)
  ******************************************************************************/
 void CmdDoubleAcuteChar(int code)
 {
+    int done = 0;
     char *cParam = getBraceParam();
 
     if (cParam == NULL)
         return;
 
-    switch (cParam[0]) {
-        case 'O':
-        	putUnicodeChar(0x01,0x50,'O');
-            break;
-        case 'o':
-        	putUnicodeChar(0x01,0x51,'o');
-            break;
-        case 'U':
-        	putUnicodeChar(0x01,0x70,'U');
-            break;
-        case 'u':
-        	putUnicodeChar(0x01,0x71,'u');
-            break;
-        default:
-            break;
-    }
+	/* These encodings will fail in equation field translation */
+    if (g_processing_fields==0) {
+		switch (cParam[0]) {
+			case 'O':
+				putUnicodeChar(0x01,0x50,'O');
+				done = 1;
+				break;
+			case 'o':
+				putUnicodeChar(0x01,0x51,'o');
+				done = 1;
+				break;
+			case 'U':
+				putUnicodeChar(0x01,0x70,'U');
+				done = 1;
+				break;
+			case 'u':
+				putUnicodeChar(0x01,0x71,'u');
+				done = 1;
+				break;
+		}
+	}
+	
+	if (!done)
+		putOverstrikeChar("MT Extra", cParam, 251);
+		
     free(cParam);
 }
 
