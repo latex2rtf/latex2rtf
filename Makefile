@@ -14,6 +14,9 @@ CFLAGS:=-DUNIX
 #Uncomment next line for windows machines
 #PREFIX_DRIVE=c:
 
+#Uncomment next line when using gcc compiler, target linux
+CFLAGS:=$(CFLAGS) -lm
+
 #Uncomment next line when using rsx compiler, target win32
 #CFLAGS:=$(CFLAGS) -Zwin32  
 

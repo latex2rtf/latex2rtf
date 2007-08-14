@@ -643,8 +643,7 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
             if (g_processing_tabbing) {
                 (void) PopBrace();
                 PushBrace();
-            } else
-                fprintRTF("\\-");
+            } 
             return;
 
         case '+':
