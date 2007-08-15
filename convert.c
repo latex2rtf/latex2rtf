@@ -209,6 +209,41 @@ globals: fTex, fRtf and all global flags for convert (see above)
 
         pending_new_paragraph--;
 
+		/* preliminary support for utf8 sequences.  Thanks to CSH */
+        if ((cThis & 0x8000) && (strcmp(g_charset_encoding_name, "utf8") == 0)) {
+        	unsigned char byte;
+        	unsigned int len, value, i;
+
+        	/* Get the number of bytes in the sequence        */
+        	/* Must use an unsigned character for comparisons */
+        	byte = cThis;
+        	if (byte >= 0xF0) { 
+        		len = 4; 
+        		value = byte & ~0xF0; 
+        	} 
+        	else if (byte >= 0xE0) { 
+        		len = 3; 
+        		value = byte & ~0xE0; 
+        	}		
+        	else if (byte >= 0xC0) { 
+        		len = 2; 
+        		value = byte & ~0xC0; 
+        	}
+        	
+        	/* reassemble the character */
+        	for ( i=1; i<len; i++) {
+        		byte = getTexChar() & ~0xC0;
+        		value = (value << 6) + byte;
+        	}
+        	
+        	/* values above 0x8000 must be negative! */
+			if (value < 0x8000)
+				fprintRTF("\\u%d?", value);
+			else
+				fprintRTF("\\u%d?", (int)((double)value-0x10000));
+        }        	        	
+		else
+
         switch (cThis) {
 
             case '\\':
@@ -778,7 +813,7 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
     }
 
 
-    /* LEG180498 Commands consist of letters and can have an optional * at the end */
+    /* Commands consist of letters and can have an optional * at the end */
     for (i = 0; i < MAXCOMMANDLEN-1; i++) {
         if (!isalpha((int) cThis) && (cThis != '*')) {
             bool found_nl = FALSE;

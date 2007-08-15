@@ -170,6 +170,10 @@ void setPackageInputenc(char *option)
     } else if (strcmp(option, "raw1253") == 0) {
         g_fcharset_number = 161;    /* Greek in RTF Specification */
         strcpy(g_charset_encoding_name, "raw");
+        
+    } else if (strcmp(option, "utf8") == 0) {
+        diagnostics(WARNING, "\n Input Encoding utf8 - experimental support");
+        strcpy(g_charset_encoding_name, "utf8");
 
     } else
         diagnostics(WARNING, "\n Input Encoding <%s> not supported", option);
