@@ -652,26 +652,6 @@ void CmdIgnore(int code)
 {
 }
 
-void CmdLdots( /* @unused@ */ int code)
-
-/******************************************************************************
- purpose: converts the LaTeX-\ldots-command into "..." in Rtf
- ******************************************************************************/
-{
-    int num = RtfFontNumber("Symbol");
-    
-    if (GetTexMode() != MODE_MATH && GetTexMode() != MODE_DISPLAYMATH)
-        SetTexMode(MODE_HORIZONTAL);
-
-/* every character from the symbol font must be accompanied by the unicode
-   value from Microsoft's Private User Area when used in a field */
-
-    if (!g_processing_fields) 
-    	fprintRTF("\\u8230\\'85",num);
-    else
-   		fprintRTF("{\\f%d\\u-3908\\'85}",num);
-}
-
 void Environment(int code)
 
 /******************************************************************************

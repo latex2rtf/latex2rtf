@@ -15,7 +15,7 @@ CFLAGS:=-DUNIX
 #PREFIX_DRIVE=c:
 
 #Uncomment next line when using gcc compiler, target linux
-CFLAGS:=$(CFLAGS) -lm
+LINK_FLAGS = -lm
 
 #Uncomment next line when using rsx compiler, target win32
 #CFLAGS:=$(CFLAGS) -Zwin32  
@@ -121,7 +121,7 @@ OBJS=fonts.o direct.o encode.o commands.o stack.o funct1.o tables.o \
 all : checkdir uptodate latex2rtf
 
 latex2rtf: $(OBJS) $(HDRS)
-	$(CC) $(CFLAGS) $(OBJS)	$(LIBS) -o $(BINARY_NAME)
+	$(CC) $(CFLAGS) $(LINK_FLAGS) $(OBJS)	$(LIBS) -o $(BINARY_NAME)
 
 cfg.o: Makefile cfg.c
 	$(CC) $(CFLAGS) -DCFGDIR=\"$(CFG_INSTALL)\" -c cfg.c -o cfg.o

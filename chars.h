@@ -16,7 +16,7 @@ void CmdTildeChar(int code);
 void CmdSymbolChar(int code);
 void CmdUnderdotChar(int code);
 void CmdHacekChar(int code);
-void CmdOaccentChar(int code);
+void CmdRingChar(int code);
 void CmdHatChar(int code);
 void CmdMacronChar(int code);
 void CmdVecChar(int code);
@@ -38,6 +38,7 @@ void CmdEuro(int code);
 void CmdDegreeCelsius(int code);
 void CmdMTExtraChar(int code);
 void CmdPolishL(int code);
+void CmdLdots(int code);
 
 #define IERF 1
 #define IEREF 2

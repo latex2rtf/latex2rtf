@@ -78,7 +78,6 @@ void CmdNewEnvironment(int code);
 void CmdAlign(int code);
 void CmdToday(int code);
 void CmdIgnore(int code);
-void CmdLdots(int code);
 void Environment(int code);
 
 #define SECT_PART    1
