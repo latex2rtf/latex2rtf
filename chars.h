@@ -15,7 +15,7 @@ void CmdDoubleAcuteChar(int code);
 void CmdTildeChar(int code);
 void CmdSymbolChar(int code);
 void CmdUnderdotChar(int code);
-void CmdHacekChar(int code);
+void CmdCaronChar(int code);
 void CmdRingChar(int code);
 void CmdHatChar(int code);
 void CmdMacronChar(int code);

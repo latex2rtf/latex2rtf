@@ -989,10 +989,10 @@ void CmdBreveChar(int code)
 }
 
 
-void CmdHacekChar(int code)
+void CmdCaronChar(int code)
 
 /******************************************************************************
- purpose: converts \v from LaTeX to RTF
+ purpose: converts \v{a}
           need something that looks like \\O(a,\\S(\f1\'da)) in RTF file
  ******************************************************************************/
 {
@@ -1142,8 +1142,8 @@ void CmdHacekChar(int code)
 		}
 	}
 	
-	if (!done)
-		putOverstrikeChar("MT Extra", cParam, 253, 0.1);
+	if (!done) 
+		putOverstrikeChar("unicode", cParam, 780, 0.05);
 
     free(cParam);
 }

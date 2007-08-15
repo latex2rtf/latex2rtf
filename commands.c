@@ -158,7 +158,7 @@ static CommandArray commands[] = {
 
     /* ---------- SPECIAL CHARACTERS ------------------- */
     {"hat", CmdHatChar, 0},
-    {"check", CmdHacekChar, 0},
+    {"check", CmdCaronChar, 0},
     {"breve", CmdBreveChar, 0},
     {"acute", CmdAcuteChar, 0},
     {"grave", CmdGraveChar, 0},
@@ -170,7 +170,7 @@ static CommandArray commands[] = {
     {"\"", CmdUmlauteChar, 0},
     {"u", CmdBreveChar, 0},
     {"d", CmdUnderdotChar, 0},
-    {"v", CmdHacekChar, 0},
+    {"v", CmdCaronChar, 0},
     {"r", CmdRingChar, 0},
     {"b", CmdUnderbarChar, 0},
     {"c", CmdCedillaChar, 0},
