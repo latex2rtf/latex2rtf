@@ -175,6 +175,10 @@ void setPackageInputenc(char *option)
         diagnostics(WARNING, "\n Input Encoding utf8 - experimental support");
         strcpy(g_charset_encoding_name, "utf8");
 
+    } else if (strcmp(option, "utf8x") == 0) {
+        diagnostics(WARNING, "\n Input Encoding utf8x - experimental support");
+        strcpy(g_charset_encoding_name, "utf8");
+
     } else
         diagnostics(WARNING, "\n Input Encoding <%s> not supported", option);
 }
