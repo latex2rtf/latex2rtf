@@ -50,6 +50,12 @@ static bool g_preambleTwoside = FALSE;
 static bool g_preambleTwocolumn = FALSE;
 static bool g_preambleTitlepage = FALSE;
 static bool g_preambleLandscape = FALSE;
+static bool g_preambleGeometry = FALSE;
+
+static int g_geomMargl = 0;
+static int g_geomMargr = 0;
+static int g_geomMargt = 0;
+static int g_geomMargb = 0;
 
 static char *g_preambleTitle = NULL;
 static char *g_preambleAuthor = NULL;
@@ -516,73 +522,109 @@ void CmdDocumentStyle(int code)
 static void CmdUseOnepackage(char* package, char *options)
 {
     if (strcmp(package, "inputenc") == 0 && options)
-        setPackageInputenc(options);
-
+	setPackageInputenc(options);
+    
     else if (strcmp(package, "graphics") == 0)
         g_graphics_package = GRAPHICS_GRAPHICS;
-
+    
     else if (strcmp(package, "graphicx") == 0)
         g_graphics_package = GRAPHICS_GRAPHICX;
 
     else if (strcmp(package, "isolatin1") == 0)
-        setPackageInputenc("latin1");
+	setPackageInputenc("latin1");
 
     else if (strcmp(package, "spanish") == 0)
-            setPackageBabel(package);
+	setPackageBabel(package);
 
     else if (strcmp(package, "babel") == 0) {
-        if (options)
-            setPackageBabel(options);
+	if (options)
+	    setPackageBabel(options);
 
     } else if (strcmp(package, "german") == 0 ||
-      strcmp(package, "ngerman") == 0 ||
-      strcmp(package, "czech") == 0 || strcmp(package, "frenchb") == 0 || strcmp(package, "french") == 0)
-        setPackageBabel(package);
+	       strcmp(package, "ngerman") == 0 ||
+	       strcmp(package, "czech") == 0 || strcmp(package, "frenchb") == 0 || strcmp(package, "french") == 0)
+	setPackageBabel(package);
 
     else if (strcmp(package, "palatino") == 0 ||
-      strcmp(package, "times") == 0 ||
-      strcmp(package, "bookman") == 0 ||
-      strcmp(package, "chancery") == 0 ||
-      strcmp(package, "courier") == 0 ||
-      strstr(package, "avant") || strstr(package, "newcen") || strstr(package, "helvet"))
-        setPackageFont(package);
+	     strcmp(package, "times") == 0 ||
+	     strcmp(package, "bookman") == 0 ||
+	     strcmp(package, "chancery") == 0 ||
+	     strcmp(package, "courier") == 0 ||
+	     strstr(package, "avant") || strstr(package, "newcen") || strstr(package, "helvet"))
+	setPackageFont(package);
 
     else if (strcmp(package, "endfloat") == 0) {
-        g_endfloat_figures = TRUE;
-        g_endfloat_tables  = TRUE;
-        if (options && strstr(options,"nomarkers")) g_endfloat_markers = FALSE;
+	g_endfloat_figures = TRUE;
+	g_endfloat_tables  = TRUE;
+	if (options && strstr(options,"nomarkers")) g_endfloat_markers = FALSE;
 
     } else if (strcmp(package, "cite") == 0) {
-       set_sorted_citations();
-       set_compressed_citations();
+	set_sorted_citations();
+	set_compressed_citations();
 
     } else if (strcmp(package, "natbib") == 0) {
-        if (options && strstr(options, "longnamesfirst"))
-            set_longnamesfirst();
-        if (options && strstr(options, "super"))
-            set_bibpunct_style_super();
-        if (options && strstr(options, "comma"))
-            set_bibpunct_style_separator(",");
-        if (options && strstr(options, "colon"))
-            set_bibpunct_style_separator(":");
-        if (options && strstr(options, "round"))
-            set_bibpunct_style_paren("(",")");
-        if (options && strstr(options, "square"))
-            set_bibpunct_style_paren("[","]");
-        if (options && strstr(options, "curly"))
-            set_bibpunct_style_paren("{","}");
-        if (options && strstr(options, "angle"))
-            set_bibpunct_style_paren("<",">");
-        if (options && strstr(options, "sort"))
-            set_sorted_citations();
-        if (options && strstr(options, "compress"))
-        	set_compressed_citations();
-
-        PushEnvironment(NATBIB_MODE);
-        g_document_bibstyle = BIBSTYLE_NATBIB;
+	if (options && strstr(options, "longnamesfirst"))
+	    set_longnamesfirst();
+	if (options && strstr(options, "super"))
+	    set_bibpunct_style_super();
+	if (options && strstr(options, "comma"))
+	    set_bibpunct_style_separator(",");
+	if (options && strstr(options, "colon"))
+	    set_bibpunct_style_separator(":");
+	if (options && strstr(options, "round"))
+	    set_bibpunct_style_paren("(",")");
+	if (options && strstr(options, "square"))
+	    set_bibpunct_style_paren("[","]");
+	if (options && strstr(options, "curly"))
+	    set_bibpunct_style_paren("{","}");
+	if (options && strstr(options, "angle"))
+	    set_bibpunct_style_paren("<",">");
+	if (options && strstr(options, "sort"))
+	    set_sorted_citations();
+	if (options && strstr(options, "compress"))
+	    set_compressed_citations();
+      
+	PushEnvironment(NATBIB_MODE);
+	g_document_bibstyle = BIBSTYLE_NATBIB;
+	
+    } else if (strcmp(package, "geometry") == 0) {
+        char geomOpt[50], *geomParamStart, *geomParamEnd, *j;
+        int i=0, geomParamVal;
+        g_preambleGeometry = TRUE;
+        
+        g_geomMargl = g_geomMargr = (getLength("textwidth") * 0.15);
+        g_geomMargt = (getLength("textheight") * 0.3 * 0.4);
+        g_geomMargb = (getLength("textheight") * 0.3 * 0.6);
+	
+        if (options) {
+	    while(*options == ' ')
+		options ++;
+	    geomOpt[i] = *options++;
+	    while (*options != (' ') && *options != '=' && *options != ',' && *options != '\0') {
+		i++;
+		geomOpt[i] = *options;
+		options++;
+	    }
+	    geomOpt[++i] = '\0';
+	    while (*options == ' ')
+		options++;
+	    if (*options == '=') {
+		geomParamStart = ++options;
+		while (*options != ',' && *options !=' ' && *options != '\0')
+		    options++;
+		geomParamEnd = (options - 1);
+		for (j = geomParamEnd; j >= geomParamStart; j--)
+		    ungetTexChar(*j);
+		geomParamVal = getDimension();
+	    }
+        }
+        if (strcmp(geomOpt, "margin") == 0)
+	    g_geomMargl = g_geomMargr = g_geomMargt = g_geomMargb = geomParamVal;
+        /* printf("geometry option %s, parameter value %d\n", geoOpt, geoParamVal); */
+	
     } else
-        setDocumentOptions(package);
-
+	setDocumentOptions(package);
+  
 }
 
 /******************************************************************************
@@ -988,18 +1030,26 @@ static void WritePageSize(void)
     if (g_preambleTwocolumn)
         fprintRTF("\\cols2\\colsx709"); /* two columns -- space between columns 709 */
 
-    n = getLength("hoffset") + 72 * 20 + getLength("oddsidemargin");
-    fprintRTF("\\margl%d", n);
-    diagnostics(4, "Writepagesize left margin   =%d pt", n / 20);
-    n = getLength("pagewidth") - (n + getLength("textwidth"));
-    fprintRTF("\\margr%d", n);
-    diagnostics(4, "Writepagesize right margin  =%d pt", n / 20);
-    n = getLength("voffset") + 72 * 20 + getLength("topmargin") + getLength("headheight") + getLength("headsep");
-    fprintRTF("\\margt%d", n);
-    diagnostics(4, "Writepagesize top    margin =%d pt", n / 20);
-    n = getLength("pageheight") - (n + getLength("textheight") + getLength("footskip"));
-    fprintRTF("\\margb%d", n);
-    diagnostics(4, "Writepagesize bottom margin =%d pt", n / 20);
+    if(!g_preambleGeometry){
+      n = getLength("hoffset") + 72 * 20 + getLength("oddsidemargin");
+      fprintRTF("\\margl%d", n);
+      diagnostics(4, "Writepagesize left margin   =%d pt", n / 20);
+      n = getLength("pagewidth") - (n + getLength("textwidth"));
+      fprintRTF("\\margr%d", n);
+      diagnostics(4, "Writepagesize right margin  =%d pt", n / 20);
+      n = getLength("voffset") + 72 * 20 + getLength("topmargin") + getLength("headheight") + getLength("headsep");
+      fprintRTF("\\margt%d", n);
+      diagnostics(4, "Writepagesize top    margin =%d pt", n / 20);
+      n = getLength("pageheight") - (n + getLength("textheight") + getLength("footskip"));
+      fprintRTF("\\margb%d", n);
+      diagnostics(4, "Writepagesize bottom margin =%d pt", n / 20);
+    } else {
+      /* Insert geometry dimensions here */
+      fprintRTF("\\margl%d", g_geomMargl);
+      fprintRTF("\\margr%d", g_geomMargr);
+      fprintRTF("\\margt%d", g_geomMargt);
+      fprintRTF("\\margb%d", g_geomMargb);
+    }
 
     fprintRTF("\\pgnstart%d", getCounter("page"));
     fprintRTF("\\widowctrl\\qj\\ftnbj\\f%d\\aftnnar\n", family);
