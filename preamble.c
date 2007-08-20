@@ -588,43 +588,35 @@ static void CmdUseOnepackage(char* package, char *options)
 	g_document_bibstyle = BIBSTYLE_NATBIB;
 	
     } else if (strcmp(package, "geometry") == 0) {
-        char geomOpt[50], *geomParamStart, *geomParamEnd, *j;
-        int i=0, geomParamVal;
-        g_preambleGeometry = TRUE;
         
-        g_geomMargl = g_geomMargr = (getLength("textwidth") * 0.15);
+        g_preambleGeometry = TRUE;
+        g_geomMargr = (getLength("textwidth") * 0.15);
+        g_geomMargl = g_geomMargr;
         g_geomMargt = (getLength("textheight") * 0.3 * 0.4);
         g_geomMargb = (getLength("textheight") * 0.3 * 0.6);
 	
-        if (options) {
-	    while(*options == ' ')
-		options ++;
-	    geomOpt[i] = *options++;
-	    while (*options != (' ') && *options != '=' && *options != ',' && *options != '\0') {
-		i++;
-		geomOpt[i] = *options;
-		options++;
-	    }
-	    geomOpt[++i] = '\0';
-	    while (*options == ' ')
-		options++;
-	    if (*options == '=') {
-		geomParamStart = ++options;
-		while (*options != ',' && *options !=' ' && *options != '\0')
-		    options++;
-		geomParamEnd = (options - 1);
-		for (j = geomParamEnd; j >= geomParamStart; j--)
-		    ungetTexChar(*j);
-		geomParamVal = getDimension();
-	    }
-        }
-        if (strcmp(geomOpt, "margin") == 0)
-	    g_geomMargl = g_geomMargr = g_geomMargt = g_geomMargb = geomParamVal;
-        /* printf("geometry option %s, parameter value %d\n", geoOpt, geoParamVal); */
+        while (options) {
+			char *key, *value, *next;
+			int distance=0;
+        	
+			next = keyvalue_pair(options,&key,&value);
+			
+			if (value == NULL) 
+				diagnostics(WARNING, "geometry package, single option=[%s]\n", key); 
+			else {
+				PushSource(NULL,value);
+				distance=getDimension();
+				diagnostics(WARNING, "geometry package, option=[%s], distance=%d twpts\n", key, distance); 
+				free(value);		
+			}
+			
+			if (key) free(key);
+			options = next;
+		}
 	
     } else
 	setDocumentOptions(package);
-  
+	  
 }
 
 /******************************************************************************

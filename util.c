@@ -336,3 +336,56 @@ char *ExtractAndRemoveTag(char *tag, char *text)
 
     return contents;
 }
+
+/* this extracts a comma-delimited, key-value pair from the string s
+   the string is untouched, and the return value from the function is
+   a pointer to the next character in the string to be parsed to get
+   the next pair.
+   
+   EXAMPLE: s= "  option=param,singleoptionname,opt2=crazy"
+   first  iteration return="singleoptionname,opt2=crazy", key="option", value="param"
+   second iteration return="opt2=crazy", key="singleoptionname", value=NULL
+   third  iteration return=NULL, key="opt2", value="crazy"
+*/  
+   
+char * keyvalue_pair(char *s, char **key, char **value)
+{
+	char *k, *v;	
+	*key = NULL;
+	*value = NULL;
+	if (s==NULL) return NULL;
+		
+	/* skip any blanks at start */
+	while (*s == ' ') s++;
+
+	if (*s=='\0') return NULL;  /*possibly all blanks*/
+	
+	/* find the end of the key */
+	k = s;
+	while (*k != '=' && *k != ',' && *k != '\0') 
+		k++;
+		
+	/* allocate and copy string into the key */
+	*key = my_strndup(s, k-s);
+	
+	if (*k == '\0') return NULL;
+	
+	if (*k == ',') return k+1;
+	
+	/* '=' found, now parse value */
+	s = k+1;
+	
+	/* skip any blanks at start */
+	while (*s == ' ') s++;
+	
+	/* find the end of the value */
+	v = s;
+	while (*v != ',' && *v != '\0') 
+		v++;
+	
+	/* allocate and copy this into the value */
+	*value = my_strndup(s, v-s);
+	
+	if (*v == '\0') return NULL;
+	return v+1;
+}
