@@ -20,12 +20,35 @@ chars 64-95 (40-5F)\\
 chars 96-126 (60-7E) (127(7F) is "DEL" key)\\
 \verb/` a b c d e f g h i j k l m n o p q r s t u v w x y z { | } ~/\\
 
+\section{Math}
+It is possible to use some utf-8 encoded characters even in math mode.
+
+Now let's test an equation.
+
+First, in standard notation:
+\[
+\nabla^2 \phi -{1\over c} {\partial \phi\over \partial t}  = 0
+\]
+
+Now with "partial" replaced:
+\[
+\nabla^2 \phi -{1\over c} {∂ \phi\over ∂ t}  = 0
+\]
+
+Note that utf-8 encoded greek characters aren't supported 
+in \LaTeX{} math mode. So for entering an utf-8 encoded 
+greek character inside a math enviroment one would have 
+to switch to text mode and additionally to greek, 
+but it makes no sense to replace the command\\
+\verb|$\phi$|\\
+by the command\\
+\verb|$\textit{\foreignlanguage{greek}{utf-8_encoded_phi}}$|
 
 \section{Tables}
 
 \begin{tabular}{crcl}
 €&128&80&\\
-&129&81&\\
+n/a&129&81&\\
 ‚&130&82&\\
 ƒ&131&83&\\
 „&132&84&\\
@@ -37,10 +60,10 @@ chars 96-126 (60-7E) (127(7F) is "DEL" key)\\
 Š&138&8A&\\
 ‹&139&8B&\\
 Œ&140&8C&\\
-&141&8D&\\
+n/a&141&8D&\\
 Ž&142&8E&\\
-&143&8F&\\
-&144&90&\\
+n/a&143&8F&\\
+n/a&144&90&\\
 ‘&145&91&\\
 ’&146&92&\\
 “&147&93&\\
@@ -53,7 +76,7 @@ chars 96-126 (60-7E) (127(7F) is "DEL" key)\\
 š&154&9A&\\
 ›&155&9B&\\
 œ&156&9C&\\
-&157&9D&\\
+n/a&157&9D&\\
 ž&158&9E&\\
 Ÿ&159&9F&\\
 \end{tabular}
