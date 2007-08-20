@@ -236,7 +236,7 @@ globals: fTex, fRtf and all global flags for convert (see above)
         		value = (value << 6) + byte;
         	}
         	
-        	diagnostics(WARNING,"(flag = 0x%X) char value = 0X%04X or %ud (%d bytes)", (unsigned char) cThis, value, value, len);
+        	diagnostics(4,"(flag = 0x%X) char value = 0X%04X or %ud (%d bytes)", (unsigned char) cThis, value, value, len);
 
         	/* values above 0x8000 must be negative! */
 			if (value < 0x8000)
