@@ -606,7 +606,7 @@ static void CmdUseOnepackage(char* package, char *options)
 			else {
 				PushSource(NULL,value);
 				distance=getDimension();
-				diagnostics(WARNING, "geometry package, option=[%s], distance=%d twpts\n", key, distance); 
+				diagnostics(WARNING, "geometry package, option=[%s], distance=%d twips\n", key, distance); 
 				free(value);		
 			}
 			
