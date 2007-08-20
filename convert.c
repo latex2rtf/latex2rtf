@@ -218,24 +218,26 @@ globals: fTex, fRtf and all global flags for convert (see above)
         	/* Must use an unsigned character for comparisons */
         	byte = cThis;
         	if (byte >= 0xF0) { 
-        		len = 4; 
+        		len = 3; 
         		value = byte & ~0xF0; 
         	} 
         	else if (byte >= 0xE0) { 
-        		len = 3; 
+        		len = 2; 
         		value = byte & ~0xE0; 
         	}		
         	else if (byte >= 0xC0) { 
-        		len = 2; 
+        		len = 1; 
         		value = byte & ~0xC0; 
         	}
         	
         	/* reassemble the character */
-        	for ( i=1; i<len; i++) {
+        	for ( i=0; i<len; i++) {
         		byte = getTexChar() & ~0xC0;
         		value = (value << 6) + byte;
         	}
         	
+        	diagnostics(WARNING,"(flag = 0x%X) char value = 0X%04X or %ud (%d bytes)", (unsigned char) cThis, value, value, len);
+
         	/* values above 0x8000 must be negative! */
 			if (value < 0x8000)
 				fprintRTF("\\u%d?", value);
