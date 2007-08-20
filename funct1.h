@@ -195,3 +195,5 @@ void CmdTextFont(int code);
 void CmdThe(int code);
 void CmdRule(int code);
 void CmdTolerateEnviron(int code);
+void CmdIflatextortf(int code);
+void CmdNewif(int code);

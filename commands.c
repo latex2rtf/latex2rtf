@@ -396,6 +396,7 @@ static CommandArray commands[] = {
     {"pagenumbering", CmdIgnoreParameter, No_Opt_One_NormParam},
     {"markboth", CmdIgnoreParameter, No_Opt_Two_NormParam},
     {"markright", CmdIgnoreParameter, No_Opt_One_NormParam},
+    
     {"", NULL, 0}
 };
 
@@ -476,6 +477,11 @@ static CommandArray PreambleCommands[] = {
     {"degreecelsius", CmdDegreeCelsius},
     {"resizebox", CmdResizeBox, 0},
     {"resizebox*", CmdResizeBox, 1},    
+    {"iflatextortf",CmdIflatextortf,0},
+    {"latextortftrue",CmdIgnore,1}, 
+    {"latextortffalse",CmdIgnore,0}, 
+    {"newif",CmdNewif,0},
+  
     {"", NULL, 0}
 };                              /* end of list */
 

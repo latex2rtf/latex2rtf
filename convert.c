@@ -122,13 +122,13 @@ void ConvertString(char *string)
     }
 
     if (PushSource(NULL, string) == 0) {
-        diagnostics(4, "Entering Convert() from StringConvert()\n******\n%s\n*****", temp);
+        diagnostics(4, "Entering Convert() from ConvertString()\n******\n%s\n*****", temp);
 
         while (StillSource())
             Convert();
 
         PopSource();
-        diagnostics(4, "Exiting Convert() from StringConvert()");
+        diagnostics(4, "Exiting Convert() from ConvertString()");
     }
 }
 

@@ -1613,6 +1613,18 @@ void CmdIgnoreLet( /* @unused@ */ int code)
     }
 }
 
+void CmdNewif( /* @unused@ */ int code)
+
+/******************************************************************************
+     purpose : ignore \newif\ifsomething
+ ******************************************************************************/
+{
+    char *s;
+	s = getSimpleCommand();
+	diagnostics(4,"discarding %s",s);
+	if (s) free(s);
+}
+
 void CmdQuad(int kk)
 
 /******************************************************************************
@@ -2202,3 +2214,27 @@ void CmdIgnoreEnviron(int code)
         }
     }
 }
+
+/******************************************************************************
+  purpose: simple support for \iflatextortf
+ ******************************************************************************/
+void CmdIflatextortf(int code)
+{
+	char *entire_if, *else_clause;
+	
+	/* extract entire if statement, removing comments */
+	entire_if = getTexUntil("\\fi", FALSE);
+	
+	/* look for else */
+	else_clause = strstr(entire_if, "\\else");
+	if (else_clause != NULL) *else_clause = '\0';
+	
+	ConvertString(entire_if);
+	
+	/* put the appropriate piece back for processing */
+	diagnostics(2,"CmdIflatextortf clause is");
+	diagnostics(2,"       <%s>", entire_if);	
+	free(entire_if);
+}
+
+

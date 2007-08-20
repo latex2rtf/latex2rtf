@@ -1,0 +1,46 @@
+\documentclass[11pt]{report}
+
+\newif\iflatextortf  %all \newif constructs ignored
+\latextortffalse  %ignored by latex2rtf
+%\latextortftrue  %also ignored by latex2rtf
+ 
+\iflatextortf
+\else
+\usepackage{dcolumn}
+\fi
+
+\begin{document}
+
+Some text to start! latextortf is \ldots
+
+\iflatextortf
+
+  This is the true clause!  There should be no false clause.
+
+\else
+
+  This is the false clause!  Something is wrong if this appears in the RTF translation.
+  This should appear in the \latex{} version.
+
+\fi
+
+Some text to separate the next two cases.
+
+\iflatextortf
+
+  No else clause!  This is the true clause.
+
+\fi
+
+More space.  There should be nothing between this ...
+\iflatextortf
+
+\else
+
+  This is the else clause.
+
+\fi
+...and this (six dots).
+
+\end{document}
+
