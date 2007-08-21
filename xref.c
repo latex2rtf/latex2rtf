@@ -187,9 +187,9 @@ purpose: obtains a reference from .aux file
     code==1 means \token{reference}{{sect}{line}} -> "sect"
     code==2 means \token{reference}{a}{b}{c}      -> "{a}{b}{c}"
  ************************************************************************/
-static char *ScanAux(char *token, char *reference, int code)
+static char *ScanAux(char *token, char *reference, int code, char *aux_name)
 {
-    static FILE *fAux = NULL;
+    FILE *fAux = NULL;
     char AuxLine[2048];
     char target[512];
     char *s, *t;
@@ -202,45 +202,63 @@ static char *ScanAux(char *token, char *reference, int code)
 
     snprintf(target, 512, "\\%s{%s}", token, reference);
 
-    if (fAux == NULL && (fAux = my_fopen(g_aux_name, "r")) == NULL) {
-        diagnostics(WARNING, "No .aux file.  Run LaTeX to create %s\n", g_aux_name);
+    fAux = my_fopen(aux_name, "r");
+    if (fAux == NULL) {
+        diagnostics(3, "No .aux file.  Run LaTeX to create %s\n", aux_name);
         g_aux_file_missing = TRUE;
         return NULL;
     }
-    rewind(fAux);
 
     while (fgets(AuxLine, 2047, fAux) != NULL) {
 
-        s = strstr(AuxLine, target);
-        if (s) {
+		s = strstr(AuxLine, "\\@input{");
+		if (s) {
+			char *t, *ret_val, *filename;
+			
+			t = strchr(s, '}');
+			filename = my_strndup(s+8,t-s-8);
+			
+			diagnostics(WARNING, "In ScanAux, filename = %s", filename);
+			ret_val = ScanAux(token,reference,code,filename);
+			free(filename);
+			if (ret_val != NULL) {fclose(fAux); return ret_val;}
+		}
 
-            s += strlen(target);    /* move to \token{reference}{ */
-            
-            if (code == 2) {
+		s = strstr(AuxLine, target);
+		if (s) {
+	
+			s += strlen(target);    /* move to \token{reference}{ */
+			
+			if (code == 2) {
 				diagnostics(4, "found <%s>", s);
+				fclose(fAux);
 				return strdup_noendblanks(s);
 			}
-            	
-            if (code == 1)
-                s++;            /* move to \token{reference}{{ */
+				
+			if (code == 1)
+				s++;            /* move to \token{reference}{{ */
 
-            t = s;
-            braces = 1;
-            while (braces >= 1) {   /* skip matched braces */
-                t++;
-                if (*t == '{')
-                    braces++;
-                if (*t == '}')
-                    braces--;
-                if (*t == '\0')
-                    return NULL;
-            }
+			t = s;
+			braces = 1;
+			while (braces >= 1) {   /* skip matched braces */
+				t++;
+				if (*t == '{')
+					braces++;
+				if (*t == '}')
+					braces--;
+				if (*t == '\0') {
+					fclose(fAux);
+					return NULL;
+				}
+			}
 
-            *t = '\0';
-            diagnostics(4, "found <%s>", s + 1);
-            return strdup(s + 1);
-        }
+			*t = '\0';
+			diagnostics(4, "found <%s>", s + 1);
+			fclose(fAux);
+			return strdup(s + 1);
+		}
     }
+    fclose(fAux);
     return NULL;
 }
 
@@ -468,7 +486,7 @@ void CmdBibitem(int code)
     label = getBracketParam();
     key = getBraceParam();
     signet = strdup_nobadchars(key);
-    s = ScanAux("bibcite", key, 0);
+    s = ScanAux("bibcite", key, 0, g_aux_name);
 
     if (label && !s) {          /* happens when file needs to be latex'ed again */
         diagnostics(WARNING, "file needs to be latexed again for references");
@@ -657,7 +675,7 @@ void CmdLabel(int code)
         case LABEL_EQREF:
         case LABEL_VREF:
             signet = strdup_nobadchars(text);
-            s = ScanAux("newlabel", text, 1);
+            s = ScanAux("newlabel", text, 1, g_aux_name);
             if (code == LABEL_EQREF)
                 fprintRTF("(");
             if (g_fields_use_REF) {
@@ -1222,7 +1240,7 @@ static char * reorder_citations(char *keys, int scan_aux_code)
     remaining_keys = popCommaName(key);
 	n=0;
     while (key  && n < 100) {
-		char *s = ScanAux("bibcite", key, scan_aux_code); 
+		char *s = ScanAux("bibcite", key, scan_aux_code, g_aux_name); 
 		if (s) {
 			int number;
 			sscanf(s,"%d",&number);
@@ -1361,7 +1379,7 @@ void CmdCite(int code)
 			continue;
 		}
 		
-		s = ScanAux("bibcite", key, 0); /* look up bibliographic * reference */
+		s = ScanAux("bibcite", key, 0, g_aux_name); /* look up bibliographic * reference */
             
         if (g_document_bibstyle == BIBSTYLE_APALIKE) {  /* can't use Word refs for APALIKE or APACITE */
             t = s ? s : key;
@@ -1527,7 +1545,7 @@ void CmdNatbibCite(int code)
 		} else {
 		
 			/* look up citation and write it to the RTF stream */
-			s = ScanAux("bibcite", key, 0);
+			s = ScanAux("bibcite", key, 0, g_aux_name);
 				
 			diagnostics(3, "natbib key=[%s] <%s> ", key, s);
 			if (s) {
@@ -1631,7 +1649,7 @@ void CmdHarvardCite(int code)
 			continue;
 		}
 
-        s = ScanAux("harvardcite", key, 2); /* look up bibliographic reference */
+        s = ScanAux("harvardcite", key, 2, g_aux_name); /* look up bibliographic reference */
             
 		diagnostics(2, "harvard key=[%s] <%s>", key, s);
 		
