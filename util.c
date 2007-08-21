@@ -380,9 +380,13 @@ char * keyvalue_pair(char *s, char **key, char **value)
 	
 	/* find the end of the value */
 	v = s;
-	while (*v != ',' && *v != '\0') 
+	while (*v != ',' && *v != '\0') {
+	    if (*v == '{')
+		while (*(++v) != '}')
+		    ;
+	    else
 		v++;
-	
+	}
 	/* allocate and copy this into the value */
 	*value = my_strndup(s, v-s);
 	

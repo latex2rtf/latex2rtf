@@ -74,6 +74,8 @@ static void setDocumentOptions(char *optionlist);
 static void WriteFontHeader(void);
 static void WriteStyleHeader(void);
 static void WritePageSize(void);
+void ParseOptGeometry(char *options);
+void ExecGeomOptions (char *option, char *value1, char *value2);
 
 void setPackageBabel(char *option)
 {
@@ -588,35 +590,143 @@ static void CmdUseOnepackage(char* package, char *options)
 	g_document_bibstyle = BIBSTYLE_NATBIB;
 	
     } else if (strcmp(package, "geometry") == 0) {
-        
+
+	/* Set default values for geometry package */        
         g_preambleGeometry = TRUE;
-        g_geomMargr = (getLength("textwidth") * 0.15);
-        g_geomMargl = g_geomMargr;
-        g_geomMargt = (getLength("textheight") * 0.3 * 0.4);
-        g_geomMargb = (getLength("textheight") * 0.3 * 0.6);
+        if(g_preambleTwoside==FALSE) {
+	    g_geomMargr = (getLength("pagewidth") * 0.15);
+	    g_geomMargl = g_geomMargr;
+	} else {
+	    g_geomMargr = (getLength("pagewidth") * 0.3 * 0.4);
+	    g_geomMargl = (getLength("pagewidth") * 0.3 * 0.6);
+	}
+        g_geomMargt = (getLength("pageheight") * 0.3 * 0.4);
+        g_geomMargb = (getLength("pageheight") * 0.3 * 0.6);
 	
-        while (options) {
-			char *key, *value, *next;
-			int distance=0;
-        	
-			next = keyvalue_pair(options,&key,&value);
-			
-			if (value == NULL) 
-				diagnostics(WARNING, "geometry package, single option=[%s]\n", key); 
-			else {
-				PushSource(NULL,value);
-				distance=getDimension();
-				diagnostics(WARNING, "geometry package, option=[%s], distance=%d twips\n", key, distance); 
-				free(value);		
-			}
-			
-			if (key) free(key);
-			options = next;
-		}
+        if (options)
+	    ParseOptGeometry(options);
 	
     } else
 	setDocumentOptions(package);
 	  
+}
+
+/**********************************************************************************
+purpose: parse options from \usepackage[options]{geometry} and \geometry{options}
+**********************************************************************************/
+void ParseOptGeometry(char *options)
+{
+    char *key, *value1, *value2, *next, *comma = ", ", *colon = ": ";
+    int distance=0;
+
+    while (options) {
+	next = keyvalue_pair(options,&key,&value1);
+			
+	if (value1 == NULL) {
+	    diagnostics(WARNING, "geometry package, single option=[%s]\n", key);
+	    ExecGeomOptions (key, NULL, NULL);
+	}
+	else if (*value1 == '{') {
+	    PushSource(NULL, value1);
+	    value1 = getBraceParam();
+	    value1 = strtok(value1, comma);
+	    value2 = strtok(NULL, comma);
+	    diagnostics(WARNING, "option=%s with values %s and %s\n", key, value1, value2);
+	    ExecGeomOptions (key, value1, value2);
+	    free(value1);
+	}
+	else if (strchr(value1, ':')) {
+	    value1 = strtok(value1, colon);
+	    value2 = strtok(NULL, colon);
+	    diagnostics(WARNING, "option=%s with ratio '%s:%s'\n", key, value1, value2);
+	    ExecGeomOptions (key, value1, value2);
+	    free(value1);
+	}
+	else {
+	    diagnostics(WARNING, "geometry package, option=[%s], value=%s\n", key, value1);
+	    value2=value1;
+	    ExecGeomOptions (key, value1, value2);
+	    free(value1);
+	}
+			
+	if (key) free(key);
+	options = next;
+    }
+}
+
+/******************************************************************************
+ purpose: implement geometry options 
+******************************************************************************/
+
+void ExecGeomOptions (char *key, char *value1, char *value2)
+{
+    int dist1, dist2, dist3, dist4, ratio_sum, margin_sum;
+    char *value1b = NULL, *value2b = NULL;
+
+    if (strstr(key, "ratio")) {
+	if (strchr(value1, ':')) { /* each value is a ratio */
+	    value1 = strtok(value1, ": ");
+	    value1b = strtok(NULL, ": ");
+	    value2 = strtok(value2, ": ");
+	    value2b = strtok(NULL, ": ");
+	} else { /* each value is part of a single ratio */
+	    dist1 = dist3 = atoi(value1);
+	    dist2 = dist4 = atoi(value2);
+	    diagnostics(WARNING, "one ratio parameter, %d:%d\n", dist1, dist2);
+	}
+    } else if (strstr(key, "centering") == NULL) {
+	PushSource(NULL,value1);
+	dist1=getDimension();
+	PushSource(NULL,value2);
+	dist2=getDimension();
+	diagnostics(WARNING, "twips paramters, %d and %d\n", dist1, dist2);
+    }
+
+    if (strcmp(key, "vmargin") == 0) {
+	diagnostics(WARNING, "vmargin distance(top)=%d, distance (bottom)=%d twips\n", dist1, dist2);
+	g_geomMargt = dist1;
+	g_geomMargb = dist2;
+    } else if (strcmp(key, "hmargin") == 0) {
+	diagnostics(WARNING, "hmargin distance(left)=%d, distance (right)=%d twips\n", dist1, dist2);
+	g_geomMargl = dist1;
+	g_geomMargr = dist2;
+    } else if (strcmp(key, "margin") == 0) {
+	ExecGeomOptions ("hmargin", value1, value2);
+	ExecGeomOptions ("vmargin", value1, value2);
+    } else if ((strcmp(key, "left") == 0) || (strcmp(key, "lmargin") == 0) || (strcmp(key, "inner") == 0) ) {
+	g_geomMargl = dist1;
+    } else if ((strcmp(key, "right") == 0) || (strcmp(key, "rmargin") == 0) || (strcmp(key, "outer") == 0) ) {
+	g_geomMargr = dist1;
+    } else if ((strcmp(key, "top") == 0) || (strcmp(key, "tmargin") == 0)) {
+	g_geomMargt = dist1;
+    } else if ((strcmp(key, "bottom") == 0) || (strcmp(key, "bmargin") == 0)) {
+	g_geomMargb = dist1;
+    } else if (strcmp(key, "hmarginratio") == 0) {
+	ratio_sum = dist1 + dist2;
+	margin_sum = g_geomMargl + g_geomMargr;
+	g_geomMargl = (int) (((float) dist1 / (float) ratio_sum) * (float) margin_sum);
+	printf("g_geomMargl %d\n", g_geomMargl);
+	g_geomMargr = (int) (((float) dist2 / (float) ratio_sum) * (float) margin_sum);
+	printf("g_geomMargr %d\n", g_geomMargr);
+    } else if (strcmp(key, "vmarginratio") == 0) {
+	ratio_sum = dist1 + dist2;
+	margin_sum = g_geomMargt + g_geomMargb;
+	g_geomMargt = (int) (((float) dist1 / (float) ratio_sum) * (float) margin_sum);
+	printf("g_geomMargt %d\n", g_geomMargt);
+	g_geomMargb = (int) (((float) dist2 / (float) ratio_sum) * (float) margin_sum);
+	printf("g_geomMargb %d\n", g_geomMargb);
+    } else if ((strcmp(key, "marginratio") == 0) || (strcmp(key, "ratio") == 0)) {
+	ExecGeomOptions ("hmarginratio", value1, value1b);
+	ExecGeomOptions ("vmarginratio", value2, value2b);
+    } else if (strcmp(key, "hcentering") == 0) {
+	ExecGeomOptions ("hmarginratio", "1", "1");
+    } else if (strcmp(key, "vcentering") == 0) {
+	ExecGeomOptions ("vmarginratio", "1", "1");
+    } else if (strcmp(key, "centering") == 0) {
+	ExecGeomOptions ("vmarginratio", "1", "1");
+	ExecGeomOptions ("hmarginratio", "1", "1");
+    }
+
 }
 
 /******************************************************************************
