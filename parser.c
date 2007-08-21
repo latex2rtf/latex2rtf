@@ -1122,47 +1122,61 @@ void getSection(char **body, char **header, char **label)
     char cNext, *s, *text, *next_header, *str;
     int i;
     size_t delta;
-    int match[35];
-    char *command[35] = { "",   /* 0 entry is for user definitions */
+    int match[41];
+    char *command[41] = { "",   /* 0 entry is for user definitions */
         "",                     /* 1 entry is for user environments */
-        "\\begin{verbatim}", "\\begin{figure}", "\\begin{figure*}", "\\begin{equation}",
-        "\\begin{eqnarray}", "\\begin{table}", "\\begin{description}", "\\begin{comment}",
-        "\\end{verbatim}", "\\end{figure}", "\\end{figure*}", "\\end{equation}",
-        "\\end{eqnarray}", "\\end{table}", "\\end{description}", "\\end{comment}",
-        "\\part", "\\chapter", "\\section", "\\subsection", "\\subsubsection",
+        "\\begin{verbatim}", 
+        "\\begin{figure}",      "\\begin{figure*}", 
+        "\\begin{equation}",    "\\begin{equation*}",
+        "\\begin{eqnarray}",    "\\begin{eqnarray*}",
+        "\\begin{table}",       "\\begin{table}",
+        "\\begin{description}", "\\begin{comment}",
+        "\\end{verbatim}", 
+        "\\end{figure}",        "\\end{figure*}", 
+        "\\end{equation}",      "\\end{equation*}",
+        "\\end{eqnarray}",      "\\end{eqnarray*}",
+        "\\end{table}",         "\\end{table*}",
+        "\\end{description}",   "\\end{comment}",
+        "\\part", "\\chapter",  "\\section", "\\subsection", "\\subsubsection",
         "\\section*", "\\subsection*", "\\subsubsection*",
         "\\label", "\\input", "\\include", "\\verb", "\\url",
         "\\newcommand", "\\def", "\\renewcommand", "\\endinput",
     };
 
-    int ncommands = 35;
+    int ncommands = 41;
 
     const int b_verbatim_item = 2;
     const int b_figure_item = 3;
     const int b_figure_item2 = 4;
     const int b_equation_item = 5;
-    const int b_eqnarray_item = 6;
-    const int b_table_item = 7;
-    const int b_description_item = 8;
-    const int b_comment_item = 9;
-    const int e_verbatim_item = 10;
-    const int e_figure_item = 11;
-    const int e_equation_item = 12;
-    const int e_equation_item2 = 13;
-    const int e_eqnarray_item = 14;
-    const int e_table_item = 15;
-    const int e_description_item = 16;
-    const int e_comment_item = 17;
+    const int b_equation_item2 = 6;
+    const int b_eqnarray_item = 7;
+    const int b_eqnarray_item2 = 8;
+    const int b_table_item = 9;
+    const int b_table_item2 = 10;
+    const int b_description_item = 11;
+    const int b_comment_item = 12;
+    const int e_verbatim_item = 13;
+    const int e_figure_item = 14;
+    const int e_figure_item2 = 15;
+    const int e_equation_item = 16;
+    const int e_equation_item2 = 17;
+    const int e_eqnarray_item = 18;
+    const int e_eqnarray_item2 = 19;
+    const int e_table_item = 20;
+    const int e_table_item2 = 21;
+    const int e_description_item = 22;
+    const int e_comment_item = 23;
 
-    const int label_item = 26;
-    const int input_item = 27;
-    const int include_item = 28;
-    const int verb_item = 29;
-    const int url_item = 30;
-    const int new_item = 31;
-    const int def_item = 32;
-    const int renew_item = 33;
-    const int endinput_item = 34;
+    const int label_item = 32;
+    const int input_item = 33;
+    const int include_item = 34;
+    const int verb_item = 35;
+    const int url_item = 36;
+    const int new_item = 37;
+    const int def_item = 38;
+    const int renew_item = 39;
+    const int endinput_item = 40;
 
     int bs_count = 0;
     size_t index = 0;
@@ -1440,15 +1454,21 @@ void getSection(char **body, char **header, char **label)
             continue;
         }
 
-        if (i == b_figure_item || i == b_figure_item2 || i == b_equation_item || i == b_eqnarray_item ||
-          i == b_table_item || i == b_description_item) {
+        if (i == b_figure_item   || i == b_figure_item2   || 
+            i == b_equation_item || i == b_equation_item2 || 
+            i == b_eqnarray_item || i == b_eqnarray_item2 ||
+            i == b_table_item    || i == b_table_item2    ||
+            i == b_description_item) {
             label_depth++;      /* labels now will not be the section label */
             index = 0;
             continue;
         }
 
-        if (i == e_figure_item || i == e_equation_item || i == e_equation_item2 || i == e_eqnarray_item ||
-          i == e_table_item || i == e_description_item) {
+        if (i == e_figure_item   || i == e_figure_item2   || 
+            i == e_equation_item || i == e_equation_item2 || 
+            i == e_eqnarray_item || i == e_eqnarray_item2 ||
+            i == e_table_item    || i == e_table_item2    ||
+            i == e_description_item)  {
             label_depth--;      /* labels may now be the section label */
             index = 0;
             continue;
