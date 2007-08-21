@@ -617,7 +617,6 @@ purpose: parse options from \usepackage[options]{geometry} and \geometry{options
 void ParseOptGeometry(char *options)
 {
     char *key, *value1, *value2, *next, *comma = ", ", *colon = ": ";
-    int distance=0;
 
     while (options) {
 	next = keyvalue_pair(options,&key,&value1);
