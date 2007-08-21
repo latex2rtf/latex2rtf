@@ -611,6 +611,19 @@ static void CmdUseOnepackage(char* package, char *options)
 	  
 }
 
+/******************************************************************************
+ purpose: collect options from \geometry{options} 
+ ******************************************************************************/
+void CmdGeometry(int code)
+{
+    char *options;
+    options = getBraceParam();
+    diagnostics(WARNING, "geometry command, argument %s\n", options);
+    ParseOptGeometry(options);
+}
+
+
+
 /**********************************************************************************
 purpose: parse options from \usepackage[options]{geometry} and \geometry{options}
 **********************************************************************************/

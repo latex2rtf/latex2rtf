@@ -41,3 +41,4 @@ void CmdHeadFoot(int code);
 void CmdThePage(int code);
 void setPackageInputenc(char * option);
 void setPackageBabel(char * option);
+void CmdGeometry(int code);
