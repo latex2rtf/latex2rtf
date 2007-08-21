@@ -1279,8 +1279,8 @@ void CmdTable(int code)
 {
     char *location, *table_contents;
     static char     oldalignment;
-    char *endtable = ((code & ~ON) == TABLE) ? "\\end{table}" : "\\end{table*}";
-
+    int true_code = code & ~ON;
+		
     if (code & ON) {
         location = getBracketParam();
         if (location) free(location);
@@ -1293,7 +1293,12 @@ void CmdTable(int code)
         CmdIndent(INDENT_NONE);
 
         g_processing_table = TRUE;
-        table_contents = getTexUntil(endtable, TRUE);
+        
+        if (true_code == TABLE)
+        	table_contents = getTexUntil("\\end{table}", TRUE);
+        else
+        	table_contents = getTexUntil("\\end{table*}", TRUE);
+        	
         g_table_label = ExtractLabelTag(table_contents);
         if (g_endfloat_tables) {
             if (g_endfloat_markers) {
@@ -1311,9 +1316,12 @@ void CmdTable(int code)
             CmdStartParagraph(0);
             ConvertString(table_contents);
         }
-        
-        ConvertString(endtable);
         free(table_contents);
+        
+        if (true_code == TABLE)
+        	ConvertString("\\end{table}");
+        else
+        	ConvertString("\\end{table*}");
     } else {
         g_processing_table = FALSE;
         if (GetTexMode() != MODE_VERTICAL)

@@ -7,7 +7,7 @@
 #define TABULAR_LONG_STAR 4
 
 #define TABLE 2
-#define TABLE_1 3
+#define TABLE_STAR 3
 
 void            CmdTabjump(void);
 void            CmdTabset(void);

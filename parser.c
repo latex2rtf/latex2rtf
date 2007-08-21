@@ -1129,7 +1129,7 @@ void getSection(char **body, char **header, char **label)
         "\\begin{figure}",      "\\begin{figure*}", 
         "\\begin{equation}",    "\\begin{equation*}",
         "\\begin{eqnarray}",    "\\begin{eqnarray*}",
-        "\\begin{table}",       "\\begin{table}",
+        "\\begin{table}",       "\\begin{table*}",
         "\\begin{description}", "\\begin{comment}",
         "\\end{verbatim}", 
         "\\end{figure}",        "\\end{figure*}", 

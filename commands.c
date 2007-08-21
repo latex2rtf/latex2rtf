@@ -694,7 +694,7 @@ static CommandArray params[] = {
     {"multicolumn", CmdMultiCol, 0},
     {"letter", CmdLetter, 0},
     {"table", CmdTable, TABLE},
-    {"table*", CmdTable, TABLE_1},
+    {"table*", CmdTable, TABLE_STAR},
     {"thebibliography", CmdThebibliography, 0},
     {"abstract", CmdAbstract, 1},
 	{"acknowledgments", CmdAcknowledgments, 0},
