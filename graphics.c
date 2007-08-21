@@ -1657,12 +1657,14 @@ void CmdGraphics(int code)
     if (code == FIGURE_EPSFBOX) { 
         int n,llx,lly,urx,ury;
         options = getBracketParam();
-        n = sscanf(options,"%d %d %d %d", &llx,&lly,&urx,&ury);
-        if (n==4) {
-        	width  = (urx - llx) * 20;
-        	height = (ury - lly) * 20;
+        if (options) {
+        	n = sscanf(options,"%d %d %d %d", &llx,&lly,&urx,&ury);
+        	if (n==4) {
+        		width  = (urx - llx) * 20;
+        		height = (ury - lly) * 20;
+        	}
+        	free(options);
         }
-        if (options) free(options);
         filename = getBraceParam();
     }
 
