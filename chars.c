@@ -83,6 +83,39 @@ int isShortStr(char *s)
 	return isShort(s[0]);
 }
 
+/******************************************************************************
+ * purpose : tries to do the right thing when MT Extra font is used
+ *******************************************************************************/
+void CmdMTExtraChar(int code)
+{
+    if (g_processing_fields == 0) {
+    	int num = RtfFontNumber("MT Extra");
+    	fprintRTF("{\\f%d\\'%.2X}",num,code);
+
+    } else {
+    
+		fprintRTF("{\\field{\\*\\fldinst SYMBOL %u ", (unsigned int) code);
+		fprintRTF("\\\\f \"MT Extra\"}{\\fldrslt }}");
+	}
+}
+
+/******************************************************************************
+ * purpose : tries to do the right thing when the Symbol font is used
+   every character from the symbol font must be accompanied by the unicode
+   value from Microsoft's Private User Area when used in a field 
+ *******************************************************************************/
+void CmdSymbolChar(int code)
+{
+    int num = RtfFontNumber("Symbol");
+    if (g_processing_fields == 0) {
+    	fprintRTF("{\\f%d\\'%.2X}",num,code);
+
+    } else {
+    
+    	fprintRTF("{\\f%d\\u%d\\'%.2X}",num,code-4096,code);
+	}
+}
+
 /*****************************************************************************
  purpose: create overstrike character using a Word field
  
@@ -1542,9 +1575,8 @@ void CmdLdots( /* @unused@ */ int code)
     if (GetTexMode() != MODE_MATH && GetTexMode() != MODE_DISPLAYMATH)
         SetTexMode(MODE_HORIZONTAL);
 
-/* every character from the symbol font must be accompanied by the unicode
-   value from Microsoft's Private User Area when used in a field */
 
+/*    should this just be CmdSymbolChar(0x85);   ????????? */
     if (!g_processing_fields) 
     	fprintRTF("\\u8230\\'85",num);
     else
@@ -1566,7 +1598,6 @@ void CmdChar(int code)
 {
     char cThis;
     int num;
-    int symfont = RtfFontNumber("Symbol");
 
     cThis = getNonSpace();
     if (cThis != '\'') {
@@ -1580,47 +1611,47 @@ void CmdChar(int code)
 
     switch (num) {
         case 0:
-            fprintRTF("{\\f%d G}", symfont);    /* Gamma */
+        	CmdSymbolChar((int) 'G');			/* Gamma */
             break;
 
         case 1:
-            fprintRTF("{\\f%d D}", symfont);    /* Delta */
+        	CmdSymbolChar((int) 'D');		    /* Delta */
             break;
 
         case 2:
-            fprintRTF("{\\f%d Q}", symfont);    /* Theta */
+        	CmdSymbolChar((int) 'Q');		    /* Theta */
             break;
 
         case 3:
-            fprintRTF("{\\f%d L}", symfont);    /* Lambda */
+        	CmdSymbolChar((int) 'L');		    /* Lambda */
             break;
 
         case 4:
-            fprintRTF("{\\f%d X}", symfont);    /* Xi */
+        	CmdSymbolChar((int) 'X');		    /* Xi */
             break;
 
         case 5:
-            fprintRTF("{\\f%d P}", symfont);    /* Pi */
+        	CmdSymbolChar((int) 'P');		    /* Pi */
             break;
 
         case 6:
-            fprintRTF("{\\f%d S}", symfont);    /* Sigma */
+        	CmdSymbolChar((int) 'S');		    /* Sigma */
             break;
 
         case 7:
-            fprintRTF("{\\f%d U}", symfont);    /* Upsilon */
+        	CmdSymbolChar((int) 'U');		    /* Upsilon */
             break;
 
         case 8:
-            fprintRTF("{\\f%d F}", symfont);    /* Phi */
+        	CmdSymbolChar((int) 'F');		    /* Phi */
             break;
 
         case 9:
-            fprintRTF("{\\f%d Y}", symfont);    /* Psi */
+        	CmdSymbolChar((int) 'Y');		    /* Psi */
             break;
 
         case 10:
-            fprintRTF("{\\f%d W}", symfont);    /* Omega */
+        	CmdSymbolChar((int) 'W');		    /* Omega */
             break;
 
         case 11:
@@ -1672,7 +1703,7 @@ void CmdChar(int code)
             break;
 
         case 23:
-            fprintRTF("{\\f%d \\'b0}", symfont);    /* degree */
+        	CmdSymbolChar(0xb0);		    /* degree */
             break;
 
         case 24:
@@ -1696,12 +1727,12 @@ void CmdChar(int code)
             break;
 
         case 29:
-            fprintRTF("\\'c6");
-            /*AE*/ break;
+            fprintRTF("\\'c6");  /*AE*/ 
+            break;
 
         case 30:
-            fprintRTF("\\'8c");
-            /*OE*/ break;
+            fprintRTF("\\'8c");   /*OE*/ 
+            break;
 
         case 31:
             fprintRTF("\\'d8"); /* capital O with stroke */
@@ -2048,15 +2079,3 @@ void CmdDegreeCelsius(int code)
   fprintRTF("\\'b0C");
 }
 
-void CmdMTExtraChar(int code)
-{
-    if (g_processing_fields == 0) {
-    	int num = RtfFontNumber("MT Extra");
-    	fprintRTF("{\\f%d\\'%.2X}",num,code);
-
-    } else {
-    
-		fprintRTF("{\\field{\\*\\fldinst SYMBOL %u ", (unsigned int) code);
-		fprintRTF("\\\\f \"MT Extra\"}{\\fldrslt }}");
-	}
-}

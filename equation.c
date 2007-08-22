@@ -43,6 +43,7 @@ Authors:
 #include "util.h"
 #include "graphics.h"
 #include "xref.h"
+#include "chars.h"
 
 int g_equation_column = 1;
 
@@ -877,7 +878,6 @@ void CmdRoot(int code)
 {
     char *root = NULL;
     char *power = NULL;
-    int symfont;
 
     power = getBracketParam();
     root = getBraceParam();
@@ -895,8 +895,8 @@ void CmdRoot(int code)
             ConvertString(power);
             fprintRTF("}");
         }
-        symfont = RtfFontNumber("Symbol");
-        fprintRTF("{\\f%d\\'d6}(", symfont);
+        CmdSymbolChar(0xd6);
+        fprintRTF("(");
         ConvertString(root);
         fprintRTF(")");
     }
@@ -1041,15 +1041,6 @@ parameter: 0=\lim, 1=\limsup, 2=\liminf
     free(s);
 }
 
-static void emit_symbol_char(int fontnum, int unicode, char *hex)
-{
-	if (g_processing_fields) 
-		fprintRTF("{\\f%d\\u%d\\'%s}", fontnum, unicode, hex);
-	else
-        fprintRTF("{\\f%d\\'%s}", fontnum, hex);
-}
-
-
 void CmdIntegral(int code)
 
 /******************************************************************************
@@ -1145,26 +1136,24 @@ parameter: type of operand
 
     } else {
 
-        int symfont = RtfFontNumber("Symbol");
-
         switch (code) {
             case 0:
-                emit_symbol_char(symfont, -3854, "f2");
+                CmdSymbolChar(0xf2);
                 break;
             case 1:
-                emit_symbol_char(symfont, -3867, "e5");
+                CmdSymbolChar(0xe5);
                 break;
             case 2:
-                emit_symbol_char(symfont, -3883, "d5");
+                CmdSymbolChar(0xd5);
                 break;
             case 3:  /* \iint  */
-                emit_symbol_char(symfont, -3854, "f2");
-                emit_symbol_char(symfont, -3854, "f2");
+                CmdSymbolChar(0xf2);
+                CmdSymbolChar(0xf2);
                 break;
             case 4:  /* \iiint  */
-                emit_symbol_char(symfont, -3854, "f2");
-                emit_symbol_char(symfont, -3854, "f2");
-                emit_symbol_char(symfont, -3854, "f2");
+                CmdSymbolChar(0xf2);
+                CmdSymbolChar(0xf2);
+                CmdSymbolChar(0xf2);
                 break;
                 
             default:
