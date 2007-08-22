@@ -412,12 +412,13 @@ static char *eps_to_png(char *eps)
 }
 
 /******************************************************************************
-     purpose : create a png file from an PDF file and return file name
+     purpose : create a png file from a PDF file and return file name
  ******************************************************************************/
 static char *pdf_to_png(char *pdf)
 {
     char *cmd, *s1, *p, *png;
     size_t cmd_len;
+    char *base = "gs -dNOPAUSE -dSAFER -dBATCH -sDEVICE=pngalpha -sOutputFile=";
 
     diagnostics(2, "filename = <%s>", pdf);
 
@@ -430,9 +431,16 @@ static char *pdf_to_png(char *pdf)
 
     strcpy(p, ".png");
     png = strdup_tmp_path(s1);
-    cmd_len = strlen(pdf) + strlen(png) + 40;
+
+    /* 
+    ImageMagick apparently reads the wrong /MediaBox for PDF files and can give
+    us a full-page image (especially a problem with Quartz-generated PDF files).
+    Since GhostScript is required anyway for working with PDF, use it directly.
+    */
+    cmd_len = strlen(pdf) + strlen(png) + strlen(base) + 40;
     cmd = (char *) malloc(cmd_len);
-    snprintf(cmd, cmd_len, "convert -density %d %s %s", g_dots_per_inch, pdf, png);
+/*  snprintf(cmd, cmd_len, "convert -density %d %s %s", g_dots_per_inch, pdf, png); */
+    snprintf(cmd, cmd_len, "%s%s -r%d %s", base, png, g_dots_per_inch, pdf);
     diagnostics(2, "system graphics command = [%s]", cmd);
     system(cmd);
 
