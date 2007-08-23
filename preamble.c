@@ -604,9 +604,7 @@ static void CmdUseOnepackage(char* package, char *options)
         g_geomMargb = (getLength("pageheight") * 0.3 * 0.6);
 	
         if (options) {
-        	char *copy = strdup(options);
-	    	ParseOptGeometry(copy);
-	    	if (copy) free(copy);
+	    	ParseOptGeometry(options);
 	    }
 	
     } else
