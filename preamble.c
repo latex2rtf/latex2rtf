@@ -533,19 +533,19 @@ static void CmdUseOnepackage(char* package, char *options)
         g_graphics_package = GRAPHICS_GRAPHICX;
 
     else if (strcmp(package, "isolatin1") == 0)
-	setPackageInputenc("latin1");
+		setPackageInputenc("latin1");
 
     else if (strcmp(package, "spanish") == 0)
-	setPackageBabel(package);
+		setPackageBabel(package);
 
     else if (strcmp(package, "babel") == 0) {
-	if (options)
-	    setPackageBabel(options);
+		if (options)
+			setPackageBabel(options);
 
     } else if (strcmp(package, "german") == 0 ||
-	       strcmp(package, "ngerman") == 0 ||
-	       strcmp(package, "czech") == 0 || strcmp(package, "frenchb") == 0 || strcmp(package, "french") == 0)
-	setPackageBabel(package);
+	    strcmp(package, "ngerman") == 0 ||
+	    strcmp(package, "czech") == 0 || strcmp(package, "frenchb") == 0 || strcmp(package, "french") == 0)
+		setPackageBabel(package);
 
     else if (strcmp(package, "palatino") == 0 ||
 	     strcmp(package, "times") == 0 ||
@@ -553,16 +553,16 @@ static void CmdUseOnepackage(char* package, char *options)
 	     strcmp(package, "chancery") == 0 ||
 	     strcmp(package, "courier") == 0 ||
 	     strstr(package, "avant") || strstr(package, "newcen") || strstr(package, "helvet"))
-	setPackageFont(package);
+		setPackageFont(package);
 
     else if (strcmp(package, "endfloat") == 0) {
-	g_endfloat_figures = TRUE;
-	g_endfloat_tables  = TRUE;
-	if (options && strstr(options,"nomarkers")) g_endfloat_markers = FALSE;
+		g_endfloat_figures = TRUE;
+		g_endfloat_tables  = TRUE;
+		if (options && strstr(options,"nomarkers")) g_endfloat_markers = FALSE;
 
     } else if (strcmp(package, "cite") == 0) {
-	set_sorted_citations();
-	set_compressed_citations();
+		set_sorted_citations();
+		set_compressed_citations();
 
     } else if (strcmp(package, "natbib") == 0) {
 	if (options && strstr(options, "longnamesfirst"))
@@ -594,17 +594,20 @@ static void CmdUseOnepackage(char* package, char *options)
 	/* Set default values for geometry package */        
         g_preambleGeometry = TRUE;
         if(g_preambleTwoside==FALSE) {
-	    g_geomMargr = (getLength("pagewidth") * 0.15);
-	    g_geomMargl = g_geomMargr;
-	} else {
-	    g_geomMargr = (getLength("pagewidth") * 0.3 * 0.4);
-	    g_geomMargl = (getLength("pagewidth") * 0.3 * 0.6);
-	}
+			g_geomMargr = (getLength("pagewidth") * 0.15);
+			g_geomMargl = g_geomMargr;
+		} else {
+			g_geomMargr = (getLength("pagewidth") * 0.3 * 0.4);
+			g_geomMargl = (getLength("pagewidth") * 0.3 * 0.6);
+		}
         g_geomMargt = (getLength("pageheight") * 0.3 * 0.4);
         g_geomMargb = (getLength("pageheight") * 0.3 * 0.6);
 	
-        if (options)
-	    ParseOptGeometry(options);
+        if (options) {
+        	char *copy = strdup(options);
+	    	ParseOptGeometry(copy);
+	    	if (copy) free(copy);
+	    }
 	
     } else
 	setDocumentOptions(package);
@@ -618,8 +621,11 @@ void CmdGeometry(int code)
 {
     char *options;
     options = getBraceParam();
-    diagnostics(WARNING, "geometry command, argument %s\n", options);
-    ParseOptGeometry(options);
+    if (options) {
+    	diagnostics(WARNING, "geometry command, argument %s\n", options);
+    	ParseOptGeometry(options);
+    	free(options);
+    }
 }
 
 
@@ -632,37 +638,38 @@ void ParseOptGeometry(char *options)
     char *key, *value1, *value2, *next, *comma = ", ", *colon = ": ";
 
     while (options) {
-	next = keyvalue_pair(options,&key,&value1);
-			
-	if (value1 == NULL) {
-	    diagnostics(WARNING, "geometry package, single option=[%s]\n", key);
-	    ExecGeomOptions (key, NULL, NULL);
-	}
-	else if (*value1 == '{') {
-	    PushSource(NULL, value1);
-	    value1 = getBraceParam();
-	    value1 = strtok(value1, comma);
-	    value2 = strtok(NULL, comma);
-	    diagnostics(WARNING, "option=%s with values %s and %s\n", key, value1, value2);
-	    ExecGeomOptions (key, value1, value2);
-	    free(value1);
-	}
-	else if (strchr(value1, ':')) {
-	    value1 = strtok(value1, colon);
-	    value2 = strtok(NULL, colon);
-	    diagnostics(WARNING, "option=%s with ratio '%s:%s'\n", key, value1, value2);
-	    ExecGeomOptions (key, value1, value2);
-	    free(value1);
-	}
-	else {
-	    diagnostics(WARNING, "geometry package, option=[%s], value=%s\n", key, value1);
-	    value2=value1;
-	    ExecGeomOptions (key, value1, value2);
-	    free(value1);
-	}
-			
-	if (key) free(key);
-	options = next;
+		next = keyvalue_pair(options,&key,&value1);
+				
+		if (value1 == NULL) {
+			diagnostics(WARNING, "geometry package, single option=[%s]\n", key);
+			ExecGeomOptions (key, NULL, NULL);
+		}
+		else if (*value1 == '{') {
+			PushSource(NULL, value1);
+			value1 = getBraceParam();
+			PopSource();
+			value1 = strtok(value1, comma);
+			value2 = strtok(NULL, comma);
+			diagnostics(WARNING, "option=%s with values %s and %s\n", key, value1, value2);
+			ExecGeomOptions (key, value1, value2);
+			free(value1);
+		}
+		else if (strchr(value1, ':')) {
+			value1 = strtok(value1, colon);
+			value2 = strtok(NULL, colon);
+			diagnostics(WARNING, "option=%s with ratio '%s:%s'\n", key, value1, value2);
+			ExecGeomOptions (key, value1, value2);
+			free(value1);
+		}
+		else {
+			diagnostics(WARNING, "geometry package, option=[%s], value=%s\n", key, value1);
+			value2=value1;
+			ExecGeomOptions (key, value1, value2);
+			free(value1);
+		}
+				
+		if (key) free(key);
+		options = next;
     }
 }
 
@@ -687,56 +694,56 @@ void ExecGeomOptions (char *key, char *value1, char *value2)
 	    diagnostics(WARNING, "one ratio parameter, %d:%d\n", dist1, dist2);
 	}
     } else if (strstr(key, "centering") == NULL) {
-	PushSource(NULL,value1);
-	dist1=getDimension();
-	PushSource(NULL,value2);
-	dist2=getDimension();
-	diagnostics(WARNING, "twips paramters, %d and %d\n", dist1, dist2);
+		PushSource(NULL,value1);
+		dist1=getDimension();
+		PushSource(NULL,value2);
+		dist2=getDimension();
+		diagnostics(WARNING, "twips paramters, %d and %d\n", dist1, dist2);
     }
 
     if (strcmp(key, "vmargin") == 0) {
-	diagnostics(WARNING, "vmargin distance(top)=%d, distance (bottom)=%d twips\n", dist1, dist2);
-	g_geomMargt = dist1;
-	g_geomMargb = dist2;
+		diagnostics(WARNING, "vmargin distance(top)=%d, distance (bottom)=%d twips\n", dist1, dist2);
+		g_geomMargt = dist1;
+		g_geomMargb = dist2;
     } else if (strcmp(key, "hmargin") == 0) {
-	diagnostics(WARNING, "hmargin distance(left)=%d, distance (right)=%d twips\n", dist1, dist2);
-	g_geomMargl = dist1;
-	g_geomMargr = dist2;
+		diagnostics(WARNING, "hmargin distance(left)=%d, distance (right)=%d twips\n", dist1, dist2);
+		g_geomMargl = dist1;
+		g_geomMargr = dist2;
     } else if (strcmp(key, "margin") == 0) {
-	ExecGeomOptions ("hmargin", value1, value2);
-	ExecGeomOptions ("vmargin", value1, value2);
+		ExecGeomOptions ("hmargin", value1, value2);
+		ExecGeomOptions ("vmargin", value1, value2);
     } else if ((strcmp(key, "left") == 0) || (strcmp(key, "lmargin") == 0) || (strcmp(key, "inner") == 0) ) {
-	g_geomMargl = dist1;
+		g_geomMargl = dist1;
     } else if ((strcmp(key, "right") == 0) || (strcmp(key, "rmargin") == 0) || (strcmp(key, "outer") == 0) ) {
-	g_geomMargr = dist1;
+		g_geomMargr = dist1;
     } else if ((strcmp(key, "top") == 0) || (strcmp(key, "tmargin") == 0)) {
-	g_geomMargt = dist1;
+		g_geomMargt = dist1;
     } else if ((strcmp(key, "bottom") == 0) || (strcmp(key, "bmargin") == 0)) {
-	g_geomMargb = dist1;
+		g_geomMargb = dist1;
     } else if (strcmp(key, "hmarginratio") == 0) {
-	ratio_sum = dist1 + dist2;
-	margin_sum = g_geomMargl + g_geomMargr;
-	g_geomMargl = (int) (((float) dist1 / (float) ratio_sum) * (float) margin_sum);
-	printf("g_geomMargl %d\n", g_geomMargl);
-	g_geomMargr = (int) (((float) dist2 / (float) ratio_sum) * (float) margin_sum);
-	printf("g_geomMargr %d\n", g_geomMargr);
+		ratio_sum = dist1 + dist2;
+		margin_sum = g_geomMargl + g_geomMargr;
+		g_geomMargl = (int) (((float) dist1 / (float) ratio_sum) * (float) margin_sum);
+		diagnostics(WARNING, "g_geomMargl %d\n", g_geomMargl);
+		g_geomMargr = (int) (((float) dist2 / (float) ratio_sum) * (float) margin_sum);
+		diagnostics(WARNING, "g_geomMargr %d\n", g_geomMargr);
     } else if (strcmp(key, "vmarginratio") == 0) {
-	ratio_sum = dist1 + dist2;
-	margin_sum = g_geomMargt + g_geomMargb;
-	g_geomMargt = (int) (((float) dist1 / (float) ratio_sum) * (float) margin_sum);
-	printf("g_geomMargt %d\n", g_geomMargt);
-	g_geomMargb = (int) (((float) dist2 / (float) ratio_sum) * (float) margin_sum);
-	printf("g_geomMargb %d\n", g_geomMargb);
+		ratio_sum = dist1 + dist2;
+		margin_sum = g_geomMargt + g_geomMargb;
+		g_geomMargt = (int) (((float) dist1 / (float) ratio_sum) * (float) margin_sum);
+		printf("g_geomMargt %d\n", g_geomMargt);
+		g_geomMargb = (int) (((float) dist2 / (float) ratio_sum) * (float) margin_sum);
+		printf("g_geomMargb %d\n", g_geomMargb);
     } else if ((strcmp(key, "marginratio") == 0) || (strcmp(key, "ratio") == 0)) {
-	ExecGeomOptions ("hmarginratio", value1, value1b);
-	ExecGeomOptions ("vmarginratio", value2, value2b);
+		ExecGeomOptions ("hmarginratio", value1, value1b);
+		ExecGeomOptions ("vmarginratio", value2, value2b);
     } else if (strcmp(key, "hcentering") == 0) {
-	ExecGeomOptions ("hmarginratio", "1", "1");
+		ExecGeomOptions ("hmarginratio", "1", "1");
     } else if (strcmp(key, "vcentering") == 0) {
-	ExecGeomOptions ("vmarginratio", "1", "1");
+		ExecGeomOptions ("vmarginratio", "1", "1");
     } else if (strcmp(key, "centering") == 0) {
-	ExecGeomOptions ("vmarginratio", "1", "1");
-	ExecGeomOptions ("hmarginratio", "1", "1");
+		ExecGeomOptions ("vmarginratio", "1", "1");
+		ExecGeomOptions ("hmarginratio", "1", "1");
     }
 
 }
@@ -1159,6 +1166,9 @@ static void WritePageSize(void)
       diagnostics(4, "Writepagesize bottom margin =%d pt", n / 20);
     } else {
       /* Insert geometry dimensions here */
+      diagnostics(WARNING, "Using geometry package");
+      diagnostics(WARNING, "[l,r,t,b] = [%d,%d,%d,%d]",g_geomMargl,g_geomMargr,
+                                                       g_geomMargt,g_geomMargb);
       fprintRTF("\\margl%d", g_geomMargl);
       fprintRTF("\\margr%d", g_geomMargr);
       fprintRTF("\\margt%d", g_geomMargt);

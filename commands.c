@@ -931,9 +931,9 @@ globals: command-functions have side effects or recursive calls
         i = 0;
         while (strcmp(All_Commands[j][i].cpCommand, "") != 0) {
 
- /*           if (i<5)
+            if (i<150)
             	diagnostics(3,"CallCommandFunc (%d,%3d) Trying %s",j,i,All_Commands[j][i].cpCommand);
-*/
+
             if (strcmp(All_Commands[j][i].cpCommand, cCommand) == 0) {
                 if (All_Commands[j][i].func == NULL)
                     return FALSE;
