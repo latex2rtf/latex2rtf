@@ -646,6 +646,7 @@ void ParseOptGeometry(char *options)
 		}
 		else if (*value1 == '{') {
 			PushSource(NULL, value1);
+			free(value1);
 			value1 = getBraceParam();
 			PopSource();
 			value1 = strtok(value1, comma);
