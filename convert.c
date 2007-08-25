@@ -563,8 +563,15 @@ globals: fTex, fRtf and all global flags for convert (see above)
             case ',':
                 if (g_field_separator == ',' && g_processing_fields)
                     fprintRTF("\\\\,");
-                else
-                    fprintRTF(",");
+                else {
+                /* ,, is \quotedblbase nearly always */
+                    if ((cNext = getTexChar()) && cNext == ',') {
+                        fprintRTF("\\'84");
+                    } else {
+                        fprintRTF(",");
+                        ungetTexChar(cNext);
+                    }
+                }
                 break;
 
             default:
