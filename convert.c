@@ -561,9 +561,15 @@ globals: fTex, fRtf and all global flags for convert (see above)
                 break;
 
             case ',':
-                if (g_field_separator == ',' && g_processing_fields)
-                    fprintRTF("\\\\,");
-                else {
+                if (g_field_separator == ',' && g_processing_fields) {
+                	if (g_processing_arrays) {
+                	/* this is crazy, fields fail if \, is present in EQ array! */
+                	/* substitute semi-colon because it is least worst option   */
+						fprintRTF(";"); 
+                	} else {
+						fprintRTF("\\\\,"); 
+                	}
+                } else {
                 /* ,, is \quotedblbase nearly always */
                     if ((cNext = getTexChar()) && cNext == ',') {
                         fprintRTF("\\'84");

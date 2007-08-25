@@ -167,7 +167,7 @@ void CmdEndParagraph(int code)
     int mode = GetTexMode();
 
     diagnostics(5, "CmdEndParagraph mode = %d", GetTexMode());
-    if (mode != MODE_VERTICAL) {
+    if (mode != MODE_VERTICAL  && g_processing_fields == 0) {
         fprintRTF("\\par\n");
         SetTexMode(-MODE_VERTICAL); /* negative value avoids calling CmdEndParagraph! */
     }
