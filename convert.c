@@ -373,7 +373,7 @@ globals: fTex, fRtf and all global flags for convert (see above)
 
             case '-':
                 if (mode == MODE_MATH || mode == MODE_DISPLAYMATH)
-                    fprintRTF("-");
+                	CmdSymbolChar(0x2d);
                 else {
                     SetTexMode(MODE_HORIZONTAL);
 
