@@ -1585,47 +1585,42 @@ static void HandleGraphicsOptions(char *opt, char *opt2, double *h, double *w, d
 /******************************************************************************
   purpose: handle psfig options \psfig{figure=filename.ps,height=1in,width=3mm}
  ******************************************************************************/
-static void HandlePsfigOptions(char *opt, char *filename, double *h, double *w, double *s)
+static void HandlePsfigOptions(char *opt, char **filename, double *h, double *w, double *s)
 {
-	char **part, *value;
-	int count,i;
-
 	*s=0.0;
-	*h=0;
-	*w=0;
-
+	*h=0.0;
+	*w=0.0;
+	*filename = NULL;
+	
 	diagnostics(2,"HandlePsfigOptions <%s>",opt);
-	
-	if (opt==NULL) return;
-	
-	split_string(opt, ',', &count, &part);
-	
-	for (i=0; i<count; i++) {
 		
-		diagnostics(2,"part[%d]=<%s>", i, part[i]);
+	while (opt) {
+		char *key, *value;
 		
-		value=strchr(part[i],'=');
-		if (value==NULL) continue;
-		value++;
+		opt = keyvalue_pair(opt,&key,&value);
 		
-		diagnostics(2,"value=<%s>",value);
-				
-		if (strstr(part[i],"filename"))
-			filename=strdup(value);
-
-		else if (strstr(part[i],"height")) {
-			PushSource(NULL,value);
-			*h = getDimension();
-			PopSource();
+		if (key) {
+			diagnostics(1,"psfig key=%s, value=%s", key, value);
+			if (strstr(key,"figure"))
+				*filename=strdup(value);
+	
+			else if (strstr(key,"height")) {
+				PushSource(NULL,value);
+				*h = getDimension();
+				PopSource();
+			}
+	
+			else if (strstr(key,"width")) {
+				PushSource(NULL,value);
+				*w = getDimension();
+				PopSource();
+			}
+			
+			free(key);
 		}
-
-		else if (strstr(part[i],"width")) {
-			PushSource(NULL,value);
-			*w = getDimension();
-			PopSource();
-		}
+		
+		if (value) free(value);	
 	}
-	free_strings(count,part);
 }
 
 
@@ -1687,57 +1682,60 @@ void CmdGraphics(int code)
 
     if (code == FIGURE_PSFIG) { 
         options = getBraceParam();
-        HandlePsfigOptions(options,filename,&height,&width,&scale);
+        HandlePsfigOptions(options,&filename,&height,&width,&scale);
+        diagnostics(1,"figure=%s, height=%d, width=%d, scale=%d",filename, height, width, scale);
         free(options);
     }
 
-    SetTexMode(MODE_HORIZONTAL);
-
-    fullname = strdup_absolute_path(filename);
-    fullpathname = append_graphic_extension(fullname);
-    free(fullname);
+    if (filename) {
+		SetTexMode(MODE_HORIZONTAL);
 	
-    if (has_extension(fullpathname, ".pict"))
-        PutPictFile(fullpathname, height, width, scale, baseline, TRUE);
-
-    else if (has_extension(fullpathname, ".png"))
-        PutPngFile(fullpathname, height, width, scale, baseline, TRUE);
-
-    else if (has_extension(fullpathname, ".gif"))
-        PutGifFile(fullpathname, height, width, scale, baseline, TRUE);
-
-    else if (has_extension(fullpathname, ".emf"))
-        PutEmfFile(fullpathname, height, width, scale, baseline, TRUE);
-
-    else if (has_extension(fullpathname, ".wmf"))
-        PutWmfFile(fullpathname, height, width, scale, baseline, TRUE);
-
-    else if (has_extension(fullpathname, ".eps"))
-        PutEpsFile(fullpathname, height, width, scale, baseline, TRUE);
-
-    else if (has_extension(fullpathname, ".pdf"))
-        PutPdfFile(fullpathname, height, width, scale, baseline, TRUE);
-
-    else if (has_extension(fullpathname, ".ps"))
-        PutEpsFile(fullpathname, height, width, scale, baseline, TRUE);
-
-    else if (has_extension(fullpathname, ".tiff"))
-        PutTiffFile(fullpathname, height, width, scale, baseline, TRUE);
-
-    else if (has_extension(fullpathname, ".tif"))
-        PutTiffFile(fullpathname, height, width, scale, baseline, TRUE);
-
-    else if (has_extension(fullpathname, ".jpg"))
-        PutJpegFile(fullpathname, height, width, scale, baseline, TRUE);
-
-    else if (has_extension(fullpathname, ".jpeg"))
-        PutJpegFile(fullpathname, height, width, scale, baseline, TRUE);
-
-    else
-        diagnostics(WARNING, "Conversion of '%s' not supported", filename);
-
-    free(filename);
-    free(fullpathname);
+		fullname = strdup_absolute_path(filename);
+		fullpathname = append_graphic_extension(fullname);
+		free(fullname);
+		
+		if (has_extension(fullpathname, ".pict"))
+			PutPictFile(fullpathname, height, width, scale, baseline, TRUE);
+	
+		else if (has_extension(fullpathname, ".png"))
+			PutPngFile(fullpathname, height, width, scale, baseline, TRUE);
+	
+		else if (has_extension(fullpathname, ".gif"))
+			PutGifFile(fullpathname, height, width, scale, baseline, TRUE);
+	
+		else if (has_extension(fullpathname, ".emf"))
+			PutEmfFile(fullpathname, height, width, scale, baseline, TRUE);
+	
+		else if (has_extension(fullpathname, ".wmf"))
+			PutWmfFile(fullpathname, height, width, scale, baseline, TRUE);
+	
+		else if (has_extension(fullpathname, ".eps"))
+			PutEpsFile(fullpathname, height, width, scale, baseline, TRUE);
+	
+		else if (has_extension(fullpathname, ".pdf"))
+			PutPdfFile(fullpathname, height, width, scale, baseline, TRUE);
+	
+		else if (has_extension(fullpathname, ".ps"))
+			PutEpsFile(fullpathname, height, width, scale, baseline, TRUE);
+	
+		else if (has_extension(fullpathname, ".tiff"))
+			PutTiffFile(fullpathname, height, width, scale, baseline, TRUE);
+	
+		else if (has_extension(fullpathname, ".tif"))
+			PutTiffFile(fullpathname, height, width, scale, baseline, TRUE);
+	
+		else if (has_extension(fullpathname, ".jpg"))
+			PutJpegFile(fullpathname, height, width, scale, baseline, TRUE);
+	
+		else if (has_extension(fullpathname, ".jpeg"))
+			PutJpegFile(fullpathname, height, width, scale, baseline, TRUE);
+	
+		else
+			diagnostics(WARNING, "Conversion of '%s' not supported", filename);
+	
+		free(filename);
+		free(fullpathname);
+    }
 }
 
 /******************************************************************************
