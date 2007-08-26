@@ -1600,7 +1600,7 @@ static void HandlePsfigOptions(char *opt, char **filename, double *h, double *w,
 		opt = keyvalue_pair(opt,&key,&value);
 		
 		if (key) {
-			diagnostics(1,"psfig key=%s, value=%s", key, value);
+			diagnostics(5,"psfig key=%s, value=%s", key, value);
 			if (strstr(key,"figure"))
 				*filename=strdup(value);
 	
@@ -1683,7 +1683,7 @@ void CmdGraphics(int code)
     if (code == FIGURE_PSFIG) { 
         options = getBraceParam();
         HandlePsfigOptions(options,&filename,&height,&width,&scale);
-        diagnostics(1,"figure=%s, height=%d, width=%d, scale=%d",filename, height, width, scale);
+        diagnostics(4,"figure=%s, height=%d, width=%d, scale=%d",filename, height, width, scale);
         free(options);
     }
 
