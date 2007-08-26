@@ -157,7 +157,14 @@ fi
 if [ $inline -eq 1 ] ; then
     rm -f $name.ppm $name.pbm
 
-    pngtopnm $name.png > $name.ppm
+# sjs added the pipe through pnmcrop to get rid of some 
+# left-over white space at the left of the image which meant 
+# it didn't find the dot, so the 2nd
+# pnmcrop further down just cropped to the dot! Feb 2006
+
+    pngtopnm $name.png | pnmcrop -white -left > $name.ppm
+
+#    pngtopnm $name.png > $name.ppm
     
     pnmcut -width 1 $name.ppm | ppmtopgm | pgmtopbm > $name.pbm
 
