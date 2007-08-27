@@ -147,7 +147,7 @@ typedef struct _GdiCommentMultiFormats {
 static void my_unlink(char *filename)
 {
 #ifdef UNIX
-/*    unlink(filename);*/
+    unlink(filename);
 #endif
 }
 
