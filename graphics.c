@@ -1664,15 +1664,11 @@ static void HandlePsfigOptions(char *opt, char **filename, double *h, double *w,
 				*filename=strdup(value);
 	
 			else if (strstr(key,"height")) {
-				PushSource(NULL,value);
-				*h = getDimension();
-				PopSource();
+				*h = getStringDimension(value);
 			}
 	
 			else if (strstr(key,"width")) {
-				PushSource(NULL,value);
-				*w = getDimension();
-				PopSource();
+				*w = getStringDimension(value);
 			}
 			
 			free(key);

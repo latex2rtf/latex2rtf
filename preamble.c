@@ -693,10 +693,8 @@ void ExecGeomOptions (char *key, char *value1, char *value2)
 	    diagnostics(WARNING, "one ratio parameter, %d:%d\n", dist1, dist2);
 	}
     } else if (strstr(key, "centering") == NULL) {
-		PushSource(NULL,value1);
-		dist1=getDimension();
-		PushSource(NULL,value2);
-		dist2=getDimension();
+		dist1=getStringDimension(value1);
+		dist2=getStringDimension(value2);
 		diagnostics(WARNING, "twips paramters, %d and %d\n", dist1, dist2);
     }
 

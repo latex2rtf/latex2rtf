@@ -300,10 +300,7 @@ static void TabularGetRow(char *table, char **row, char **next_row, int *height)
     dimension[dim_chars] = '\n';    /* make sure entire string is not parsed */
     dimension[dim_chars + 1] = '\0';
 
-    if (PushSource(NULL, dimension) == 0) {
-        *height = getDimension();
-        PopSource();
-    }
+    *height = getStringDimension(dimension);
 
     diagnostics(3, "height =<%s>=%d twpi", dimension, height);
     free(dimension);

@@ -2146,9 +2146,7 @@ void CmdRule(int code)
 	width = getBraceParam();
 	height = getBraceParam();
 	
-	PushSource(NULL,width);
-	dim = getDimension();
-	PopSource();
+	dim = getStringDimension(width);
 	
 	n = dim / CurrentFontSize();
 	

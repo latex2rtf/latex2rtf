@@ -396,12 +396,13 @@ char * keyvalue_pair(char *s, char **key, char **value)
 
 int getStringDimension(char *s)
 {
-	int size;
+	int size = 0;
 	
-	if (s==NULL) return 0;
+	if (s != NULL) {
+		PushSource(NULL, s);
+		size = getDimension();
+		PopSource();
+	}
 	
-	PushSource(NULL, s);
-	size=getDimension();
-	PopSource();
 	return size;
 }
