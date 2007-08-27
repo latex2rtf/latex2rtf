@@ -516,7 +516,7 @@ static void AdjustScaling(double h, double w, double target_h, double target_w, 
 	else
 		*sx = (int) (100.0 * target_w / w);
 
-	diagnostics(2,"AdjustScaling xscale=%d yscale=%d", *sx, *sy);
+	diagnostics(4,"AdjustScaling xscale=%d yscale=%d", *sx, *sy);
 }
 
 /******************************************************************************
@@ -741,11 +741,17 @@ static void GetPngSize(char *s, unsigned long *w, unsigned long *h, unsigned lon
 \pngblip
 
 There are three scaling factors floating around
-	1) the scaling factor from converting the png ... 
-	2) the encoded scaling factor in the png file (xres)
-	3) the scaling factor given by \includegraphics
+	convert_scale = the scaling factor from converting the PNG ... 
+	encode_scale  = POINTS_PER_METER/xres (scaling factor inside the PNG)
+	scale         = the scaling factor given by \includegraphics
 
-   baseline should be in twips already
+Basically, if the PNG was created with a correct value for the resolution
+then we leave things as they are.  On the other hand, an incorrect value 
+means that the Word will assume the image resolution is 1/72 of an inch.  
+Consequently, when this happens, scale must be altered by the convert_scale 
+value.  As you can see below, we never use encode_scale.
+
+On entry baseline should be in pixels.
  ******************************************************************************/
 void PutPngFile(char *s, double height_goal, double width_goal, double scale, 
                          double convert_scale, double baseline, int full_path)
@@ -754,7 +760,6 @@ void PutPngFile(char *s, double height_goal, double width_goal, double scale,
     char *png;
     unsigned long width, height, w, h, b, xres, yres;
 	int sx, sy, bad_res;
-	double encoded_scale;
 	
     if (full_path)
         png = strdup(s);
@@ -768,50 +773,45 @@ void PutPngFile(char *s, double height_goal, double width_goal, double scale,
 	/* make sure that we can open the file */
     fp = fopen(png, "rb");
     free(png);
-    if (fp == NULL)return;
+    if (fp == NULL) return;
 
-	/* trust convert_scale if not zero */
-	encoded_scale = POINTS_PER_METER/(double)(xres);
-
-	/* if encoded_scale < 0 then it is a bad resolution so it must be scaled */
-	if (convert_scale > 0 && bad_res) 
+	/* only modify when the PNG resolution is bad and convert_scale is non-zero */
+	if (bad_res && convert_scale != 0) 
 		scale *= convert_scale;
 		
 	/* twips calculation                                             */
 	/*                       points        meter       20 twips      */
 	/* width =  (pixels) * ----------- * ---------  * -----------    */
 	/*                       meter         pixels      1 point       */
-	width  *= POINTS_PER_METER / xres * 20.0;
-	height *= POINTS_PER_METER / yres * 20.0;
+	width    *= POINTS_PER_METER / xres * 20.0;
+	height   *= POINTS_PER_METER / yres * 20.0;
 	
     /* size is in units that equal 1/100 of a millimeter  (10 microns). */    
 	/*       dwips       100,000 (units)     1 points        meter      */
 	/* w =  -------- * ------------------ * ---------  * -----------    */
 	/*         1            1 meter          20 dwips      1 point      */
-
-    w = (unsigned long) (100000.0 * width  ) / (20 * POINTS_PER_METER);
-    h = (unsigned long) (100000.0 * height ) / (20 * POINTS_PER_METER);
-
+    w = (unsigned long) (100000.0 * width           ) / (20 * POINTS_PER_METER);
+    h = (unsigned long) (100000.0 * height          ) / (20 * POINTS_PER_METER);
+    b = (unsigned long) (100000.0 * baseline * scale) / (20 * POINTS_PER_METER); 
+    
 	AdjustScaling(height,width,height_goal,width_goal,scale,&sx,&sy);
 	
-	diagnostics(4, "scale      = %6.3f,            convert     = %6.3f,         encoded = %6.3f", scale, convert_scale, encoded_scale);
+	diagnostics(4, "scale      = %6.3f,            convert     = %6.3f", scale, convert_scale);
     diagnostics(4, "width_goal = %6ld twips,      height_goal = %6ld twips", (int)width_goal, (int)height_goal);
     diagnostics(4, "picw       = %6ld microns,    pich        = %6ld microns", w*10, h*10);
     diagnostics(4, "picwgoal   = %6ld twips,      pichgoal    = %6ld twips", width, height);
     diagnostics(4, "sx         = %6ld percent,    sy          = %6ld percent", sx, sy);
     
-
+    /* Write the header for the png bitmap */
     fprintRTF("\n{");
-    if (b)
-        fprintRTF("\\dn%ld", b);
+    if (b) fprintRTF("\\dn%ld", b); 
     fprintRTF("\\pict");
-    if (sx != 100 && sy != 100)
-        fprintRTF("\\picscalex%d\\picscaley%d", sx,sy);
+    if (sx != 100 && sy != 100) fprintRTF("\\picscalex%d\\picscaley%d", sx,sy);
     fprintRTF("\\picw%ld\\pich%ld", w, h);
     fprintRTF("\\picwgoal%ld\\pichgoal%ld", width, height);
-    fprintRTF("\\pngblip");
+    fprintRTF("\\pngblip\n");
 
-    fprintRTF("\n");
+	/* Now actually write the PNG file out */
     rewind(fp);
     PutHexFile(fp);
     fprintRTF("}\n");
@@ -1231,7 +1231,8 @@ static int ReadLine(FILE * fp)
 
 /****************************************************************************
 purpose: reads a .pbm file to determine the baseline for an equation
-		 the .pbm file should have dimensions of 1xheight
+		 the .pbm file should have dimensions of 1 x height
+		 returns the baseline height in pixels
  ****************************************************************************/
 long GetBaseline(char *s, char *pre)
 {
@@ -1328,7 +1329,7 @@ void PutLatexFile(char *s, double height0, double width0, double scale, char *pr
     int resolution = g_dots_per_inch;   /* points per inch */
 	double convert_scale = 72.0 / g_dots_per_inch;
 	
-    diagnostics(4, "Entering PutLatexFile");
+    diagnostics(WARNING, "Rendering LaTeX construct (e.g. equation) as a bitmap...");
 
     png = strdup_together(s, ".png");
     l2p = get_latex2png_name();
