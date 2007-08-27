@@ -28,6 +28,7 @@ Authors:
 #include <string.h>
 #include <ctype.h>
 #include <limits.h>
+#include <math.h>
 #ifdef UNIX
 #include <unistd.h>
 #endif
@@ -42,7 +43,8 @@ Authors:
 #include "funct1.h"
 #include "preamble.h"
 
-#define POINTS_PER_M 2834.65
+/* number of points (72/inch) in a meter */
+#define POINTS_PER_METER 2834.65
 
 /* Little endian macros to convert to and from host format to network byte ordering */
 #define LETONS(A) ((((A) & 0xFF00) >> 8) | (((A) & 0x00FF) << 8))
@@ -145,7 +147,7 @@ typedef struct _GdiCommentMultiFormats {
 static void my_unlink(char *filename)
 {
 #ifdef UNIX
-    unlink(filename);
+/*    unlink(filename);*/
 #endif
 }
 
@@ -504,27 +506,15 @@ static char *eps_to_emf(char *eps)
  ******************************************************************************/
 static void AdjustScaling(double h, double w, double target_h, double target_w, double s, int *sx, int *sy)
 {
-	*sx=100;
-	*sy=100;
-	
-	if (s!=0) {
-		*sx = (int)(s * 100);
-		*sy = (int)(s * 100);
-	diagnostics(2,"AdjustScaling xscale=%d yscale=%d", *sx, *sy);
-		return;
-	}
-
 	if (target_h != 0 && h != 0) 
 		*sy = (int) (100.0 * target_h / h);
+	else
+		*sy = (int) (s * 100);
 	
 	if (target_w == 0 || w == 0)
 		*sx = *sy;
-		
-	if (target_w != 0 && w != 0) 
+	else
 		*sx = (int) (100.0 * target_w / w);
-		
-	if (target_h == 0 || h == 0)
-		*sy = *sx;
 
 	diagnostics(2,"AdjustScaling xscale=%d yscale=%d", *sx, *sy);
 }
@@ -605,94 +595,221 @@ static void PutPictFile(char *s, double height0, double width0, double scale, do
     fclose(fp);
 }
 
+/*
+typedef struct _PngChunk
+{
+    DWORD DataLength;   Size of Data field in bytes
+    DWORD Type;         Code identifying the type of chunk
+    BYTE  Data[];       The actual data stored by the chunk
+    DWORD Crc;          CRC-32 value of the Type and Data fields
+} PNGCHUNK;
+
+typedef struct _pHYsChunkEntry
+{
+   DWORD PixelsPerUnitX;    Pixels per unit, X axis 
+   DWORD PixelsPerUnitY;    Pixels per unit, Y axis 
+   BYTE  UnitSpecifier;     0 = unknown, 1 = meter 
+} PHYSCHUNKENTRY;
+*/
+
+static unsigned char * getPngChunk(FILE *fp, char *s)
+{
+	unsigned long size, crc;
+	char head[5];
+	unsigned char *data;
+	
+	head[4]='\0';
+	
+	diagnostics(4, "getPngChunk ... seeking <%s>",s);
+	data = NULL;
+	do {
+		int i;
+		if (data!=NULL) free(data);
+				
+		fread(&size, 4, 1, fp);
+		if (g_little_endian) size = LETONL(size);
+		
+		for (i=0; i<4; i++) {
+			head[i] = (char) fgetc(fp);
+			if (feof(fp)) return NULL;
+		}
+
+		if (strcmp(head,"IEND") == 0) return NULL;
+		
+		diagnostics(4,"found chunk <%s> size %ld bytes",head,size);
+		data = malloc(size);
+		if (data == NULL) return NULL;
+		
+		fread(data, size, 1, fp);
+		fread(&crc, 4, 1, fp);
+	
+		
+	} while (strcmp(s,head)!=0);
+	
+	return data;	
+}
+
 /******************************************************************************
      purpose : determine height and width of file
+               w is the size in pixels
+               xres is the number of pixels per meter
  ******************************************************************************/
-static void GetPngSize(char *s, unsigned long *w, unsigned long *h)
+static void GetPngSize(char *s, unsigned long *w, unsigned long *h, unsigned long *xres, unsigned long *yres, int *bad_res)
 {
     FILE *fp;
+    unsigned long *p;
     unsigned char buffer[16];
-    unsigned long width, height;
     char reftag[9] = "\211PNG\r\n\032\n";
-    char refchunk[5] = "IHDR";
+    unsigned char *data = NULL;
 
     *w = 0;
     *h = 0;
+    *xres = (unsigned long) POINTS_PER_METER;
+    *yres = (unsigned long) POINTS_PER_METER;
+    *bad_res = 1;
+    
     fp = fopen(s, "rb");
     if (fp == NULL)
         return;
 
-    if (fread(buffer, 1, 16, fp) < 16) {
+    if (fread(buffer, 1, 8, fp) < 8) {
         diagnostics(WARNING, "Cannot read graphics file <%s>", s);
         fclose(fp);
         return;
     }
 
-    if (memcmp(buffer, reftag, 8) != 0 || memcmp(buffer + 12, refchunk, 4) != 0) {
+    if (memcmp(buffer, reftag, 8) != 0) {
         diagnostics(WARNING, "Graphics file <%s> is not a PNG file!", s);
         fclose(fp);
         return;
     }
 
-    if (fread(&width, 4, 1, fp) != 1 || fread(&height, 4, 1, fp) != 1) {
-        diagnostics(WARNING, "Cannot read graphics file <%s>", s);
-        fclose(fp);
+	data = getPngChunk(fp,"IHDR");
+	if (data == NULL) {
+        diagnostics(WARNING, "Graphics file <%s>: could not locate IHDR chunk!", s);
         return;
-    }
+	}
 
-    if (g_little_endian) {
-        width = LETONL(width);
-        height = LETONL(height);
-    }
+	p = (unsigned long *) data;	
+	*w = (g_little_endian) ? LETONL(*p) : *p;
+	p++;
+	*h = (g_little_endian) ? LETONL(*p) : *p;
+	free(data);
+	
+	data = getPngChunk(fp,"pHYs");
+	if (data == NULL) {
+        diagnostics(4, "Graphics file <%s>: could not locate pHYs chunk!", s);
+        return;
+	}
 
-    *w = width;
-    *h = height;
+	p = (unsigned long *) data;	
+	*xres = (g_little_endian) ? LETONL(*p) : *p;
+	p++;
+	*yres = (g_little_endian) ? LETONL(*p) : *p;
+	
+	free(data);
+
+	/* dots per inch, not per meter! */
+	if (*xres < POINTS_PER_METER) {
+		*bad_res = 1;
+		diagnostics(4, "bogus resolution in png image! ");
+		diagnostics(4, "xres = %ld, yres = %ld, pixels/meter", *xres, *yres);
+		diagnostics(4, "xres = %ld, yres = %ld, pixels/in", 
+		(unsigned long)( (double)(*xres *72.0)/POINTS_PER_METER), 
+		(unsigned long)((double)(*yres * 72.0) /POINTS_PER_METER));
+		*xres *= POINTS_PER_METER/72.0;
+		*yres *= POINTS_PER_METER/72.0;
+	} else 
+		*bad_res = 0;
+	
+	
+    diagnostics(4, "xres = %ld, yres = %ld, pixels/meter", *xres, *yres);
+    diagnostics(4, "xres = %ld, yres = %ld, pixels/in", 
+    (unsigned long)( (double)(*xres *72.0)/POINTS_PER_METER), 
+    (unsigned long)((double)(*yres * 72.0) /POINTS_PER_METER));
+    
     fclose(fp);
 }
 
 /******************************************************************************
      purpose : Include .png file in RTF
+     
+\pict {...}
+\picscalex22\picscaley22
+\piccropl0\piccropr0\piccropt0\piccropb0
+\picw32032\pich29633\picwgoal18160\pichgoal16800
+\pngblip
+
+There are three scaling factors floating around
+	1) the scaling factor from converting the png ... 
+	2) the encoded scaling factor in the png file (xres)
+	3) the scaling factor given by \includegraphics
+
+   baseline should be in twips already
  ******************************************************************************/
-void PutPngFile(char *s, double height0, double width0, double scale, double baseline, int full_path)
+void PutPngFile(char *s, double height_goal, double width_goal, double scale, 
+                         double convert_scale, double baseline, int full_path)
 {
     FILE *fp;
     char *png;
-    unsigned long width, height, w, h, b;
-	int sx, sy;
+    unsigned long width, height, w, h, b, xres, yres;
+	int sx, sy, bad_res;
+	double encoded_scale;
 	
     if (full_path)
         png = strdup(s);
     else
         png = strdup_together(g_home_dir, s);
-    diagnostics(2, "PutPngFile <%s>", png);
+    diagnostics(4, "PutPngFile <%s>", png);
 
-    GetPngSize(png, &width, &height);
+    GetPngSize(png, &width, &height, &xres, &yres,&bad_res);
+    if (width == 0 || height == 0) return;
 
-    diagnostics(2, "width = %ld, height = %ld, baseline = %g", width, height, baseline);
-
-    if (width == 0 || height == 0)
-        return;
-
+	/* make sure that we can open the file */
     fp = fopen(png, "rb");
     free(png);
-    if (fp == NULL)
-        return;
+    if (fp == NULL)return;
 
-    w = (unsigned long) (100000.0 * width) / (20 * POINTS_PER_M);
-    h = (unsigned long) (100000.0 * height) / (20 * POINTS_PER_M);
-    b = (unsigned long) (100000.0 * baseline * scale) / (20 * POINTS_PER_M);
+	/* trust convert_scale if not zero */
+	encoded_scale = POINTS_PER_METER/(double)(xres);
 
-    diagnostics(2, "width = %ld, height = %ld, baseline = %ld", w, h, b);
+	/* if encoded_scale < 0 then it is a bad resolution so it must be scaled */
+	if (convert_scale > 0 && bad_res) 
+		scale *= convert_scale;
+		
+	/* twips calculation                                             */
+	/*                       points        meter       20 twips      */
+	/* width =  (pixels) * ----------- * ---------  * -----------    */
+	/*                       meter         pixels      1 point       */
+	width  *= POINTS_PER_METER / xres * 20.0;
+	height *= POINTS_PER_METER / yres * 20.0;
+	
+    /* size is in units that equal 1/100 of a millimeter  (10 microns). */    
+	/*       dwips       100,000 (units)     1 points        meter      */
+	/* w =  -------- * ------------------ * ---------  * -----------    */
+	/*         1            1 meter          20 dwips      1 point      */
+
+    w = (unsigned long) (100000.0 * width  ) / (20 * POINTS_PER_METER);
+    h = (unsigned long) (100000.0 * height ) / (20 * POINTS_PER_METER);
+
+	AdjustScaling(height,width,height_goal,width_goal,scale,&sx,&sy);
+	
+	diagnostics(4, "scale      = %6.3f,            convert     = %6.3f,         encoded = %6.3f", scale, convert_scale, encoded_scale);
+    diagnostics(4, "width_goal = %6ld twips,      height_goal = %6ld twips", (int)width_goal, (int)height_goal);
+    diagnostics(4, "picw       = %6ld microns,    pich        = %6ld microns", w*10, h*10);
+    diagnostics(4, "picwgoal   = %6ld twips,      pichgoal    = %6ld twips", width, height);
+    diagnostics(4, "sx         = %6ld percent,    sy          = %6ld percent", sx, sy);
+    
 
     fprintRTF("\n{");
     if (b)
         fprintRTF("\\dn%ld", b);
-    fprintRTF("\\pict\\pngblip\\picw%ld\\pich%ld", w, h);
-    fprintRTF("\\picwgoal%ld\\pichgoal%ld", width * 20, height * 20);
-
-	AdjustScaling(height*20,width*20,height0,width0,scale,&sx,&sy);
+    fprintRTF("\\pict");
     if (sx != 100 && sy != 100)
         fprintRTF("\\picscalex%d\\picscaley%d", sx,sy);
+    fprintRTF("\\picw%ld\\pich%ld", w, h);
+    fprintRTF("\\picwgoal%ld\\pichgoal%ld", width, height);
+    fprintRTF("\\pngblip");
 
     fprintRTF("\n");
     rewind(fp);
@@ -753,8 +870,8 @@ static void PutJpegFile(char *s, double height0, double width0, double scale, do
 
     diagnostics(4, "width = %d, height = %d", width, height);
 
-    w = (unsigned long) (100000.0 * width) / (20 * POINTS_PER_M);
-    h = (unsigned long) (100000.0 * height) / (20 * POINTS_PER_M);
+    w = (unsigned long) (100000.0 * width) / (20 * POINTS_PER_METER);
+    h = (unsigned long) (100000.0 * height) / (20 * POINTS_PER_METER);
     fprintRTF("\n{\\pict\\jpegblip\\picw%ld\\pich%ld", w, h);
     fprintRTF("\\picwgoal%ld\\pichgoal%ld\n", width * 20, height * 20);
 
@@ -839,8 +956,8 @@ static void PutEmfFile(char *s, double height0, double width0, double scale, dou
     height = (unsigned long) (BoundsBottom - BoundsTop);
     width = (unsigned long) (BoundsRight - BoundsLeft);
 
-    w = (unsigned long) ((100000.0 * width) / (20 * POINTS_PER_M));
-    h = (unsigned long) ((100000.0 * height) / (20 * POINTS_PER_M));
+    w = (unsigned long) ((100000.0 * width) / (20 * POINTS_PER_METER));
+    h = (unsigned long) ((100000.0 * height) / (20 * POINTS_PER_METER));
     diagnostics(4, "width = %ld, height = %ld", width, height);
     fprintRTF("\n{\\pict\\emfblip\\picw%ld\\pich%ld", w, h);
     fprintRTF("\\picwgoal%ld\\pichgoal%ld\n", width * 20, height * 20);
@@ -962,13 +1079,14 @@ static void PutWmfFile(char *s, double height0, double width0, double scale, dou
 static void PutPdfFile(char *s, double height0, double width0, double scale, double baseline, int full_path)
 {
     char *png;
-
-    diagnostics(2, "PutPdfFile filename = <%s>", s);
+    double convert_scale = 72.0 / g_dots_per_inch;
+    
+    diagnostics(4, "PutPdfFile filename = <%s>", s);
 
     png = pdf_to_png(s);
-    scale *= 72.0 / g_dots_per_inch;
+        	
     if (png) {
-        PutPngFile(png, height0, width0, scale, baseline, TRUE);
+        PutPngFile(png, height0, width0, scale, convert_scale, baseline, TRUE);
         my_unlink(png);
         free(png);
     }
@@ -980,14 +1098,14 @@ static void PutPdfFile(char *s, double height0, double width0, double scale, dou
 static void PutEpsFile(char *s, double height0, double width0, double scale, double baseline, int full_path)
 {
     char *png, *emf, *pict;
+    double convert_scale = 72.0 / g_dots_per_inch;
 
-    diagnostics(2, "PutEpsFile filename = <%s>", s);
+    diagnostics(4, "PutEpsFile filename = <%s>, scale=%f5.3", s,scale);
 
     if (1) {
         png = eps_to_png(s);
-        scale *= 72.0 / g_dots_per_inch;
         if (png) {
-            PutPngFile(png, height0, width0, scale, baseline, TRUE);
+            PutPngFile(png, height0, width0, scale, convert_scale, baseline, TRUE);
             my_unlink(png);
             free(png);
         }
@@ -1019,6 +1137,7 @@ static void PutTiffFile(char *s, double height0, double width0, double scale, do
 {
     char *cmd, *tiff, *png, *tmp_png;
     size_t cmd_len;
+    double convert_scale = 0.0;
 
     diagnostics(2, "filename = <%s>", s);
     png = strdup_new_extension(s, ".tiff", ".png");
@@ -1037,7 +1156,7 @@ static void PutTiffFile(char *s, double height0, double width0, double scale, do
     diagnostics(2, "system graphics command = [%s]", cmd);
     system(cmd);
 
-    PutPngFile(tmp_png, height0, width0, scale, baseline, TRUE);
+    PutPngFile(tmp_png, height0, width0, scale, convert_scale, baseline, TRUE);
     my_unlink(tmp_png);
 
     free(tmp_png);
@@ -1053,7 +1172,8 @@ static void PutGifFile(char *s, double height0, double width0, double scale, dou
 {
     char *cmd, *gif, *png, *tmp_png;
     size_t cmd_len;
-
+	double convert_scale = 0.0;
+	
     diagnostics(2, "filename = <%s>", s);
     png = strdup_new_extension(s, ".gif", ".png");
     if (png == NULL) {
@@ -1071,7 +1191,7 @@ static void PutGifFile(char *s, double height0, double width0, double scale, dou
     diagnostics(2, "system graphics command = [%s]", cmd);
     system(cmd);
 
-    PutPngFile(tmp_png, height0, width0, scale, baseline, TRUE);
+    PutPngFile(tmp_png, height0, width0, scale, convert_scale, baseline, TRUE);
     my_unlink(tmp_png);
 
     free(tmp_png);
@@ -1201,12 +1321,13 @@ static char *get_latex2png_name()
 void PutLatexFile(char *s, double height0, double width0, double scale, char *pre)
 {
     char *png, *cmd, *l2p;
-    int err, baseline, second_pass, bmoffset;
+    int err, baseline, second_pass, bmoffset,bad_res;
     size_t cmd_len;
-    unsigned long width, height, rw, rh;
+    unsigned long width, height, rw, rh, xres, yres;
     unsigned long maxsize = (unsigned long) (32767.0 / 20.0);
     int resolution = g_dots_per_inch;   /* points per inch */
-
+	double convert_scale = 72.0 / g_dots_per_inch;
+	
     diagnostics(4, "Entering PutLatexFile");
 
     png = strdup_together(s, ".png");
@@ -1233,7 +1354,7 @@ void PutLatexFile(char *s, double height0, double width0, double scale, char *pr
         if (err)
             break;
 
-        GetPngSize(png, &width, &height);
+        GetPngSize(png, &width, &height,&xres,&yres,&bad_res);
         baseline = GetBaseline(s, pre);
         diagnostics(4, "png size height=%d baseline=%d width=%d", height, baseline, width);
 
@@ -1245,8 +1366,9 @@ void PutLatexFile(char *s, double height0, double width0, double scale, char *pr
         }
     } while (resolution > 10 && ((width > maxsize) || (height > maxsize)));
 
+	
     if (err == 0)
-        PutPngFile(png, height0, width0, scale * 72.0 / resolution, (double) baseline, TRUE);
+        PutPngFile(png, height0, width0, scale, convert_scale, (double) baseline, TRUE);
 
     free(l2p);
     free(png);
@@ -1387,58 +1509,6 @@ char *append_graphic_extension(char *s)
 
 }
 
-static void free_strings(int n, char *strings[]) 
-{
-	int i;
-	if (strings==NULL) return;
-	
-	for (i=0; i<n; i++) {
-		if (strings[i]) free(strings[i]);
-	}
-	free(strings);
-	strings=NULL;
-}
-
-/******************************************************************************
- purpose   : splits a string into pieces ... the original string remains intact 
-             "key1=value1,key2=value2" becomes
-	               piece[0]="key1=value1"
-	               piece[1]="key2=value2"   
- ******************************************************************************/
-static void split_string(char *s, char delim, int *n, char ***strings)
-{
-	char *t, *p;
-	int i=0;
-	*n=0;
-	
-	if (s==NULL) return;
-	
-/* count number of entries and allocate that many pieces */
-	i=0;
-	t=s;
-	while ( (p=strchr(t,delim)) != 0) {
-		i++;
-		t=p+1;
-	}
-	diagnostics(2,"number of strings = %d",i+1);
-	*n = i+1;
-	*strings = malloc(sizeof(char *) * (i+1));
-
-/* copy each piece into array of strings */
-	i=0;
-	t=s;
-	while ( (p=strchr(t,delim)) != NULL) {
-		*p='\0';
-		(*strings)[i]=strdup(t);
-		*p=delim;
-		t=p+1;
-		diagnostics(6,"piece[%d]=<%s>",i,(*strings)[i]);
-		i++;
-	}
-	(*strings)[i]=strdup(t);
-	diagnostics(6,"piece[%d]=<%s>",i,(*strings)[i]);
-}
-
 /******************************************************************************
   purpose: handle Includegraphics options 
 
@@ -1452,130 +1522,119 @@ static void split_string(char *s, char delim, int *n, char ***strings)
  ******************************************************************************/
 static void HandleGraphicsOptions(char *opt, char *opt2, double *h, double *w, double *s)
 {
+	char *key, *value;
 	double llx=0;
 	double lly=0;
 	double urx=0;
 	double ury=0;
-	char **part;
-	int count,i;
 
-	*s=0.0;
+	*s=1.0;
 	*h=0;
 	*w=0;
 
 	diagnostics(2,"HandleGraphicsOptions <%s> <%s>",opt,opt2);
-	
-	if (opt==NULL) return;
-	
-	split_string(opt, ',', &count, &part);
-	
+			
 /*  \includegraphics[llx,lly][urx,ury]{filename} */
-	if (opt2) {
-		char **part2;
-		int count2;
-	
-		split_string(opt2, ',', &count2, &part2);
-		if (count == 2 && count2 == 2) {
+	if (opt && opt2) {
 		
-			PushSource(NULL, part[0]);
-			llx=getDimension();
-			PopSource();
-			PushSource(NULL, part[1]);
-			lly=getDimension();
-			PopSource();
-			
-			PushSource(NULL, part2[0]);
-			urx=getDimension();
-			PopSource();
-			PushSource(NULL, part2[1]);
-			ury=getDimension();
-			PopSource();
-			
-			*h = ury-lly;
-			*w = urx-llx;
-		} 
+		opt = keyvalue_pair(opt,&key,&value);
+		if (!key) return;
+		llx=getStringDimension(key);
+		free(key);
 		
-		free_strings(count,part);
-		free_strings(count2,part2);
+		opt = keyvalue_pair(opt,&key,&value);
+		if (!key) return;
+		lly=getStringDimension(key);
+		free(key);
+
+		opt2 = keyvalue_pair(opt2,&key,&value);
+		if (!key) return;
+		urx=getStringDimension(key);
+		free(key);
+		
+		opt2 = keyvalue_pair(opt2,&key,&value);
+		if (!key) return;
+		ury=getStringDimension(key);
+		free(key);
+
+		*h = ury-lly;
+		*w = urx-llx;
 		return;
-	}
+	} 
+		
 
-/*  \includegraphics[llx,lly]{filename} for graphics */
+/*  \includegraphics[width,height]{filename} for graphics */
 
-	if (g_graphics_package == GRAPHICS_GRAPHICS) {
+	if (g_graphics_package == GRAPHICS_GRAPHICS && opt) {
 
-		if (count == 2) {
-			PushSource(NULL, part[0]);
-			*w=getDimension();
-			PopSource();
-			PushSource(NULL, part[1]);
-			PopSource();
-			*h=getDimension();
-			*s = 1.0;
-		}
-		free_strings(count,part);
+		opt = keyvalue_pair(opt,&key,&value);
+		if (!key) return;
+		*w=getStringDimension(key);
+		free(key);
+		
+		opt = keyvalue_pair(opt,&key,&value);
+		if (!key) return;
+		*h=getStringDimension(key);
+		free(key);
+
 		return;
 	}
 
 /*  \includegraphics[key=value,key1=value1]{filename} for graphicx */
 
-	for (i=0; i<count; i++) {
-		char *value;
+	while (opt) {		
+		opt = keyvalue_pair(opt,&key,&value);
 		
-		diagnostics(2,"part[%d]=<%s>", i, part[i]);
-		
-		value=strchr(part[i],'=');
-		if (value==NULL) continue;
-		value++;
-		
-		diagnostics(2,"value=<%s>",value);
-		
-		PushSource(NULL,value);
-		
-		if (strstr(part[i],"height"))
-			*h=getDimension();
+		if (key) {
+			diagnostics(5,"graphicx key=%s, value=%s", key, value);
 
-		else if (strstr(part[i],"natheight")) 
-			*h=getDimension();
-
-		else if (strstr(part[i],"totalheight"))
-			*h=getDimension();
-
-		else if (strstr(part[i],"width")) 
-			*w=getDimension();
-
-		else if (strstr(part[i],"natwidth")) 
-			*w=getDimension();
-		
-		else if (strstr(part[i],"bbllx")) 
-			llx=getDimension();
-
-		else if (strstr(part[i],"bblly"))
-			lly=getDimension();
-
-		else if (strstr(part[i],"bburx"))
-			urx=getDimension();
-
-		else if (strstr(part[i],"bbury"))
-			ury=getDimension();
-		
-		else if (strstr(part[i],"bb")) {
-			llx=getDimension();
-			lly=getDimension();
-			urx=getDimension();
-			ury=getDimension();
+			if (strstr(key,"height"))
+				*h=getStringDimension(value);
+	
+			else if (strstr(key,"natheight")) 
+				*h=getStringDimension(value);
+	
+			else if (strstr(key,"totalheight"))
+				*h=getStringDimension(value);
+	
+			else if (strstr(key,"width")) 
+				*w=getStringDimension(value);
+	
+			else if (strstr(key,"natwidth")) 
+				*w=getStringDimension(value);
 			
-		} else if (strstr(part[i],"scale")) {
-			sscanf(value, "%lf", s);   /* just a float, not a dimension */
+			else if (strstr(key,"bbllx")) 
+				llx=getStringDimension(value);
+	
+			else if (strstr(key,"bblly"))
+				lly=getStringDimension(value);
+	
+			else if (strstr(key,"bburx"))
+				urx=getStringDimension(value);
+	
+			else if (strstr(key,"bbury"))
+				ury=getStringDimension(value);
+			
+			else if (strstr(key,"bb")) {
+				llx=getStringDimension(value);
+				lly=getStringDimension(value);
+				urx=getStringDimension(value);
+				ury=getStringDimension(value);
+				
+			} else if (strstr(key,"scale")) {
+				sscanf(value, "%lf", s);   /* just a float, not a dimension */
+			}
+			
+			free(key);
 		}
-
-		PopSource();			
-        diagnostics(2, "image scale  = %lf", *s);
-        diagnostics(2, "image height = %lf", *h);
-        diagnostics(2, "image width  = %lf", *w);
+		
+		if (value) free(value);	
 	}
-	free_strings(count,part);
 
+    diagnostics(3, "image scale  = %lf", *s);
+    diagnostics(3, "image height = %lf", *h);
+    diagnostics(3, "image width  = %lf", *w);
+	
 	if (urx)
 		*w=urx-llx;
 	if (ury)
@@ -1587,7 +1646,7 @@ static void HandleGraphicsOptions(char *opt, char *opt2, double *h, double *w, d
  ******************************************************************************/
 static void HandlePsfigOptions(char *opt, char **filename, double *h, double *w, double *s)
 {
-	*s=0.0;
+	*s=1.0;
 	*h=0.0;
 	*w=0.0;
 	*filename = NULL;
@@ -1637,7 +1696,7 @@ void CmdGraphics(int code)
 {
     char *options, *options2;
     char *filename=NULL, *fullpathname, *fullname;
-    double scale = 0.0;
+    double scale = 1.0;
     double baseline = 0.0;
     double height =0;
     double width = 0;
@@ -1698,7 +1757,7 @@ void CmdGraphics(int code)
 			PutPictFile(fullpathname, height, width, scale, baseline, TRUE);
 	
 		else if (has_extension(fullpathname, ".png"))
-			PutPngFile(fullpathname, height, width, scale, baseline, TRUE);
+			PutPngFile(fullpathname, height, width, scale, 0.0, baseline, TRUE);
 	
 		else if (has_extension(fullpathname, ".gif"))
 			PutGifFile(fullpathname, height, width, scale, baseline, TRUE);

@@ -393,3 +393,15 @@ char * keyvalue_pair(char *s, char **key, char **value)
 	if (*v == '\0') return NULL;
 	return v+1;
 }
+
+int getStringDimension(char *s)
+{
+	int size;
+	
+	if (s==NULL) return 0;
+	
+	PushSource(NULL, s);
+	size=getDimension();
+	PopSource();
+	return size;
+}

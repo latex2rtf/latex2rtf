@@ -37,4 +37,6 @@ char *  strdup_printable(char *s);
 void    strncpy_printable(char* dst, char *src, int n);
 char *	ExtractLabelTag(char *text);
 char *	ExtractAndRemoveTag(char *tag, char *text);
-char * keyvalue_pair(char *t, char **key, char **value);
+char *  keyvalue_pair(char *t, char **key, char **value);
+int     getStringDimension(char *s);
+
