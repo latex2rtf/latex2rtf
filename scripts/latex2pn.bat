@@ -1,9 +1,9 @@
 @echo off
-rem echo latex2pn.bat (%1 %2 %3 %4 %5 %6 %7 %8 %9)
+echo latex2pn.bat (%1 %2 %3 %4 %5 %6 %7 %8 %9) >> C:\l2rtest\latex2pn.log
 rem This version uses latex and dvips
 rem              with convert (Part of ImageMagick)
 rem
-rem USAGE: latex2png -d density [-o offset] [-H home_dir] filename
+rem USAGE: latex2pn -d density [-o offset] [-H home_dir] filename
 rem        where filename is the name (without extension) of the file to be converted,
 rem        either a LaTeX file or a eps file.
 rem
@@ -70,9 +70,11 @@ del tmp1.eps
 IF NOT EXIST %fn%.png GOTO ERR4
 
 IF %inline%==0 GOTO NOIN
-pngtopnm %fn%.png > %fn%.pgm
-pnmcut -left %of% %fn%.pgm | pnmcrop -left | pnmtopng > %fn%.png
-del %fn%.pgm
+del %fn%.ppm
+pngtopnm %fn%.png | pnmcrop -white -left > %fn%.ppm
+del %fn%.png
+pnmcut -left %of% %fn%.ppm | pnmcrop -left | pnmtopng > %fn%.png
+del %fn%.ppm
 
 :NOIN
 del %fn%.tex

@@ -155,7 +155,7 @@ fi
 #    in $name.tmp.png is removed to create the final image $name.png
 # 
 if [ $inline -eq 1 ] ; then
-    rm -f $name.ppm $name.pbm
+    rm -f $name.ppm
 
 # sjs added the pipe through pnmcrop to get rid of some 
 # left-over white space at the left of the image which meant 
@@ -165,8 +165,10 @@ if [ $inline -eq 1 ] ; then
     pngtopnm $name.png | pnmcrop -white -left > $name.ppm
 
 #    pngtopnm $name.png > $name.ppm
-    
-    pnmcut -width 1 $name.ppm | ppmtopgm | pgmtopbm > $name.pbm
+
+# wh commented out next line because it does nothing:
+# $name.pbm isn't used anywhere else, the next command reads $name.ppm instead
+#    pnmcut -width 1 $name.ppm | ppmtopgm | pgmtopbm > $name.pbm
 
 #   offset=`expr ${opt_d} / 72 + 2`
     pnmcut -left $opt_o $name.ppm | pnmcrop -left | pnmtopng > $name.png 2> /dev/null
