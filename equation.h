@@ -21,6 +21,8 @@
 #define LONG_RIGHTLEFT 4
 #define LEFT_LEFT 5
 #define RIGHT_RIGHT 6
+#define LONG_LEFT 7
+#define LONG_RIGHT 8
 
 void CmdEquation(int code);
 void CmdFraction(int code);

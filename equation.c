@@ -990,6 +990,16 @@ void CmdArrows(int code)
             fprintRTF("}%c{\\dn%d ", g_field_separator, size);
             ConvertString("\\longleftarrow");
             break;
+
+        case LONG_LEFT:
+            ConvertString("\\leftarrow");
+        	CmdSymbolChar(0xbe);  /* extension character */
+            break;
+
+        case LONG_RIGHT:
+        	CmdSymbolChar(0xbe);  /* extension character */
+            ConvertString("\\rightarrow");
+            break;
     }
     fprintRTF("}) ");
 }
