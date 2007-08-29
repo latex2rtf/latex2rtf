@@ -166,9 +166,8 @@ if [ $inline -eq 1 ] ; then
 
 #    pngtopnm $name.png > $name.ppm
 
-# wh commented out next line because it does nothing:
-# $name.pbm isn't used anywhere else, the next command reads $name.ppm instead
-#    pnmcut -width 1 $name.ppm | ppmtopgm | pgmtopbm > $name.pbm
+# wh restored next line because $name.pbm is read by latex2rtf
+    pnmcut -width 1 $name.ppm | ppmtopgm | pgmtopbm > $name.pbm
 
 #   offset=`expr ${opt_d} / 72 + 2`
     pnmcut -left $opt_o $name.ppm | pnmcrop -left | pnmtopng > $name.png 2> /dev/null

@@ -1,5 +1,5 @@
 @echo off
-echo latex2pn.bat (%1 %2 %3 %4 %5 %6 %7 %8 %9) >> C:\l2rtest\latex2pn.log
+echo latex2pn.bat (%1 %2 %3 %4 %5 %6 %7 %8 %9) >> latex2pn.log
 rem This version uses latex and dvips
 rem              with convert (Part of ImageMagick)
 rem
@@ -63,16 +63,24 @@ IF NOT EXIST %fn%.dvi GOTO ERR2
 dvips -q -l 1 -o %fn%.eps %fn%.dvi
 
 :NOTEX
+IF EXIST %fn%.eps GOTO ISEPS
+IF NOT EXIST %fn%.pdf GOTO ERR3
+call pdf2ps %fn%.pdf %fn%.eps
 IF NOT EXIST %fn%.eps GOTO ERR3
+:ISEPS
 call eps2eps %fn%.eps tmp1.eps
 convert -crop 0x0 -density %dn%x%dn% tmp1.eps %fn%.png
 del tmp1.eps
 IF NOT EXIST %fn%.png GOTO ERR4
 
 IF %inline%==0 GOTO NOIN
-del %fn%.ppm
+
 pngtopnm %fn%.png | pnmcrop -white -left > %fn%.ppm
-del %fn%.png
+
+rem ** %fn%.pbm created by next line contains the "INLINE_DOT"
+rem ** and is needed by latex2rt.exe 
+rem ** for calculating vertical alignment of the graphic
+pnmcut -width 1 %fn%.ppm | ppmtopgm | pgmtopbm > %fn%.pbm
 pnmcut -left %of% %fn%.ppm | pnmcrop -left | pnmtopng > %fn%.png
 del %fn%.ppm
 
@@ -85,15 +93,15 @@ del %fn%.eps
 goto cleanup
 
 :ERR2
-echo ERROR: latex failed to create %fn%.dvi from %fn%.tex
+echo ERROR: latex failed to create %fn%.dvi from %fn%.tex >> latex2pn.log
 goto cleanup
 
 :ERR3
-echo ERROR: file %fn%.eps not found
+echo ERROR: file %fn%.eps or %fn%.pdf not found >> latex2pn.log
 goto cleanup
 
 :ERR4
-echo ERROR: ImageMagick convert failed to create %fn%.png from %fn%.eps
+echo ERROR: ImageMagick convert failed to create %fn%.png from %fn%.eps >> latex2pn.log
 
 :cleanup
 set fn=
