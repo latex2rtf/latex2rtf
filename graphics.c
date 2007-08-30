@@ -44,8 +44,9 @@ Authors:
 #include "preamble.h"
 
 /* number of points (72/inch) in a meter */
-#define POINTS_PER_METER 2834.65
-
+/* define POINTS_PER_METER 2834.65 */
+/* number of points (72/inch) in an inch */
+#define POINTS_PER_INCH 72.00
 /* Little endian macros to convert to and from host format to network byte ordering */
 #define LETONS(A) ((((A) & 0xFF00) >> 8) | (((A) & 0x00FF) << 8))
 #define LETONL(A) ((((A) & 0xFF000000) >> 24) | (((A) & 0x00FF0000) >>  8) | \
@@ -73,6 +74,12 @@ Version 1.6 RTF files can include pictures as follows
 \wmetafileN             Source of the picture is a Windows metafile
 \dibitmapN              Source of the picture is a Windows device-independent bitmap
 \wbitmapN               Source of the picture is a Windows device-dependent bitmap
+\picw			(in case of bitmap) width of the bitmap in pixels
+\pich			(in case of bitmap) height of the bitmap in pixels
+\picwgoal		desired width of the picture in twips (1/20 pt = 1/1440 inch)
+\pichgoal		desired height of the picture in twips (1/20 pt = 1/1440 inch)
+\picscalex		horizontal scaling value; argument is percentage (default 100)
+\picscaley		vertical scaling value; argument is percentage (default 100)
 */
 
 typedef struct _WindowsMetaHeader {
@@ -664,13 +671,15 @@ static void GetPngSize(char *s, unsigned long *w, unsigned long *h, unsigned lon
 
     *w = 0;
     *h = 0;
-    *xres = (unsigned long) POINTS_PER_METER;
-    *yres = (unsigned long) POINTS_PER_METER;
+    *xres = (unsigned long) POINTS_PER_INCH;
+    *yres = (unsigned long) POINTS_PER_INCH;
     *bad_res = 1;
     
     fp = fopen(s, "rb");
-    if (fp == NULL)
+    if (fp == NULL) {
+        diagnostics(WARNING, "GetPngSize: Cannot open graphics file <%s>", s);
         return;
+    }
 
     if (fread(buffer, 1, 8, fp) < 8) {
         diagnostics(WARNING, "Cannot read graphics file <%s>", s);
@@ -687,6 +696,7 @@ static void GetPngSize(char *s, unsigned long *w, unsigned long *h, unsigned lon
 	data = getPngChunk(fp,"IHDR");
 	if (data == NULL) {
         diagnostics(WARNING, "Graphics file <%s>: could not locate IHDR chunk!", s);
+	fclose(fp);
         return;
 	}
 
@@ -699,6 +709,7 @@ static void GetPngSize(char *s, unsigned long *w, unsigned long *h, unsigned lon
 	data = getPngChunk(fp,"pHYs");
 	if (data == NULL) {
         diagnostics(4, "Graphics file <%s>: could not locate pHYs chunk!", s);
+	fclose(fp);
         return;
 	}
 
@@ -710,23 +721,17 @@ static void GetPngSize(char *s, unsigned long *w, unsigned long *h, unsigned lon
 	free(data);
 
 	/* dots per inch, not per meter! */
-	if (*xres < POINTS_PER_METER) {
+	if (*xres < POINTS_PER_INCH) {
 		*bad_res = 1;
 		diagnostics(4, "bogus resolution in png image! ");
-		diagnostics(4, "xres = %ld, yres = %ld, pixels/meter", *xres, *yres);
-		diagnostics(4, "xres = %ld, yres = %ld, pixels/in", 
-		(unsigned long)( (double)(*xres *72.0)/POINTS_PER_METER), 
-		(unsigned long)((double)(*yres * 72.0) /POINTS_PER_METER));
-		*xres *= POINTS_PER_METER/72.0;
-		*yres *= POINTS_PER_METER/72.0;
+		diagnostics(4, "xres = %ld, yres = %ld, pixels/in", *xres, *yres);
+		*xres *= 72.0;
+		*yres *= 72.0;
 	} else 
 		*bad_res = 0;
 	
 	
-    diagnostics(4, "xres = %ld, yres = %ld, pixels/meter", *xres, *yres);
-    diagnostics(4, "xres = %ld, yres = %ld, pixels/in", 
-    (unsigned long)( (double)(*xres *72.0)/POINTS_PER_METER), 
-    (unsigned long)((double)(*yres * 72.0) /POINTS_PER_METER));
+    diagnostics(4, "xres = %ld, yres = %ld, pixels/in", *xres, *yres);
     
     fclose(fp);
 }
@@ -779,26 +784,21 @@ void PutPngFile(char *s, double height_goal, double width_goal, double scale,
 	if (bad_res && convert_scale != 0) 
 		scale *= convert_scale;
 		
-	/* twips calculation                                             */
-	/*                       points        meter       20 twips      */
-	/* width =  (pixels) * ----------- * ---------  * -----------    */
-	/*                       meter         pixels      1 point       */
-	width    *= POINTS_PER_METER / xres * 20.0;
-	height   *= POINTS_PER_METER / yres * 20.0;
-	
-    /* size is in units that equal 1/100 of a millimeter  (10 microns). */    
-	/*       dwips       100,000 (units)     1 points        meter      */
-	/* w =  -------- * ------------------ * ---------  * -----------    */
-	/*         1            1 meter          20 dwips      1 point      */
-    w = (unsigned long) (100000.0 * width           ) / (20 * POINTS_PER_METER);
-    h = (unsigned long) (100000.0 * height          ) / (20 * POINTS_PER_METER);
-    b = (unsigned long) (100000.0 * baseline * scale) / (20 * POINTS_PER_METER); 
+    /* size (w, h) is in pixels  */    
+    w = width;
+    h = height;
+    b = baseline * scale;
+    /* width_goal, height_goal are in twips */
+    width  = w * 1440 / xres;
+    height = h * 1440 / yres;
+    width_goal  = w * 1440 * scale / g_dots_per_inch;
+    height_goal = h * 1440 * scale / g_dots_per_inch;
     
 	AdjustScaling(height,width,height_goal,width_goal,scale,&sx,&sy);
 	
-	diagnostics(4, "scale      = %6.3f,            convert     = %6.3f", scale, convert_scale);
+    diagnostics(4, "scale      = %6.3f,           convert     = %6.3f", scale, convert_scale);
     diagnostics(4, "width_goal = %6ld twips,      height_goal = %6ld twips", (int)width_goal, (int)height_goal);
-    diagnostics(4, "picw       = %6ld microns,    pich        = %6ld microns", w*10, h*10);
+    diagnostics(4, "picw       = %6ld pixels,     pich        = %6ld pixels", w, h);
     diagnostics(4, "picwgoal   = %6ld twips,      pichgoal    = %6ld twips", width, height);
     diagnostics(4, "sx         = %6ld percent,    sy          = %6ld percent", sx, sy);
     
@@ -870,8 +870,8 @@ static void PutJpegFile(char *s, double height0, double width0, double scale, do
 
     diagnostics(4, "width = %d, height = %d", width, height);
 
-    w = (unsigned long) (100000.0 * width) / (20 * POINTS_PER_METER);
-    h = (unsigned long) (100000.0 * height) / (20 * POINTS_PER_METER);
+    w = (unsigned long) (100000.0 * width) / (20 * POINTS_PER_INCH);
+    h = (unsigned long) (100000.0 * height) / (20 * POINTS_PER_INCH);
     fprintRTF("\n{\\pict\\jpegblip\\picw%ld\\pich%ld", w, h);
     fprintRTF("\\picwgoal%ld\\pichgoal%ld\n", width * 20, height * 20);
 
@@ -956,8 +956,8 @@ static void PutEmfFile(char *s, double height0, double width0, double scale, dou
     height = (unsigned long) (BoundsBottom - BoundsTop);
     width = (unsigned long) (BoundsRight - BoundsLeft);
 
-    w = (unsigned long) ((100000.0 * width) / (20 * POINTS_PER_METER));
-    h = (unsigned long) ((100000.0 * height) / (20 * POINTS_PER_METER));
+    w = (unsigned long) ((100000.0 * width) / (20 * POINTS_PER_INCH));
+    h = (unsigned long) ((100000.0 * height) / (20 * POINTS_PER_INCH));
     diagnostics(4, "width = %ld, height = %ld", width, height);
     fprintRTF("\n{\\pict\\emfblip\\picw%ld\\pich%ld", w, h);
     fprintRTF("\\picwgoal%ld\\pichgoal%ld\n", width * 20, height * 20);
