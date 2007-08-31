@@ -141,7 +141,7 @@ if [ $ext = "tex" ] ; then
     fi
 fi
 
-$CONVERT -crop 0x0 $out -density ${opt_d}x${opt_d} $name.eps $name.png
+$CONVERT -crop 0x0 $out -units PixelsPerInch -density ${opt_d}x${opt_d} $name.eps $name.png
 
 if [ ! -e "$name.png" ] ; then
     echo "error: convert (ImageMagick) failed to translate $name.eps from $name.png"

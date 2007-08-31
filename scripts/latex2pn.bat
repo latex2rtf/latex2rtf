@@ -69,7 +69,7 @@ call pdf2ps %fn%.pdf %fn%.eps
 IF NOT EXIST %fn%.eps GOTO ERR3
 :ISEPS
 call eps2eps %fn%.eps tmp1.eps
-convert -crop 0x0 -density %dn%x%dn% tmp1.eps %fn%.png
+convert -crop 0x0 -units PixelsPerInch -density %dn%x%dn% tmp1.eps %fn%.png
 del tmp1.eps
 IF NOT EXIST %fn%.png GOTO ERR4
 
@@ -79,21 +79,22 @@ pngtopnm %fn%.png | pnmcrop -white -left > %fn%.ppm
 
 rem ** %fn%.pbm created by next line contains the "INLINE_DOT"
 rem ** and is needed by latex2rt.exe 
-rem ** for calculating vertical alignment of the graphic
+rem ** for calculating vertical alignment of the bitmap
 pnmcut -width 1 %fn%.ppm | ppmtopgm | pgmtopbm > %fn%.pbm
 pnmcut -left %of% %fn%.ppm | pnmcrop -left | pnmtopng > %fn%.png
 del %fn%.ppm
 
 :NOIN
+IF NOT EXIST %fn%.tex goto cleanup
+del %fn%.eps
 del %fn%.tex
 del %fn%.dvi
 del %fn%.aux
 del %fn%.log
-del %fn%.eps
 goto cleanup
 
 :ERR2
-echo ERROR: latex failed to create %fn%.dvi from %fn%.tex >> latex2pn.log
+echo ERROR: LaTeX failed to create %fn%.dvi from %fn%.tex >> latex2pn.log
 goto cleanup
 
 :ERR3
