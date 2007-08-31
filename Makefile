@@ -163,8 +163,8 @@ dist: checkdir releasedate latex2rtf doc $(SRCS) $(HDRS) $(CFGS) $(README) Makef
 	rm -rf latex2rtf-$(VERSION)
 
 uptodate:
-	perl -pi.bak -e '$$date=scalar localtime; s/\(.*/($$date)";/' version.h
-	rm version.h.bak
+#	perl -pi.bak -e '$$date=scalar localtime; s/\(.*/($$date)";/' version.h
+#	rm version.h.bak
 
 releasedate:
 	perl -pi.bak -e '$$date=scalar localtime; s/\(.*/(released $$date)";/; s/d ..../d /;s/\d\d:\d\d:\d\d //;' version.h

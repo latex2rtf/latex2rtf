@@ -112,6 +112,9 @@ void CmdSymbolChar(int code)
 
     } else {
     
+/*		fprintRTF("{\\field{\\*\\fldinst SYMBOL %u ", (unsigned int) code);
+		fprintRTF("\\\\f \"Symbol\"}{\\fldrslt }}");
+*/
     	fprintRTF("{\\f%d\\u%d\\'%.2X}",num,code-4096,code);
 	}
 }

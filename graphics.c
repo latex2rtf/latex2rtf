@@ -281,10 +281,10 @@ static char *eps_to_pict(char *s)
     eps = strdup_together(g_home_dir, s);
 
     /* create a bitmap version of the eps file */
-    cmd_len = strlen(eps) + strlen(pict_bitmap) + strlen("convert -crop 0x0 -density ") + 5;
+    cmd_len = strlen(eps) + strlen(pict_bitmap) + strlen("convert -crop 0x0 -density ") + 15;
     cmd = (char *) malloc(cmd_len);
     snprintf(cmd, cmd_len, "convert -crop 0x0 -density %d %s %s", g_dots_per_inch, eps, pict_bitmap);
-    diagnostics(2, "system graphics command = [%s]", cmd);
+    diagnostics(2, "system command = [%s]", cmd);
     err = system(cmd);
     free(cmd);
 
@@ -385,61 +385,65 @@ static char *eps_to_pict(char *s)
 /******************************************************************************
      purpose : create a png file from an EPS or PS file and return file name
  ******************************************************************************/
-static char *eps_to_png(char *eps)
+static char *eps_to_png(char *name)
 {
-    char *cmd, *s1, *p, *png;
+    char *cmd, *png, *outfile;
     size_t cmd_len;
 
-    diagnostics(2, "filename = <%s>", eps);
+	outfile = NULL;
+	
+    diagnostics(2, " eps_to_png file = <%s>", name);
 
-    s1 = strdup(eps);
-    if ((p = strstr(s1, ".eps")) == NULL && (p = strstr(s1, ".EPS")) == NULL &&
-      (p = strstr(s1, ".ps")) == NULL && (p = strstr(s1, ".PS")) == NULL) {
-        diagnostics(2, "<%s> is not an EPS or PS file", eps);
-        free(s1);
-        return NULL;
-    }
-
-    strcpy(p, ".png");
-    png = strdup_tmp_path(s1);
-    cmd_len = strlen(eps) + strlen(png) + strlen("convert -units PixelsPerInch -density ") + 5;
+    if (strstr(name, ".eps") != NULL)
+    	outfile = strdup_new_extension(name, ".eps", ".png");
+	else if (strstr(name, ".EPS") != NULL)
+    	outfile = strdup_new_extension(name, ".EPS", ".png");
+	else if (strstr(name, ".ps") != NULL)
+    	outfile = strdup_new_extension(name, ".ps", ".png");
+	else if (strstr(name, ".PS") != NULL)
+    	outfile = strdup_new_extension(name, ".PS", ".png");
+	
+	if (outfile == NULL) return NULL;
+	
+    png = strdup_tmp_path(outfile);
+    cmd_len = strlen(name) + strlen(png) + strlen("convert -units PixelsPerInch -density ") + 15;
     cmd = (char *) malloc(cmd_len);
-    snprintf(cmd, cmd_len, "convert -units PixelsPerInch -density %d %s %s", g_dots_per_inch, eps, png);
-    diagnostics(2, "system graphics command = [%s]", cmd);
+    snprintf(cmd, cmd_len, "convert -units PixelsPerInch -density %d %s %s", g_dots_per_inch, name, png);
+    diagnostics(2, "eps_to_png command = [%s]", cmd);
     system(cmd);
 
     free(cmd);
-    free(s1);
+    free(outfile);
     return png;
 }
 
 /******************************************************************************
      purpose : create a png file from a PDF file and return file name
  ******************************************************************************/
-static char *pdf_to_png(char *pdf)
+static char *pdf_to_png(char *name)
 {
-    char *cmd, *s1, *p, *png;
+    char *cmd, *png, *outfile;
     size_t cmd_len;
-    /*
+    
+/*
     wh, 2007-08-31 changed back to ImageMagick convert because gs (gswin32c)
-    is not executed with message "Program too large for working storage" 
+    fails to execute with message "Program too large for working storage" 
     (in German: "Programm zu gross fuer den Arbeitsspeicher") 
     under WinXP commandprompt (compiled with djgpp)
-    */
-/*  char *base = "gs -dNOPAUSE -dSAFER -dBATCH -sDEVICE=pngalpha -sOutputFile="; */
+   
+    char *base = "gs -dNOPAUSE -dSAFER -dBATCH -sDEVICE=pngalpha -sOutputFile="; 
+*/
     char *base = "convert -crop 0x0 -units PixelsPerInch -density";
 
-    diagnostics(2, "filename = <%s>", pdf);
+    outfile = NULL;
+    diagnostics(2, "filename = <%s>", name);
 
-    s1 = strdup(pdf);
-    if ((p = strstr(s1, ".pdf")) == NULL && (p = strstr(s1, ".PDF")) == NULL) {
-        diagnostics(2, "<%s> is not a PDF file", pdf);
-        free(s1);
-        return NULL;
-    }
+    if (strstr(name, ".pdf") != NULL)
+    	outfile = strdup_new_extension(name, ".pdf", ".png");
+	else if (strstr(name, ".PDF") != NULL)
+    	outfile = strdup_new_extension(name, ".PDF", ".png");
 
-    strcpy(p, ".png");
-    png = strdup_tmp_path(s1);
+    png = strdup_tmp_path(outfile);
 
     /* 
     ImageMagick apparently reads the wrong /MediaBox for PDF files and can give
@@ -449,47 +453,47 @@ static char *pdf_to_png(char *pdf)
         -crop 0x0 solves this problem with producing a full page image,
         -units PixelsPerInch solves the problem of wrong resolution identification
     */
-    cmd_len = strlen(pdf) + strlen(png) + strlen(base) + 40;
+    cmd_len = strlen(name) + strlen(png) + strlen(base) + 40;
     cmd = (char *) malloc(cmd_len);
 /*  snprintf(cmd, cmd_len, "convert -density %d %s %s", g_dots_per_inch, pdf, png); */
 /*  snprintf(cmd, cmd_len, "%s%s -r%d %s", base, png, g_dots_per_inch, pdf); */
-    snprintf(cmd, cmd_len, "%s %d %s %s", base, g_dots_per_inch, pdf, png);
-    diagnostics(2, "system graphics command = [%s]", cmd);
+    snprintf(cmd, cmd_len, "%s %d %s %s", base, g_dots_per_inch, name, png);
+    diagnostics(2, "pdf_to_png command = [%s]", cmd);
     system(cmd);
 
     free(cmd);
-    free(s1);
+    free(outfile);
     return png;
 }
 
 /******************************************************************************
      purpose : create a wmf file from an EPS file and return file name
  ******************************************************************************/
-static char *eps_to_emf(char *eps)
+static char *eps_to_emf(char *name)
 {
     FILE *fp;
-    char *cmd, *s1, *p, *emf;
+    char *cmd, *emf, *outfile;
     size_t cmd_len;
-
+	
     char ans[50];
     long width, height;
 
-    diagnostics(2, "filename = <%s>", eps);
+	outfile = NULL;
+    diagnostics(2, "filename = <%s>", name);
 
-    s1 = strdup(eps);
-    if ((p = strstr(s1, ".eps")) == NULL && (p = strstr(s1, ".EPS")) == NULL) {
-        diagnostics(2, "<%s> is not an EPS file", eps);
-        free(s1);
-        return NULL;
-    }
+    if (strstr(name, ".eps") != NULL)
+    	outfile = strdup_new_extension(name, ".eps", ".wmf");
+	else if (strstr(name, ".EPS") != NULL)
+    	outfile = strdup_new_extension(name, ".EPS", ".wmf");
 
-    strcpy(p, ".wmf");
-    emf = strdup_tmp_path(s1);
+	if (outfile == NULL) return NULL;
+
+    emf = strdup_tmp_path(outfile);
 
     /* Determine bounding box for EPS file */
-    cmd_len = strlen(eps) + strlen("identify -format \"%w %h\" ") + 1;
+    cmd_len = strlen(name) + strlen("identify -format \"%w %h\" ") + 1;
     cmd = (char *) malloc(cmd_len);
-    snprintf(cmd, cmd_len, "identify -format \"%%w %%h\" %s", eps);
+    snprintf(cmd, cmd_len, "identify -format \"%%w %%h\" %s", name);
     fp = popen(cmd, "r");
     if (fgets(ans, 50, fp) != NULL)
         sscanf(ans, "%ld %ld", &width, &height);
@@ -504,7 +508,7 @@ static char *eps_to_emf(char *eps)
 
     /* write EMRFORMAT containing EPS */
 
-    free(s1);
+    free(outfile);
     fclose(fp);
     return emf;
 }
