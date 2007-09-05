@@ -110,7 +110,7 @@ char *g_script_path = NULL;
 char *g_tmp_path = NULL;
 char *g_preamble = NULL;
 char g_field_separator = ',';
-bool g_escape_parent = TRUE;
+bool g_escape_parens = FALSE;
 
 bool g_equation_display_rtf = TRUE;
 bool g_equation_inline_rtf = TRUE;
@@ -194,7 +194,7 @@ int main(int argc, char **argv)
                 g_rtf_name = strdup(optarg);
                 break;
             case 'p':
-                g_escape_parent = FALSE;
+                g_escape_parens = TRUE;
                 break;
             case 'u':
                 sscanf(optarg, "%d", &x);

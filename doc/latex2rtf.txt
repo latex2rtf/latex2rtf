@@ -563,11 +563,14 @@ the new file look similar to the original.  The command line syntax is:
      `inputfile' and appending `.rtf'.
 
 `-p'
-     Do not quote printed parentheses in mathematical formulas, as some
-     versions of Word (e.g., Word 2000) have deep psychological
-     problems with EQ fields using quoted parentheses.  If Word
-     displays some formulas with parentheses as "Error!", try this
-     option.  See also the -S option.
+     Escape parentheses in mathematical formulas.  This has no effect
+     unless EQ fields are being generated.  When this option is used,
+     then in a `(' or `)' that appears in an EQ field will be preceeded
+     by a backslash.  Despite documentation to the contrary (which says
+     that all parentheses should be escaped), adding escapes usually
+     produces a worse result than doing nothing. If Word displays some
+     formulas with parentheses as "Error!", you might try this option
+     as a last resort.  See also the -S option.
 
      This is an option because it will break typesetting equations with
      non-matching parentheses (because an unmatched unquoted

@@ -110,7 +110,7 @@ extern bool		g_fields_use_EQ;
 extern bool		g_fields_use_REF;
 
 extern int		g_equation_number;
-extern bool		g_escape_parent;
+extern bool		g_escape_parens;
 extern bool		g_show_equation_number;
 extern int		g_enumerate_depth;
 extern bool		g_suppress_equation_number;

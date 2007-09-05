@@ -1,4 +1,4 @@
-This is latex2rtf.info, produced by makeinfo version 4.6 from
+This is latex2rtf.info, produced by makeinfo version 4.7 from
 latex2rtf.texi.
 
 
@@ -45,8 +45,8 @@ translation approved by the Free Software Foundation.
 
 File: latex2rtf.info,  Node: Introduction,  Next: Installation,  Prev: Top,  Up: Top
 
-Introduction
-************
+1 Introduction
+**************
 
 LaTeX2RTF  is a translator program from LaTeX  text into "rich text
 format" files.  These files are commonly referred to as RTF files.  RTF
@@ -107,8 +107,8 @@ details on RTF the specification consult the links at
 
 File: latex2rtf.info,  Node: Installation,  Next: Using LaTeX2RTF,  Prev: Introduction,  Up: Top
 
-Installation
-************
+2 Installation
+**************
 
 * Menu:
 
@@ -124,8 +124,8 @@ Installation
 
 File: latex2rtf.info,  Node: General,  Next: Obtaining LaTeX2RTF,  Prev: Installation,  Up: Installation
 
-General
-=======
+2.1 General
+===========
 
 The documentation of the program is found in the `doc/' directory in the
 file `latex2rtf.texi' in the GNU TeXInfo format.  For your convenience,
@@ -134,8 +134,8 @@ you can find HTML and PDF versions of the manual there as well.
 
 File: latex2rtf.info,  Node: Obtaining LaTeX2RTF,  Next: UNIX,  Prev: General,  Up: Installation
 
-Obtaining LaTeX2RTF
-===================
+2.2 Obtaining LaTeX2RTF
+=======================
 
 LaTeX2RTF  is available for many Unix Platforms, for the Macintosh, and
 for MS-DOS, including all versions of MS Windows.
@@ -160,8 +160,8 @@ latest news.
 
 File: latex2rtf.info,  Node: UNIX,  Next: DOS or Windows,  Prev: Obtaining LaTeX2RTF,  Up: Installation
 
-UNIX
-====
+2.3 UNIX
+========
 
 To install,
   1. Edit `Makefile' for your local configuration.  In particular, pay
@@ -229,8 +229,8 @@ directory.
 
 File: latex2rtf.info,  Node: DOS or Windows,  Next: Win32 systems,  Prev: UNIX,  Up: Installation
 
-DOS or Windows
-==============
+2.4 DOS or Windows
+==================
 
 The UNIX and Mac distributions do not contain an executable for DOS or
 Windows.  Instead, get the DOS port as file `latex2rtf-x.x.x_dos.zip'
@@ -359,8 +359,8 @@ sufficiently large environment space `/E:'.  Shutdown and reboot the PC.
 
 File: latex2rtf.info,  Node: Win32 systems,  Next: Macintosh,  Prev: DOS or Windows,  Up: Installation
 
-Win32 systems
-=============
+2.5 Win32 systems
+=================
 
 To install LaTeX2RTF  on a Win32 system (Win9x, WinME, WinNT, Win2000,
 WinXP), download and execute the `latex2rtf-x.x.x_win.exe' (where x.x.x
@@ -397,8 +397,8 @@ sufficiently large environment space `/E:'.  Shutdown and reboot the PC.
 
 File: latex2rtf.info,  Node: Macintosh,  Next: Problems Compiling,  Prev: Win32 systems,  Up: Installation
 
-Macintosh
-=========
+2.6 Macintosh
+=============
 
 If you want a MacOS X version, make sure that you have installed the
 developer tools CD that is appropriate for your OS version, and then
@@ -418,8 +418,8 @@ converted.  These should be generated using LaTeX  and `bibtex'.
 
 File: latex2rtf.info,  Node: Problems Compiling,  Next: Problems with make check,  Prev: Macintosh,  Up: Installation
 
-Problems Compiling
-==================
+2.7 Problems Compiling
+======================
 
 The code for LaTeX2RTF  is standard ANSI C.  Some possible pitfalls are
    * Not correctly defining your compiler in the Makefile.  The default
@@ -436,8 +436,8 @@ The code for LaTeX2RTF  is standard ANSI C.  Some possible pitfalls are
 
 File: latex2rtf.info,  Node: Problems with make check,  Prev: Problems Compiling,  Up: Installation
 
-Problems with `make check'
-==========================
+2.8 Problems with `make check'
+==============================
 
 All the files in the `test' directory are converted (with varying
 degrees of success) using LaTeX2RTF  and are tested before most CVS
@@ -449,8 +449,8 @@ translated.
 
 File: latex2rtf.info,  Node: Using LaTeX2RTF,  Next: Features,  Prev: Installation,  Up: Top
 
-Using LaTeX2RTF
-***************
+3 Using LaTeX2RTF
+*****************
 
 * Menu:
 
@@ -461,8 +461,8 @@ Using LaTeX2RTF
 
 File: latex2rtf.info,  Node: General Assumptions,  Next: LaTeX2RTF Options,  Prev: Using LaTeX2RTF,  Up: Using LaTeX2RTF
 
-General Assumptions
-===================
+3.1 General Assumptions
+=======================
 
 LaTeX2RTF  assumes that the `.tex' file you want to convert is a valid
 LaTeX  document.  The chances of a successful LaTeX2RTF  conversion are
@@ -501,8 +501,8 @@ maintainer.
 
 File: latex2rtf.info,  Node: LaTeX2RTF Options,  Next: Debugging,  Prev: General Assumptions,  Up: Using LaTeX2RTF
 
-LaTeX2RTF Options
-=================
+3.2 LaTeX2RTF Options
+=====================
 
 The LaTeX2RTF  command converts a LaTeX  file into RTF text format. The
 text and much of the formatting information is translated to RTF making
@@ -637,11 +637,14 @@ the new file look similar to the original.  The command line syntax is:
      `inputfile' and appending `.rtf'.
 
 `-p'
-     Do not quote printed parentheses in mathematical formulas, as some
-     versions of Word (e.g., Word 2000) have deep psychological
-     problems with EQ fields using quoted parentheses.  If Word
-     displays some formulas with parentheses as "Error!", try this
-     option.  See also the -S option.
+     Escape parentheses in mathematical formulas.  This has no effect
+     unless EQ fields are being generated.  When this option is used,
+     then in a `(' or `)' that appears in an EQ field will be preceeded
+     by a backslash.  Despite documentation to the contrary (which says
+     that all parentheses should be escaped), adding escapes usually
+     produces a worse result than doing nothing. If Word displays some
+     formulas with parentheses as "Error!", you might try this option
+     as a last resort.  See also the -S option.
 
      This is an option because it will break typesetting equations with
      non-matching parentheses (because an unmatched unquoted
@@ -683,8 +686,8 @@ file name by removing the extension ".tex" and adding ".rtf".
 
 File: latex2rtf.info,  Node: Debugging,  Prev: LaTeX2RTF Options,  Up: Using LaTeX2RTF
 
-Debugging
-=========
+3.3 Debugging
+=============
 
 With the `-d' option you can specify how much processing information
 LaTeX2RTF  reports.  If there is a logfile specified the output goes to
@@ -708,8 +711,8 @@ this file. Nonetheless Warnings and Errors are logged to stderr always.
 
 File: latex2rtf.info,  Node: Features,  Next: Configuration,  Prev: Using LaTeX2RTF,  Up: Top
 
-Features
-********
+4 Features
+**********
 
 In this chapter you find what styles is LaTeX2RTF  supposed to translate
 correctly to RTF.
@@ -730,8 +733,8 @@ correctly to RTF.
 
 File: latex2rtf.info,  Node: LaTeX2e,  Next: Input Encoding,  Prev: Features,  Up: Features
 
-LaTeX2e
-=======
+4.1 LaTeX2e
+===========
 
 LaTeX2RTF  understands most of the commands introduced with LaTeX2e .
 It supports both the old 2.09 version of
@@ -741,8 +744,8 @@ It supports both the old 2.09 version of
 
 File: latex2rtf.info,  Node: Input Encoding,  Next: Language Support,  Prev: LaTeX2e,  Up: Features
 
-Input Encoding
-==============
+4.2 Input Encoding
+==================
 
 It is not necesary to specify the `-C' option if you use
 `\usepackage{isolatin1}' or `\documentstyle[isolatin1]{...}'. LaTeX2RTF
@@ -757,8 +760,8 @@ are represented in the RTF file using cp1251 (Windows Cyrillic).
 
 File: latex2rtf.info,  Node: Language Support,  Next: Cross References,  Prev: Input Encoding,  Up: Features
 
-Language Support
-================
+4.3 Language Support
+====================
 
 The following languages from the Babel package are supported: afrikaans,
 german, nynorsk, spanish, bahasa, dutch, icelandic, polish, swedish,
@@ -793,8 +796,8 @@ cyrillic languages.
 
 File: latex2rtf.info,  Node: Cross References,  Next: Equations,  Prev: Language Support,  Up: Features
 
-Cross References
-================
+4.4 Cross References
+====================
 
 Cross references include everything that you might expect and then some:
 bibliographic citations, equation references, table references, figure
@@ -851,8 +854,8 @@ LaTeX2RTF  in eqnarray environments.
 
 File: latex2rtf.info,  Node: Equations,  Next: Math and Special Symbols,  Prev: Cross References,  Up: Features
 
-Equations
-=========
+4.5 Equations
+=============
 
 There are four separate levels of equation translation based on the -M
 switch, see *Note LaTeX2RTF Options::.  Each equation is now converted
@@ -877,8 +880,8 @@ line parameter -S , the semicolon is inserted as parameter delimiter.
 
 File: latex2rtf.info,  Node: Math and Special Symbols,  Next: Tables,  Prev: Equations,  Up: Features
 
-Math and Special Symbols
-========================
+4.6 Math and Special Symbols
+============================
 
 Many mathematical and special symbols are supported by the conversion
 table in the file direct.cfg, see *Note Direct Conversion::. However to
@@ -911,16 +914,16 @@ Required fonts are:
 
 File: latex2rtf.info,  Node: Tables,  Next: Graphics,  Prev: Math and Special Symbols,  Up: Features
 
-Tables
-======
+4.7 Tables
+==========
 
 The table code is currently barely working.  It needs to be rewritten.
 
 
 File: latex2rtf.info,  Node: Graphics,  Next: Pagestyles,  Prev: Tables,  Up: Features
 
-Graphics
-========
+4.8 Graphics
+============
 
 There is now rudimentary support for `\includegraphics'.  Three file
 types will be inserted into the RTF file without needing conversion:
@@ -930,8 +933,8 @@ types will be inserted into the RTF file without needing conversion:
 
 File: latex2rtf.info,  Node: Pagestyles,  Next: Hyperlatex,  Prev: Graphics,  Up: Features
 
-Pagestyles
-==========
+4.9 Pagestyles
+==============
 
 If there is no `\pagestyle' command, the RTF output is generated as
 with plain pagestyle, i.e. each page get's its page number centered at
@@ -946,8 +949,8 @@ Note that these features require RTF Version 1.4.
 
 File: latex2rtf.info,  Node: Hyperlatex,  Prev: Pagestyles,  Up: Features
 
-Hyperlatex
-==========
+4.10 Hyperlatex
+===============
 
 Hyperlatex support is largely broken at the moment, but continues to
 improve.
@@ -973,8 +976,8 @@ simply can `ignore'.
 
 File: latex2rtf.info,  Node: Configuration,  Next: Error Messages and Logging,  Prev: Features,  Up: Top
 
-Configuration
-*************
+5 Configuration
+***************
 
 * Menu:
 
@@ -988,8 +991,8 @@ Configuration
 
 File: latex2rtf.info,  Node: Input processing,  Next: Output formatting,  Prev: Configuration,  Up: Configuration
 
-Input processing
-================
+5.1 Input processing
+====================
 
 On processing input LaTeX2RTF  first converts the LaTeX  special
 characters. If it encounters one of the standard commands it is
@@ -1003,24 +1006,24 @@ and the like), or that we are not able or willing to convert to RTF.
 
    You can use `ignore.cfg' if you get tired of seeing
      WARNING: command: `foo' not found - ignored
-    and you don't need `foo' in your RTF document.  It would be nice to
+   and you don't need `foo' in your RTF document.  It would be nice to
 send your additions to the LaTeX2RTF  mailing list for inclusion in
 later distributions.
 
-LaTeX2RTF  accepts Unix, MS-DOS, and Macintosh line ending codes (\n,
-\r\n and \r).  The files it creates are the line ending for the
+   LaTeX2RTF  accepts Unix, MS-DOS, and Macintosh line ending codes
+(\n, \r\n and \r).  The files it creates are the line ending for the
 platform on which LaTeX2RTF  was compiled.
 
-The LaTeX  file may have been created with a wide variety of character
-sets.  If the LaTeX  lacks the `\package[codepage]{inputenc}'
+   The LaTeX  file may have been created with a wide variety of
+character sets.  If the LaTeX  lacks the `\package[codepage]{inputenc}'
 definition, then you may need to use the command line switch to manually
 select the proper code page (*note Input Encoding::).
 
 
 File: latex2rtf.info,  Node: Output formatting,  Next: Direct Conversion,  Prev: Input processing,  Up: Configuration
 
-Output formatting
-=================
+5.2 Output formatting
+=====================
 
 On writing output, LaTeX2RTF  generates `\n' as line ending code.  Your
 RTF Reader should accept this on any platform. If you ftp your RTF file
@@ -1036,8 +1039,8 @@ These filese are documented in the next four sections.
 
 File: latex2rtf.info,  Node: Direct Conversion,  Next: Ignore Command,  Prev: Output formatting,  Up: Configuration
 
-Direct Conversion
-=================
+5.3 Direct Conversion
+=====================
 
 The file `direct.cfg' is used for converting LaTeX  commands by simple
 text replacement. The format consists of lines with a LaTeX  command
@@ -1068,8 +1071,8 @@ direct_ucs.cfg to direct.cfg.
 
 File: latex2rtf.info,  Node: Ignore Command,  Next: Font Configuration,  Prev: Direct Conversion,  Up: Configuration
 
-Ignore Command
-==============
+5.4 Ignore Command
+==================
 
 The file `ignore.cfg' is used for defining how to ignore specific
 commands. This file is used for recognition of LaTeX  variables, user
@@ -1122,8 +1125,8 @@ everything is ignored to end of line. Example:
 
 File: latex2rtf.info,  Node: Font Configuration,  Next: Language Configuration,  Prev: Ignore Command,  Up: Configuration
 
-Font Configuration
-==================
+5.5 Font Configuration
+======================
 
 The file `fonts.cfg' contains the font name mapping.  For example, this
 file determines what font is used to represent `\rm' characters in the
@@ -1151,8 +1154,8 @@ Serif `\sf', Typewriter `\tt', or Calligraphic `\cal'.
 
 File: latex2rtf.info,  Node: Language Configuration,  Prev: Font Configuration,  Up: Configuration
 
-Language Configuration
-======================
+5.6 Language Configuration
+==========================
 
 The file(s) `language.cfg' control the translation of LaTeX 's
 "hardcoded" sectioning names.  The standard LaTeX  styles have some
@@ -1167,8 +1170,8 @@ pattern.  The format is really simple.
 
 File: latex2rtf.info,  Node: Error Messages and Logging,  Next: History,  Prev: Configuration,  Up: Top
 
-Error Messages and Logging
-**************************
+6 Error Messages and Logging
+****************************
 
 As stated in the Debugging section, LaTeX2RTF  provides a means to
 control the amount of debugging information through the `-d#' switch.
@@ -1204,13 +1207,13 @@ example,
      \verbositylevel{5}
      problematic code
      \verbositylevel{0}
-    will cause a huge amount of debugging information to be emitted for
+   will cause a huge amount of debugging information to be emitted for
 the problematic code.
 
-Error reporting and logging still has many inconsistencies, but it gets
-better with each release.  Don't try to make any sense in debugging
-levels above 4, these are for my own delight only and can change
-significantly between versions.
+   Error reporting and logging still has many inconsistencies, but it
+gets better with each release.  Don't try to make any sense in
+debugging levels above 4, these are for my own delight only and can
+change significantly between versions.
 
    The `inputfile' may be incorrectly identified if it is incorporated
 through `\input' or `\include'.  The line may be also be wrong at
@@ -1219,8 +1222,8 @@ times.  *Note Known Bugs::.
 
 File: latex2rtf.info,  Node: History,  Next: LaTeX2RTF under Development,  Prev: Error Messages and Logging,  Up: Top
 
-History & Copyright
-*******************
+7 History & Copyright
+*********************
 
 In 1994 the first Version of LaTeX2RTF  was written by Fernando Dorner
 and Andreas Granzer of the Viena University supervised by Ralf
@@ -1256,8 +1259,8 @@ what was available in the original sources and documentation.
 
 File: latex2rtf.info,  Node: LaTeX2RTF under Development,  Next: Index,  Prev: History,  Up: Top
 
-LaTeX2RTF under Development
-***************************
+8 LaTeX2RTF under Development
+*****************************
 
 * Menu:
 
@@ -1270,8 +1273,8 @@ LaTeX2RTF under Development
 
 File: latex2rtf.info,  Node: Unimplemented Features,  Next: Missing options,  Prev: LaTeX2RTF under Development,  Up: LaTeX2RTF under Development
 
-Unimplemented Features
-======================
+8.1 Unimplemented Features
+==========================
 
    * LaTeX2RTF  ignores some optional parameters of `\documentstyle'
 
@@ -1289,8 +1292,8 @@ Unimplemented Features
 
 File: latex2rtf.info,  Node: Missing options,  Next: Known Bugs,  Prev: Unimplemented Features,  Up: LaTeX2RTF under Development
 
-Missing options
-===============
+8.2 Missing options
+===================
 
 Missing or buggy command line options.
 
@@ -1307,8 +1310,8 @@ Missing or buggy command line options.
 
 File: latex2rtf.info,  Node: Known Bugs,  Next: Reporting Bugs,  Prev: Missing options,  Up: LaTeX2RTF under Development
 
-Known Bugs
-==========
+8.3 Known Bugs
+==============
 
   1. The first parameter of a \link{anchor}[ltx]{label} is converted to
      the       rtf-output. Label is stored to hyperref for later use,
@@ -1326,8 +1329,8 @@ Known Bugs
 
 File: latex2rtf.info,  Node: Reporting Bugs,  Next: Todo List,  Prev: Known Bugs,  Up: LaTeX2RTF under Development
 
-Reporting Bugs
-==============
+8.4 Reporting Bugs
+==================
 
 Report bugs to to the bug tracking system at SourceForge
 (http://sourceforge.net/projects/latex2rtf/).  Only report bugs for the
@@ -1360,8 +1363,8 @@ reporting a bug in the program:
 
 File: latex2rtf.info,  Node: Todo List,  Prev: Reporting Bugs,  Up: LaTeX2RTF under Development
 
-Todo List
-=========
+8.5 Todo List
+=============
 
 Scott's ToDo list
    * Use lex/yacc to implement getSection
@@ -1389,58 +1392,59 @@ Scott's ToDo list
 
 File: latex2rtf.info,  Node: Index,  Prev: LaTeX2RTF under Development,  Up: Top
 
-Index
-*****
+9 Index
+*******
 
+ [index ]
 * Menu:
 
-* Copyright issues:                      History.
-* History of the programm:               History.
+* Copyright issues:                      History.               (line 6)
+* History of the programm:               History.               (line 6)
 
 
 
 Tag Table:
 Node: Top79
 Node: Introduction1375
-Node: Installation4303
-Node: General4596
-Node: Obtaining LaTeX2RTF4931
-Node: UNIX5919
-Node: DOS or Windows8689
-Node: Win32 systems15029
-Node: Macintosh16726
-Node: Problems Compiling17645
-Node: Problems with make check18335
-Node: Using LaTeX2RTF18853
-Node: General Assumptions19054
-Node: LaTeX2RTF Options20884
-Node: Debugging28111
-Node: Features28748
-Node: LaTeX2e29145
-Node: Input Encoding29453
-Node: Language Support30201
-Node: Cross References31719
-Node: Equations34342
-Node: Math and Special Symbols35607
-Node: Tables37145
-Node: Graphics37336
-Node: Pagestyles37692
-Node: Hyperlatex38288
-Node: Configuration39354
-Node: Input processing39641
-Node: Output formatting41011
-Node: Direct Conversion41756
-Node: Ignore Command43386
-Node: Font Configuration45091
-Node: Language Configuration46393
-Node: Error Messages and Logging47004
-Node: History49096
-Node: LaTeX2RTF under Development50970
-Node: Unimplemented Features51237
-Node: Missing options52055
-Node: Known Bugs52628
-Node: Reporting Bugs53511
-Node: Todo List55146
-Node: Index55972
+Node: Installation4307
+Node: General4604
+Node: Obtaining LaTeX2RTF4947
+Node: UNIX5943
+Node: DOS or Windows8721
+Node: Win32 systems15069
+Node: Macintosh16774
+Node: Problems Compiling17701
+Node: Problems with make check18399
+Node: Using LaTeX2RTF18925
+Node: General Assumptions19130
+Node: LaTeX2RTF Options20968
+Node: Debugging28440
+Node: Features29085
+Node: LaTeX2e29486
+Node: Input Encoding29802
+Node: Language Support30558
+Node: Cross References32084
+Node: Equations34715
+Node: Math and Special Symbols35988
+Node: Tables37534
+Node: Graphics37733
+Node: Pagestyles38097
+Node: Hyperlatex38701
+Node: Configuration39777
+Node: Input processing40068
+Node: Output formatting41451
+Node: Direct Conversion42204
+Node: Ignore Command43842
+Node: Font Configuration45555
+Node: Language Configuration46865
+Node: Error Messages and Logging47484
+Node: History49582
+Node: LaTeX2RTF under Development51460
+Node: Unimplemented Features51731
+Node: Missing options52557
+Node: Known Bugs53138
+Node: Reporting Bugs54029
+Node: Todo List55672
+Node: Index56506
 
 End Tag Table

@@ -538,14 +538,14 @@ globals: fTex, fRtf and all global flags for convert (see above)
                 break;
 
             case '(':
-                if (g_processing_fields && g_escape_parent)
+                if (g_processing_fields && g_escape_parens)
                     fprintRTF("\\\\(");
                 else
                     fprintRTF("(");
                 break;
 
             case ')':
-                if (g_processing_fields && g_escape_parent)
+                if (g_processing_fields && g_escape_parens)
                     fprintRTF("\\\\)");
                 else
                     fprintRTF(")");
