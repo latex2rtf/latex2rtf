@@ -141,6 +141,7 @@ extern bool		g_equation_display_rtf;
 extern bool		g_equation_inline_bitmap;
 extern bool		g_equation_display_bitmap;
 extern bool		g_equation_comment;
+extern bool     g_equation_raw_latex;
 extern bool		g_little_endian;
 extern bool		g_tableofcontents;
 

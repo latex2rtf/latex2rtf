@@ -117,6 +117,7 @@ bool g_equation_inline_rtf = TRUE;
 bool g_equation_inline_bitmap = FALSE;
 bool g_equation_display_bitmap = FALSE;
 bool g_equation_comment = FALSE;
+bool g_equation_raw_latex = FALSE;
 bool g_tableofcontents = FALSE;
 
 bool g_unicode = TRUE;
@@ -218,19 +219,21 @@ int main(int argc, char **argv)
             case 'M':
                 sscanf(optarg, "%d", &x);
                 diagnostics(2, "Math option = %s x=%d", optarg, x);
-                g_equation_display_rtf = (x & 1) ? TRUE : FALSE;
-                g_equation_inline_rtf = (x & 2) ? TRUE : FALSE;
-                g_equation_display_bitmap = (x & 4) ? TRUE : FALSE;
-                g_equation_inline_bitmap = (x & 8) ? TRUE : FALSE;
-                g_equation_comment = (x & 16) ? TRUE : FALSE;
-                diagnostics(2, "Math option g_equation_display_rtf      = %d", g_equation_display_rtf);
-                diagnostics(2, "Math option g_equation_inline_rtf	      = %d", g_equation_inline_rtf);
-                diagnostics(2, "Math option g_equation_display_bitmap   = %d", g_equation_display_bitmap);
-                diagnostics(2, "Math option g_equation_inline_bitmap    = %d", g_equation_inline_bitmap);
-                diagnostics(2, "Math option g_equation_comment	      = %d", g_equation_comment);
-                if (!g_equation_comment && !g_equation_inline_rtf && !g_equation_inline_bitmap)
+                g_equation_display_rtf   = (x &  1) ? TRUE : FALSE;
+                g_equation_inline_rtf    = (x &  2) ? TRUE : FALSE;
+                g_equation_display_bitmap= (x &  4) ? TRUE : FALSE;
+                g_equation_inline_bitmap = (x &  8) ? TRUE : FALSE;
+                g_equation_comment       = (x & 16) ? TRUE : FALSE;
+                g_equation_raw_latex     = (x & 32) ? TRUE : FALSE;
+                diagnostics(2, "Math option g_equation_display_rtf    = %d", g_equation_display_rtf);
+                diagnostics(2, "Math option g_equation_inline_rtf     = %d", g_equation_inline_rtf);
+                diagnostics(2, "Math option g_equation_display_bitmap = %d", g_equation_display_bitmap);
+                diagnostics(2, "Math option g_equation_inline_bitmap  = %d", g_equation_inline_bitmap);
+                diagnostics(2, "Math option g_equation_comment        = %d", g_equation_comment);
+                diagnostics(2, "Math option g_equation_raw_latex      = %d", g_equation_raw_latex);
+                if (!g_equation_comment && !g_equation_inline_rtf && !g_equation_inline_bitmap && !g_equation_raw_latex)
                     g_equation_inline_rtf = TRUE;
-                if (!g_equation_comment && !g_equation_display_rtf && !g_equation_display_bitmap)
+                if (!g_equation_comment && !g_equation_display_rtf && !g_equation_display_bitmap && !g_equation_raw_latex)
                     g_equation_display_rtf = TRUE;
                 break;
 

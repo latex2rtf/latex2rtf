@@ -244,6 +244,22 @@ static int EquationNeedsFields(char *eq)
     return 0;
 }
 
+static void WriteEquationAsRawLatex(char *pre, char *eq, char *post)
+
+/******************************************************************************
+ purpose   : Writes equation to RTF file as text of COMMENT field
+ ******************************************************************************/
+{
+    fprintRTF("<<:");
+    while (*pre)
+        putRtfCharEscaped(*pre++);
+    while (*eq)
+        putRtfCharEscaped(*eq++);
+    while (*post)
+        putRtfCharEscaped(*post++);
+    fprintRTF(":>>");
+}
+
 static void WriteEquationAsComment(char *pre, char *eq, char *post)
 
 /******************************************************************************
@@ -774,6 +790,9 @@ void CmdEquation(int code)
 
     if (g_equation_comment)
         WriteEquationAsComment(pre, eq, post);
+
+    if (g_equation_raw_latex)
+        WriteEquationAsRawLatex(pre, eq, post);
 
     diagnostics(4, "inline=%d  inline_bitmap=%d", inline_equation, g_equation_inline_bitmap);
     diagnostics(4, "inline=%d display_bitmap=%d", inline_equation, g_equation_display_bitmap);
