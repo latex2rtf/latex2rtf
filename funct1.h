@@ -67,6 +67,7 @@ void CmdEndParagraph(int code);
 void CmdIndent(int code);
 void CmdVspace(int code);
 void CmdSlashSlash(int code);
+void CmdDoubleSpacing(int code);
 
 #define DEF_NEW    1
 #define DEF_RENEW  2

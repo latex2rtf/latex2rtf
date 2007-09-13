@@ -639,6 +639,7 @@ static CommandArray PreambleCommands[] = {
     {"latextortffalse",CmdIgnore,0}, 
     {"newif",CmdNewif,0},
     {"geometry",CmdGeometry,0},
+	{"doublespacing", CmdDoubleSpacing, 0},
     {"", NULL, 0}
 };                              /* end of list */
 

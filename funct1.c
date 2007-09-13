@@ -62,6 +62,7 @@ static bool g_paragraph_inhibit_indent = FALSE;
 static bool g_page_new = FALSE;
 static bool g_column_new = FALSE;
 static int g_vertical_space_to_add = 0;
+static int g_line_spacing = 240;
 bool g_processing_list_environment = FALSE;
 
 void CmdStartParagraph(int code)
@@ -122,7 +123,7 @@ void CmdStartParagraph(int code)
         g_column_new = FALSE;
     }
 
-    fprintRTF("\\pard\\q%c", alignment);
+    fprintRTF("\\pard\\q%c\\sl%i\\slmult1 ", alignment, g_line_spacing);
 
     if (g_vertical_space_to_add > 0)
         fprintRTF("\\sb%d ", g_vertical_space_to_add);
@@ -2235,4 +2236,10 @@ void CmdIflatextortf(int code)
 	free(entire_if);
 }
 
-
+/******************************************************************************
+  purpose: support for \doublespacing
+ ******************************************************************************/
+void CmdDoubleSpacing(int code)
+{
+	g_line_spacing = 480;
+}
