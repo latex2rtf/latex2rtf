@@ -754,6 +754,7 @@ correctly to RTF.
 
 @menu
 * LaTeX2e::                     
+* Unicode Support::                     
 * Input Encoding ::          
 * Language Support ::          
 * Cross References ::            
@@ -765,7 +766,7 @@ correctly to RTF.
 * Hyperlatex ::  
 @end menu
 
-@node LaTeX2e, Input Encoding, Features, Features
+@node LaTeX2e, Unicode Support, Features, Features
 @section LaTeX2e
 
 @ltor{} understands most of the commands introduced with @latexe{}.  It translates both

@@ -620,10 +620,11 @@ the new file look similar to the original.  The command line syntax is:
 
     `-M32'
           insert the raw latex equation delimited by `<<:' and `:>>'.
-          This     is potential handy for version 6 of the MathType
-          equation editor.
-     These switches can be added together to get the desired
-     conversion.  Handy examples are
+          This     is potential useful when using version 6 of the
+          MathType equation editor.
+
+     These switches can be combined to get different effects.  Handy
+     examples are
     `-M3'
           convert both inline and displayed equations to RTF (default)
 
@@ -725,6 +726,7 @@ correctly to RTF.
 * Menu:
 
 * LaTeX2e::
+* Unicode Support::
 * Input Encoding ::
 * Language Support ::
 * Cross References ::
@@ -736,20 +738,32 @@ correctly to RTF.
 * Hyperlatex ::
 
 
-File: latex2rtf.info,  Node: LaTeX2e,  Next: Input Encoding,  Prev: Features,  Up: Features
+File: latex2rtf.info,  Node: LaTeX2e,  Next: Unicode Support,  Prev: Features,  Up: Features
 
 4.1 LaTeX2e
 ===========
 
 LaTeX2RTF  understands most of the commands introduced with LaTeX2e .
-It supports both the old 2.09 version of
+It translates both the old 2.09 version of
 `\documentstyle[options]{format#}' and the newer
 `\documentclass[options]{format}'.
 
 
-File: latex2rtf.info,  Node: Input Encoding,  Next: Language Support,  Prev: LaTeX2e,  Up: Features
+File: latex2rtf.info,  Node: Unicode Support,  Next: Input Encoding,  Prev: LaTeX2e,  Up: Features
 
-4.2 Input Encoding
+4.2 Unicode Support
+===================
+
+As of version 1.9.17, LaTeX2RTF  has limited unicode support.  LaTeX
+files that use unicode sequences are just emitted directly into the RTF
+file.  Symbols and odd characters in math sequences may also be
+converted to a unicode sequence if there is no corresponding symbol in
+the "Symbol" or "MT Extra" fonts.
+
+
+File: latex2rtf.info,  Node: Input Encoding,  Next: Language Support,  Prev: Unicode Support,  Up: Features
+
+4.3 Input Encoding
 ==================
 
 It is not necesary to specify the `-C' option if you use
@@ -765,7 +779,7 @@ are represented in the RTF file using cp1251 (Windows Cyrillic).
 
 File: latex2rtf.info,  Node: Language Support,  Next: Cross References,  Prev: Input Encoding,  Up: Features
 
-4.3 Language Support
+4.4 Language Support
 ====================
 
 The following languages from the Babel package are supported: afrikaans,
@@ -801,7 +815,7 @@ cyrillic languages.
 
 File: latex2rtf.info,  Node: Cross References,  Next: Equations,  Prev: Language Support,  Up: Features
 
-4.4 Cross References
+4.5 Cross References
 ====================
 
 Cross references include everything that you might expect and then some:
@@ -838,7 +852,7 @@ with formatting in special cases.
 
    Footnotes are implemented and appear at the bottom of each page.
 
-   Indexing is reasonable well supported.  The simple mark-up of
+   Indexing is reasonably-well supported.  The simple mark-up of
 `makeindex'
      \index{topic!subtopic@\textit{subtopic}}
    is supported.  The rest of the fancy indexing stuff is not
@@ -859,10 +873,10 @@ LaTeX2RTF  in eqnarray environments.
 
 File: latex2rtf.info,  Node: Equations,  Next: Math and Special Symbols,  Prev: Cross References,  Up: Features
 
-4.5 Equations
+4.6 Equations
 =============
 
-There are four separate levels of equation translation based on the -M
+There are five separate levels of equation translation based on the -M
 switch, see *Note LaTeX2RTF Options::.  Each equation is now converted
 either to an EQ field or to a bitmap.
 
@@ -885,7 +899,7 @@ line parameter -S , the semicolon is inserted as parameter delimiter.
 
 File: latex2rtf.info,  Node: Math and Special Symbols,  Next: Tables,  Prev: Equations,  Up: Features
 
-4.6 Math and Special Symbols
+4.7 Math and Special Symbols
 ============================
 
 Many mathematical and special symbols are supported by the conversion
@@ -919,7 +933,7 @@ Required fonts are:
 
 File: latex2rtf.info,  Node: Tables,  Next: Graphics,  Prev: Math and Special Symbols,  Up: Features
 
-4.7 Tables
+4.8 Tables
 ==========
 
 The table code is currently barely working.  It needs to be rewritten.
@@ -927,22 +941,23 @@ The table code is currently barely working.  It needs to be rewritten.
 
 File: latex2rtf.info,  Node: Graphics,  Next: Pagestyles,  Prev: Tables,  Up: Features
 
-4.8 Graphics
+4.9 Graphics
 ============
 
 There is now rudimentary support for `\includegraphics'.  Three file
 types will be inserted into the RTF file without needing conversion:
 .pict, .jpeg, and .png files.  EPS files are converted to PNG using
-`convert' from the ImageMagick package.
+`convert' from the ImageMagick package.  Some options are handled
+properly.
 
 
 File: latex2rtf.info,  Node: Pagestyles,  Next: Hyperlatex,  Prev: Graphics,  Up: Features
 
-4.9 Pagestyles
-==============
+4.10 Pagestyles
+===============
 
 If there is no `\pagestyle' command, the RTF output is generated as
-with plain pagestyle, i.e. each page get's its page number centered at
+with plain pagestyle, i.e. each page has its page number centered at
 the bottom.
 
    You must turn this off with the \pagestyle{empty} command in the
@@ -954,7 +969,7 @@ Note that these features require RTF Version 1.4.
 
 File: latex2rtf.info,  Node: Hyperlatex,  Prev: Pagestyles,  Up: Features
 
-4.10 Hyperlatex
+4.11 Hyperlatex
 ===============
 
 Hyperlatex support is largely broken at the moment, but continues to
@@ -1423,33 +1438,34 @@ Node: Problems with make check18402
 Node: Using LaTeX2RTF18928
 Node: General Assumptions19133
 Node: LaTeX2RTF Options20971
-Node: Debugging28620
-Node: Features29265
-Node: LaTeX2e29666
-Node: Input Encoding29982
-Node: Language Support30738
-Node: Cross References32264
-Node: Equations34895
-Node: Math and Special Symbols36168
-Node: Tables37714
-Node: Graphics37913
-Node: Pagestyles38277
-Node: Hyperlatex38881
-Node: Configuration39957
-Node: Input processing40248
-Node: Output formatting41631
-Node: Direct Conversion42384
-Node: Ignore Command44022
-Node: Font Configuration45735
-Node: Language Configuration47045
-Node: Error Messages and Logging47664
-Node: History49762
-Node: LaTeX2RTF under Development51640
-Node: Unimplemented Features51911
-Node: Missing options52737
-Node: Known Bugs53318
-Node: Reporting Bugs54209
-Node: Todo List55852
-Node: Index56686
+Node: Debugging28618
+Node: Features29263
+Node: LaTeX2e29684
+Node: Unicode Support30003
+Node: Input Encoding30457
+Node: Language Support31221
+Node: Cross References32747
+Node: Equations35378
+Node: Math and Special Symbols36651
+Node: Tables38197
+Node: Graphics38396
+Node: Pagestyles38796
+Node: Hyperlatex39400
+Node: Configuration40476
+Node: Input processing40767
+Node: Output formatting42150
+Node: Direct Conversion42903
+Node: Ignore Command44541
+Node: Font Configuration46254
+Node: Language Configuration47564
+Node: Error Messages and Logging48183
+Node: History50281
+Node: LaTeX2RTF under Development52159
+Node: Unimplemented Features52430
+Node: Missing options53256
+Node: Known Bugs53837
+Node: Reporting Bugs54728
+Node: Todo List56371
+Node: Index57205
 
 End Tag Table

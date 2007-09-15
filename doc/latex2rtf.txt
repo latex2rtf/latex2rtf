@@ -546,10 +546,11 @@ the new file look similar to the original.  The command line syntax is:
 
     `-M32'
           insert the raw latex equation delimited by `<<:' and `:>>'.
-          This     is potential handy for version 6 of the MathType
-          equation editor.
-     These switches can be added together to get the desired
-     conversion.  Handy examples are
+          This     is potential useful when using version 6 of the
+          MathType equation editor.
+
+     These switches can be combined to get different effects.  Handy
+     examples are
     `-M3'
           convert both inline and displayed equations to RTF (default)
 
@@ -646,11 +647,20 @@ correctly to RTF.
 ===========
 
 LaTeX2RTF  understands most of the commands introduced with LaTeX2e .
-It supports both the old 2.09 version of
+It translates both the old 2.09 version of
 `\documentstyle[options]{format#}' and the newer
 `\documentclass[options]{format}'.
 
-4.2 Input Encoding
+4.2 Unicode Support
+===================
+
+As of version 1.9.17, LaTeX2RTF  has limited unicode support.  LaTeX
+files that use unicode sequences are just emitted directly into the RTF
+file.  Symbols and odd characters in math sequences may also be
+converted to a unicode sequence if there is no corresponding symbol in
+the "Symbol" or "MT Extra" fonts.
+
+4.3 Input Encoding
 ==================
 
 It is not necesary to specify the `-C' option if you use
@@ -663,7 +673,7 @@ koi8-r, koi8-u, cp1251, cp855, cp866, maccyr, and macukr.  The encoding
 used in RTF files is cp1252.  If cyrillic fonts are present, then these
 are represented in the RTF file using cp1251 (Windows Cyrillic).
 
-4.3 Language Support
+4.4 Language Support
 ====================
 
 The following languages from the Babel package are supported: afrikaans,
@@ -696,7 +706,7 @@ cyrillic languages.
    *Note Language Configuration::, for details on how to write a
 `language.cfg' file for your language by yourself.
 
-4.4 Cross References
+4.5 Cross References
 ====================
 
 Cross references include everything that you might expect and then some:
@@ -733,7 +743,7 @@ with formatting in special cases.
 
    Footnotes are implemented and appear at the bottom of each page.
 
-   Indexing is reasonable well supported.  The simple mark-up of
+   Indexing is reasonably-well supported.  The simple mark-up of
 `makeindex'
      \index{topic!subtopic@\textit{subtopic}}
    is supported.  The rest of the fancy indexing stuff is not
@@ -751,10 +761,10 @@ there are multiple `\label' in a figure, table, or section environment
 then only the first gets processed.  It is also possible to confuse the
 LaTeX2RTF  in eqnarray environments.
 
-4.5 Equations
+4.6 Equations
 =============
 
-There are four separate levels of equation translation based on the -M
+There are five separate levels of equation translation based on the -M
 switch, see *Note LaTeX2RTF Options::.  Each equation is now converted
 either to an EQ field or to a bitmap.
 
@@ -774,7 +784,7 @@ correctly. You can check and set the separator in [Windows control panel
 uses the comma as separator. If latex2rtf is called with the command
 line parameter -S , the semicolon is inserted as parameter delimiter.
 
-4.6 Math and Special Symbols
+4.7 Math and Special Symbols
 ============================
 
 Many mathematical and special symbols are supported by the conversion
@@ -805,24 +815,25 @@ Required fonts are:
      For a description of direct.cfg see *Note Direct Conversion::.
 
 
-4.7 Tables
+4.8 Tables
 ==========
 
 The table code is currently barely working.  It needs to be rewritten.
 
-4.8 Graphics
+4.9 Graphics
 ============
 
 There is now rudimentary support for `\includegraphics'.  Three file
 types will be inserted into the RTF file without needing conversion:
 .pict, .jpeg, and .png files.  EPS files are converted to PNG using
-`convert' from the ImageMagick package.
+`convert' from the ImageMagick package.  Some options are handled
+properly.
 
-4.9 Pagestyles
-==============
+4.10 Pagestyles
+===============
 
 If there is no `\pagestyle' command, the RTF output is generated as
-with plain pagestyle, i.e. each page get's its page number centered at
+with plain pagestyle, i.e. each page has its page number centered at
 the bottom.
 
    You must turn this off with the \pagestyle{empty} command in the
@@ -831,7 +842,7 @@ styles are silently ignored by now.  The twosided option to the
 \documentstyle or \documentclass produces the corresponding RTF tokens.
 Note that these features require RTF Version 1.4.
 
-4.10 Hyperlatex
+4.11 Hyperlatex
 ===============
 
 Hyperlatex support is largely broken at the moment, but continues to

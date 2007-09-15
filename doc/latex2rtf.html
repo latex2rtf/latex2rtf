@@ -709,9 +709,10 @@ backwards compatibility.
     <br><dt><code>-M8</code><dd>    convert inline equations to bitmap
     <br><dt><code>-M16</code><dd>    insert Word comment field that contains the original equation text
     <br><dt><code>-M32</code><dd>    insert the raw latex equation delimited by <code>&lt;&lt;:</code> and <code>:&gt;&gt;</code>.  This
-    is potential handy for version 6 of the MathType equation editor. 
+    is potential useful when using version 6 of the MathType equation editor. 
     </dl>
-     These switches can be added together to get the desired conversion.  Handy examples are
+
+     <p>These switches can be combined to get different effects.  Handy examples are
           <dl>
     <dt><code>-M3</code><dd>    convert both inline and displayed equations to RTF (default)
     <br><dt><code>-M6</code><dd>    convert inline equations to RTF and displayed equations to bitmaps
@@ -807,20 +808,21 @@ correctly to RTF.
 
 <ul class="menu">
 <li><a accesskey="1" href="#LaTeX2e">LaTeX2e</a>
-<li><a accesskey="2" href="#Input-Encoding">Input Encoding </a>
-<li><a accesskey="3" href="#Language-Support">Language Support </a>
-<li><a accesskey="4" href="#Cross-References">Cross References </a>
-<li><a accesskey="5" href="#Equations">Equations </a>
-<li><a accesskey="6" href="#Math-and-Special-Symbols">Math and Special Symbols </a>
-<li><a accesskey="7" href="#Tables">Tables </a>
-<li><a accesskey="8" href="#Graphics">Graphics </a>
-<li><a accesskey="9" href="#Pagestyles">Pagestyles </a>
+<li><a accesskey="2" href="#Unicode-Support">Unicode Support</a>
+<li><a accesskey="3" href="#Input-Encoding">Input Encoding </a>
+<li><a accesskey="4" href="#Language-Support">Language Support </a>
+<li><a accesskey="5" href="#Cross-References">Cross References </a>
+<li><a accesskey="6" href="#Equations">Equations </a>
+<li><a accesskey="7" href="#Math-and-Special-Symbols">Math and Special Symbols </a>
+<li><a accesskey="8" href="#Tables">Tables </a>
+<li><a accesskey="9" href="#Graphics">Graphics </a>
+<li><a href="#Pagestyles">Pagestyles </a>
 <li><a href="#Hyperlatex">Hyperlatex </a>
 </ul>
 
 <div class="node">
 <p><hr>
-<a name="LaTeX2e"></a>Next:&nbsp;<a rel="next" accesskey="n" href="#Input-Encoding">Input Encoding</a>,
+<a name="LaTeX2e"></a>Next:&nbsp;<a rel="next" accesskey="n" href="#Unicode-Support">Unicode Support</a>,
 Previous:&nbsp;<a rel="previous" accesskey="p" href="#Features">Features</a>,
 Up:&nbsp;<a rel="up" accesskey="u" href="#Features">Features</a>
 <br>
@@ -830,19 +832,36 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Features">Features</a>
 
 <p>LaTeX2RTF
  understands most of the commands introduced with LaTeX2e
-.  It supports both
+.  It translates both
 the old 2.09 version of <code>\documentstyle[options]{format#}</code> and the newer
 <code>\documentclass[options]{format}</code>.
 
 <div class="node">
 <p><hr>
-<a name="Input-Encoding"></a>Next:&nbsp;<a rel="next" accesskey="n" href="#Language-Support">Language Support</a>,
+<a name="Unicode-Support"></a>Next:&nbsp;<a rel="next" accesskey="n" href="#Input-Encoding">Input Encoding</a>,
 Previous:&nbsp;<a rel="previous" accesskey="p" href="#LaTeX2e">LaTeX2e</a>,
 Up:&nbsp;<a rel="up" accesskey="u" href="#Features">Features</a>
 <br>
 </div>
 
-<h3 class="section">4.2 Input Encoding</h3>
+<h3 class="section">4.2 Unicode Support</h3>
+
+<p>As of version 1.9.17, LaTeX2RTF
+ has limited unicode support.  LaTeX files
+that use unicode sequences are just emitted directly into the RTF file. 
+Symbols and odd characters in math sequences may also be converted to
+a unicode sequence if there is no corresponding symbol in the &ldquo;Symbol&rdquo;
+or &ldquo;MT Extra&rdquo; fonts.
+
+<div class="node">
+<p><hr>
+<a name="Input-Encoding"></a>Next:&nbsp;<a rel="next" accesskey="n" href="#Language-Support">Language Support</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Unicode-Support">Unicode Support</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Features">Features</a>
+<br>
+</div>
+
+<h3 class="section">4.3 Input Encoding</h3>
 
 <p>It is not necesary to specify the <span class="option">-C</span> option if you use <code>\usepackage{isolatin1}</code>
 or <code>\documentstyle[isolatin1]{...}</code>. LaTeX2RTF
@@ -862,7 +881,7 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Features">Features</a>
 <br>
 </div>
 
-<h3 class="section">4.3 Language Support</h3>
+<h3 class="section">4.4 Language Support</h3>
 
 <p>The following languages from the Babel package are supported: afrikaans,
 german, nynorsk, spanish, bahasa, dutch, icelandic, polish, swedish,
@@ -905,7 +924,7 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Features">Features</a>
 <br>
 </div>
 
-<h3 class="section">4.4 Cross References</h3>
+<h3 class="section">4.5 Cross References</h3>
 
 <p>Cross references include everything that you might expect and then some:
 bibliographic citations, equation references, table references, figure
@@ -949,7 +968,7 @@ problems with formatting in special cases.
 
    <p>Footnotes are implemented and appear at the bottom of each page.
 
-   <p>Indexing is reasonable well supported.  The simple mark-up of <code>makeindex</code>
+   <p>Indexing is reasonably-well supported.  The simple mark-up of <code>makeindex</code>
 <pre class="example">     \index{topic!subtopic@\textit{subtopic}}
 </pre>
    <p>is supported.  The rest of the fancy indexing stuff is not implemented. 
@@ -974,9 +993,9 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Features">Features</a>
 <br>
 </div>
 
-<h3 class="section">4.5 Equations</h3>
+<h3 class="section">4.6 Equations</h3>
 
-<p>There are four separate levels of equation translation based on the -M switch,
+<p>There are five separate levels of equation translation based on the -M switch,
 see <a href="#LaTeX2RTF-Options">LaTeX2RTF Options</a>. 
 Each equation is now converted either to an EQ field or to a bitmap.
 
@@ -1003,7 +1022,7 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Features">Features</a>
 <br>
 </div>
 
-<h3 class="section">4.6 Math and Special Symbols</h3>
+<h3 class="section">4.7 Math and Special Symbols</h3>
 
 <p>Many mathematical and special symbols are supported by the conversion table
 in the file direct.cfg, see <a href="#Direct-Conversion">Direct Conversion</a>. However to display (or print)
@@ -1043,7 +1062,7 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Features">Features</a>
 <br>
 </div>
 
-<h3 class="section">4.7 Tables</h3>
+<h3 class="section">4.8 Tables</h3>
 
 <p>The table code is currently barely working.  It needs to be rewritten.
 
@@ -1055,12 +1074,12 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Features">Features</a>
 <br>
 </div>
 
-<h3 class="section">4.8 Graphics</h3>
+<h3 class="section">4.9 Graphics</h3>
 
 <p>There is now rudimentary support for <code>\includegraphics</code>.  Three file types
 will be inserted into the RTF file without needing conversion: .pict, .jpeg, and
 .png files.  EPS files are converted to PNG using <code>convert</code> from the ImageMagick
-package.
+package.  Some options are handled properly.
 
 <div class="node">
 <p><hr>
@@ -1070,10 +1089,10 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Features">Features</a>
 <br>
 </div>
 
-<h3 class="section">4.9 Pagestyles</h3>
+<h3 class="section">4.10 Pagestyles</h3>
 
 <p>If there is no <code>\pagestyle</code> command, the RTF output is generated as with plain
-pagestyle, i.e. each page get's its page number centered at the bottom.
+pagestyle, i.e. each page has its page number centered at the bottom.
 
    <p>You must turn this off with the \pagestyle{empty} command in the LaTeX
  file if
@@ -1090,7 +1109,7 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Features">Features</a>
 <br>
 </div>
 
-<h3 class="section">4.10 Hyperlatex</h3>
+<h3 class="section">4.11 Hyperlatex</h3>
 
 <p>Hyperlatex support is largely broken at the moment, but continues to improve.
 
@@ -1647,15 +1666,16 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 <li><a name="toc_Features" href="#Features">4 Features</a>
 <ul>
 <li><a href="#LaTeX2e">4.1 LaTeX2e</a>
-<li><a href="#Input-Encoding">4.2 Input Encoding</a>
-<li><a href="#Language-Support">4.3 Language Support</a>
-<li><a href="#Cross-References">4.4 Cross References</a>
-<li><a href="#Equations">4.5 Equations</a>
-<li><a href="#Math-and-Special-Symbols">4.6 Math and Special Symbols</a>
-<li><a href="#Tables">4.7 Tables</a>
-<li><a href="#Graphics">4.8 Graphics</a>
-<li><a href="#Pagestyles">4.9 Pagestyles</a>
-<li><a href="#Hyperlatex">4.10 Hyperlatex</a>
+<li><a href="#Unicode-Support">4.2 Unicode Support</a>
+<li><a href="#Input-Encoding">4.3 Input Encoding</a>
+<li><a href="#Language-Support">4.4 Language Support</a>
+<li><a href="#Cross-References">4.5 Cross References</a>
+<li><a href="#Equations">4.6 Equations</a>
+<li><a href="#Math-and-Special-Symbols">4.7 Math and Special Symbols</a>
+<li><a href="#Tables">4.8 Tables</a>
+<li><a href="#Graphics">4.9 Graphics</a>
+<li><a href="#Pagestyles">4.10 Pagestyles</a>
+<li><a href="#Hyperlatex">4.11 Hyperlatex</a>
 </li></ul>
 <li><a name="toc_Configuration" href="#Configuration">5 Configuration</a>
 <ul>
