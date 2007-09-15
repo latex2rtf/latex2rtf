@@ -821,6 +821,7 @@ static CommandArray params[] = {
     {"picture", CmdPicture, 0},
     {"minipage", CmdMinipage, 0},
     {"music", CmdMusic, 0},
+    {"small", CmdTolerateEnviron, 0},
 
     {"quote", CmdQuote, QUOTE_MODE},
     {"quotation", CmdQuote, QUOTATION_MODE},
