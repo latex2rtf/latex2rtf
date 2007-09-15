@@ -57,7 +57,7 @@ LaTeX2RTF
 @subtitle 
 A converter from @latex{} to RTF
 
-Edition 0.7.2
+Edition 0.7.3
 @author Georg Lehner,
 updated by Wilfried Hennings and Scott Prahl,
 with contributions by Mikhail Polianski
@@ -123,7 +123,7 @@ into another language, under the above conditions for modified versions,
 except that this permission notice may be stated in a translation
 approved by the Free Software Foundation.
 
-@c This document applies to version 1.9.16 of @ltor{}.
+@c This document applies to version 1.9.17 of @ltor{}.
 @end ifnottex
 
 
@@ -221,7 +221,7 @@ The MS-DOS version (1.8aa and up) will also run under all MS Windows versions
 The Win32 distribution (starting from @ltor{} 1.9.15) is the MS-DOS version 
 plus Win32 GUI program (l2rshell).
 
-There is one person working on @ltor{}, and some more make 
+There are a few people working on @ltor{}, and some more make 
 contributions, coordinated by
 Wilfried Hennings (W.Hennings "at" fz-juelich.de). 
 See the @uref{http://sourceforge.net/projects/latex2rtf/,SourceForge} 
@@ -557,7 +557,7 @@ much of the formatting information is translated to RTF making the new file
 look similar to the original.  The command line syntax is:
 
 @example
-latex2rtf [-options] inputfile.[tex]
+latex2rtf [-options] inputfile[.tex]
 @end example
 
 The @code{-options} may consist of one or more of the following
@@ -654,8 +654,12 @@ where # selects the type of equation conversion.  Use
     convert inline equations to bitmap
     @item -M16  
     insert Word comment field that contains the original equation text
+    @item -M32  
+    insert the raw latex equation delimited by @code{<<:} and @code{:>>}.  This
+    is potential useful when using version 6 of the MathType equation editor.
     @end table
-These switches can be added together to get the desired conversion.  Handy examples are
+    
+These switches can be combined to get different effects.  Handy examples are
     @table @code
     @item -M3   
     convert both inline and displayed equations to RTF (default)
@@ -764,11 +768,20 @@ correctly to RTF.
 @node LaTeX2e, Input Encoding, Features, Features
 @section LaTeX2e
 
-@ltor{} understands most of the commands introduced with @latexe{}.  It supports both
+@ltor{} understands most of the commands introduced with @latexe{}.  It translates both
 the old 2.09 version of @code{\documentstyle[options]@{format#@}} and the newer
 @code{\documentclass[options]@{format@}}.  
 
-@node Input Encoding, Language Support, LaTeX2e, Features
+@node Unicode Support, Input Encoding, LaTeX2e, Features
+@section Unicode Support
+
+As of version 1.9.17, @ltor{} has limited unicode support.  LaTeX files
+that use unicode sequences are just emitted directly into the RTF file.
+Symbols and odd characters in math sequences may also be converted to
+a unicode sequence if there is no corresponding symbol in the ``Symbol''
+or ``MT Extra'' fonts.
+
+@node Input Encoding, Language Support, Unicode Support, Features
 @section Input Encoding
 
 It is not necesary to specify the @option{-C} option if you use @code{\usepackage@{isolatin1@}}
@@ -779,7 +792,6 @@ decmulti, cp1250, cp1252, latin1, latin2, latin3, latin4, latin5, latin9, next,
 koi8-r, koi8-u, cp1251, cp855, cp866, maccyr, and macukr.  The encoding used in
 RTF files is cp1252.  If cyrillic fonts are present, then these are represented
 in the RTF file using cp1251 (Windows Cyrillic).
-
 
 @node Language Support, Cross References, Input Encoding, Features
 @section Language Support
@@ -847,7 +859,7 @@ problems with formatting in special cases.
 
 Footnotes are implemented and appear at the bottom of each page.  
 
-Indexing is reasonable well supported.  The simple mark-up of @code{makeindex}
+Indexing is reasonably-well supported.  The simple mark-up of @code{makeindex}
 @example
 \index@{topic!subtopic@@\textit@{subtopic@}@}
 @end example
@@ -866,7 +878,7 @@ gets processed.  It is also possible to confuse the @ltor{} in eqnarray environm
 @node Equations, Math and Special Symbols, Cross References, Features
 @section Equations
 
-There are four separate levels of equation translation based on the -M switch, 
+There are five separate levels of equation translation based on the -M switch, 
 see @ref{LaTeX2RTF Options}.
 Each equation is now converted either to an EQ field or to a bitmap. 
 
@@ -930,13 +942,13 @@ The table code is currently barely working.  It needs to be rewritten.
 There is now rudimentary support for @code{\includegraphics}.  Three file types
 will be inserted into the RTF file without needing conversion: .pict, .jpeg, and
 .png files.  EPS files are converted to PNG using @code{convert} from the ImageMagick 
-package.  
+package.  Some options are handled properly.
 
 @node Pagestyles, Hyperlatex, Graphics, Features
 @section Pagestyles
 
 If there is no @code{\pagestyle} command, the RTF output is generated as with plain
-pagestyle, i.e. each page get's its page number centered at the bottom.
+pagestyle, i.e. each page has its page number centered at the bottom.
 
 You must turn this off with the \pagestyle@{empty@} command in the @latex{} file if
 you don't want pagenumbers.

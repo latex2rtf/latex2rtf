@@ -1122,8 +1122,8 @@ void getSection(char **body, char **header, char **label)
     char cNext, *s, *text, *next_header, *str;
     int i;
     size_t delta;
-    int match[41];
-    char *command[41] = { "",   /* 0 entry is for user definitions */
+    int match[42];
+    char *command[42] = { "",   /* 0 entry is for user definitions */
         "",                     /* 1 entry is for user environments */
         "\\begin{verbatim}", 
         "\\begin{figure}",      "\\begin{figure*}", 
@@ -1140,10 +1140,10 @@ void getSection(char **body, char **header, char **label)
         "\\part", "\\chapter",  "\\section", "\\subsection", "\\subsubsection",
         "\\section*", "\\subsection*", "\\subsubsection*",
         "\\label", "\\input", "\\include", "\\verb", "\\url",
-        "\\newcommand", "\\def", "\\renewcommand", "\\endinput",
+        "\\newcommand", "\\def", "\\renewcommand", "\\endinput", "\\end{document}",
     };
 
-    int ncommands = 41;
+    int ncommands = 42;
 
     const int b_verbatim_item = 2;
     const int b_figure_item = 3;
@@ -1177,6 +1177,7 @@ void getSection(char **body, char **header, char **label)
     const int def_item = 38;
     const int renew_item = 39;
     const int endinput_item = 40;
+    const int e_document_item = 41;
 
     int bs_count = 0;
     size_t index = 0;
@@ -1284,7 +1285,8 @@ void getSection(char **body, char **header, char **label)
 
 /*				diagnostics(2,"index = %d, char = %c, failed to match %s, size=%d", \
 				index,*p,command[i],strlen(command[i]));
-*/ continue;
+*/ 
+				continue;
             }
             possible_match = TRUE;
         }
@@ -1388,6 +1390,13 @@ void getSection(char **body, char **header, char **label)
             PopSource();
             index = 0;          /* keep looking */
             continue;
+        }
+
+		/* \end{document} reached! Stop processing */
+        if (i == e_document_item) {
+        	*(section_buffer + delta + 1) = '\0';
+	    	*body = strdup(section_buffer);
+	    	return;
         }
 
         if (i == verb_item || i == url_item) {  /* slurp \verb#text# */
@@ -1508,8 +1517,8 @@ void getSection(char **body, char **header, char **label)
             continue;
         }
 
-        diagnostics(5, "possible end of section");
-        diagnostics(5, "label_depth = %d", label_depth);
+        diagnostics(2, "possible end of section");
+        diagnostics(2, "label_depth = %d", label_depth);
 
         if (label_depth > 0)    /* still in a \begin{xxx} environment? */
             continue;
@@ -1531,4 +1540,7 @@ void getSection(char **body, char **header, char **label)
     *body = text;
     *header = next_header;
     PopTrackLineNumber();
+    
+    diagnostics(2, "body = %s", text);
+    diagnostics(2, "header = %s", next_header);
 }

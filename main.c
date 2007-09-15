@@ -120,8 +120,6 @@ bool g_equation_comment = FALSE;
 bool g_equation_raw_latex = FALSE;
 bool g_tableofcontents = FALSE;
 
-bool g_unicode = TRUE;
-
 double g_png_equation_scale = 1.22;
 double g_png_figure_scale = 1.35;
 bool g_latex_figures = FALSE;
@@ -196,11 +194,6 @@ int main(int argc, char **argv)
                 break;
             case 'p':
                 g_escape_parens = TRUE;
-                break;
-            case 'u':
-                sscanf(optarg, "%d", &x);
-                diagnostics(2, "Unicode option = %s x=%d", optarg, x);
-                g_unicode = x ? TRUE : FALSE;
                 break;
             case 'v':
                 print_version();

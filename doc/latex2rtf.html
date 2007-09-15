@@ -65,7 +65,7 @@ into another language, under the above conditions for modified versions,
 except that this permission notice may be stated in a translation
 approved by the Free Software Foundation.
 
-<!-- This document applies to version 1.9.16 of @ltor{}. -->
+<!-- This document applies to version 1.9.17 of @ltor{}. -->
 <div class="node">
 <p><hr>
 <a name="Introduction"></a>Next:&nbsp;<a rel="next" accesskey="n" href="#Installation">Installation</a>,
@@ -202,7 +202,7 @@ CTAN sites: e.g., <a href="http://www.dante.de">http://www.dante.de</a> or <a hr
  1.9.15) is the MS-DOS version
 plus Win32 GUI program (l2rshell).
 
-   <p>There is one person working on LaTeX2RTF
+   <p>There are a few people working on LaTeX2RTF
 , and some more make
 contributions, coordinated by
 Wilfried Hennings (W.Hennings "at" fz-juelich.de). 
@@ -623,7 +623,7 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Using-LaTeX2RTF">Using LaTeX2RTF</a>
 much of the formatting information is translated to RTF making the new file
 look similar to the original.  The command line syntax is:
 
-<pre class="example">     latex2rtf [-options] inputfile.[tex]
+<pre class="example">     latex2rtf [-options] inputfile[.tex]
 </pre>
    <p>The <code>-options</code> may consist of one or more of the following
 
@@ -708,6 +708,8 @@ backwards compatibility.
     <br><dt><code>-M4</code><dd>    convert displayed equations to bitmap
     <br><dt><code>-M8</code><dd>    convert inline equations to bitmap
     <br><dt><code>-M16</code><dd>    insert Word comment field that contains the original equation text
+    <br><dt><code>-M32</code><dd>    insert the raw latex equation delimited by <code>&lt;&lt;:</code> and <code>:&gt;&gt;</code>.  This
+    is potential handy for version 6 of the MathType equation editor. 
     </dl>
      These switches can be added together to get the desired conversion.  Handy examples are
           <dl>

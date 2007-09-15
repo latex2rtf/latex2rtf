@@ -110,7 +110,7 @@ or better.
    The Win32 distribution (starting from LaTeX2RTF  1.9.15) is the
 MS-DOS version plus Win32 GUI program (l2rshell).
 
-   There is one person working on LaTeX2RTF , and some more make
+   There are a few people working on LaTeX2RTF , and some more make
 contributions, coordinated by Wilfried Hennings (W.Hennings "at"
 fz-juelich.de).  See the SourceForge
 (http://sourceforge.net/projects/latex2rtf/) project pages for the
@@ -434,7 +434,7 @@ The LaTeX2RTF  command converts a LaTeX  file into RTF text format. The
 text and much of the formatting information is translated to RTF making
 the new file look similar to the original.  The command line syntax is:
 
-     latex2rtf [-options] inputfile.[tex]
+     latex2rtf [-options] inputfile[.tex]
 
    The `-options' may consist of one or more of the following
 
@@ -543,6 +543,11 @@ the new file look similar to the original.  The command line syntax is:
     `-M16'
           insert Word comment field that contains the original equation
           text
+
+    `-M32'
+          insert the raw latex equation delimited by `<<:' and `:>>'.
+          This     is potential handy for version 6 of the MathType
+          equation editor.
      These switches can be added together to get the desired
      conversion.  Handy examples are
     `-M3'

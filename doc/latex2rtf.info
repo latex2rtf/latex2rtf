@@ -151,7 +151,7 @@ or better.
    The Win32 distribution (starting from LaTeX2RTF  1.9.15) is the
 MS-DOS version plus Win32 GUI program (l2rshell).
 
-   There is one person working on LaTeX2RTF , and some more make
+   There are a few people working on LaTeX2RTF , and some more make
 contributions, coordinated by Wilfried Hennings (W.Hennings "at"
 fz-juelich.de).  See the SourceForge
 (http://sourceforge.net/projects/latex2rtf/) project pages for the
@@ -508,7 +508,7 @@ The LaTeX2RTF  command converts a LaTeX  file into RTF text format. The
 text and much of the formatting information is translated to RTF making
 the new file look similar to the original.  The command line syntax is:
 
-     latex2rtf [-options] inputfile.[tex]
+     latex2rtf [-options] inputfile[.tex]
 
    The `-options' may consist of one or more of the following
 
@@ -617,6 +617,11 @@ the new file look similar to the original.  The command line syntax is:
     `-M16'
           insert Word comment field that contains the original equation
           text
+
+    `-M32'
+          insert the raw latex equation delimited by `<<:' and `:>>'.
+          This     is potential handy for version 6 of the MathType
+          equation editor.
      These switches can be added together to get the desired
      conversion.  Handy examples are
     `-M3'
@@ -1409,42 +1414,42 @@ Node: Introduction1375
 Node: Installation4307
 Node: General4604
 Node: Obtaining LaTeX2RTF4947
-Node: UNIX5943
-Node: DOS or Windows8721
-Node: Win32 systems15069
-Node: Macintosh16774
-Node: Problems Compiling17701
-Node: Problems with make check18399
-Node: Using LaTeX2RTF18925
-Node: General Assumptions19130
-Node: LaTeX2RTF Options20968
-Node: Debugging28440
-Node: Features29085
-Node: LaTeX2e29486
-Node: Input Encoding29802
-Node: Language Support30558
-Node: Cross References32084
-Node: Equations34715
-Node: Math and Special Symbols35988
-Node: Tables37534
-Node: Graphics37733
-Node: Pagestyles38097
-Node: Hyperlatex38701
-Node: Configuration39777
-Node: Input processing40068
-Node: Output formatting41451
-Node: Direct Conversion42204
-Node: Ignore Command43842
-Node: Font Configuration45555
-Node: Language Configuration46865
-Node: Error Messages and Logging47484
-Node: History49582
-Node: LaTeX2RTF under Development51460
-Node: Unimplemented Features51731
-Node: Missing options52557
-Node: Known Bugs53138
-Node: Reporting Bugs54029
-Node: Todo List55672
-Node: Index56506
+Node: UNIX5946
+Node: DOS or Windows8724
+Node: Win32 systems15072
+Node: Macintosh16777
+Node: Problems Compiling17704
+Node: Problems with make check18402
+Node: Using LaTeX2RTF18928
+Node: General Assumptions19133
+Node: LaTeX2RTF Options20971
+Node: Debugging28620
+Node: Features29265
+Node: LaTeX2e29666
+Node: Input Encoding29982
+Node: Language Support30738
+Node: Cross References32264
+Node: Equations34895
+Node: Math and Special Symbols36168
+Node: Tables37714
+Node: Graphics37913
+Node: Pagestyles38277
+Node: Hyperlatex38881
+Node: Configuration39957
+Node: Input processing40248
+Node: Output formatting41631
+Node: Direct Conversion42384
+Node: Ignore Command44022
+Node: Font Configuration45735
+Node: Language Configuration47045
+Node: Error Messages and Logging47664
+Node: History49762
+Node: LaTeX2RTF under Development51640
+Node: Unimplemented Features51911
+Node: Missing options52737
+Node: Known Bugs53318
+Node: Reporting Bugs54209
+Node: Todo List55852
+Node: Index56686
 
 End Tag Table
