@@ -90,8 +90,6 @@ extern int		tabcounter;
 extern bool		twocolumn;
 extern bool		titlepage;
 
-extern bool     g_unicode;
-
 extern bool		g_processing_equation;
 extern bool		g_processing_preamble;
 extern bool		g_processing_figure;

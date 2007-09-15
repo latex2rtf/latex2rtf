@@ -1438,9 +1438,8 @@ void CmdCite(int code)
     }
 
     /* final text after citation */
-    if (option && (g_document_bibstyle == BIBSTYLE_APACITE || 
-                   g_document_bibstyle == BIBSTYLE_AUTHORDATE)) {
-        fprintRTF("%s", g_bibpunct_postnote_sep);
+    if (option) {
+   		ConvertString(g_bibpunct_postnote_sep);
         ConvertString(option);
     }
 
