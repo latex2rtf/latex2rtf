@@ -198,6 +198,7 @@ static CommandArray commands[] = {
     {"subparagraph*", CmdSection, SECT_SUBSUBSUBSUB_STAR},
 
     {"ldots", CmdLdots, 0},
+    {"dots", CmdLdots, 0},
     {"dotfill", CmdLdots, 1},
     {"textellipsis", CmdLdots, 2},
     {"title", CmdTitle, TITLE_TITLE},
@@ -447,7 +448,6 @@ static CommandArray commands[] = {
 	{"land", CmdSymbolChar, 0xd9},
 	{"langle", CmdSymbolChar, 0xe1},
 	{"lceil", CmdSymbolChar, 0xe9},
-	{"ldots", CmdSymbolChar, 0xbc},  
 	{"le", CmdSymbolChar, 0xa3},
 	{"leftarrow", CmdSymbolChar, 0xac},
 	{"Leftarrow", CmdSymbolChar, 0xdc},
