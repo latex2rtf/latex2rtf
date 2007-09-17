@@ -40,8 +40,8 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#dir">(dir)</a>
 <li><a accesskey="4" href="#Features">Features</a>
 <li><a accesskey="5" href="#Configuration">Configuration</a>
 <li><a accesskey="6" href="#Error-Messages-and-Logging">Error Messages and Logging </a>
-<li><a accesskey="7" href="#LaTeX2RTF-under-Development">LaTeX2RTF under Development </a>
-<li><a accesskey="8" href="#History">History</a>
+<li><a accesskey="7" href="#History">History</a>
+<li><a accesskey="8" href="#LaTeX2RTF-under-Development">LaTeX2RTF under Development </a>
 <li><a accesskey="9" href="#Index">Index</a>
 </ul>
 
@@ -812,10 +812,11 @@ correctly to RTF.
 <li><a accesskey="3" href="#Input-Encoding">Input Encoding </a>
 <li><a accesskey="4" href="#Language-Support">Language Support </a>
 <li><a accesskey="5" href="#Cross-References">Cross References </a>
-<li><a accesskey="6" href="#Equations">Equations </a>
-<li><a accesskey="7" href="#Math-and-Special-Symbols">Math and Special Symbols </a>
-<li><a accesskey="8" href="#Tables">Tables </a>
-<li><a accesskey="9" href="#Graphics">Graphics </a>
+<li><a accesskey="6" href="#Page-Formatting">Page Formatting </a>
+<li><a accesskey="7" href="#Equations">Equations </a>
+<li><a accesskey="8" href="#Math-and-Special-Symbols">Math and Special Symbols </a>
+<li><a accesskey="9" href="#Tables">Tables </a>
+<li><a href="#Graphics">Graphics </a>
 <li><a href="#Pagestyles">Pagestyles </a>
 <li><a href="#Hyperlatex">Hyperlatex </a>
 </ul>
@@ -883,7 +884,8 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Features">Features</a>
 
 <h3 class="section">4.4 Language Support</h3>
 
-<p>The following languages from the Babel package are supported: afrikaans,
+<p><a name="index-language-support-1"></a><a name="index-babel-2"></a>
+The following languages from the Babel package are supported: afrikaans,
 german, nynorsk, spanish, bahasa, dutch, icelandic, polish, swedish,
 basque, english, portuges, turkish, brazil, esperanto, irish, romanian,
 usorbian, breton, estonian, italian, samin, welsh, catalan, finnish,
@@ -918,7 +920,7 @@ for your language by yourself.
 
 <div class="node">
 <p><hr>
-<a name="Cross-References"></a>Next:&nbsp;<a rel="next" accesskey="n" href="#Equations">Equations</a>,
+<a name="Cross-References"></a>Next:&nbsp;<a rel="next" accesskey="n" href="#Page-Formatting">Page Formatting</a>,
 Previous:&nbsp;<a rel="previous" accesskey="p" href="#Language-Support">Language Support</a>,
 Up:&nbsp;<a rel="up" accesskey="u" href="#Features">Features</a>
 <br>
@@ -937,7 +939,7 @@ means that Word does not automatically update the page references when the file
 is opened.  To update the page references you must select the entire document
 (in Word) and press <code>F9</code>.
 
-   <p>Bibliographic references currently require that a valid <span class="file">.aux</span> file be
+   <p><a name="index-bibliography-3"></a>Bibliographic references currently require that a valid <span class="file">.aux</span> file be
 present.  This is where LaTeX2RTF
  obtains the reference numbers.  It would be
 nice if LaTeX2RTF
@@ -945,20 +947,20 @@ nice if LaTeX2RTF
 no <span class="file">.aux</span> file, but LaTeX2RTF
  does not do this yet.
 
-   <p>LaTeX2RTF
+   <p><a name="index-bibliography_002c-BibTeX-4"></a><a name="index-BibTeX-5"></a>LaTeX2RTF
  relies on BibTeX
- to convert and format bibliographic
-entries.  Usually the style file for a particular BibTeX
- format
-does not use any special LaTeX
- commands and therefore the
-bibliography file <span class="file">file.bbl</span> can be processed by LaTeX2RTF
+ to convert and format bibliographic entries. 
+Usually the style file for a particular BibTeX
+ format does not use
+any special LaTeX
+ commands and therefore the bibliography file
+<span class="file">file.bbl</span> can be processed by LaTeX2RTF
+ without difficulty. As a
+consequence, LaTeX2RTF
+ can handle most bibliography styles without
+problem.
 
-   <p>without difficulty.  As a consequence, LaTeX2RTF
- can handle most
-bibliography styles without problem.
-
-   <p>There are several latex style packages that add additional
+   <p><a name="index-bibliography_002c-apacite-6"></a><a name="index-bibliography_002c-apalike-7"></a><a name="index-bibliography_002c-authordate-8"></a><a name="index-bibliography_002c-harvard-9"></a><a name="index-bibliography_002c-natbib-10"></a><a name="index-bibliography_002c-apanat1b-11"></a><a name="index-apacite-12"></a><a name="index-apalike-13"></a><a name="index-authordate-14"></a><a name="index-harvard-15"></a><a name="index-natbib-16"></a><a name="index-apanat1b-17"></a>There are several latex style packages that add additional
 latex commands to enhance bibliographic formatting. 
 LaTeX2RTF
  currently supports the following bibliographic packages:<br>
@@ -966,9 +968,12 @@ apacite, apalike, authordate, harvard, natbib (also with apanat1b).
 These packages have many, many options and you may encounter
 problems with formatting in special cases.
 
-   <p>Footnotes are implemented and appear at the bottom of each page.
+   <p>As of LaTeX2RTF
+ 1.9.17, the natbib command bibpunct is supported.
 
-   <p>Indexing is reasonably-well supported.  The simple mark-up of <code>makeindex</code>
+   <p>Footnotes are implemented and appear at the bottom of each page. 
+<a name="index-footnotes-18"></a>
+<a name="index-index-19"></a>Indexing is reasonably-well supported.  The simple mark-up of <code>makeindex</code>
 <pre class="example">     \index{topic!subtopic@\textit{subtopic}}
 </pre>
    <p>is supported.  The rest of the fancy indexing stuff is not implemented. 
@@ -987,15 +992,35 @@ gets processed.  It is also possible to confuse the LaTeX2RTF
 
 <div class="node">
 <p><hr>
-<a name="Equations"></a>Next:&nbsp;<a rel="next" accesskey="n" href="#Math-and-Special-Symbols">Math and Special Symbols</a>,
+<a name="Page-Formatting"></a>Next:&nbsp;<a rel="next" accesskey="n" href="#Equations">Equations</a>,
 Previous:&nbsp;<a rel="previous" accesskey="p" href="#Cross-References">Cross References</a>,
 Up:&nbsp;<a rel="up" accesskey="u" href="#Features">Features</a>
 <br>
 </div>
 
-<h3 class="section">4.6 Equations</h3>
+<h3 class="section">4.6 Page Formatting</h3>
 
-<p>There are five separate levels of equation translation based on the -M switch,
+<p><a name="index-page-formatting-20"></a><a name="index-geometry-package-21"></a><a name="index-margins-22"></a><a name="index-line-spacing-23"></a><a name="index-double-spacing-24"></a><a name="index-setspace-package-25"></a>
+LaTeX2RTF
+ will handle some basic page formatting options, including
+\doublespacing (as implemented in the setspace package), and the margin
+setting options provided by the geometry package including commands in the
+ratio, centering and margin families. Not all geometry options are
+implemented yet, in part because there are no corresponding rtf commands
+for many of them.
+
+<div class="node">
+<p><hr>
+<a name="Equations"></a>Next:&nbsp;<a rel="next" accesskey="n" href="#Math-and-Special-Symbols">Math and Special Symbols</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Page-Formatting">Page Formatting</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Features">Features</a>
+<br>
+</div>
+
+<h3 class="section">4.7 Equations</h3>
+
+<p><a name="index-equations-26"></a>
+There are five separate levels of equation translation based on the -M switch,
 see <a href="#LaTeX2RTF-Options">LaTeX2RTF Options</a>. 
 Each equation is now converted either to an EQ field or to a bitmap.
 
@@ -1022,9 +1047,10 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Features">Features</a>
 <br>
 </div>
 
-<h3 class="section">4.7 Math and Special Symbols</h3>
+<h3 class="section">4.8 Math and Special Symbols</h3>
 
-<p>Many mathematical and special symbols are supported by the conversion table
+<p><a name="index-math-27"></a><a name="index-special-symbols-28"></a>
+Many mathematical and special symbols are supported by the conversion table
 in the file direct.cfg, see <a href="#Direct-Conversion">Direct Conversion</a>. However to display (or print)
 them correctly from the rtf file, these symbols must be available in the fonts
 in the system in which the rtf file is opened.<br>
@@ -1062,9 +1088,10 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Features">Features</a>
 <br>
 </div>
 
-<h3 class="section">4.8 Tables</h3>
+<h3 class="section">4.9 Tables</h3>
 
-<p>The table code is currently barely working.  It needs to be rewritten.
+<p><a name="index-tables-29"></a>
+The table code is currently barely working.  It needs to be rewritten.
 
 <div class="node">
 <p><hr>
@@ -1074,9 +1101,10 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Features">Features</a>
 <br>
 </div>
 
-<h3 class="section">4.9 Graphics</h3>
+<h3 class="section">4.10 Graphics</h3>
 
-<p>There is now rudimentary support for <code>\includegraphics</code>.  Three file types
+<p><a name="index-graphics-30"></a>
+There is now rudimentary support for <code>\includegraphics</code>.  Three file types
 will be inserted into the RTF file without needing conversion: .pict, .jpeg, and
 .png files.  EPS files are converted to PNG using <code>convert</code> from the ImageMagick
 package.  Some options are handled properly.
@@ -1089,9 +1117,10 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Features">Features</a>
 <br>
 </div>
 
-<h3 class="section">4.10 Pagestyles</h3>
+<h3 class="section">4.11 Pagestyles</h3>
 
-<p>If there is no <code>\pagestyle</code> command, the RTF output is generated as with plain
+<p><a name="index-pagestyles-31"></a>
+If there is no <code>\pagestyle</code> command, the RTF output is generated as with plain
 pagestyle, i.e. each page has its page number centered at the bottom.
 
    <p>You must turn this off with the \pagestyle{empty} command in the LaTeX
@@ -1109,9 +1138,10 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Features">Features</a>
 <br>
 </div>
 
-<h3 class="section">4.11 Hyperlatex</h3>
+<h3 class="section">4.12 Hyperlatex</h3>
 
-<p>Hyperlatex support is largely broken at the moment, but continues to improve.
+<p><a name="index-hyperlatex-32"></a>
+Hyperlatex support is largely broken at the moment, but continues to improve.
 
    <p>Otfried Schwarzkopf has created the &ldquo;Hyperlatex Markup Language&rdquo; which is a
 &ldquo;little package that allows you to use LaTeX
@@ -1161,17 +1191,19 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Configuration">Configuration</a>
 
 <h3 class="section">5.1 Input processing</h3>
 
-<p>On processing input LaTeX2RTF
+<p><a name="index-input-processing-33"></a><a name="index-direct_002ecfg-34"></a><a name="index-ignore_002ecfg-35"></a>
+On processing input LaTeX2RTF
  first converts the LaTeX
- special characters. If
-it encounters one of the standard commands it is converted internally. If a
-command is not known to LaTeX2RTF
- it is first looked up in
-<span class="file">direct.cfg</span> and the RTF code specified there is output. If not found there it
-is looked up in the section <span class="file">ignore.cfg</span>.  This file includes a lot of LaTeX
-
-   <p>commands that do not affect the output (cross reference information
-and the like), or that we are not able or willing to convert to RTF.
+ special
+characters. If it encounters one of the standard commands it is
+converted internally. If a command is not known to LaTeX2RTF
+ it is first
+looked up in <span class="file">direct.cfg</span> and the RTF code specified there is
+output. If not found there it is looked up in the section
+<span class="file">ignore.cfg</span>. This file includes a lot of LaTeX
+ commands that do
+not affect the output (cross reference information and the like), or
+that we are not able or willing to convert to RTF.
 
    <p>You can use <span class="file">ignore.cfg</span> if you get tired of seeing
 <pre class="example">     WARNING: command: `foo' not found - ignored
@@ -1193,6 +1225,35 @@ sets.  If the LaTeX
  lacks the <code>\package[codepage]{inputenc}</code>
 definition, then you may need to use the command line switch to manually
 select the proper code page (see <a href="#Input-Encoding">Input Encoding</a>).
+
+   <p><a name="index-conditional-parsing-36"></a><a name="index-_0025latex2rtf-37"></a><a name="index-iflatextortf-38"></a>As of LaTeX2RTF
+ 1.9.17, there are two options for including content that
+will be ignored by LaTeX
+ but parsed by LaTeX2RTF
+. The first is simply
+to begin a line with <code>%latex2rtf:</code>, as in the following:
+<pre class="example">     %latex2rtf: These lines will only appear in the latex2rtf output,
+     %latex2rtf: not in the LaTeX output.
+</pre>
+   <p>More sophisticated processing is available with the <code>\iflatextortf</code>
+command:
+<pre class="example">     \newif\iflatextortf  %all \newif constructs ignored by latex2rtf
+     \latextortffalse     %ignored by latex2rtf, so file works in latex
+     
+     \iflatextortf
+     This code is processed only by latex2rtf
+     \else
+     This code is processed only by latex
+     \fi
+</pre>
+   <p>Note that <code>\iflatextortf</code> will only work within a section; you
+cannot use this command to conditionally parse code that crosses section
+boundaries. Also, it will only work on complete table or figure
+environments. Due to the mechanism used by LaTeX2RTF
+ in processing these
+environments, at this time the only way to conditionally parse tables
+and figures is to include two complete versions of the environment in
+question, nested within an appropriate \iflatex2rtf structure.
 
 <div class="node">
 <p><hr>
@@ -1430,7 +1491,7 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 
 <h2 class="chapter">7 History &amp; Copyright</h2>
 
-<p><a name="index-History-of-the-programm-1"></a><a name="index-Copyright-issues-2"></a>
+<p><a name="index-History-of-the-program-39"></a><a name="index-Copyright-issues-40"></a>
 In 1994 the first Version of LaTeX2RTF
  was written by Fernando Dorner and Andreas Granzer of
 the Viena University supervised by Ralf Schlatterbeck in a one-semester course. They
@@ -1638,8 +1699,46 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 <h2 class="chapter">9 Index</h2>
 
 <ul class="index-cp" compact>
-<li><a href="#index-Copyright-issues-2">Copyright issues</a>: <a href="#History">History</a></li>
-<li><a href="#index-History-of-the-programm-1">History of the programm</a>: <a href="#History">History</a></li>
+<li><a href="#index-_0025latex2rtf-37">%latex2rtf</a>: <a href="#Input-processing">Input processing</a></li>
+<li><a href="#index-apacite-12">apacite</a>: <a href="#Cross-References">Cross References</a></li>
+<li><a href="#index-apalike-13">apalike</a>: <a href="#Cross-References">Cross References</a></li>
+<li><a href="#index-apanat1b-17">apanat1b</a>: <a href="#Cross-References">Cross References</a></li>
+<li><a href="#index-authordate-14">authordate</a>: <a href="#Cross-References">Cross References</a></li>
+<li><a href="#index-babel-2">babel</a>: <a href="#Language-Support">Language Support</a></li>
+<li><a href="#index-bibliography-3">bibliography</a>: <a href="#Cross-References">Cross References</a></li>
+<li><a href="#index-bibliography_002c-apacite-6">bibliography, apacite</a>: <a href="#Cross-References">Cross References</a></li>
+<li><a href="#index-bibliography_002c-apalike-7">bibliography, apalike</a>: <a href="#Cross-References">Cross References</a></li>
+<li><a href="#index-bibliography_002c-apanat1b-11">bibliography, apanat1b</a>: <a href="#Cross-References">Cross References</a></li>
+<li><a href="#index-bibliography_002c-authordate-8">bibliography, authordate</a>: <a href="#Cross-References">Cross References</a></li>
+<li><a href="#index-bibliography_002c-BibTeX-4">bibliography, BibTeX</a>: <a href="#Cross-References">Cross References</a></li>
+<li><a href="#index-bibliography_002c-harvard-9">bibliography, harvard</a>: <a href="#Cross-References">Cross References</a></li>
+<li><a href="#index-bibliography_002c-natbib-10">bibliography, natbib</a>: <a href="#Cross-References">Cross References</a></li>
+<li><a href="#index-BibTeX-5">BibTeX</a>: <a href="#Cross-References">Cross References</a></li>
+<li><a href="#index-conditional-parsing-36">conditional parsing</a>: <a href="#Input-processing">Input processing</a></li>
+<li><a href="#index-Copyright-issues-40">Copyright issues</a>: <a href="#History">History</a></li>
+<li><a href="#index-direct_002ecfg-34">direct.cfg</a>: <a href="#Input-processing">Input processing</a></li>
+<li><a href="#index-double-spacing-24">double spacing</a>: <a href="#Page-Formatting">Page Formatting</a></li>
+<li><a href="#index-equations-26">equations</a>: <a href="#Equations">Equations</a></li>
+<li><a href="#index-footnotes-18">footnotes</a>: <a href="#Cross-References">Cross References</a></li>
+<li><a href="#index-geometry-package-21">geometry package</a>: <a href="#Page-Formatting">Page Formatting</a></li>
+<li><a href="#index-graphics-30">graphics</a>: <a href="#Graphics">Graphics</a></li>
+<li><a href="#index-harvard-15">harvard</a>: <a href="#Cross-References">Cross References</a></li>
+<li><a href="#index-History-of-the-program-39">History of the program</a>: <a href="#History">History</a></li>
+<li><a href="#index-hyperlatex-32">hyperlatex</a>: <a href="#Hyperlatex">Hyperlatex</a></li>
+<li><a href="#index-iflatextortf-38">iflatextortf</a>: <a href="#Input-processing">Input processing</a></li>
+<li><a href="#index-ignore_002ecfg-35">ignore.cfg</a>: <a href="#Input-processing">Input processing</a></li>
+<li><a href="#index-index-19">index</a>: <a href="#Cross-References">Cross References</a></li>
+<li><a href="#index-input-processing-33">input processing</a>: <a href="#Input-processing">Input processing</a></li>
+<li><a href="#index-language-support-1">language support</a>: <a href="#Language-Support">Language Support</a></li>
+<li><a href="#index-line-spacing-23">line spacing</a>: <a href="#Page-Formatting">Page Formatting</a></li>
+<li><a href="#index-margins-22">margins</a>: <a href="#Page-Formatting">Page Formatting</a></li>
+<li><a href="#index-math-27">math</a>: <a href="#Math-and-Special-Symbols">Math and Special Symbols</a></li>
+<li><a href="#index-natbib-16">natbib</a>: <a href="#Cross-References">Cross References</a></li>
+<li><a href="#index-page-formatting-20">page formatting</a>: <a href="#Page-Formatting">Page Formatting</a></li>
+<li><a href="#index-pagestyles-31">pagestyles</a>: <a href="#Pagestyles">Pagestyles</a></li>
+<li><a href="#index-setspace-package-25">setspace package</a>: <a href="#Page-Formatting">Page Formatting</a></li>
+<li><a href="#index-special-symbols-28">special symbols</a>: <a href="#Math-and-Special-Symbols">Math and Special Symbols</a></li>
+<li><a href="#index-tables-29">tables</a>: <a href="#Tables">Tables</a></li>
 </ul>
 <div class="contents">
 <h2>Table of Contents</h2>
@@ -1670,12 +1769,13 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 <li><a href="#Input-Encoding">4.3 Input Encoding</a>
 <li><a href="#Language-Support">4.4 Language Support</a>
 <li><a href="#Cross-References">4.5 Cross References</a>
-<li><a href="#Equations">4.6 Equations</a>
-<li><a href="#Math-and-Special-Symbols">4.7 Math and Special Symbols</a>
-<li><a href="#Tables">4.8 Tables</a>
-<li><a href="#Graphics">4.9 Graphics</a>
-<li><a href="#Pagestyles">4.10 Pagestyles</a>
-<li><a href="#Hyperlatex">4.11 Hyperlatex</a>
+<li><a href="#Page-Formatting">4.6 Page Formatting</a>
+<li><a href="#Equations">4.7 Equations</a>
+<li><a href="#Math-and-Special-Symbols">4.8 Math and Special Symbols</a>
+<li><a href="#Tables">4.9 Tables</a>
+<li><a href="#Graphics">4.10 Graphics</a>
+<li><a href="#Pagestyles">4.11 Pagestyles</a>
+<li><a href="#Hyperlatex">4.12 Hyperlatex</a>
 </li></ul>
 <li><a name="toc_Configuration" href="#Configuration">5 Configuration</a>
 <ul>

@@ -729,10 +729,9 @@ this yet.
    LaTeX2RTF  relies on BibTeX  to convert and format bibliographic
 entries.  Usually the style file for a particular BibTeX  format does
 not use any special LaTeX  commands and therefore the bibliography file
-`file.bbl' can be processed by LaTeX2RTF
-
-   without difficulty.  As a consequence, LaTeX2RTF  can handle most
-bibliography styles without problem.
+`file.bbl' can be processed by LaTeX2RTF  without difficulty. As a
+consequence, LaTeX2RTF  can handle most bibliography styles without
+problem.
 
    There are several latex style packages that add additional latex
 commands to enhance bibliographic formatting.  LaTeX2RTF  currently
@@ -741,7 +740,9 @@ apacite, apalike, authordate, harvard, natbib (also with apanat1b).
 These packages have many, many options and you may encounter problems
 with formatting in special cases.
 
-   Footnotes are implemented and appear at the bottom of each page.
+   As of LaTeX2RTF  1.9.17, the natbib command bibpunct is supported.
+
+   Footnotes are implemented and appear at the bottom of each page.  
 
    Indexing is reasonably-well supported.  The simple mark-up of
 `makeindex'
@@ -761,7 +762,17 @@ there are multiple `\label' in a figure, table, or section environment
 then only the first gets processed.  It is also possible to confuse the
 LaTeX2RTF  in eqnarray environments.
 
-4.6 Equations
+4.6 Page Formatting
+===================
+
+LaTeX2RTF  will handle some basic page formatting options, including
+\doublespacing (as implemented in the setspace package), and the margin
+setting options provided by the geometry package including commands in
+the ratio, centering and margin families. Not all geometry options are
+implemented yet, in part because there are no corresponding rtf commands
+for many of them.
+
+4.7 Equations
 =============
 
 There are five separate levels of equation translation based on the -M
@@ -784,7 +795,7 @@ correctly. You can check and set the separator in [Windows control panel
 uses the comma as separator. If latex2rtf is called with the command
 line parameter -S , the semicolon is inserted as parameter delimiter.
 
-4.7 Math and Special Symbols
+4.8 Math and Special Symbols
 ============================
 
 Many mathematical and special symbols are supported by the conversion
@@ -815,13 +826,13 @@ Required fonts are:
      For a description of direct.cfg see *Note Direct Conversion::.
 
 
-4.8 Tables
+4.9 Tables
 ==========
 
 The table code is currently barely working.  It needs to be rewritten.
 
-4.9 Graphics
-============
+4.10 Graphics
+=============
 
 There is now rudimentary support for `\includegraphics'.  Three file
 types will be inserted into the RTF file without needing conversion:
@@ -829,7 +840,7 @@ types will be inserted into the RTF file without needing conversion:
 `convert' from the ImageMagick package.  Some options are handled
 properly.
 
-4.10 Pagestyles
+4.11 Pagestyles
 ===============
 
 If there is no `\pagestyle' command, the RTF output is generated as
@@ -842,7 +853,7 @@ styles are silently ignored by now.  The twosided option to the
 \documentstyle or \documentclass produces the corresponding RTF tokens.
 Note that these features require RTF Version 1.4.
 
-4.11 Hyperlatex
+4.12 Hyperlatex
 ===============
 
 Hyperlatex support is largely broken at the moment, but continues to
@@ -877,10 +888,9 @@ characters. If it encounters one of the standard commands it is
 converted internally. If a command is not known to LaTeX2RTF  it is
 first looked up in `direct.cfg' and the RTF code specified there is
 output. If not found there it is looked up in the section `ignore.cfg'.
-This file includes a lot of LaTeX
-
-   commands that do not affect the output (cross reference information
-and the like), or that we are not able or willing to convert to RTF.
+This file includes a lot of LaTeX  commands that do not affect the
+output (cross reference information and the like), or that we are not
+able or willing to convert to RTF.
 
    You can use `ignore.cfg' if you get tired of seeing
      WARNING: command: `foo' not found - ignored
@@ -896,6 +906,32 @@ platform on which LaTeX2RTF  was compiled.
 character sets.  If the LaTeX  lacks the `\package[codepage]{inputenc}'
 definition, then you may need to use the command line switch to manually
 select the proper code page (*note Input Encoding::).
+
+   As of LaTeX2RTF  1.9.17, there are two options for including content
+that will be ignored by LaTeX  but parsed by LaTeX2RTF . The first is
+simply to begin a line with `%latex2rtf:', as in the following:
+     %latex2rtf: These lines will only appear in the latex2rtf output,
+     %latex2rtf: not in the LaTeX output.
+
+   More sophisticated processing is available with the `\iflatextortf'
+command:
+     \newif\iflatextortf  %all \newif constructs ignored by latex2rtf
+     \latextortffalse     %ignored by latex2rtf, so file works in latex
+
+     \iflatextortf
+     This code is processed only by latex2rtf
+     \else
+     This code is processed only by latex
+     \fi
+
+   Note that `\iflatextortf' will only work within a section; you
+cannot use this command to conditionally parse code that crosses section
+boundaries. Also, it will only work on complete table or figure
+environments. Due to the mechanism used by LaTeX2RTF  in processing
+these environments, at this time the only way to conditionally parse
+tables and figures is to include two complete versions of the
+environment in question, nested within an appropriate \iflatex2rtf
+structure.
 
 5.2 Output formatting
 =====================

@@ -223,7 +223,7 @@ plus Win32 GUI program (l2rshell).
 
 There are a few people working on @ltor{}, and some more make 
 contributions, coordinated by
-Wilfried Hennings (W.Hennings "at" fz-juelich.de). 
+Wilfried Hennings (W.Hennings ``at'' fz-juelich.de). 
 See the @uref{http://sourceforge.net/projects/latex2rtf/,SourceForge} 
 project pages for the latest news.
 
@@ -305,14 +305,14 @@ file @file{latex2rtf-x.x.x_win.exe} (where x.x.x is the version number) from
 
 The DOS distribution contains a precompiled executable (djgpp compiler) 
 which should run under plain DOS and also in the command prompt 
-(or "console") of any MS Windows system up to XP and Server 2003.@*
+(or ``console'') of any MS Windows system up to XP and Server 2003.@*
 However in Windows Vista the DPMI memory is limited to 32 MB, and 
 we yet don't know whether this is sufficient to run @ltor{} or not, 
 so please tell us any experiences regarding Windows Vista.@*
 If the memory limitation under Windows Vista turns out to be a problem, 
 one can use an executable compiled with Cygwin, 
 but for now this isn't provided in the distributions.@*
-Moreover, the command processor "command.com" is not provided by Vista,
+Moreover, the command processor ``command.com'' is not provided by Vista,
 so conversion of pictures and of equations to bitmaps will definitely 
 not work under Vista.
 
@@ -322,12 +322,12 @@ and is wrapped in an automatic installer, see @ref{Win32 systems}.@*
 
 To install @ltor{}, extract all files from the zip archive to @file{C:\l2r}
 or to another folder (i.e. directory) of your choice,
-preserving the folder structure (winzip: check "use folder names").@*
+preserving the folder structure (winzip: check ``use folder names'').@*
 If you extracted them to another folder (e.g. @file{C:\Program Files\l2r}),
 edit the files @file{L2R.BAT}, @file{L2RSEM.BAT} and @file{L2RPREP.BAT} 
 and change the folder @file{C:\l2r} to where you put them.
 If there is a blank in any of the folder names
-(as in e.g. "Program Files"), then you need to enclose both
+(as in e.g. ``Program Files''), then you need to enclose both
 the file-ID and the cfg path in double quotes, e.g. @*
 @file{"C:\Program Files\l2r\latex2rt" -P "C:\Program Files\l2r\cfg" %1 %2 ...}@*
 or use the DOS filename equivalent instead, e.g. @*
@@ -366,10 +366,10 @@ Save the file to its original location. Shutdown and reboot the PC.
 WinNT, Win2000, WinXP
 @itemize
 @item
-Right-click "My Computer" (German: "Arbeitsplatz"), then select "Properties";
+Right-click ``My Computer'' (German: ``Arbeitsplatz''), then select ``Properties'';
 @item
-NT: Click the "Environment" tab;@*
-XP: Click the "Extended" tab, then the "Environment variables" button;
+NT: Click the ``Environment'' tab;@*
+XP: Click the ``Extended'' tab, then the ``Environment variables'' button;
 @item
 Find the line beginning with @file{PATH=} and insert the string @*
 @file{C:\l2r;}@*
@@ -426,7 +426,7 @@ The other fix is now hardcoded in latex2rt.exe, making sure the DOS environment
 space in which latex2pn.bat is executed is large enough to store the needed 
 variables.
 
-If you get the message "Out of environment space" (should occur only under 
+If you get the message ``Out of environment space'' (should occur only under 
 plain DOS, Windows 3.1, Windows 95, Windows 98 or Windows ME) then@*
 add to your config.sys a line like the following@*
 @code{SHELL=C:\COMMAND.COM C:\ /E:4096 /P}@*
@@ -458,9 +458,9 @@ freely available for download at @uref{http://www.miktex.org/},
 If MikTeX, ImageMagick and Ghostscript are installed before installing @ltor{},
 the pathes to the executables are automatically found in the windows registry 
 by the installer. Otherwise, these pathes may have to be specified manually 
-in the "Environment" tab of the @ltor{} window.
+in the ``Environment'' tab of the @ltor{} window.
 
-If you get the message "Out of environment space" (should occur only under 
+If you get the message ``Out of environment space'' (should occur only under 
 Windows 95, Windows 98 or Windows ME) then@*
 add to your config.sys a line like the following@*
 @code{SHELL=C:\COMMAND.COM C:\ /E:4096 /P}@*
@@ -948,50 +948,72 @@ the semicolon is inserted as parameter delimiter.
 @cindex math
 @cindex special symbols
 
-Many mathematical and special symbols are supported by the conversion table
-in the file direct.cfg, see @ref{Direct Conversion}. However to display (or print) 
-them correctly from the rtf file, these symbols must be available in the fonts 
-in the system in which the rtf file is opened.@*
+The way that symbols are converted in the RTF is based on the following
+observations.  If the symbol is found in the latin 1 character set, then
+the current font is used.  The font ``Symbol'' is widely available, and therefore it is used 
+for as many translations as possible.  The font ``MT Extra'' is less common,
+but is free (as in beer from Design Science, see below) and characters from this font 
+are used when possible.  Note that early versions of ``MT Extra'' were missing 
+some characters;  the most recent version of this font should be installed
+for best results.  Finally, if the symbol is not found in any of
+the previous fonts, then @latextortf{} will use the unicode sequence for 
+that symbol.
+
+The means that on the system where the @file{.rtf} file is opened, a unicode
+font should be available or these glyphs will not be displayed correctly. On
+Windows machines the unicode font is ``Lucida Sans Unicode'', on MacOS X the
+font is ``Lucida Grande''.  Even when these fonts are installed, support for
+these unicode sequences seems to be hit-or-miss in various versions of Word since
+many of these symbols are not (yet) contained in the standard unicode fonts.
+
+Many mathematical and special symbols are directly supported by @ltor{}.
+Less common symbols (not found in the fonts ``Symbol'' or ``MT Extra'')
+are supported by the conversion table in the file @file{direct.cfg}, 
+see @ref{Direct Conversion}. 
+An alternative @file{direct.cfg} is available in which ``MT Extra'' is not used and the symbols 
+which normally are taken from ``MT Extra'' are instead taken from ``Lucida Sans Unicode''. 
+To use ``Lucida Sans Unicode'' instead of MT Extra, rename @file{direct.cfg} (to e.g., @file{
+direct_mt.cfg}) and rename @file{direct_ucs.cfg} to @file{direct.cfg}.
+
 Required fonts are:
 
 @itemize
 
-@item "Times" / "Times New Roman", preferably with Unicode extension (i.e. 
-supporting all European languages including Cyrillic, Greek, and Hebrew). "Times" 
-or "Times New Roman" is standard on all systems, but not its Unicode extension.
+@item ``Times'' / ``Times New Roman'', preferably with Unicode extension (i.e. 
+supporting all European languages including Cyrillic, Greek, and Hebrew). ``Times'' 
+or ``Times New Roman'' is standard on all systems, but not its Unicode extension.
 
-@item "Symbol", which is standard on all systems.
+@item ``Symbol'', which is standard on all systems.
 
-@item "MT Extra". This font is installed with the Microsoft Equation Editor,
+@item ``MT Extra''. This font is installed with the Microsoft Equation Editor,
 which comes with Microsoft Word, or its full version MathType. 
 If you don't have Word or MathType, you can get this font from 
 @uref{http://www.mathtype.com/en/dl/fonts/}
 
-@item "Lucida Sans Unicode" which contains many symbols that 
-aren't in the first three fonts. This is a new feature 
-in @ltor{} version 1.9.17 and may or may not work, depending 
-on the system in which the rtf file is opened.@*
-If you need these symbols, don't have "Lucida Sans Unicode"
-but have another font containing these symbols, you can
-edit direct.cfg and fonts.cfg and replace the font name in 
-both files. For a description of direct.cfg see @ref{Direct Conversion}.
-
 @end itemize
+
 
 @node Tables, Graphics, Math and Special Symbols, Features
 @section Tables
 @cindex tables
 
-The table code is currently barely working.  It needs to be rewritten.
+Conversion of tabular and tabbing environments is somewhat lame.  The 
+main difficulty is that @latex{} (and html) will size the columns of
+a table automatically.  There is no such feature in RTF.  Consequently,
+the conversion defaults to making all the columns have equal size.  This
+is suboptimal and should be revised.  One interesting suggestion is to 
+have an option to handle these environments the same way that equations
+are handles and have latex render them as bitmaps and insert the bitmaps
+into the RTF file.  Such a feature remains to be written.
 
 @node Graphics, Pagestyles, Tables, Features
 @section Graphics
 @cindex graphics
 
 There is now rudimentary support for @code{\includegraphics}.  Three file types
-will be inserted into the RTF file without needing conversion: .pict, .jpeg, and
-.png files.  EPS files are converted to PNG using @code{convert} from the ImageMagick 
-package.  Some options are handled properly.
+will be inserted into the RTF file without needing conversion: @file{.pict}, @file{.jpeg}, and
+@file{.png} files.  EPS and PDF files are converted to PNG using @code{convert} from the ImageMagick 
+package.  Some options are even handled properly.
 
 @node Pagestyles, Hyperlatex, Graphics, Features
 @section Pagestyles
@@ -1057,7 +1079,6 @@ not affect the output (cross reference information and the like), or
 that we are not able or willing to convert to RTF.
 
 You can use @file{ignore.cfg} if you get tired of seeing 
-
 @example
 WARNING: command: `foo' not found - ignored
 @end example
@@ -1136,23 +1157,17 @@ to end of line. To select a specific font use @code{*fontname*}, where
 To write the @samp{*} character use @samp{**}. 
 
 @example
-\alpha,@{\f*Symbol* a@}. #alpha in the Symbol Font
+\bigstar,{\u8727**}.
 \copyright,\'a9.
 @end example
 
-Changes in version 1.9.17:@*
-More math symbols are supported by using Unicode coding. 
-However many of these symbols are not (yet) contained in the standard 
-MS Windows fonts but only in "Lucida Sans Unicode".
-So on the system where the rtf file is opened, this font must be available,
-otherwise the symbols are not displayed correctly.@*
-As it seems that this font is not commonly available or supported, symbols which are 
-available in the standard fonts ("Times" / "Times New Roman", "Symbol", "MT Extra") 
-are taken from these fonts (@pxref{Math and Special Symbols}).@*
-An alternative direct.cfg is available by which MT Extra is not used and the symbols 
-which normally are taken from MT Extra are instead taken from "Lucida Sans Unicode". 
-To use "Lucida Sans Unicode" instead of MT Extra, rename direct.cfg (to e.g. 
-direct_mt.cfg) and rename direct_ucs.cfg to direct.cfg.
+In general, specific fonts should not be specified in this file.   There is a 
+mechanism to do this, but it turns out that this is not as useful as originally
+thought.  The main reason that this fails is because the conversion of equations
+from Word fields to Equation Editor objects is buggy.  The consequence is that
+to have symbols show up properly, they must be encoded differently when the Symbol
+and MT Extra fonts are used --- depending on whether Word fields are active or 
+not.  It was all very tedious to figure out a mechanism that was ``least broken.''
 
 @node Ignore Command, Font Configuration, Direct Conversion, Configuration
 @section Ignore Command 
@@ -1302,10 +1317,10 @@ the Viena University supervised by Ralf Schlatterbeck in a one-semester course. 
 created a simple @latex{} parser and added most of the infrastructure for the program.
 This was version 1.0 of @ltor{}.  In 1995, work on @ltor{} was continued in another
 one-semester course by Friedrich Polzer and Gerhard Trisko. The result was @ltor{} version
-1.5.  Ralf Schlatterbeck (ralf "at" zoo.priv.at) maintained and extended @ltor{} until
+1.5.  Ralf Schlatterbeck (ralf ``at'' zoo.priv.at) maintained and extended @ltor{} until
 1998.
 
-In 1998 Georg Lehner (jorge_lehner "at" gmx.net) found the reference to @ltor{} on the
+In 1998 Georg Lehner (jorge_lehner ``at'' gmx.net) found the reference to @ltor{} on the
 @uref{http://tug.org/utilities/texconv/index.html, TeX Conversion Webpage} of
 Wilfried Hennings and added some functionality and took
 over the maintainence of the program.  The last version release by Georg is 1.8aa.
@@ -1425,7 +1440,6 @@ Scott's ToDo list
 @itemize @bullet
 @item  Use lex/yacc to implement getSection
 @item  Add support for pagestyle
-@item  Improve graphic/graphicx support
 @item  Better support for ignoring commands
 @end itemize
 
