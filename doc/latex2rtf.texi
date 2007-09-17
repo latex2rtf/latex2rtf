@@ -380,16 +380,21 @@ Click "OK"
 @end itemize
 @end itemize
 
-To start the program under Windows, @*
+To start the program under Windows:
+@itemize
+@item
 open a command prompt (or console window)@*
 -- under DOS you are already at the command prompt --,@*
+@item
 use @file{cd <folder>} to make the folder with your TeX files the
 current folder, @*
-then enter either @file{L2R <filename> <options>}
-or @file{L2RSEM <filename> <options>} @*
-where <filename> is the name of your TeX file without the .tex extension.@*
-@file{L2R.BAT} and @file{L2RSEM.BAT} only differ in the character being used
-as parameter separator in the EQ fields, see chapter @ref{Equations}.
+@item
+then enter either @file{L2R <filename> <options>} or @file{L2RSEM
+<filename> <options>} where <filename> is the name of your TeX file
+without the .tex extension.@* @file{L2R.BAT} and @file{L2RSEM.BAT} only
+differ in the character being used as parameter separator in the EQ
+fields, see @ref{Equations}.
+@end itemize
 
 If your @latex{} document refers to external graphic files, e.g. eps, 
 or you want to use the option to convert equations to bitmaps (-M# where
@@ -1052,12 +1057,15 @@ not affect the output (cross reference information and the like), or
 that we are not able or willing to convert to RTF.
 
 You can use @file{ignore.cfg} if you get tired of seeing 
+
 @example
 WARNING: command: `foo' not found - ignored
 @end example
-@noindent and you don't need `foo' in your RTF document.  It would
-be nice to send your additions to the @ltor{} mailing list for inclusion
-in later distributions.
+
+@noindent 
+and you don't need `foo' in your RTF document. It would be nice to send
+your additions to the @ltor{} mailing list for inclusion in later
+distributions.
 
 @ltor{} accepts Unix, MS-DOS, and Macintosh line ending codes (\n, \r\n
 and \r).  The files it creates are the line ending for the platform on
@@ -1074,6 +1082,7 @@ select the proper code page (@pxref{Input Encoding}).
 As of @ltor{} 1.9.17, there are two options for including content that
 will be ignored by @latex{} but parsed by @ltor{}. The first is simply
 to begin a line with @code{%latex2rtf:}, as in the following:
+
 @example
 %latex2rtf: These lines will only appear in the latex2rtf output, 
 %latex2rtf: not in the LaTeX output.
@@ -1081,10 +1090,10 @@ to begin a line with @code{%latex2rtf:}, as in the following:
 
 More sophisticated processing is available with the @code{\iflatextortf}
 command:
+
 @example
 \newif\iflatextortf  %all \newif constructs ignored by latex2rtf
 \latextortffalse     %ignored by latex2rtf, so file works in latex
-
 \iflatextortf
 This code is processed only by latex2rtf
 \else
@@ -1125,10 +1134,12 @@ starting with a @samp{#} character are ignored. After the @samp{.} everything is
 to end of line. To select a specific font use @code{*fontname*}, where 
 @code{fontname} be defined in @file{fonts.cfg}.
 To write the @samp{*} character use @samp{**}. 
+
 @example
 \alpha,@{\f*Symbol* a@}. #alpha in the Symbol Font
 \copyright,\'a9.
 @end example
+
 Changes in version 1.9.17:@*
 More math symbols are supported by using Unicode coding. 
 However many of these symbols are not (yet) contained in the standard 
@@ -1329,15 +1340,18 @@ available in the original sources and documentation.
 @section Unimplemented Features
 
 @itemize @bullet
-@item @ltor{} ignores some optional parameters of @code{\documentstyle} 
-@item Add the code to produce the corresponding chapter, section,
-      and page numbering with headings and myheadings pagestyles. Implement
-      @code{\markboth} and @code{\markright}.
-@item To support @code{\tableofcontents} there would be two approaches: Transfer
-      sectioning information, title text and then produce page numbers by the rtf-
-      reader. Scan and label all of the sectioning commands while reading and
-      then construct the sectioning information using these labels. Needs two
-      passes on @latex{} input.
+@item 
+@ltor{} ignores some optional parameters of @code{\documentstyle} 
+@item 
+Add the code to produce the corresponding chapter, section, and page
+numbering with headings and myheadings pagestyles. Implement
+@code{\markboth} and @code{\markright}.
+@item 
+To support @code{\tableofcontents} there would be two approaches:
+Transfer sectioning information, title text and then produce page
+numbers by the rtf- reader. Scan and label all of the sectioning
+commands while reading and then construct the sectioning information
+using these labels. Needs two passes on @latex{} input.
 @end itemize
 
 @node Missing options, Known Bugs, Unimplemented Features, LaTeX2RTF under Development
@@ -1361,16 +1375,19 @@ getopt package.
 @section Known Bugs 
 
 @enumerate
-@item The first parameter of a \link@{anchor@}[ltx]@{label@} is converted to the
-      rtf-output. Label is stored to hyperref for later use, the optional
-      parameter is ignored. [ltx] should be processed as Otfried recommends it,
-      to use for exclusive @latex{} output.e.g: \link@{readhere@}[~\Ref]@{explaining:
-      chapter@}. Since @{explaining:chapter@} is yet read by @latex{} and hyperlatex
-      when [...] is evaluated it produces the correct reference. @ltor{} is
-      only strolling from left to right through the text and can't remember
-      what she will see in the future.
-@item The diagnostics routine does not output the correct (actual)
-      inputfilename. (`.aux', `.bbl', @code{\input}).
+@item 
+The first parameter of a \link@{anchor@}[ltx]@{label@} is converted to
+the rtf-output. Label is stored to hyperref for later use, the optional
+parameter is ignored. [ltx] should be processed as Otfried recommends
+it, to use for exclusive @latex{} output.e.g:
+\link@{readhere@}[~\Ref]@{explaining: chapter@}. Since
+@{explaining:chapter@} is yet read by @latex{} and hyperlatex when [...]
+is evaluated it produces the correct reference. @ltor{} is only
+strolling from left to right through the text and can't remember what
+she will see in the future.
+@item 
+The diagnostics routine does not output the correct (actual)
+input filename. (`.aux', `.bbl', @code{\input}).
 @end enumerate
 
 @node Reporting Bugs, Todo List, Known Bugs, LaTeX2RTF under Development
@@ -1412,16 +1429,22 @@ Scott's ToDo list
 @item  Better support for ignoring commands
 @end itemize
 
+@noindent
 Georg's todo list
 @itemize @bullet
-@item  Make this Manual more consistent, the ToDo and Known Bug List shorter and
-      the Features List longer.
-@item  Harmonize all of the error and warning messages.
-@item  Put warnings everywhere applicable about producing RTF 1.4 tokens.
-@item  Provide an Error and Warning recovery guide to the user.
-@item  Add a chapter with lists of all @latex{} commands that convert, and that do
-      not convert to RTF, including their status (for future releases, never,
-      partially functional, ...).
+@item  
+Make this Manual more consistent, the ToDo and Known Bug List shorter
+and the Features List longer.
+@item  
+Harmonize all of the error and warning messages.
+@item  
+Put warnings everywhere applicable about producing RTF 1.4 tokens.
+@item  
+Provide an Error and Warning recovery guide to the user.
+@item  
+Add a chapter with lists of all @latex{} commands that convert, and that
+do not convert to RTF, including their status (for future releases,
+never, partially functional, ...).
 @end itemize
 
 @node Index, , LaTeX2RTF under Development, Top

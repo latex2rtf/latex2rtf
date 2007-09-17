@@ -305,17 +305,16 @@ prompt (with no arguments).
 
         * Click "OK"
 
-   To start the program under Windows,
-open a command prompt (or console window)
-- under DOS you are already at the command prompt -,
-use `cd <folder>' to make the folder with your TeX files the current
-folder,
-then enter either `L2R <filename> <options>' or `L2RSEM <filename>
-<options>'
-where <filename> is the name of your TeX file without the .tex
-extension.
-`L2R.BAT' and `L2RSEM.BAT' only differ in the character being used as
-parameter separator in the EQ fields, see chapter *Note Equations::.
+   To start the program under Windows:
+   * open a command prompt (or console window)
+     - under DOS you are already at the command prompt -,
+   * use `cd <folder>' to make the folder with your TeX files the
+     current folder,
+   * then enter either `L2R <filename> <options>' or `L2RSEM <filename>
+     <options>' where <filename> is the name of your TeX file without
+     the .tex extension.
+     `L2R.BAT' and `L2RSEM.BAT' only differ in the character being used
+     as parameter separator in the EQ fields, see *Note Equations::.
 
    If your LaTeX  document refers to external graphic files, e.g. eps,
 or you want to use the option to convert equations to bitmaps (-M# where
@@ -1039,10 +1038,12 @@ output (cross reference information and the like), or that we are not
 able or willing to convert to RTF.
 
    You can use `ignore.cfg' if you get tired of seeing
+
      WARNING: command: `foo' not found - ignored
-   and you don't need `foo' in your RTF document.  It would be nice to
-send your additions to the LaTeX2RTF  mailing list for inclusion in
-later distributions.
+
+and you don't need `foo' in your RTF document. It would be nice to send
+your additions to the LaTeX2RTF  mailing list for inclusion in later
+distributions.
 
    LaTeX2RTF  accepts Unix, MS-DOS, and Macintosh line ending codes
 (\n, \r\n and \r).  The files it creates are the line ending for the
@@ -1056,14 +1057,15 @@ select the proper code page (*note Input Encoding::).
    As of LaTeX2RTF  1.9.17, there are two options for including content
 that will be ignored by LaTeX  but parsed by LaTeX2RTF . The first is
 simply to begin a line with `%latex2rtf:', as in the following:
+
      %latex2rtf: These lines will only appear in the latex2rtf output,
      %latex2rtf: not in the LaTeX output.
 
    More sophisticated processing is available with the `\iflatextortf'
 command:
+
      \newif\iflatextortf  %all \newif constructs ignored by latex2rtf
      \latextortffalse     %ignored by latex2rtf, so file works in latex
-
      \iflatextortf
      This code is processed only by latex2rtf
      \else
@@ -1110,8 +1112,10 @@ the LaTeX  file. Lines starting with a `#' character are ignored. After
 the `.' everything is ignored to end of line. To select a specific font
 use `*fontname*', where `fontname' be defined in `fonts.cfg'.  To write
 the `*' character use `**'.
+
      \alpha,{\f*Symbol* a}. #alpha in the Symbol Font
      \copyright,\'a9.
+
    Changes in version 1.9.17:
 More math symbols are supported by using Unicode coding.  However many
 of these symbols are not (yet) contained in the standard MS Windows
@@ -1338,16 +1342,15 @@ File: latex2rtf.info,  Node: Unimplemented Features,  Next: Missing options,  Pr
 
    * LaTeX2RTF  ignores some optional parameters of `\documentstyle'
 
-   * Add the code to produce the corresponding chapter, section,
-     and page numbering with headings and myheadings pagestyles.
-     Implement       `\markboth' and `\markright'.
+   * Add the code to produce the corresponding chapter, section, and
+     page numbering with headings and myheadings pagestyles. Implement
+     `\markboth' and `\markright'.
 
    * To support `\tableofcontents' there would be two approaches:
-     Transfer       sectioning information, title text and then produce
-     page numbers by the rtf-       reader. Scan and label all of the
-     sectioning commands while reading and       then construct the
-     sectioning information using these labels. Needs two       passes
-     on LaTeX  input.
+     Transfer sectioning information, title text and then produce page
+     numbers by the rtf- reader. Scan and label all of the sectioning
+     commands while reading and then construct the sectioning
+     information using these labels. Needs two passes on LaTeX  input.
 
 
 File: latex2rtf.info,  Node: Missing options,  Next: Known Bugs,  Prev: Unimplemented Features,  Up: LaTeX2RTF under Development
@@ -1374,17 +1377,17 @@ File: latex2rtf.info,  Node: Known Bugs,  Next: Reporting Bugs,  Prev: Missing o
 ==============
 
   1. The first parameter of a \link{anchor}[ltx]{label} is converted to
-     the       rtf-output. Label is stored to hyperref for later use,
-     the optional       parameter is ignored. [ltx] should be processed
-     as Otfried recommends it,       to use for exclusive LaTeX
-     output.e.g: \link{readhere}[~\Ref]{explaining:       chapter}.
-     Since {explaining:chapter} is yet read by LaTeX  and hyperlatex
-       when [...] is evaluated it produces the correct reference.
-     LaTeX2RTF  is       only strolling from left to right through the
-     text and can't remember       what she will see in the future.
+     the rtf-output. Label is stored to hyperref for later use, the
+     optional parameter is ignored. [ltx] should be processed as
+     Otfried recommends it, to use for exclusive LaTeX  output.e.g:
+     \link{readhere}[~\Ref]{explaining: chapter}. Since
+     {explaining:chapter} is yet read by LaTeX  and hyperlatex when
+     [...]  is evaluated it produces the correct reference. LaTeX2RTF
+     is only strolling from left to right through the text and can't
+     remember what she will see in the future.
 
-  2. The diagnostics routine does not output the correct (actual)
-     inputfilename. (`.aux', `.bbl', `\input').
+  2. The diagnostics routine does not output the correct (actual) input
+     filename. (`.aux', `.bbl', `\input').
 
 
 File: latex2rtf.info,  Node: Reporting Bugs,  Next: Todo List,  Prev: Known Bugs,  Up: LaTeX2RTF under Development
@@ -1435,9 +1438,9 @@ Scott's ToDo list
 
    * Better support for ignoring commands
 
-   Georg's todo list
+Georg's todo list
    * Make this Manual more consistent, the ToDo and Known Bug List
-     shorter and       the Features List longer.
+     shorter and the Features List longer.
 
    * Harmonize all of the error and warning messages.
 
@@ -1446,8 +1449,8 @@ Scott's ToDo list
    * Provide an Error and Warning recovery guide to the user.
 
    * Add a chapter with lists of all LaTeX  commands that convert, and
-     that do       not convert to RTF, including their status (for
-     future releases, never,       partially functional, ...).
+     that do not convert to RTF, including their status (for future
+     releases, never, partially functional, ...).
 
 
 File: latex2rtf.info,  Node: Index,  Prev: LaTeX2RTF under Development,  Up: Top
@@ -1458,7 +1461,7 @@ File: latex2rtf.info,  Node: Index,  Prev: LaTeX2RTF under Development,  Up: Top
  [index ]
 * Menu:
 
-* %latex2rtf:                            Input processing.     (line 30)
+* %latex2rtf:                            Input processing.     (line 32)
 * apacite:                               Cross References.     (line 30)
 * apalike:                               Cross References.     (line 30)
 * apanat1b:                              Cross References.     (line 30)
@@ -1473,7 +1476,7 @@ File: latex2rtf.info,  Node: Index,  Prev: LaTeX2RTF under Development,  Up: Top
 * bibliography, harvard:                 Cross References.     (line 30)
 * bibliography, natbib:                  Cross References.     (line 30)
 * BibTeX:                                Cross References.     (line 23)
-* conditional parsing:                   Input processing.     (line 30)
+* conditional parsing:                   Input processing.     (line 32)
 * Copyright issues:                      History.              (line  6)
 * direct.cfg:                            Input processing.     (line  6)
 * double spacing:                        Page Formatting.      (line  6)
@@ -1484,7 +1487,7 @@ File: latex2rtf.info,  Node: Index,  Prev: LaTeX2RTF under Development,  Up: Top
 * harvard:                               Cross References.     (line 30)
 * History of the program:                History.              (line  6)
 * hyperlatex:                            Hyperlatex.           (line  6)
-* iflatextortf:                          Input processing.     (line 30)
+* iflatextortf:                          Input processing.     (line 32)
 * ignore.cfg:                            Input processing.     (line  6)
 * index:                                 Cross References.     (line 41)
 * input processing:                      Input processing.     (line  6)
@@ -1511,42 +1514,42 @@ Node: General4612
 Node: Obtaining LaTeX2RTF4955
 Node: UNIX5954
 Node: DOS or Windows8732
-Node: Win32 systems15080
-Node: Macintosh16785
-Node: Problems Compiling17712
-Node: Problems with make check18410
-Node: Using LaTeX2RTF18936
-Node: General Assumptions19141
-Node: LaTeX2RTF Options20979
-Node: Debugging28626
-Node: Features29271
-Node: LaTeX2e29713
-Node: Unicode Support30032
-Node: Input Encoding30486
-Node: Language Support31250
-Node: Cross References32776
-Node: Page Formatting35482
-Node: Equations36004
-Node: Math and Special Symbols37276
-Node: Tables38822
-Node: Graphics39021
-Node: Pagestyles39423
-Node: Hyperlatex40027
-Node: Configuration41103
-Node: Input processing41394
-Node: Output formatting43926
-Node: Direct Conversion44679
-Node: Ignore Command46317
-Node: Font Configuration48030
-Node: Language Configuration49340
-Node: Error Messages and Logging49959
-Node: History52057
-Node: LaTeX2RTF under Development53935
-Node: Unimplemented Features54206
-Node: Missing options55032
-Node: Known Bugs55613
-Node: Reporting Bugs56504
-Node: Todo List58147
-Node: Index58981
+Node: Win32 systems15117
+Node: Macintosh16822
+Node: Problems Compiling17749
+Node: Problems with make check18447
+Node: Using LaTeX2RTF18973
+Node: General Assumptions19178
+Node: LaTeX2RTF Options21016
+Node: Debugging28663
+Node: Features29308
+Node: LaTeX2e29750
+Node: Unicode Support30069
+Node: Input Encoding30523
+Node: Language Support31287
+Node: Cross References32813
+Node: Page Formatting35519
+Node: Equations36041
+Node: Math and Special Symbols37313
+Node: Tables38859
+Node: Graphics39058
+Node: Pagestyles39460
+Node: Hyperlatex40064
+Node: Configuration41140
+Node: Input processing41431
+Node: Output formatting43962
+Node: Direct Conversion44715
+Node: Ignore Command46355
+Node: Font Configuration48068
+Node: Language Configuration49378
+Node: Error Messages and Logging49997
+Node: History52095
+Node: LaTeX2RTF under Development53973
+Node: Unimplemented Features54244
+Node: Missing options55035
+Node: Known Bugs55616
+Node: Reporting Bugs56471
+Node: Todo List58114
+Node: Index58927
 
 End Tag Table
