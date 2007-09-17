@@ -206,7 +206,7 @@ can find @acronym{HTML} and @acronym{PDF} versions of the manual there as well.
 
 @node Obtaining LaTeX2RTF, UNIX, General, Installation
 
-@section Obtaining LaTeX2RTF
+@section Obtaining @ltor{}
 
 @ltor{} is available for many Unix Platforms, for the Macintosh, and for MS-DOS, including
 all versions of MS Windows.
@@ -317,7 +317,7 @@ so conversion of pictures and of equations to bitmaps will definitely
 not work under Vista.
 
 The Win32 version starting from 1.9.14a has the same executable but 
-additionally an optional Win32 GUI interface (LaTeX2RTF Shell) 
+additionally an optional Win32 GUI interface (@ltor{} Shell) 
 and is wrapped in an automatic installer, see @ref{Win32 systems}.@*
 
 To install @ltor{}, extract all files from the zip archive to @file{C:\l2r}
@@ -555,7 +555,7 @@ have to change one ore more of them to suit your needs (@pxref{Configuration}).
 @xref{Reporting Bugs}, for information on how to reach the maintainer.
 
 @node LaTeX2RTF Options, Debugging, General Assumptions, Using LaTeX2RTF
-@section LaTeX2RTF Options
+@section @ltor{} Options
 
 The @ltor{} command converts a @latex{} file into RTF text format. The text and
 much of the formatting information is translated to RTF making the new file
@@ -938,8 +938,8 @@ is opened. E.g. in English versions of MS Windows, the default parameter separat
 is the comma, in German versions the default is the semicolon. If the parameter 
 in the RTF file does not match the Windows setting, some EQ fields are not 
 interpreted correctly. You can check and set the separator in [Windows control panel 
-- country settings - numbers - list separator]. By default, latex2rtf uses
-the comma as separator. If latex2rtf is called with the command line parameter -S ,
+- country settings - numbers - list separator]. By default, @ltor{} uses
+the comma as separator. If @ltor{} is called with the command line parameter -S ,
 the semicolon is inserted as parameter delimiter. 
 
 
@@ -956,7 +956,7 @@ but is free (as in beer from Design Science, see below) and characters from this
 are used when possible.  Note that early versions of ``MT Extra'' were missing 
 some characters;  the most recent version of this font should be installed
 for best results.  Finally, if the symbol is not found in any of
-the previous fonts, then @latextortf{} will use the unicode sequence for 
+the previous fonts, then @ltor{} will use the unicode sequence for 
 that symbol.
 
 The means that on the system where the @file{.rtf} file is opened, a unicode
@@ -1156,10 +1156,10 @@ to end of line. To select a specific font use @code{*fontname*}, where
 @code{fontname} be defined in @file{fonts.cfg}.
 To write the @samp{*} character use @samp{**}. 
 
-@example
+@verbatim
 \bigstar,{\u8727**}.
 \copyright,\'a9.
-@end example
+@end verbatim
 
 In general, specific fonts should not be specified in this file.   There is a 
 mechanism to do this, but it turns out that this is not as useful as originally

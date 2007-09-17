@@ -94,7 +94,8 @@ file `latex2rtf.texi' in the GNU TeXInfo format.  For your convenience,
 you can find HTML and PDF versions of the manual there as well.
 
 2.2 Obtaining LaTeX2RTF
-=======================
+
+========================
 
 LaTeX2RTF  is available for many Unix Platforms, for the Macintosh, and
 for MS-DOS, including all versions of MS Windows.
@@ -204,7 +205,7 @@ so conversion of pictures and of equations to bitmaps will definitely
 not work under Vista.
 
    The Win32 version starting from 1.9.14a has the same executable but
-additionally an optional Win32 GUI interface (LaTeX2RTF Shell) and is
+additionally an optional Win32 GUI interface (LaTeX2RTF  Shell) and is
 wrapped in an automatic installer, see *Note Win32 systems::.
 To install LaTeX2RTF , extract all files from the zip archive to
 `C:\l2r' or to another folder (i.e. directory) of your choice,
@@ -258,17 +259,16 @@ prompt (with no arguments).
 
         * Click "OK"
 
-   To start the program under Windows,
-open a command prompt (or console window)
-- under DOS you are already at the command prompt -,
-use `cd <folder>' to make the folder with your TeX files the current
-folder,
-then enter either `L2R <filename> <options>' or `L2RSEM <filename>
-<options>'
-where <filename> is the name of your TeX file without the .tex
-extension.
-`L2R.BAT' and `L2RSEM.BAT' only differ in the character being used as
-parameter separator in the EQ fields, see chapter *Note Equations::.
+   To start the program under Windows:
+   * open a command prompt (or console window)
+     - under DOS you are already at the command prompt -,
+   * use `cd <folder>' to make the folder with your TeX files the
+     current folder,
+   * then enter either `L2R <filename> <options>' or `L2RSEM <filename>
+     <options>' where <filename> is the name of your TeX file without
+     the .tex extension.
+     `L2R.BAT' and `L2RSEM.BAT' only differ in the character being used
+     as parameter separator in the EQ fields, see *Note Equations::.
 
    If your LaTeX  document refers to external graphic files, e.g. eps,
 or you want to use the option to convert equations to bitmaps (-M# where
@@ -427,8 +427,9 @@ needs (*note Configuration::).
    *Note Reporting Bugs::, for information on how to reach the
 maintainer.
 
-3.2 LaTeX2RTF Options
-=====================
+3.2 LaTeX2RTF
+ Options
+======================
 
 The LaTeX2RTF  command converts a LaTeX  file into RTF text format. The
 text and much of the formatting information is translated to RTF making
@@ -791,18 +792,43 @@ Windows, the default parameter separator is the comma, in German
 versions the default is the semicolon. If the parameter in the RTF file
 does not match the Windows setting, some EQ fields are not interpreted
 correctly. You can check and set the separator in [Windows control panel
-- country settings - numbers - list separator]. By default, latex2rtf
-uses the comma as separator. If latex2rtf is called with the command
+- country settings - numbers - list separator]. By default, LaTeX2RTF
+uses the comma as separator. If LaTeX2RTF  is called with the command
 line parameter -S , the semicolon is inserted as parameter delimiter.
 
 4.8 Math and Special Symbols
 ============================
 
-Many mathematical and special symbols are supported by the conversion
-table in the file direct.cfg, see *Note Direct Conversion::. However to
-display (or print) them correctly from the rtf file, these symbols must
-be available in the fonts in the system in which the rtf file is opened.
-Required fonts are:
+The way that symbols are converted in the RTF is based on the following
+observations.  If the symbol is found in the latin 1 character set, then
+the current font is used.  The font "Symbol" is widely available, and
+therefore it is used for as many translations as possible.  The font
+"MT Extra" is less common, but is free (as in beer from Design Science,
+see below) and characters from this font are used when possible.  Note
+that early versions of "MT Extra" were missing some characters;  the
+most recent version of this font should be installed for best results.
+Finally, if the symbol is not found in any of the previous fonts, then
+LaTeX2RTF  will use the unicode sequence for that symbol.
+
+   The means that on the system where the `.rtf' file is opened, a
+unicode font should be available or these glyphs will not be displayed
+correctly. On Windows machines the unicode font is "Lucida Sans
+Unicode", on MacOS X the font is "Lucida Grande".  Even when these
+fonts are installed, support for these unicode sequences seems to be
+hit-or-miss in various versions of Word since many of these symbols are
+not (yet) contained in the standard unicode fonts.
+
+   Many mathematical and special symbols are directly supported by
+LaTeX2RTF .  Less common symbols (not found in the fonts "Symbol" or
+"MT Extra") are supported by the conversion table in the file
+`direct.cfg', see *Note Direct Conversion::.  An alternative
+`direct.cfg' is available in which "MT Extra" is not used and the
+symbols which normally are taken from "MT Extra" are instead taken from
+"Lucida Sans Unicode".  To use "Lucida Sans Unicode" instead of MT
+Extra, rename `direct.cfg' (to e.g., ` direct_mt.cfg') and rename
+`direct_ucs.cfg' to `direct.cfg'.
+
+   Required fonts are:
 
    * "Times" / "Times New Roman", preferably with Unicode extension
      (i.e.  supporting all European languages including Cyrillic,
@@ -816,29 +842,27 @@ Required fonts are:
      MathType.  If you don't have Word or MathType, you can get this
      font from `http://www.mathtype.com/en/dl/fonts/'
 
-   * "Lucida Sans Unicode" which contains many symbols that aren't in
-     the first three fonts. This is a new feature in LaTeX2RTF  version
-     1.9.17 and may or may not work, depending on the system in which
-     the rtf file is opened.
-     If you need these symbols, don't have "Lucida Sans Unicode" but
-     have another font containing these symbols, you can edit
-     direct.cfg and fonts.cfg and replace the font name in both files.
-     For a description of direct.cfg see *Note Direct Conversion::.
-
 
 4.9 Tables
 ==========
 
-The table code is currently barely working.  It needs to be rewritten.
+Conversion of tabular and tabbing environments is somewhat lame.  The
+main difficulty is that LaTeX  (and html) will size the columns of a
+table automatically.  There is no such feature in RTF.  Consequently,
+the conversion defaults to making all the columns have equal size.  This
+is suboptimal and should be revised.  One interesting suggestion is to
+have an option to handle these environments the same way that equations
+are handles and have latex render them as bitmaps and insert the bitmaps
+into the RTF file.  Such a feature remains to be written.
 
 4.10 Graphics
 =============
 
 There is now rudimentary support for `\includegraphics'.  Three file
 types will be inserted into the RTF file without needing conversion:
-.pict, .jpeg, and .png files.  EPS files are converted to PNG using
-`convert' from the ImageMagick package.  Some options are handled
-properly.
+`.pict', `.jpeg', and `.png' files.  EPS and PDF files are converted to
+PNG using `convert' from the ImageMagick package.  Some options are
+even handled properly.
 
 4.11 Pagestyles
 ===============
@@ -894,9 +918,10 @@ able or willing to convert to RTF.
 
    You can use `ignore.cfg' if you get tired of seeing
      WARNING: command: `foo' not found - ignored
-   and you don't need `foo' in your RTF document.  It would be nice to
-send your additions to the LaTeX2RTF  mailing list for inclusion in
-later distributions.
+
+and you don't need `foo' in your RTF document. It would be nice to send
+your additions to the LaTeX2RTF  mailing list for inclusion in later
+distributions.
 
    LaTeX2RTF  accepts Unix, MS-DOS, and Macintosh line ending codes
 (\n, \r\n and \r).  The files it creates are the line ending for the
@@ -910,14 +935,15 @@ select the proper code page (*note Input Encoding::).
    As of LaTeX2RTF  1.9.17, there are two options for including content
 that will be ignored by LaTeX  but parsed by LaTeX2RTF . The first is
 simply to begin a line with `%latex2rtf:', as in the following:
+
      %latex2rtf: These lines will only appear in the latex2rtf output,
      %latex2rtf: not in the LaTeX output.
 
    More sophisticated processing is available with the `\iflatextortf'
 command:
+
      \newif\iflatextortf  %all \newif constructs ignored by latex2rtf
      \latextortffalse     %ignored by latex2rtf, so file works in latex
-
      \iflatextortf
      This code is processed only by latex2rtf
      \else
@@ -958,23 +984,20 @@ the LaTeX  file. Lines starting with a `#' character are ignored. After
 the `.' everything is ignored to end of line. To select a specific font
 use `*fontname*', where `fontname' be defined in `fonts.cfg'.  To write
 the `*' character use `**'.
-     \alpha,{\f*Symbol* a}. #alpha in the Symbol Font
-     \copyright,\'a9.
-   Changes in version 1.9.17:
-More math symbols are supported by using Unicode coding.  However many
-of these symbols are not (yet) contained in the standard MS Windows
-fonts but only in "Lucida Sans Unicode".  So on the system where the
-rtf file is opened, this font must be available, otherwise the symbols
-are not displayed correctly.
-As it seems that this font is not commonly available or supported,
-symbols which are available in the standard fonts ("Times" / "Times New
-Roman", "Symbol", "MT Extra") are taken from these fonts (*note Math
-and Special Symbols::).
-An alternative direct.cfg is available by which MT Extra is not used
-and the symbols which normally are taken from MT Extra are instead
-taken from "Lucida Sans Unicode".  To use "Lucida Sans Unicode" instead
-of MT Extra, rename direct.cfg (to e.g.  direct_mt.cfg) and rename
-direct_ucs.cfg to direct.cfg.
+
+
+\bigstar,{\u8727**}.
+\copyright,\'a9.
+
+   In general, specific fonts should not be specified in this file.
+There is a mechanism to do this, but it turns out that this is not as
+useful as originally thought.  The main reason that this fails is
+because the conversion of equations from Word fields to Equation Editor
+objects is buggy.  The consequence is that to have symbols show up
+properly, they must be encoded differently when the Symbol and MT Extra
+fonts are used -- depending on whether Word fields are active or not.
+It was all very tedious to figure out a mechanism that was "least
+broken."
 
 5.4 Ignore Command
 ==================
@@ -1157,16 +1180,15 @@ what was available in the original sources and documentation.
 
    * LaTeX2RTF  ignores some optional parameters of `\documentstyle'
 
-   * Add the code to produce the corresponding chapter, section,
-     and page numbering with headings and myheadings pagestyles.
-     Implement       `\markboth' and `\markright'.
+   * Add the code to produce the corresponding chapter, section, and
+     page numbering with headings and myheadings pagestyles. Implement
+     `\markboth' and `\markright'.
 
    * To support `\tableofcontents' there would be two approaches:
-     Transfer       sectioning information, title text and then produce
-     page numbers by the rtf-       reader. Scan and label all of the
-     sectioning commands while reading and       then construct the
-     sectioning information using these labels. Needs two       passes
-     on LaTeX  input.
+     Transfer sectioning information, title text and then produce page
+     numbers by the rtf- reader. Scan and label all of the sectioning
+     commands while reading and then construct the sectioning
+     information using these labels. Needs two passes on LaTeX  input.
 
 8.2 Missing options
 ===================
@@ -1187,17 +1209,17 @@ Missing or buggy command line options.
 ==============
 
   1. The first parameter of a \link{anchor}[ltx]{label} is converted to
-     the       rtf-output. Label is stored to hyperref for later use,
-     the optional       parameter is ignored. [ltx] should be processed
-     as Otfried recommends it,       to use for exclusive LaTeX
-     output.e.g: \link{readhere}[~\Ref]{explaining:       chapter}.
-     Since {explaining:chapter} is yet read by LaTeX  and hyperlatex
-       when [...] is evaluated it produces the correct reference.
-     LaTeX2RTF  is       only strolling from left to right through the
-     text and can't remember       what she will see in the future.
+     the rtf-output. Label is stored to hyperref for later use, the
+     optional parameter is ignored. [ltx] should be processed as
+     Otfried recommends it, to use for exclusive LaTeX  output.e.g:
+     \link{readhere}[~\Ref]{explaining: chapter}. Since
+     {explaining:chapter} is yet read by LaTeX  and hyperlatex when
+     [...]  is evaluated it produces the correct reference. LaTeX2RTF
+     is only strolling from left to right through the text and can't
+     remember what she will see in the future.
 
-  2. The diagnostics routine does not output the correct (actual)
-     inputfilename. (`.aux', `.bbl', `\input').
+  2. The diagnostics routine does not output the correct (actual) input
+     filename. (`.aux', `.bbl', `\input').
 
 8.4 Reporting Bugs
 ==================
@@ -1238,13 +1260,11 @@ Scott's ToDo list
 
    * Add support for pagestyle
 
-   * Improve graphic/graphicx support
-
    * Better support for ignoring commands
 
-   Georg's todo list
+Georg's todo list
    * Make this Manual more consistent, the ToDo and Known Bug List
-     shorter and       the Features List longer.
+     shorter and the Features List longer.
 
    * Harmonize all of the error and warning messages.
 
@@ -1253,8 +1273,8 @@ Scott's ToDo list
    * Provide an Error and Warning recovery guide to the user.
 
    * Add a chapter with lists of all LaTeX  commands that convert, and
-     that do       not convert to RTF, including their status (for
-     future releases, never,       partially functional, ...).
+     that do not convert to RTF, including their status (for future
+     releases, never, partially functional, ...).
 
 9 Index
 *******

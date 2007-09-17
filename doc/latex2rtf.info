@@ -1,5 +1,5 @@
-This is doc/latex2rtf.info, produced by makeinfo version 4.8 from
-doc/latex2rtf.texi.
+This is latex2rtf.info, produced by makeinfo version 4.7 from
+latex2rtf.texi.
 
 
 File: latex2rtf.info,  Node: Top,  Next: Introduction,  Up: (dir)
@@ -135,7 +135,8 @@ you can find HTML and PDF versions of the manual there as well.
 File: latex2rtf.info,  Node: Obtaining LaTeX2RTF,  Next: UNIX,  Prev: General,  Up: Installation
 
 2.2 Obtaining LaTeX2RTF
-=======================
+
+========================
 
 LaTeX2RTF  is available for many Unix Platforms, for the Macintosh, and
 for MS-DOS, including all versions of MS Windows.
@@ -251,7 +252,7 @@ so conversion of pictures and of equations to bitmaps will definitely
 not work under Vista.
 
    The Win32 version starting from 1.9.14a has the same executable but
-additionally an optional Win32 GUI interface (LaTeX2RTF Shell) and is
+additionally an optional Win32 GUI interface (LaTeX2RTF  Shell) and is
 wrapped in an automatic installer, see *Note Win32 systems::.
 To install LaTeX2RTF , extract all files from the zip archive to
 `C:\l2r' or to another folder (i.e. directory) of your choice,
@@ -500,8 +501,9 @@ maintainer.
 
 File: latex2rtf.info,  Node: LaTeX2RTF Options,  Next: Debugging,  Prev: General Assumptions,  Up: Using LaTeX2RTF
 
-3.2 LaTeX2RTF Options
-=====================
+3.2 LaTeX2RTF
+ Options
+======================
 
 The LaTeX2RTF  command converts a LaTeX  file into RTF text format. The
 text and much of the formatting information is translated to RTF making
@@ -906,8 +908,8 @@ Windows, the default parameter separator is the comma, in German
 versions the default is the semicolon. If the parameter in the RTF file
 does not match the Windows setting, some EQ fields are not interpreted
 correctly. You can check and set the separator in [Windows control panel
-- country settings - numbers - list separator]. By default, latex2rtf
-uses the comma as separator. If latex2rtf is called with the command
+- country settings - numbers - list separator]. By default, LaTeX2RTF
+uses the comma as separator. If LaTeX2RTF  is called with the command
 line parameter -S , the semicolon is inserted as parameter delimiter.
 
 
@@ -916,11 +918,36 @@ File: latex2rtf.info,  Node: Math and Special Symbols,  Next: Tables,  Prev: Equ
 4.8 Math and Special Symbols
 ============================
 
-Many mathematical and special symbols are supported by the conversion
-table in the file direct.cfg, see *Note Direct Conversion::. However to
-display (or print) them correctly from the rtf file, these symbols must
-be available in the fonts in the system in which the rtf file is opened.
-Required fonts are:
+The way that symbols are converted in the RTF is based on the following
+observations.  If the symbol is found in the latin 1 character set, then
+the current font is used.  The font "Symbol" is widely available, and
+therefore it is used for as many translations as possible.  The font
+"MT Extra" is less common, but is free (as in beer from Design Science,
+see below) and characters from this font are used when possible.  Note
+that early versions of "MT Extra" were missing some characters;  the
+most recent version of this font should be installed for best results.
+Finally, if the symbol is not found in any of the previous fonts, then
+LaTeX2RTF  will use the unicode sequence for that symbol.
+
+   The means that on the system where the `.rtf' file is opened, a
+unicode font should be available or these glyphs will not be displayed
+correctly. On Windows machines the unicode font is "Lucida Sans
+Unicode", on MacOS X the font is "Lucida Grande".  Even when these
+fonts are installed, support for these unicode sequences seems to be
+hit-or-miss in various versions of Word since many of these symbols are
+not (yet) contained in the standard unicode fonts.
+
+   Many mathematical and special symbols are directly supported by
+LaTeX2RTF .  Less common symbols (not found in the fonts "Symbol" or
+"MT Extra") are supported by the conversion table in the file
+`direct.cfg', see *Note Direct Conversion::.  An alternative
+`direct.cfg' is available in which "MT Extra" is not used and the
+symbols which normally are taken from "MT Extra" are instead taken from
+"Lucida Sans Unicode".  To use "Lucida Sans Unicode" instead of MT
+Extra, rename `direct.cfg' (to e.g., ` direct_mt.cfg') and rename
+`direct_ucs.cfg' to `direct.cfg'.
+
+   Required fonts are:
 
    * "Times" / "Times New Roman", preferably with Unicode extension
      (i.e.  supporting all European languages including Cyrillic,
@@ -934,15 +961,6 @@ Required fonts are:
      MathType.  If you don't have Word or MathType, you can get this
      font from `http://www.mathtype.com/en/dl/fonts/'
 
-   * "Lucida Sans Unicode" which contains many symbols that aren't in
-     the first three fonts. This is a new feature in LaTeX2RTF  version
-     1.9.17 and may or may not work, depending on the system in which
-     the rtf file is opened.
-     If you need these symbols, don't have "Lucida Sans Unicode" but
-     have another font containing these symbols, you can edit
-     direct.cfg and fonts.cfg and replace the font name in both files.
-     For a description of direct.cfg see *Note Direct Conversion::.
-
 
 
 File: latex2rtf.info,  Node: Tables,  Next: Graphics,  Prev: Math and Special Symbols,  Up: Features
@@ -950,7 +968,14 @@ File: latex2rtf.info,  Node: Tables,  Next: Graphics,  Prev: Math and Special Sy
 4.9 Tables
 ==========
 
-The table code is currently barely working.  It needs to be rewritten.
+Conversion of tabular and tabbing environments is somewhat lame.  The
+main difficulty is that LaTeX  (and html) will size the columns of a
+table automatically.  There is no such feature in RTF.  Consequently,
+the conversion defaults to making all the columns have equal size.  This
+is suboptimal and should be revised.  One interesting suggestion is to
+have an option to handle these environments the same way that equations
+are handles and have latex render them as bitmaps and insert the bitmaps
+into the RTF file.  Such a feature remains to be written.
 
 
 File: latex2rtf.info,  Node: Graphics,  Next: Pagestyles,  Prev: Tables,  Up: Features
@@ -960,9 +985,9 @@ File: latex2rtf.info,  Node: Graphics,  Next: Pagestyles,  Prev: Tables,  Up: Fe
 
 There is now rudimentary support for `\includegraphics'.  Three file
 types will be inserted into the RTF file without needing conversion:
-.pict, .jpeg, and .png files.  EPS files are converted to PNG using
-`convert' from the ImageMagick package.  Some options are handled
-properly.
+`.pict', `.jpeg', and `.png' files.  EPS and PDF files are converted to
+PNG using `convert' from the ImageMagick package.  Some options are
+even handled properly.
 
 
 File: latex2rtf.info,  Node: Pagestyles,  Next: Hyperlatex,  Prev: Graphics,  Up: Features
@@ -1038,7 +1063,6 @@ output (cross reference information and the like), or that we are not
 able or willing to convert to RTF.
 
    You can use `ignore.cfg' if you get tired of seeing
-
      WARNING: command: `foo' not found - ignored
 
 and you don't need `foo' in your RTF document. It would be nice to send
@@ -1113,24 +1137,19 @@ the `.' everything is ignored to end of line. To select a specific font
 use `*fontname*', where `fontname' be defined in `fonts.cfg'.  To write
 the `*' character use `**'.
 
-     \alpha,{\f*Symbol* a}. #alpha in the Symbol Font
-     \copyright,\'a9.
 
-   Changes in version 1.9.17:
-More math symbols are supported by using Unicode coding.  However many
-of these symbols are not (yet) contained in the standard MS Windows
-fonts but only in "Lucida Sans Unicode".  So on the system where the
-rtf file is opened, this font must be available, otherwise the symbols
-are not displayed correctly.
-As it seems that this font is not commonly available or supported,
-symbols which are available in the standard fonts ("Times" / "Times New
-Roman", "Symbol", "MT Extra") are taken from these fonts (*note Math
-and Special Symbols::).
-An alternative direct.cfg is available by which MT Extra is not used
-and the symbols which normally are taken from MT Extra are instead
-taken from "Lucida Sans Unicode".  To use "Lucida Sans Unicode" instead
-of MT Extra, rename direct.cfg (to e.g.  direct_mt.cfg) and rename
-direct_ucs.cfg to direct.cfg.
+\bigstar,{\u8727**}.
+\copyright,\'a9.
+
+   In general, specific fonts should not be specified in this file.
+There is a mechanism to do this, but it turns out that this is not as
+useful as originally thought.  The main reason that this fails is
+because the conversion of equations from Word fields to Equation Editor
+objects is buggy.  The consequence is that to have symbols show up
+properly, they must be encoded differently when the Symbol and MT Extra
+fonts are used -- depending on whether Word fields are active or not.
+It was all very tedious to figure out a mechanism that was "least
+broken."
 
 
 File: latex2rtf.info,  Node: Ignore Command,  Next: Font Configuration,  Prev: Direct Conversion,  Up: Configuration
@@ -1434,8 +1453,6 @@ Scott's ToDo list
 
    * Add support for pagestyle
 
-   * Improve graphic/graphicx support
-
    * Better support for ignoring commands
 
 Georg's todo list
@@ -1461,7 +1478,7 @@ File: latex2rtf.info,  Node: Index,  Prev: LaTeX2RTF under Development,  Up: Top
  [index ]
 * Menu:
 
-* %latex2rtf:                            Input processing.     (line 32)
+* %latex2rtf:                            Input processing.     (line 31)
 * apacite:                               Cross References.     (line 30)
 * apalike:                               Cross References.     (line 30)
 * apanat1b:                              Cross References.     (line 30)
@@ -1476,7 +1493,7 @@ File: latex2rtf.info,  Node: Index,  Prev: LaTeX2RTF under Development,  Up: Top
 * bibliography, harvard:                 Cross References.     (line 30)
 * bibliography, natbib:                  Cross References.     (line 30)
 * BibTeX:                                Cross References.     (line 23)
-* conditional parsing:                   Input processing.     (line 32)
+* conditional parsing:                   Input processing.     (line 31)
 * Copyright issues:                      History.              (line  6)
 * direct.cfg:                            Input processing.     (line  6)
 * double spacing:                        Page Formatting.      (line  6)
@@ -1487,7 +1504,7 @@ File: latex2rtf.info,  Node: Index,  Prev: LaTeX2RTF under Development,  Up: Top
 * harvard:                               Cross References.     (line 30)
 * History of the program:                History.              (line  6)
 * hyperlatex:                            Hyperlatex.           (line  6)
-* iflatextortf:                          Input processing.     (line 32)
+* iflatextortf:                          Input processing.     (line 31)
 * ignore.cfg:                            Input processing.     (line  6)
 * index:                                 Cross References.     (line 41)
 * input processing:                      Input processing.     (line  6)
@@ -1507,49 +1524,49 @@ File: latex2rtf.info,  Node: Index,  Prev: LaTeX2RTF under Development,  Up: Top
 
 
 Tag Table:
-Node: Top87
-Node: Introduction1383
-Node: Installation4315
-Node: General4612
-Node: Obtaining LaTeX2RTF4955
-Node: UNIX5954
-Node: DOS or Windows8732
-Node: Win32 systems15117
-Node: Macintosh16822
-Node: Problems Compiling17749
-Node: Problems with make check18447
-Node: Using LaTeX2RTF18973
-Node: General Assumptions19178
-Node: LaTeX2RTF Options21016
-Node: Debugging28663
-Node: Features29308
-Node: LaTeX2e29750
-Node: Unicode Support30069
-Node: Input Encoding30523
-Node: Language Support31287
-Node: Cross References32813
-Node: Page Formatting35519
-Node: Equations36041
-Node: Math and Special Symbols37313
-Node: Tables38859
-Node: Graphics39058
-Node: Pagestyles39460
-Node: Hyperlatex40064
-Node: Configuration41140
-Node: Input processing41431
-Node: Output formatting43962
-Node: Direct Conversion44715
-Node: Ignore Command46355
-Node: Font Configuration48068
-Node: Language Configuration49378
-Node: Error Messages and Logging49997
-Node: History52095
-Node: LaTeX2RTF under Development53973
-Node: Unimplemented Features54244
-Node: Missing options55035
-Node: Known Bugs55616
-Node: Reporting Bugs56471
-Node: Todo List58114
-Node: Index58927
+Node: Top79
+Node: Introduction1375
+Node: Installation4307
+Node: General4604
+Node: Obtaining LaTeX2RTF4947
+Node: UNIX5948
+Node: DOS or Windows8726
+Node: Win32 systems15112
+Node: Macintosh16817
+Node: Problems Compiling17744
+Node: Problems with make check18442
+Node: Using LaTeX2RTF18968
+Node: General Assumptions19173
+Node: LaTeX2RTF Options21011
+Node: Debugging28660
+Node: Features29305
+Node: LaTeX2e29747
+Node: Unicode Support30066
+Node: Input Encoding30520
+Node: Language Support31284
+Node: Cross References32810
+Node: Page Formatting35516
+Node: Equations36038
+Node: Math and Special Symbols37311
+Node: Tables39785
+Node: Graphics40469
+Node: Pagestyles40890
+Node: Hyperlatex41494
+Node: Configuration42570
+Node: Input processing42861
+Node: Output formatting45391
+Node: Direct Conversion46144
+Node: Ignore Command47432
+Node: Font Configuration49145
+Node: Language Configuration50455
+Node: Error Messages and Logging51074
+Node: History53172
+Node: LaTeX2RTF under Development55050
+Node: Unimplemented Features55321
+Node: Missing options56112
+Node: Known Bugs56693
+Node: Reporting Bugs57548
+Node: Todo List59191
+Node: Index59965
 
 End Tag Table

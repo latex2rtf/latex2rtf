@@ -184,7 +184,8 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Installation">Installation</a>
 <br>
 </div>
 
-<h3 class="section">2.2 Obtaining LaTeX2RTF</h3>
+<h3 class="section">2.2 Obtaining LaTeX2RTF
+</h3>
 
 <p>LaTeX2RTF
  is available for many Unix Platforms, for the Macintosh, and for MS-DOS, including
@@ -205,7 +206,7 @@ plus Win32 GUI program (l2rshell).
    <p>There are a few people working on LaTeX2RTF
 , and some more make
 contributions, coordinated by
-Wilfried Hennings (W.Hennings "at" fz-juelich.de). 
+Wilfried Hennings (W.Hennings &ldquo;at&rdquo; fz-juelich.de). 
 See the <a href="http://sourceforge.net/projects/latex2rtf/">SourceForge</a>
 project pages for the latest news.
 
@@ -304,7 +305,7 @@ file <span class="file">latex2rtf-x.x.x_win.exe</span> (where x.x.x is the versi
 
    <p>The DOS distribution contains a precompiled executable (djgpp compiler)
 which should run under plain DOS and also in the command prompt
-(or "console") of any MS Windows system up to XP and Server 2003.<br>
+(or &ldquo;console&rdquo;) of any MS Windows system up to XP and Server 2003.<br>
 However in Windows Vista the DPMI memory is limited to 32 MB, and
 we yet don't know whether this is sufficient to run LaTeX2RTF
  or not,
@@ -312,23 +313,24 @@ so please tell us any experiences regarding Windows Vista.<br>
 If the memory limitation under Windows Vista turns out to be a problem,
 one can use an executable compiled with Cygwin,
 but for now this isn't provided in the distributions.<br>
-Moreover, the command processor "command.com" is not provided by Vista,
+Moreover, the command processor &ldquo;command.com&rdquo; is not provided by Vista,
 so conversion of pictures and of equations to bitmaps will definitely
 not work under Vista.
 
    <p>The Win32 version starting from 1.9.14a has the same executable but
-additionally an optional Win32 GUI interface (LaTeX2RTF Shell)
+additionally an optional Win32 GUI interface (LaTeX2RTF
+ Shell)
 and is wrapped in an automatic installer, see <a href="#Win32-systems">Win32 systems</a>.<br>
 
    <p>To install LaTeX2RTF
 , extract all files from the zip archive to <span class="file">C:\l2r</span>
 or to another folder (i.e. directory) of your choice,
-preserving the folder structure (winzip: check "use folder names").<br>
+preserving the folder structure (winzip: check &ldquo;use folder names&rdquo;).<br>
 If you extracted them to another folder (e.g. <span class="file">C:\Program Files\l2r</span>),
 edit the files <span class="file">L2R.BAT</span>, <span class="file">L2RSEM.BAT</span> and <span class="file">L2RPREP.BAT</span>
 and change the folder <span class="file">C:\l2r</span> to where you put them. 
 If there is a blank in any of the folder names
-(as in e.g. "Program Files"), then you need to enclose both
+(as in e.g. &ldquo;Program Files&rdquo;), then you need to enclose both
 the file-ID and the cfg path in double quotes, e.g. <br>
 <span class="file">"C:\Program Files\l2r\latex2rt" -P "C:\Program Files\l2r\cfg" %1 %2 ...</span><br>
 or use the DOS filename equivalent instead, e.g. <br>
@@ -364,9 +366,9 @@ with Notepad (Windows).
 </ul>
      <li>WinNT, Win2000, WinXP
           <ul>
-<li>Right-click "My Computer" (German: "Arbeitsplatz"), then select "Properties";
-<li>NT: Click the "Environment" tab;<br>
-XP: Click the "Extended" tab, then the "Environment variables" button;
+<li>Right-click &ldquo;My Computer&rdquo; (German: &ldquo;Arbeitsplatz&rdquo;), then select &ldquo;Properties&rdquo;;
+<li>NT: Click the &ldquo;Environment&rdquo; tab;<br>
+XP: Click the &ldquo;Extended&rdquo; tab, then the &ldquo;Environment variables&rdquo; button;
 <li>Find the line beginning with <span class="file">PATH=</span> and insert the string <br>
 <span class="file">C:\l2r;</span><br>
 so that the complete line looks like <br>
@@ -375,16 +377,18 @@ so that the complete line looks like <br>
 </ul>
      </ul>
 
-   <p>To start the program under Windows, <br>
-open a command prompt (or console window)<br>
+   <p>To start the program under Windows:
+     <ul>
+<li>open a command prompt (or console window)<br>
 &ndash; under DOS you are already at the command prompt &ndash;,<br>
-use <span class="file">cd &lt;folder&gt;</span> to make the folder with your TeX files the
+<li>use <span class="file">cd &lt;folder&gt;</span> to make the folder with your TeX files the
 current folder, <br>
-then enter either <span class="file">L2R &lt;filename&gt; &lt;options&gt;</span>
-or <span class="file">L2RSEM &lt;filename&gt; &lt;options&gt;</span> <br>
-where &lt;filename&gt; is the name of your TeX file without the .tex extension.<br>
-<span class="file">L2R.BAT</span> and <span class="file">L2RSEM.BAT</span> only differ in the character being used
-as parameter separator in the EQ fields, see chapter <a href="#Equations">Equations</a>.
+<li>then enter either <span class="file">L2R &lt;filename&gt; &lt;options&gt;</span> or <span class="file">L2RSEM
+&lt;filename&gt; &lt;options&gt;</span> where &lt;filename&gt; is the name of your TeX file
+without the .tex extension.<br> <span class="file">L2R.BAT</span> and <span class="file">L2RSEM.BAT</span> only
+differ in the character being used as parameter separator in the EQ
+fields, see <a href="#Equations">Equations</a>. 
+</ul>
 
    <p>If your LaTeX
  document refers to external graphic files, e.g. eps,
@@ -418,7 +422,7 @@ The other fix is now hardcoded in latex2rt.exe, making sure the DOS environment
 space in which latex2pn.bat is executed is large enough to store the needed
 variables.
 
-   <p>If you get the message "Out of environment space" (should occur only under
+   <p>If you get the message &ldquo;Out of environment space&rdquo; (should occur only under
 plain DOS, Windows 3.1, Windows 95, Windows 98 or Windows ME) then<br>
 add to your config.sys a line like the following<br>
 <code>SHELL=C:\COMMAND.COM C:\ /E:4096 /P</code><br>
@@ -462,10 +466,10 @@ freely available for download at <a href="http://www.miktex.org/">http://www.mik
 ,
 the pathes to the executables are automatically found in the windows registry
 by the installer. Otherwise, these pathes may have to be specified manually
-in the "Environment" tab of the LaTeX2RTF
+in the &ldquo;Environment&rdquo; tab of the LaTeX2RTF
  window.
 
-   <p>If you get the message "Out of environment space" (should occur only under
+   <p>If you get the message &ldquo;Out of environment space&rdquo; (should occur only under
 Windows 95, Windows 98 or Windows ME) then<br>
 add to your config.sys a line like the following<br>
 <code>SHELL=C:\COMMAND.COM C:\ /E:4096 /P</code><br>
@@ -615,7 +619,8 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Using-LaTeX2RTF">Using LaTeX2RTF</a>
 <br>
 </div>
 
-<h3 class="section">3.2 LaTeX2RTF Options</h3>
+<h3 class="section">3.2 LaTeX2RTF
+ Options</h3>
 
 <p>The LaTeX2RTF
  command converts a LaTeX
@@ -1035,8 +1040,10 @@ is opened. E.g. in English versions of MS Windows, the default parameter separat
 is the comma, in German versions the default is the semicolon. If the parameter
 in the RTF file does not match the Windows setting, some EQ fields are not
 interpreted correctly. You can check and set the separator in [Windows control panel
-- country settings - numbers - list separator]. By default, latex2rtf uses
-the comma as separator. If latex2rtf is called with the command line parameter -S ,
+- country settings - numbers - list separator]. By default, LaTeX2RTF
+ uses
+the comma as separator. If LaTeX2RTF
+ is called with the command line parameter -S ,
 the semicolon is inserted as parameter delimiter.
 
 <div class="node">
@@ -1050,33 +1057,48 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Features">Features</a>
 <h3 class="section">4.8 Math and Special Symbols</h3>
 
 <p><a name="index-math-27"></a><a name="index-special-symbols-28"></a>
-Many mathematical and special symbols are supported by the conversion table
-in the file direct.cfg, see <a href="#Direct-Conversion">Direct Conversion</a>. However to display (or print)
-them correctly from the rtf file, these symbols must be available in the fonts
-in the system in which the rtf file is opened.<br>
-Required fonts are:
+The way that symbols are converted in the RTF is based on the following
+observations.  If the symbol is found in the latin 1 character set, then
+the current font is used.  The font &ldquo;Symbol&rdquo; is widely available, and therefore it is used
+for as many translations as possible.  The font &ldquo;MT Extra&rdquo; is less common,
+but is free (as in beer from Design Science, see below) and characters from this font
+are used when possible.  Note that early versions of &ldquo;MT Extra&rdquo; were missing
+some characters;  the most recent version of this font should be installed
+for best results.  Finally, if the symbol is not found in any of
+the previous fonts, then LaTeX2RTF
+ will use the unicode sequence for
+that symbol.
+
+   <p>The means that on the system where the <span class="file">.rtf</span> file is opened, a unicode
+font should be available or these glyphs will not be displayed correctly. On
+Windows machines the unicode font is &ldquo;Lucida Sans Unicode&rdquo;, on MacOS X the
+font is &ldquo;Lucida Grande&rdquo;.  Even when these fonts are installed, support for
+these unicode sequences seems to be hit-or-miss in various versions of Word since
+many of these symbols are not (yet) contained in the standard unicode fonts.
+
+   <p>Many mathematical and special symbols are directly supported by LaTeX2RTF
+. 
+Less common symbols (not found in the fonts &ldquo;Symbol&rdquo; or &ldquo;MT Extra&rdquo;)
+are supported by the conversion table in the file <span class="file">direct.cfg</span>,
+see <a href="#Direct-Conversion">Direct Conversion</a>. 
+An alternative <span class="file">direct.cfg</span> is available in which &ldquo;MT Extra&rdquo; is not used and the symbols
+which normally are taken from &ldquo;MT Extra&rdquo; are instead taken from &ldquo;Lucida Sans Unicode&rdquo;. 
+To use &ldquo;Lucida Sans Unicode&rdquo; instead of MT Extra, rename <span class="file">direct.cfg</span> (to e.g., <span class="file">
+direct_mt.cfg</span>) and rename <span class="file">direct_ucs.cfg</span> to <span class="file">direct.cfg</span>.
+
+   <p>Required fonts are:
 
      <ul>
-<li>"Times" / "Times New Roman", preferably with Unicode extension (i.e. 
-supporting all European languages including Cyrillic, Greek, and Hebrew). "Times"
-or "Times New Roman" is standard on all systems, but not its Unicode extension.
+<li>&ldquo;Times&rdquo; / &ldquo;Times New Roman&rdquo;, preferably with Unicode extension (i.e. 
+supporting all European languages including Cyrillic, Greek, and Hebrew). &ldquo;Times&rdquo;
+or &ldquo;Times New Roman&rdquo; is standard on all systems, but not its Unicode extension.
 
-     <li>"Symbol", which is standard on all systems.
+     <li>&ldquo;Symbol&rdquo;, which is standard on all systems.
 
-     <li>"MT Extra". This font is installed with the Microsoft Equation Editor,
+     <li>&ldquo;MT Extra&rdquo;. This font is installed with the Microsoft Equation Editor,
 which comes with Microsoft Word, or its full version MathType. 
 If you don't have Word or MathType, you can get this font from
 <a href="http://www.mathtype.com/en/dl/fonts/">http://www.mathtype.com/en/dl/fonts/</a>
-
-     <li>"Lucida Sans Unicode" which contains many symbols that
-aren't in the first three fonts. This is a new feature
-in LaTeX2RTF
- version 1.9.17 and may or may not work, depending
-on the system in which the rtf file is opened.<br>
-If you need these symbols, don't have "Lucida Sans Unicode"
-but have another font containing these symbols, you can
-edit direct.cfg and fonts.cfg and replace the font name in
-both files. For a description of direct.cfg see <a href="#Direct-Conversion">Direct Conversion</a>.
 
    </ul>
 
@@ -1091,7 +1113,15 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Features">Features</a>
 <h3 class="section">4.9 Tables</h3>
 
 <p><a name="index-tables-29"></a>
-The table code is currently barely working.  It needs to be rewritten.
+Conversion of tabular and tabbing environments is somewhat lame.  The
+main difficulty is that LaTeX
+ (and html) will size the columns of
+a table automatically.  There is no such feature in RTF.  Consequently,
+the conversion defaults to making all the columns have equal size.  This
+is suboptimal and should be revised.  One interesting suggestion is to
+have an option to handle these environments the same way that equations
+are handles and have latex render them as bitmaps and insert the bitmaps
+into the RTF file.  Such a feature remains to be written.
 
 <div class="node">
 <p><hr>
@@ -1105,9 +1135,9 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Features">Features</a>
 
 <p><a name="index-graphics-30"></a>
 There is now rudimentary support for <code>\includegraphics</code>.  Three file types
-will be inserted into the RTF file without needing conversion: .pict, .jpeg, and
-.png files.  EPS files are converted to PNG using <code>convert</code> from the ImageMagick
-package.  Some options are handled properly.
+will be inserted into the RTF file without needing conversion: <span class="file">.pict</span>, <span class="file">.jpeg</span>, and
+<span class="file">.png</span> files.  EPS and PDF files are converted to PNG using <code>convert</code> from the ImageMagick
+package.  Some options are even handled properly.
 
 <div class="node">
 <p><hr>
@@ -1208,10 +1238,10 @@ that we are not able or willing to convert to RTF.
    <p>You can use <span class="file">ignore.cfg</span> if you get tired of seeing
 <pre class="example">     WARNING: command: `foo' not found - ignored
 </pre>
-   <p class="noindent">and you don't need `foo' in your RTF document.  It would
-be nice to send your additions to the LaTeX2RTF
- mailing list for inclusion
-in later distributions.
+   <p class="noindent">and you don't need `foo' in your RTF document. It would be nice to send
+your additions to the LaTeX2RTF
+ mailing list for inclusion in later
+distributions.
 
    <p>LaTeX2RTF
  accepts Unix, MS-DOS, and Macintosh line ending codes (\n, \r\n
@@ -1232,14 +1262,15 @@ will be ignored by LaTeX
  but parsed by LaTeX2RTF
 . The first is simply
 to begin a line with <code>%latex2rtf:</code>, as in the following:
+
 <pre class="example">     %latex2rtf: These lines will only appear in the latex2rtf output,
      %latex2rtf: not in the LaTeX output.
 </pre>
    <p>More sophisticated processing is available with the <code>\iflatextortf</code>
 command:
+
 <pre class="example">     \newif\iflatextortf  %all \newif constructs ignored by latex2rtf
      \latextortffalse     %ignored by latex2rtf, so file works in latex
-     
      \iflatextortf
      This code is processed only by latex2rtf
      \else
@@ -1299,22 +1330,19 @@ starting with a <span class="samp">#</span> character are ignored. After the <sp
 to end of line. To select a specific font use <code>*fontname*</code>, where
 <code>fontname</code> be defined in <span class="file">fonts.cfg</span>. 
 To write the <span class="samp">*</span> character use <span class="samp">**</span>.
-<pre class="example">     \alpha,{\f*Symbol* a}. #alpha in the Symbol Font
-     \copyright,\'a9.
+
+<pre class="verbatim">
+\bigstar,{\u8727**}.
+\copyright,\'a9.
 </pre>
-   <p>Changes in version 1.9.17:<br>
-More math symbols are supported by using Unicode coding. 
-However many of these symbols are not (yet) contained in the standard
-MS Windows fonts but only in "Lucida Sans Unicode". 
-So on the system where the rtf file is opened, this font must be available,
-otherwise the symbols are not displayed correctly.<br>
-As it seems that this font is not commonly available or supported, symbols which are
-available in the standard fonts ("Times" / "Times New Roman", "Symbol", "MT Extra")
-are taken from these fonts (see <a href="#Math-and-Special-Symbols">Math and Special Symbols</a>).<br>
-An alternative direct.cfg is available by which MT Extra is not used and the symbols
-which normally are taken from MT Extra are instead taken from "Lucida Sans Unicode". 
-To use "Lucida Sans Unicode" instead of MT Extra, rename direct.cfg (to e.g. 
-direct_mt.cfg) and rename direct_ucs.cfg to direct.cfg.
+
+   <p>In general, specific fonts should not be specified in this file.   There is a
+mechanism to do this, but it turns out that this is not as useful as originally
+thought.  The main reason that this fails is because the conversion of equations
+from Word fields to Equation Editor objects is buggy.  The consequence is that
+to have symbols show up properly, they must be encoded differently when the Symbol
+and MT Extra fonts are used &mdash; depending on whether Word fields are active or
+not.  It was all very tedious to figure out a mechanism that was &ldquo;least broken.&rdquo;
 
 <div class="node">
 <p><hr>
@@ -1502,11 +1530,11 @@ This was version 1.0 of LaTeX2RTF
  was continued in another
 one-semester course by Friedrich Polzer and Gerhard Trisko. The result was LaTeX2RTF
  version
-1.5.  Ralf Schlatterbeck (ralf "at" zoo.priv.at) maintained and extended LaTeX2RTF
+1.5.  Ralf Schlatterbeck (ralf &ldquo;at&rdquo; zoo.priv.at) maintained and extended LaTeX2RTF
  until
 1998.
 
-   <p>In 1998 Georg Lehner (jorge_lehner "at" gmx.net) found the reference to LaTeX2RTF
+   <p>In 1998 Georg Lehner (jorge_lehner &ldquo;at&rdquo; gmx.net) found the reference to LaTeX2RTF
  on the
 <a href="http://tug.org/utilities/texconv/index.html">TeX Conversion Webpage</a> of
 Wilfried Hennings and added some functionality and took
@@ -1559,14 +1587,14 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#LaTeX2RTF-under-Development">LaTeX2RTF
      <ul>
 <li>LaTeX2RTF
  ignores some optional parameters of <code>\documentstyle</code>
-<li>Add the code to produce the corresponding chapter, section,
-      and page numbering with headings and myheadings pagestyles. Implement
-      <code>\markboth</code> and <code>\markright</code>. 
-<li>To support <code>\tableofcontents</code> there would be two approaches: Transfer
-      sectioning information, title text and then produce page numbers by the rtf-
-      reader. Scan and label all of the sectioning commands while reading and
-      then construct the sectioning information using these labels. Needs two
-      passes on LaTeX
+<li>Add the code to produce the corresponding chapter, section, and page
+numbering with headings and myheadings pagestyles. Implement
+<code>\markboth</code> and <code>\markright</code>. 
+<li>To support <code>\tableofcontents</code> there would be two approaches:
+Transfer sectioning information, title text and then produce page
+numbers by the rtf- reader. Scan and label all of the sectioning
+commands while reading and then construct the sectioning information
+using these labels. Needs two passes on LaTeX
  input. 
 </ul>
 
@@ -1602,19 +1630,20 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#LaTeX2RTF-under-Development">LaTeX2RTF
 <h3 class="section">8.3 Known Bugs</h3>
 
      <ol type=1 start=1>
-<li>The first parameter of a \link{anchor}[ltx]{label} is converted to the
-      rtf-output. Label is stored to hyperref for later use, the optional
-      parameter is ignored. [ltx] should be processed as Otfried recommends it,
-      to use for exclusive LaTeX
- output.e.g: \link{readhere}[~\Ref]{explaining:
-      chapter}. Since {explaining:chapter} is yet read by LaTeX
- and hyperlatex
-      when [...] is evaluated it produces the correct reference. LaTeX2RTF
- is
-      only strolling from left to right through the text and can't remember
-      what she will see in the future. 
+<li>The first parameter of a \link{anchor}[ltx]{label} is converted to
+the rtf-output. Label is stored to hyperref for later use, the optional
+parameter is ignored. [ltx] should be processed as Otfried recommends
+it, to use for exclusive LaTeX
+ output.e.g:
+\link{readhere}[~\Ref]{explaining: chapter}. Since
+{explaining:chapter} is yet read by LaTeX
+ and hyperlatex when [...] 
+is evaluated it produces the correct reference. LaTeX2RTF
+ is only
+strolling from left to right through the text and can't remember what
+she will see in the future. 
 <li>The diagnostics routine does not output the correct (actual)
-      inputfilename. (`.aux', `.bbl', <code>\input</code>).
+input filename. (`.aux', `.bbl', <code>\input</code>).
      </ol>
 
 <div class="node">
@@ -1672,21 +1701,20 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#LaTeX2RTF-under-Development">LaTeX2RTF
      <ul>
 <li>Use lex/yacc to implement getSection
 <li>Add support for pagestyle
-<li>Improve graphic/graphicx support
 <li>Better support for ignoring commands
 </ul>
 
-   <p>Georg's todo list
+<p class="noindent">Georg's todo list
      <ul>
-<li>Make this Manual more consistent, the ToDo and Known Bug List shorter and
-      the Features List longer. 
+<li>Make this Manual more consistent, the ToDo and Known Bug List shorter
+and the Features List longer. 
 <li>Harmonize all of the error and warning messages. 
 <li>Put warnings everywhere applicable about producing RTF 1.4 tokens. 
 <li>Provide an Error and Warning recovery guide to the user. 
 <li>Add a chapter with lists of all LaTeX
- commands that convert, and that do
-      not convert to RTF, including their status (for future releases, never,
-      partially functional, ...). 
+ commands that convert, and that
+do not convert to RTF, including their status (for future releases,
+never, partially functional, ...). 
 </ul>
 
 <div class="node">
@@ -1748,7 +1776,8 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 <li><a name="toc_Installation" href="#Installation">2 Installation</a>
 <ul>
 <li><a href="#General">2.1 General</a>
-<li><a href="#Obtaining-LaTeX2RTF">2.2 Obtaining LaTeX2RTF</a>
+<li><a href="#Obtaining-LaTeX2RTF">2.2 Obtaining LaTeX2RTF
+</a>
 <li><a href="#UNIX">2.3 UNIX</a>
 <li><a href="#DOS-or-Windows">2.4 DOS or Windows</a>
 <li><a href="#Win32-systems">2.5 Win32 systems</a>
@@ -1759,7 +1788,8 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 <li><a name="toc_Using-LaTeX2RTF" href="#Using-LaTeX2RTF">3 Using LaTeX2RTF</a>
 <ul>
 <li><a href="#General-Assumptions">3.1 General Assumptions</a>
-<li><a href="#LaTeX2RTF-Options">3.2 LaTeX2RTF Options</a>
+<li><a href="#LaTeX2RTF-Options">3.2 LaTeX2RTF
+ Options</a>
 <li><a href="#Debugging">3.3 Debugging</a>
 </li></ul>
 <li><a name="toc_Features" href="#Features">4 Features</a>
