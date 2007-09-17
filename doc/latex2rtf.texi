@@ -97,8 +97,8 @@ This file documents @ltor{}, a converter that translates @latex{} to RTF.
 * Features::                    
 * Configuration::      
 * Error Messages and Logging ::  
-* LaTeX2RTF under Development ::  
 * History::                     
+* LaTeX2RTF under Development ::  
 * Index::  
 @end menu
 @ifnottex

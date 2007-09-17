@@ -1,5 +1,5 @@
-This is latex2rtf.info, produced by makeinfo version 4.7 from
-latex2rtf.texi.
+This is doc/latex2rtf.info, produced by makeinfo version 4.8 from
+doc/latex2rtf.texi.
 
 
 File: latex2rtf.info,  Node: Top,  Next: Introduction,  Up: (dir)
@@ -18,8 +18,8 @@ RTF.
 * Features::
 * Configuration::
 * Error Messages and Logging ::
-* LaTeX2RTF under Development ::
 * History::
+* LaTeX2RTF under Development ::
 * Index::
 
    Copyright 1998-2002 Georg Lehner,
@@ -1424,48 +1424,48 @@ File: latex2rtf.info,  Node: Index,  Prev: LaTeX2RTF under Development,  Up: Top
 
 
 Tag Table:
-Node: Top79
-Node: Introduction1375
-Node: Installation4307
-Node: General4604
-Node: Obtaining LaTeX2RTF4947
-Node: UNIX5946
-Node: DOS or Windows8724
-Node: Win32 systems15072
-Node: Macintosh16777
-Node: Problems Compiling17704
-Node: Problems with make check18402
-Node: Using LaTeX2RTF18928
-Node: General Assumptions19133
-Node: LaTeX2RTF Options20971
-Node: Debugging28618
-Node: Features29263
-Node: LaTeX2e29684
-Node: Unicode Support30003
-Node: Input Encoding30457
-Node: Language Support31221
-Node: Cross References32747
-Node: Equations35378
-Node: Math and Special Symbols36651
-Node: Tables38197
-Node: Graphics38396
-Node: Pagestyles38796
-Node: Hyperlatex39400
-Node: Configuration40476
-Node: Input processing40767
-Node: Output formatting42150
-Node: Direct Conversion42903
-Node: Ignore Command44541
-Node: Font Configuration46254
-Node: Language Configuration47564
-Node: Error Messages and Logging48183
-Node: History50281
-Node: LaTeX2RTF under Development52159
-Node: Unimplemented Features52430
-Node: Missing options53256
-Node: Known Bugs53837
-Node: Reporting Bugs54728
-Node: Todo List56371
-Node: Index57205
+Node: Top87
+Node: Introduction1383
+Node: Installation4315
+Node: General4612
+Node: Obtaining LaTeX2RTF4955
+Node: UNIX5954
+Node: DOS or Windows8732
+Node: Win32 systems15080
+Node: Macintosh16785
+Node: Problems Compiling17712
+Node: Problems with make check18410
+Node: Using LaTeX2RTF18936
+Node: General Assumptions19141
+Node: LaTeX2RTF Options20979
+Node: Debugging28626
+Node: Features29271
+Node: LaTeX2e29692
+Node: Unicode Support30011
+Node: Input Encoding30465
+Node: Language Support31229
+Node: Cross References32755
+Node: Equations35386
+Node: Math and Special Symbols36659
+Node: Tables38205
+Node: Graphics38404
+Node: Pagestyles38804
+Node: Hyperlatex39408
+Node: Configuration40484
+Node: Input processing40775
+Node: Output formatting42158
+Node: Direct Conversion42911
+Node: Ignore Command44549
+Node: Font Configuration46262
+Node: Language Configuration47572
+Node: Error Messages and Logging48191
+Node: History50289
+Node: LaTeX2RTF under Development52167
+Node: Unimplemented Features52438
+Node: Missing options53264
+Node: Known Bugs53845
+Node: Reporting Bugs54736
+Node: Todo List56379
+Node: Index57213
 
 End Tag Table
