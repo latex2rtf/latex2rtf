@@ -880,8 +880,8 @@ File: latex2rtf.info,  Node: Page Formatting,  Next: Equations,  Prev: Cross Ref
 
 LaTeX2RTF  will handle some basic page formatting options, including
 \doublespacing (as implemented in the setspace package), and the margin
-setting options provided by the geometry package include commands in the
-ratio, centering and margin families. Not all geometry options are
+setting options provided by the geometry package including commands in
+the ratio, centering and margin families. Not all geometry options are
 implemented yet, in part because there are no corresponding rtf commands
 for many of them.
 
@@ -1034,10 +1034,9 @@ characters. If it encounters one of the standard commands it is
 converted internally. If a command is not known to LaTeX2RTF  it is
 first looked up in `direct.cfg' and the RTF code specified there is
 output. If not found there it is looked up in the section `ignore.cfg'.
-This file includes a lot of LaTeX
-
-   commands that do not affect the output (cross reference information
-and the like), or that we are not able or willing to convert to RTF.
+This file includes a lot of LaTeX  commands that do not affect the
+output (cross reference information and the like), or that we are not
+able or willing to convert to RTF.
 
    You can use `ignore.cfg' if you get tired of seeing
      WARNING: command: `foo' not found - ignored
@@ -1053,6 +1052,32 @@ platform on which LaTeX2RTF  was compiled.
 character sets.  If the LaTeX  lacks the `\package[codepage]{inputenc}'
 definition, then you may need to use the command line switch to manually
 select the proper code page (*note Input Encoding::).
+
+   As of LaTeX2RTF  1.9.17, there are two options for including content
+that will be ignored by LaTeX  but parsed by LaTeX2RTF . The first is
+simply to begin a line with `%latex2rtf:', as in the following:
+     %latex2rtf: These lines will only appear in the latex2rtf output,
+     %latex2rtf: not in the LaTeX output.
+
+   More sophisticated processing is available with the `\iflatextortf'
+command:
+     \newif\iflatextortf  %all \newif constructs ignored by latex2rtf
+     \latextortffalse     %ignored by latex2rtf, so file works in latex
+
+     \iflatextortf
+     This code is processed only by latex2rtf
+     \else
+     This code is processed only by latex
+     \fi
+
+   Note that `\iflatextortf' will only work within a section; you
+cannot use this command to conditionally parse code that crosses section
+boundaries. Also, it will only work on complete table or figure
+environments. Due to the mechanism used by LaTeX2RTF  in processing
+these environments, at this time the only way to conditionally parse
+tables and figures is to include two complete versions of the
+environment in question, nested within an appropriate \iflatex2rtf
+structure.
 
 
 File: latex2rtf.info,  Node: Output formatting,  Next: Direct Conversion,  Prev: Input processing,  Up: Configuration
@@ -1433,6 +1458,7 @@ File: latex2rtf.info,  Node: Index,  Prev: LaTeX2RTF under Development,  Up: Top
  [index ]
 * Menu:
 
+* %latex2rtf:                            Input processing.     (line 30)
 * apacite:                               Cross References.     (line 30)
 * apalike:                               Cross References.     (line 30)
 * apanat1b:                              Cross References.     (line 30)
@@ -1447,7 +1473,9 @@ File: latex2rtf.info,  Node: Index,  Prev: LaTeX2RTF under Development,  Up: Top
 * bibliography, harvard:                 Cross References.     (line 30)
 * bibliography, natbib:                  Cross References.     (line 30)
 * BibTeX:                                Cross References.     (line 23)
+* conditional parsing:                   Input processing.     (line 30)
 * Copyright issues:                      History.              (line  6)
+* direct.cfg:                            Input processing.     (line  6)
 * double spacing:                        Page Formatting.      (line  6)
 * equations:                             Equations.            (line  6)
 * footnotes:                             Cross References.     (line 39)
@@ -1456,7 +1484,10 @@ File: latex2rtf.info,  Node: Index,  Prev: LaTeX2RTF under Development,  Up: Top
 * harvard:                               Cross References.     (line 30)
 * History of the program:                History.              (line  6)
 * hyperlatex:                            Hyperlatex.           (line  6)
+* iflatextortf:                          Input processing.     (line 30)
+* ignore.cfg:                            Input processing.     (line  6)
 * index:                                 Cross References.     (line 41)
+* input processing:                      Input processing.     (line  6)
 * language support:                      Language Support.     (line  6)
 * line spacing:                          Page Formatting.      (line  6)
 * margins:                               Page Formatting.      (line  6)
@@ -1495,27 +1526,27 @@ Node: Input Encoding30486
 Node: Language Support31250
 Node: Cross References32776
 Node: Page Formatting35482
-Node: Equations36002
-Node: Math and Special Symbols37274
-Node: Tables38820
-Node: Graphics39019
-Node: Pagestyles39421
-Node: Hyperlatex40025
-Node: Configuration41101
-Node: Input processing41392
-Node: Output formatting42775
-Node: Direct Conversion43528
-Node: Ignore Command45166
-Node: Font Configuration46879
-Node: Language Configuration48189
-Node: Error Messages and Logging48808
-Node: History50906
-Node: LaTeX2RTF under Development52784
-Node: Unimplemented Features53055
-Node: Missing options53881
-Node: Known Bugs54462
-Node: Reporting Bugs55353
-Node: Todo List56996
-Node: Index57830
+Node: Equations36004
+Node: Math and Special Symbols37276
+Node: Tables38822
+Node: Graphics39021
+Node: Pagestyles39423
+Node: Hyperlatex40027
+Node: Configuration41103
+Node: Input processing41394
+Node: Output formatting43926
+Node: Direct Conversion44679
+Node: Ignore Command46317
+Node: Font Configuration48030
+Node: Language Configuration49340
+Node: Error Messages and Logging49959
+Node: History52057
+Node: LaTeX2RTF under Development53935
+Node: Unimplemented Features54206
+Node: Missing options55032
+Node: Known Bugs55613
+Node: Reporting Bugs56504
+Node: Todo List58147
+Node: Index58981
 
 End Tag Table

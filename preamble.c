@@ -728,9 +728,7 @@ void ExecGeomOptions (char *key, char *value1, char *value2)
 		ratio_sum = dist1 + dist2;
 		margin_sum = g_geomMargt + g_geomMargb;
 		g_geomMargt = (int) (((float) dist1 / (float) ratio_sum) * (float) margin_sum);
-		printf("g_geomMargt %d\n", g_geomMargt);
 		g_geomMargb = (int) (((float) dist2 / (float) ratio_sum) * (float) margin_sum);
-		printf("g_geomMargb %d\n", g_geomMargb);
     } else if ((strcmp(key, "marginratio") == 0) || (strcmp(key, "ratio") == 0)) {
 		ExecGeomOptions ("hmarginratio", value1, value1b);
 		ExecGeomOptions ("vmarginratio", value2, value2b);

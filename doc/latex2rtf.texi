@@ -1038,14 +1038,18 @@ there are a lot of HTML oriented commands in Hyperlatex that we simply can
 
 @node Input processing, Output formatting, Configuration, Configuration
 @section Input processing 
+@cindex input processing
+@cindex direct.cfg
+@cindex ignore.cfg
 
-On processing input @ltor{} first converts the @latex{} special characters. If
-it encounters one of the standard commands it is converted internally. If a
-command is not known to @ltor{} it is first looked up in
-@file{direct.cfg} and the RTF code specified there is output. If not found there it
-is looked up in the section @file{ignore.cfg}.  This file includes a lot of @latex{}
-commands that do not affect the output (cross reference information
-and the like), or that we are not able or willing to convert to RTF.
+On processing input @ltor{} first converts the @latex{} special
+characters. If it encounters one of the standard commands it is
+converted internally. If a command is not known to @ltor{} it is first
+looked up in @file{direct.cfg} and the RTF code specified there is
+output. If not found there it is looked up in the section
+@file{ignore.cfg}. This file includes a lot of @latex{} commands that do
+not affect the output (cross reference information and the like), or
+that we are not able or willing to convert to RTF.
 
 You can use @file{ignore.cfg} if you get tired of seeing 
 @example
@@ -1063,6 +1067,38 @@ The @latex{} file may have been created with a wide variety of character
 sets.  If the @latex{} lacks the @code{\package[codepage]@{inputenc@}}
 definition, then you may need to use the command line switch to manually
 select the proper code page (@pxref{Input Encoding}).
+
+@cindex conditional parsing
+@cindex %latex2rtf
+@cindex iflatextortf
+As of @ltor{} 1.9.17, there are two options for including content that
+will be ignored by @latex{} but parsed by @ltor{}. The first is simply
+to begin a line with @code{%latex2rtf:}, as in the following:
+@example
+%latex2rtf: These lines will only appear in the latex2rtf output, 
+%latex2rtf: not in the LaTeX output.
+@end example
+
+More sophisticated processing is available with the @code{\iflatextortf}
+command:
+@example
+\newif\iflatextortf  %all \newif constructs ignored by latex2rtf
+\latextortffalse     %ignored by latex2rtf, so file works in latex
+
+\iflatextortf
+This code is processed only by latex2rtf
+\else
+This code is processed only by latex
+\fi
+@end example
+
+Note that @code{\iflatextortf} will only work within a section; you
+cannot use this command to conditionally parse code that crosses section
+boundaries. Also, it will only work on complete table or figure
+environments. Due to the mechanism used by @ltor{} in processing these
+environments, at this time the only way to conditionally parse tables
+and figures is to include two complete versions of the environment in
+question, nested within an appropriate \iflatex2rtf structure.
 
 @node Output formatting, Direct Conversion, Input processing, Configuration
 @section Output formatting 
