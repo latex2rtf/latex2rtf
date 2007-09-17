@@ -1,5 +1,5 @@
 @echo off
-echo latex2pn.bat (%1 %2 %3 %4 %5 %6 %7 %8 %9) >> latex2pn.log
+echo calling latex2pn.bat (%1 %2 %3 %4 %5 %6 %7 %8 %9) >> latex2pn.log
 rem This version uses latex and dvips
 rem              with convert (Part of ImageMagick)
 rem
@@ -76,6 +76,7 @@ IF NOT EXIST %fn%.png GOTO ERR4
 IF %inline%==0 GOTO NOIN
 
 pngtopnm %fn%.png | pnmcrop -white -left > %fn%.ppm
+IF NOT EXIST %fn%.ppm echo ERROR: NetPBM failed to create %fn%.ppm from %fn%.png >> latex2pn.log
 
 rem ** %fn%.pbm created by next line contains the "INLINE_DOT"
 rem ** and is needed by latex2rt.exe 
@@ -83,6 +84,8 @@ rem ** for calculating vertical alignment of the bitmap
 pnmcut -width 1 %fn%.ppm | ppmtopgm | pgmtopbm > %fn%.pbm
 pnmcut -left %of% %fn%.ppm | pnmcrop -left | pnmtopng > %fn%.png
 del %fn%.ppm
+IF NOT EXIST %fn%.pbm echo ERROR: NetPBM failed to create %fn%.pbm from %fn%.ppm >> latex2pn.log
+IF NOT EXIST %fn%.png echo ERROR: NetPBM failed to create %fn%.png from %fn%.ppm >> latex2pn.log
 
 :NOIN
 IF NOT EXIST %fn%.tex goto cleanup
