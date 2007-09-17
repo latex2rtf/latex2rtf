@@ -757,7 +757,8 @@ correctly to RTF.
 * Unicode Support::                     
 * Input Encoding ::          
 * Language Support ::          
-* Cross References ::            
+* Cross References ::
+* Page Formatting ::
 * Equations ::  
 * Math and Special Symbols ::
 * Tables ::
@@ -796,6 +797,8 @@ in the RTF file using cp1251 (Windows Cyrillic).
 
 @node Language Support, Cross References, Input Encoding, Features
 @section Language Support
+@cindex language support
+@cindex babel
 
 The following languages from the Babel package are supported: afrikaans,
 german, nynorsk, spanish, bahasa, dutch, icelandic, polish, swedish,
@@ -825,7 +828,7 @@ There is reasonable support for english, latin1, latin2, and cyrillic languages.
 @xref{Language Configuration}, for details on how to write a @file{language.cfg} file
 for your language by yourself.
 
-@node Cross References, Equations, Language Support, Features
+@node Cross References, Page Formatting, Language Support, Features
 @section Cross References
 
 Cross references include everything that you might expect and then some:
@@ -839,18 +842,33 @@ means that Word does not automatically update the page references when the file
 is opened.  To update the page references you must select the entire document
 (in Word) and press @code{F9}.
 
+@cindex bibliography
 Bibliographic references currently require that a valid @file{.aux} file be
 present.  This is where @ltor{} obtains the reference numbers.  It would be
 nice if @ltor{} just automatically numbered the references when there was
 no @file{.aux} file, but @ltor{} does not do this yet.
  
-@ltor{} relies on @bibtex{} to convert and format bibliographic
-entries.  Usually the style file for a particular @bibtex{} format
-does not use any special @latex{} commands and therefore the
-bibliography file @file{file.bbl} can be processed by @ltor{}
-without difficulty.  As a consequence, @ltor{} can handle most
-bibliography styles without problem.
+@cindex bibliography, BibTeX
+@cindex BibTeX
+@ltor{} relies on @bibtex{} to convert and format bibliographic entries.
+Usually the style file for a particular @bibtex{} format does not use
+any special @latex{} commands and therefore the bibliography file
+@file{file.bbl} can be processed by @ltor{} without difficulty. As a
+consequence, @ltor{} can handle most bibliography styles without
+problem.
 
+@cindex bibliography, apacite
+@cindex bibliography, apalike
+@cindex bibliography, authordate
+@cindex bibliography, harvard
+@cindex bibliography, natbib
+@cindex bibliography, apanat1b
+@cindex apacite
+@cindex apalike
+@cindex authordate
+@cindex harvard
+@cindex natbib
+@cindex apanat1b
 There are several latex style packages that add additional
 latex commands to enhance bibliographic formatting.
 @ltor{} currently supports the following bibliographic packages:@*
@@ -858,8 +876,12 @@ apacite, apalike, authordate, harvard, natbib (also with apanat1b).
 These packages have many, many options and you may encounter
 problems with formatting in special cases.
 
-Footnotes are implemented and appear at the bottom of each page.  
+As of @ltor{} 1.9.17, the natbib command bibpunct is supported.
 
+Footnotes are implemented and appear at the bottom of each page.  
+@cindex footnotes
+
+@cindex index
 Indexing is reasonably-well supported.  The simple mark-up of @code{makeindex}
 @example
 \index@{topic!subtopic@@\textit@{subtopic@}@}
@@ -876,8 +898,25 @@ mechanisms in the @latex{} and Word worlds.  In particular, if there are
 multiple @code{\label} in a figure, table, or section environment then only the first
 gets processed.  It is also possible to confuse the @ltor{} in eqnarray environments.
 
-@node Equations, Math and Special Symbols, Cross References, Features
+@node Page Formatting, Equations, Cross References, Features
+@section Page Formatting
+@cindex page formatting
+@cindex geometry package
+@cindex margins
+@cindex line spacing
+@cindex double spacing
+@cindex setspace package
+
+@ltor{} will handle some basic page formatting options, including
+\doublespacing (as implemented in the setspace package), and the margin
+setting options provided by the geometry package including commands in the
+ratio, centering and margin families. Not all geometry options are
+implemented yet, in part because there are no corresponding rtf commands
+for many of them.
+
+@node Equations, Math and Special Symbols, Page Formatting, Features
 @section Equations
+@cindex equations
 
 There are five separate levels of equation translation based on the -M switch, 
 see @ref{LaTeX2RTF Options}.
@@ -901,6 +940,8 @@ the semicolon is inserted as parameter delimiter.
 
 @node Math and Special Symbols, Tables, Equations, Features
 @section Math and Special Symbols
+@cindex math
+@cindex special symbols
 
 Many mathematical and special symbols are supported by the conversion table
 in the file direct.cfg, see @ref{Direct Conversion}. However to display (or print) 
@@ -934,11 +975,13 @@ both files. For a description of direct.cfg see @ref{Direct Conversion}.
 
 @node Tables, Graphics, Math and Special Symbols, Features
 @section Tables
+@cindex tables
 
 The table code is currently barely working.  It needs to be rewritten.
 
 @node Graphics, Pagestyles, Tables, Features
 @section Graphics
+@cindex graphics
 
 There is now rudimentary support for @code{\includegraphics}.  Three file types
 will be inserted into the RTF file without needing conversion: .pict, .jpeg, and
@@ -947,6 +990,7 @@ package.  Some options are handled properly.
 
 @node Pagestyles, Hyperlatex, Graphics, Features
 @section Pagestyles
+@cindex pagestyles
 
 If there is no @code{\pagestyle} command, the RTF output is generated as with plain
 pagestyle, i.e. each page has its page number centered at the bottom.
@@ -960,6 +1004,7 @@ Note that these features require RTF Version 1.4.
 
 @node Hyperlatex, , Pagestyles, Features
 @section Hyperlatex
+@cindex hyperlatex
 
 Hyperlatex support is largely broken at the moment, but continues to improve.
 
@@ -1202,7 +1247,7 @@ at times.  @xref{Known Bugs}.
 
 @node History, LaTeX2RTF under Development, Error Messages and Logging, Top
 @chapter History & Copyright
-@cindex History of the programm
+@cindex History of the program
 @cindex Copyright issues
 
 In 1994 the first Version of @ltor{} was written by Fernando Dorner and Andreas Granzer of

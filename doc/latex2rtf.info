@@ -730,6 +730,7 @@ correctly to RTF.
 * Input Encoding ::
 * Language Support ::
 * Cross References ::
+* Page Formatting ::
 * Equations ::
 * Math and Special Symbols ::
 * Tables ::
@@ -813,7 +814,7 @@ cyrillic languages.
 `language.cfg' file for your language by yourself.
 
 
-File: latex2rtf.info,  Node: Cross References,  Next: Equations,  Prev: Language Support,  Up: Features
+File: latex2rtf.info,  Node: Cross References,  Next: Page Formatting,  Prev: Language Support,  Up: Features
 
 4.5 Cross References
 ====================
@@ -838,10 +839,9 @@ this yet.
    LaTeX2RTF  relies on BibTeX  to convert and format bibliographic
 entries.  Usually the style file for a particular BibTeX  format does
 not use any special LaTeX  commands and therefore the bibliography file
-`file.bbl' can be processed by LaTeX2RTF
-
-   without difficulty.  As a consequence, LaTeX2RTF  can handle most
-bibliography styles without problem.
+`file.bbl' can be processed by LaTeX2RTF  without difficulty. As a
+consequence, LaTeX2RTF  can handle most bibliography styles without
+problem.
 
    There are several latex style packages that add additional latex
 commands to enhance bibliographic formatting.  LaTeX2RTF  currently
@@ -850,7 +850,9 @@ apacite, apalike, authordate, harvard, natbib (also with apanat1b).
 These packages have many, many options and you may encounter problems
 with formatting in special cases.
 
-   Footnotes are implemented and appear at the bottom of each page.
+   As of LaTeX2RTF  1.9.17, the natbib command bibpunct is supported.
+
+   Footnotes are implemented and appear at the bottom of each page.  
 
    Indexing is reasonably-well supported.  The simple mark-up of
 `makeindex'
@@ -871,9 +873,22 @@ then only the first gets processed.  It is also possible to confuse the
 LaTeX2RTF  in eqnarray environments.
 
 
-File: latex2rtf.info,  Node: Equations,  Next: Math and Special Symbols,  Prev: Cross References,  Up: Features
+File: latex2rtf.info,  Node: Page Formatting,  Next: Equations,  Prev: Cross References,  Up: Features
 
-4.6 Equations
+4.6 Page Formatting
+===================
+
+LaTeX2RTF  will handle some basic page formatting options, including
+\doublespacing (as implemented in the setspace package), and the margin
+setting options provided by the geometry package include commands in the
+ratio, centering and margin families. Not all geometry options are
+implemented yet, in part because there are no corresponding rtf commands
+for many of them.
+
+
+File: latex2rtf.info,  Node: Equations,  Next: Math and Special Symbols,  Prev: Page Formatting,  Up: Features
+
+4.7 Equations
 =============
 
 There are five separate levels of equation translation based on the -M
@@ -899,7 +914,7 @@ line parameter -S , the semicolon is inserted as parameter delimiter.
 
 File: latex2rtf.info,  Node: Math and Special Symbols,  Next: Tables,  Prev: Equations,  Up: Features
 
-4.7 Math and Special Symbols
+4.8 Math and Special Symbols
 ============================
 
 Many mathematical and special symbols are supported by the conversion
@@ -933,7 +948,7 @@ Required fonts are:
 
 File: latex2rtf.info,  Node: Tables,  Next: Graphics,  Prev: Math and Special Symbols,  Up: Features
 
-4.8 Tables
+4.9 Tables
 ==========
 
 The table code is currently barely working.  It needs to be rewritten.
@@ -941,8 +956,8 @@ The table code is currently barely working.  It needs to be rewritten.
 
 File: latex2rtf.info,  Node: Graphics,  Next: Pagestyles,  Prev: Tables,  Up: Features
 
-4.9 Graphics
-============
+4.10 Graphics
+=============
 
 There is now rudimentary support for `\includegraphics'.  Three file
 types will be inserted into the RTF file without needing conversion:
@@ -953,7 +968,7 @@ properly.
 
 File: latex2rtf.info,  Node: Pagestyles,  Next: Hyperlatex,  Prev: Graphics,  Up: Features
 
-4.10 Pagestyles
+4.11 Pagestyles
 ===============
 
 If there is no `\pagestyle' command, the RTF output is generated as
@@ -969,7 +984,7 @@ Note that these features require RTF Version 1.4.
 
 File: latex2rtf.info,  Node: Hyperlatex,  Prev: Pagestyles,  Up: Features
 
-4.11 Hyperlatex
+4.12 Hyperlatex
 ===============
 
 Hyperlatex support is largely broken at the moment, but continues to
@@ -1418,8 +1433,42 @@ File: latex2rtf.info,  Node: Index,  Prev: LaTeX2RTF under Development,  Up: Top
  [index ]
 * Menu:
 
-* Copyright issues:                      History.               (line 6)
-* History of the programm:               History.               (line 6)
+* apacite:                               Cross References.     (line 30)
+* apalike:                               Cross References.     (line 30)
+* apanat1b:                              Cross References.     (line 30)
+* authordate:                            Cross References.     (line 30)
+* babel:                                 Language Support.     (line  6)
+* bibliography:                          Cross References.     (line 17)
+* bibliography, apacite:                 Cross References.     (line 30)
+* bibliography, apalike:                 Cross References.     (line 30)
+* bibliography, apanat1b:                Cross References.     (line 30)
+* bibliography, authordate:              Cross References.     (line 30)
+* bibliography, BibTeX:                  Cross References.     (line 23)
+* bibliography, harvard:                 Cross References.     (line 30)
+* bibliography, natbib:                  Cross References.     (line 30)
+* BibTeX:                                Cross References.     (line 23)
+* Copyright issues:                      History.              (line  6)
+* double spacing:                        Page Formatting.      (line  6)
+* equations:                             Equations.            (line  6)
+* footnotes:                             Cross References.     (line 39)
+* geometry package:                      Page Formatting.      (line  6)
+* graphics:                              Graphics.             (line  6)
+* harvard:                               Cross References.     (line 30)
+* History of the program:                History.              (line  6)
+* hyperlatex:                            Hyperlatex.           (line  6)
+* index:                                 Cross References.     (line 41)
+* language support:                      Language Support.     (line  6)
+* line spacing:                          Page Formatting.      (line  6)
+* margins:                               Page Formatting.      (line  6)
+* math:                                  Math and Special Symbols.
+                                                               (line  6)
+* natbib:                                Cross References.     (line 30)
+* page formatting:                       Page Formatting.      (line  6)
+* pagestyles:                            Pagestyles.           (line  6)
+* setspace package:                      Page Formatting.      (line  6)
+* special symbols:                       Math and Special Symbols.
+                                                               (line  6)
+* tables:                                Tables.               (line  6)
 
 
 
@@ -1440,32 +1489,33 @@ Node: General Assumptions19141
 Node: LaTeX2RTF Options20979
 Node: Debugging28626
 Node: Features29271
-Node: LaTeX2e29692
-Node: Unicode Support30011
-Node: Input Encoding30465
-Node: Language Support31229
-Node: Cross References32755
-Node: Equations35386
-Node: Math and Special Symbols36659
-Node: Tables38205
-Node: Graphics38404
-Node: Pagestyles38804
-Node: Hyperlatex39408
-Node: Configuration40484
-Node: Input processing40775
-Node: Output formatting42158
-Node: Direct Conversion42911
-Node: Ignore Command44549
-Node: Font Configuration46262
-Node: Language Configuration47572
-Node: Error Messages and Logging48191
-Node: History50289
-Node: LaTeX2RTF under Development52167
-Node: Unimplemented Features52438
-Node: Missing options53264
-Node: Known Bugs53845
-Node: Reporting Bugs54736
-Node: Todo List56379
-Node: Index57213
+Node: LaTeX2e29713
+Node: Unicode Support30032
+Node: Input Encoding30486
+Node: Language Support31250
+Node: Cross References32776
+Node: Page Formatting35482
+Node: Equations36002
+Node: Math and Special Symbols37274
+Node: Tables38820
+Node: Graphics39019
+Node: Pagestyles39421
+Node: Hyperlatex40025
+Node: Configuration41101
+Node: Input processing41392
+Node: Output formatting42775
+Node: Direct Conversion43528
+Node: Ignore Command45166
+Node: Font Configuration46879
+Node: Language Configuration48189
+Node: Error Messages and Logging48808
+Node: History50906
+Node: LaTeX2RTF under Development52784
+Node: Unimplemented Features53055
+Node: Missing options53881
+Node: Known Bugs54462
+Node: Reporting Bugs55353
+Node: Todo List56996
+Node: Index57830
 
 End Tag Table
