@@ -174,6 +174,7 @@ doc: doc/latex2rtf.texi doc/Makefile
 	cd doc && $(MAKE) -k
 
 install: latex2rtf doc/latex2rtf.1 $(CFGS) scripts/latex2png
+	cd doc && $(MAKE)
 	$(MKDIR) $(BIN_INSTALL)
 	$(MKDIR) $(MAN_INSTALL)
 	$(MKDIR) $(CFG_INSTALL)
