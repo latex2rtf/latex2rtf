@@ -99,14 +99,16 @@ This file documents @ltor{}, a converter that translates @latex{} to RTF.
 * Error Messages and Logging::  
 * History::                     
 * LaTeX2RTF under Development::  
-* LaTeX Commands::              
-* Index::                       
+* Function Index::              
+* Concept Index::               
 
 @detailmenu
  --- The Detailed Node Listing ---
 
 Installation
 
+* General::                     
+* Obtaining LaTeX2RTF::         
 * UNIX::                        
 * DOS or Windows::              
 * Win32 systems::               
@@ -151,6 +153,41 @@ LaTeX2RTF under Development
 * Known Bugs::                  
 * Reporting Bugs::              
 * Todo List::                   
+* LaTeX Commands::              
+
+Command List
+
+* General Commands::            
+* Preamble Commands::           
+* Letter Commands::             
+* Language Commands::           
+* Citation Commands::           
+* Other Commands::              
+* Environments::                
+
+General Commands
+
+* Basic Commands::              
+* Font Commands::               
+* Logos::                       
+* Special Characters::          
+* Sectioning Commands::         
+* Uncategorized::               
+
+Language Commands
+
+* German Commands::             
+* Czech Commands::              
+* French Commands::             
+* Russian Commands::            
+
+Citation Commands
+
+* Apacite Commands::            
+* AuthorDate Commands::         
+* Harvard Commands::            
+* HyperLatex Commands::         
+* Natbib Commands::             
 
 @end detailmenu
 @end menu
@@ -245,8 +282,8 @@ For more details on RTF the specification consult the links at @uref{http://late
 @cindex installation
 
 @menu
-* General::
-* Obtaining LaTeX2RTF::
+* General::                     
+* Obtaining LaTeX2RTF::         
 * UNIX::                        
 * DOS or Windows::              
 * Win32 systems::               
@@ -1398,7 +1435,7 @@ One day there shall be a jump to Version 2.0, but this is not history but future
 The contents of this manual were composed by copying shamelessly what was
 available in the original sources and documentation.
 
-@node LaTeX2RTF under Development, LaTeX Commands, History, Top
+@node LaTeX2RTF under Development, Function Index, History, Top
 @chapter LaTeX2RTF under Development 
 
 @menu
@@ -1407,6 +1444,7 @@ available in the original sources and documentation.
 * Known Bugs::                  
 * Reporting Bugs::              
 * Todo List::                   
+* LaTeX Commands::              
 @end menu
 
 @node Unimplemented Features, Missing options, LaTeX2RTF under Development, LaTeX2RTF under Development
@@ -1491,7 +1529,7 @@ write most of the code. Often I do not have the time to answer to your
 question. I will, however, try to fix reported bugs in upcoming releases.
 @end enumerate
 
-@node Todo List,  , Reporting Bugs, LaTeX2RTF under Development
+@node Todo List, LaTeX Commands, Reporting Bugs, LaTeX2RTF under Development
 @section Todo List 
 
 Scott's ToDo list
@@ -1519,8 +1557,8 @@ do not convert to RTF, including their status (for future releases,
 never, partially functional, ...).
 @end itemize
 
-@node LaTeX Commands, Index, LaTeX2RTF under Development, Top
-@appendix Command List
+@node LaTeX Commands,  , Todo List, LaTeX2RTF under Development
+@section Command List
 
 Listed here are all the @latex{} commands currently parsed by @ltor{}.
 Note: inclusion in this list does not mean that a command is fully and
@@ -1533,596 +1571,277 @@ work in progress, and may not be immediately useful to general users,
 other than to indicate those commands that we have at least contemplated
 implementing.
 
-@noindent
-Commands in the @code{commands[]} array:
+@menu
+* General Commands::            
+* Preamble Commands::           
+* Letter Commands::             
+* Language Commands::           
+* Citation Commands::           
+* Other Commands::              
+* Environments::                
+@end menu
 
-General
-@table @asis
+@node General Commands, Preamble Commands, LaTeX Commands, LaTeX Commands
+@comment  node-name,  next,  previous,  up
+@subsection General Commands
+
+These commands are found in the @code{commands[]} array in commands.c.
+They are arranged alphabetically within sections according to function.
+
+@menu
+* Basic Commands::              
+* Font Commands::               
+* Logos::                       
+* Special Characters::          
+* Sectioning Commands::         
+* Uncategorized::               
+@end menu
+
+@node Basic Commands, Font Commands, General Commands, General Commands
+@comment  node-name,  next,  previous,  up
+@subsubsection Basic Commands
+
+All listed commands work as expected.
+
+@ftable @asis
 @item begin
-@item end
-@item today
-@item footnote
-@item endnote
-@item the
-@item raggedright
 @item centerline
+@item end
+@item endnote
+@item footnote
+@item raggedright
+@item the
+@item today
 @item vcenter
-@end table
+@end ftable
 
+@node Font Commands, Logos, Basic Commands, General Commands
+@comment  node-name,  next,  previous,  up
+@subsubsection Font Commands
 
-Fonts
-@table @asis
-@item rmfamily
-@item rm
-@item mathrm
-@item textrm
-@item sffamily
-@item sf
-@item mathsf
-@item textsf
-@item ttfamily
-@item tt
-@item mathtt
-@item texttt
-@item cal
-@item mathcal
-@item bfseries
+All listed commands work as expected.
+
+@ftable @asis
 @item bf
-@item textbf
-@item mathbf
-@item mdseries
-@item textmd
-@item mathmd
-@item itshape
-@item it
-@item mit
-@item textit
-@item mathit
-@item upshape
-@item textup
-@item mathup
-@item scfamily
-@item scshape
-@item sc
-@item textsc
-@item mathsc
-@item slshape
-@item sl
-@item textsl
-@item mathsl
-@item tiny
-@item ssmall
-@item scriptsize
-@item footnotesize
-@item enotesize
-@item small
-@item normalsize
-@item large
-@item Large
-@item LARGE
-@item huge
-@item Huge
-@item HUGE
+@item bfseries
+@item cal
 @item em
 @item emph
-@item underline
-@item underbar
-@item textnormal
-@item normalfont
+@item enotesize
+@item footnotesize
+@item HUGE
+@item Huge
+@item huge
+@item it
+@item itshape
+@item LARGE
+@item Large
+@item large
+@item mathbf
+@item mathcal
+@item mathit
+@item mathmd
 @item mathnormal
+@item mathrm
+@item mathsc
+@item mathsf
+@item mathsl
+@item mathtt
+@item mathup
+@item mdseries
+@item mit
+@item normalfont
+@item normalsize
+@item rm
+@item rmfamily
+@item sc
+@item scfamily
+@item scriptsize
+@item scshape
+@item sf
+@item sffamily
+@item sl
+@item slshape
+@item small
+@item ssmall
+@item textbf
 @item textfont
-@end table
+@item textit
+@item textmd
+@item textnormal
+@item textrm
+@item textsc
+@item textsf
+@item textsl
+@item texttt
+@item textup
+@item tiny
+@item tt
+@item ttfamily
+@item underbar
+@item underline
+@item upshape
+@end ftable
 
-Logos
-@table @asis
-@item latex
-@item LaTeX
-@item LaTeXe
-@item TeX
-@item SLiTeX
-@item BibTeX
-@item AmSTeX
+@node Logos, Special Characters, Font Commands, General Commands
+@comment  node-name,  next,  previous,  up
+@subsubsection Logos
+
+All listed commands work as expected.
+
+@ftable @asis
 @item AmSLaTeX
-@item LyX
-@item lower
+@item AmSTeX
+@item BibTeX
 @item kern
-@end table
+@item LaTeX
+@item latex
+@item LaTeXe
+@item lower
+@item LyX
+@item SLiTeX
+@item TeX
+@end ftable
 
-Special characters
-@table @asis
-@item hat
-@item check
+@node Special Characters, Sectioning Commands, Logos, General Commands
+@comment  node-name,  next,  previous,  up
+@subsubsection Special Characters
 
-@item breve
+These commands all work as expected.
 
-@item acute
-
-@item grave
-
-@item tilde
-
-@item bar
-
-@item vec
-
-@item dot
-
-@item ddot
-
+@ftable @asis
 @item \
-
-@item u
-
-@item d
-
-@item v
-
-@item r
-
+@item acute
 @item b
-
+@item bar
+@item breve
 @item c
-
-@item i
-
-@item j
-
+@item check
+@item d
+@item ddot
+@item dot
+@item grave
 @item H
-
+@item hat
+@item i
+@item j
 @item l
-
 @item L
-@end table
+@item r
+@item tilde
+@item u
+@item v
+@item vec
+@end ftable
 
-Sectioning Commands
-@table @asis
+@node Sectioning Commands, Uncategorized, Special Characters, General Commands
+@comment  node-name,  next,  previous,  up
+@subsubsection Sectioning Commands
+
+@ftable @asis
+@item chapter
+@item chapter*
+@item paragraph
+@item paragraph*
 @item part
 @item part*
-
-@item chapter
-
-@item chapter*
-
 @item section
-
 @item section*
-
-@item subsection
-
-@item subsection*
-
-@item subsubsection
-
-@item subsubsection*
-
-@item paragraph
-
-@item paragraph*
-
 @item subparagraph
-
 @item subparagraph*
-@end table
+@item subsection
+@item subsection*
+@item subsubsection
+@item subsubsection*
+@end ftable
 
-Uncategorized
-@table @asis
-@item ldots
+@node Uncategorized,  , Sectioning Commands, General Commands
+@comment  node-name,  next,  previous,  up
+@subsubsection Uncategorized
 
-@item dots
+These commands need to be organized into new or existing sections.
 
-@item dotfill
-There is no rtf code for dotfill; @ltor{} inserts an ellipsis only.
-@item textellipsis
+@ftable @asis
 
-@item title
-
-@item author
-
-@item and
-
-@item date
-
-@item maketitle
-
-@item par
-
-@item noindent
-
-@item indent
-
-@item caption
-
-@item appendix
-
-@item protect
-
-@item clearpage
-
-@item efloatseparator
-
-@item cleardoublepage
-
-@item newpage
-
-@item pagebreak
-
-@item mbox
-
-@item hbox
-
-@item vbox
-
-@item fbox
-
-@item parbox
-
-@item frenchspacing
-
-@item nonfrenchspacing
-
-@item include
-
-@item input
-
-@item verb
-
-@item verb*
-
-@item url
-
-@item onecolumn
-
-@item twocolumn
-
-@item includegraphics
-
-@item epsffile
-
-@item epsfbox
-
-@item BoxedEPSF
-
-@item psfig
-
-@item includegraphics*
-
-@item moveleft
-
-@item moveright
-
-@item hsize
-
-@item letterspace
-
-@item footnotemark
-
-@item endnotemark
-
-@item label
-
-@item ref
-
-@item vref
-
-@item eqref
-
-@item pageref
-
-@item cite
-
-@item onlinecite
-
-@item citeonline
-
-@item nobibliography
-
-@item bibliography
-
-@item bibliographystyle
-
-@item bibitem
-
-@item bibentry
-
-@item newblock
-
-@item newsavebox
-
-@item usebox
-
-@item fbox
-
-@item quad
-
-@item qquad
-
-@item textsuperscript
-
-@item textsubscript
-
-@item hspace
-
-@item hspace*
-
-@item vspace
-
-@item vspace*
-
-@item vskip
-
-@item smallskip
-
-@item medskip
-
-@item bigskip
-
-@item addvspace
-
-@item addcontentsline
+@item abstract
 
 @item addcontents
+Ignored
 
-@item stretch
+@item addcontentsline
+Ignored
 
-@item typeaout
+@item addvspace
+Ignored
 
-@item index
-
-@item printindex
-
-@item indexentry
-
-@item glossary
-
-@item glossaryentry
-
-@item typeout
-
-@item Typein
-
-@item includeonly
-This command is not implemented.
-@item nocite
-
-@item stepcounter
-
-@item refstepcounter
-
-@item fnsymbol
+@item aleph
 
 @item Alph
 
 @item alph
-
-@item Roman
-
-@item roman
-
-@item arabic
-
-@item newcount
-
-@item output
-
-@item value
-
-@item makebox
-
-@item framebox
-
-@item sbox
-
-@item savebox
-
-@item rule
-
-@item raisebox
-
-@item newfont
-
-@item settowidth
-
-@item nopagebreak
-
-@item samepage
-
-@item linebreak
-
-@item nolinebreak
-
-@item typein
-
-@item marginpar
-
-@item baselineskip
-
-@item psfrag
-
-@item lineskip
-
-@item vsize
-
-@item setbox
-
-@item thanks
-
-@item bibliographystyle
-
-@item let
-
-@item multicolumn
-
-@item ensuremath
-
-@item frac
-
-@item dfrac
-
-@item Frac
-
-@item sqrt
-
-@item lim
-
-@item limsup
-
-@item liminf
-
-@item int
-
-@item iint
-
-@item iiint
-
-@item sum
-
-@item prod
-
-@item left
-
-@item right
-
-@item stackrel
-
-@item matrix
-
-@item overline
-
-@item leftrightarrows
-
-@item leftleftarrows
-
-@item rightrightarrows
-
-@item longleftrightarrows
-
-@item longleftarrow
-
-@item longrightarrow
-
-@item mho
-
-@item ddots
-
-@item mapsto
-
-@item updownarrow
-
-@item nwarrow
-
-@item nearrow
-
-@item searrow
-
-@item swarrow
-
-@item triangleleft
-
-@item triangleright
-
-@item cdots
-
-@item vdots
-
-@item hbar
-
-@item hslash
-
-@item ell
-
-@item mp
-
-@item succ
-
-@item prec
-
-@item amalg
-
-@item coprod
-
-@item simeq
-
-@item ll
-
-@item gg
-
-@item doteq
-
-@item because
-
-@item measuredangle
-
-@item Updownarrow
-
-@item rightleftarrows
-
-@item rightleftharpoons
-
-@item rightharpoonup
-
-@item leftharpoondown
-
-@item nonumber
-
-@item notag
-
-@item char
-
-@item htmladdnormallink
-
-@item htmlref
-
-@item nobreakspace
-
-@item abstract
-
-@item endinput
-
-@item textcolor
-
-@item tableofcontents
-
-@item listoffigures
-
-@item listoftables
-
-@item numberline
-
-@item contentsline
-
-@item centering
-
-@item pagestyle
-
-@item pagenumbering
-
-@item markboth
-
-@item markright
-
-@item aleph
+Ignored
 
 @item alpha
 
 @item Alpha
+Ignored
+
+@item amalg
+
+@item and
 
 @item angle
 
+@item appendix
+Ignored
+
 @item approx
 
+@item arabic
+Ignored
+
 @item ast
+
+@item author
+
+@item baselineskip
+
+@item because
 
 @item beta
 
 @item Beta
 
+@item bibentry
+
+@item bibitem
+
+@item bibliography
+
+@item bibliographystyle
+
+@item bibliographystyle
+Ignored
+
+@item bigskip
+
 @item bot
+
+@item BoxedEPSF
 
 @item bullet
 
 @item cap
 
+@item caption
+
 @item cdot
+
+@item cdots
+
+@item centering
+
+@item char
 
 @item chi
 
@@ -2130,15 +1849,33 @@ This command is not implemented.
 
 @item circ
 
+@item cite
+
+@item citeonline
+
+@item cleardoublepage
+
+@item clearpage
+
 @item clubsuit
 
 @item cong
 
+@item contentsline
+
+@item coprod
+
 @item cup
+
+@item date
+
+@item ddots
 
 @item delta
 
 @item Delta
+
+@item dfrac
 
 @item Diamond
 
@@ -2146,15 +1883,39 @@ This command is not implemented.
 
 @item div
 
+@item doteq
+
+@item dotfill
+There is no rtf code for dotfill; @ltor{} inserts an ellipsis only.
+
+@item dots
+
 @item dots
 
 @item downarrow
 
 @item Downarrow
 
+@item efloatseparator
+
+@item ell
+
 @item emptyset
 
+@item endinput
+
+@item endnotemark
+Ignored
+
+@item ensuremath
+
+@item epsfbox
+
+@item epsffile
+
 @item epsilon
+
+@item eqref
 
 @item equiv
 
@@ -2162,7 +1923,27 @@ This command is not implemented.
 
 @item exists
 
+@item fbox
+
+@item fbox
+
+@item fnsymbol
+Ignored
+
+@item footnotemark
+Ignored
+
 @item forall
+
+@item frac
+
+@item Frac
+
+@item framebox
+Ignored
+
+@item frenchspacing
+Ignored
 
 @item gamma
 
@@ -2172,19 +1953,71 @@ This command is not implemented.
 
 @item geq
 
+@item gg
+
+@item glossary
+Ignored
+
+@item glossaryentry
+Ignored
+
+@item hbar
+
+@item hbox
+
 @item heartsuit
+
+@item hsize
+
+@item hslash
+
+@item hspace
+Ignored
+
+@item hspace*
+Ignored
+
+@item htmladdnormallink
+
+@item htmlref
+
+@item iiint
+
+@item iint
 
 @item Im
 
 @item in
 
+@item include
+
+@item includegraphics
+
+@item includegraphics*
+
+@item includeonly
+Ignored
+
+@item indent
+
+@item index
+
+@item indexentry
+Ignored
+
 @item infty
+
+@item input
+
+@item int
 
 @item int
 
 @item iota
 
 @item kappa
+
+@item label
 
 @item lambda
 
@@ -2196,33 +2029,146 @@ This command is not implemented.
 
 @item lceil
 
+@item ldots
+
 @item le
+
+@item left
 
 @item leftarrow
 
 @item Leftarrow
 
+@item leftharpoondown
+
+@item leftleftarrows
+
 @item leftrightarrow
 
 @item Leftrightarrow
 
+@item leftrightarrows
+
 @item leq
+
+@item let
+Ignored
+
+@item letterspace
 
 @item lfloor
 
+@item lim
+
+@item liminf
+
+@item limsup
+
+@item linebreak
+Ignored
+
+@item lineskip
+
+@item listoffigures
+
+@item listoftables
+
+@item ll
+
+@item longleftarrow
+
+@item longleftrightarrows
+
+@item longrightarrow
+
 @item lor
 
+@item makebox
+Ignored
+
+@item maketitle
+
+@item mapsto
+
+@item marginpar
+Ignored
+
+@item markboth
+Ignored
+
+@item markright
+Ignored
+
+@item matrix
+
+@item mbox
+
+@item measuredangle
+
+@item medskip
+
+@item mho
+
+@item moveleft
+
+@item moveright
+
+@item mp
+
 @item mu
+
+@item multicolumn
 
 @item nabla
 
 @item ne
 
+@item nearrow
+
 @item neg
 
 @item neq
 
+@item newblock
+
+@item newcount
+Ignored
+
+@item newfont
+Ignored
+
+@item newpage
+
+@item newsavebox
+Ignored
+
+@item nobibliography
+Ignored
+
+@item nobreakspace
+
+@item nocite
+
+@item noindent
+
+@item nolinebreak
+Ignored
+
+@item nonfrenchspacing
+Ignored
+
+@item nonumber
+
+@item nopagebreak
+Ignored
+
+@item notag
+
 @item nu
+
+@item numberline
+
+@item nwarrow
 
 @item omega
 
@@ -2230,11 +2176,34 @@ This command is not implemented.
 
 @item omicron
 
+@item onecolumn
+
+@item onlinecite
+
 @item oplus
 
 @item oslash
 
 @item otimes
+
+@item output
+Ignored
+
+@item overline
+
+@item pagebreak
+
+@item pagenumbering
+Ignored
+
+@item pageref
+
+@item pagestyle
+Ignored
+
+@item par
+
+@item parbox
 
 @item partial
 
@@ -2250,13 +2219,34 @@ This command is not implemented.
 
 @item pm
 
+@item prec
+
+@item printindex
+
+@item prod
+
 @item prod
 
 @item propto
 
+@item protect
+Ignored
+
+@item psfig
+
+@item psfrag
+Ignored
+
 @item psi
 
 @item Psi
+
+@item qquad
+
+@item quad
+
+@item raisebox
+Ignored
 
 @item rangle
 
@@ -2264,13 +2254,51 @@ This command is not implemented.
 
 @item Re
 
+@item ref
+
+@item refstepcounter
+
 @item rfloor
 
 @item rho
 
+@item right
+
 @item Rightarrow
 
 @item rightarrow
+
+@item rightharpoonup
+
+@item rightleftarrows
+
+@item rightleftharpoons
+
+@item rightrightarrows
+
+@item Roman
+Ignored
+
+@item roman
+Ignored
+
+@item rule
+
+@item samepage
+Ignored
+
+@item savebox
+Ignored
+
+@item sbox
+Ignored
+
+@item searrow
+
+@item setbox
+
+@item settowidth
+Ignored
 
 @item sigma
 
@@ -2278,11 +2306,29 @@ This command is not implemented.
 
 @item sim
 
+@item simeq
+
+@item smallskip
+
 @item spadesuit
+
+@item sqrt
+
+@item stackrel
+
+@item stepcounter
+Ignored
+
+@item stretch
+Ignored
 
 @item subset
 
 @item subseteq
+
+@item succ
+
+@item sum
 
 @item sum
 
@@ -2291,6 +2337,10 @@ This command is not implemented.
 @item supseteq
 
 @item surd
+
+@item swarrow
+
+@item tableofcontents
 
 @item tau
 
@@ -2302,9 +2352,13 @@ This command is not implemented.
 
 @item textchi
 
+@item textcolor
+
 @item textDelta
 
 @item textdelta
+
+@item textellipsis
 
 @item textepsilon
 
@@ -2348,6 +2402,10 @@ This command is not implemented.
 
 @item textsigma
 
+@item textsubscript
+
+@item textsuperscript
+
 @item textTau
 
 @item texttau
@@ -2362,6 +2420,8 @@ This command is not implemented.
 
 @item textzeta
 
+@item thanks
+
 @item therefore
 
 @item Theta
@@ -2370,15 +2430,46 @@ This command is not implemented.
 
 @item times
 
+@item title
+
 @item to
+
+@item triangleleft
+
+@item triangleright
+
+@item twocolumn
+
+@item typeaout
+Ignored
+
+@item Typein
+Ignored
+
+@item typein
+Ignored
+
+@item typeout
+Ignored
 
 @item Uparrow
 
 @item uparrow
 
+@item updownarrow
+
+@item Updownarrow
+
 @item upsilon
 
 @item Upsilon
+
+@item url
+
+@item usebox
+Ignored
+
+@item value
 
 @item varepsilon
 
@@ -2394,7 +2485,25 @@ This command is not implemented.
 
 @item vartheta
 
+@item vbox
+
+@item vdots
+
 @item vee
+
+@item verb
+
+@item verb*
+
+@item vref
+
+@item vsize
+
+@item vskip
+
+@item vspace
+
+@item vspace*
 
 @item wedge
 
@@ -2405,490 +2514,666 @@ This command is not implemented.
 @item Xi
 
 @item zeta
-@end table
 
-Preamble Commands (PreambleCommands[])
-@table @asis
-@item documentclass
+@end ftable
 
-@item documentstyle
+@node Preamble Commands, Letter Commands, General Commands, LaTeX Commands
+@comment  node-name,  next,  previous,  up
+@subsection Preamble Commands
 
-@item usepackage
+These commands are found in @code{PreambleCommands[]} in commands.c, and
+are implemented in preamble.c.
 
-@item flushbottom
-
-@item raggedbottom
+@ftable @asis
+@item addtocounter
 
 @item addtolength
 
-@item setlength
+@item baselineskip
 
-@item newlength
-
-@item newcounter
-
-@item setcounter
-
-@item addtocounter
+@item celsius
 
 @item cfoot
 
-@item rfoot
-
-@item lfoot
-
 @item chead
 
-@item rhead
-
-@item lhead
-
-@item fancyfoot
-
-@item fancyhead
-
-@item thepage
-
-@item hyphenation
-
-@item def
-
-@item newcommand
-
-@item providecommand
+@item cline
 
 @item DeclareRobustCommand
 
 @item DeclareRobustCommand*
 
-@item renewcommand
+@item def
 
-@item newenvironment
+@item degreecelsius
 
-@item renewenvironment
+@item documentclass
 
-@item newtheorem
+@item documentstyle
 
-@item renewtheorem
+@item doublespacing
+Currently, the only command from the setspace package that is
+implemented, and the only way to modify line spacing.
 
-@item pagestyle
+@item endnotetext
 
-@item thispagestyle
+@item EUR
 
-@item pagenumbering
+@item euro
 
-@item markboth
+@item evensidemargin
 
-@item markright
+@item fancyfoot
 
-@item makeindex
+@item fancyhead
 
-@item makeglossary
+@item flushbottom
 
-@item listoffiles
+@item footnotetext
 
-@item nofiles
-
-@item makelabels
-
-@item verbositylevel
-
-@item hoffset
-
-@item voffset
-
-@item parindent
-
-@item parskip
-
-@item baselineskip
-
-@item topmargin
-
-@item textheight
+@item geometry
+Currently recognizes *ratio, *centering, *margin, left, right, inner,
+outer, top, bottom, right, left (including vmargin, hratio etc.)
 
 @item headheight
 
 @item headsep
 
-@item textwidth
+@item hline
 
-@item oddsidemargin
-
-@item evensidemargin
-
-@item footnotetext
-
-@item endnotetext
-
-@item include
-
-@item input
+@item hoffset
 
 @item htmladdnormallink
 
 @item htmlref
 
-@item nobreakspace
+@item hyphenation
 
-@item signature
-
-@item hline
-
-@item cline
+@item iflatextortf
 
 @item ifx
 
-@item theendnotes
+@item include
 
-@item euro
+@item input
 
-@item EUR
+@item latextortffalse
+Ignored
 
-@item celsius
+@item latextortftrue
+Ignored
 
-@item degreecelsius
+@item lfoot
+
+@item lhead
+
+@item listoffiles
+Ignored
+
+@item makeglossary
+Ignored
+
+@item makeindex
+Ignored
+
+@item makelabels
+Ignored
+
+@item markboth
+Ignored
+
+@item markright
+Ignored
+
+@item newcommand
+
+@item newcounter
+
+@item newenvironment
+
+@item newif
+
+@item newlength
+
+@item newtheorem
+
+@item nobreakspace
+
+@item nofiles
+Ignored
+
+@item oddsidemargin
+
+@item pagenumbering
+Ignored
+
+@item pagestyle
+
+@item parindent
+
+@item parskip
+
+@item providecommand
+
+@item raggedbottom
+
+@item renewcommand
+
+@item renewenvironment
+
+@item renewtheorem
+Ignored
 
 @item resizebox
 
 @item resizebox*
 
-@item iflatextortf
+@item rfoot
 
-@item latextortftrue
+@item rhead
 
-@item latextortffalse
+@item setcounter
 
-@item newif
+@item setlength
 
-@item geometry
-Currently recognizes *ratio, *centering, *margin, left, right, inner,
-outer, top, bottom, right, left (including vmargin, hratio etc.)
-@item doublespacing
-Currently, the only command from the setspace package that is
-implemented, and the only way to modify line spacing.
-@end table
-
-LetterCommands[]
-@table @asis
-@item opening
-@item closing
-@item address
 @item signature
-@item ps
+
+@item textheight
+
+@item textwidth
+
+@item theendnotes
+
+@item thepage
+
+@item thispagestyle
+Ignored
+
+@item topmargin
+
+@item usepackage
+
+@item verbositylevel
+
+@item voffset
+
+@end ftable
+
+@node Letter Commands, Language Commands, Preamble Commands, LaTeX Commands
+@comment  node-name,  next,  previous,  up
+@subsection Letter Commands
+
+Found in @code{LetterCommands[]} in commands.c.
+
+@ftable @asis
+@item address
+
 @item cc
+
+@item closing
+
 @item encl
-@end table
 
-GermanModeCommands[]
-@table @asis
+@item opening
+
+@item ps
+
+@item signature
+
+@end ftable
+
+@node Language Commands, Citation Commands, Letter Commands, LaTeX Commands
+@comment  node-name,  next,  previous,  up
+@subsection Language Commands
+
+@menu
+* German Commands::             
+* Czech Commands::              
+* French Commands::             
+* Russian Commands::            
+@end menu
+
+@node German Commands, Czech Commands, Language Commands, Language Commands
+@comment  node-name,  next,  previous,  up
+@subsubsection German Commands
+
+Found in @code{GermanModeCommands[]} in commands.c.
+
+@ftable @asis
 @item ck
+
 @item glqq
+
 @item glq
+
 @item grq
+
 @item grqq
-@end table
 
-CzechModeCommands[]
-@table @asis
+@end ftable
+
+@node Czech Commands, French Commands, German Commands, Language Commands
+@comment  node-name,  next,  previous,  up
+@subsubsection Czech Commands
+
+@ftable @asis
 @item uv
-@end table
+@end ftable
 
-FrenchModeCommands[]
-@table @asis
-@item ier
-@item iere
-@item iers
-@item ieres
+@node French Commands, Russian Commands, Czech Commands, Language Commands
+@comment  node-name,  next,  previous,  up
+@subsubsection French Commands
+
+@ftable @asis
+@item deuxpoints
+@item dittomark
+@item FCS
+@item fg
+@item fup
 @item ieme
 @item iemes
-@item numero
-@item numeros
-@item Numero
-@item Numeros
-@item primo
-@item secundo
-@item tertio
-@item quarto
+@item ier
+@item iere
+@item ieres
+@item iers
 @item inferieura
-@item superieura
+@item LCS
 @item lq
-@item rq
 @item lqq
-@item rqq
-@item pointvirgule
+@item numero
+@item Numero
+@item numeros
+@item Numeros
+@item og
 @item pointexclamation
 @item pointinterrogation
-@item dittomark
-@item deuxpoints
-@item fup
+@item pointvirgule
+@item primo
+@item quarto
+@item rq
+@item rqq
+@item secundo
+@item superieura
+@item tertio
 @item up
-@item LCS
-@item FCS
-@item og
-@item fg
-@end table
+@end ftable
 
-RussianModeCommands
-@table @asis
+@node Russian Commands,  , French Commands, Language Commands
+@comment  node-name,  next,  previous,  up
+@subsubsection Russian Commands
+
+@ftable @asis
 @item CYRA
-@item CYRB
-@item CYRV
-@item CYRG
-@item CYRD
-@item CYRE
-@item CYRZH
-@item CYRZ
-@item CYRI
-@item CYRISHRT
-@item CYRK
-@item CYRL
-@item CYRM
-@item CYRN
-@item CYRO
-@item CYRP
-@item CYRR
-@item CYRS
-@item CYRT
-@item CYRU
-@item CYRF
-@item CYRH
-@item CYRC
-@item CYRCH
-@item CYRSH
-@item CYRCHSH
-@item CYRHRDSN
-@item CYRERY
-@item CYRSFTSN
-@item CYREREV
-@item CYRYU
-@item CYRYA
 @item cyra
+@item CYRB
 @item cyrb
-@item cyrv
-@item cyrg
-@item cyrd
-@item cyre
-@item cyrzh
-@item cyrz
-@item cyri
-@item cyrishrt
-@item cyrk
-@item cyrl
-@item cyrm
-@item cyrn
-@item cyro
-@item cyrp
-@item cyrr
-@item cyrs
-@item cyrt
-@item cyru
-@item cyrf
-@item cyrh
+@item CYRC
 @item cyrc
+@item CYRCH
 @item cyrch
-@item cyrsh
+@item CYRCHSH
 @item cyrchsh
-@item cyrhrdsn
-@item cyrery
-@item cyrsftsn
+@item CYRD
+@item cyrd
+@item CYRE
+@item cyre
+@item CYREREV
 @item cyrerev
-@item cyryu
+@item CYRERY
+@item cyrery
+@item CYRF
+@item cyrf
+@item CYRG
+@item cyrg
+@item CYRH
+@item cyrh
+@item CYRHRDSN
+@item cyrhrdsn
+@item CYRI
+@item cyri
+@item CYRISHRT
+@item cyrishrt
+@item CYRK
+@item cyrk
+@item CYRL
+@item cyrl
+@item CYRM
+@item cyrm
+@item CYRN
+@item cyrn
+@item CYRO
+@item cyro
+@item CYRP
+@item cyrp
+@item CYRR
+@item cyrr
+@item CYRS
+@item cyrs
+@item CYRSFTSN
+@item cyrsftsn
+@item CYRSH
+@item cyrsh
+@item CYRT
+@item cyrt
+@item CYRU
+@item cyru
+@item CYRV
+@item cyrv
+@item CYRYA
 @item cyrya
-@end table
+@item CYRYU
+@item cyryu
+@item CYRZ
+@item cyrz
+@item CYRZH
+@item cyrzh
+@end ftable
 
-Environments (params[])
-@table @asis
-@item center
-@item flushright
-@item flushleft
-@item document
-@item tabbing
-@item figure
-@item figure*
-@item picture
-@item minipage
-@item music
-@item small
-@item quote
-@item quotation
-@item enumerate
-@item compactenum
-@item list
-@item itemize
-@item compactitem
-@item description
-@item verbatim
-@item comment
-@item verse
-@item tabular
-@item tabular*
-@item longtable
-@item longtable*
-@item array
-@item displaymath
-@item equation
-@item equation*
-@item eqnarray*
-@item eqnarray
-@item align*
-@item align
-@item math
-@item multicolumn
-@item letter
-@item table
-@item table*
-@item thebibliography
-@item abstract
-@item acknowledgments
-@item titlepage
-@item em
-@item rmfamily
-@item sffamily
-@item ttfamily
-@item bfseries
-@item mdseries
-@item itshape
-@item scshape
-@item slshape
-@item it
-@item sc
-@item sl
-@item bf
-@item sf
-@item tt
-@item rm
-@item Verbatim
-@item alltt
-@item latexonly
-@item htmlonly
-@item rawhtml
-@item theindex
-@item landscape
-@item sloppypar
-@end table
+@node Citation Commands, Other Commands, Language Commands, LaTeX Commands
+@comment  node-name,  next,  previous,  up
+@subsection Citation Commands
 
-hyperlatexCommands[]
-@table @asis
-@item link
-@item xlink
-@item Cite
-@item Ref
-@item Pageref
-@item S
-@end table
+@menu
+* Apacite Commands::            
+* AuthorDate Commands::         
+* Harvard Commands::            
+* HyperLatex Commands::         
+* Natbib Commands::             
+@end menu
 
-apaciteCommands[]
-@table @asis
-@item BBOP
+@node Apacite Commands, AuthorDate Commands, Citation Commands, Citation Commands
+@comment  node-name,  next,  previous,  up
+@subsubsection Apacite Commands
+
+@ftable @asis
+@item AX
+@item BAnd
+@item BBA
 @item BBAA
 @item BBAB
 @item BBAY
 @item BBC
-@item BBN
 @item BBCP
-@item BBOQ
 @item BBCQ
-@item BCBT
+@item BBN
+@item BBOP
+@item BBOQ
+@item BCAY
 @item BCBL
-@item BOthers
-@item BIP
-@item BAnd
-@item BED
-@item BEDS
-@item BTRANS
-@item BTRANSS
+@item BCBT
 @item BCHAIR
 @item BCHAIRS
-@item BVOL
-@item BVOLS
-@item BNUM
-@item BNUMS
-@item BEd
-@item BPG
-@item BPGS
-@item BTR
-@item BPhD
-@item BUPhD
-@item BMTh
-@item BUMTh
-@item BOWP
-@item BREPR
 @item BCnt
 @item BCntIP
-@item BBA
-@item AX
+@item BED
+@item BEd
+@item BEDS
 @item Bem
-@item BCAY
-@item fullcite
-@item shortcite
-@item citeNP
-@item fullciteNP
-@item shortciteNP
+@item BIP
+@item BMTh
+@item BNUM
+@item BNUMS
+@item BOthers
+@item BOWP
+@item BPG
+@item BPGS
+@item BPhD
+@item BREPR
+@item BTR
+@item BTRANS
+@item BTRANSS
+@item BUMTh
+@item BUPhD
+@item BVOL
+@item BVOLS
 @item citeA
-@item fullciteA
-@item shortciteA
 @item citeauthor
-@item fullciteauthor
-@item shortciteauthor
+@item citeNP
 @item citeyear
 @item citeyearNP
-@end table
+@item fullcite
+@item fullciteA
+@item fullciteauthor
+@item fullciteNP
+@item shortcite
+@item shortciteA
+@item shortciteauthor
+@item shortciteNP
+@end ftable
 
-natbibCommands[]
-@table @asis
-@item cite
-@item citet
-@item citet*
-@item citep
-@item citep*
-@item citealt
-@item citealp
-@item citealt*
-@item citealp*
-@item citetext
-@item citeauthor
-@item citeauthor*
-@item citeyear
-@item citeyearpar
-@item Citet
-@item Citep
-@item Citealt
-@item Citealp
-@item Citeauthor
-@item bibpunct
-@end table
+@node AuthorDate Commands, Harvard Commands, Apacite Commands, Citation Commands
+@comment  node-name,  next,  previous,  up
+@subsubsection AuthorDate Commands
 
-harvardCommands[]
-@table @asis
-@item cite
-@item citeasnoun
-@item possessivecite
-@item citeaffixed
-@item citeyear
-@item citeyear*
-@item citename
-@item harvarditem
-@item harvardand
-@item harvardyearleft
-@item harvardyearright
-@end table
-
-authordateCommands[]
-@table @asis
+@ftable @asis
 @item citename
 @item shortcite
-@end table
+@end ftable
+
+@node Harvard Commands, HyperLatex Commands, AuthorDate Commands, Citation Commands
+@comment  node-name,  next,  previous,  up
+@subsubsection Harvard Commands
+
+@ftable @asis
+@item cite
+@item citeaffixed
+@item citeasnoun
+@item citename
+@item citeyear
+@item citeyear*
+@item harvardand
+@item harvarditem
+@item harvardyearleft
+@item harvardyearright
+@item possessivecite
+@end ftable
+
+@node HyperLatex Commands, Natbib Commands, Harvard Commands, Citation Commands
+@comment  node-name,  next,  previous,  up
+@subsubsection HyperLatex Commands
+
+@ftable @asis
+@item Cite
+@item link
+@item Pageref
+@item Ref
+@item S
+@item xlink
+@end ftable
+
+@node Natbib Commands,  , HyperLatex Commands, Citation Commands
+@comment  node-name,  next,  previous,  up
+@subsubsection Apacite Commands
+
+@ftable @asis
+@item bibpunct
+@item cite
+@item citealp
+@item Citealp
+@item citealp*
+@item citealt
+@item Citealt
+@item citealt*
+@item citeauthor
+@item Citeauthor
+@item citeauthor*
+@item citep
+@item Citep
+@item citep*
+@item citet
+@item Citet
+@item citet*
+@item citetext
+@item citeyear
+@item citeyearpar
+@end ftable
+
+@node Other Commands, Environments, Citation Commands, LaTeX Commands
+@comment  node-name,  next,  previous,  up
+@subsection Other Commands
 
 Other Commands: @*
 item @*
 caption @*
 center @*
 
-@node Index,  , LaTeX Commands, Top
-@chapter Index 
+@node Environments,  , Other Commands, LaTeX Commands
+@comment  node-name,  next,  previous,  up
+@subsection Environments
+
+Environments processed - found in @code{params[]} in commands.c.
+
+@ftable @asis
+@item abstract
+
+@item acknowledgments
+
+@item align
+
+@item align*
+
+@item alltt
+
+@item array
+
+@item bf
+
+@item bfseries
+
+@item center
+
+@item comment
+
+@item compactenum
+
+@item compactitem
+
+@item description
+
+@item displaymath
+
+@item document
+
+@item em
+
+@item enumerate
+
+@item eqnarray
+
+@item eqnarray*
+
+@item equation
+
+@item equation*
+
+@item figure
+
+@item figure*
+
+@item flushleft
+
+@item flushright
+
+@item htmlonly
+Ignored
+
+@item it
+
+@item itemize
+
+@item itshape
+
+@item landscape
+
+@item latexonly
+Ignored
+
+@item letter
+
+@item list
+
+@item longtable
+
+@item longtable*
+
+@item math
+
+@item mdseries
+
+@item minipage
+
+@item multicolumn
+
+@item music
+
+@item picture
+
+@item quotation
+
+@item quote
+
+@item rawhtml
+Ignored
+
+@item rm
+
+@item rmfamily
+
+@item sc
+
+@item scshape
+
+@item sf
+
+@item sffamily
+
+@item sl
+
+@item sloppypar
+
+@item slshape
+
+@item small
+
+@item tabbing
+
+@item table
+
+@item table*
+
+@item tabular
+
+@item tabular*
+
+@item thebibliography
+
+@item theindex
+Ignored
+
+@item titlepage
+
+@item tt
+
+@item ttfamily
+
+@item verbatim
+
+@item Verbatim
+
+@item verse
+
+@end ftable
+
+@node Function Index, Concept Index, LaTeX2RTF under Development, Top
+@chapter Function Index 
+
+@printindex fn 
+
+@node Concept Index,  , Function Index, Top
+@chapter Concept Index 
 
 @printindex cp
+
 
 @contents
 @bye
