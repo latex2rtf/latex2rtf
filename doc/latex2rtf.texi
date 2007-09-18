@@ -165,12 +165,12 @@ Permission is granted to make and distribute verbatim copies of this
 manual provided the copyright notice and this permission notice are
 preserved on all copies.
 
-Permission is granted to copy and distribute modified
-versions of this manual under the conditions for verbatim copying,
-provided also that the sections entitled ``Copying'' and ``GNU General
-Public License'' are included exactly as in the original, and provided
-that the entire resulting derived work is distributed under the terms of
-a permission notice identical to this one.
+Permission is granted to copy and distribute modified versions of this
+manual under the conditions for verbatim copying, provided also that the
+sections entitled ``Copying'' and ``GNU General Public License'' are
+included exactly as in the original, and provided that the entire
+resulting derived work is distributed under the terms of a permission
+notice identical to this one.
 
 Permission is granted to copy and distribute translations of this manual
 into another language, under the above conditions for modified versions,
@@ -184,31 +184,34 @@ approved by the Free Software Foundation.
 @node Introduction, Installation, Top, Top
 @chapter  Introduction
 
-@ltor{} is a translator program from @latex{} text into ``rich text format'' files.  These
-files are commonly referred to as RTF files.  RTF is a published standard format by
-Microsoft.  This standard can be ambiguous in places and Microsoft ignores
-parts of the standard it finds inconvenient, but RTF is widely used by many WYSIWIG text
-editors and is supported by Microsoft Word and most text processors.
+@ltor{} is a translator program from @latex{} text into ``rich text
+format'' files. These files are commonly referred to as RTF files. RTF
+is a published standard format by Microsoft. This standard can be
+ambiguous in places and Microsoft ignores parts of the standard it finds
+inconvenient, but RTF is widely used by many WYSIWIG text editors and is
+supported by Microsoft Word and most text processors.
 
-@ltor{} translates the text and as much of the formatting information from @latex{} to RTF.
-Be forewarned that the typeset output is not nearly as good as what you would get 
-from using @latex{} directly.
-So, why bother translating? Consider,
+@ltor{} translates the text and as much of the formatting information
+from @latex{} to RTF. Be forewarned that the typeset output is not
+nearly as good as what you would get from using @latex{} directly. So,
+why bother translating? Consider,
 
 @enumerate
 @item
-You use @latex{} and hate everything beginning with MS-@enddots{} Nevertheless, you have
-to share your documents with people who don't even now that there exist other things than
-MS-@enddots{}
+You use @latex{} and hate everything beginning with MS-@enddots{}
+Nevertheless, you have to share your documents with people who don't
+even know that there are alternatives to MS-@enddots{}
       
 @item
-You know somebody who frequently sends you very fine @latex{} documents. Unfortunately,
-you are ``on the other side'' and need to import her files, steal some part, and then
-desktop publish it in your fine MS-@dots{} environment.
+You know somebody who frequently sends you very fine @latex{} documents.
+Unfortunately, you are ``on the other side'' and need to import her
+files, steal some part, and then desktop publish it in your fine
+MS-@dots{} environment.
       
 @item
-You like @latex{} and @bibtex{}.  You interact with the rest of the world.  You
-know someone that wants to include your writing in a her Word document.
+You like @latex{} and @bibtex{}. You interact with the rest of the
+world. You know someone that wants to include your writing in a Word
+document.
 
 @end enumerate
 
@@ -217,27 +220,29 @@ be converted as you would like, don't expect it to be converted without errors o
 warnings, and don't be especially surprised when it doesn't convert at all.  @ltor{} is
 known to have many bugs and many missing features. Paradoxically, this number seems to
 grow more and more with each day.  However, we can categorically state that there are some
-special cases,  in which a @latex{} file will be translated to RTF satisfactorily by
+special cases in which a @latex{} file will be translated to RTF satisfactorily by
 @ltor{} --- This was sort of disclaimer, ok? OK!
 
 @latex{} is a system for typesetting text and therefore it focuses on the logical
 structure of a document, whilst RTF is meant to be a transport format for a family of
 Desktop Publishing Software, dealing mostly with the design of a text.
 
-Although the possible different commands and styles in @latex{} are much more flexible and
+Although the commands and styles in @latex{} are much more flexible and
 standardized than in RTF, only a small subset of commands has been implemented to date 
 (@pxref{Unimplemented Features}).
 
 Some of the capabilities of @ltor{} are restricted in scope or buggy (@pxref{Known Bugs}).
 
+@cindex RTF sucks
 RTF is a moving target, because Microsoft does not stop inventing new extensions and
-features, consequently you cannot view newer RTF files with older word processors.  
+features; consequently you cannot view newer RTF files with older word processors.  
 The syntax and semantics of RTF are somewhat artistic, i.e., you can generate a 
 syntactically correct RTF file that cannot be displayed by some/most word processors.
 For more details on RTF the specification consult the links at @uref{http://latex2rtf.sf.net/}
 
 @node Installation, Using LaTeX2RTF, Introduction, Top
 @chapter Installation
+@cindex installation
 
 @menu
 * General::
@@ -251,7 +256,6 @@ For more details on RTF the specification consult the links at @uref{http://late
 @end menu
 
 @node General, Obtaining LaTeX2RTF, Installation, Installation
-
 @section General
 
 The documentation of the program is found in the @file{doc/} directory in the
@@ -259,7 +263,6 @@ file @file{latex2rtf.texi} in the GNU TeXInfo format.  For your convenience, you
 can find @acronym{HTML} and @acronym{PDF} versions of the manual there as well.
 
 @node Obtaining LaTeX2RTF, UNIX, General, Installation
-
 @section Obtaining @ltor{}
 
 @ltor{} is available for many Unix Platforms, for the Macintosh, and for MS-DOS, including
@@ -305,9 +308,9 @@ is working by typing @code{make} in the @file{scripts/} directory.
 
 @item @code{make}
 
- If this is not your first time installation, you may want to preserve
-  your old configuration (@file{*.cfg}) files. Copy them to a safe place before
-  installing.
+If this is not your first time installation, you may want to preserve
+your old configuration (@file{*.cfg}) files. Copy them to a safe place
+before installing.
 
 On IBM AIX, the IBM make utility does not support some of the commands
 used in Makefile. In this case use @code{gmake} (from GNU) instead.
@@ -322,10 +325,11 @@ for tsch-like shells @code{setenv XPG4_GREP /usr/xpg4/bin/grep}.
 @item @code{make install}
 
 If your @code{mkdir} doesn't support the @option{-p} option, then create
-  the necessary directories by hand and remove the option from the @code{$MKDIR} variable.
-  If you have other problems, just copy @file{latex2rtf} and @file{latex2png} to
-  a binary directory, and move the contents of the @file{cfg/} directory to
-  the location specified by @code{$CFG_INSTALL}.
+the necessary directories by hand and remove the option from the
+@code{$MKDIR} variable. If you have other problems, just copy
+@file{latex2rtf} and @file{latex2png} to a binary directory, and move
+the contents of the @file{cfg/} directory to the location specified by
+@code{$CFG_INSTALL}.
  
 @item @code{make check}
 
