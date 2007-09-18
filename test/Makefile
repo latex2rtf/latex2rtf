@@ -6,111 +6,177 @@ BIBTEX= bibtex
 LATEX2RTF= ../latex2rtf
 OPTIONS  = -Z3 -P ../cfg/:../scripts/ -T ../tmp/
 
-RTF=accentchars.rtf array.rtf eqns.rtf fonts.rtf fontsize.rtf \
-    frac.rtf list.rtf logo.rtf misc1.rtf misc2.rtf oddchars.rtf \
-    tabular.rtf percent.rtf essential.rtf misc3.rtf misc4.rtf fancy.rtf \
-	align.rtf box.rtf \
-	babel_german.rtf babel_russian.rtf babel_czech.rtf babel_french.rtf \
-	babel_spanish.rtf babel_frenchb.rtf bib_simple.rtf \
-	enc_applemac.rtf enc_cp437.rtf enc_cp865.rtf    enc_latin2.rtf enc_latin5.rtf \
-	enc_cp1250.rtf   enc_cp850.rtf enc_decmulti.rtf enc_latin3.rtf enc_latin9.rtf\
-	enc_cp1252.rtf   enc_cp852.rtf enc_latin1.rtf   enc_latin4.rtf enc_next.rtf\
-	enc_cp1251.rtf   enc_cp855.rtf enc_cp866.rtf    enc_koi8-r.rtf enc_koi8-u.rtf \
-	enc_maccyr.rtf enc_macukr.rtf eqns-koi8.rtf \
-	defs.rtf qualisex.rtf ttgfsr7.rtf excalibur.rtf include.rtf ch.rtf\
-	spago1.rtf theorem.rtf picture.rtf tabbing.rtf \
-	fig_test2.rtf fig_size.rtf \
-	chem.rtf subsup.rtf linux.rtf color.rtf \
-	head_book.rtf head_article.rtf head_report.rtf endnote.rtf report.rtf \
-	bibentry_apalike.rtf bibentry_plain.rtf
+LATEX_LOG = >latex.log
+LATEX_LOG = 
 
-RTFX=bib_apacite.rtf bib_apanat.rtf bib_authordate.rtf fig_test3.rtf bib_harvard.rtf \
-     bib_apalike.rtf bib_apalike2.rtf bib_natbib1.rtf bib_natbib2.rtf bib_natbib3.rtf \
-     unicode.rtf fig_test.rtf
+RTF=	align.rtf	array.rtf 		box.rtf 			ch.rtf	\
+		chem.rtf 	color.rtf 		dblspace.rtf		defs.rtf\
+		endnote.rtf	essential.rtf	excalibur.rtf 		fancy.rtf\
+		fonts.rtf	fontsize.rtf 	fonttest.rtf  		geometry.rtf\
+		geotest.rtf	german.rtf		head_article.rtf	head_book.rtf \
+		list.rtf 	ifclause.rtf	include.rtf			linux.rtf\
+		logo.rtf 	misc1.rtf 		misc3.rtf 			misc4.rtf\
+		percent.rtf	report.rtf		tabbing.rtf			tabular.rtf\
+
+BIB_TESTS=  bib_apacite.rtf        bib_harvard.rtf        bib_super.rtf      \
+			bib_apacite_dblsp.rtf  bib_natbib1.rtf        bib_apalike.rtf    \
+			bib_natbib2.rtf        bibentry_apalike.rtf   bib_apalike2.rtf   \
+			bib_natbib3.rtf        bib_apanat.rtf         bibentry_plain.rtf \
+			bib_authordate.rtf     bib_simple.rtf
+	
+FIG_TESTS=  fig_endfloat.rtf  fig_test.rtf      fig_test3.rtf \
+            fig_size.rtf      fig_test2.rtf     fig_test4.rtf \
+            picture.rtf
+
+ENC_TESTS= 	enc_applemac.rtf enc_cp437.rtf  enc_cp865.rtf    enc_latin2.rtf enc_latin5.rtf \
+			enc_cp1250.rtf   enc_cp850.rtf  enc_decmulti.rtf enc_latin3.rtf enc_latin9.rtf\
+			enc_cp1252.rtf   enc_cp852.rtf  enc_latin1.rtf   enc_latin4.rtf enc_next.rtf\
+			enc_cp1251.rtf   enc_cp855.rtf  enc_cp866.rtf    enc_koi8-r.rtf enc_koi8-u.rtf \
+			enc_maccyr.rtf   enc_macukr.rtf eqns-koi8.rtf 	 enc_utf8x.rtf
+
+BABEL_TESTS=babel_german.rtf babel_russian.rtf babel_czech.rtf babel_french.rtf \
+	        babel_spanish.rtf babel_frenchb.rtf bib_simple.rtf
+	        
+EQN_TESTS=  eqns.rtf	eqns2.rtf eqns-koi8.rtf ttgfsr7.rtf spago1.rtf misc2.rtf\
+            frac.rtf	subsup.rtf	theorem.rtf
+
+CHAR_TESTS= accentchars.rtf oddchars.rtf unicode.rtf overstrike.rtf
+
+basic:
+	$(MAKE) basic_tests
+	
+bib:
+	$(MAKE) bib_tests
+
+fig:
+	mkdir -p ../tmp
+	$(MAKE) fig_tests
+
+enc:
+	$(MAKE) enc_tests
+	
+eqn:
+	$(MAKE) eqn_tests
+
+babel:
+	$(MAKE) babel_tests
+
+char:
+	$(MAKE) char_tests
 
 all:
 	mkdir -p ../tmp
-	$(MAKE) rtf
+	$(MAKE) basic_tests
+	$(MAKE) bib_tests
+	$(MAKE) eqn_tests
+	$(MAKE) fig_tests
+	$(MAKE) enc_tests
+	$(MAKE) char_tests
 
-rtf: $(RTF)
+basic_tests: $(RTF)
+
+bib_tests: $(BIB_TESTS)
+
+fig_tests: $(FIG_TESTS)
+
+enc_tests: $(ENC_TESTS)
+
+babel_tests: $(BABEL_TESTS)
+
+eqn_tests: $(EQN_TESTS)
+
+char_tests: $(CHAR_TESTS)
+
+#these tests require that some non-standard latex style be installed
 
 %.rtf:	%.tex
 	$(LATEX2RTF) $(OPTIONS) $<
 
 bib_simple.rtf: bib_simple.tex bib_simple.bib
-	$(LATEX) bib_simple > latex.log
+	$(LATEX) bib_simple $(LATEX_LOG)
 	$(BIBTEX) bib_simple > bibtex.log
-	$(LATEX) bib_simple > latex.log
-	$(LATEX) bib_simple > latex.log
+	$(LATEX) bib_simple $(LATEX_LOG)
+	$(LATEX) bib_simple $(LATEX_LOG)
 	$(LATEX2RTF) $(OPTIONS) bib_simple
 
 bib_apalike.rtf: bib_apalike.tex
-	$(LATEX) bib_apalike > latex.log
-	$(LATEX) bib_apalike > latex.log
+	$(LATEX) bib_apalike $(LATEX_LOG)
+	$(LATEX) bib_apalike $(LATEX_LOG)
 	$(LATEX2RTF) $(OPTIONS) bib_apalike
 
 bib_apacite.rtf: bib_apacite.tex
-	$(LATEX) bib_apacite > latex.log
-	$(LATEX) bib_apacite > latex.log
+	$(LATEX) bib_apacite $(LATEX_LOG)
+	$(LATEX) bib_apacite $(LATEX_LOG)
 	$(LATEX2RTF) $(OPTIONS) bib_apacite
 
+bib_apacite_dblsp.rtf: bib_apacite_dblsp.tex
+	$(LATEX) bib_apacite_dblsp $(LATEX_LOG)
+	$(LATEX) bib_apacite_dblsp $(LATEX_LOG)
+	$(LATEX2RTF) $(OPTIONS) bib_apacite_dblsp
+
 bib_apalike2.rtf: bib_apalike2.tex
-	$(LATEX) bib_apalike2 > latex.log
-	$(LATEX) bib_apalike2 > latex.log
+	$(LATEX) bib_apalike2 $(LATEX_LOG)
+	$(LATEX) bib_apalike2 $(LATEX_LOG)
 	$(LATEX2RTF) $(OPTIONS) bib_apalike2
 
 bib_natbib1.rtf: bib_natbib1.tex
-	$(LATEX) bib_natbib1 > latex.log
-	$(LATEX) bib_natbib1 > latex.log
+	$(LATEX) bib_natbib1 $(LATEX_LOG)
+	$(LATEX) bib_natbib1 $(LATEX_LOG)
 	$(LATEX2RTF) $(OPTIONS) bib_natbib1
 
 bib_natbib2.rtf: bib_natbib2.tex
-	$(LATEX) bib_natbib2 > latex.log
-	$(LATEX) bib_natbib2 > latex.log
+	$(LATEX) bib_natbib2 $(LATEX_LOG)
+	$(LATEX) bib_natbib2 $(LATEX_LOG)
 	$(LATEX2RTF) $(OPTIONS) bib_natbib2
 
 bib_natbib3.rtf: bib_natbib3.tex
-	$(LATEX) bib_natbib3 > latex.log
-	$(LATEX) bib_natbib3 > latex.log
+	$(LATEX) bib_natbib3 $(LATEX_LOG)
+	$(LATEX) bib_natbib3 $(LATEX_LOG)
 	$(LATEX2RTF) $(OPTIONS) bib_natbib3
 
 bib_apanat.rtf: bib_apanat.tex
-	$(LATEX) bib_apanat > latex.log
-	$(LATEX) bib_apanat > latex.log
+	$(LATEX) bib_apanat $(LATEX_LOG)
+	$(LATEX) bib_apanat $(LATEX_LOG)
 	$(LATEX2RTF) $(OPTIONS) bib_apanat
 
 bib_authordate.rtf: bib_authordate.tex
-	$(LATEX) bib_authordate > latex.log
-	$(LATEX) bib_authordate > latex.log
+	$(LATEX) bib_authordate $(LATEX_LOG)
+	$(LATEX) bib_authordate $(LATEX_LOG)
 	$(LATEX2RTF) $(OPTIONS) bib_authordate
 
 bib_harvard.rtf: bib_harvard.tex bib_harvard.bib
-	$(LATEX) bib_harvard > latex.log
+	$(LATEX) bib_harvard $(LATEX_LOG)
 	$(BIBTEX) bib_harvard > bibtex.log
-	$(LATEX) bib_harvard > latex.log
-	$(LATEX) bib_harvard > latex.log
+	$(LATEX) bib_harvard $(LATEX_LOG)
+	$(LATEX) bib_harvard $(LATEX_LOG)
 	$(LATEX2RTF) $(OPTIONS) bib_harvard
+	rm -rf bib_harvard.out
 
 bibentry_plain.rtf: bibentry_plain.tex bibentry_plain.bib
-	$(LATEX) bibentry_plain > latex.log
+	$(LATEX) bibentry_plain $(LATEX_LOG)
 	$(BIBTEX) bibentry_plain > bibtex.log
-	$(LATEX) bibentry_plain > latex.log
+	$(LATEX) bibentry_plain $(LATEX_LOG)
 	$(LATEX2RTF) $(OPTIONS) bibentry_plain
 
 bibentry_apalike.rtf: bibentry_apalike.tex bibentry_apalike.bib
-	$(LATEX) bibentry_apalike > latex.log
+	$(LATEX) bibentry_apalike $(LATEX_LOG)
 	$(BIBTEX) bibentry_apalike > bibtex.log
-	$(LATEX) bibentry_apalike > latex.log
+	$(LATEX) bibentry_apalike $(LATEX_LOG)
 	$(LATEX2RTF) $(OPTIONS) bibentry_apalike
 
+bib_super.rtf: bib_super.tex
+	$(LATEX) bib_super $(LATEX_LOG)
+	$(LATEX) bib_super $(LATEX_LOG)
+	$(LATEX2RTF) $(OPTIONS) bib_super
+
 misc2.rtf: misc2.tex
-	$(LATEX) misc2 > latex.log
-	$(LATEX) misc2 > latex.log
+	$(LATEX) misc2 $(LATEX_LOG)
+	$(LATEX) misc2 $(LATEX_LOG)
 	$(LATEX2RTF) $(OPTIONS) misc2
 
 german.rtf: german.tex
-	$(LATEX) german > latex.log
-	$(LATEX) german > latex.log
+	$(LATEX) german $(LATEX_LOG)
+	$(LATEX) german $(LATEX_LOG)
 	$(LATEX2RTF) $(OPTIONS) german
 
 russian.rtf: russian.tex
@@ -119,13 +185,13 @@ russian.rtf: russian.tex
 	$(LATEX2RTF) $(OPTIONS) russian
 
 ttgfsr7.rtf: ttgfsr7.tex
-	$(LATEX) ttgfsr7 > latex.log
-	$(LATEX) ttgfsr7 > latex.log
+	$(LATEX) ttgfsr7 $(LATEX_LOG)
+	$(LATEX) ttgfsr7 $(LATEX_LOG)
 	$(LATEX2RTF) $(OPTIONS) ttgfsr7
 
 fig_test.rtf: fig_test.tex fig_test.eps fig_testc.ps
-	$(LATEX) fig_test > latex.log
-	$(LATEX) fig_test > latex.log
+	$(LATEX) fig_test $(LATEX_LOG)
+	$(LATEX) fig_test $(LATEX_LOG)
 	$(LATEX2RTF) $(OPTIONS) -F fig_test
 
 fig_test2.rtf: fig_test2.tex fig_testb.pdf fig_testc.pdf
@@ -137,8 +203,8 @@ fig_test3.rtf: fig_test3.tex fig_testd.ps fig_testd.pdf
 	$(LATEX2RTF) $(OPTIONS) fig_test3
 
 linux.rtf: linux.tex
-	$(LATEX) linux > latex.log
-	$(LATEX) linux > latex.log
+	$(LATEX) linux $(LATEX_LOG)
+	$(LATEX) linux $(LATEX_LOG)
 	$(LATEX2RTF) $(OPTIONS) linux
 
 check:

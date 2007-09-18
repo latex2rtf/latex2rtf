@@ -2,6 +2,8 @@
 
 CC=gcc
 MKDIR=mkdir -p
+TAR=gnutar
+RM=rm
 
 CFLAGS:=-DUNIX
 #CFLAGS:=-DMSDOS         #Windows/DOS
@@ -111,7 +113,13 @@ TEST=   test/Makefile test/bracecheck test/accentchars.tex test/array.tex  \
 	test/head_book.tex test/head_report.tex test/head_article.tex \
 	test/endnote.tex   test/bib_harvard.tex test/report.tex \
 	test/bibentry_apalike.tex test/bibentry_apalike.bib \
-	test/bibentry_plain.tex   test/bibentry_plain.bib
+	test/bibentry_plain.tex   test/bibentry_plain.bib \
+	test/bib_apacite_dblsp.tex test/dblspace.tex test/geotest.tex\
+	test/eqns2.tex             test/ifclause.tex test/enc_utf8x.tex\
+	test/geometry.tex          test/unicode.tex  test/fonttest.tex\
+	test/german.tex            test/bib_harvard.bib test/bib_super.tex\
+	test/fig_endfloat.tex      test/fig_test4.tex   test/overstrike.tex
+	
 	
 OBJS=fonts.o direct.o encode.o commands.o stack.o funct1.o tables.o \
 	chars.o ignore.o cfg.o main.o util.o parser.o lengths.o counters.o \
@@ -133,17 +141,23 @@ check test: latex2rtf
 	cd scripts && $(MAKE)
 	cd test && $(MAKE) 
 	cd test && $(MAKE) check
+	
+fullcheck: latex2rtf
+	cd scripts && $(MAKE)
+	cd test && $(MAKE) all
+	cd test && $(MAKE) check
 
 checkdir: $(README) $(SRCS) $(HDRS) $(CFGS) $(SCRIPTS) $(TEST) doc/latex2rtf.texi Makefile vms_make.com
 
 clean: checkdir
-	rm -f $(OBJS) core $(BINARY_NAME)
+	$(RM) -f $(OBJS) core $(BINARY_NAME)
 
 depend: $(SRCS)
 	$(CC) -MM $(SRCS) >makefile.depend
 	@echo "***** Append makefile.depend to Makefile manually ******"
 
 dist: checkdir releasedate latex2rtf doc $(SRCS) $(HDRS) $(CFGS) $(README) Makefile vms_make.com $(SCRIPTS) $(DOCS) $(TEST)
+	$(MAKE) releasedate
 	$(MKDIR) latex2rtf-$(VERSION)
 	$(MKDIR) latex2rtf-$(VERSION)/cfg
 	$(MKDIR) latex2rtf-$(VERSION)/doc
@@ -158,17 +172,17 @@ dist: checkdir releasedate latex2rtf doc $(SRCS) $(HDRS) $(CFGS) $(README) Makef
 	ln $(DOCS)         latex2rtf-$(VERSION)/doc
 	ln $(SCRIPTS)      latex2rtf-$(VERSION)/scripts
 	ln $(TEST)         latex2rtf-$(VERSION)/test
-	tar cvf - latex2rtf-$(VERSION) | \
+	$(TAR) cvf - latex2rtf-$(VERSION) | \
 	    gzip > latex2rtf-$(VERSION).tar.gz
-	rm -rf latex2rtf-$(VERSION)
+	$(RM) -rf latex2rtf-$(VERSION)
 
 uptodate:
 #	perl -pi.bak -e '$$date=scalar localtime; s/\(.*/($$date)";/' version.h
-#	rm version.h.bak
+#	$(RM) version.h.bak
 
 releasedate:
 	perl -pi.bak -e '$$date=scalar localtime; s/\(.*/(released $$date)";/; s/d ..../d /;s/\d\d:\d\d:\d\d //;' version.h
-	rm version.h.bak
+	$(RM) version.h.bak
 
 doc: doc/latex2rtf.texi doc/Makefile
 	cd doc && $(MAKE) -k
@@ -207,7 +221,7 @@ install-info: doc/latex2rtf.info
 	install-info --info-dir=$(INFO_INSTALL) doc/latex2rtf.info
 
 realclean: checkdir clean
-	rm -f makefile.depend latex2rtf-$(VERSION).tar.gz
+	$(RM) -f makefile.depend latex2rtf-$(VERSION).tar.gz
 	cd doc && $(MAKE) clean
 	cd test && $(MAKE) clean
 
@@ -238,13 +252,13 @@ pkg:
 	-$(PKG_MAKER) -build -p $(PKG_NAME) -r $(PKG_RESOURCES) -f $(PKG_CONTENTS)
 	mkdmg $(DMG_DIR)
 	
-	rm -rf $(PKG_DIR)
+	$(RM) -rf $(PKG_DIR)
 	
 	mkdmg 
 	
 	
 	
-.PHONY: all check checkdir clean depend dist doc install install_info realclean latex2rtf uptodate splint
+.PHONY: all check checkdir clean depend dist doc install install_info realclean latex2rtf uptodate splint fullcheck
 
 # created using "make depend"
 commands.o: commands.c cfg.h main.h convert.h chars.h fonts.h \
