@@ -1,8 +1,8 @@
-This is latex2rtf.info, produced by makeinfo version 4.7 from
+This is latex2rtf.info, produced by makeinfo version 4.8 from
 latex2rtf.texi.
 
 
-File: latex2rtf.info,  Node: Top,  Next: Introduction,  Up: (dir)
+File: latex2rtf.info,  Node: Top,  Next: Introduction,  Prev: (dir),  Up: (dir)
 
 LaTeX2RTF
 *********
@@ -17,10 +17,60 @@ RTF.
 * Using LaTeX2RTF::
 * Features::
 * Configuration::
-* Error Messages and Logging ::
+* Error Messages and Logging::
 * History::
-* LaTeX2RTF under Development ::
+* LaTeX2RTF under Development::
+* LaTeX Commands::
 * Index::
+
+ --- The Detailed Node Listing ---
+
+Installation
+
+* UNIX::
+* DOS or Windows::
+* Win32 systems::
+* Macintosh::
+* Problems Compiling::
+* Problems with make check::
+
+Using LaTeX2RTF
+
+* General Assumptions::
+* LaTeX2RTF Options::
+* Debugging::
+
+Features
+
+* LaTeX2e::
+* Unicode Support::
+* Input Encoding::
+* Language Support::
+* Cross References::
+* Page Formatting::
+* Equations::
+* Math and Special Symbols::
+* Tables::
+* Graphics::
+* Pagestyles::
+* Hyperlatex::
+
+Configuration
+
+* Input processing::
+* Output formatting::
+* Direct Conversion::
+* Ignore Command::
+* Font Configuration::
+* Language Configuration::
+
+LaTeX2RTF under Development
+
+* Unimplemented Features::
+* Missing options::
+* Known Bugs::
+* Reporting Bugs::
+* Todo List::
 
    Copyright 1998-2002 Georg Lehner,
 updates Copyright 1999-2007 by Wilfried Hennings and Scott Prahl,
@@ -112,14 +162,14 @@ File: latex2rtf.info,  Node: Installation,  Next: Using LaTeX2RTF,  Prev: Introd
 
 * Menu:
 
-* General ::
-* Obtaining LaTeX2RTF ::
-* UNIX ::
-* DOS or Windows ::
-* Win32 systems ::
-* Macintosh ::
-* Problems Compiling ::
-* Problems with make check ::
+* General::
+* Obtaining LaTeX2RTF::
+* UNIX::
+* DOS or Windows::
+* Win32 systems::
+* Macintosh::
+* Problems Compiling::
+* Problems with make check::
 
 
 File: latex2rtf.info,  Node: General,  Next: Obtaining LaTeX2RTF,  Prev: Installation,  Up: Installation
@@ -454,8 +504,8 @@ File: latex2rtf.info,  Node: Using LaTeX2RTF,  Next: Features,  Prev: Installati
 
 * Menu:
 
-* General Assumptions ::
-* LaTeX2RTF Options ::
+* General Assumptions::
+* LaTeX2RTF Options::
 * Debugging::
 
 
@@ -728,16 +778,16 @@ correctly to RTF.
 
 * LaTeX2e::
 * Unicode Support::
-* Input Encoding ::
-* Language Support ::
-* Cross References ::
-* Page Formatting ::
-* Equations ::
-* Math and Special Symbols ::
-* Tables ::
-* Graphics ::
-* Pagestyles ::
-* Hyperlatex ::
+* Input Encoding::
+* Language Support::
+* Cross References::
+* Page Formatting::
+* Equations::
+* Math and Special Symbols::
+* Tables::
+* Graphics::
+* Pagestyles::
+* Hyperlatex::
 
 
 File: latex2rtf.info,  Node: LaTeX2e,  Next: Unicode Support,  Prev: Features,  Up: Features
@@ -1040,12 +1090,12 @@ File: latex2rtf.info,  Node: Configuration,  Next: Error Messages and Logging,  
 
 * Menu:
 
-* Input processing ::
-* Output formatting ::
-* Direct Conversion ::
-* Ignore Command ::
-* Font Configuration ::
-* Language Configuration ::
+* Input processing::
+* Output formatting::
+* Direct Conversion::
+* Ignore Command::
+* Font Configuration::
+* Language Configuration::
 
 
 File: latex2rtf.info,  Node: Input processing,  Next: Output formatting,  Prev: Configuration,  Up: Configuration
@@ -1340,18 +1390,18 @@ future ...
 what was available in the original sources and documentation.
 
 
-File: latex2rtf.info,  Node: LaTeX2RTF under Development,  Next: Index,  Prev: History,  Up: Top
+File: latex2rtf.info,  Node: LaTeX2RTF under Development,  Next: LaTeX Commands,  Prev: History,  Up: Top
 
 8 LaTeX2RTF under Development
 *****************************
 
 * Menu:
 
-* Unimplemented Features ::
-* Missing options ::
-* Known Bugs ::
-* Reporting Bugs ::
-* Todo List ::
+* Unimplemented Features::
+* Missing options::
+* Known Bugs::
+* Reporting Bugs::
+* Todo List::
 
 
 File: latex2rtf.info,  Node: Unimplemented Features,  Next: Missing options,  Prev: LaTeX2RTF under Development,  Up: LaTeX2RTF under Development
@@ -1470,9 +1520,1678 @@ Georg's todo list
      releases, never, partially functional, ...).
 
 
-File: latex2rtf.info,  Node: Index,  Prev: LaTeX2RTF under Development,  Up: Top
+File: latex2rtf.info,  Node: LaTeX Commands,  Next: Index,  Prev: LaTeX2RTF under Development,  Up: Top
 
-9 Index
+Appendix A Command List
+***********************
+
+Listed here are all the LaTeX  commands currently parsed by LaTeX2RTF .
+Note: inclusion in this list does not mean that a command is fully and
+correctly handled by LaTeX2RTF . In some cases the commands here are
+place-holders only, and are not implemented at all. The list is provided
+to encourage developers to note any departures from the behaviour that
+LaTeX  users will expect. The location of the commands is noted to
+assist anyone interested in hacking on the C source code. This list is a
+work in progress, and may not be immediately useful to general users,
+other than to indicate those commands that we have at least contemplated
+implementing.
+
+Commands in the `commands[]' array:
+
+   General
+begin
+
+end
+
+today
+
+footnote
+
+endnote
+
+the
+
+raggedright
+
+centerline
+
+vcenter
+
+   Fonts
+rmfamily
+
+rm
+
+mathrm
+
+textrm
+
+sffamily
+
+sf
+
+mathsf
+
+textsf
+
+ttfamily
+
+tt
+
+mathtt
+
+texttt
+
+cal
+
+mathcal
+
+bfseries
+
+bf
+
+textbf
+
+mathbf
+
+mdseries
+
+textmd
+
+mathmd
+
+itshape
+
+it
+
+mit
+
+textit
+
+mathit
+
+upshape
+
+textup
+
+mathup
+
+scfamily
+
+scshape
+
+sc
+
+textsc
+
+mathsc
+
+slshape
+
+sl
+
+textsl
+
+mathsl
+
+tiny
+
+ssmall
+
+scriptsize
+
+footnotesize
+
+enotesize
+
+small
+
+normalsize
+
+large
+
+Large
+
+LARGE
+
+huge
+
+Huge
+
+HUGE
+
+em
+
+emph
+
+underline
+
+underbar
+
+textnormal
+
+normalfont
+
+mathnormal
+
+textfont
+
+   Logos
+latex
+
+LaTeX
+
+LaTeXe
+
+TeX
+
+SLiTeX
+
+BibTeX
+
+AmSTeX
+
+AmSLaTeX
+
+LyX
+
+lower
+
+kern
+
+   Special characters
+hat
+
+check
+
+breve
+
+acute
+
+grave
+
+tilde
+
+bar
+
+vec
+
+dot
+
+ddot
+
+\
+
+u
+
+d
+
+v
+
+r
+
+b
+
+c
+
+i
+
+j
+
+H
+
+l
+
+L
+
+   Sectioning Commands
+part
+
+part*
+
+chapter
+
+chapter*
+
+section
+
+section*
+
+subsection
+
+subsection*
+
+subsubsection
+
+subsubsection*
+
+paragraph
+
+paragraph*
+
+subparagraph
+
+subparagraph*
+
+   Uncategorized
+ldots
+
+dots
+
+dotfill
+     There is no rtf code for dotfill; LaTeX2RTF  inserts an ellipsis
+     only.
+
+textellipsis
+
+title
+
+author
+
+and
+
+date
+
+maketitle
+
+par
+
+noindent
+
+indent
+
+caption
+
+appendix
+
+protect
+
+clearpage
+
+efloatseparator
+
+cleardoublepage
+
+newpage
+
+pagebreak
+
+mbox
+
+hbox
+
+vbox
+
+fbox
+
+parbox
+
+frenchspacing
+
+nonfrenchspacing
+
+include
+
+input
+
+verb
+
+verb*
+
+url
+
+onecolumn
+
+twocolumn
+
+includegraphics
+
+epsffile
+
+epsfbox
+
+BoxedEPSF
+
+psfig
+
+includegraphics*
+
+moveleft
+
+moveright
+
+hsize
+
+letterspace
+
+footnotemark
+
+endnotemark
+
+label
+
+ref
+
+vref
+
+eqref
+
+pageref
+
+cite
+
+onlinecite
+
+citeonline
+
+nobibliography
+
+bibliography
+
+bibliographystyle
+
+bibitem
+
+bibentry
+
+newblock
+
+newsavebox
+
+usebox
+
+fbox
+
+quad
+
+qquad
+
+textsuperscript
+
+textsubscript
+
+hspace
+
+hspace*
+
+vspace
+
+vspace*
+
+vskip
+
+smallskip
+
+medskip
+
+bigskip
+
+addvspace
+
+addcontentsline
+
+addcontents
+
+stretch
+
+typeaout
+
+index
+
+printindex
+
+indexentry
+
+glossary
+
+glossaryentry
+
+typeout
+
+Typein
+
+includeonly
+     This command is not implemented.
+
+nocite
+
+stepcounter
+
+refstepcounter
+
+fnsymbol
+
+Alph
+
+alph
+
+Roman
+
+roman
+
+arabic
+
+newcount
+
+output
+
+value
+
+makebox
+
+framebox
+
+sbox
+
+savebox
+
+rule
+
+raisebox
+
+newfont
+
+settowidth
+
+nopagebreak
+
+samepage
+
+linebreak
+
+nolinebreak
+
+typein
+
+marginpar
+
+baselineskip
+
+psfrag
+
+lineskip
+
+vsize
+
+setbox
+
+thanks
+
+bibliographystyle
+
+let
+
+multicolumn
+
+ensuremath
+
+frac
+
+dfrac
+
+Frac
+
+sqrt
+
+lim
+
+limsup
+
+liminf
+
+int
+
+iint
+
+iiint
+
+sum
+
+prod
+
+left
+
+right
+
+stackrel
+
+matrix
+
+overline
+
+leftrightarrows
+
+leftleftarrows
+
+rightrightarrows
+
+longleftrightarrows
+
+longleftarrow
+
+longrightarrow
+
+mho
+
+ddots
+
+mapsto
+
+updownarrow
+
+nwarrow
+
+nearrow
+
+searrow
+
+swarrow
+
+triangleleft
+
+triangleright
+
+cdots
+
+vdots
+
+hbar
+
+hslash
+
+ell
+
+mp
+
+succ
+
+prec
+
+amalg
+
+coprod
+
+simeq
+
+ll
+
+gg
+
+doteq
+
+because
+
+measuredangle
+
+Updownarrow
+
+rightleftarrows
+
+rightleftharpoons
+
+rightharpoonup
+
+leftharpoondown
+
+nonumber
+
+notag
+
+char
+
+htmladdnormallink
+
+htmlref
+
+nobreakspace
+
+abstract
+
+endinput
+
+textcolor
+
+tableofcontents
+
+listoffigures
+
+listoftables
+
+numberline
+
+contentsline
+
+centering
+
+pagestyle
+
+pagenumbering
+
+markboth
+
+markright
+
+aleph
+
+alpha
+
+Alpha
+
+angle
+
+approx
+
+ast
+
+beta
+
+Beta
+
+bot
+
+bullet
+
+cap
+
+cdot
+
+chi
+
+Chi
+
+circ
+
+clubsuit
+
+cong
+
+cup
+
+delta
+
+Delta
+
+Diamond
+
+diamondsuit
+
+div
+
+dots
+
+downarrow
+
+Downarrow
+
+emptyset
+
+epsilon
+
+equiv
+
+eta
+
+exists
+
+forall
+
+gamma
+
+Gamma
+
+ge
+
+geq
+
+heartsuit
+
+Im
+
+in
+
+infty
+
+int
+
+iota
+
+kappa
+
+lambda
+
+Lambda
+
+land
+
+langle
+
+lceil
+
+le
+
+leftarrow
+
+Leftarrow
+
+leftrightarrow
+
+Leftrightarrow
+
+leq
+
+lfloor
+
+lor
+
+mu
+
+nabla
+
+ne
+
+neg
+
+neq
+
+nu
+
+omega
+
+Omega
+
+omicron
+
+oplus
+
+oslash
+
+otimes
+
+partial
+
+perp
+
+phi
+
+Phi
+
+pi
+
+Pi
+
+pm
+
+prod
+
+propto
+
+psi
+
+Psi
+
+rangle
+
+rceil
+
+Re
+
+rfloor
+
+rho
+
+Rightarrow
+
+rightarrow
+
+sigma
+
+Sigma
+
+sim
+
+spadesuit
+
+subset
+
+subseteq
+
+sum
+
+supset
+
+supseteq
+
+surd
+
+tau
+
+textalpha
+
+textbeta
+
+textbullet
+
+textchi
+
+textDelta
+
+textdelta
+
+textepsilon
+
+texteta
+
+textGamma
+
+textgamma
+
+textiota
+
+textkappa
+
+textLambda
+
+textlambda
+
+textmu
+
+textnu
+
+textOmega
+
+textomega
+
+textperiodcentered
+
+textPhi
+
+textphi
+
+textPi
+
+textpi
+
+textPsi
+
+textpsi
+
+textSigma
+
+textsigma
+
+textTau
+
+texttau
+
+textTheta
+
+texttheta
+
+textXi
+
+textxi
+
+textzeta
+
+therefore
+
+Theta
+
+theta
+
+times
+
+to
+
+Uparrow
+
+uparrow
+
+upsilon
+
+Upsilon
+
+varepsilon
+
+varnothing
+
+varphi
+
+varpi
+
+varpropto
+
+varsigma
+
+vartheta
+
+vee
+
+wedge
+
+wp
+
+xi
+
+Xi
+
+zeta
+
+   Preamble Commands (PreambleCommands[])
+documentclass
+
+documentstyle
+
+usepackage
+
+flushbottom
+
+raggedbottom
+
+addtolength
+
+setlength
+
+newlength
+
+newcounter
+
+setcounter
+
+addtocounter
+
+cfoot
+
+rfoot
+
+lfoot
+
+chead
+
+rhead
+
+lhead
+
+fancyfoot
+
+fancyhead
+
+thepage
+
+hyphenation
+
+def
+
+newcommand
+
+providecommand
+
+DeclareRobustCommand
+
+DeclareRobustCommand*
+
+renewcommand
+
+newenvironment
+
+renewenvironment
+
+newtheorem
+
+renewtheorem
+
+pagestyle
+
+thispagestyle
+
+pagenumbering
+
+markboth
+
+markright
+
+makeindex
+
+makeglossary
+
+listoffiles
+
+nofiles
+
+makelabels
+
+verbositylevel
+
+hoffset
+
+voffset
+
+parindent
+
+parskip
+
+baselineskip
+
+topmargin
+
+textheight
+
+headheight
+
+headsep
+
+textwidth
+
+oddsidemargin
+
+evensidemargin
+
+footnotetext
+
+endnotetext
+
+include
+
+input
+
+htmladdnormallink
+
+htmlref
+
+nobreakspace
+
+signature
+
+hline
+
+cline
+
+ifx
+
+theendnotes
+
+euro
+
+EUR
+
+celsius
+
+degreecelsius
+
+resizebox
+
+resizebox*
+
+iflatextortf
+
+latextortftrue
+
+latextortffalse
+
+newif
+
+geometry
+     Currently recognizes *ratio, *centering, *margin, left, right,
+     inner, outer, top, bottom, right, left (including vmargin, hratio
+     etc.)
+
+doublespacing
+     Currently, the only command from the setspace package that is
+     implemented, and the only way to modify line spacing.
+
+   LetterCommands[]
+opening
+
+closing
+
+address
+
+signature
+
+ps
+
+cc
+
+encl
+
+   GermanModeCommands[]
+ck
+
+glqq
+
+glq
+
+grq
+
+grqq
+
+   CzechModeCommands[]
+uv
+
+   FrenchModeCommands[]
+ier
+
+iere
+
+iers
+
+ieres
+
+ieme
+
+iemes
+
+numero
+
+numeros
+
+Numero
+
+Numeros
+
+primo
+
+secundo
+
+tertio
+
+quarto
+
+inferieura
+
+superieura
+
+lq
+
+rq
+
+lqq
+
+rqq
+
+pointvirgule
+
+pointexclamation
+
+pointinterrogation
+
+dittomark
+
+deuxpoints
+
+fup
+
+up
+
+LCS
+
+FCS
+
+og
+
+fg
+
+   RussianModeCommands
+CYRA
+
+CYRB
+
+CYRV
+
+CYRG
+
+CYRD
+
+CYRE
+
+CYRZH
+
+CYRZ
+
+CYRI
+
+CYRISHRT
+
+CYRK
+
+CYRL
+
+CYRM
+
+CYRN
+
+CYRO
+
+CYRP
+
+CYRR
+
+CYRS
+
+CYRT
+
+CYRU
+
+CYRF
+
+CYRH
+
+CYRC
+
+CYRCH
+
+CYRSH
+
+CYRCHSH
+
+CYRHRDSN
+
+CYRERY
+
+CYRSFTSN
+
+CYREREV
+
+CYRYU
+
+CYRYA
+
+cyra
+
+cyrb
+
+cyrv
+
+cyrg
+
+cyrd
+
+cyre
+
+cyrzh
+
+cyrz
+
+cyri
+
+cyrishrt
+
+cyrk
+
+cyrl
+
+cyrm
+
+cyrn
+
+cyro
+
+cyrp
+
+cyrr
+
+cyrs
+
+cyrt
+
+cyru
+
+cyrf
+
+cyrh
+
+cyrc
+
+cyrch
+
+cyrsh
+
+cyrchsh
+
+cyrhrdsn
+
+cyrery
+
+cyrsftsn
+
+cyrerev
+
+cyryu
+
+cyrya
+
+   Environments (params[])
+center
+
+flushright
+
+flushleft
+
+document
+
+tabbing
+
+figure
+
+figure*
+
+picture
+
+minipage
+
+music
+
+small
+
+quote
+
+quotation
+
+enumerate
+
+compactenum
+
+list
+
+itemize
+
+compactitem
+
+description
+
+verbatim
+
+comment
+
+verse
+
+tabular
+
+tabular*
+
+longtable
+
+longtable*
+
+array
+
+displaymath
+
+equation
+
+equation*
+
+eqnarray*
+
+eqnarray
+
+align*
+
+align
+
+math
+
+multicolumn
+
+letter
+
+table
+
+table*
+
+thebibliography
+
+abstract
+
+acknowledgments
+
+titlepage
+
+em
+
+rmfamily
+
+sffamily
+
+ttfamily
+
+bfseries
+
+mdseries
+
+itshape
+
+scshape
+
+slshape
+
+it
+
+sc
+
+sl
+
+bf
+
+sf
+
+tt
+
+rm
+
+Verbatim
+
+alltt
+
+latexonly
+
+htmlonly
+
+rawhtml
+
+theindex
+
+landscape
+
+sloppypar
+
+   hyperlatexCommands[]
+link
+
+xlink
+
+Cite
+
+Ref
+
+Pageref
+
+S
+
+   apaciteCommands[]
+BBOP
+
+BBAA
+
+BBAB
+
+BBAY
+
+BBC
+
+BBN
+
+BBCP
+
+BBOQ
+
+BBCQ
+
+BCBT
+
+BCBL
+
+BOthers
+
+BIP
+
+BAnd
+
+BED
+
+BEDS
+
+BTRANS
+
+BTRANSS
+
+BCHAIR
+
+BCHAIRS
+
+BVOL
+
+BVOLS
+
+BNUM
+
+BNUMS
+
+BEd
+
+BPG
+
+BPGS
+
+BTR
+
+BPhD
+
+BUPhD
+
+BMTh
+
+BUMTh
+
+BOWP
+
+BREPR
+
+BCnt
+
+BCntIP
+
+BBA
+
+AX
+
+Bem
+
+BCAY
+
+fullcite
+
+shortcite
+
+citeNP
+
+fullciteNP
+
+shortciteNP
+
+citeA
+
+fullciteA
+
+shortciteA
+
+citeauthor
+
+fullciteauthor
+
+shortciteauthor
+
+citeyear
+
+citeyearNP
+
+   natbibCommands[]
+cite
+
+citet
+
+citet*
+
+citep
+
+citep*
+
+citealt
+
+citealp
+
+citealt*
+
+citealp*
+
+citetext
+
+citeauthor
+
+citeauthor*
+
+citeyear
+
+citeyearpar
+
+Citet
+
+Citep
+
+Citealt
+
+Citealp
+
+Citeauthor
+
+bibpunct
+
+   harvardCommands[]
+cite
+
+citeasnoun
+
+possessivecite
+
+citeaffixed
+
+citeyear
+
+citeyear*
+
+citename
+
+harvarditem
+
+harvardand
+
+harvardyearleft
+
+harvardyearright
+
+   authordateCommands[]
+citename
+
+shortcite
+
+   Other Commands:
+item
+caption
+center
+
+File: latex2rtf.info,  Node: Index,  Prev: LaTeX Commands,  Up: Top
+
+2 Index
 *******
 
  [index ]
@@ -1525,48 +3244,49 @@ File: latex2rtf.info,  Node: Index,  Prev: LaTeX2RTF under Development,  Up: Top
 
 Tag Table:
 Node: Top79
-Node: Introduction1375
-Node: Installation4307
-Node: General4604
-Node: Obtaining LaTeX2RTF4947
-Node: UNIX5948
-Node: DOS or Windows8726
-Node: Win32 systems15112
-Node: Macintosh16817
-Node: Problems Compiling17744
-Node: Problems with make check18442
-Node: Using LaTeX2RTF18968
-Node: General Assumptions19173
-Node: LaTeX2RTF Options21011
-Node: Debugging28660
-Node: Features29305
-Node: LaTeX2e29747
-Node: Unicode Support30066
-Node: Input Encoding30520
-Node: Language Support31284
-Node: Cross References32810
-Node: Page Formatting35516
-Node: Equations36038
-Node: Math and Special Symbols37311
-Node: Tables39785
-Node: Graphics40469
-Node: Pagestyles40890
-Node: Hyperlatex41494
-Node: Configuration42570
-Node: Input processing42861
-Node: Output formatting45391
-Node: Direct Conversion46144
-Node: Ignore Command47432
-Node: Font Configuration49145
-Node: Language Configuration50455
-Node: Error Messages and Logging51074
-Node: History53172
-Node: LaTeX2RTF under Development55050
-Node: Unimplemented Features55321
-Node: Missing options56112
-Node: Known Bugs56693
-Node: Reporting Bugs57548
-Node: Todo List59191
-Node: Index59965
+Node: Introduction2143
+Node: Installation5075
+Node: General5364
+Node: Obtaining LaTeX2RTF5707
+Node: UNIX6708
+Node: DOS or Windows9486
+Node: Win32 systems15872
+Node: Macintosh17577
+Node: Problems Compiling18504
+Node: Problems with make check19202
+Node: Using LaTeX2RTF19728
+Node: General Assumptions19931
+Node: LaTeX2RTF Options21769
+Node: Debugging29418
+Node: Features30063
+Node: LaTeX2e30495
+Node: Unicode Support30814
+Node: Input Encoding31268
+Node: Language Support32032
+Node: Cross References33558
+Node: Page Formatting36264
+Node: Equations36786
+Node: Math and Special Symbols38059
+Node: Tables40533
+Node: Graphics41217
+Node: Pagestyles41638
+Node: Hyperlatex42242
+Node: Configuration43318
+Node: Input processing43603
+Node: Output formatting46133
+Node: Direct Conversion46886
+Node: Ignore Command48174
+Node: Font Configuration49887
+Node: Language Configuration51197
+Node: Error Messages and Logging51816
+Node: History53914
+Node: LaTeX2RTF under Development55792
+Node: Unimplemented Features56067
+Node: Missing options56858
+Node: Known Bugs57439
+Node: Reporting Bugs58294
+Node: Todo List59937
+Node: LaTeX Commands60711
+Node: Index69506
 
 End Tag Table
