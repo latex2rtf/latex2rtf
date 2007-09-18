@@ -5,15 +5,19 @@ all:	latex2rtf.html latex2rtf.info latex2rtf.pdf latex2rtf.txt \
 
 latex2rtf.html:	latex2rtf.texi
 	makeinfo --html --no-split latex2rtf
+	chmod 644 latex2rtf.html
 
 latex2rtf.info: latex2rtf.texi
 	makeinfo latex2rtf
+	chmod 644 latex2rtf.info
 
 latex2rtf.txt:  latex2rtf.texi
 	makeinfo --no-headers latex2rtf > latex2rtf.txt
+	chmod 644 latex2rtf.txt
 
 latex2rtf.pdf : latex2rtf.texi
 	texi2dvi --pdf latex2rtf.texi
+	chmod 644 latex2rtf.pdf
 
 latex2pn.txt: latex2png.1
 	nroff -man <latex2png.1 | perl -pe 's/.\x08//g' > latex2pn.txt
