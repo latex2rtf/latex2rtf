@@ -880,11 +880,18 @@ the old 2.09 version of @code{\documentstyle[options]@{format#@}} and the newer
 @node Unicode Support, Input Encoding, LaTeX2e, Features
 @section Unicode Support
 
-As of version 1.9.17, @ltor{} has limited unicode support.  LaTeX files
+As of version 1.9.17, @ltor{} has limited unicode support.  @latex{} files
 that use unicode sequences are just emitted directly into the RTF file.
 Symbols and odd characters in math sequences may also be converted to
 a unicode sequence if there is no corresponding symbol in the ``Symbol''
 or ``MT Extra'' fonts.
+
+Support for unicode encoded input 
+is activated by the @latex{} command @*
+@code{\usepackage[utf8]@{inputenc@}} @*
+or @*
+@code{\usepackage[utf8x]@{inputenc@}}.
+
 
 @node Input Encoding, Language Support, Unicode Support, Features
 @section Input Encoding
@@ -894,7 +901,7 @@ or @code{\documentstyle[isolatin1]@{...@}}. @ltor{} automagically detects these
 packages/style options and switches to processing of ISO-Latin1 codes.  The following
 encodings are supported: ansinew, applemac, cp437, cp437de, cp850, cp852, cp865,
 decmulti, cp1250, cp1252, latin1, latin2, latin3, latin4, latin5, latin9, next,
-koi8-r, koi8-u, cp1251, cp855, cp866, maccyr, and macukr.  The encoding used in
+koi8-r, koi8-u, cp1251, cp855, cp866, maccyr, macukr, utf8, and utf8x.  The encoding used in
 RTF files is cp1252.  If cyrillic fonts are present, then these are represented
 in the RTF file using cp1251 (Windows Cyrillic).
 
@@ -908,7 +915,7 @@ german, nynorsk, spanish, bahasa, dutch, icelandic, polish, swedish,
 basque, english, portuges, turkish, brazil, esperanto, irish, romanian,
 usorbian, breton, estonian, italian, samin, welsh, catalan, finnish,
 latin, scottish, croatian, lsorbian, serbian, czech, french, magyar,
-slovak, danish, galician, norsk, slovene,
+slovak, danish, galician, norsk, slovene.
 
 The only thing that these files do is to translate various words usually
 emitted by @latex{} during processing.  For example, this ensures that the
