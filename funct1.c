@@ -65,7 +65,7 @@ static int g_vertical_space_to_add = 0;
 static int g_line_spacing = 240;
 bool g_processing_list_environment = FALSE;
 
-void CmdStartParagraph(int style, int indenting)
+void CmdStartParagraph(const char *style, int indenting)
 
 /******************************************************************************
      purpose : RTF codes to create a new paragraph.  If the paragraph should
@@ -73,8 +73,12 @@ void CmdStartParagraph(int style, int indenting)
                of \parindent as the indentation of the first line.
                
                style describes the type of paragraph ... 
-                  BODY_TEXT_STYLE
-                  CAPTION_STYLE
+                  "body"
+                  "caption"
+                  "author"
+                  "bibitem"
+                  "section"
+                  etc.
                   
                indenting describes how this paragraph and (perhaps) the following
                paragraph should be indented
@@ -530,7 +534,7 @@ void CmdBeginEnd(int code)
             str = expandTheorem(i, option);
             CmdEndParagraph(0);
             CmdVspace(VSPACE_SMALL_SKIP);
-            CmdStartParagraph(THEOREM_STYLE, FIRST_INDENT);
+            CmdStartParagraph("theorem", FIRST_INDENT);
             fprintRTF("{\\b %s} {\\i ", str);
             PushBrace();
             if (option)
@@ -775,7 +779,7 @@ parameter: code: type of section-recursion-level
         case SECT_PART:
         case SECT_PART_STAR:
             if (getCounter("part") > 0) CmdNewPage(NewPage);
-            CmdStartParagraph(PART_STYLE, TITLE_INDENT);
+            CmdStartParagraph("part", TITLE_INDENT);
             fprintRTF("{");
             InsertStyle("part");
             fprintRTF(" ");
@@ -796,7 +800,7 @@ parameter: code: type of section-recursion-level
         case SECT_CHAPTER_STAR:
             unit_label = NULL;
             if (getCounter("chapter") > 0) CmdNewPage(NewPage);
-            CmdStartParagraph(CHAPTER_STYLE, TITLE_INDENT);
+            CmdStartParagraph("chapter", TITLE_INDENT);
             fprintRTF("{");
             InsertStyle("chapter");
             fprintRTF(" ");
@@ -818,7 +822,7 @@ parameter: code: type of section-recursion-level
             }
             CmdEndParagraph(0);
             CmdVspace(VSPACE_BIG_SKIP);
-            CmdStartParagraph(CHAPTER_STYLE, TITLE_INDENT);
+            CmdStartParagraph("chapter", TITLE_INDENT);
             ConvertString(heading);
             CmdEndParagraph(0);
             fprintRTF("\\par\\par}");
@@ -830,7 +834,7 @@ parameter: code: type of section-recursion-level
         case SECT_NORM:
         case SECT_NORM_STAR:
             CmdVspace(VSPACE_BIG_SKIP);
-            CmdStartParagraph(SECTION_STYLE, TITLE_INDENT);
+            CmdStartParagraph("section", TITLE_INDENT);
             fprintRTF("{");
             InsertStyle("section");
             fprintRTF(" ");
@@ -855,7 +859,7 @@ parameter: code: type of section-recursion-level
         case SECT_SUB:
         case SECT_SUB_STAR:
             CmdVspace(VSPACE_MEDIUM_SKIP);
-            CmdStartParagraph(SUBSECTION_STYLE, TITLE_INDENT);
+            CmdStartParagraph("subsection", TITLE_INDENT);
             fprintRTF("{");
             InsertStyle("subsection");
             fprintRTF(" ");
@@ -879,7 +883,7 @@ parameter: code: type of section-recursion-level
         case SECT_SUBSUB:
         case SECT_SUBSUB_STAR:
             CmdVspace(VSPACE_MEDIUM_SKIP);
-            CmdStartParagraph(SUBSUBSECTION_STYLE, TITLE_INDENT);
+            CmdStartParagraph("subsubsection", TITLE_INDENT);
             fprintRTF("{");
             InsertStyle("subsubsection");
             fprintRTF(" ");
@@ -903,7 +907,7 @@ parameter: code: type of section-recursion-level
         case SECT_SUBSUBSUB:
         case SECT_SUBSUBSUB_STAR:
             CmdVspace(VSPACE_MEDIUM_SKIP);
-            CmdStartParagraph(SUBSUBSUBSECTION_STYLE, TITLE_INDENT);
+            CmdStartParagraph("paragraph", TITLE_INDENT);
             fprintRTF("{");
             InsertStyle("paragraph");
             fprintRTF(" ");
@@ -925,7 +929,7 @@ parameter: code: type of section-recursion-level
         case SECT_SUBSUBSUBSUB:
         case SECT_SUBSUBSUBSUB_STAR:
             CmdVspace(VSPACE_MEDIUM_SKIP);
-            CmdStartParagraph(SUBSUBSUBSUBSECTION_STYLE, TITLE_INDENT);
+            CmdStartParagraph("subparagraph", TITLE_INDENT);
             fprintRTF("{");
             InsertStyle("subparagraph");
             fprintRTF(" ");
@@ -981,7 +985,7 @@ void CmdCaption(int code)
         CmdEndParagraph(0);
     vspace = getLength("abovecaptionskip");
     DirectVspace(vspace);
-    CmdStartParagraph(CAPTION_STYLE, FIRST_INDENT);
+    CmdStartParagraph("caption", FIRST_INDENT);
     fprintRTF("{");
 
     if (g_processing_figure) {
@@ -1249,7 +1253,7 @@ void CmdItem(int code)
     DirectVspace(vspace);
 
     CmdIndent(INDENT_USUAL);
-    CmdStartParagraph(ITEM_STYLE, FIRST_INDENT);
+    CmdStartParagraph("item", FIRST_INDENT);
 
     itemlabel = getBracketParam();
     if (itemlabel) {            /* \item[label] */
@@ -1437,7 +1441,7 @@ void CmdVerbatim(int code)
             PushEnvironment(VERBATIM_MODE);
             CmdEndParagraph(0);
             CmdIndent(INDENT_NONE);
-            CmdStartParagraph(VERBATIM_STYLE, FIRST_INDENT);
+            CmdStartParagraph("verbatim", FIRST_INDENT);
             num = TexFontNumber("Typewriter");
             fprintRTF("\\pard\\ql\\b0\\i0\\scaps0\\f%d ", num);
         }
@@ -1702,7 +1706,7 @@ void CmdFigure(int code)
         if (g_endfloat_figures) {
 			if (g_endfloat_markers) {
 				alignment = CENTERED;
-				CmdStartParagraph(ENDFLOAT_STYLE, ANY_INDENT);
+				CmdStartParagraph("endfloat", ANY_INDENT);
 				incrementCounter("endfloatfigure");  /* two separate counters */
 				fprintRTF("[");                      /* one for figures and one for */
 				ConvertBabelName("FIGURENAME");      /* endfloat figures */
@@ -1716,7 +1720,7 @@ void CmdFigure(int code)
 
             caption = ExtractAndRemoveTag("\\caption", figure_contents);
             label = ExtractAndRemoveTag("\\label", figure_contents);
-            CmdStartParagraph(CAPTION_STYLE, FIRST_INDENT);
+            CmdStartParagraph("caption", FIRST_INDENT);
             WriteLatexAsBitmap("\\begin{figure}", figure_contents, "\\end{figure}");
             ConvertString(caption);
             if (label)
@@ -1724,7 +1728,7 @@ void CmdFigure(int code)
             if (caption)
                 free(caption);
         } else {
-			CmdStartParagraph(FIGURE_STYLE, ANY_INDENT);
+			CmdStartParagraph("figure", ANY_INDENT);
             ConvertString(figure_contents);
         }
         free(figure_contents);
@@ -1913,7 +1917,7 @@ void CmdAbstract(int code)
         if (g_document_type == FORMAT_REPORT || titlepage)
             CmdNewPage(NewPage);
 
-        CmdStartParagraph(ABSTRACT_STYLE, FIRST_INDENT);
+        CmdStartParagraph("abstract", FIRST_INDENT);
         fprintRTF("\\qc{\\b ");
         ConvertBabelName("ABSTRACTNAME");
         fprintRTF("}");
@@ -1950,7 +1954,7 @@ CmdAcknowledgments(int code)
 	if (code == ON) {
 		
 		CmdVspace(VSPACE_BIG_SKIP);
-		CmdStartParagraph(ACKNOWLEDGEMENTS_STYLE, ANY_INDENT);
+		CmdStartParagraph("acknowledgments", ANY_INDENT);
 		fprintRTF("\n{\\b ");
 		fprintRTF("Acknowledgments"); /* should be in cfg file, but it is not */
 		fprintRTF("}\n");

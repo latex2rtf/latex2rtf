@@ -809,7 +809,7 @@ void CmdTitle(int code)
 
 void CmdTableOfContents(int code)
 {
-	CmdStartParagraph(CONTENTS_STYLE, TITLE_INDENT);
+	CmdStartParagraph("contents", TITLE_INDENT);
 	fprintRTF("{");
 	InsertStyle("contents_no_style");
 	fprintRTF(" ");
@@ -829,7 +829,7 @@ void CmdTableOfContents(int code)
 void CmdAnd(int code)
 {
 	CmdEndParagraph(0);
-	CmdStartParagraph(AUTHOR_STYLE, TITLE_INDENT);
+	CmdStartParagraph("author", TITLE_INDENT);
 }
 
 

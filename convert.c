@@ -88,7 +88,7 @@ void SetTexMode(int mode)
     }
 
     if (g_TeX_mode == MODE_VERTICAL && mode == MODE_HORIZONTAL)
-        CmdStartParagraph(BODY_TEXT_STYLE, ANY_INDENT);
+        CmdStartParagraph("body", ANY_INDENT);
 
     if (g_TeX_mode == MODE_HORIZONTAL && mode == MODE_VERTICAL)
         CmdEndParagraph(0);

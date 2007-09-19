@@ -328,7 +328,7 @@ void CmdTheEndNotes(int code)
     diagnostics(4, "Entering CmdTheEndNotes");
 
     CmdVspace(VSPACE_BIG_SKIP);
-    CmdStartParagraph(ENDNOTE_STYLE, TITLE_INDENT);
+    CmdStartParagraph("endnotes", TITLE_INDENT);
     fprintRTF("{\\sect ");
     InsertStyle("section");
     fprintRTF(" Notes");
@@ -442,7 +442,7 @@ void CmdThebibliography(int code)
 
         CmdEndParagraph(0);
         CmdVspace(VSPACE_MEDIUM_SKIP);
-        CmdStartParagraph(BIBLIOGRAPHY_STYLE, TITLE_INDENT);
+        CmdStartParagraph("bibliography", TITLE_INDENT);
 
         fprintRTF("{\\plain\\b\\fs32 ");
         i = existsDefinition("refname");    /* see if refname has * been redefined */
@@ -481,7 +481,7 @@ void CmdBibitem(int code)
 
     g_processing_list_environment = TRUE;
     CmdEndParagraph(0);
-    CmdStartParagraph(BIBITEM_STYLE, FIRST_INDENT);
+    CmdStartParagraph("bibitem", FIRST_INDENT);
 
     label = getBracketParam();
     key = getBraceParam();
@@ -2002,7 +2002,7 @@ void CmdContentsLine(int code)
 
     diagnostics(1, "Entering CmdContentsLine %s [%s]", type, text);
 
-    CmdStartParagraph(CONTENTS_STYLE, TITLE_INDENT);
+    CmdStartParagraph("contents", TITLE_INDENT);
     fprintRTF("{");
     contents_type = strdup_together("contents_", type);
     InsertStyle(contents_type);
@@ -2026,7 +2026,7 @@ void CmdListOf(int code)
 	
     diagnostics(4, "Entering CmdListOf");
 
-	CmdStartParagraph(LIST_STYLE, TITLE_INDENT);
+	CmdStartParagraph("list", TITLE_INDENT);
 	fprintRTF("{");
 	InsertStyle("contents_no_style");
 	fprintRTF(" ");

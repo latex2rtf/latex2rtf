@@ -42,34 +42,6 @@ This file is available from http://sourceforge.net/projects/latex2rtf/
 #define ANY_INDENT        2
 #define TITLE_INDENT      3
 
-#define BODY_TEXT_STYLE             1
-#define CONTENTS_STYLE              2
-#define BIBLIOGRAPHY_STYLE          3
-#define ENDNOTE_STYLE               4
-#define LIST_STYLE                  5
-#define AUTHOR_STYLE                6
-#define PART_STYLE                  7
-#define CHAPTER_STYLE               8
-#define SECTION_STYLE               9
-#define SUBSECTION_STYLE           10
-#define SUBSUBSECTION_STYLE        11
-#define SUBSUBSUBSECTION_STYLE     12
-#define SUBSUBSUBSUBSECTION_STYLE  13
-#define BIBITEM_STYLE              14
-#define TABULAR_STYLE              15
-#define TABBING_STYLE              16
-#define THEOREM_STYLE              17
-#define CAPTION_STYLE              18
-#define ITEM_STYLE                 19
-#define VERBATIM_STYLE             20
-#define ABSTRACT_STYLE             21
-#define MUSIC_STYLE                22
-#define TABLE_STYLE                23
-#define ENDFLOAT_STYLE             24
-#define FIGURE_STYLE               25
-#define ACKNOWLEDGEMENTS_STYLE     26
-
-
 #define INDENT_NONE    1
 #define INDENT_INHIBIT 2
 #define INDENT_USUAL   3
@@ -95,7 +67,7 @@ void CmdIndent(int code);
 void CmdVspace(int code);
 void CmdSlashSlash(int code);
 void CmdDoubleSpacing(int code);
-void CmdStartParagraph(int style, int indenting);
+void CmdStartParagraph(const char *style, int indenting);
 
 #define DEF_NEW    1
 #define DEF_RENEW  2

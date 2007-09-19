@@ -220,7 +220,7 @@ static TabularT TabularPreamble(char *text, char *width, char *pos, char *cols)
 
     if (GetTexMode() != MODE_HORIZONTAL) {
         CmdIndent(INDENT_NONE);
-        CmdStartParagraph(TABULAR_STYLE, FIRST_INDENT);
+        CmdStartParagraph("tabular", FIRST_INDENT);
     }
 
     fprintRTF("\\par\n");
@@ -1232,7 +1232,7 @@ void CmdTabbing(int code)
 
     if (GetTexMode() != MODE_HORIZONTAL) {
         CmdIndent(INDENT_NONE);
-        CmdStartParagraph(TABBING_STYLE, FIRST_INDENT);
+        CmdStartParagraph("tabbing", FIRST_INDENT);
     }
 
     fprintRTF("\\par\n");
@@ -1300,7 +1300,7 @@ void CmdTable(int code)
         if (g_endfloat_tables) {
             if (g_endfloat_markers) {
                 alignment = CENTERED;
-                CmdStartParagraph(ENDFLOAT_STYLE, ANY_INDENT);
+                CmdStartParagraph("endfloat", ANY_INDENT);
                 incrementCounter("endfloattable");  /* two separate counters */
                 fprintRTF("[");                     /* one for tables and one for */
                 ConvertBabelName("TABLENAME");      /* endfloat tables */
@@ -1310,7 +1310,7 @@ void CmdTable(int code)
                 fprintRTF("%d about here]", getCounter("endfloattable"));
             }
         } else {
-            CmdStartParagraph(TABLE_STYLE, ANY_INDENT);
+            CmdStartParagraph("table", ANY_INDENT);
             ConvertString(table_contents);
         }
         free(table_contents);

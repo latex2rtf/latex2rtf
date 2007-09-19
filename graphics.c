@@ -1847,7 +1847,7 @@ void CmdMusic(int code)
     CmdEndParagraph(0);
     CmdVspace(VSPACE_SMALL_SKIP);
     CmdIndent(INDENT_NONE);
-    CmdStartParagraph(MUSIC_STYLE, FIRST_INDENT);
+    CmdStartParagraph("music", FIRST_INDENT);
     WriteLatexAsBitmap("\\begin{music}", contents, endmusic);
     ConvertString(endmusic);
     CmdEndParagraph(0);
