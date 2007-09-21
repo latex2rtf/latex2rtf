@@ -464,6 +464,8 @@ static void setDocumentOptions(char *optionlist)
             diagnostics(WARNING, "Color support limited to eight basic colors");
         } else if (strcmp(option, "endnotes") == 0) {
             diagnostics(WARNING, "Limited endnote support");
+        } else if (strcmp(option, "paralist") == 0) {
+            diagnostics(WARNING, "Limited paralist support");
         } else if (!TryVariableIgnore(option)) {
             diagnostics(WARNING, "Unknown style option %s ignored", option);
         }
