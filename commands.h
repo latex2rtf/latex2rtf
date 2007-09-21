@@ -3,6 +3,7 @@
 #define ITEMIZE_MODE       3
 #define ENUMERATE_MODE     4
 #define DESCRIPTION_MODE   5
+#define INPARAENUM_MODE    6
 #define LETTER_MODE        8
 #define IGNORE_MODE        9
 #define HYPERLATEX_MODE   10

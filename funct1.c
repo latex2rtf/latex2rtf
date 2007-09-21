@@ -1184,11 +1184,13 @@ void CmdList(int code)
 
     vspace = getLength("topsep") + getLength("parskip");
 
-    if (GetTexMode() == MODE_VERTICAL)
-        vspace += getLength("partopsep");
-    else
-        CmdEndParagraph(0);
-
+	if (code != (INPARAENUM_MODE | ON) && code != (INPARAENUM_MODE | OFF) ) {
+		if (GetTexMode() == MODE_VERTICAL)
+			vspace += getLength("partopsep");
+		else
+			CmdEndParagraph(0);
+	}
+	
     switch (code) {
         case (ITEMIZE_MODE | ON):
             DirectVspace(vspace);
@@ -1214,6 +1216,18 @@ void CmdList(int code)
             setLength("parindent", -amount);
             g_left_margin_indent += amount;
             CmdIndent(INDENT_USUAL);
+            break;
+
+        case (INPARAENUM_MODE | ON):
+            PushEnvironment(INPARAENUM_MODE);
+            g_enumerate_depth++;
+            CmdItem(RESET_ITEM_COUNTER);
+            break;
+
+        case (INPARAENUM_MODE | OFF):
+            g_enumerate_depth--;
+            PopEnvironment();
+            g_processing_list_environment = FALSE;
             break;
 
         case (ENUMERATE_MODE | OFF):
@@ -1245,15 +1259,25 @@ void CmdItem(int code)
         return;
     }
 
-    diagnostics(4, "Entering CmdItem depth=%d item=%d", g_enumerate_depth, item_number[g_enumerate_depth]);
+    diagnostics(4, " CmdItem depth=%d #=%d (%s)", 
+       g_enumerate_depth, 
+       item_number[g_enumerate_depth],
+       (code==ENUMERATE_MODE)?"enumerate":
+       (code==ITEMIZE_MODE)?"itemize":
+       (code==DESCRIPTION_MODE)?"description":
+       (code==INPARAENUM_MODE)?"inparaenum":"not enum");
 
     g_processing_list_environment = TRUE;
-    CmdEndParagraph(0);
-    vspace = getLength("itemsep") + getLength("parsep");
-    DirectVspace(vspace);
 
-    CmdIndent(INDENT_USUAL);
-    CmdStartParagraph("item", FIRST_INDENT);
+	/* suppress vertical space for inparaenum */
+	if (code != INPARAENUM_MODE) {
+    	CmdEndParagraph(0);
+    	vspace = getLength("itemsep") + getLength("parsep");
+    	DirectVspace(vspace);
+
+    	CmdIndent(INDENT_USUAL);
+    	CmdStartParagraph("item", FIRST_INDENT);
+    }
 
     itemlabel = getBracketParam();
     if (itemlabel) {            /* \item[label] */
@@ -1264,7 +1288,7 @@ void CmdItem(int code)
         ConvertString(itemlabel);
         diagnostics(5, "Exiting ConvertString from CmdItem");
         fprintRTF("}");
-        if (code != DESCRIPTION_MODE)
+        if (code != DESCRIPTION_MODE && code != INPARAENUM_MODE)
             fprintRTF("\\tab ");
     }
 
@@ -1278,27 +1302,32 @@ void CmdItem(int code)
             }
             break;
 
+        case INPARAENUM_MODE:
         case ENUMERATE_MODE:
-            if (itemlabel)
-                break;
-            switch (g_enumerate_depth) {
-                case 1:
-                    fprintRTF("%d.", item_number[g_enumerate_depth]);
-                    break;
+            if (itemlabel) 
+            	break;
+			switch (g_enumerate_depth) {
+				case 1:
+					fprintRTF("%d.", item_number[g_enumerate_depth]);
+					break;
 
-                case 2:
-                    fprintRTF("(%c)", 'a' + item_number[g_enumerate_depth] - 1);
-                    break;
+				case 2:
+					fprintRTF("(%c)", 'a' + item_number[g_enumerate_depth] - 1);
+					break;
 
-                case 3:
-                    fprintRTF("%s.", roman_item(item_number[g_enumerate_depth], FALSE));
-                    break;
+				case 3:
+					fprintRTF("%s.", roman_item(item_number[g_enumerate_depth], FALSE));
+					break;
 
-                case 4:
-                    fprintRTF("%c.", 'A' + item_number[g_enumerate_depth] - 1);
-                    break;
-            }
-            fprintRTF("\\tab ");
+				case 4:
+					fprintRTF("%c.", 'A' + item_number[g_enumerate_depth] - 1);
+					break;
+			}
+			if (code != INPARAENUM_MODE)
+				fprintRTF("\\tab ");
+			else
+				fprintRTF(" ");
+			
             item_number[g_enumerate_depth]++;
             break;
 
@@ -1311,7 +1340,9 @@ void CmdItem(int code)
         free(itemlabel);
     thechar = getNonBlank();
     ungetTexChar(thechar);
-    CmdIndent(INDENT_NONE);
+    
+    if (code != INPARAENUM_MODE)
+    	CmdIndent(INDENT_NONE);
 }
 
 void CmdResizeBox(int code)

@@ -51,10 +51,8 @@ typedef struct commandtag {
     int param;                  /* used in various ways */
 } CommandArray;
 
-static int iEnvCount = 0;       /* number of active environments */
-static int iAllCommands = 0;       /* number of (lists of commands) */
-static CommandArray *Environments[100]; /* list of active environments */
-static CommandArray *All_Commands[100]; /* list of (list of commands) */
+static int iEnvCount = 0;               /* number of current environments */
+static CommandArray *Environments[100]; /* call chain for current environments */
 static int g_par_indent_array[100];
 static int g_left_indent_array[100];
 static int g_right_indent_array[100];
@@ -658,6 +656,11 @@ static CommandArray EnumerateCommands[] = {
     {"", NULL, 0}
 };
 
+static CommandArray InparaenumCommands[] = {
+    {"item", CmdItem, INPARAENUM_MODE},
+    {"", NULL, 0}
+};
+
 static CommandArray FigureCommands[] = {
     {"caption", CmdCaption, 0},
     {"center", CmdAlign, PAR_CENTER},
@@ -826,7 +829,9 @@ static CommandArray params[] = {
     {"quote", CmdQuote, QUOTE_MODE},
     {"quotation", CmdQuote, QUOTATION_MODE},
     {"enumerate", CmdList, ENUMERATE_MODE},
+    {"asparaenum", CmdList, ENUMERATE_MODE},
 	{"compactenum", CmdList, ENUMERATE_MODE},
+	{"inparaenum", CmdList, INPARAENUM_MODE},
     {"list", CmdList, ITEMIZE_MODE},
     {"itemize", CmdList, ITEMIZE_MODE},
 	{"compactitem", CmdList, ITEMIZE_MODE},
@@ -1071,40 +1076,43 @@ returns: success or failure
 globals: command-functions have side effects or recursive calls
  ****************************************************************************/
 {
-    int i, j;
+    int iCommand, iEnv,user_def_index;
     char *macro_string;
 
-    diagnostics(5, "CallCommandFunc seeking <%s>, iAllCommands = %d", cCommand, iAllCommands);
+    diagnostics(5, "CallCommandFunc seeking <%s> (%d environments to look through)", cCommand, iEnvCount);
 
-    i = existsDefinition(cCommand);
-    if (i > -1) {
-        macro_string = expandDefinition(i);
+    user_def_index = existsDefinition(cCommand);
+    if (user_def_index > -1) {
+        macro_string = expandDefinition(user_def_index);
         diagnostics(3, "CallCommandFunc <%s> expanded to <%s>", cCommand, macro_string);
         ConvertString(macro_string);
         free(macro_string);
         return TRUE;
     }
 
-    for (j = iAllCommands - 1; j >= 0; j--) {
-        i = 0;
-        while (strcmp(All_Commands[j][i].cpCommand, "") != 0) {
+	/* search backwards through chain of environments*/
+    for (iEnv = iEnvCount - 1; iEnv >= 0; iEnv--) {
+    
+    	/* test every command in the current enviroment */
+        iCommand = 0;
+        while (strcmp(Environments[iEnv][iCommand].cpCommand, "") != 0) {
 
-          /*  if (i<10)
-            	diagnostics(3,"CallCommandFunc (%d,%3d) Trying %s",j,i,All_Commands[j][i].cpCommand);
+          /*  if (iCommand<10)
+            	diagnostics(3,"CallCommandFunc (%d,%3d) Trying %s",iEnv,iCommand,Environments[iEnv][iCommand].cpCommand);
 		*/
 		
-            if (strcmp(All_Commands[j][i].cpCommand, cCommand) == 0) {
-                if (All_Commands[j][i].func == NULL)
+            if (strcmp(Environments[iEnv][iCommand].cpCommand, cCommand) == 0) {
+                if (Environments[iEnv][iCommand].func == NULL)
                     return FALSE;
-                if (*All_Commands[j][i].func == CmdIgnoreParameter) {
+                if (*Environments[iEnv][iCommand].func == CmdIgnoreParameter) {
                     diagnostics(2, "Command \\%s ignored", cCommand);
                 }
 
-                diagnostics(5, "CallCommandFunc Found %s iAllCommands=%d number=%d", All_Commands[j][i].cpCommand, j, i);
-                (*All_Commands[j][i].func) ((All_Commands[j][i].param));
+                diagnostics(5, "CallCommandFunc Found %s iEnvCommand=%d number=%d", Environments[iEnv][iCommand].cpCommand, iEnv, iCommand);
+                (*Environments[iEnv][iCommand].func) ((Environments[iEnv][iCommand].param));
                 return TRUE;    /* Command Function found */
             }
-            ++i;
+            ++iCommand;
         }
     }
     return FALSE;
@@ -1165,6 +1173,8 @@ static char *EnvironmentName(CommandArray *code)
 		return strdup("enumerate");
 	if (code == DescriptionCommands)
 		return strdup("description");
+	if (code == InparaenumCommands)
+		return strdup("inparaenum");
 	if (code == LetterCommands)
 		return strdup("letter");
 	if (code == GermanModeCommands)
@@ -1206,6 +1216,15 @@ static char *EnvironmentName(CommandArray *code)
 }
 
 /****************************************************************************
+purpose: returns a name for the current environment number
+ ****************************************************************************/
+static char *EnvironmentNameByNumber(int n)
+{
+    if (n<0) return "";
+	return EnvironmentName(Environments[n]);
+}
+
+/****************************************************************************
 purpose: prints the names of all the current environments
  ****************************************************************************/
 /*
@@ -1216,13 +1235,7 @@ static void WriteEnvironmentStack(void)
         
     for (i=0; i<iEnvCount; i++) {
     	s=EnvironmentName(Environments[i]);
-    	if (i>=iAllCommands)
-    		diagnostics(1, "Environments[%2d] %12s", i, s);
-    	else {
-    		char *t =EnvironmentName(All_Commands[i]);
-    		diagnostics(1, "Environments[%2d] %12s,     All_Commands[%2d] %12s", i, s, i, t);
-    		free(t);
-    	}    	
+    	diagnostics(1, "Environments[%2d]=\"%12s\"", i, s);
     	free(s);
     }
 }
@@ -1236,11 +1249,9 @@ purpose: adds the command list for a specific environment to the list
 params:  constant identifying the environment
 globals: changes Environment - array of active environments
 		 iEnvCount   - counter of active environments
-		 iAllCommands - counter for lists of commands
  ****************************************************************************/
 {
     char *diag;
-	int i;
 	
     g_par_indent_array[iEnvCount] = getLength("parindent");
     g_left_indent_array[iEnvCount] = g_left_margin_indent;
@@ -1262,7 +1273,10 @@ globals: changes Environment - array of active environments
         case ENUMERATE_MODE:
             Environments[iEnvCount] = EnumerateCommands;
             break;
-        case LETTER_MODE:
+        case INPARAENUM_MODE:
+            Environments[iEnvCount] = InparaenumCommands;
+            break;
+		case LETTER_MODE:
             Environments[iEnvCount] = LetterCommands;
             break;
         case DESCRIPTION_MODE:
@@ -1323,25 +1337,13 @@ globals: changes Environment - array of active environments
         default:
             diagnostics(ERROR, "assertion failed at function PushEnvironment");
     }
-    
-    /* Environments contains the command list to look through */
-    for (i=0; i<iAllCommands; i++) {
-    	if (Environments[iEnvCount] == All_Commands[i])
-    		break;
-    }
-    
-    if (i==iAllCommands) {
-    	All_Commands[iAllCommands] = Environments[iEnvCount];
-    	iAllCommands++;
-    }
-    
-    
-    diag = EnvironmentName(Environments[iEnvCount]);
+     
     iEnvCount++;
-    diagnostics(2, "Entered %s environment iEnvCount=%d iAllCommands=%d", diag, iEnvCount, iAllCommands);
+    diag = EnvironmentNameByNumber(iEnvCount-1);
+    diagnostics(2, "Entered environment! Last Environment[%d]=%s", iEnvCount-1, diag);
 	free(diag);
 
-/*    WriteEnvironmentStack();*/
+  /*  WriteEnvironmentStack();*/
 }
 
 /****************************************************************************
@@ -1351,11 +1353,10 @@ globals: changes Environment - array of active environments
  ****************************************************************************/
 void PopEnvironment()
 {
-	char *diag;
-	int i;
-	int found = FALSE;
-    CommandArray *ca = Environments[iEnvCount-1];
-	diag = EnvironmentName(ca);
+	char *this_env, *last_env;
+
+	this_env = EnvironmentNameByNumber(iEnvCount-1);
+	last_env = EnvironmentNameByNumber(iEnvCount-2);
     
     /* always pop the current environment */
     --iEnvCount;
@@ -1366,22 +1367,10 @@ void PopEnvironment()
     g_right_margin_indent = g_right_indent_array[iEnvCount];
     alignment = g_align_array[iEnvCount];
     PopFontSettings();
-
-    /* if current ca is still in Environments list do not remove from All_Commands */    
-    for (i=0; i<iEnvCount; i++) {
-    	if (ca == Environments[i]) {
-    		found = TRUE;
-    		break;
-    	}
-    }
-    
-    if (!found) {
-    	All_Commands[iAllCommands-1] = NULL;
-    	iAllCommands--;
-    }
-    	
-    diagnostics(2, "Exited %s environment, iEnvCount now = %d", diag, iEnvCount);
-	free(diag);
+   
+    diagnostics(2, "Exited %s environment! Last Environment[%d]=\"%s\" ", this_env, iEnvCount-1, last_env);
+	free(this_env);
+	free(last_env);
 	
-   /* WriteEnvironmentStack();*/
+  /*  WriteEnvironmentStack(); */
 }
