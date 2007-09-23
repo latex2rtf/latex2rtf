@@ -464,11 +464,13 @@ void CmdSlashSlash(int code)
             fprintRTF("\\par\n\\tab ");
             return;
         }
-        for (; actCol < colCount; actCol++) {
+    	fprintRTF("\\row\n");
+/*        for (; actCol < colCount; actCol++) {
             fprintRTF("\\cell\\pard\\intbl");
         }
         actCol = 0;
         fprintRTF("\\row\n\\pard\\intbl\\q%c ", colFmt[actCol]);
+*/
         return;
     }
 
@@ -2053,16 +2055,20 @@ void CmdColsep(int code)
         fprintRTF("{\\'a7}");
         return;
     }
-    actCol++;
+
+    diagnostics(0, "CmdColsep called");
+  /*  actCol++;*/
 
     if (GetTexMode() == MODE_DISPLAYMATH) { /* in an eqnarray or array environment */
         fprintRTF("\\tab ");
     } else {
         fprintRTF("\\cell\\pard\\intbl ");
+        /*
         if (colFmt == NULL)
             diagnostics(WARNING, "Fatal, Fatal! CmdColsep called whith colFmt == NULL.");
         else
             fprintRTF("\\q%c ", colFmt[actCol]);
+        */
     }
 }
 

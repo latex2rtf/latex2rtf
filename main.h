@@ -79,11 +79,8 @@ extern int		g_right_margin_indent;
 extern char		alignment;
 
 /* table  & tabbing variables */
-extern char		*colFmt;
 extern long		pos_begin_kill;
 extern int		tabcounter;
-extern int		colCount;
-extern int		actCol;
 extern int		g_equation_column;
 extern int		tabcounter;
 
