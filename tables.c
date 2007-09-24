@@ -86,48 +86,13 @@ static void EndCellRtf(void)
     fprintRTF("\\cell\n");
 }
 
-static void ExtractBraceParameter(char *s, char **parameter, int *len)
-
-/******************************************************************************
- purpose: if s contains "aaa {stuff}cdef", then after 
- 			parameter="stuff", len=11, *(s+len)='c'
- ******************************************************************************/
-{
-	char *p_start,*p;
-	int braces = 1;
-	
-	*len = 0;
-	*parameter = NULL;
-	
-	/* find start of parameter */
-	if (s == NULL) return;
-	p_start = strchr(s,'{');
-	if (p_start==NULL) return;
-
-	/* scan to enclosing brace */
-	p_start++;
-	p=p_start;	
-	while (*p != '\0' && braces > 0) {
-		if (*p == '{')
-			braces++;
-		if (*p == '}')
-			braces--;
-		p++;
-	}
-	
-	*len = p-s;
-	*parameter=my_strndup(p_start, p-p_start-1);
-
-	diagnostics(1,"Extract parameter=<%s> after=<%s>", *parameter, s+*len); 
-}
-
 static char *ConvertFormatString(char *s)
 
 /******************************************************************************
  purpose: convert latex formatting to something simpler
  ******************************************************************************/
 {
-    int iCol, width,len;
+    int iCol, width;
     char *simple, *t;
 
     simple = strdup(s);         /* largest possible */
@@ -144,17 +109,15 @@ static char *ConvertFormatString(char *s)
                 iCol++;
                 break;
             case '{':          /* skip to balancing brace */
-            	ExtractBraceParameter(s,&t,&len);
+            	t=getStringBraceParam(&s);
             	free(t);
-            	s+=len;
                 break;
             case 'p':
-            	ExtractBraceParameter(s,&t,&len);
-            	s+=len;
                 simple[iCol] = 'l';
-                iCol++;
+            	t=getStringBraceParam(&s);
             	width = getStringDimension(t);
             	free(t);
+                iCol++;
                 break;
             case '*':
                 diagnostics(WARNING, " '*{num}{cols}' not supported.\n");

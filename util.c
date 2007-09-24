@@ -292,12 +292,54 @@ char *ExtractLabelTag(char *text)
 }
 
 /******************************************************************************
+ purpose: provide functionality of getBraceParam() for strings
+ 
+ 		if s contains "aaa {stuff}cdef", then  
+ 			parameter = getStringBraceParam(&s)
+ 			
+ 		  gives
+ 			parameter = "stuff"
+ 			s="cdef"
+ ******************************************************************************/
+char *getStringBraceParam(char **s)
+
+{
+	char *p_start, *p, *parameter;
+	int braces = 1;
+		
+	/* find start of parameter */
+	if (*s == NULL) return NULL;
+	p_start = strchr(*s,'{');
+	if (p_start==NULL) return NULL;
+
+	/* scan to enclosing brace */
+	p_start++;
+	p=p_start;	
+	while (*p != '\0' && braces > 0) {
+		if (*p == '{')
+			braces++;
+		if (*p == '}')
+			braces--;
+		p++;
+	}
+	
+	parameter = my_strndup(p_start, p-p_start-1);
+	*s = p;
+
+	diagnostics(1,"Extract parameter=<%s> after=<%s>", parameter, *s); 
+	
+	return parameter;
+	
+}
+
+
+/******************************************************************************
   purpose: remove 'tag{contents}' from text and return contents
            note that tag should typically be "\\caption"
  ******************************************************************************/
 char *ExtractAndRemoveTag(char *tag, char *text)
 {
-    char *s, *contents, *start=NULL, *end;
+    char *s, *contents, *start=NULL;
 
     if (text==NULL || *text=='\0') return NULL;
     
@@ -314,21 +356,13 @@ char *ExtractAndRemoveTag(char *tag, char *text)
             break;
     }
 
-    PushSource(NULL, s);
-    contents = getBraceParam();
-    PopSource();
-
-    if (!contents)
-        return NULL;
-
-    end = strstr(s, contents) + strlen(contents) + 1;   /* end just after '}' */
-
-    free(contents);
-    contents = my_strndup(start, (size_t) (end - start));
-
+	contents = getStringBraceParam(&s);
+	if (contents == NULL) return NULL;
+	
+	/* erase "tag{contents}" */
     do
-        *start++ = *end++;
-    while (*end);               /* erase "tag{contents}" */
+        *start++ = *s++;
+    while (*s);               
     *start = '\0';
 
     diagnostics(5, "final contents = <%s>", contents);
