@@ -361,6 +361,7 @@ static void TabularMultiParameters(char *cell, int *col_span, char *align, int *
  ******************************************************************************/
 {
     char *p, *format, *mformat, *num;
+    diagnostics(5, "TabularMultiParameters cell=\"%s\" ", cell);
 
     *col_span = 0;
     *align = '\0';
@@ -371,10 +372,9 @@ static void TabularMultiParameters(char *cell, int *col_span, char *align, int *
     if (p == NULL)
         return;
 
-    PushSource(NULL, p + strlen("\\multicolumn"));
-    num = getBraceParam();
-    format = getBraceParam();
-    PopSource();
+	p      += strlen("\\multicolumn");
+	num     = getStringBraceParam(&p);
+	format  = getStringBraceParam(&p);
     mformat = ConvertFormatString(format);
 
     /* count '|' to the left of the column */
@@ -516,6 +516,7 @@ static void TabularBeginRow(TabularT tabular, char *this_row, char *next_row, in
 
     cline = TabularCline(next_row, tabular.n);
 
+
     while (cell_start) {        /* for each cell */
 
         top = 0;
@@ -529,6 +530,7 @@ static void TabularBeginRow(TabularT tabular, char *this_row, char *next_row, in
 
         cell = TabularNextCell(cell_start, &cell_end);
         TabularMultiParameters(cell, &n, &align, &lvert, &rvert);
+        
         if (n > 1)
             fprintRTF("\\clmgf");
 
@@ -604,14 +606,21 @@ static void TabularWriteRow(TabularT tabular, char *this_row, char *next_row, in
     if (this_row == NULL || strlen(this_row) == 0)
         return;
 
-    diagnostics(4, "TabularWriteRow height=%d twpi, row <%s>", height, this_row);
+    diagnostics(5, "TabularWriteRow height=%d twpi, row <%s>", height, this_row);
 
     /* avoid writing anything for empty last row */
     if (next_row == NULL) {
+    	/* do nothing if the row is empty */
         if (tabular.n == 1 && strlen(this_row) == 0)
             return;
-        if (tabular.n > 1 && !strchr(this_row, '&'))
-            return;
+            
+        /* do nothing if there is more than one column, but no '&' */
+        if (tabular.n > 1 && !strchr(this_row, '&')) {
+        
+        	/* except if the last line is multicolumn! */
+            TabularMultiParameters(this_row, &n, &align, &lvert, &rvert);
+            if (n==0) return;
+		}
     }
 
     TabularBeginRow(tabular, this_row, next_row, first_row);
