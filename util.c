@@ -304,7 +304,7 @@ char *ExtractLabelTag(char *text)
 char *getStringBraceParam(char **s)
 
 {
-	char *p_start, *p, *parameter;
+	char *p_start, *p, *parameter, last;
 	int braces = 1;
 		
 	/* find start of parameter */
@@ -315,18 +315,20 @@ char *getStringBraceParam(char **s)
 	/* scan to enclosing brace */
 	p_start++;
 	p=p_start;	
+	last = '\0';
 	while (*p != '\0' && braces > 0) {
-		if (*p == '{')
+		if (*p == '{' && last != '\\')
 			braces++;
-		if (*p == '}')
+		if (*p == '}' && last != '\\')
 			braces--;
+		last = *p;
 		p++;
 	}
 	
 	parameter = my_strndup(p_start, p-p_start-1);
 	*s = p;
 
-	diagnostics(1,"Extract parameter=<%s> after=<%s>", parameter, *s); 
+	diagnostics(6,"Extract parameter=<%s> after=<%s>", parameter, *s); 
 	
 	return parameter;
 	
