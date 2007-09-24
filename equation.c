@@ -44,6 +44,7 @@ Authors:
 #include "graphics.h"
 #include "xref.h"
 #include "chars.h"
+#include "preamble.h"
 
 int g_equation_column = 1;
 
@@ -506,6 +507,25 @@ static void PrepareRtfEquation(int code, int EQ_Needed)
 
 }
 
+static char *CreateEquationLabel(void)
+{
+	char *number = malloc(30);
+	int n;
+	
+	n = getCounter("equation");
+	
+	if (g_document_type == FORMAT_REPORT ||
+	    g_document_type == FORMAT_BOOK )
+		snprintf(number, 29, "%d.%d", getCounter("chapter"), getCounter("equation"));
+	else
+		snprintf(number, 29, "%d", getCounter("equation"));
+		
+	return number;
+}
+
+	
+
+
 static void FinishRtfEquation(int code, int EQ_Needed)
 {
     if (g_fields_use_EQ && EQ_Needed && g_processing_fields == 1) {
@@ -583,14 +603,15 @@ static void FinishRtfEquation(int code, int EQ_Needed)
         case EQN_ALIGN:
             diagnostics(4, "FinishRtfEquation --- equation or eqnarray or align");
             if (g_show_equation_number && !g_suppress_equation_number) {
-                char number[20];
+                char *number;
 
                 incrementCounter("equation");
                 for (; g_equation_column < 3; g_equation_column++)
                     fprintRTF("\\tab ");
                 fprintRTF("\\tab{\\b0 (");
-                snprintf(number, 20, "%d", getCounter("equation"));
+                number = CreateEquationLabel();
                 InsertBookmark(g_equation_label, number);
+                free(number);
                 if (g_equation_label) {
                     free(g_equation_label);
                     g_equation_label = NULL;

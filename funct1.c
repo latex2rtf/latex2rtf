@@ -817,6 +817,7 @@ parameter: code: type of section-recursion-level
                 setCounter("subparagraph", 0);
         		setCounter("figure",0);
        			setCounter("table",0);
+       			setCounter("equation",0);
                 resetTheoremCounter("chapter");
                 unit_label = FormatUnitNumber("chapter");
                 fprintRTF(" ");

@@ -118,7 +118,8 @@ TEST=   test/Makefile test/bracecheck test/accentchars.tex test/array.tex  \
 	test/eqns2.tex             test/ifclause.tex test/enc_utf8x.tex\
 	test/geometry.tex          test/unicode.tex  test/fonttest.tex\
 	test/german.tex            test/bib_harvard.bib test/bib_super.tex\
-	test/fig_endfloat.tex      test/fig_test4.tex   test/overstrike.tex
+	test/fig_endfloat.tex      test/fig_test4.tex   test/overstrike.tex \
+	test/eqnnumber.tex         test/eqnnumber2.tex
 	
 	
 OBJS=fonts.o direct.o encode.o commands.o stack.o funct1.o tables.o \
