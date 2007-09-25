@@ -27,7 +27,7 @@
 #include <string.h>
 #include <ctype.h>
 #include "main.h"
-#include "util.h"
+#include "utils.h"
 #include "convert.h"
 #include "funct1.h"
 #include "commands.h"
@@ -37,9 +37,9 @@
 #include "preamble.h"
 #include "lengths.h"
 #include "fonts.h"
-#include "style.h"
+#include "styles.h"
 #include "definitions.h"
-#include "equation.h"
+#include "equations.h"
 
 char *g_figure_label = NULL;
 char *g_table_label = NULL;

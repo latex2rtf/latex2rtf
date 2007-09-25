@@ -1,6 +1,6 @@
 
 /*
- * util.c - handy routines
+ * utils.c - handy routines
  * 
  * Copyright (C) 1995-2002 The Free Software Foundation
  * 
@@ -27,7 +27,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "main.h"
-#include "util.h"
+#include "utils.h"
 #include "parser.h"
 
 /******************************************************************************

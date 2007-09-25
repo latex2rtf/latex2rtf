@@ -37,7 +37,7 @@ Authors:
 #include "fonts.h"
 #include "cfg.h"
 #include "ignore.h"
-#include "util.h"
+#include "utils.h"
 #include "encode.h"
 #include "parser.h"
 #include "counters.h"
@@ -45,9 +45,9 @@ Authors:
 #include "definitions.h"
 #include "preamble.h"
 #include "xref.h"
-#include "equation.h"
+#include "equations.h"
 #include "direct.h"
-#include "style.h"
+#include "styles.h"
 
 extern bool twocolumn;          /* true if twocolumn-mode is enabled */
 int g_right_margin_indent;

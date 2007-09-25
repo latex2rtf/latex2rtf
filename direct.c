@@ -32,7 +32,7 @@ Authors:
 #include "direct.h"
 #include "fonts.h"
 #include "cfg.h"
-#include "util.h"
+#include "utils.h"
 
 #define MAXFONTLEN 100
 

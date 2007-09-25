@@ -35,7 +35,7 @@ Authors:
 #include "preamble.h"
 #include "funct1.h"
 #include "tables.h"
-#include "equation.h"
+#include "equations.h"
 #include "letterformat.h"
 #include "commands.h"
 #include "parser.h"

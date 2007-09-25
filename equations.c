@@ -1,5 +1,5 @@
 
-/* equation.c - Translate TeX equations
+/* equations.c - Translate TeX equations
 
 Copyright (C) 1995-2002 The Free Software Foundation
 
@@ -36,11 +36,11 @@ Authors:
 #include "cfg.h"
 #include "ignore.h"
 #include "parser.h"
-#include "equation.h"
+#include "equations.h"
 #include "counters.h"
 #include "funct1.h"
 #include "lengths.h"
-#include "util.h"
+#include "utils.h"
 #include "graphics.h"
 #include "xref.h"
 #include "chars.h"

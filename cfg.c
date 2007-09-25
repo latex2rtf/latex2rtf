@@ -42,7 +42,7 @@ Authors:
 #include "convert.h"
 #include "funct1.h"
 #include "cfg.h"
-#include "util.h"
+#include "utils.h"
 
 typedef struct ConfigInfoT {
     char *filename;

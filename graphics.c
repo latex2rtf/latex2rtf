@@ -36,10 +36,10 @@ Authors:
 #include "main.h"
 #include "graphics.h"
 #include "parser.h"
-#include "util.h"
+#include "utils.h"
 #include "commands.h"
 #include "convert.h"
-#include "equation.h"
+#include "equations.h"
 #include "funct1.h"
 #include "preamble.h"
 

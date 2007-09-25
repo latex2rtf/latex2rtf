@@ -28,7 +28,7 @@ By convention all the values stored should be twips  20 twips = 1 pt
 #include <stdlib.h>
 #include <string.h>
 #include "main.h"
-#include "util.h"
+#include "utils.h"
 #include "lengths.h"
 #include "parser.h"
 

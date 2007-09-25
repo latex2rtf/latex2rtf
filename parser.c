@@ -33,7 +33,7 @@ Authors:
 #include "commands.h"
 #include "cfg.h"
 #include "stack.h"
-#include "util.h"
+#include "utils.h"
 #include "parser.h"
 #include "fonts.h"
 #include "lengths.h"

@@ -28,7 +28,7 @@ This file is available from http://sourceforge.net/projects/latex2rtf/
 #include "definitions.h"
 #include "parser.h"
 #include "funct1.h"
-#include "util.h"
+#include "utils.h"
 #include "cfg.h"
 #include "counters.h"
 #include "funct1.h"

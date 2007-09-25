@@ -33,7 +33,7 @@ This file is available from http://sourceforge.net/projects/latex2rtf/
 #include "cfg.h"
 #include "parser.h"
 #include "counters.h"
-#include "util.h"
+#include "utils.h"
 #include "lengths.h"
 #include "preamble.h"
 

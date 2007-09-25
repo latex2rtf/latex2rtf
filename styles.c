@@ -1,5 +1,5 @@
 
-/* style.c - Convert simple LaTeX commands using direct.cfg 
+/* styles.c - Convert simple LaTeX commands using direct.cfg 
 
 Copyright (C) 1995-2002 The Free Software Foundation
 
@@ -29,7 +29,7 @@ Authors:
 #include "direct.h"
 #include "fonts.h"
 #include "cfg.h"
-#include "util.h"
+#include "utils.h"
 #include "parser.h"
 
 void InsertBasicStyle(const char *rtf, bool include_header_info)

@@ -45,7 +45,7 @@ Authors:
 #include "funct1.h"
 #include "cfg.h"
 #include "encode.h"
-#include "util.h"
+#include "utils.h"
 #include "parser.h"
 #include "lengths.h"
 #include "counters.h"

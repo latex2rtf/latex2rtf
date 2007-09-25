@@ -1,4 +1,4 @@
-/* util.h - handy strings routines
+/* utils.h - handy strings routines
 
 Copyright (C) 1995-2002 The Free Software Foundation
 

@@ -29,7 +29,7 @@ Authors:
 #include <sys/stat.h>
 #include "main.h"
 #include "convert.h"
-#include "util.h"
+#include "utils.h"
 #include "preamble.h"
 #include "fonts.h"
 #include "cfg.h"
@@ -42,7 +42,7 @@ Authors:
 #include "counters.h"
 #include "xref.h"
 #include "direct.h"
-#include "style.h"
+#include "styles.h"
 
 extern char *Version;  /*storage and definition in version.h */
 
