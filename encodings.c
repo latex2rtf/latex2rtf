@@ -31,7 +31,7 @@ Authors:
 #include "fonts.h"
 #include "funct1.h"
 #include "encodings.h"
-#include "encode_tables.h"
+#include "encoding_tables.h"
 #include "chars.h"
 
 static void put_breve_char(char c)

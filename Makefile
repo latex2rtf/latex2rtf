@@ -60,7 +60,7 @@ SRCS=commands.c chars.c direct.c encodings.c fonts.c funct1.c tables.c ignore.c 
 
 HDRS=commands.h chars.h direct.h encodings.h fonts.h funct1.h tables.h ignore.h \
     main.h stack.h cfg.h utils.h parser.h lengths.h counters.h letterformat.h \
-    preamble.h equations.h convert.h xrefs.h definitions.h graphics.h encode_tables.h \
+    preamble.h equations.h convert.h xrefs.h definitions.h graphics.h encoding_tables.h \
     version.h mygetopt.h styles.h
 
 CFGS=cfg/fonts.cfg cfg/direct.cfg cfg/ignore.cfg cfg/style.cfg \
@@ -262,21 +262,21 @@ pkg:
 .PHONY: all check checkdir clean depend dist doc install install_info realclean latex2rtf uptodate splint fullcheck
 
 # created using "make depend"
-commands.o: commands.c cfg.h main.h convert.h chars.h fonts.h \
-  preamble.h funct1.h tables.h equations.h letterformat.h commands.h \
-  parser.h xrefs.h ignore.h lengths.h definitions.h graphics.h
+commands.o: commands.c cfg.h main.h convert.h chars.h fonts.h preamble.h \
+  funct1.h tables.h equations.h letterformat.h commands.h parser.h \
+  xrefs.h ignore.h lengths.h definitions.h graphics.h
 chars.o: chars.c main.h commands.h fonts.h cfg.h ignore.h encodings.h \
   parser.h chars.h funct1.h convert.h
 direct.o: direct.c main.h direct.h fonts.h cfg.h utils.h
-encodings.o: encodings.c main.h fonts.h funct1.h encodings.h encode_tables.h \
-  chars.h
-fonts.o: fonts.c main.h convert.h fonts.h funct1.h commands.h \
-  cfg.h parser.h stack.h
-funct1.o: funct1.c main.h convert.h funct1.h commands.h stack.h \
-  fonts.h cfg.h ignore.h utils.h encodings.h parser.h counters.h \
-  lengths.h definitions.h preamble.h xrefs.h equations.h direct.h styles.h
-tables.o: tables.c main.h convert.h fonts.h commands.h funct1.h \
-  tables.h stack.h cfg.h parser.h counters.h utils.h lengths.h
+encodings.o: encodings.c main.h fonts.h funct1.h encodings.h \
+  encoding_tables.h chars.h
+fonts.o: fonts.c main.h convert.h fonts.h funct1.h commands.h cfg.h \
+  parser.h stack.h
+funct1.o: funct1.c main.h convert.h funct1.h commands.h stack.h fonts.h \
+  cfg.h ignore.h utils.h encodings.h parser.h counters.h lengths.h \
+  definitions.h preamble.h xrefs.h equations.h direct.h styles.h
+tables.o: tables.c main.h convert.h fonts.h commands.h funct1.h tables.h \
+  stack.h cfg.h parser.h counters.h utils.h lengths.h preamble.h
 ignore.o: ignore.c main.h direct.h fonts.h cfg.h ignore.h funct1.h \
   commands.h parser.h convert.h
 main.o: main.c main.h mygetopt.h convert.h commands.h chars.h fonts.h \
@@ -288,23 +288,24 @@ utils.o: utils.c main.h utils.h parser.h
 parser.o: parser.c main.h commands.h cfg.h stack.h utils.h parser.h \
   fonts.h lengths.h definitions.h funct1.h
 lengths.o: lengths.c main.h utils.h lengths.h parser.h
-counters.o: counters.c main.h utils.h counters.h
+counters.o: counters.c main.h counters.h
 letterformat.o: letterformat.c main.h parser.h letterformat.h cfg.h \
   commands.h funct1.h convert.h
-preamble.o: preamble.c main.h convert.h utils.h preamble.h fonts.h \
-  cfg.h encodings.h parser.h funct1.h lengths.h ignore.h commands.h \
-  counters.h xrefs.h direct.h styles.h
+preamble.o: preamble.c main.h convert.h utils.h preamble.h fonts.h cfg.h \
+  encodings.h parser.h funct1.h lengths.h ignore.h commands.h counters.h \
+  xrefs.h direct.h styles.h
 equations.o: equations.c main.h convert.h commands.h stack.h fonts.h \
-  cfg.h ignore.h parser.h equations.h counters.h funct1.h lengths.h utils.h \
-  graphics.h xrefs.h
-convert.o: convert.c main.h convert.h commands.h chars.h funct1.h \
-  fonts.h stack.h tables.h equations.h direct.h ignore.h cfg.h \
-  encodings.h utils.h parser.h lengths.h counters.h preamble.h
-xrefs.o: xrefs.c main.h utils.h convert.h funct1.h commands.h cfg.h xrefs.h \
-  parser.h preamble.h lengths.h fonts.h
+  cfg.h ignore.h parser.h equations.h counters.h funct1.h lengths.h \
+  utils.h graphics.h xrefs.h chars.h preamble.h
+convert.o: convert.c main.h convert.h commands.h chars.h funct1.h fonts.h \
+  stack.h tables.h equations.h direct.h ignore.h cfg.h encodings.h \
+  utils.h parser.h lengths.h counters.h preamble.h
+xrefs.o: xrefs.c main.h utils.h convert.h funct1.h commands.h cfg.h \
+  xrefs.h parser.h preamble.h lengths.h fonts.h styles.h definitions.h \
+  equations.h
 definitions.o: definitions.c main.h convert.h definitions.h parser.h \
   funct1.h utils.h cfg.h counters.h
-graphics.o: graphics.c cfg.h main.h graphics.h parser.h utils.h commands.h \
-  convert.h equations.h funct1.h
-mygetopt.o: mygetopt.c main.h
+graphics.o: graphics.c cfg.h main.h graphics.h parser.h utils.h \
+  commands.h convert.h equations.h funct1.h preamble.h
+mygetopt.o: mygetopt.c main.h mygetopt.h
 styles.o: styles.c main.h direct.h fonts.h cfg.h utils.h parser.h
