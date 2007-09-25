@@ -53,14 +53,14 @@ PKG_NAME:="$(PWD)/macosx/dmg/latex2rtf-$(VERSION)/latex2rtf.pkg"
 PKG_MAKER=/Developer/Applications/PackageMaker.app/Contents/MacOS/PackageMaker
 DMG_DIR := "$(PWD)/macosx/dmg/latex2rtf-$(VERSION)"
 
-SRCS=commands.c chars.c direct.c encode.c fonts.c funct1.c tables.c ignore.c \
+SRCS=commands.c chars.c direct.c encodings.c fonts.c funct1.c tables.c ignore.c \
 	main.c stack.c cfg.c utils.c parser.c lengths.c counters.c letterformat.c \
-	preamble.c equations.c convert.c xref.c definitions.c graphics.c \
+	preamble.c equations.c convert.c xrefs.c definitions.c graphics.c \
 	mygetopt.c styles.c
 
-HDRS=commands.h chars.h direct.h encode.h fonts.h funct1.h tables.h ignore.h \
+HDRS=commands.h chars.h direct.h encodings.h fonts.h funct1.h tables.h ignore.h \
     main.h stack.h cfg.h utils.h parser.h lengths.h counters.h letterformat.h \
-    preamble.h equations.h convert.h xref.h definitions.h graphics.h encode_tables.h \
+    preamble.h equations.h convert.h xrefs.h definitions.h graphics.h encode_tables.h \
     version.h mygetopt.h styles.h
 
 CFGS=cfg/fonts.cfg cfg/direct.cfg cfg/ignore.cfg cfg/style.cfg \
@@ -122,9 +122,9 @@ TEST=   test/Makefile test/bracecheck test/accentchars.tex test/array.tex  \
 	test/eqnnumber.tex         test/eqnnumber2.tex
 	
 	
-OBJS=fonts.o direct.o encode.o commands.o stack.o funct1.o tables.o \
+OBJS=fonts.o direct.o encodings.o commands.o stack.o funct1.o tables.o \
 	chars.o ignore.o cfg.o main.o utils.o parser.o lengths.o counters.o \
-	preamble.o letterformat.o equations.o convert.o xref.o definitions.o graphics.o \
+	preamble.o letterformat.o equations.o convert.o xrefs.o definitions.o graphics.o \
 	mygetopt.o styles.o
 
 all : checkdir uptodate latex2rtf
@@ -264,24 +264,24 @@ pkg:
 # created using "make depend"
 commands.o: commands.c cfg.h main.h convert.h chars.h fonts.h \
   preamble.h funct1.h tables.h equations.h letterformat.h commands.h \
-  parser.h xref.h ignore.h lengths.h definitions.h graphics.h
-chars.o: chars.c main.h commands.h fonts.h cfg.h ignore.h encode.h \
+  parser.h xrefs.h ignore.h lengths.h definitions.h graphics.h
+chars.o: chars.c main.h commands.h fonts.h cfg.h ignore.h encodings.h \
   parser.h chars.h funct1.h convert.h
 direct.o: direct.c main.h direct.h fonts.h cfg.h utils.h
-encode.o: encode.c main.h fonts.h funct1.h encode.h encode_tables.h \
+encodings.o: encodings.c main.h fonts.h funct1.h encodings.h encode_tables.h \
   chars.h
 fonts.o: fonts.c main.h convert.h fonts.h funct1.h commands.h \
   cfg.h parser.h stack.h
 funct1.o: funct1.c main.h convert.h funct1.h commands.h stack.h \
-  fonts.h cfg.h ignore.h utils.h encode.h parser.h counters.h \
-  lengths.h definitions.h preamble.h xref.h equations.h direct.h styles.h
+  fonts.h cfg.h ignore.h utils.h encodings.h parser.h counters.h \
+  lengths.h definitions.h preamble.h xrefs.h equations.h direct.h styles.h
 tables.o: tables.c main.h convert.h fonts.h commands.h funct1.h \
   tables.h stack.h cfg.h parser.h counters.h utils.h lengths.h
 ignore.o: ignore.c main.h direct.h fonts.h cfg.h ignore.h funct1.h \
   commands.h parser.h convert.h
 main.o: main.c main.h mygetopt.h convert.h commands.h chars.h fonts.h \
-  stack.h direct.h ignore.h version.h funct1.h cfg.h encode.h utils.h \
-  parser.h lengths.h counters.h preamble.h xref.h
+  stack.h direct.h ignore.h version.h funct1.h cfg.h encodings.h utils.h \
+  parser.h lengths.h counters.h preamble.h xrefs.h
 stack.o: stack.c main.h stack.h
 cfg.o: cfg.c main.h convert.h funct1.h cfg.h utils.h
 utils.o: utils.c main.h utils.h parser.h
@@ -292,15 +292,15 @@ counters.o: counters.c main.h utils.h counters.h
 letterformat.o: letterformat.c main.h parser.h letterformat.h cfg.h \
   commands.h funct1.h convert.h
 preamble.o: preamble.c main.h convert.h utils.h preamble.h fonts.h \
-  cfg.h encode.h parser.h funct1.h lengths.h ignore.h commands.h \
-  counters.h xref.h direct.h styles.h
+  cfg.h encodings.h parser.h funct1.h lengths.h ignore.h commands.h \
+  counters.h xrefs.h direct.h styles.h
 equations.o: equations.c main.h convert.h commands.h stack.h fonts.h \
   cfg.h ignore.h parser.h equations.h counters.h funct1.h lengths.h utils.h \
-  graphics.h xref.h
+  graphics.h xrefs.h
 convert.o: convert.c main.h convert.h commands.h chars.h funct1.h \
   fonts.h stack.h tables.h equations.h direct.h ignore.h cfg.h \
-  encode.h utils.h parser.h lengths.h counters.h preamble.h
-xref.o: xref.c main.h utils.h convert.h funct1.h commands.h cfg.h xref.h \
+  encodings.h utils.h parser.h lengths.h counters.h preamble.h
+xrefs.o: xrefs.c main.h utils.h convert.h funct1.h commands.h cfg.h xrefs.h \
   parser.h preamble.h lengths.h fonts.h
 definitions.o: definitions.c main.h convert.h definitions.h parser.h \
   funct1.h utils.h cfg.h counters.h

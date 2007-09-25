@@ -1,6 +1,6 @@
 
 /*
- * xref.c - commands for LaTeX cross references
+ * xrefs.c - commands for LaTeX cross references
  * 
  * Copyright (C) 2001-2002 The Free Software Foundation
  * 
@@ -32,7 +32,7 @@
 #include "funct1.h"
 #include "commands.h"
 #include "cfg.h"
-#include "xref.h"
+#include "xrefs.h"
 #include "parser.h"
 #include "preamble.h"
 #include "lengths.h"

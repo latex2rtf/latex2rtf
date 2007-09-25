@@ -44,13 +44,13 @@ Authors:
 #include "version.h"
 #include "funct1.h"
 #include "cfg.h"
-#include "encode.h"
+#include "encodings.h"
 #include "utils.h"
 #include "parser.h"
 #include "lengths.h"
 #include "counters.h"
 #include "preamble.h"
-#include "xref.h"
+#include "xrefs.h"
 
 FILE *fRtf = NULL;              /* file pointer to RTF file */
 char *g_tex_name = NULL;

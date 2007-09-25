@@ -61,7 +61,7 @@ correctly, as well as vertical and horizontal space.
 #include "direct.h"
 #include "ignore.h"
 #include "cfg.h"
-#include "encode.h"
+#include "encodings.h"
 #include "utils.h"
 #include "parser.h"
 #include "lengths.h"

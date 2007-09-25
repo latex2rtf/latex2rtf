@@ -42,7 +42,7 @@ Authors:
 #include "lengths.h"
 #include "utils.h"
 #include "graphics.h"
-#include "xref.h"
+#include "xrefs.h"
 #include "chars.h"
 #include "preamble.h"
 

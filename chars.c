@@ -30,7 +30,7 @@ This file is available from http://sourceforge.net/projects/latex2rtf/
 #include "fonts.h"
 #include "cfg.h"
 #include "ignore.h"
-#include "encode.h"
+#include "encodings.h"
 #include "parser.h"
 #include "chars.h"
 #include "funct1.h"

@@ -39,7 +39,7 @@ Authors:
 #include "letterformat.h"
 #include "commands.h"
 #include "parser.h"
-#include "xref.h"
+#include "xrefs.h"
 #include "ignore.h"
 #include "lengths.h"
 #include "definitions.h"
