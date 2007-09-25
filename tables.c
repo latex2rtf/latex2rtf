@@ -36,6 +36,7 @@ This file is available from http://sourceforge.net/projects/latex2rtf/
 #include "utils.h"
 #include "lengths.h"
 #include "preamble.h"
+#include "equations.h"
 
 int g_tabbing_left_position = 0;
 int g_tabbing_current_position = 0;
@@ -796,6 +797,7 @@ void CmdTabular(int code)
     char *cols = NULL;
     char *pos = NULL;
     char *width = NULL;
+    
     TabularT tabular;
 
     if (!(code & ON)) {
@@ -834,90 +836,112 @@ void CmdTabular(int code)
     cols = getBraceParam();
     table = getTexUntil(end, FALSE);
 
-/* need to make sure that we don't have nested environments */
-    begins = strstr_count(table, begin);
-    ends = strstr_count(table, end);
+	
+	if (g_tabular_display_bitmap) {
+		char pre[151];
+		
+		CmdEndParagraph(0);
+		CmdVspace(VSPACE_SMALL_SKIP);
+		CmdIndent(INDENT_NONE);
+		CmdStartParagraph("tabular", FIRST_INDENT);
+		
+		snprintf(pre,150, "%s{%s}",begin,cols);
+		WriteLatexAsBitmap(pre, table, end);
+		
+		CmdEndParagraph(0);
+		CmdVspace(VSPACE_SMALL_SKIP);
+		CmdIndent(INDENT_INHIBIT);
+	}
+	
+	if (g_tabular_display_rtf)
+	{
+	/* need to make sure that we don't have nested environments */
+		begins = strstr_count(table, begin);
+		ends = strstr_count(table, end);
+	
+		while (begins > ends) {
+			char *table2, *table3, *table4;
+	
+			if (begins > ends) {
+				table2 = getTexUntil(end, FALSE);
+				table3 = strdup_together(table, end);
+				table4 = strdup_together(table3, table2);
+				free(table);
+				free(table2);
+				free(table3);
+				table = table4;
+			}
+			begins = strstr_count(table, begin);
+			ends = strstr_count(table, end);
+		}
+	
+		if (begins > 0) {
+			char *p;
+			int num = TexFontNumber("Typewriter");
+	
+			diagnostics(1, "Nested tabular/tabbing environments not allowed");
+			diagnostics(2, "table_table_table_table_table\n%stable_table_table_table_table", table);
+			fprintRTF("\\pard\\ql\\b0\\i0\\scaps0\\f%d ", num);
+			p = begin;
+			while (*p)
+				fprintRTF("%c",*p++);
+			p = table;
+			while (*p)
+				fprintRTF("%c",*p++);
+			p = end;
+			while (*p)
+				fprintRTF("%c",*p++);
+	
+		} else {
+	
+			diagnostics(3, "Entering CmdTabular() options [%s], format {%s}", (pos) ? pos : "", cols);
+			tabular = TabularPreamble(table, width, pos, cols);
+			diagnostics(2, "table_table_table_table_table\n%stable_table_table_table_table", table);
+	
+			row_start = table;
+			TabularGetRow(row_start, &this_row, &next_row_start, &this_height);
+	
+			/* scan entire table to get estimates for column widths */
+			first_row = TRUE;
+			while (this_row) {
+				row_start = next_row_start;
+				TabularGetRow(row_start, &next_row, &next_row_start, &next_height);
+				TabularMeasureRow(tabular, this_row, next_row, this_height, first_row);
+				free(this_row);
+				this_row = next_row;
+				this_height = next_height;
+				first_row = FALSE;
+			}
+	
+			row_start = table;
+			TabularGetRow(row_start, &this_row, &next_row_start, &this_height);
+			first_row = TRUE;
+			while (this_row) {
+				row_start = next_row_start;
+				TabularGetRow(row_start, &next_row, &next_row_start, &next_height);
+				TabularWriteRow(tabular, this_row, next_row, this_height, first_row);
+				free(this_row);
+				this_row = next_row;
+				this_height = next_height;
+				first_row = FALSE;
+			}
+	
+			free(tabular.cline);
+			free(tabular.align);
+			free(tabular.vert);
+			free(tabular.width);
+			if (cols)
+				free(cols);
+			if (pos)
+				free(pos);
+			if (width)
+				free(width);
+		}
+	}
 
-    while (begins > ends) {
-        char *table2, *table3, *table4;
-
-        if (begins > ends) {
-            table2 = getTexUntil(end, FALSE);
-            table3 = strdup_together(table, end);
-            table4 = strdup_together(table3, table2);
-            free(table);
-            free(table2);
-            free(table3);
-            table = table4;
-        }
-        begins = strstr_count(table, begin);
-        ends = strstr_count(table, end);
-    }
-
-    if (begins > 0) {
-        char *p;
-        int num = TexFontNumber("Typewriter");
-
-        diagnostics(1, "Nested tabular/tabbing environments not allowed");
-        diagnostics(2, "table_table_table_table_table\n%stable_table_table_table_table", table);
-        fprintRTF("\\pard\\ql\\b0\\i0\\scaps0\\f%d ", num);
-        p = begin;
-        while (*p)
-            fprintRTF("%c",*p++);
-        p = table;
-        while (*p)
-            fprintRTF("%c",*p++);
-        p = end;
-        while (*p)
-            fprintRTF("%c",*p++);
-
-    } else {
-
-        diagnostics(3, "Entering CmdTabular() options [%s], format {%s}", (pos) ? pos : "", cols);
-        tabular = TabularPreamble(table, width, pos, cols);
-        diagnostics(2, "table_table_table_table_table\n%stable_table_table_table_table", table);
-
-        row_start = table;
-        TabularGetRow(row_start, &this_row, &next_row_start, &this_height);
-
-        /* scan entire table to get estimates for column widths */
-        first_row = TRUE;
-        while (this_row) {
-            row_start = next_row_start;
-            TabularGetRow(row_start, &next_row, &next_row_start, &next_height);
-            TabularMeasureRow(tabular, this_row, next_row, this_height, first_row);
-            free(this_row);
-            this_row = next_row;
-            this_height = next_height;
-            first_row = FALSE;
-        }
-
-        row_start = table;
-        TabularGetRow(row_start, &this_row, &next_row_start, &this_height);
-        first_row = TRUE;
-        while (this_row) {
-            row_start = next_row_start;
-            TabularGetRow(row_start, &next_row, &next_row_start, &next_height);
-            TabularWriteRow(tabular, this_row, next_row, this_height, first_row);
-            free(this_row);
-            this_row = next_row;
-            this_height = next_height;
-            first_row = FALSE;
-        }
-
-        free(tabular.cline);
-        free(tabular.align);
-        free(tabular.vert);
-        free(tabular.width);
-        if (cols)
-            free(cols);
-        if (pos)
-            free(pos);
-        if (width)
-            free(width);
-    }
-
-    ConvertString(end);
+	ConvertString(end);
+	
+	
     free(table);
     free(end);
     free(begin);

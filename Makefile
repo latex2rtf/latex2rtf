@@ -145,6 +145,7 @@ check test: latex2rtf
 	
 fullcheck: latex2rtf
 	cd scripts && $(MAKE)
+	cd test && $(MAKE) clean
 	cd test && $(MAKE) all
 	cd test && $(MAKE) check
 

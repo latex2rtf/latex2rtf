@@ -120,6 +120,9 @@ bool g_equation_comment = FALSE;
 bool g_equation_raw_latex = FALSE;
 bool g_tableofcontents = FALSE;
 
+bool g_tabular_display_rtf = TRUE;
+bool g_tabular_display_bitmap = FALSE;
+
 double g_png_equation_scale = 1.22;
 double g_png_figure_scale = 1.35;
 bool g_latex_figures = FALSE;
@@ -162,7 +165,7 @@ int main(int argc, char **argv)
     InitializeLatexLengths();
 	InitializeBibliography();
 	
-    while ((c = my_getopt(argc, argv, "lhpuvFSWZ:o:a:b:d:f:i:s:u:C:D:M:P:T:")) != EOF) {
+    while ((c = my_getopt(argc, argv, "lhpuvFSWZ:o:a:b:d:f:i:s:u:C:D:M:P:T:t:")) != EOF) {
         switch (c) {
             case 'a':
                 g_aux_name = optarg;
@@ -228,6 +231,15 @@ int main(int argc, char **argv)
                     g_equation_inline_rtf = TRUE;
                 if (!g_equation_comment && !g_equation_display_rtf && !g_equation_display_bitmap && !g_equation_raw_latex)
                     g_equation_display_rtf = TRUE;
+                break;
+
+            case 't':
+                sscanf(optarg, "%d", &x);
+                diagnostics(2, "Table option = %s x=%d", optarg, x);
+                g_tabular_display_rtf    = (x &  1) ? TRUE : FALSE;
+                g_tabular_display_bitmap = (x &  2) ? TRUE : FALSE;
+                diagnostics(2, "Table option g_tabular_display_rtf     = %d", g_equation_display_rtf);
+                diagnostics(2, "Table option g_tabular_display_bitmap  = %d", g_equation_inline_rtf);
                 break;
 
             case 'P':          /* -P path/to/cfg:path/to/script or -P path/to/cfg or -P :path/to/script */
