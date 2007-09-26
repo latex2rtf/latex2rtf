@@ -519,6 +519,9 @@ static void print_usage(void)
     fprintf(stdout, "  -S               use ';' to separate args in RTF fields\n");
     fprintf(stdout, "  -se#             scale factor for bitmap equations\n");
     fprintf(stdout, "  -sf#             scale factor for bitmap figures\n");
+    fprintf(stdout, "  -t#              math equation handling\n");
+    fprintf(stdout, "       -t1          tabular and tabbing environments as RTF\n");
+    fprintf(stdout, "       -t2          tabular and tabbing environments as bitmaps\n");
     fprintf(stdout, "  -T /path/to/tmp  temporary directory\n");
     fprintf(stdout, "  -v               version information\n");
     fprintf(stdout, "  -V               version information\n");
@@ -529,6 +532,7 @@ static void print_usage(void)
     fprintf(stdout, "  latex2rtf <foo >foo.RTF             convert foo to foo.RTF\n");
     fprintf(stdout, "  latex2rtf -P ./cfg/:./scripts/ foo  use alternate cfg and latex2png files\n");
     fprintf(stdout, "  latex2rtf -M12 foo                  replace equations with bitmaps\n");
+    fprintf(stdout, "  latex2rtf -t3  foo                  tables as RTF *and* bitmaps\n");
     fprintf(stdout, "  latex2rtf -i russian foo            assume russian tex conventions\n");
     fprintf(stdout, "  latex2rtf -C raw foo                retain font encoding in rtf file\n");
     fprintf(stdout, "  latex2rtf -f0 foo                   create foo.rtf without fields\n");

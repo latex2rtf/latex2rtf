@@ -1248,38 +1248,53 @@ void CmdTabbing(int code)
     table = getTexUntil(end, FALSE);
     diagnostics(2, "Entering CmdTabbing()");
 
-    row_start = table;
-    TabbingGetRow(row_start, &this_row, &next_row_start);
-
-    diagnostics(2, "tabbing_tabbing_tabbing\n%s\ntabbing_tabbing_tabbing", table);
-
-    if (GetTexMode() != MODE_HORIZONTAL) {
-        CmdIndent(INDENT_NONE);
-        CmdStartParagraph("tabbing", FIRST_INDENT);
-    }
-
-    fprintRTF("\\par\n");
-
-    n_total = 0;
-    while (this_row && strlen(this_row) >= 0) {
-        diagnostics(4, "row=<%s>", this_row);
-
-        TabbingGetColumnAlignments(this_row, align, &n, &next_left);
-        if (n > n_total)
-            n_total = n;
-
-        diagnostics(4, "this row n=%d <%s> left_tab=%d", n, align, g_tabbing_left_position);
-
-        TabbingWriteRow(this_row, n, n_total, align);
-
-        g_tabbing_left_position = next_left;
-        row_start = next_row_start;
-
-        free(this_row);
-        TabbingGetRow(row_start, &this_row, &next_row_start);
-    }
-
+	if (g_tabular_display_bitmap) {		
+		CmdEndParagraph(0);
+		CmdVspace(VSPACE_SMALL_SKIP);
+		CmdIndent(INDENT_NONE);
+		CmdStartParagraph("tabbing", FIRST_INDENT);
+		
+		WriteLatexAsBitmap("\\begin{tabbing}", table, end);
+		
+		CmdEndParagraph(0);
+		CmdVspace(VSPACE_SMALL_SKIP);
+		CmdIndent(INDENT_INHIBIT);
+	}
+	
+	if (g_tabular_display_rtf) {
+		row_start = table;
+		TabbingGetRow(row_start, &this_row, &next_row_start);
+	
+		diagnostics(2, "tabbing_tabbing_tabbing\n%s\ntabbing_tabbing_tabbing", table);
+	
+		if (GetTexMode() != MODE_HORIZONTAL) {
+			CmdIndent(INDENT_NONE);
+			CmdStartParagraph("tabbing", FIRST_INDENT);
+		}
+	
+		fprintRTF("\\par\n");
+	
+		n_total = 0;
+		while (this_row && strlen(this_row) >= 0) {
+			diagnostics(4, "row=<%s>", this_row);
+	
+			TabbingGetColumnAlignments(this_row, align, &n, &next_left);
+			if (n > n_total)
+				n_total = n;
+	
+			diagnostics(4, "this row n=%d <%s> left_tab=%d", n, align, g_tabbing_left_position);
+	
+			TabbingWriteRow(this_row, n, n_total, align);
+	
+			g_tabbing_left_position = next_left;
+			row_start = next_row_start;
+	
+			free(this_row);
+			TabbingGetRow(row_start, &this_row, &next_row_start);
+		}
+	}
     ConvertString(end);
+    
 
     free(table);
     free(end);
