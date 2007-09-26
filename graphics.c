@@ -463,14 +463,14 @@ static char *pdf_to_png(char *pdf)
     png = strdup_tmp_path(png_base);
     
 #ifdef UNIX
-    format = strdup("gs -q -dNOPAUSE -dSAFER -dBATCH -sDEVICE=pngalpha -r%d -sOutputFile=%s %s"); 
+    format = strdup("gs -q -dNOPAUSE -dSAFER -dBATCH -sDEVICE=pngalpha -r%d -sOutputFile=\'%s\' \'%s\'"); 
     snprintf(cmd, 511, format, g_dots_per_inch, png, pdf);
 #else
     format = strdup("convert -crop 0x0 -units PixelsPerInch -density %d %s %s"); 
     snprintf(cmd, 511, format, g_dots_per_inch, pdf, png);
 #endif
 
-    diagnostics(2, "pdf_to_png command = [%s]", cmd);
+    diagnostics(1, "pdf_to_png command = [%s]", cmd);
     diagnostics(1, "converting %s to png file", pdf);
     system(cmd);
 
