@@ -281,9 +281,9 @@ static char *eps_to_pict(char *s)
     eps = strdup_together(g_home_dir, s);
 
     /* create a bitmap version of the eps file */
-    cmd_len = strlen(eps) + strlen(pict_bitmap) + strlen("convert -crop 0x0 -density ") + 15;
+    cmd_len = strlen(eps) + strlen(pict_bitmap) + strlen("convert -crop 0x0 -density ") + 19;
     cmd = (char *) malloc(cmd_len);
-    snprintf(cmd, cmd_len, "convert -crop 0x0 -density %d '%s' '%s'", g_dots_per_inch, eps, pict_bitmap);
+    snprintf(cmd, cmd_len, "convert -crop 0x0 -density %d \"%s\" \"%s\"", g_dots_per_inch, eps, pict_bitmap);
     diagnostics(2, "system command = [%s]", cmd);
     err = system(cmd);
     free(cmd);
@@ -406,9 +406,9 @@ static char *eps_to_png(char *name)
 	if (outfile == NULL) return NULL;
 	
     png = strdup_tmp_path(outfile);
-    cmd_len = strlen(name) + strlen(png) + strlen("convert -units PixelsPerInch -density ") + 15;
+    cmd_len = strlen(name) + strlen(png) + strlen("convert -units PixelsPerInch -density ") + 19;
     cmd = (char *) malloc(cmd_len);
-    snprintf(cmd, cmd_len, "convert -units PixelsPerInch -density %d '%s' '%s'", g_dots_per_inch, name, png);
+    snprintf(cmd, cmd_len, "convert -units PixelsPerInch -density %d \"%s\" \"%s\"", g_dots_per_inch, name, png);
     diagnostics(2, "eps_to_png command = [%s]", cmd);
     system(cmd);
 
@@ -463,10 +463,10 @@ static char *pdf_to_png(char *pdf)
     png = strdup_tmp_path(png_base);
     
 #ifdef UNIX
-    format = strdup("gs -q -dNOPAUSE -dSAFER -dBATCH -sDEVICE=pngalpha -r%d -sOutputFile='%s' '%s'"); 
+    format = strdup("gs -q -dNOPAUSE -dSAFER -dBATCH -sDEVICE=pngalpha -r%d -sOutputFile=\"%s\" \"%s\""); 
     snprintf(cmd, 511, format, g_dots_per_inch, png, pdf);
 #else
-    format = strdup("convert -crop 0x0 -units PixelsPerInch -density %d '%s' '%s'"); 
+    format = strdup("convert -crop 0x0 -units PixelsPerInch -density %d \"%s\" \"%s\""); 
     snprintf(cmd, 511, format, g_dots_per_inch, pdf, png);
 #endif
 
@@ -505,9 +505,9 @@ static char *eps_to_emf(char *name)
     emf = strdup_tmp_path(outfile);
 
     /* Determine bounding box for EPS file */
-    cmd_len = strlen(name) + strlen("identify -format \"%w %h\" ") + 1;
+    cmd_len = strlen(name) + strlen("identify -format \"%w %h\" ") + 3;
     cmd = (char *) malloc(cmd_len);
-    snprintf(cmd, cmd_len, "identify -format \"%%w %%h\" %s", name);
+    snprintf(cmd, cmd_len, "identify -format \"%%w %%h\" \"%s\"", name);
     fp = popen(cmd, "r");
     if (fgets(ans, 50, fp) != NULL)
         sscanf(ans, "%ld %ld", &width, &height);
@@ -1179,9 +1179,9 @@ static void PutTiffFile(char *s, double height0, double width0, double scale, do
     tmp_png = strdup_tmp_path(png);
     tiff = strdup_together(g_home_dir, s);
 
-    cmd_len = strlen(tiff) + strlen(tmp_png) + 10;
+    cmd_len = strlen(tiff) + strlen(tmp_png) + 14;
     cmd = (char *) malloc(cmd_len);
-    snprintf(cmd, cmd_len, "convert '%s' '%s'", tiff, tmp_png);
+    snprintf(cmd, cmd_len, "convert \"%s\" \"%s\"", tiff, tmp_png);
     diagnostics(2, "system graphics command = [%s]", cmd);
     system(cmd);
 
@@ -1214,9 +1214,9 @@ static void PutGifFile(char *s, double height0, double width0, double scale, dou
     tmp_png = strdup_tmp_path(png);
     gif = strdup_together(g_home_dir, s);
 
-    cmd_len = strlen(gif) + strlen(tmp_png) + 10;
+    cmd_len = strlen(gif) + strlen(tmp_png) + 14;
     cmd = (char *) malloc(cmd_len);
-    snprintf(cmd, cmd_len, "convert '%s' '%s'", gif, tmp_png);
+    snprintf(cmd, cmd_len, "convert \"%s\" \"%s\"", gif, tmp_png);
     diagnostics(2, "system graphics command = [%s]", cmd);
     system(cmd);
 
@@ -1364,9 +1364,9 @@ void PutLatexFile(char *s, double height0, double width0, double scale, char *pr
     l2p = get_latex2png_name();
     bmoffset = resolution / 72 + 2;
 
-    cmd_len = strlen(l2p) + strlen(s) + 14;
+    cmd_len = strlen(l2p) + strlen(s) + 16;
     if (g_home_dir)
-        cmd_len += strlen(g_home_dir) + 6;
+        cmd_len += strlen(g_home_dir) + 8;
     if (bmoffset > 9)
         cmd_len += 1;
 
@@ -1375,9 +1375,9 @@ void PutLatexFile(char *s, double height0, double width0, double scale, char *pr
     do {
         second_pass = FALSE;    /* only needed if png is too large for Word */
         if (g_home_dir == NULL)
-            snprintf(cmd, cmd_len, "%s -d %d -o %d '%s'", l2p, resolution, bmoffset, s);
+            snprintf(cmd, cmd_len, "%s -d %d -o %d \"%s\"", l2p, resolution, bmoffset, s);
         else
-            snprintf(cmd, cmd_len, "%s -d %d -o %d -H '%s' %s", l2p, resolution, bmoffset, g_home_dir, s);
+            snprintf(cmd, cmd_len, "%s -d %d -o %d -H \"%s\" \"%s\"", l2p, resolution, bmoffset, g_home_dir, s);
 
         diagnostics(2, "system graphics command = [%s]", cmd);
         err = system(cmd);
@@ -1931,7 +1931,7 @@ void CmdGraphics(int code)
 			PutJpegFile(fullpathname, height, width, scale, baseline, TRUE);
 	
 		else
-			diagnostics(WARNING, "Conversion of '%s' not supported", filename);
+			diagnostics(WARNING, "Conversion of \"%s\" not supported", filename);
 	
 		free(filename);
 		free(fullpathname);
