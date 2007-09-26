@@ -23,7 +23,7 @@ This file is available from http://sourceforge.net/projects/latex2rtf/
 #include <stdlib.h>
 #include <string.h>
 #include "main.h"
-#include "util.h"
+#include "utils.h"
 #include "counters.h"
 
 #define MAX_COUNTERS 50
