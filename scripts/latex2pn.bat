@@ -89,7 +89,8 @@ IF NOT EXIST %fn%.png echo ERROR: NetPBM failed to create %fn%.png from %fn%.ppm
 
 :NOIN
 IF NOT EXIST %fn%.tex goto cleanup
-del %fn%.eps
+rem following command commented-out to allow re-execution with lower resolution
+rem del %fn%.eps
 del %fn%.tex
 del %fn%.dvi
 del %fn%.aux
