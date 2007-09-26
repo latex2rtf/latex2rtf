@@ -36,7 +36,7 @@ This file is available from http://sourceforge.net/projects/latex2rtf/
 #include "utils.h"
 #include "lengths.h"
 #include "preamble.h"
-#include "equations.h"
+#include "graphics.h"
 
 int g_tabbing_left_position = 0;
 int g_tabbing_current_position = 0;
@@ -840,17 +840,10 @@ void CmdTabular(int code)
 	if (g_tabular_display_bitmap) {
 		char pre[151];
 		
-		CmdEndParagraph(0);
-		CmdVspace(VSPACE_SMALL_SKIP);
-		CmdIndent(INDENT_NONE);
-		CmdStartParagraph("tabular", FIRST_INDENT);
-		
 		snprintf(pre,150, "%s{%s}",begin,cols);
+		PrepareDisplayedBitmap("tabular");
 		WriteLatexAsBitmap(pre, table, end);
-		
-		CmdEndParagraph(0);
-		CmdVspace(VSPACE_SMALL_SKIP);
-		CmdIndent(INDENT_INHIBIT);
+		FinishDisplayedBitmap();
 	}
 	
 	if (g_tabular_display_rtf)
@@ -1249,16 +1242,9 @@ void CmdTabbing(int code)
     diagnostics(2, "Entering CmdTabbing()");
 
 	if (g_tabular_display_bitmap) {		
-		CmdEndParagraph(0);
-		CmdVspace(VSPACE_SMALL_SKIP);
-		CmdIndent(INDENT_NONE);
-		CmdStartParagraph("tabbing", FIRST_INDENT);
-		
+		PrepareDisplayedBitmap("tabbing");
 		WriteLatexAsBitmap("\\begin{tabbing}", table, end);
-		
-		CmdEndParagraph(0);
-		CmdVspace(VSPACE_SMALL_SKIP);
-		CmdIndent(INDENT_INHIBIT);
+		FinishDisplayedBitmap();
 	}
 	
 	if (g_tabular_display_rtf) {

@@ -39,9 +39,9 @@ Authors:
 #include "utils.h"
 #include "commands.h"
 #include "convert.h"
-#include "equations.h"
 #include "funct1.h"
 #include "preamble.h"
+#include "counters.h"
 
 /* number of points (72/inch) in a meter */
 #define POINTS_PER_METER 2834.65
@@ -1391,6 +1391,121 @@ void PutLatexFile(char *s, double height0, double width0, double scale, char *pr
     free(cmd);
 }
 
+static char *SaveEquationAsFile(char *pre, char *eq_with_spaces, char *post)
+{
+    FILE *f;
+    char name[15];
+    char *tmp_dir, *fullname, *texname, *eq;
+    static int file_number = 0;
+
+    if (!pre || !eq_with_spaces || !post)
+        return NULL;
+
+    eq = strdup_noendblanks(eq_with_spaces);
+
+/* create needed file names */
+    file_number++;
+    tmp_dir = getTmpPath();
+    snprintf(name, 15, "l2r_%04d", file_number);
+    fullname = strdup_together(tmp_dir, name);
+    texname = strdup_together(fullname, ".tex");
+
+    diagnostics(4, "SaveEquationAsFile =%s", texname);
+
+    f = fopen(texname, "w");
+    while (eq && (*eq == '\n' || *eq == ' '))
+        eq++;                   /* skip whitespace */
+    if (f) {
+        fprintf(f, "%s", g_preamble);
+        fprintf(f, "\\thispagestyle{empty}\n");
+        fprintf(f, "\\begin{document}\n");
+        fprintf(f, "\\setcounter{equation}{%d}\n", getCounter("equation"));
+        if ((strcmp(pre, "$") == 0) || (strcmp(pre, "\\begin{math}") == 0) || (strcmp(pre, "\\(") == 0)) {
+            fprintf(f, "%%INLINE_DOT_ON_BASELINE\n");
+            fprintf(f, "%s\n.\\quad %s\n%s", pre, eq, post);
+        } else if (strstr(pre, "equation"))
+            fprintf(f, "$$%s$$", eq);
+        else
+            fprintf(f, "%s\n%s\n%s", pre, eq, post);
+        fprintf(f, "\n\\end{document}");
+        fclose(f);
+    } else {
+        free(fullname);
+        fullname = NULL;
+    }
+
+    free(eq);
+    free(tmp_dir);
+    free(texname);
+    return (fullname);
+}
+
+void PrepareDisplayedBitmap(char *the_type)
+/******************************************************************************
+ purpose   : Call before WriteLatexAsBitmap()
+ ******************************************************************************/
+{
+    CmdEndParagraph(0);
+    CmdVspace(VSPACE_SMALL_SKIP);
+    CmdIndent(INDENT_NONE);
+    CmdStartParagraph(the_type, FIRST_INDENT);
+}
+
+void FinishDisplayedBitmap(void)
+/******************************************************************************
+ purpose   : Call after WriteLatexAsBitmap()
+ ******************************************************************************/
+{
+    CmdEndParagraph(0);
+    CmdVspace(VSPACE_SMALL_SKIP);
+    CmdIndent(INDENT_INHIBIT);
+}
+
+void WriteLatexAsBitmap(char *pre, char *eq, char *post)
+
+/******************************************************************************
+ purpose   : Convert LaTeX to Bitmap and write to RTF file
+ ******************************************************************************/
+{
+    char *p, *name;
+    double scale;
+
+    diagnostics(4, "Entering WriteEquationAsBitmap");
+
+    if (eq == NULL)
+        return;
+
+    scale = g_png_equation_scale;
+    if (strstr(pre, "music") || strstr(pre, "figure") 
+                             || strstr(pre, "picture")
+                             || strstr(pre, "longtable") )
+        scale = g_png_figure_scale;
+
+/* suppress bitmap equation numbers in eqnarrays with zero or one \label{}'s*/
+    if (strcmp(pre, "\\begin{eqnarray}") == 0) {
+        p = strstr(eq, "\\label");
+        if (p != NULL && strlen(p) > 6) /* found one ... is there a second? */
+            p = strstr(p + 6, "\\label");
+        if (p == NULL)
+            name = SaveEquationAsFile("\\begin{eqnarray*}", eq, "\\end{eqnarray*}");
+        else
+            name = SaveEquationAsFile(pre, eq, post);
+
+    } else if (strcmp(pre, "\\begin{align}") == 0) {
+        p = strstr(eq, "\\label");
+        if (p != NULL && strlen(p) > 6) /* found one ... is there a second? */
+            p = strstr(p + 6, "\\label");
+        if (p == NULL)
+            name = SaveEquationAsFile("\\begin{align*}", eq, "\\end{align*}");
+        else
+            name = SaveEquationAsFile(pre, eq, post);
+    } else
+
+        name = SaveEquationAsFile(pre, eq, post);
+
+    PutLatexFile(name, 0, 0, scale, pre);
+}
+
 char *upper_case_string(char *s)
 {
     char *t, *x;
@@ -1815,18 +1930,23 @@ void CmdGraphics(int code)
  ******************************************************************************/
 void CmdPicture(int code)
 {
-    char *pre, *post, *picture;
+    char *picture;
+    char post[] = "\\end{picture}";
 
-    if (code & ON) {
-        pre = strdup("\\begin{picture}");
-        post = strdup("\\end{picture}");
-        picture = getTexUntil(post, 0);
-        WriteLatexAsBitmap(pre, picture, post);
-        ConvertString(post);    /* to balance the \begin{picture} */
-        free(pre);
-        free(post);
-        free(picture);
+    if (!(code & ON)) {
+        diagnostics(4, "exiting CmdPicture");
+        return;
     }
+
+	picture = getTexUntil(post, 0);
+
+	PrepareDisplayedBitmap("latex picture");
+	WriteLatexAsBitmap("\\begin{picture}", picture, post);
+	FinishDisplayedBitmap();
+
+	ConvertString(post);    /* to balance the \begin{picture} */
+	free(picture);
+    
 }
 
 /******************************************************************************
@@ -1844,14 +1964,11 @@ void CmdMusic(int code)
 
     diagnostics(4, "entering CmdMusic");
     contents = getTexUntil(endmusic, TRUE);
-    CmdEndParagraph(0);
-    CmdVspace(VSPACE_SMALL_SKIP);
-    CmdIndent(INDENT_NONE);
-    CmdStartParagraph("music", FIRST_INDENT);
+
+	PrepareDisplayedBitmap("music");
     WriteLatexAsBitmap("\\begin{music}", contents, endmusic);
-    ConvertString(endmusic);
-    CmdEndParagraph(0);
-    CmdVspace(VSPACE_SMALL_SKIP);
-    CmdIndent(INDENT_INHIBIT);
+	FinishDisplayedBitmap();
+
+    ConvertString(endmusic);		 /* to balance the \begin{music} */
     free(contents);
 }

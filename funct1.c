@@ -48,6 +48,7 @@ Authors:
 #include "equations.h"
 #include "direct.h"
 #include "styles.h"
+#include "graphics.h"
 
 extern bool twocolumn;          /* true if twocolumn-mode is enabled */
 int g_right_margin_indent;
@@ -1754,8 +1755,10 @@ void CmdFigure(int code)
 
             caption = ExtractAndRemoveTag("\\caption", figure_contents);
             label = ExtractAndRemoveTag("\\label", figure_contents);
-            CmdStartParagraph("caption", FIRST_INDENT);
+
+            PrepareDisplayedBitmap("figure");
             WriteLatexAsBitmap("\\begin{figure}", figure_contents, "\\end{figure}");
+            FinishDisplayedBitmap();
             ConvertString(caption);
             if (label)
                 free(label);

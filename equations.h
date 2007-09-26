@@ -37,7 +37,6 @@ void CmdLeftRight(int code);
 void CmdMatrix(int code);
 void CmdStackrel(int code);
 void CmdArrows(int code);
-void WriteLatexAsBitmap(char *pre, char *eq, char *post);
 int  script_shift(void);
 int  script_size(void);
 void CmdEnsuremath(int code);
