@@ -419,50 +419,64 @@ static char *eps_to_png(char *name)
 
 /******************************************************************************
      purpose : create a png file from a PDF file and return file name
- ******************************************************************************/
-static char *pdf_to_png(char *name)
-{
-    char *cmd, *png, *outfile;
-    size_t cmd_len;
-    
-/*
-    wh, 2007-08-31 changed back to ImageMagick convert because gs (gswin32c)
+ 
+ 	We need to create a system command to convert a PDF to a PNG file
+	
+	In principle, this could be as simple as
+	
+		convert file.pdf file.png
+		
+	Unfortunately, we need to specify the pixel density, and more importantly,
+	crop whitespace out of the images appropriately.  The command then becomes
+	
+	    convert -crop 0x0 -units PixelsPerInch -density 300 file.pdf file.png
+	    
+	Now the problem arises that apparently ImageMagick reads the wrong /MediaBox
+	for PDF files and this gives a full-page image.  Since GhostScript is 
+	required for ImageMagick, the solution is to use GhostScript directly
+	
+		gs -dNOPAUSE -dSAFER -dBATCH -sDEVICE=pngalpha -sOutputFile=file.png -r300 file.pdf
+		
+	Unfortunately, this fails to work under Windows XP because gs (gswin32c)
     fails to execute with message "Program too large for working storage" 
     (in German: "Programm zu gross fuer den Arbeitsspeicher") 
-    under WinXP commandprompt (compiled with djgpp)
-   
-    char *base = "gs -dNOPAUSE -dSAFER -dBATCH -sDEVICE=pngalpha -sOutputFile="; 
-*/
-    char *base = "convert -crop 0x0 -units PixelsPerInch -density";
+	
+	
+	So here we are, creating different commands for Windows XP and Unix!
+******************************************************************************/
+static char *pdf_to_png(char *pdf)
+{
+    char cmd[512];
+    char *png, *png_base;
+    char *format   = NULL;
 
-    outfile = NULL;
-    diagnostics(2, "filename = <%s>", name);
+    png_base = NULL;
+    diagnostics(2, "filename = <%s>", pdf);
 
-    if (strstr(name, ".pdf") != NULL)
-    	outfile = strdup_new_extension(name, ".pdf", ".png");
-	else if (strstr(name, ".PDF") != NULL)
-    	outfile = strdup_new_extension(name, ".PDF", ".png");
+    if (strstr(pdf, ".pdf") != NULL)
+    	png_base = strdup_new_extension(pdf, ".pdf", ".png");
+	else if (strstr(pdf, ".PDF") != NULL)
+    	png_base = strdup_new_extension(pdf, ".PDF", ".png");
+	else
+		return NULL;
+		
+    png = strdup_tmp_path(png_base);
+    
+#ifdef UNIX
+    format = strdup("gs -q -dNOPAUSE -dSAFER -dBATCH -sDEVICE=pngalpha -r%d -sOutputFile=%s %s"); 
+    snprintf(cmd, 511, format, g_dots_per_inch, png, pdf);
+#else
+    format = strdup("convert -crop 0x0 -units PixelsPerInch -density %d %s %s"); 
+    snprintf(cmd, 511, format, g_dots_per_inch, pdf, png);
+#endif
 
-    png = strdup_tmp_path(outfile);
-
-    /* 
-    ImageMagick apparently reads the wrong /MediaBox for PDF files and can give
-    us a full-page image (especially a problem with Quartz-generated PDF files).
-    Since GhostScript is required anyway for working with PDF, use it directly.
-    wh, 2007-08-31 changed back to ImageMagick convert:
-        -crop 0x0 solves this problem with producing a full page image,
-        -units PixelsPerInch solves the problem of wrong resolution identification
-    */
-    cmd_len = strlen(name) + strlen(png) + strlen(base) + 40;
-    cmd = (char *) malloc(cmd_len);
-/*  snprintf(cmd, cmd_len, "convert -density %d %s %s", g_dots_per_inch, pdf, png); */
-/*  snprintf(cmd, cmd_len, "%s%s -r%d %s", base, png, g_dots_per_inch, pdf); */
-    snprintf(cmd, cmd_len, "%s %d %s %s", base, g_dots_per_inch, name, png);
     diagnostics(2, "pdf_to_png command = [%s]", cmd);
+    diagnostics(1, "converting %s to png file", pdf);
     system(cmd);
 
-    free(cmd);
-    free(outfile);
+    free(png_base);
+    free(format);
+
     return png;
 }
 

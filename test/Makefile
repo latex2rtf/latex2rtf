@@ -224,11 +224,13 @@ clean:
 	mv fig_testb.pdf fig_testb.tmp
 	mv fig_testc.pdf fig_testc.tmp
 	mv fig_testd.pdf fig_testd.tmp
+	mv fig_teste.pdf fig_teste.tmp
 	rm -f *.dvi *.rtf *.aux *.blg *.bbl *.log *.pdf *.toc *.lot *.idx *.ilg *.ind
 	rm -f l2r*tex frlicense.dat *.fff *.lof
 	mv fig_testb.tmp fig_testb.pdf
 	mv fig_testc.tmp fig_testc.pdf
 	mv fig_testd.tmp fig_testd.pdf
+	mv fig_teste.tmp fig_teste.pdf
 	rm -rf ../tmp
 
 .PHONY: clean all check
