@@ -151,6 +151,28 @@ static void my_unlink(char *filename)
 #endif
 }
 
+static char *SysGraphicsCommand(char *in, char *out, int specify_density_and_crop)
+{
+    char cmd[512];
+	char format[]  = "convert -crop 0x0 -units PixelsPerInch -density %d \"%s\" \"%s\"";
+	char format2[] = "convert \"%s\" \"%s\"";
+	
+	if (specify_density_and_crop == TRUE)
+    	snprintf(cmd, 511, format, g_dots_per_inch, in, out);
+    else
+    	snprintf(cmd, 511, format2, g_dots_per_inch, in, out);
+	
+#ifdef UNIX
+	/* convert works nicely, except for some pdfs, so use gs directly for those */
+	if ((strstr(in, ".pdf") != NULL) || (strstr(in, ".PDF") != NULL)) {
+		char form[] = "gs -q -dNOPAUSE -dSAFER -dBATCH -sDEVICE=pngalpha -r%d -sOutputFile=\"%s\" \"%s\"";
+    	snprintf(cmd, 511, form, g_dots_per_inch, out, in);
+    }
+#endif
+
+	return strdup(cmd);
+}
+
 static void PicComment(short label, short size, FILE * fp)
 {
     short long_comment = 0x00A1;
@@ -241,7 +263,6 @@ static char *strdup_tmp_path(char *s)
 static char *eps_to_pict(char *s)
 {
     char *cmd, *p, buffer[560];
-    size_t cmd_len;
     long ii, pict_bitmap_size, eps_size;
     short err, handle_size;
     unsigned char byte;
@@ -281,9 +302,7 @@ static char *eps_to_pict(char *s)
     eps = strdup_together(g_home_dir, s);
 
     /* create a bitmap version of the eps file */
-    cmd_len = strlen(eps) + strlen(pict_bitmap) + strlen("convert -crop 0x0 -density ") + 19;
-    cmd = (char *) malloc(cmd_len);
-    snprintf(cmd, cmd_len, "convert -crop 0x0 -density %d \"%s\" \"%s\"", g_dots_per_inch, eps, pict_bitmap);
+    cmd = SysGraphicsCommand(eps, pict_bitmap, TRUE);
     diagnostics(2, "system command = [%s]", cmd);
     err = system(cmd);
     free(cmd);
@@ -388,7 +407,6 @@ static char *eps_to_pict(char *s)
 static char *eps_to_png(char *name)
 {
     char *cmd, *png, *outfile;
-    size_t cmd_len;
 
 	outfile = NULL;
 	
@@ -406,9 +424,7 @@ static char *eps_to_png(char *name)
 	if (outfile == NULL) return NULL;
 	
     png = strdup_tmp_path(outfile);
-    cmd_len = strlen(name) + strlen(png) + strlen("convert -units PixelsPerInch -density ") + 19;
-    cmd = (char *) malloc(cmd_len);
-    snprintf(cmd, cmd_len, "convert -units PixelsPerInch -density %d \"%s\" \"%s\"", g_dots_per_inch, name, png);
+    cmd = SysGraphicsCommand(name, png, TRUE);
     diagnostics(2, "eps_to_png command = [%s]", cmd);
     system(cmd);
 
@@ -446,12 +462,10 @@ static char *eps_to_png(char *name)
 ******************************************************************************/
 static char *pdf_to_png(char *pdf)
 {
-    char cmd[512];
-    char *png, *png_base;
-    char *format   = NULL;
+    char *cmd, *png, *png_base;
 
     png_base = NULL;
-    diagnostics(2, "filename = <%s>", pdf);
+    diagnostics(1, "converting %s to png file", pdf);
 
     if (strstr(pdf, ".pdf") != NULL)
     	png_base = strdup_new_extension(pdf, ".pdf", ".png");
@@ -461,21 +475,12 @@ static char *pdf_to_png(char *pdf)
 		return NULL;
 		
     png = strdup_tmp_path(png_base);
-    
-#ifdef UNIX
-    format = strdup("gs -q -dNOPAUSE -dSAFER -dBATCH -sDEVICE=pngalpha -r%d -sOutputFile=\"%s\" \"%s\""); 
-    snprintf(cmd, 511, format, g_dots_per_inch, png, pdf);
-#else
-    format = strdup("convert -crop 0x0 -units PixelsPerInch -density %d \"%s\" \"%s\""); 
-    snprintf(cmd, 511, format, g_dots_per_inch, pdf, png);
-#endif
-
+    cmd = SysGraphicsCommand(pdf, png, TRUE);
     diagnostics(2, "pdf_to_png command = [%s]", cmd);
-    diagnostics(1, "converting %s to png file", pdf);
     system(cmd);
 
+    free(cmd);
     free(png_base);
-    free(format);
 
     return png;
 }
@@ -1165,7 +1170,6 @@ static void PutEpsFile(char *s, double height0, double width0, double scale, dou
 static void PutTiffFile(char *s, double height0, double width0, double scale, double baseline, int full_path)
 {
     char *cmd, *tiff, *png, *tmp_png;
-    size_t cmd_len;
     double convert_scale = 0.0;
 
     diagnostics(2, "filename = <%s>", s);
@@ -1178,11 +1182,7 @@ static void PutTiffFile(char *s, double height0, double width0, double scale, do
 
     tmp_png = strdup_tmp_path(png);
     tiff = strdup_together(g_home_dir, s);
-
-    cmd_len = strlen(tiff) + strlen(tmp_png) + 14;
-    cmd = (char *) malloc(cmd_len);
-    snprintf(cmd, cmd_len, "convert \"%s\" \"%s\"", tiff, tmp_png);
-    diagnostics(2, "system graphics command = [%s]", cmd);
+	cmd = SysGraphicsCommand(tiff, tmp_png, FALSE);
     system(cmd);
 
     PutPngFile(tmp_png, height0, width0, scale, convert_scale, baseline, TRUE);
@@ -1200,7 +1200,6 @@ static void PutTiffFile(char *s, double height0, double width0, double scale, do
 static void PutGifFile(char *s, double height0, double width0, double scale, double baseline, int full_path)
 {
     char *cmd, *gif, *png, *tmp_png;
-    size_t cmd_len;
 	double convert_scale = 0.0;
 	
     diagnostics(2, "filename = <%s>", s);
@@ -1213,10 +1212,7 @@ static void PutGifFile(char *s, double height0, double width0, double scale, dou
 
     tmp_png = strdup_tmp_path(png);
     gif = strdup_together(g_home_dir, s);
-
-    cmd_len = strlen(gif) + strlen(tmp_png) + 14;
-    cmd = (char *) malloc(cmd_len);
-    snprintf(cmd, cmd_len, "convert \"%s\" \"%s\"", gif, tmp_png);
+    cmd = SysGraphicsCommand(gif, tmp_png, FALSE);
     diagnostics(2, "system graphics command = [%s]", cmd);
     system(cmd);
 
