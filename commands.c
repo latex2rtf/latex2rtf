@@ -891,6 +891,7 @@ static CommandArray params[] = {
     {"theindex", CmdIgnoreEnviron, 0},
     {"landscape", CmdTolerateEnviron, 0},
     {"sloppypar", CmdTolerateEnviron, 0},
+    {"doublespace", CmdTolerateEnviron, 0},
     {"", NULL, 0}
 };                              /* end of list */
 
