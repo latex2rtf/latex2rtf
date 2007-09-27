@@ -540,16 +540,25 @@ static char *eps_to_emf(char *name)
  ******************************************************************************/
 static void AdjustScaling(double h, double w, double target_h, double target_w, double s, int *sx, int *sy)
 {
+	double round=0.59;
+	diagnostics(4,"AdjustScaling h       =%f w       =%f s=%f", h, w, s);
+	diagnostics(4,"AdjustScaling target_h=%f target_w=%f", target_h, target_w);
+
 	if (target_h != 0 && h != 0) 
-		*sy = (int) (100.0 * target_h / h);
+		*sy = (int) (100.0 * target_h / h + round);
 	else
-		*sy = (int) (s * 100);
+		*sy = (int) (s * 100 + round);
 	
 	if (target_w == 0 || w == 0)
 		*sx = *sy;
 	else
-		*sx = (int) (100.0 * target_w / w);
+		*sx = (int) (100.0 * target_w / w + round);
 
+	/* catch the case when width is specified, but not height */
+	if (target_h == 0 && target_w != 0)
+		*sy = *sx;
+
+	
 	diagnostics(4,"AdjustScaling xscale=%d yscale=%d", *sx, *sy);
 }
 
