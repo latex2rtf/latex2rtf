@@ -162,13 +162,15 @@ static char *SysGraphicsCommand(char *in, char *out, int specify_density_and_cro
     else
     	snprintf(cmd, 511, format2, g_dots_per_inch, in, out);
 	
-#ifdef UNIX
 	/* convert works nicely, except for some pdfs, so use gs directly for those */
+	/* WH: calling gs via pdf2pnga script */
+
 	if ((strstr(in, ".pdf") != NULL) || (strstr(in, ".PDF") != NULL)) {
-		char form[] = "gs -q -dNOPAUSE -dSAFER -dBATCH -sDEVICE=pngalpha -r%d -sOutputFile=\"%s\" \"%s\"";
-    	snprintf(cmd, 511, form, g_dots_per_inch, out, in);
+/*		char form[] = "gs -q -dNOPAUSE -dSAFER -dBATCH -sDEVICE=pngalpha -r%d -sOutputFile=\"%s\" \"%s\"";*/
+/*    		snprintf(cmd, 511, form, g_dots_per_inch, out, in);*/
+		char form[] = "pdf2pnga \"%s\" \"%s\" %d";
+    		snprintf(cmd, 511, form, in, out, g_dots_per_inch);
     }
-#endif
 
 	return strdup(cmd);
 }

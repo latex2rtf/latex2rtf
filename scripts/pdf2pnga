@@ -1,0 +1,2 @@
+#!/bin/sh
+exec gs -q -dNOPAUSE -dBATCH -dSAFER -sDEVICE=pngalpha -r$3 "-sOutputFile=$2" "$1"
