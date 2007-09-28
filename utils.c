@@ -50,7 +50,7 @@ int even(int n)
 /******************************************************************************
  purpose:  rounds to nearest integer. round() in math.h is not always present
  *****************************************************************************/
-double rint(double nr)
+double my_rint(double nr)
 {
   double f = floor(nr);
   double c = ceil(nr);

@@ -26,7 +26,7 @@ Authors:
 
 int     odd(int n);
 int     even(int n);
-double  rint(double nr);
+double  my_rint(double nr);
 int     strstr_count(char *s, char *t);
 char *  my_strndup(char *s, size_t n);
 char *  strdup_together(char *s, char *t);

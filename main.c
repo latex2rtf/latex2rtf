@@ -106,8 +106,8 @@ int g_safety_braces = 0;
 bool g_processing_equation = FALSE;
 bool g_RTF_warnings = FALSE;
 char *g_config_path = NULL;
-char *g_script_path = NULL;
-char *g_tmp_path = NULL;
+char *g_script_dir = NULL;
+char *g_tmp_dir = NULL;
 char *g_preamble = NULL;
 char g_field_separator = ',';
 bool g_escape_parens = FALSE;
@@ -246,11 +246,11 @@ int main(int argc, char **argv)
                 p = strchr(optarg, ':');
                 if (p) {
                     *p = '\0';
-                    g_script_path = strdup(p + 1);
+                    g_script_dir = strdup(p + 1);
                 }
                 if (p != optarg)
                     g_config_path = strdup(optarg);
-                diagnostics(2, "cfg=%s, script=%s", g_config_path, g_script_path);
+                diagnostics(2, "cfg=%s, script=%s", g_config_path, g_script_dir);
                 break;
             case 's':
                 if (optarg && optarg[0] == 'e') {
@@ -270,7 +270,7 @@ int main(int argc, char **argv)
                 g_field_separator = ';';
                 break;
             case 'T':
-                g_tmp_path = strdup(optarg);
+                g_tmp_dir = strdup(optarg);
                 break;
             case 'W':
                 g_RTF_warnings = TRUE;
@@ -860,8 +860,8 @@ purpose: return the directory to store temporary files
     char pathsep_str[2] = { PATHSEP, 0 };   /* for os2 or w32 "unix" compiler */
 
     /* first use any temporary directory specified as an option */
-    if (g_tmp_path)
-        t = strdup(g_tmp_path);
+    if (g_tmp_dir)
+        t = strdup(g_tmp_dir);
 
     /* next try the environment variable TMPDIR */
     else if ((u = getenv("TMPDIR")) != NULL)

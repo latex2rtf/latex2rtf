@@ -141,6 +141,11 @@ typedef struct _GdiCommentMultiFormats {
     EMRFORMAT *Data;            /* Array of comment data */
 } GDICOMMENTMULTIFORMATS;
 
+#define CONVERT_SIMPLE 1
+#define CONVERT_CROP   2
+#define CONVERT_LATEX  3
+#define CONVERT_PDF    4
+
 /******************************************************************************
      purpose : portable routine to delete filename
  ******************************************************************************/
@@ -151,28 +156,124 @@ static void my_unlink(char *filename)
 #endif
 }
 
-static char *SysGraphicsCommand(char *in, char *out, int specify_density_and_crop)
+/******************************************************************************
+     purpose : create a tmp file name using only the end of the filename
+ ******************************************************************************/
+static char *strdup_tmp_path(char *s)
 {
-    char cmd[512];
-	char format[]  = "convert -crop 0x0 -units PixelsPerInch -density %d \"%s\" \"%s\"";
-	char format2[] = "convert \"%s\" \"%s\"";
-	
-	if (specify_density_and_crop == TRUE)
-    	snprintf(cmd, 511, format, g_dots_per_inch, in, out);
+    char *tmp, *p, *fullname, c;
+
+    if (s == NULL)
+        return NULL;
+
+    tmp = getTmpPath();
+
+    c = PATHSEP;
+    p = strrchr(s, c);
+
+    if (!p)
+        fullname = strdup_together(tmp, s);
     else
-    	snprintf(cmd, 511, format2, g_dots_per_inch, in, out);
+        fullname = strdup_together(tmp, p + 1);
+
+    free(tmp);
+    return fullname;
+}
+
+/******************************************************************************
+     purpose :  System specific shell graphics commands 
+
+	opt		type of conversion
+	o 		vertical offset
+	in		input filename
+	out		output filename
 	
-	/* convert works nicely, except for some pdfs, so use gs directly for those */
-	/* WH: calling gs via pdf2pnga script */
+ Need to worry about the global flags used on the command-line
+  -D dpi           g_dots_per_inch
+  -P path          g_script_dir
+  -T /path/to/tmp  g_tmp_path
+  
+ ******************************************************************************/
 
-	if ((strstr(in, ".pdf") != NULL) || (strstr(in, ".PDF") != NULL)) {
-/*		char form[] = "gs -q -dNOPAUSE -dSAFER -dBATCH -sDEVICE=pngalpha -r%d -sOutputFile=\"%s\" \"%s\"";*/
-/*    		snprintf(cmd, 511, form, g_dots_per_inch, out, in);*/
-		char form[] = "pdf2pnga \"%s\" \"%s\" %d";
-    		snprintf(cmd, 511, form, in, out, g_dots_per_inch);
-    }
+static char *SysGraphicsConvert(int opt, int offset, char *in, char *out)
+{
+    char cmd[512], *out_tmp;
+	int err;
 
-	return strdup(cmd);
+    int N = 512;	
+	int dpi   = g_dots_per_inch;
+	
+    out_tmp = strdup_tmp_path(out);
+   
+	if (opt == CONVERT_SIMPLE) {
+		char format_simple[] = "convert \"%s\" \"%s\"";
+		snprintf(cmd, N, format_simple, in, out_tmp);
+	}
+
+	if (opt == CONVERT_CROP) {
+		char format_crop[]   = "convert -crop 0x0 -units PixelsPerInch -density %d \"%s\" \"%s\"";
+		snprintf(cmd, N, format_crop, dpi, in, out_tmp);
+	}
+
+#ifdef UNIX
+
+	if (opt == CONVERT_LATEX) {
+
+		if (g_home_dir == NULL) {
+			char format_unix[] = "%slatex2png -d %d -o %d \"%s\"";
+			
+			if (g_script_dir)
+				snprintf(cmd, N, format_unix, g_script_dir, dpi, offset, in);
+			else
+				snprintf(cmd, N, format_unix, "", dpi, offset, in);
+			
+		} else {
+			char format_unix[] = "%slatex2png -d %d -o %d -H \"%s\" \"%s\"";
+			if (g_script_dir)
+				snprintf(cmd, N, format_unix, g_script_dir, dpi, offset, g_home_dir, in);
+			else
+				snprintf(cmd, N, format_unix, "", dpi, offset, g_home_dir, in);
+		}
+	}
+	
+	if (opt == CONVERT_PDF) {
+		#ifdef __APPLE__
+		char format_apple[] = "/usr/bin/sips -s format png -s dpiHeight %d -s dpiWidth %d --out \"%s\" \"%s\"";
+		snprintf(cmd, N, format_apple, dpi, dpi, out_tmp, in);
+		#else
+		char format_unix[] = "gs -q -dNOPAUSE -dSAFER -dBATCH -sDEVICE=pngalpha -r%d -sOutputFile=\"%s\" \"%s\"";
+		snprintf(cmd, N, format_unix, dpi, out_tmp, in);
+		#endif
+	}
+
+#else
+
+	if (opt == CONVERT_LATEX) {
+		if (g_home_dir == NULL){
+			char format_xp[] = "command.com /e:2048 /c latex2pn -d %d -o %d \"%s\"";
+			snprintf(cmd, N, format_xp, dpi, offset, in);
+		} else {
+			char format_xp[] = "command.com /e:2048 /c latex2pn -d %d -o %d -H \"%s\" \"%s\"";
+			snprintf(cmd, N, format_xp, dpi, offset, g_home_dir, in);
+		}
+	}
+	
+	if (opt == CONVERT_PDF) {
+		char format_xp[] = "command.com /e:2048 /c pdf2pnga \"%s\" \"%s\" %d";
+		snprintf(cmd, N, format_xp, g_dots_per_inch,out_tmp,in);
+	}
+	
+#endif
+
+    diagnostics(1, "system graphics command = [%s]", cmd);
+    fflush(stdout);
+
+    err = system(cmd);
+
+    if (err != 0)
+        diagnostics(WARNING, "error=%d when converting %s", in);
+	
+	return out_tmp;
 }
 
 static void PicComment(short label, short size, FILE * fp)
@@ -231,29 +332,6 @@ static char *strdup_absolute_path(char *s)
     return abs_path;
 }
 
-/******************************************************************************
-     purpose : create a tmp file name using only the end of the filename
- ******************************************************************************/
-static char *strdup_tmp_path(char *s)
-{
-    char *tmp, *p, *fullname, c;
-
-    if (s == NULL)
-        return NULL;
-
-    tmp = getTmpPath();
-
-    c = PATHSEP;
-    p = strrchr(s, c);
-
-    if (!p)
-        fullname = strdup_together(tmp, s);
-    else
-        fullname = strdup_together(tmp, p + 1);
-
-    free(tmp);
-    return fullname;
-}
 
 /******************************************************************************
      purpose : create a pict file from an EPS file and return file name for
@@ -264,32 +342,30 @@ static char *strdup_tmp_path(char *s)
  ******************************************************************************/
 static char *eps_to_pict(char *s)
 {
-    char *cmd, *p, buffer[560];
+    char *p, *pict, buffer[560];
     long ii, pict_bitmap_size, eps_size;
-    short err, handle_size;
+    short handle_size;
     unsigned char byte;
     short PostScriptBegin = 190;
     short PostScriptEnd = 191;
     short PostScriptHandle = 192;
-    char *pict_bitmap = NULL;
     char *pict_eps = NULL;
     char *eps = NULL;
     char *return_value = NULL;
     FILE *fp_eps = NULL;
     FILE *fp_pict_bitmap = NULL;
     FILE *fp_pict_eps = NULL;
-
+	int offset = 0;
+	
     diagnostics(2, "eps_to_pict filename = <%s>", s);
 
     /* Create filename for bitmap */
-    p = strdup_new_extension(s, ".eps", "a.pict");
-    if (p == NULL) {
-        p = strdup_new_extension(s, ".EPS", "a.pict");
-        if (p == NULL)
+    pict = strdup_new_extension(s, ".eps", "a.pict");
+    if (pict == NULL) {
+        pict = strdup_new_extension(s, ".EPS", "a.pict");
+        if (pict == NULL)
             goto Exit;
     }
-    pict_bitmap = strdup_tmp_path(p);
-    free(p);
 
     /* Create filename for eps file */
     p = strdup_new_extension(s, ".eps", ".pict");
@@ -298,21 +374,14 @@ static char *eps_to_pict(char *s)
         if (p == NULL)
             goto Exit;
     }
-    pict_eps = strdup_tmp_path(p);
+    pict_eps = strdup(p);
     free(p);
 
     eps = strdup_together(g_home_dir, s);
 
     /* create a bitmap version of the eps file */
-    cmd = SysGraphicsCommand(eps, pict_bitmap, TRUE);
-    diagnostics(2, "system command = [%s]", cmd);
-    err = system(cmd);
-    free(cmd);
-
-    if (err != 0)
-        diagnostics(WARNING, "problem creating bitmap from %s", eps);
-    else
-        return_value = pict_bitmap;
+    return_value = SysGraphicsConvert(CONVERT_CROP, offset, eps, pict);
+    free(pict);
 
     /* open the eps file and make sure that it is less than 32k */
     fp_eps = fopen(eps, "rb");
@@ -328,7 +397,7 @@ static char *eps_to_pict(char *s)
     diagnostics(WARNING, "eps size is 0x%X bytes", eps_size);
 
     /* open bitmap pict file and get file size */
-    fp_pict_bitmap = fopen(pict_bitmap, "rb");
+    fp_pict_bitmap = fopen(pict, "rb");
     if (fp_pict_bitmap == NULL)
         goto Exit;
     fseek(fp_pict_bitmap, 0, SEEK_END);
@@ -391,8 +460,8 @@ static char *eps_to_pict(char *s)
         free(eps);
     if (pict_eps)
         free(pict_eps);
-    if (pict_bitmap)
-        free(pict_bitmap);
+    if (pict)
+        free(pict);
 
     if (fp_eps)
         fclose(fp_eps);
@@ -408,31 +477,25 @@ static char *eps_to_pict(char *s)
  ******************************************************************************/
 static char *eps_to_png(char *name)
 {
-    char *cmd, *png, *outfile;
-
-	outfile = NULL;
+    char *png, *out;
 	
     diagnostics(2, " eps_to_png file = <%s>", name);
 
     if (strstr(name, ".eps") != NULL)
-    	outfile = strdup_new_extension(name, ".eps", ".png");
+    	png = strdup_new_extension(name, ".eps", ".png");
 	else if (strstr(name, ".EPS") != NULL)
-    	outfile = strdup_new_extension(name, ".EPS", ".png");
+    	png = strdup_new_extension(name, ".EPS", ".png");
 	else if (strstr(name, ".ps") != NULL)
-    	outfile = strdup_new_extension(name, ".ps", ".png");
+    	png = strdup_new_extension(name, ".ps", ".png");
 	else if (strstr(name, ".PS") != NULL)
-    	outfile = strdup_new_extension(name, ".PS", ".png");
-	
-	if (outfile == NULL) return NULL;
-	
-    png = strdup_tmp_path(outfile);
-    cmd = SysGraphicsCommand(name, png, TRUE);
-    diagnostics(2, "eps_to_png command = [%s]", cmd);
-    system(cmd);
+    	png = strdup_new_extension(name, ".PS", ".png");
+    else
+    	return NULL;
+		
+    out = SysGraphicsConvert(CONVERT_CROP, 0, name, png);
 
-    free(cmd);
-    free(outfile);
-    return png;
+    free(png);
+    return out;
 }
 
 /******************************************************************************
@@ -464,27 +527,20 @@ static char *eps_to_png(char *name)
 ******************************************************************************/
 static char *pdf_to_png(char *pdf)
 {
-    char *cmd, *png, *png_base;
+    char *png, *out;
 
-    png_base = NULL;
     diagnostics(1, "converting %s to png file", pdf);
 
     if (strstr(pdf, ".pdf") != NULL)
-    	png_base = strdup_new_extension(pdf, ".pdf", ".png");
+    	png = strdup_new_extension(pdf, ".pdf", ".png");
 	else if (strstr(pdf, ".PDF") != NULL)
-    	png_base = strdup_new_extension(pdf, ".PDF", ".png");
+    	png = strdup_new_extension(pdf, ".PDF", ".png");
 	else
 		return NULL;
 		
-    png = strdup_tmp_path(png_base);
-    cmd = SysGraphicsCommand(pdf, png, TRUE);
-    diagnostics(2, "pdf_to_png command = [%s]", cmd);
-    system(cmd);
-
-    free(cmd);
-    free(png_base);
-
-    return png;
+    out = SysGraphicsConvert(CONVERT_PDF, 0, pdf, png);
+	free(png);
+    return out;
 }
 
 /******************************************************************************
@@ -546,14 +602,14 @@ static void AdjustScaling(double h, double w, double target_h, double target_w, 
 	diagnostics(4,"AdjustScaling target_h=%f target_w=%f", target_h, target_w);
 
 	if (target_h != 0 && h != 0) 
-		*sy = (int) rint(100.0 * target_h / h);
+		*sy = (int) my_rint(100.0 * target_h / h);
 	else
-		*sy = (int) rint(s * 100);
+		*sy = (int) my_rint(s * 100);
 	
 	if (target_w == 0 || w == 0)
 		*sx = *sy;
 	else
-		*sx = (int) rint(100.0 * target_w / w);
+		*sx = (int) my_rint(100.0 * target_w / w);
 
 	/* catch the case when width is specified, but not height */
 	if (target_h == 0 && target_w != 0)
@@ -1178,7 +1234,7 @@ static void PutEpsFile(char *s, double height0, double width0, double scale, dou
  ******************************************************************************/
 static void PutTiffFile(char *s, double height0, double width0, double scale, double baseline, int full_path)
 {
-    char *cmd, *tiff, *png, *tmp_png;
+    char *tiff, *png, *out;
     double convert_scale = 0.0;
 
     diagnostics(2, "filename = <%s>", s);
@@ -1189,17 +1245,13 @@ static void PutTiffFile(char *s, double height0, double width0, double scale, do
             return;
     }
 
-    tmp_png = strdup_tmp_path(png);
     tiff = strdup_together(g_home_dir, s);
-	cmd = SysGraphicsCommand(tiff, tmp_png, FALSE);
-    system(cmd);
+	out = SysGraphicsConvert(CONVERT_SIMPLE, 0, tiff, png);
+    PutPngFile(out, height0, width0, scale, convert_scale, baseline, TRUE);
 
-    PutPngFile(tmp_png, height0, width0, scale, convert_scale, baseline, TRUE);
-    my_unlink(tmp_png);
-
-    free(tmp_png);
-    free(cmd);
+    my_unlink(out);
     free(tiff);
+    free(out);
     free(png);
 }
 
@@ -1208,7 +1260,7 @@ static void PutTiffFile(char *s, double height0, double width0, double scale, do
  ******************************************************************************/
 static void PutGifFile(char *s, double height0, double width0, double scale, double baseline, int full_path)
 {
-    char *cmd, *gif, *png, *tmp_png;
+    char *gif, *png, *out;
 	double convert_scale = 0.0;
 	
     diagnostics(2, "filename = <%s>", s);
@@ -1219,19 +1271,14 @@ static void PutGifFile(char *s, double height0, double width0, double scale, dou
             return;
     }
 
-    tmp_png = strdup_tmp_path(png);
     gif = strdup_together(g_home_dir, s);
-    cmd = SysGraphicsCommand(gif, tmp_png, FALSE);
-    diagnostics(2, "system graphics command = [%s]", cmd);
-    system(cmd);
+    out = SysGraphicsConvert(CONVERT_SIMPLE, 0, gif, png);
+    PutPngFile(out, height0, width0, scale, convert_scale, baseline, TRUE);
 
-    PutPngFile(tmp_png, height0, width0, scale, convert_scale, baseline, TRUE);
-    my_unlink(tmp_png);
-
-    free(tmp_png);
-    free(cmd);
+    my_unlink(out);
     free(gif);
     free(png);
+    free(out);
 }
 
 /****************************************************************************
@@ -1341,56 +1388,29 @@ long GetBaseline(char *s, char *pre)
     return baseline;
 }
 
-static char *get_latex2png_name()
-{
-#ifdef MSDOS
-    return strdup("command.com /e:2048 /c latex2pn");
-#else
-    return strdup_together(g_script_path, "latex2png");
-#endif
-}
-
 /******************************************************************************
  purpose   : Convert LaTeX to Bitmap and insert in RTF file
  ******************************************************************************/
-void PutLatexFile(char *s, double height0, double width0, double scale, char *pre)
+void PutLatexFile(char *latex, double height0, double width0, double scale, char *pre)
 {
-    char *png, *cmd, *l2p;
+    char *png;
     int err, baseline, second_pass, bmoffset,bad_res;
-    size_t cmd_len;
     unsigned long width, height, rw, rh, xres, yres;
     unsigned long maxsize = (unsigned long) (32767.0 / 20.0);
-    int resolution = g_dots_per_inch;   /* points per inch */
 	double convert_scale = 72.0 / g_dots_per_inch;
+	double resolution = g_dots_per_inch;
 	
     diagnostics(WARNING, "Rendering LaTeX construct (e.g. equation) as a bitmap...");
 
-    png = strdup_together(s, ".png");
-    l2p = get_latex2png_name();
-    bmoffset = resolution / 72 + 2;
-
-    cmd_len = strlen(l2p) + strlen(s) + 16;
-    if (g_home_dir)
-        cmd_len += strlen(g_home_dir) + 8;
-    if (bmoffset > 9)
-        cmd_len += 1;
-
-    cmd = (char *) malloc(cmd_len);
+    png = strdup_together(latex, ".png");
+    bmoffset = g_dots_per_inch / 72 + 2;
 
     do {
         second_pass = FALSE;    /* only needed if png is too large for Word */
-        if (g_home_dir == NULL)
-            snprintf(cmd, cmd_len, "%s -d %d -o %d \"%s\"", l2p, resolution, bmoffset, s);
-        else
-            snprintf(cmd, cmd_len, "%s -d %d -o %d -H \"%s\" \"%s\"", l2p, resolution, bmoffset, g_home_dir, s);
 
-        diagnostics(2, "system graphics command = [%s]", cmd);
-        err = system(cmd);
-        if (err)
-            break;
-
+    	SysGraphicsConvert(CONVERT_LATEX, bmoffset, latex, NULL);
         GetPngSize(png, &width, &height,&xres,&yres,&bad_res);
-        baseline = GetBaseline(s, pre);
+        baseline = GetBaseline(latex, pre);
         diagnostics(4, "png size height=%d baseline=%d width=%d", height, baseline, width);
 
         if ((width > maxsize && height != 0) || (height > maxsize && width != 0)) {
@@ -1405,9 +1425,7 @@ void PutLatexFile(char *s, double height0, double width0, double scale, char *pr
     if (err == 0)
         PutPngFile(png, height0, width0, scale, convert_scale, (double) baseline, TRUE);
 
-    free(l2p);
     free(png);
-    free(cmd);
 }
 
 static char *SaveEquationAsFile(char *pre, char *eq_with_spaces, char *post)

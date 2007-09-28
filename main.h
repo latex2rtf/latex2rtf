@@ -120,7 +120,7 @@ extern char		*g_table_label;
 extern char		*g_equation_label;
 extern char		*g_section_label;
 extern char		*g_config_path;
-extern char		*g_script_path;
+extern char		*g_script_dir;
 extern char		g_field_separator;
 extern char		*g_preamble;
 
