@@ -546,14 +546,14 @@ static void AdjustScaling(double h, double w, double target_h, double target_w, 
 	diagnostics(4,"AdjustScaling target_h=%f target_w=%f", target_h, target_w);
 
 	if (target_h != 0 && h != 0) 
-		*sy = (int) round(100.0 * target_h / h);
+		*sy = (int) rint(100.0 * target_h / h);
 	else
-		*sy = (int) round(s * 100);
+		*sy = (int) rint(s * 100);
 	
 	if (target_w == 0 || w == 0)
 		*sx = *sy;
 	else
-		*sx = (int) round(100.0 * target_w / w);
+		*sx = (int) rint(100.0 * target_w / w);
 
 	/* catch the case when width is specified, but not height */
 	if (target_h == 0 && target_w != 0)

@@ -24,6 +24,7 @@
  * Prahl
  */
 
+#include <math.h>
 #include <stdlib.h>
 #include <string.h>
 #include "main.h"
@@ -44,6 +45,16 @@ int odd(int n)
 int even(int n)
 {
     return (!(n & 1));
+}
+
+/******************************************************************************
+ purpose:  rounds to nearest integer. round() in math.h is not always present
+ *****************************************************************************/
+double rint(double nr)
+{
+  double f = floor(nr);
+  double c = ceil(nr);
+  return (((c-nr) >= (nr-f)) ? f :c);
 }
 
 /******************************************************************************

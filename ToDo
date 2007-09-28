@@ -1,15 +1,10 @@
 Fit & Finish:
 	
-	Fix \cdots, \rightarrow, \in, and others
-	
-	Improve 'make check' target
 	last line tabular in one column mode
 	extra spaces around \hline in tabular
 	
 	Reset footnote numbering at each new chapter
-	add documentation for %latex2rtf:
 	add examples to help page
-	fix problem with scaling of pdf files in conversion
 
 Potential Features:
 
