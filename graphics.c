@@ -250,16 +250,16 @@ static char *SysGraphicsConvert(int opt, int offset, char *in, char *out)
 
 	if (opt == CONVERT_LATEX) {
 		if (g_home_dir == NULL){
-			char format_xp[] = "command.com /e:2048 /c latex2pn -d %d -o %d %s";
+			char format_xp[] = "bash latex2png -d %d -o %d \"%s\"";
 			snprintf(cmd, N, format_xp, dpi, offset, in);
 		} else {
-			char format_xp[] = "command.com /e:2048 /c latex2pn -d %d -o %d -H %s %s";
+			char format_xp[] = "bash latex2png -d %d -o %d -H \"%s\" \"%s\"";
 			snprintf(cmd, N, format_xp, dpi, offset, g_home_dir, in);
 		}
 	}
 	
 	if (opt == CONVERT_PDF) {
-		char format_xp[] = "command.com /e:2048 /c pdf2pnga %s %s %d";
+		char format_xp[] = "bash pdf2pnga \"%s\" \"%s\" %d";
 		snprintf(cmd, N, format_xp, in, out_tmp, g_dots_per_inch);
 	}
 	
