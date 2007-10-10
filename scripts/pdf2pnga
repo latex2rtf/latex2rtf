@@ -10,4 +10,4 @@ else
     dpi=$3
 fi
 
-exec gs -q -dNOPAUSE -dBATCH -dSAFER -sDEVICE=pngalpha -r$dpi "-sOutputFile=$2" "$1"
+gs -q -dNOPAUSE -dBATCH -dSAFER -sDEVICE=pngalpha -r$dpi -sOutputFile=$2 $1
