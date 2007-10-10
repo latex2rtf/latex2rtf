@@ -237,13 +237,11 @@ static char *SysGraphicsConvert(int opt, int offset, char *in, char *out)
 	}
 	
 	if (opt == CONVERT_PDF) {
-		#ifdef __APPLE__
-		char format_apple[] = "/usr/bin/sips -s format png -s dpiHeight %d -s dpiWidth %d --out \"%s\" \"%s\"";
-		snprintf(cmd, N, format_apple, dpi, dpi, out_tmp, in);
-		#else
-		char format_unix[] = "gs -q -dNOPAUSE -dSAFER -dBATCH -sDEVICE=pngalpha -r%d -sOutputFile=\"%s\" \"%s\"";
-		snprintf(cmd, N, format_unix, dpi, out_tmp, in);
-		#endif
+		char format_unix[] = "%spdf2pnga \"%s\" \"%s\" %d";
+		if (g_script_dir)
+			snprintf(cmd, N, format_unix, g_script_dir, in, out_tmp, dpi);
+		else
+			snprintf(cmd, N, format_unix, "", in, out_tmp, dpi);
 	}
 
 #else
@@ -260,7 +258,7 @@ static char *SysGraphicsConvert(int opt, int offset, char *in, char *out)
 	
 	if (opt == CONVERT_PDF) {
 		char format_xp[] = "bash pdf2pnga \"%s\" \"%s\" %d";
-		snprintf(cmd, N, format_xp, in, out_tmp, g_dots_per_inch);
+		snprintf(cmd, N, format_xp, in, out_tmp, dpi);
 	}
 	
 #endif
