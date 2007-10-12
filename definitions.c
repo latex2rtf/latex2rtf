@@ -231,7 +231,7 @@ int maybeDefinition(char *s, size_t n)
         return TRUE;
 
     for (i = 0; i < iDefinitionCount; i++) {
-        diagnostics(6, "seeking=<%s>, i=%d, current=<%s>", s, i, Definitions[i].name);
+        diagnostics(1, "def seeking=<%s>, i=%d, current=<%s>", s, i, Definitions[i].name);
         if (strncmp(s, Definitions[i].name, n) == 0)
             return TRUE;
     }
@@ -407,7 +407,7 @@ int maybeEnvironment(char *s, size_t n)
         return TRUE;
 
     for (i = 0; i < iNewEnvironmentCount; i++) {
-        diagnostics(6, "seeking=<%s>, i=%d, current=<%s>", s, i, NewEnvironments[i].name);
+        diagnostics(1, "env seeking=<%s>, i=%d, current=<%s>", s, i, NewEnvironments[i].name);
         if (strncmp(s, NewEnvironments[i].begname, n) == 0 || strncmp(s, NewEnvironments[i].endname, n) == 0) {
             diagnostics(6, "possible");
             return TRUE;

@@ -121,6 +121,30 @@ char *strdup_together(char *s, char *t)
 }
 
 /******************************************************************************
+ purpose:  returns a new string consisting of s+t+u
+******************************************************************************/
+char *strdup_together3(char *s, char *t, char *u)
+{
+    char *two, *three;
+	two = strdup_together(s,t);
+	three = strdup_together(two,u);
+	free(two);
+	return three;
+}
+
+/******************************************************************************
+ purpose:  returns a new string consisting of s+t+u+v
+******************************************************************************/
+char *strdup_together4(char *s, char *t, char *u, char *v)
+{
+    char *four, *three;
+	three = strdup_together3(s,t,u);
+	four = strdup_together(three,v);
+	free(three);
+	return four;
+}
+
+/******************************************************************************
  purpose:  duplicates a string but removes TeX  %comment\n
 ******************************************************************************/
 char *strdup_nocomments(char *s)
