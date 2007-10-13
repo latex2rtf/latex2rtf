@@ -421,7 +421,7 @@ static void ConvertWholeDocument(void)
     if (label)
         free(label);
 
-    while (sec_head) {
+    while (strcmp(sec_head,"\\end{document}")!=0) {
         getSection(&body, &sec_head2, &g_section_label);
         label = ExtractLabelTag(sec_head);
         if (label) {
@@ -469,6 +469,10 @@ static void ConvertWholeDocument(void)
 			free(sec_head);
         }
      }
+     
+    if (strcmp(sec_head,"\\end{document}")==0) 
+    	ConvertString(sec_head);
+
 }
 
 static void print_version(void)

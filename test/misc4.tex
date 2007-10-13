@@ -2537,6 +2537,7 @@ Math shift commands also behave as scope delimiters, so that
 commands issued in an expression cannot affect anything else in
 a document.
 
+
 \section{Displaying a formula}\label{sec:display}
 \LaTeX\ considers an expression \verb@$ ... $@ to be word-like in the
 sense that it considers it to be eligible for splitting across lines
@@ -2601,6 +2602,7 @@ $$
 and these are easily seen to be completely regular.
 }
 
+
 That illustrates how to display an expression, but also shows that
 we've got a lot more to learn about mathematical typesetting.  Before
 we have a look at how to arrange symbols all over the show (e.g.\
@@ -2653,6 +2655,7 @@ should not migrate into an expression.
 \newcommand{\dsf}[4]{\ds{#1}&\ds{#2}&\ds{#3}&\ds{#4}}
 \newcommand{\dst}[3]{\ds{#1}&\ds{#2}&\ds{#3}}
 
+
 Tables \ref{tab:lgreek} and \ref{tab:ugreek} show the control sequences that produce the
 letters of the Greek alphabet.  We see that a lowercase Greek letter
 is simply is accessed by typing the control word of the same name
@@ -2683,6 +2686,7 @@ Greek letters constituting this word that the name \TeX\ was derived.
 \caption{\rm Lowercase Greek letters}
 \label{tab:lgreek}
 \end{table}
+\end{document}
 
 \begin{table}[htbp]
 \centering\footnotesize
@@ -2731,7 +2735,6 @@ by the same little space and finally the second argument.
 Table~\ref{tab:binops} shows the binary operators that are available
 via \LaTeX\ control words (recall that the binary operators $+$,
 $-$, and $*$ can be typed from the keyboard).  Here are some examples of their use:
-
 \begin{mathegs}
 \verb@$a+b$@ & $a+b$\\
 \verb@$(a+b) \ otimes c$@ & $(a+b)\otimes c$\\

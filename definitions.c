@@ -231,7 +231,11 @@ int maybeDefinition(char *s, size_t n)
         return TRUE;
 
     for (i = 0; i < iDefinitionCount; i++) {
-        diagnostics(1, "def seeking=<%s>, i=%d, current=<%s>", s, i, Definitions[i].name);
+    	/*
+    	char *ss = my_strndup(s,strlen(Definitions[i].name));
+        diagnostics(1, "def seeking=<%s>, i=%d, current=<%s>", ss, i, Definitions[i].name);
+        free(ss);
+        */
         if (strncmp(s, Definitions[i].name, n) == 0)
             return TRUE;
     }
@@ -249,9 +253,19 @@ int existsDefinition(char *s)
     int i;
 
     for (i = 0; i < iDefinitionCount; i++) {
-        diagnostics(6, "seeking=<%s>, i=%d, current=<%s>", s, i, Definitions[i].name);
-        if (strcmp(s, Definitions[i].name) == 0)
+    /*
+		char *tt = my_strndup(s,strlen(Definitions[i].name));
+		diagnostics(1, "def text has=<%s>, i=%d, trying=<%s>", tt, i, Definitions[i].name);
+		free(tt);
+	*/
+        if (strcmp(s, Definitions[i].name) == 0) {
+    /*
+			char *ss = my_strndup(s,strlen(Definitions[i].name));
+			diagnostics(1, "def text has=<%s>, i=%d, matched=<%s>", ss, i, Definitions[i].name);
+			free(ss);
+	*/
             break;
+        }
     }
 
     if (i == iDefinitionCount)
@@ -268,7 +282,7 @@ void newDefinition(char *name, char *opt_param, char *def, int params)
               define \hd, name = "hd"
 **************************************************************************/
 {
-    diagnostics(3, "Adding macro <%s>=<%s>", name, def);
+    diagnostics(2, "Adding macro <%s>=<%s>", name, def);
 
     if (strcmp(name, "LaTeX") == 0)
         return;
@@ -313,7 +327,7 @@ void newDefinition(char *name, char *opt_param, char *def, int params)
     }
 
     iDefinitionCount++;
-    diagnostics(3, "Successfully added macro #%d", iDefinitionCount);
+    diagnostics(2, "Successfully added macro #%d", iDefinitionCount);
 }
 
 void renewDefinition(char *name, char *opt_param, char *def, int params)
@@ -390,8 +404,10 @@ int existsEnvironment(char *s)
 
     if (i == iNewEnvironmentCount)
         return -1;
-    else
+    else {
+        diagnostics(4, "user env found=<%s>, i=%d, current=<%s>", s, i, NewEnvironments[i].name);
         return i;
+    }
 }
 
 int maybeEnvironment(char *s, size_t n)
@@ -407,14 +423,38 @@ int maybeEnvironment(char *s, size_t n)
         return TRUE;
 
     for (i = 0; i < iNewEnvironmentCount; i++) {
-        diagnostics(1, "env seeking=<%s>, i=%d, current=<%s>", s, i, NewEnvironments[i].name);
-        if (strncmp(s, NewEnvironments[i].begname, n) == 0 || strncmp(s, NewEnvironments[i].endname, n) == 0) {
-            diagnostics(6, "possible");
+    
+		if (0) {
+		char *ss = my_strndup(s,n);
+		diagnostics(1, "trying env seeking=<%s>, i=%d, current=<%s>", ss, i, NewEnvironments[i].endname);
+		free(ss);
+		}
+		
+        if (strncmp(s, NewEnvironments[i].begname, n) == 0) {
+			if (0) {
+			char *ss = my_strndup(s,n);
+			diagnostics(1, "possible env seeking=<%s>, i=%d, current=<%s>", ss, i, NewEnvironments[i].begname);
+			free(ss);
+			}
+            return TRUE;
+        }
+
+    
+        if (strncmp(s, NewEnvironments[i].endname, n) == 0) {
+			if (0) {
+			char *ss = my_strndup(s,n);
+			diagnostics(1, "possible env seeking=<%s>, i=%d, current=<%s>", ss, i, NewEnvironments[i].endname);
+			free(ss);
+			}
             return TRUE;
         }
     }
 
-    diagnostics(6, "not possible");
+	if (0) {
+	char *ss = my_strndup(s,n);
+	diagnostics(1, "failed all env seeking=<%s>", ss);
+	free(ss);
+	}
     return FALSE;
 }
 

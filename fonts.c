@@ -110,11 +110,11 @@ int RtfFontNumber(char *Fname)
     char *font_type, *font_name;
     ConfigEntryT **config_handle = CfgStartIterate(FONT_A);
 
-    diagnostics(5, "seeking=%s", Fname);
+    diagnostics(6, "seeking=%s", Fname);
     while ((config_handle = CfgNext(FONT_A, config_handle)) != NULL) {
         font_type = (char *) (*config_handle)->TexCommand;
         font_name = (char *) (*config_handle)->RtfCommand;
-        diagnostics(5, "name='%s' type='%s' num=%d", font_name, font_type, num);
+        diagnostics(6, "name='%s' type='%s' num=%d", font_name, font_type, num);
 
         if (strcmp(font_name, Fname) == 0) {
 			int charset = 0;

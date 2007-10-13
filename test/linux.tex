@@ -122,6 +122,7 @@ UNIVERSITY OF GÄVLE}
 There has been a lot of talk in the press that Linux is not ready for the enterprise server market where the demand for high availability, performance and security are the main issues. This report will look at what the latest Linux kernel doesn't have in comparison to the main Unix actors within the enterprise server market and finally conclude if Linux is ready for the enterprise server market or what features Linux have to implement to compete with the other Unix clones to get into the enterprise server market. This is a comparative report who got its information mainly from the original UNIX supplier's homepage, books, articles and from people doing technical support. The information is put together, sorted out, and compared to see which features Linux is lacking in comparison to other Unix's and and if it has more functions then the other operating systems, and finally got to the conclusion that Linux is not yet ready for the enterprise market. To penetrate the enterprise server market it has to implement support for more amount of memory, more high--availability functions and more security functions. It could not be verified if Linux has more features than any of the compared operating systems due to the lack of information. \\ \\
 Keywords: {\bf Linux, operating system, AIX, HP-UX, True64 UNIX, Solaris, enterprise}
 \end{abstract}
+
 \pagenumbering{Roman}
 \newpage
 \clearpage
@@ -154,7 +155,6 @@ The reference must be immediately followed with any options elected by the autho
 Commercial redistribution of Open Publication-licensed material is permitted.
 
 Any publication in standard (paper) book form shall require the citation of the original publisher and author. The publisher and author's names shall appear on all outer surfaces of the book. On all outer surfaces of the book the original publishers name shall be as large as the title of the work and cited as possessive with respect to the title.
-
 
 \subsection{COPYRIGHT}
 
@@ -640,6 +640,7 @@ Cells with
 \item[-] = Operating system does not support the function or it is offer as an external program. See reference inside the brackets for more information
 \end{description}
 
+
 \subsection{TABLE WITH KERNEL SPECIFIC FUNCTIONS}
 \begin{tabular}{|p{0.9in} |p{0.9in} |p{0.9in} |p{0.9in} |p{0.9in} |p{0.9in} | } \hline
 \textbf{Feature}	&\textbf{Linux}	&\textbf{Solaris}	&\textbf{AIX}	&\textbf{Tru64 UNIX	}&\textbf{HP-UX}\\ \hline
@@ -648,6 +649,7 @@ Maximum physical Memory tested and supported in \textbf{Gigabytes} & 64\cite{41}
 Maximum supported and tested size of file system in \textbf{Terabytes}& 4\cite{38}& 1 \cite{13}&1\cite{7} & 16 \cite{10}& 2 \cite{13}  \\ \hline
 
 \end{tabular}
+
 
 \begin{tabular}{|p{0.9in} |p{0.9in} |p{0.9in} |p{0.9in} |p{0.9in} |p{0.9in} | } \hline
 \textbf{Feature}	&\textbf{Linux}	& \textbf{Solaris}	& \textbf{AIX}	&\textbf{Tru64 UNIX}&\textbf{HP-UX}\\ \hline
@@ -737,10 +739,12 @@ There was some difficulties in finding information from the suppliers documentat
 
 Most of the missing features in Linux do already exist for Linux as patches, but they are not yet implemented in the official kernel. For example IPSec (see reference \cite{48}), Dynamic Memory Resilience (see appendix \ref{a8}), live update (see appendix \ref{a2})...
 
+
 Now that Linux is getting a greater deal of press, as is the interest for it to in the enterprise market. Here are some quotes from different magazines. The September 1998 Software Magazine cover story\cite{36} reveals just how far Linux has managed to infiltrate corporate America and how it is not about to go away: 
 \begin{quote}
 ``Tim Payne, director of database marketing at Oracle, says many of his company's corporate customers have made large investments in Linux. When Oracle announced in July that it would be offering 24x7 support for Oracle8 on Linux, he says 300 customers called the next day asking about availability. 'It's reliable, it's proven, it runs on commodity Intel boxes, and it's a really low-cost alternative to NT,' says Payne. 'The fact that you are going to be able to get enterprise quality support from Oracle to deploy on the Linux platform will help customers adopt Linux.''
 \end{quote}
+
 
 Nicholas Petreley, editor-in-chief of NC World and columnist for InfoWorld and NT World Japan provides an explanation for the rise of Linux and FreeBSD in IT departments \cite{35}: 
 
@@ -784,6 +788,7 @@ It could not be verified in this thesis if Linux has more features than any othe
 \item Available support.
 \item Cost versus performance.
 \end{itemize}
+
 
 \chapter{Bibliography}
 %---------------------------------------------%
@@ -882,6 +887,7 @@ It could not be verified in this thesis if Linux has more features than any othe
 
 \bibitem{44} \textit{Visual Threads Documentation}, Compaq Inc, \url{http://www.compaq.com/products/software/visualthreads/documentation.html} (available 2001--05--25).
 
+
 \subsubsection*{Source documentation and man pages}
 \bibitem{101} See Solaris 8 man page for \verb|mount_nfs| (1M).
 \bibitem{102} See Tru64 UNIX man page for \verb|mount| (8).
@@ -951,12 +957,12 @@ It could not be verified in this thesis if Linux has more features than any othe
 \end{thebibliography}
 
 
-
 \appendix
 \chapter{MESSAGE REPLIES FROM THE KERNEL DEVELOPMEN LIST} \label{kernlist}
 Here are the letter I've got from the developers of the kernel, that where posted on the ``Linux kernel development list''. Please see reference \cite{49} for more information.
 
 \section{Jeff Garzik 26 May 2001 22:27:09}\label{a1}
+
 \begin{verbatim}Date: Sat, 26 May 2001 22:27:09 -0400
         From: Jeff Garzik <jgarzik@mandrakesoft.com>
 Organization:MandrakeSoft
@@ -1039,6 +1045,7 @@ yes
 > kernel? If yes, where can I read (url-link  to the
 > article, paper... please) about it?
 \end{verbatim}
+
 
 \section{Jonathan Morton 27 May 2001}\label{a2}
 \begin{verbatim}

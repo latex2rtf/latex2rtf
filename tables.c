@@ -836,7 +836,6 @@ void CmdTabular(int code)
     cols = getBraceParam();
     table = getTexUntil(end, FALSE);
 
-	
 	if (g_tabular_display_bitmap) {
 		char pre[151];
 		

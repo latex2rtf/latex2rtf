@@ -352,7 +352,7 @@ globals: fTex, fRtf and all global flags for convert (see above)
                 }
 
                 if (g_processing_tabular) { /* in tabular */
-                	diagnostics(0,"this should not happen");
+                	diagnostics(0,"this should not happen tabular should handle this!");
                 	/*
                     actCol++;
                     fprintRTF("\\cell\\pard\\intbl\\q%c ", colFmt[actCol]);

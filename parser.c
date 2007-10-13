@@ -411,13 +411,13 @@ char getRawTexChar()
 
     g_parser_penultimateChar = g_parser_lastChar;
     g_parser_lastChar = g_parser_currentChar;
-    if (1) {
+    if (0) {
 		if (g_parser_currentChar=='\n')
-			diagnostics(6,"getRawTexChar = <\\n>");
+			diagnostics(5,"getRawTexChar = <\\n>");
 		else if (g_parser_currentChar=='\0')
-			diagnostics(6,"getRawTexChar = <\\0> depth=%d, files=%d", g_parser_depth, g_parser_include_level);
+			diagnostics(5,"getRawTexChar = <\\0> depth=%d, files=%d", g_parser_depth, g_parser_include_level);
 		else
-			diagnostics(6,"getRawTexChar = <%2c>",g_parser_currentChar);
+			diagnostics(5,"getRawTexChar = <%2c>",g_parser_currentChar);
 	}
 	/* if (g_parser_currentChar=='\0') exit(0);*/
     return g_parser_currentChar;
@@ -453,7 +453,7 @@ purpose: rewind the filepointer in the LaTeX-file by one
     g_parser_lastChar = g_parser_penultimateChar;
     g_parser_penultimateChar = '\0';    /* no longer know what that it was */
     g_parser_backslashes = 0;
-    diagnostics(6, "after ungetTexChar=<%c> backslashes=%d line=%ld", c, g_parser_backslashes, g_parser_line);
+    diagnostics(5, "after ungetTexChar=<%c> backslashes=%d line=%ld", c, g_parser_backslashes, g_parser_line);
 }
 
 char getTexChar()
@@ -480,7 +480,7 @@ char getTexChar()
         g_parser_backslashes++;
     else
         g_parser_backslashes = 0;
-	if (1) {
+	if (0) {
 		if (cThis=='\n')
 			diagnostics(6,"getRawTexChar = <\\n> backslashes=%d line=%ld", g_parser_backslashes, g_parser_line);
 		else if (cThis=='\0')
@@ -1157,7 +1157,7 @@ static void add_chr_to_buffer(char c)
 		else if (c == '\n')
 			fprintf(stderr, "[\\n]");
 		else
-			fprintf(stderr, "%c_", (int) c);
+			fprintf(stderr, "[%c]", (int) c);
 	}
 }
 
@@ -1192,6 +1192,16 @@ static void reset_buffer(void)
 static void move_end_of_buffer(size_t n)
 {
 	section_buffer_end += n;
+
+	if (0) {
+		diagnostics(1,"last 5 characters are [%c][%c][%c][%c][%c]\n", 
+		*(section_buffer+section_buffer_end-4),
+		*(section_buffer+section_buffer_end-3),
+		*(section_buffer+section_buffer_end-2),
+		*(section_buffer+section_buffer_end-1),
+		*(section_buffer+section_buffer_end)
+		);
+	}
 }
 
 void getSection(char **body, char **header, char **label)
@@ -1210,10 +1220,10 @@ void getSection(char **body, char **header, char **label)
 	
 **************************************************************************/
 {
-    int possible_match, found;
-    char cNext, *s, *text, *next_header, *str;
+    int any_possible_match, found;
+    char cNext, cThis, *s, *text, *next_header, *str;
     int i;
-    int match[42];
+    int possible_match[42];
     char *command[42] = { "",   /* 0 entry is for user definitions */
         "",                     /* 1 entry is for user environments */
         "\\begin{verbatim}", 
@@ -1275,7 +1285,8 @@ void getSection(char **body, char **header, char **label)
     int bs_count = 0;          /* number of backslashes encountered in a row */
     size_t cmd_pos = 0;        /* position of start of command relative to end of buffer */
     int label_depth = 0;
-
+	int i_match = 0;
+	
     text = NULL;
     next_header = NULL;         /* typically becomes \subsection{Cows eat grass} */
     *body = NULL;
@@ -1286,27 +1297,30 @@ void getSection(char **body, char **header, char **label)
     reset_buffer();
     while (1) {
 
-        cNext = getRawTexChar();
-        while (cNext == '\0' && g_parser_depth > 0) {
+        cThis = getRawTexChar();
+        while (cThis == '\0' && g_parser_depth > 0) {
             PopSource();
-            cNext = getRawTexChar();
+            cThis = getRawTexChar();
         }
 
-        if (cNext == '\0')
+        if (cThis == '\0')
             diagnostics(5, "[%ld] xchar=000 '\\0' (backslash count=%d)", section_buffer_end, bs_count);
-        else if (cNext == '\n')
+        else if (cThis == '\n')
             diagnostics(5, "[%ld] xchar=012 '\\n' (backslash count=%d)", section_buffer_end, bs_count);
         else
-            diagnostics(5, "[%ld] xchar=%03d '%c' (backslash count=%d)", section_buffer_end, (int) cNext, cNext, bs_count);
+            diagnostics(5, "[%ld] xchar=%03d '%c' (backslash count=%d)", section_buffer_end, (int) cThis, cThis, bs_count);
 
-        add_chr_to_buffer(cNext);
+        add_chr_to_buffer(cThis);
 
-        if (cNext == '\0') break;
+        if (cThis == '\0') break;
 
         /* slurp TeX comments but retain stuff following %latex2rtf: */
-        if (cNext == '%' && even(bs_count)) {
-        
-            int n = 1; /*always remove % */
+        /* if we did not have the %latex2rtf: feature then we could just */
+        /* discard the entire line following a '%'.  Instead we must collect */
+        /* the line and then see if there is a %latex2rtf:, if there is not */
+        /* then just discard the entire line, otherwise just the %latex2rtf: */
+        if (cThis == '%' && even(bs_count)) {   
+            int n = 1;
             do {
             	cNext = getRawTexChar();
         		add_chr_to_buffer(cNext);
@@ -1317,16 +1331,18 @@ void getSection(char **body, char **header, char **label)
             	}
             } while (cNext != '\n' && cNext != '\0');
             
-            move_end_of_buffer(-n); /* remove '% .... \n', or '% ... \0' or just '%latex2rtf:' */
+            move_end_of_buffer(-n);
             continue;
         }
 
-        /* start watching for commands when a backslash found */
-        if (cNext == '\\') {
+        /* cmd_pos > 0 means that we have encountered a '\' and some
+           fraction of a command, e.g., '\sec', therefore the first
+           time that a backslash is found then cmd_pos becomes 1,      */
+        if (cThis == '\\') {
             bs_count++;
             if (odd(bs_count)) {    /* avoid "\\section" and "\\\\section" */
                 for (i = 0; i < ncommands; i++)
-                    match[i] = TRUE;
+                    possible_match[i] = TRUE;
                 cmd_pos = 1;
                 continue;
             }
@@ -1335,7 +1351,10 @@ void getSection(char **body, char **header, char **label)
 
         if (cmd_pos == 0) continue;
 
-        possible_match = FALSE;
+		/* at this point we are have encountered a command and may have to do something.
+		   if it is a user definition, then the user definition is expanded here
+		   if it is a user environment, then expansion also happens here
+		   it it is something else then we may or may not have to mess with it. */
 
 		/* hack to convert '\begin { environment}' --> '\begin{environ}' */
         if (matches_buffer_tail("\\begin") || matches_buffer_tail("\\end") ) {
@@ -1348,134 +1367,138 @@ void getSection(char **body, char **header, char **label)
         	}
         }
         
-/* slow... */
-        if (cmd_pos>0 && match[0]) {          /* do any user defined commands possibly match? */
-        	fprintf(stderr,"88");
-            match[0] = maybeDefinition(section_buffer + section_buffer_end - cmd_pos + 1, cmd_pos - 1);
-         }
-
-        /* do any user defined commands possibly match? */
-        if (cmd_pos>0 && match[1]) {
-        	fprintf(stderr,"77");
-            match[1] = maybeEnvironment(section_buffer + section_buffer_end - cmd_pos +1, cmd_pos - 1);
-        }
-
-        possible_match = match[0] || match[1];
-
-        for (i = 2; i < ncommands; i++) {   /* test each command for match */
-            if (!match[i])
-                continue;
-
-            if ( cNext != command[i][cmd_pos]) {
-                match[i] = FALSE;
-				continue;
-			} else {
-/*				diagnostics(1,"cmd_pos = %d, char = %c, possible match %s, size=%d", \
-				cmd_pos,cNext,command[i],strlen(command[i]));
-*/			}
-            
-            possible_match = TRUE;
-        }
-
+        any_possible_match = FALSE;
         found = FALSE;
 
-        if (match[0]) {         /* expand user macros */
-            cNext = getRawTexChar();    /* wrong when cNext == '%' */
-            ungetTexChar(cNext);
-            if (!isalpha((int) cNext) && cmd_pos > 1) {   /* is macro name complete? */
+        /* is is possibly a user defined command? */
+        if (possible_match[0]) {
+            possible_match[0] = maybeDefinition(section_buffer + section_buffer_end - cmd_pos + 1, cmd_pos - 1);
+			
+			if (possible_match[0]) {        /* test to make sure \userdef is complete */
+				any_possible_match = TRUE;
+				cNext = getRawTexChar();    /* wrong when cNext == '%' */
+				ungetTexChar(cNext);
+				
+				if (!isalpha((int) cNext)) {   /* is macro name complete? */
+	
+					*(section_buffer + section_buffer_end + 1) = '\0';
+					i = existsDefinition(section_buffer + section_buffer_end - cmd_pos + 1);
+					if (i > -1) {
+						diagnostics(2, "matched <%s> ", section_buffer + section_buffer_end - cmd_pos);
+						if (cNext == ' ') {
+							cNext = getNonSpace();
+							ungetTexChar(cNext);
+						}
+	
+						move_end_of_buffer(-cmd_pos-1);  /* remove \userdef */
+						
+						str = expandDefinition(i);
+						PushSource(NULL, str);
+						free(str);
+						cmd_pos = 0;
+            			bs_count = 0;
+						continue;
+					}
+				}
+			}
+        }
 
-                *(section_buffer + section_buffer_end + 1) = '\0';
-                i = existsDefinition(section_buffer + section_buffer_end - cmd_pos + 1);
-                if (i > -1) {
-                    if (cNext == ' ') {
-                        cNext = getNonSpace();
-                        ungetTexChar(cNext);
-                    }
+        /* is it a user defined environment? */
+        if (possible_match[1]) {
+			char *p = section_buffer + section_buffer_end - cmd_pos;
+            possible_match[1] = maybeEnvironment(p, cmd_pos);
+            
+        	if (possible_match[1] == TRUE) {
+	
+				any_possible_match = TRUE;
+				cNext = getRawTexChar();    /* wrong when cNext == '%' */
+	
+				/* \begin{name} or \end{name} will end with '}' */
+				if (cNext == '}') {
+					char *str = NULL;
+					
+					*(p + cmd_pos + 1) = '\0';
+					if (*(p + 1) == 'e') {  
+						i = existsEnvironment(p + strlen("\\end{"));
+						str = expandEnvironment(i, CMD_END);
+					} else { 
+						i = existsEnvironment(p + strlen("\\begin{"));
+						str = expandEnvironment(i, CMD_BEGIN);
+					}
+	
+					if (str) {          /* found */
+						diagnostics(2, "matched <%s}>", p);
+						diagnostics(3, "expanded to <%s>", str);
+	
+						PushSource(NULL, str);
+						move_end_of_buffer(-cmd_pos-1); /* remove \begin{userenvironment} */
+						
+						free(str);
+						cmd_pos = 0;
+						continue;
+					}
+				}
+				
+				ungetTexChar(cNext);    /* put the character back */
+        	}
+        }
 
-                    move_end_of_buffer(-cmd_pos-1);/* remove \macroname */
-                    str = expandDefinition(i);
-                    diagnostics(4, "getSection() expanded macro string is <%s>", str);
-                    PushSource(NULL, str);
-                    free(str);
-                    cmd_pos = 0;
-                    continue;
-                }
+		/* is it one of the commands listed above? */
+        for (i = 2; i < ncommands; i++) {
+            if (possible_match[i]) {
+				if (cThis == command[i][cmd_pos])
+					any_possible_match = TRUE;
+				else
+					possible_match[i] = FALSE;
+
+				diagnostics(2,"cmd_pos = %d, char = %c, possible match %s, size=%d, possible=%d", \
+					cmd_pos,cThis,command[i],strlen(command[i]),possible_match[i]);
             }
         }
 
-        if (match[1]) {         /* expand user environments */
-            char *p = section_buffer + section_buffer_end - cmd_pos + 1;
 
-            cNext = getRawTexChar();    /* wrong when cNext == '%' */
-            str = NULL;
 
-            if (cNext == '}' && cmd_pos > 5) {    /* is environ name complete? */
-                *(p + cmd_pos + 1) = '\0';
-                if (*(p + 1) == 'e') {  /* find \\end{userenvironment} */
-                    i = existsEnvironment(p + strlen("\\end{"));
-                    str = expandEnvironment(i, CMD_END);
-                } else if (cmd_pos > 8) { /* find \\begin{userenvironment} */
-                    i = existsEnvironment(p + strlen("\\begin{"));
-                    str = expandEnvironment(i, CMD_BEGIN);
-                }
-            }
-
-            if (str) {          /* found */
-                char *str2;
-
-                diagnostics(4, "matched <%s}>", p);
-                diagnostics(4, "expanded <%s>", str);
-                if (*(p + 1) == 'e')
-                    str2 = strdup_together(str, "}");
-                else
-                    str2 = strdup_together("{", str);
-                free(str);
-                PushSource(NULL, str2);
-                free(str2);
-                move_end_of_buffer(-cmd_pos - 1); /* remove \begin{userenvironment} */
-                cmd_pos = 0;
-                diagnostics(4, "getSection() expanded environment string is <%s>", str);
-                continue;
-            }
-
-            ungetTexChar(cNext);    /* put the character back */
-        }
-
+        i_match = -1;
         for (i = 2; i < ncommands; i++) {   /* discover any exact matches */
-            if (!match[i])
-                continue;
-            if (cmd_pos + 1 == strlen(command[i])) {
-                found = TRUE;
-                diagnostics(5,"found match <%s> entry number %d",command[i],i);
-                break;
+            if (possible_match[i]) {
+				diagnostics(5, "testing for <%s>", command[i]);
+				
+				/* right length? */
+				if (cmd_pos + 1 == strlen(command[i])) {
+
+					if (i<=e_comment_item || i==e_comment_item) { 
+						/* these entries are complete matches */ 
+						found = TRUE;
+					} else {
+						/* these entries we need to be a bit more careful and check next character */
+						cNext = getRawTexChar();
+						ungetTexChar(cNext);
+			
+						if (cNext == ' ' || cNext == '{' || cNext == '\n' || cNext == '\0') {
+							found = TRUE;
+						}
+					}
+				}
             }
+            
+            if (found == TRUE) {
+				diagnostics(5,"matched <%s> entry number %d",command[i],i);
+				i_match = i;
+				break;
+			}
         }
 
-        if (found) {            /* make sure the next char terminates the command */
-            diagnostics(5, "matched %s", command[i]);
-            cNext = getRawTexChar();
-            ungetTexChar(cNext);
 
-            if (cNext != ' ' && cNext != '{' && cNext != '\n') {
-                found = FALSE;
-                match[i] = FALSE;
-                diagnostics(5, "oops! did not match %s", command[i]);
-            }
-        }
-
-        if (!possible_match) {  /* no possible matches, reset and wait for next '\\' */
-            cmd_pos = 0;
-            diagnostics(4,"no possible matches reset cmd_pos");
-            continue;
-        } else {
+        if (any_possible_match)
             cmd_pos++;
-            diagnostics(4,"found a match <%s> length=%d", command[i],cmd_pos);
-        }
+        else
+            cmd_pos = 0;    /* no possible matches, reset and wait for next '\\' */
+        
 
         if (!found)
             continue;
 
-        if (i == endinput_item) {
+        if (i_match == endinput_item) {
             diagnostics(5, "\\endinput");
             move_end_of_buffer(-9);         /* remove \endinput */
             PopSource();
@@ -1484,30 +1507,32 @@ void getSection(char **body, char **header, char **label)
         }
 
 		/* \end{document} reached! Stop processing */
-        if (i == e_document_item) {
-            diagnostics(1, "\\end{document}");
+        if (i_match == e_document_item) {
+            diagnostics(2, "\\end{document}");
         	move_end_of_buffer(-strlen(command[e_document_item]));
         	add_chr_to_buffer('\0');
         	*header = strdup(command[e_document_item]);
 	    	*body = strdup(section_buffer);
     		PopTrackLineNumber();
+			diagnostics(3, "body = %s", section_buffer);
+			diagnostics(3, "next header = '%s'", command[e_document_item]);
 	    	return;
         }
 
-        if (i == verb_item) {  /* slurp \verb#text# */
+        if (i_match == verb_item) {  /* slurp \verb#text# */
         	char cc;
  
             do {
             	cc = getRawTexChar();
             	add_chr_to_buffer(cc);
-            } while (cc != '\0' && cc != cNext);
+            } while (cc != '\0' && cc != cThis);
             
             cmd_pos = 0;          /* reset the command position */
             continue;
         }
 
 		/* cannot ignore this because it may contain unescaped '%' */
-        if (i == url_item) {  
+        if (i_match == url_item) {  
         	char cc;
  
             do {
@@ -1519,24 +1544,23 @@ void getSection(char **body, char **header, char **label)
             continue;
         }
 
-        if (i == include_item) {
+        if (i_match == include_item) {
             CmdInclude(0);
             move_end_of_buffer(-strlen(command[i]));    
             cmd_pos = 0;          		 /* reset the command position */
             continue;
         }
 
-        if (i == input_item) {
+        if (i_match == input_item) {
             CmdInclude(1);
             move_end_of_buffer(-strlen(command[i]));    
             cmd_pos = 0;          		 /* reset the command position */
             continue;
         }
 
-        if (i == label_item) {
+        if (i_match == label_item) {
             char *tag;
             tag = getBraceParam();
-            diagnostics(1, "\\label{%s}", tag);
 
             /* append \label{tag} to the buffer */
 			add_chr_to_buffer('{');
@@ -1552,17 +1576,19 @@ void getSection(char **body, char **header, char **label)
         }
 
         /* process any new definitions */
-        if (i == def_item || i == new_item || i == renew_item) {
+        if (i_match == def_item || i_match == new_item || i_match == renew_item) {
+        
             cNext = getRawTexChar();    /* wrong when cNext == '%' */
             ungetTexChar(cNext);
+            
             if (isalpha((int) cNext))   /* is macro name complete? */
                 continue;
 
             move_end_of_buffer(-strlen(command[i]));    /* do not include in buffer */
 
-            if (i == def_item)
+            if (i_match == def_item)
                 CmdNewDef(DEF_DEF);
-            else if (i == new_item)
+            else if (i_match == new_item)
                 CmdNewDef(DEF_NEW);
             else
                 CmdNewDef(DEF_RENEW);
@@ -1571,27 +1597,27 @@ void getSection(char **body, char **header, char **label)
             continue;
         }
 
-        if (i == b_figure_item   || i == b_figure_item2   || 
-            i == b_equation_item || i == b_equation_item2 || 
-            i == b_eqnarray_item || i == b_eqnarray_item2 ||
-            i == b_table_item    || i == b_table_item2    ||
-            i == b_description_item) {
+        if (i_match == b_figure_item   || i_match == b_figure_item2   || 
+            i_match == b_equation_item || i_match == b_equation_item2 || 
+            i_match == b_eqnarray_item || i_match == b_eqnarray_item2 ||
+            i_match == b_table_item    || i_match == b_table_item2    ||
+            i_match == b_description_item) {
             label_depth++;      /* labels now will not be the section label */
             cmd_pos = 0;
             continue;
         }
 
-        if (i == e_figure_item   || i == e_figure_item2   || 
-            i == e_equation_item || i == e_equation_item2 || 
-            i == e_eqnarray_item || i == e_eqnarray_item2 ||
-            i == e_table_item    || i == e_table_item2    ||
-            i == e_description_item)  {
+        if (i_match == e_figure_item   || i_match == e_figure_item2   || 
+            i_match == e_equation_item || i_match == e_equation_item2 || 
+            i_match == e_eqnarray_item || i_match == e_eqnarray_item2 ||
+            i_match == e_table_item    || i_match == e_table_item2    ||
+            i_match == e_description_item)  {
             label_depth--;      /* labels may now be the section label */
             cmd_pos = 0;
             continue;
         }
 
-        if (i == b_verbatim_item) { /* slurp environment ... toxic contents! */
+        if (i_match == b_verbatim_item) { /* slurp environment ... toxic contents! */
             s = getTexUntil(command[e_verbatim_item], TRUE);
 			add_str_to_buffer(s);
             free(s);
@@ -1601,7 +1627,7 @@ void getSection(char **body, char **header, char **label)
             continue;
         }
 
-        if (i == b_comment_item) {  /* slurp environment ... toxic contents! */
+        if (i_match == b_comment_item) {  /* slurp environment ... toxic contents! */
             s = getTexUntil(command[e_comment_item], TRUE);
 			add_str_to_buffer(s);
             free(s);
@@ -1631,6 +1657,6 @@ void getSection(char **body, char **header, char **label)
     *header = next_header;
     PopTrackLineNumber();
     
-    diagnostics(2, "body = %s", text);
+    diagnostics(3, "body = %s", text);
     diagnostics(2, "next header = '%s'", next_header);
 }
