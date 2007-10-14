@@ -51,6 +51,7 @@ Authors:
 #include "counters.h"
 #include "preamble.h"
 #include "xrefs.h"
+#include "preparse.h"
 
 FILE *fRtf = NULL;              /* file pointer to RTF file */
 char *g_tex_name = NULL;
