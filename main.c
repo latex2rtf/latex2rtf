@@ -23,7 +23,7 @@ Authors:
 	1995	  Fernando Dorner, Andreas Granzer, Freidrich Polzer, Gerhard Trisko
 	1995-1997 Ralf Schlatterbeck
 	1998-2000 Georg Lehner
-	2001-2002 Scott Prahl
+	2001-2007 Scott Prahl
 */
 
 #include <stdio.h>
@@ -412,7 +412,7 @@ static void ConvertWholeDocument(void)
     ConvertString(t);
 
     g_processing_preamble = FALSE;
-    getSection(&body, &sec_head, &label);
+    preParse(&body, &sec_head, &label);
 
     diagnostics(2, "*******************\nbody=%s", (body) ? body : "<empty>");
     diagnostics(2, "*******************\nsec_head=%s", (sec_head) ? sec_head : "<none>");
@@ -423,7 +423,7 @@ static void ConvertWholeDocument(void)
         free(label);
 
     while (strcmp(sec_head,"\\end{document}")!=0) {
-        getSection(&body, &sec_head2, &g_section_label);
+        preParse(&body, &sec_head2, &g_section_label);
         label = ExtractLabelTag(sec_head);
         if (label) {
             if (g_section_label)
@@ -448,7 +448,7 @@ static void ConvertWholeDocument(void)
         if (PushSource(g_fff_name, NULL) == 0) {
         	CmdNewPage(NewPage);
         	CmdListOf(LIST_OF_FIGURES);
-			getSection(&body, &sec_head2, &g_section_label);
+			preParse(&body, &sec_head2, &g_section_label);
 			ConvertString(sec_head);
 			ConvertString(body);
 			if (g_section_label) free(g_section_label);
@@ -462,7 +462,7 @@ static void ConvertWholeDocument(void)
         if (PushSource(g_ttt_name, NULL) == 0) {
         	CmdNewPage(NewPage);
         	CmdListOf(LIST_OF_TABLES);
-			getSection(&body, &sec_head2, &g_section_label);
+			preParse(&body, &sec_head2, &g_section_label);
 			ConvertString(sec_head);
 			ConvertString(body);
 			if (g_section_label) free(g_section_label);
