@@ -1436,7 +1436,7 @@ void PutLatexFile(char *latex, double height0, double width0, double scale, char
 
         GetPngSize(png, &width, &height,&xres,&yres,&bad_res);
         baseline = GetBaseline(latex, pre);
-        diagnostics(1, "png=<%s> size height=%d baseline=%d width=%d",png, height, baseline, width);
+        diagnostics(2, "png=<%s> size height=%d baseline=%d width=%d",png, height, baseline, width);
 
         if ((width > maxsize && height != 0) || (height > maxsize && width != 0)) {
             second_pass = TRUE;
@@ -1446,7 +1446,7 @@ void PutLatexFile(char *latex, double height0, double width0, double scale, char
         }
     } while (resolution > 10 && ((width > maxsize) || (height > maxsize)));
 
-    diagnostics(2, "calling PutPngFile %s, path=%s", png, pngpath); /* WH */
+    diagnostics(2, "calling PutPngFile %s, path=%s", png, pngpath);
         
     if (pngpath != NULL) {
         PutPngFile(png, height0, width0, scale, convert_scale, (double) baseline, TRUE);
