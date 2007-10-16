@@ -248,7 +248,7 @@ static int EquationNeedsFields(char *eq)
 static void WriteEquationAsRawLatex(char *pre, char *eq, char *post)
 
 /******************************************************************************
- purpose   : Writes equation to RTF file as text of COMMENT field
+ purpose   : Writes equation to RTF file as plain text 
  ******************************************************************************/
 {
     fprintRTF("<<:");

@@ -196,6 +196,30 @@ static char *strdup_tmp_path(char *s)
  ******************************************************************************/
 
 static char *SysGraphicsConvert(int opt, int offset, char *in, char *out)
+
+/******************************************************************************
+	We need e.g. to create a system command to convert a PDF to a PNG file.
+	In principle, this could be as simple as
+	
+		convert file.pdf file.png
+		
+	Unfortunately, we need to specify the pixel density, and more importantly,
+	crop whitespace out of the images appropriately.  The command then becomes
+	
+	    convert -crop 0x0 -units PixelsPerInch -density 300 file.pdf file.png
+	    
+	Now the problem arises that apparently ImageMagick reads the wrong /MediaBox
+	for PDF files and this gives a full-page image.  Since GhostScript is 
+	required for ImageMagick, the solution is to use GhostScript directly
+	
+		gs -dNOPAUSE -dSAFER -dBATCH -sDEVICE=pngalpha -sOutputFile=file.png -r300 file.pdf
+		
+	Unfortunately, this fails to work under Windows XP because gs (gswin32c)
+	fails to execute with message "Program too large for working storage" 
+	(in German: "Programm zu gross fuer den Arbeitsspeicher") 
+
+	So here we are, creating different commands for Windows XP and Unix!
+ ******************************************************************************/
 {
     char cmd[512], *out_tmp;
 	int err;
@@ -291,7 +315,7 @@ static char *SysGraphicsConvert(int opt, int offset, char *in, char *out)
     err = system(cmd);
 
     if (err != 0)
-        diagnostics(WARNING, "error=%d when converting %s", in);
+        diagnostics(WARNING, "error=%d when converting %s", err, in);
 	
 	return out_tmp;
 }
@@ -520,31 +544,7 @@ static char *eps_to_png(char *name)
 
 /******************************************************************************
      purpose : create a png file from a PDF file and return file name
- 
- 	We need to create a system command to convert a PDF to a PNG file
-	
-	In principle, this could be as simple as
-	
-		convert file.pdf file.png
-		
-	Unfortunately, we need to specify the pixel density, and more importantly,
-	crop whitespace out of the images appropriately.  The command then becomes
-	
-	    convert -crop 0x0 -units PixelsPerInch -density 300 file.pdf file.png
-	    
-	Now the problem arises that apparently ImageMagick reads the wrong /MediaBox
-	for PDF files and this gives a full-page image.  Since GhostScript is 
-	required for ImageMagick, the solution is to use GhostScript directly
-	
-		gs -dNOPAUSE -dSAFER -dBATCH -sDEVICE=pngalpha -sOutputFile=file.png -r300 file.pdf
-		
-	Unfortunately, this fails to work under Windows XP because gs (gswin32c)
-    fails to execute with message "Program too large for working storage" 
-    (in German: "Programm zu gross fuer den Arbeitsspeicher") 
-	
-	
-	So here we are, creating different commands for Windows XP and Unix!
-******************************************************************************/
+ ******************************************************************************/
 static char *pdf_to_png(char *pdf)
 {
     char *png, *out;
@@ -1441,7 +1441,7 @@ void PutLatexFile(char *latex, double height0, double width0, double scale, char
         }
     } while (resolution > 10 && ((width > maxsize) || (height > maxsize)));
 
-	
+        diagnostics(2, "calling PutPngFile %s, err=%d", png, err); /* WH */
     if (err == 0)
         PutPngFile(png, height0, width0, scale, convert_scale, (double) baseline, TRUE);
 
