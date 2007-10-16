@@ -314,8 +314,10 @@ static char *SysGraphicsConvert(int opt, int offset, char *in, char *out)
 
     err = system(cmd);
 
-    if (err != 0)
+    if (err != 0) {
         diagnostics(WARNING, "error=%d when converting %s", err, in);
+        return NULL;
+    }
 	
 	return out_tmp;
 }
@@ -1413,25 +1415,28 @@ long GetBaseline(char *s, char *pre)
  ******************************************************************************/
 void PutLatexFile(char *latex, double height0, double width0, double scale, char *pre)
 {
-    char *png;
-    int err, baseline, second_pass, bmoffset,bad_res;
+    char *png=NULL;
+    char *pngpath = NULL;
+    int baseline, second_pass, bmoffset,bad_res;
     unsigned long width, height, rw, rh, xres, yres;
     unsigned long maxsize = (unsigned long) (32767.0 / 20.0);
 	double convert_scale = 72.0 / g_dots_per_inch;
 	double resolution = g_dots_per_inch;
 	
-    diagnostics(WARNING, "Rendering LaTeX construct (e.g. equation) as a bitmap...");
+    diagnostics(2, "Rendering LaTeX construct (e.g. equation) as a bitmap...");
 
-    png = strdup_together(latex, ".png");
     bmoffset = g_dots_per_inch / 72 + 2;
+    png = strdup_together(latex, ".png");
 
     do {
         second_pass = FALSE;    /* only needed if png is too large for Word */
 
-    	SysGraphicsConvert(CONVERT_LATEX, bmoffset, latex, NULL);
+    	pngpath = SysGraphicsConvert(CONVERT_LATEX, bmoffset, latex, "");
+    	if (pngpath == NULL) break;
+
         GetPngSize(png, &width, &height,&xres,&yres,&bad_res);
         baseline = GetBaseline(latex, pre);
-        diagnostics(4, "png size height=%d baseline=%d width=%d", height, baseline, width);
+        diagnostics(1, "png=<%s> size height=%d baseline=%d width=%d",png, height, baseline, width);
 
         if ((width > maxsize && height != 0) || (height > maxsize && width != 0)) {
             second_pass = TRUE;
@@ -1441,9 +1446,12 @@ void PutLatexFile(char *latex, double height0, double width0, double scale, char
         }
     } while (resolution > 10 && ((width > maxsize) || (height > maxsize)));
 
-        diagnostics(2, "calling PutPngFile %s, err=%d", png, err); /* WH */
-    if (err == 0)
+    diagnostics(2, "calling PutPngFile %s, path=%s", png, pngpath); /* WH */
+        
+    if (pngpath != NULL) {
         PutPngFile(png, height0, width0, scale, convert_scale, (double) baseline, TRUE);
+        free(pngpath);
+    }
 
     free(png);
 }
