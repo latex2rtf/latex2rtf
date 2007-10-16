@@ -90,7 +90,7 @@ done
 
 # is there an input file?
 if [ -z "$1" ] ; then
-    error "no input file specified"
+    echo "error: no input file specified"
     exit 1
 fi
 

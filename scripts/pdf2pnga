@@ -1,13 +1,38 @@
 #!/bin/sh
+# Part of latex2rtf by Wilfried Hennings (Oct 2007)
+# usage: pdf2pnga pdf_input_file png_output_file density
+
 if [ -z "$1" ] ; then
-    error "no input file specified"
+    echo "error: no input file specified"
+    exit 1
+fi
+
+if [ -z "$2" ] ; then
+    echo "error: no output file specified"
     exit 1
 fi
 
 if [ -z $3 ] ; then 
-    dpi=300;
+    dpi=300
 else
     dpi=$3
 fi
 
-gs -q -dNOPAUSE -dBATCH -dSAFER -sDEVICE=pngalpha -r$dpi -sOutputFile=$2 $1
+# Under DOS, Ghostscript isn't available at all.
+# Under Windows, the executable is named gswin32c.exe
+# The use of the _.at file is necessary because of the 
+# restricted command line length under Windows.
+# The way to do this was taken over from the batch files 
+# in the Ghostscript distribution for Windows.
+
+if which gswin32c.exe >NUL ; then
+   echo -dNOPAUSE -dBATCH -dSAFER -sDEVICE#pngalpha -r$dpi >_.at
+   gswin32c -q -sOutputFile#$2 @_.at $1
+   rm -f _.at
+elif [ -e /usr/bin/sips ] ; then 
+#  If sips is available (which is the case in newer MacOSX systems), then use it.
+   /usr/bin/sips -s format png -s dpiHeight $dpi -s dpiWidth $dpi --out $2 $1 
+else
+   gs -q -dNOPAUSE -dBATCH -dSAFER -sDEVICE=pngalpha -r$dpi -sOutputFile=$2 $1 
+fi
+
