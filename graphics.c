@@ -233,11 +233,13 @@ static char *SysGraphicsConvert(int opt, int offset, char *in, char *out)
 
 	if (strchr(in, (int) '\'')) {
 		diagnostics(WARNING, "single quote found in filename <%s>.  skipping conversion", in);
+		free(out_tmp);
 		return NULL;
 	}
 	
 	if (out && strchr(out_tmp, (int) '\'')) {
 		diagnostics(WARNING, "single quote found in filename <%s>.  skipping conversion", out_tmp);
+		free(out_tmp);
 		return NULL;
 	}
 
@@ -309,13 +311,12 @@ static char *SysGraphicsConvert(int opt, int offset, char *in, char *out)
 	
 #endif
 
-    diagnostics(1, "system graphics command = [%s]", cmd);
-    fflush(stdout);
-
+    diagnostics(1, "sys command = [%s]", cmd);
     err = system(cmd);
 
     if (err != 0) {
         diagnostics(WARNING, "error=%d when converting %s", err, in);
+		free(out_tmp);
         return NULL;
     }
 	
@@ -428,7 +429,8 @@ static char *eps_to_pict(char *s)
     /* create a bitmap version of the eps file */
     return_value = SysGraphicsConvert(CONVERT_CROP, offset, eps, pict);
     free(pict);
-
+	if (return_value == NULL) goto Exit;
+	
     /* open the eps file and make sure that it is less than 32k */
     fp_eps = fopen(eps, "rb");
     if (fp_eps == NULL)
@@ -1269,11 +1271,14 @@ static void PutTiffFile(char *s, double height0, double width0, double scale, do
 
     tiff = strdup_together(g_home_dir, s);
 	out = SysGraphicsConvert(CONVERT_SIMPLE, 0, tiff, png);
-    PutPngFile(out, height0, width0, scale, convert_scale, baseline, TRUE);
-
-    my_unlink(out);
+	
+	if (out != NULL) {
+    	PutPngFile(out, height0, width0, scale, convert_scale, baseline, TRUE);
+		my_unlink(out);
+    	free(out);
+    }
+    
     free(tiff);
-    free(out);
     free(png);
 }
 
@@ -1295,12 +1300,14 @@ static void PutGifFile(char *s, double height0, double width0, double scale, dou
 
     gif = strdup_together(g_home_dir, s);
     out = SysGraphicsConvert(CONVERT_SIMPLE, 0, gif, png);
-    PutPngFile(out, height0, width0, scale, convert_scale, baseline, TRUE);
 
-    my_unlink(out);
+	if (out != NULL) {
+    	PutPngFile(out, height0, width0, scale, convert_scale, baseline, TRUE);
+   	 	my_unlink(out);
+    	free(out);
+    }
     free(gif);
     free(png);
-    free(out);
 }
 
 /****************************************************************************
