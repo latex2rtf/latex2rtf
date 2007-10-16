@@ -82,7 +82,7 @@ README= README README.DOS README.Mac README.OS2 README.Solaris README.VMS README
         Copyright ChangeLog
 
 SCRIPTS= scripts/version scripts/latex2png scripts/latex2png_1 scripts/latex2png_2 \
-	scripts/latex2pn.bat scripts/README \
+	scripts/pdf2pnga scripts/README \
 	scripts/Makefile scripts/test1.tex scripts/test2.tex scripts/test3.tex \
 	scripts/test3a.tex scripts/test4.tex scripts/test1fig.eps
 
