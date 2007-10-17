@@ -4,7 +4,6 @@ Fit & Finish:
 	extra spaces around \hline in tabular
 	
 	Reset footnote numbering at each new chapter
-	add examples to help page
 
 Potential Features:
 
@@ -15,14 +14,11 @@ Potential Features:
 	
 	New diagnostic level to replace Warning for expected stuff
 
-	Translation when .aux is absent.
-
 	add support for \symbol{\'134}
 	finish special cases for \char 'xxx
 	
 	Add support for \usepackage{fullpage}
 	Add support for \usepackage{doublespace}
-	Add support for \usepackage{geometry}
 	Add support for \usepackage{endnote}
 	
 	Add autonumbering of equations using fields
