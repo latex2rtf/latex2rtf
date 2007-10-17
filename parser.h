@@ -29,6 +29,7 @@ char	*getLeftRightParam(void);
 char	*getBracketParam(void);
 char	*getSimpleCommand(void);
 char	*getTexUntil(char * target, int raw);
+char    *getSpacedTexUntil(char *target, int raw);
 int 	getDimension(void);
 void	parseBrace(void);
 char	*getDelimitedText(char left, char right, bool raw);

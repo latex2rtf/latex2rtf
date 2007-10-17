@@ -968,6 +968,99 @@ char *getTexUntil(char *target, int raw)
     return s;
 }
 
+char *getSpacedTexUntil(char *target, int raw)
+
+/**************************************************************************
+     purpose: returns the portion of the file to the beginning of target
+
+     getSpacedTexUntil("\begin|{|document|}")
+     
+     will match the regular expression "\\begin *{ *document *}"
+ **************************************************************************/
+{
+    enum { BUFFSIZE = 16000 };
+    char buffer[BUFFSIZE];
+    char *s;
+    int buffer_pos, target_pos, target_len, max_buffer_pos, start_pos;
+    bool end_of_file_reached = FALSE;
+	bool matched;
+	
+    PushTrackLineNumber(FALSE);
+
+    diagnostics(2, "getSpaceTexUntil target = <%s> raw_search = %d ", target, raw);
+
+	matched = FALSE;	
+	buffer_pos = 0;
+	target_pos = 0;
+	start_pos  = 0;
+	target_len = strlen(target);
+	max_buffer_pos = -1;
+	
+    do {
+        
+        /* the next character might already be in the buffer */
+        if (buffer_pos > max_buffer_pos) {
+            buffer[buffer_pos] = (raw) ? getRawTexChar() : getTexChar();
+            max_buffer_pos = buffer_pos;
+        } 
+
+        if (buffer[buffer_pos] == '\0') {
+            end_of_file_reached = TRUE;
+            diagnostics(ERROR, "end of file reached before '%s' was found",target);
+        }
+
+        if (buffer[buffer_pos] == target[target_pos]) {
+        	if (target_pos == 0) 
+        		start_pos = buffer_pos;
+        	target_pos++;
+        } 
+        
+        /* does not match next character in target ... */
+        else if (target[target_pos] != '|') {
+
+            if (target_pos > 0)        /* false start, put back what was found */
+                buffer_pos = start_pos;
+            target_pos = 0;
+        
+        /* next character in target is '|' */ 
+        } else if (buffer[buffer_pos] != ' ' && buffer[buffer_pos] != '\n') {
+        	
+			/* next char is non-blank ... either match or reset */
+			target_pos++;  /* move past wildcard */
+			if (buffer[buffer_pos] == target[target_pos]) {
+				target_pos++;
+			} else {
+				buffer_pos = start_pos;
+				target_pos = 0;
+			}
+        }
+        
+        if (0) {
+		if (buffer[buffer_pos] != '\n')
+			diagnostics(1, "this char = <%c>, %d, %d, max=%d", buffer[buffer_pos], buffer_pos, target_pos, max_buffer_pos);
+		else
+			diagnostics(1, "this char = <\\n>, %d, %d, max=%d", buffer[buffer_pos], buffer_pos, target_pos, max_buffer_pos);
+		}
+		
+        buffer_pos++;
+
+
+		if (buffer_pos == BUFFSIZE)
+			diagnostics(ERROR, "Could not find <%s> in %d characters \n\
+			Recompile with larger BUFFSIZE in getTexUntil() in parser.c", target, BUFFSIZE);
+
+    } while (target_pos < target_len);
+
+	/* terminate buffer */
+    buffer[start_pos] = '\0';
+
+    PopTrackLineNumber();
+
+    s = strdup(buffer);
+    diagnostics(5, "getSpacedTexUntil result = %s", s);
+    return s;
+}
+
 int getDimension(void)
 
 /**************************************************************************

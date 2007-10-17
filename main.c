@@ -711,13 +711,13 @@ purpose: reads the LaTeX preamble (to \begin{document} ) for the file
  ****************************************************************************/
 {
     FILE *hidden;
-    char t[] = "\\begin{document}";
+    char t[] = "\\begin|{|document|}";
 
     diagnostics(4, "Reading LaTeX Preamble");
     hidden = fRtf;
     fRtf = stderr;
 
-    g_preamble = getTexUntil(t, 1);
+    g_preamble = getSpacedTexUntil(t, 1);
     RemoveInterpretCommentString(g_preamble);
 
     diagnostics(4, "Entering ConvertString() from ConvertLatexPreamble <%s>", g_preamble);
