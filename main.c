@@ -524,7 +524,7 @@ static void print_usage(void)
     fprintf(stdout, "  -S               use ';' to separate args in RTF fields\n");
     fprintf(stdout, "  -se#             scale factor for bitmap equations\n");
     fprintf(stdout, "  -sf#             scale factor for bitmap figures\n");
-    fprintf(stdout, "  -t#              math equation handling\n");
+    fprintf(stdout, "  -t#              table handling\n");
     fprintf(stdout, "       -t1          tabular and tabbing environments as RTF\n");
     fprintf(stdout, "       -t2          tabular and tabbing environments as bitmaps\n");
     fprintf(stdout, "  -T /path/to/tmp  temporary directory\n");
