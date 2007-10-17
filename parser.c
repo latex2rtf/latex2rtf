@@ -954,6 +954,10 @@ char *getTexUntil(char *target, int raw)
 
     if (!end_of_file_reached)   /* do not include target in returned string */
         buffer[i - len] = '\0';
+    else {
+        diagnostics(ERROR, "Could not find <%s>", target);
+        exit(1);
+    }
 
     PopTrackLineNumber();
 
