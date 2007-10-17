@@ -198,3 +198,4 @@ void CmdRule(int code);
 void CmdTolerateEnviron(int code);
 void CmdIflatextortf(int code);
 void CmdNewif(int code);
+void CmdAppendix(int code);

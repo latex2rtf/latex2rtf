@@ -2,8 +2,6 @@ Fit & Finish:
 	
 	last line tabular in one column mode
 	extra spaces around \hline in tabular
-	
-	Reset footnote numbering at each new chapter
 
 Potential Features:
 
@@ -25,7 +23,7 @@ Potential Features:
 	
 	add style support for quote environment
 	add style support for enumerate environment
-        add style support for superscript natbib entries
+    add style support for superscript natbib entries
 
 	support \hsize
 	add support for \vspace
