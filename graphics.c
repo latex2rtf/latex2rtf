@@ -181,23 +181,13 @@ static char *strdup_tmp_path(char *s)
 }
 
 /******************************************************************************
-     purpose :  System specific shell graphics commands 
+   purpose :  System specific shell graphics commands 
 
-	opt		type of conversion
-	o 		vertical offset
-	in		input filename
-	out		output filename
-	
  Need to worry about the global flags used on the command-line
   -D dpi           g_dots_per_inch
   -P path          g_script_dir
   -T /path/to/tmp  g_tmp_path
   
- ******************************************************************************/
-
-static char *SysGraphicsConvert(int opt, int offset, char *in, char *out)
-
-/******************************************************************************
 	We need e.g. to create a system command to convert a PDF to a PNG file.
 	In principle, this could be as simple as
 	
@@ -216,10 +206,22 @@ static char *SysGraphicsConvert(int opt, int offset, char *in, char *out)
 		
 	Unfortunately, this fails to work under Windows XP because gs (gswin32c)
 	fails to execute with message "Program too large for working storage" 
-	(in German: "Programm zu gross fuer den Arbeitsspeicher") 
+	(in German: "Programm zu gross fuer den Arbeitsspeicher").  Wilfried wrote
+	the script pdf2pnga to solve this problem.
 
 	So here we are, creating different commands for Windows XP and Unix!
+	
+	Parameters:
+	
+	opt		type of conversion
+	offset	vertical offset
+	in		input filename
+	out		output filename
+	
  ******************************************************************************/
+
+static char *SysGraphicsConvert(int opt, int offset, char *in, char *out)
+
 {
     char cmd[512], *out_tmp;
 	int err;

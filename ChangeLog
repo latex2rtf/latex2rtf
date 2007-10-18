@@ -1,885 +1,245 @@
-  2007-09-15 22:50:12 (r655)
-
-    Fix pointers in .texi file 
-
-  2007-09-15 22:38:04 (r654)
-
-    Tolerate \begin{small} ... \end{small} 
-
-  2007-09-15 22:21:50 (r653)
-
-    Stop reading the latex file when \end{document} is encountered. This
-    should facilitate tracking down bugs as well as being the right thing
-    to do. 
-
-  2007-09-15 19:54:25 (r652)
-
-    Removed unused fonts from fonts.cfg. The extra Roman fonts were not
-    used anywhere. I recently removed every instance of 'Lucida Sans
-    Unicode' from direct.cfg. I had two reasons. First, it should be up
-    to the RTF reader to find a font with a particular unicode feature.
-    For example, if the default font is 'Times' and the reader encounters
-    {\u376Y} 'LATIN CAPITAL LETTER Y WITH CIRCUMFLEX', then it should try
-    to construct the character in the Times font. If this fails, then it
-    should look in some default unicode font and use that character. The
-    second reason is that 'Lucida Sans Unicode' is Windows centric and
-    the font does not exist on MacOS X or Linux. If this causes problems,
-    I will revert this change.
-
-  2007-09-15 18:37:14 (r651)
-
-    Add support for \dots, eliminate duplicate entry for \ldots 
-
-  2007-09-15 18:19:20 (r650)
-
-    Include optional text in all \cite[text]{key} constructions. Reported
-    in the debian distribution by Karim Belabas
-    <karim.belabas@math.u-bordeaux.fr>. 
-
-  2007-09-14 00:36:40 (r649)
-
-    Adding text/geotest.tex 
-
-  2007-09-13 12:54:27 (r648)
-
-    Support for \doublespacing option. Basic, but seems to work. 
-
-  2007-09-05 11:15:53 (r647)
-
-    Support for emitting raw latex into file so that it can be converted
-    using the new version 6 MathType. Experimental at the moment.
-    Equations are emitted as <<:$x+y$:>> for example. 
-
-  2007-09-05 10:53:31 (r646)
-
-    Reverse the default behavior for the '-p' switch. Word seems to work
-    better when parentheses are not properly escaped. 
-
-  2007-08-31 18:27:55 (r645)
-
-    Fix bug in eps_to_png where the new filename terminated too soon. 
-
-  2007-08-31 16:31:18 (r644)
-
-    WH: changed size calculation in graphics.c back to previous version
-    but added -units parameter to calls to ImageMagick convert, also in
-    scripts. In graphics.c, changed call to gs (doesn't work in WinXP) to
-    ImgMag convert. 
-
-  2007-08-30 14:21:31 (r643)
-
-    WH: changed graphics.c: resolution read from png is pix per inch, not
-    per meter, at least under WinXP, and with the 2002 version of netpbm.
-    Graphics and equations now scale correctly in my Word 2003. Please
-    install and test under other systems! 
-
-  2007-08-29 14:57:34 (r642)
-
-    WH: restored a line in latex2png script because $name.pbm is read by
-    latex2rtf and added the corresponding line to latex2pn.bat.
-    Nevertheless graphics sizes are still not as they should be. 
-
-  2007-08-28 19:34:30 (r641)
-
-    Remove unneeded Lucida Unicode Sans from direct.cfg. There is no need
-    to use a special font for the unicode sequences. In fact, it is wrong
-    when the current font has the unicode character, but there is a
-    forced font change to Lucida Unicode. 
-
-  2007-08-28 19:18:40 (r640)
-
-    Remove hack from direct.c to support symbol font. Slightly modify
-    comment in direct.cfg 
-
-  2007-08-28 19:14:14 (r639)
-
-    Remove all uses of the symbol font from direct.cfg. This should allow
-    characters with symbols to be properly handled in equation fields by
-    directly calling CmdSymbolChar(). 
-
-  2007-08-28 10:55:22 (r638)
-
-    WH: inserted the changes from latex2png script into latex2pn.bat and
-    removed a do-nothing command from latex2png script 
-
-  2007-08-27 20:43:51 (r637)
-
-    Restore baseline positioning for PNG files so that it works again.
-    'latex2rtf -M12 test/eqns2' now works as it should. 
-
-  2007-08-27 16:50:00 (r636)
-
-    Replace PushSource(); getDimension(); PopSource() with
-    getStringDimension() throughout the source code. This fixed at least
-    one bug in preamble.c and simplifies code several other places. 
-
-  2007-08-27 00:33:37 (r635)
-
-    Re-enable deletion of intermediate files. 
-
-  2007-08-27 00:32:23 (r634)
-
-    Massive rewrite of graphics emission. Better probing of png file for
-    resolution. Better documentation about how the values for \pichgoal
-    and \pich are calculated. Now using the keyvalue routine from util.c
-    to improve handling of graphics options. The upshot is that figures
-    are scaled properly now. Ironically, I needed to know the resolution
-    of the png file only to know if it was bogus. If it was bad then the
-    image must be scaled. If not, then Word seems to do the right thing. 
-
-  2007-08-26 05:37:04 (r633)
-
-    Remove unneeded debugging information 
-
-  2007-08-26 05:36:11 (r632)
-
-    Fix psfig crasher that Wilfried found. It was a pretty silly error...
-    I wrote 'filename' and not 'figure'. 
-
-  2007-08-26 04:55:55 (r631)
-
-    add patch submitted in Feb 2006 by Steve Schwartz that fixes a bug in
-    the bitmapped equation cropping. Results look pretty good. 
-
-  2007-08-25 22:18:08 (r630)
-
-    Fix, well sorta, the problems with eqns2.tex. First problem was that
-    Word has a bug associated with commas in an array. I cannot figure
-    out how to escape a comma properly, so I just put in a semicolon. The
-    second bug was that a \par token was emitted within an equation
-    field. Added a bit of logic to prevent this from happening. 
-
-  2007-08-25 20:54:26 (r629)
-
-    Use the minus sign in the symbol font for '-' in equations. This is
-    both typographically correct, and equations convert properly when
-    clicked to convert to equation editor. 
-
-  2007-08-25 20:37:58 (r628)
-
-    support ,, as a synonym for \quotedblbase. 
-
-  2007-08-23 23:48:04 (r627)
-
-    Removed redundant debugging commands.
-
-  2007-08-23 20:57:05 (r626)
-
-    plug a memory leak. 
-
-  2007-08-23 17:56:07 (r625)
-
-    comment out debugging stuff that I added 
-
-  2007-08-23 17:55:13 (r624)
-
-    Added missing PopSource() to handling of geometry options. Whitespace
-    fixes. 
-
-  2007-08-22 04:23:58 (r623)
-
-    All use of the symbol font goes through CmdSymbolChar() now 
-
-  2007-08-22 00:03:52 (r622)
-
-    Starting work on fixing all the problems with image files. First set
-    of changes. Nothing is really fixed yet. 
-
-  2007-08-21 22:36:29 (r621)
-
-    fix bug in handling of \begin{table*} ... \end{table*}. 
-
-  2007-08-21 22:17:25 (r620)
-
-    fix bug in handling of \epsfbox without dimensions. 
-
-  2007-08-21 21:54:57 (r619)
-
-    Trying to track down a bug, I added a few more environments to
-    getSection(). 
-
-  2007-08-21 21:26:27 (r618)
-
-    Support aux files that include other aux files using \@include
-    suggested by mwtoews++. Not extensively tested, but the sample
-    provided in the bugs tracker seems to work. 
-
-  2007-08-21 20:56:43 (r617)
-
-    A buggy attempt at implementing \geometry. I don't know why it
-    doesn't work.
-
-  2007-08-21 20:35:43 (r616)
-
-    include a more comprehensive ifclause.tex test; commented out
-    complicated examples for now, since they don't work. A tabular test
-    was modified for a multicolumn bug.
-
-  2007-08-21 20:02:29 (r615)
-
-    add support for \underbar as suggested by jspitzm++ 
-
-  2007-08-21 16:15:23 (r614)
-
-    Added support for geometry margin family commands, including handling
-    of option = {val1, val2} and option = {ratio1, ratio2}.
-
-  2007-08-21 08:57:15 (r613)
-
-    WH: added test file enc_utf8x.tex 
-
-  2007-08-20 15:40:40 (r612)
-
-    Add support for \iflatextortf, latextortftrue, latex2rtffalse
-    properly ignore all \newif constructs add a simple test file
-    ifclause.tex 
-
-  2007-08-20 12:14:03 (r611)
-
-    add simple test file for geometry package correct units in diagnostic
-    string 
-
-  2007-08-20 12:12:25 (r610)
-
-    add new keyvalue routine to util.c, to aid in parsing option lists
-    use in preamble.c to provide skeleton for geometry package 
-
-  2007-08-20 11:49:44 (r609)
-
-    WH: added test file enc_utf8x.tex 
-
-  2007-08-20 00:58:18 (r608)
-
-    change diagnostic level for UTF support 
-
-  2007-08-20 00:57:20 (r607)
-
-    minor changes to character counting for utf8 support 
-
-  2007-08-18 21:46:20 (r606)
-
-    Initial support for geometry package. Only supports default margins
-    and the 'margin' option as the only option passed to the package.
-
-  2007-08-17 15:22:05 (r605)
-
-    WH: added test file enc_utf8x.tex 
-
-  2007-08-17 14:50:14 (r604)
-
-    WH: added support for [utf8x]{inputenc} + test file enc_utf8x.tex 
-
-  2007-08-15 17:44:35 (r603)
-
-    Add utf8 support. Only active if the file has
-    \usepackage[utf8]{encoding} The support only takes utf8 characters
-    from input and emits them as \u1234? sequences. This is untested. 
-
-  2007-08-15 01:36:43 (r602)
-
-    Rename CmdHacekChar to CmdCaronChar. Use the unicode combining
-    character for caron and cedilla when all else fails. accentchars.rtf
-    and overstrike.rtf look fine in Word 2004 for Mac. 
-
-  2007-08-15 01:20:50 (r601)
-
-    a couple of edits that missed the last check-in 
-
-  2007-08-15 01:20:30 (r600)
-
-    Move ldots to chars.c Update overstrike.tex, still needs to have some
-    test cases added but generally much better. Multiple fixes to chars.c
-    Raise accents on tall letters. Rename CmdOaccentChar to CmdRingChar
-    overstrike.rtf displays completely correctly in Word. Converting some
-    equations to equation editor objects fails. I think that this is the
-    way things will stay. Added fixes to overstrike from Wilfried++
-
-  2007-08-14 01:23:58 (r599)
-
-    Makefile changed to use the -lm flag. I don't know if I did this
-    correctly, but an explicit -lm flag is now necessary because the
-    chars.c file includes math.h. I've never understood why gcc can't
-    include math.h without this flag, but it doesn't, at least on Debian
-    GNU/Linux. 
-    
-    Also added a newline at the end of funct1.h so that the associated
-    compile warnings will stop bugging me.
-    
-    One actual feature fix - I removed the \- command from the rtf
-    output, since rtf doesn't seem to include these hyphenation
-    suggestions. They should not be visible in words that are not broken
-    across two lines.
-
-  2007-08-13 20:38:37 (r598)
-
-    Remove unused routines. Minor whitespace tweaks. 
-
-  2007-08-13 20:06:20 (r597)
-
-    Fixed the \d{o} so that it works the way everything else does. There
-    were some completely wrong unicode values in CmdUnderdotChar(). Not
-    sure how they got there or if they ever worked. 
-
-  2007-08-13 16:27:35 (r596)
-
-    update ring characters, cedilla chars, caron chars. Underdot chars
-    seem broken. Still need work. 
-
-  2007-08-13 03:00:23 (r595)
-
-    delete incorrect comments and remove unused code 
-
-  2007-08-13 02:59:18 (r594)
-
-    Fixes for the breve accent 
-
-  2007-08-13 02:22:31 (r593)
-
-    More tweaks for umlautes/ddot and grave accents 
-
-  2007-08-13 00:48:52 (r592)
-
-    Bring the doubleacute accent characters up to date 
-
-  2007-08-13 00:37:42 (r591)
-
-    Work on the accute accent characters. This turned out to be harder
-    than expected because nothing seems to work when converting to
-    equation editor objects in word. Oh well. 
-
-  2007-08-11 18:52:22 (r590)
-
-    More unicode clean up. Rename put_unicode_char to putUnicodeChar() to
-    match the silly conventions that latex2rtf uses. Add a parameter so
-    that the default character makes sense. 
-
-  2007-08-11 04:28:52 (r589)
-
-    Clean up handling of tilde chars. Allow \hat and \dot to work on
-    something other than characters if necessar e.g., \.{\alpha}. 
-
-  2007-08-10 22:57:42 (r588)
-
-    Test file for overstrike characters e.g. \hat{a} 
-
-  2007-08-10 22:55:36 (r587)
-
-    Fixes for hatted characters. More clean-up and factoring of dotted
-    chars as well. 
-
-  2007-08-10 21:38:54 (r586)
-
-    Fix dotted characters. Use unicode when possible except in equations.
-    In equations or when no unicode character exists, then use the
-    overstrike field to provide the dot. These are not perfect, but the
-    dots are present *and* the results when converted to equation editor
-    objects are not horrible! 
-
-  2007-08-10 01:27:55 (r585)
-
-    Apply unicode patches. I think that it is probably much better to
-    emit a unicode sequence for a real character like \.{A}, than to rely
-    on the more-or-less broken technique of using Word fields to stack
-    two characters on top of one another. I think that I will need to go
-    in an rip out g_unicode, since I cannot imagine a good reason to set
-    g_unicode to zero. 
-
-  2007-08-09 17:56:10 (r584)
-
-    Revise caption in tabbing.tex as per Wilfried++. Fix bug reported in
-    tabbing for extra \\. 
-
-  2007-08-09 17:02:46 (r583)
-
-    Add unicode number for ellipsis ... just in case 
-
-  2007-08-09 16:49:07 (r582)
-
-    Fixes for ldots and ellipsis. Nothing Microsoft does is consistent.
-    Cannot use the ellipsis from the symbol font with impunity. Just use
-    \'85, assuming standard windows encoding. But of course, use the
-    symbol encoding in equations :) 
-
-  2007-08-08 21:04:42 (r581)
-
-    Support MT Extra properly. Now equations that contain characters from
-    the MT Extra font work properly. The MT Extra characters also show up
-    properly when no equation is present.
-    
-    There are still problems with MT Extra characters with values above
-    128, But these changes solve most of the problems with the MT Extra
-    characters. 
-
-  2007-08-08 00:49:35 (r580)
-
-    Add new test that shows the problems with MT Extra 
-
-  2007-08-07 16:14:20 (r579)
-
-    Fix \copyright Start to undo the changes I made to direct.cfg that
-    involve MT Extra. Unicode seems to fail badly in Word. F or example
-    {\f7\u8826\'70} just does not work in Word, but {\f7\'70} does. There
-    are a bunch more entries in direct.cfg that need to be fixed. Make
-    some changes for \sum when used without fields Change oddchars.tex to
-    use \Sigma and \Pi instead of \sum and \prod 
-
-  2007-08-07 07:55:10 (r578)
-
-    WH: some updates to the documentation 
-
-  2007-08-07 03:40:14 (r577)
-
-    Now we don't emit the unicode sequence for characters in the symbol
-    font when it is used outside fields. This only applies to commands
-    that use direct.cfg 
-
-  2007-08-06 19:39:16 (r576)
-
-    rename putRtfChar to putRtfCharEscaped to be more descriptive
-    Eliminate unnecessary usage of putRtfChar() Structure output so that
-    EVERTHING goes through fprintRTF() and then through
-    WriteEightBitChar() 
-
-  2007-08-06 18:00:58 (r575)
-
-    Initial pass on making all output go through one routine 
-
-  2007-08-06 00:16:09 (r574)
-
-    I touched a lot of stuff trying to figure out how to get symbols
-    working in MS equation fields. I found a solution that works for
-    Microsoft, but it breaks everything else. Basically I changed
-    direct.cfg so that it will emit something like {\f6\u-3910\'ab} when
-    a rightarrow is needed. This is great, but the unicode value is bogus
-    and breaks all other rtf readers. 
-    
-    The right thing to do would be to emit {\f6\'ab} when not in a word
-    equation field and {\f6\u-3910\'ab} when in one. I added such a
-    routine in CmdMathChar() but did not want to do all the spade work to
-    move *all* the entries that use the symbol font from direct.cfg. 
-    
-    I think the best solution would be an even lower level routine
-    putSymbolChar() that would do the right thing. This would still
-    require moving the entries from the direct.cfg file. putSymbolChar()
-    would look like emit_math_char().
-
-  2007-07-30 15:48:01 (r573)
-
-    A bunch of small changes. Linked \dotfill to \ldots, which is
-    probably the closest that rtf will get to true \dotfill.
-    
-    --This line, and those below, will be ignored--
-    
-    M commands.c M funct1.c M version.h M xref.c 
-
-  2007-07-30 14:31:38 (r572)
-
-    Corrected capitalizatin problem wrt \Cite* natbib commands. 
-
-  2007-07-30 13:18:47 (r571)
-
-    Another patch from Juergen, this one fixes citet with multiple years.
-    Limited testing shows it works as expected. 
-
-  2007-07-30 03:34:45 (r570)
-
-    Merged in patch from Juergen Spitzmueller.
-
-  2007-07-29 15:52:13 (r569)
-
-    Infrastructure needed to support \Citet, \CiteP, and friends. 
-
-  2007-07-29 04:25:34 (r568)
-
-    Fixed an apparent bug in preamble.c, which selected
-    set_longnamesfirst as default for natbib. As written now
-    set_longnamesfirst must be selected explicitly. First commit, so it's
-    about as small as possible.
-    
-    --This line, and those below, will be ignored--
-    
-    M preamble.c 
-
-  2007-07-28 19:41:37 (r567)
-
-    Another fix from Tyler Smith for \bibpunct support for \citep 
-
-  2007-07-28 16:55:52 (r566)
-
-    Fixes for so that author-year punctuation works properly in \citep
-    Excellent bug reduction submitted by Taylor Smith 
-
-  2007-07-28 16:18:50 (r565)
-
-    My first check in for the new svn repository 
-
-  2007-07-24 13:51:10 (r564)
-
-    WH: added (to ./test) german.tex, bib_super.tex, bib_super.bib 
-
-  2007-07-23 09:35:43 (r563)
-
-    WH: documentation updated: preliminary information on Windows Vista
-    included 
-
-  2007-07-17 11:34:53 (r562)
-
-    WH: changed "ChangeLog" to test svn funtionality 
-
-  2007-04-24 12:06:41 (r561)
-
-    WH: changed latex2png to allow twoside option (thanks to Jean-Pierre
-    Chretien) 
-
-  2007-04-24 12:06:41 (r560)
-
-    WH: added l2rprep.bat from DOS distribution 
-
-  2006-11-20 04:34:11 (r559)
-
-    support for \vref from varioref package 
-
-  2006-11-20 00:40:40 (r558)
-
-    Increase stacksize so that error reported by Albert Cardona works 
-
-  2006-11-16 14:47:25 (r557)
-
-    WH: added "textcurrency" to direct.cfg and changed some test files to
-    make them compileable with an up to date LaTeX installation 
-
-  2006-11-16 14:46:28 (r556)
-
-    WH: removed include2.txt (should be include3.tex) 
-
-  2006-01-30 09:19:19 (r555)
-
-    WH: added info on Mac gui shell to documentation files 
-
-  2006-01-23 00:24:09 (r554)
-
-    Fixed \and Fixed quote and quotation environments Fixed font changes
-    escaping from their environments Fixed \input file.txt bug Add
-    test/include3.txt as a test file 
-
-  2005-11-22 04:40:19 (r553)
-
-    Support for \left\Vert ... \right\Vert or \left\langle ...
-    \right\rangle. as suggested by Enrico Forestieri. 
-
-  2005-11-13 19:45:19 (r552)
-
-    Fix for improper font in equations by Enrico Forestieri 
-
-  2005-11-13 19:19:21 (r551)
-
-    Fixes for equation numbering by Enrico Forestieri 
-
-  2005-09-20 04:20:51 (r550)
-
-    Fix for \sum \left( bug 
-
-  2005-09-20 00:28:38 (r549)
-
-    Minor formatting changes for debugging 
-
-  2005-09-19 23:53:14 (r548)
-
-    Add a new routine for formatting strings 
-
-  2005-09-19 06:57:46 (r547)
-
-    WH: updated documentation files 
-
-  2005-09-19 04:33:29 (r546)
-
-    support for compactenum and compactitem environments 
-
-  2005-09-15 08:48:46 (r545)
-
-    WH: changes in direct.cfg added to documentation 
-
-  2005-09-14 14:55:14 (r544)
-
-    WH: alternative direct.cfg using Unicode instead of MT Extra 
-
-  2005-09-14 14:25:32 (r543)
-
-    WH: updated direct.cfg and fonts.cfg to support more math symbols by
-    using a unicode font 
-
-  2005-09-11 04:10:58 (r542)
-
-    reduce spurious comments when running latex2rtf 
-
-  2005-09-11 04:01:53 (r541)
-
-    Alphabetical direct.cfg file. Patch by Wilfried Hennings 
-
-  2005-09-05 23:45:14 (r540)
-
-    Fixes for horizontal centered elipsis and infinity symbol for Word
-    for Mac 2004 *This new version of Word is buggy ... RTF that worked
-    just fine with Word 2000 failed * Still a number of characters that
-    need fixing. 
-
-  2005-09-05 21:33:19 (r539)
-
-    Fix for non-ascii characters in verbatim context bug report and patch
-    by Yaroslav Schekin 
-
-  2005-09-05 21:03:16 (r538)
-
-    Fix for improperly handled \} and \{ reported by Michalis Kamburelis 
-
-  2005-09-05 20:08:27 (r537)
-
-    Fix incorrect font usage for entries in direct.cfg (regression found
-    by Martin Chicoine) 
-
-  2005-05-30 16:17:42 (r536)
-
-    WH: removed email addresses from documentation (section "history") to
-    prevent spammers from harvesting 
-
-  2005-05-11 12:18:32 (r535)
-
-    WH: added Latin2 definitions to fonts_pc.cfg which had been added to
-    fonts.cfg by Scott Prahl 2004-05-11 
-
-  2005-04-19 13:40:56 (r534)
-
-    Reduce non-helpful warnings by skipping warnings for ignored commands 
-
-  2005-04-19 13:27:52 (r533)
-
-    Simple hack to use underscore '_' to fake \rule 
-
-  2005-04-19 13:10:25 (r532)
-
-    Add CmdTolerateEnviron so that \begin{sloppypar} ... \end{sloppypar}
-    and \begin{landscape} ... \end{landscape} are handled correctly. 
-
-  2005-04-19 05:19:13 (r531)
-
-    Explicitly add parsing for \rule Make tabbing environment ignore dim
-    in \\[dim] at end of line 
-
-  2005-04-17 00:00:26 (r530)
-
-    Fix mistake in how font names are looked up for style files. 
-
-  2005-04-16 17:35:41 (r529)
-
-    fix \usepackage{package1,package2} parsing 
-
-  2005-04-16 17:13:25 (r528)
-
-    fix \usepackage{fontname} to no longer make fontname the default font 
-
-  2005-04-13 10:16:01 (r527)
-
-    WH: additionally output clipping offset parameter to the latex2png
-    call and support this parameter in the scripts. 
-
-  2005-04-13 10:06:01 (r526)
-
-    WH: additionally output clipping offset parameter to the latex2png
-    call and support this parameter in the scripts. 
-
-  2005-04-13 09:48:00 (r525)
-
-    WH: additionally output clipping offset parameter to the latex2png
-    call and support this parameter in the scripts. 
-
-  2005-02-20 05:31:14 (r524)
-
-    Fixed parsing error when macro arguments are parsed (% not handled
-    correctly) 
-
-  2005-01-30 03:36:49 (r523)
-
-    fixing some entries in direct.cfg. adding test file unicode.tex to
-    see how many conversions fail. Currently arrows are all messed up. 
-
-  2005-01-30 02:18:36 (r522)
-
-    tweak readme for solaris 
-
-  2005-01-30 02:14:16 (r521)
-
-    add babel support for ukrainian. Igor Vlasenko made the cfg file. 
-
-  2005-01-29 18:42:52 (r520)
-
-    Add bib_harvard.bib and update Makefile to use the new .bib file
-    rather than embedding the processed bibliography in the .tex file. 
-
-  2005-01-27 16:00:36 (r519)
-
-    Yet more clean-up of direct.cfg --- avoid using unicode chars for a
-    variety of characters in MT Extra. Fix caption in tabbing.tex so that
-    it is processed cleanly by LaTeX 
-
-  2005-01-27 06:08:29 (r518)
-
-    Fix bug in how unicode entries are formatted in direct.cfg Reformat
-    whitespace in tables.c Straighten out unicode entries for various
-    triangle characters Add a few latex equivalents for ams entries
-    already present 
-
-  2005-01-26 05:45:56 (r517)
-
-    remove some test files that may use styles that are not normally
-    present from the 'make check' test 
-
-  2005-01-25 22:39:03 (r516)
-
-    Mention that Sun users should use gmake instead of just make 
-
-  2005-01-25 01:16:04 (r515)
-
-    clean up and add more unicode entries in direct.cfg 
-
-  2005-01-25 00:18:07 (r514)
-
-    add a bunch of unicode characters to direct.cfg This pretty much
-    covers the special characters used in misc4.tex 
-
-  2005-01-19 06:52:31 (r513)
-
-    change double grave to double acute accent for \H{c} add support for
-    unicode support for macron and caron and cedilla 
-
-  2005-01-18 06:19:50 (r512)
-
-    Support for endfloat package. 
-
-  2005-01-16 19:58:59 (r511)
-
-    Add support for \celsius and \degreecelsius from Andy Loening 
-
-  2005-01-16 19:40:31 (r510)
-
-    Restore basic endnote functionality. 
-
-  2005-01-16 18:57:22 (r509)
-
-    ignore \textfont and \the commands 
-
-  2005-01-16 06:36:20 (r508)
-
-    Support Hungarian double grave accent with unicode. Same with breve
-    accents. Unicode support in RTF seems to be very marginal for the
-    applications on my computer. 
-
-  2005-01-16 00:52:04 (r507)
-
-    Fixes for tabbing environment (properly handle \a' and \verb#code#) 
-
-  2005-01-15 23:13:58 (r506)
-
-    add missing header file <time.h> to preamble.c 
-
-  2005-01-15 22:51:08 (r505)
-
-    Fixed botched check-in of test files. Improve tests for bibentry
-    usage. 
-
-  2005-01-08 05:27:44 (r504)
-
-    Final bit of support for \bibentry. Now with two sets of tests. fix
-    warning about lack of a final linefeed in parser.h 
-
-  2005-01-07 15:55:24 (r503)
-
-    relax matching so bibentry can be used with fancy bibliographies 
-
-  2005-01-07 05:10:14 (r502)
-
-    support for bibentry package. No tests yet. 
-
-  2004-12-08 05:42:48 (r501)
-
-    fix regression when symbol font is used improve fix for
-    tableofcontents entries add support for listoffigures and
-    listoftables 
-
-  2004-12-08 04:37:19 (r500)
-
-    eliminate extra lines for chapters in the table of contents 
-
-  2004-12-07 05:47:10 (r499)
-
-    remove excess debugging information 
-
-  2004-12-07 05:44:15 (r498)
-
-    added pagenumbers to RTF converted documents fixed a pretty major
-    problem with default fonts 
-
-  2004-12-07 03:19:44 (r497)
-
-    remove l2r_fonts.c and l2r_fonts.h 
-
-  2004-12-07 03:17:58 (r496)
-
-    Rename l2r_fonts.c to just fonts.c Robust fix for pushing and popping
-    environments Renaming of environment modes Support for
-    \tableofcontents Insert creation info into rtf fields 
-
-  2004-11-21 03:46:20 (r495)
-
-    fix regression in macro expansion 
-
-  2004-11-21 00:48:08 (r494)
-
-    Fix for alignment problem in babel_spanish.tex 
-
-  2004-11-20 21:44:59 (r493)
-
-    support for \kern, \lower ignore \resizebox better 
-
-  2004-11-20 19:31:37 (r492)
-
-    fix for regression in itemize environments 
-
-  2004-11-20 19:08:23 (r491)
-
-    add support for \latex 
-
-  2004-11-20 18:59:18 (r490)
-
-    support for \overline 
-
-  2004-11-20 18:18:07 (r489)
-
-    fix for bug in macroexpansion (seen in misc4.tex) 
-
-  2004-11-12 04:11:57 (r488)
-
-    support for \begin{align}...\end{align} fix bug in field support in
-    eqnarray environment 
-
-  2004-11-10 03:01:47 (r487)
-
-    support \dagger and \ddagger fix so TextEdit on MacOSX will have a
-    default font. 
-
-  2004-11-09 14:59:25 (r486)
-
-    More figure sizing fixes. Expand support for \psfig 
-
-  2004-11-09 06:07:05 (r485)
-
-    First changes for 1.9.17 This adds much expanded support for options
-    in graphics and graphicx packages For example these now work
-
-    \includegraphics[0,0][72,72]{file.png}
-
-    \includegraphics[width=2cm]{file.png}
-
-    \includegraphics[scale=0.3]{file.png}
-
-    \includegraphics[height=1cm, width=3cm]{file.png} 
+Changes between release 1.9.17 and 1.9.18
+
+r673
+first check-in for 1.9.18
+
+r674
+WH: update of the documentation (equation conversion)
+
+r675
+WH: update of the documentation (unicode input)
+
+r676
+Infrastructure changes to support stylesheets.  Modify
+CmdStartParagraph() to take two parameters (paragraph style and
+indenting).  Create style numbers in funct1.h for the different possible
+paragraph styles and use these as appropriate. No changes to translation
+or conversion have been made.
+
+r677
+Eliminate the numbers in favor of passing strings.  This will allow
+InsertStyle() to be called directly when the time comes to hook up these
+parameters.  I had forgotten about the existing style infrastructure in
+style.c and style.h.
+
+r678
+WH: updated main.c to include "help" text for -M32
+
+r679
+Support for list environments from paralist package.  While implementing
+this I noticed that some nested list environments were broken.  While
+tracing the problems, I discovered that an old optimization was broken. 
+I have taken it out and everything still seems to work fine.
+
+r680
+Mention that there is some support for paralist
+
+r681
+Add compactitem and compactdesc environment handling. Like the rest of
+paralist, there has been no attempt to reduce the line spacing.
+
+r682
+Add a few more test cases for paralist environments to list.tex
+
+r683
+Started to improve tabular widths.  Then realized that global variables
+for the tabular environment were used oddly.  Further investigation
+revealed that the global variable could be removed completely if the
+active column was placed in the TabularT type.  So I did this, and then
+needed to comment out some usage in funct1.c and convert.c.  Evidently,
+that stuff was never used.  Maybe I will get farther next time.
+
+r684
+Modify function to extract the contents of a brace from tables.c and put
+it in util.c because it is a handy little function.  Use in in xref.c to
+simplify some code.
+
+r685
+Make getStringBraceParam() work properly with \{ and \}
+
+r686
+modify testfile so that it does not create unnecessary warnings.
+
+r687
+fix problem with multicolumn in the last line of a table
+
+r688
+Fix equation numbering in reports and books so that equations use (2.3)
+format as appropriate.  Reset numbering at each chapter break.
+
+r689
+renaming files so that plurals are used more consistently
+
+r690
+More plurals for file names
+
+r691
+rename encode_tables.h to encoding_tables.h update dependencies in the
+Makefile
+
+r692
+New option -t # that allows the user to have tabular environments
+generated as bitmaps. Basically -t 1 is the default and generates RTF
+only.  -t 2 will convert tabular environments to bitmaps, -t 3 will
+generate both in the RTF document.
+
+r693
+WH: in counters.c corrected "util.h" -> "utils.h"
+
+r694
+WH: corrected latex2pn.bat to allow repeated call for reducing picture
+size
+
+r695
+Do not scale tables that are inserted as bitmaps.  Modify tabular.tex so
+that it typesets more nicely with latex.  Thanks Wilfried!
+
+r696
+Support tabbing environments as bitmaps.  Add a minimal documentation in
+help message.
+
+r697
+Refactoring code.  Move WriteLatexAsBitmap() to graphics.c.  Create new
+routines PrepareDisplayedBitmap() and FinishDisplayedBitmap() to
+simplify to localize paragraph starting and stopping.
+
+r698
+Once again, try to use ghostscript for pdf->png conversion.  Last time
+the command needed to be changed because it failed on Windows system.
+Now, under unix, use ghostscript conversion.  Under everything else
+continue to use ImageMagick.  Hopefully, this will make everyone happy.
+Or at least happier.
+
+r699
+Quote filenames passed to system() in pdf_to_png
+
+r700
+Single quote all filenames passed to shell via system().  Adam Maxwell++
+
+r701
+Convert 'filename' to "filename" in system commands because Windows
+treats single quotes differently than UNIX.  Also, fix up the lengths of
+the command strings.  This needs revisiting.
+
+r702
+Collect most of the code for creating command-line graphics conversion
+into a single routine SysGraphicsCommand().  This routine is both
+simpler and more robust than the code used in many other places in the
+code.
+
+r703
+hack to resolve doublespace environment problem
+
+r704
+fix for image scaling when the width is specified, but the height is
+not.  Adam Maxwell++
+
+r705
+implement rounding properly ... what was I thinking?
+
+r706
+add yet another test image file.  Maxwell++
+
+r707
+WH: added pdf2pnga scripts, called in graphics.c
+
+r708
+supply rint() as a substitute for round() because windows does not have
+round() defined in its math.h header.
+
+r709
+Collecting all the system dependent graphics conversion stuff into one
+place.  This eliminates a lot of code duplication and makes it clearer
+that all conversions are handled in a uniform fashion (i.e., -D -T and
+-P command line flags).  Right now there are two basic sets of calls ...
+one for UNIX and one for XP.  (There is one minor sub-branch in the UNIX
+versions that uses native pdf handling on Apple systems.)
+
+Scaling on apple systems looks messed up ... sigh
+
+r710
+WH: (DOS version) in graphics.c, removed quotes from calls to
+latex2pn.bat and pdf2pnga.bat
+
+r711
+WH: (DOS version) in graphics.c, now calling bash instead of
+command.com, so that quotes in calls to latex2png are supported
+
+r712
+WH: in graphics.c, calling pdf2pnga script instead of sips (Apple) or gs
+(otherwise) Added Apple specific script pdf2pnga_apple (calling sips)
+
+r713
+Changes to pdf2pnga to make things work at least under OS X.  This
+probably breaks the XP stuff, and is only intended to start the process
+of coming up with script that will run properly cross-platform.
+
+r714
+refactoring the horrible horrible getSection().  In the process
+misc4.tex and linux.tex no longer translate properly.  More fixes
+coming.  This version will spew a whole bunch of diagnostic information.
+Wait for a later version before downloading.
+
+r715
+Fixing remaining bugs from the refactoring of getSection().  Things
+should make a bit more sense.  Files other than parser.c have ignorable
+tweaks.
+
+r716
+Clean separation of unix and windows graphics conversion.  Filenames are
+now single-quoted in unix as they should be.  Windows gets double
+quotes.  Use sips by default on apple systems.  Windows uses the script
+pdf2pnga for conversions.  I think that this should provide maximum
+functionality to all platforms.
+
+r717
+Move getSection() out of parser.c and into preparse.c
+
+r718
+Actually add the files to svn this time.  Rename getSection() to
+preParse()
+
+r719
+WH: latex2pnga script tests availability of Ghostscript or sips and
+issues system dependent call; unneeded scripts deleted
+
+r720
+WH: Makefile: script latex2pn.bat removed, pdf2pnga added
+
+r721
+WH: equations.c: one comment changed graphics.c: comments about pdf2png
+moved into function SysGraphicsConvert, command for debugging
+(non-)insertion of bitmap into rtf file inserted (marked with "/* WH
+*/")
+
+r722
+Fix problem with bitmapped equations not appearing when -M12 option is
+used.
+
+r723
+Make equation conversion to bitmap less noisy.
+
+r724
+If SysGraphicsConvert() returns null, then make sure that the return
+value is handled properly.  Catch a few cases when strings are not freed
+properly.
+
+r725
+WH: main.c: help text corrected
+
+r726
+WH: parser.c: Added exit to catch extra blank in \begin{document}
+Actually, it doesn't solve the problem that such extra blanks are
+allowed but at least it exits the progrm with a helpful error message.
+
+r727
+fix for '\begin {document}' parse error.  This solution has not been
+applied to any other \begin .. \end environments.
+
+r728
+remove debugging \end{document} from misc4.tex
+
+r729
+Fix numbering of chapters in the appendix ... not perfect, but the latex
+default should work.
 
