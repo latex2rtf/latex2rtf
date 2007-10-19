@@ -86,42 +86,49 @@ SCRIPTS= scripts/version scripts/latex2png scripts/latex2png_1 scripts/latex2png
 	scripts/Makefile scripts/test1.tex scripts/test2.tex scripts/test3.tex \
 	scripts/test3a.tex scripts/test4.tex scripts/test1fig.eps
 
-TEST=   test/Makefile test/bracecheck test/accentchars.tex test/array.tex  \
-	test/eqns.tex test/fonts.tex test/fontsize.tex test/frac.tex \
-	test/list.tex test/logo.tex test/misc1.tex test/misc2.tex \
-	test/oddchars.tex test/tabular.tex test/percent.tex test/essential.tex test/hndout.sty \
-	test/misc3.tex test/misc4.tex test/fancy.tex test/align.tex \
-	test/box.tex test/ttgfsr7.tex \
-	test/defs.tex test/excalibur.tex test/qualisex.tex test/include.tex \
-	test/include1.tex test/include2.tex test/include3.tex test/ch.tex test/spago1.tex \
-	test/theorem.tex test/picture.tex test/eqns-koi8.tex test/tabbing.tex \
-	test/chem.tex test/linux.tex test/color.tex test/subsup.tex \
-	test/babel_german.tex  test/babel_russian.tex test/babel_french.tex \
-	test/babel_frenchb.tex test/babel_czech.tex test/babel_spanish.tex \
-	test/bib_apacite.tex    test/bib_apalike.tex test/bib_apalike2.tex \
-	test/bib_natbib1.tex    test/bib_natbib2.tex test/bib_natbib3.tex test/bib_apanat.tex \
-	test/bib_authordate.tex test/bib_simple.tex test/bib_simple.bib\
-	test/enc_applemac.tex test/enc_cp437.tex test/enc_cp865.tex test/enc_latin2.tex \
-	test/enc_latin5.tex test/enc_cp1250.tex test/enc_cp850.tex test/enc_decmulti.tex  \
-	test/enc_latin3.tex test/enc_latin9.tex test/enc_cp1252.tex test/enc_cp852.tex \
-	test/enc_latin1.tex test/enc_latin4.tex test/enc_next.tex  \
-	test/enc_cp1251.tex test/enc_cp855.tex  test/enc_cp866.tex  test/enc_koi8-r.tex \
-	test/enc_koi8-u.tex test/enc_maccyr.tex test/enc_macukr.tex \
-	test/fig_test.eps test/fig_testb.pdf test/fig_test.tex \
-	test/fig_test2.tex test/fig_testc.ps test/fig_testc.pdf test/fig_testd.ps \
-	test/fig_testd.pdf test/fig_test3.tex test/fig_size.tex \
-	test/head_book.tex test/head_report.tex test/head_article.tex \
-	test/endnote.tex   test/bib_harvard.tex test/report.tex \
-	test/bibentry_apalike.tex test/bibentry_apalike.bib \
-	test/bibentry_plain.tex   test/bibentry_plain.bib \
-	test/bib_apacite_dblsp.tex test/dblspace.tex test/geotest.tex\
-	test/eqns2.tex             test/ifclause.tex test/enc_utf8x.tex\
-	test/geometry.tex          test/unicode.tex  test/fonttest.tex\
-	test/german.tex            test/bib_harvard.bib test/bib_super.tex\
-	test/fig_endfloat.tex      test/fig_test4.tex   test/overstrike.tex \
-	test/eqnnumber.tex         test/eqnnumber2.tex  test/fig_teste.pdf \
-	test/fig_testf.png
-	
+TEST=   
+	test/Makefile                test/enc_cp852.tex      test/fig_testd.pdf     \
+	test/accentchars.tex         test/enc_cp855.tex      test/fig_testd.ps      \
+	test/align.tex               test/enc_cp865.tex      test/fig_teste.pdf     \
+	test/array.tex               test/enc_cp866.tex      test/fig_testf.png     \
+	test/babel_czech.tex         test/enc_decmulti.tex   test/fig_tex.eps       \
+	test/babel_french.tex        test/enc_koi8-r.tex     test/fonts.tex         \
+	test/babel_frenchb.tex       test/enc_koi8-u.tex     test/fontsize.tex      \
+	test/babel_german.tex        test/enc_latin1.tex     test/fonttest.tex      \
+	test/babel_russian.tex       test/enc_latin2.tex     test/frac.tex          \
+	test/babel_spanish.tex       test/enc_latin3.tex     test/geometry.tex      \
+	test/bib_apacite.tex         test/enc_latin4.tex     test/geotest.tex       \
+	test/bib_apacite_dblsp.tex   test/enc_latin5.tex     test/german.tex        \
+	test/bib_apalike.tex         test/enc_latin9.tex     test/head_article.tex  \
+	test/bib_apalike2.tex        test/enc_maccyr.tex     test/head_book.tex     \
+	test/bib_apanat.tex          test/enc_macukr.tex     test/head_report.tex   \
+	test/bib_authordate.tex      test/enc_next.tex       test/hndout.sty        \
+	test/bib_harvard.bib         test/enc_utf8x.tex      test/ifclause.tex      \
+	test/bib_harvard.tex         test/endnote.tex        test/include.tex       \
+	test/bib_natbib1.tex         test/eqnnumber.tex      test/include1.tex      \
+	test/bib_natbib2.tex         test/eqnnumber2.tex     test/include2.tex      \
+	test/bib_natbib3.tex         test/eqns-koi8.tex      test/include3.tex      \
+	test/bib_simple.bib          test/eqns.tex           test/linux.tex         \
+	test/bib_simple.tex          test/eqns2.tex          test/list.tex          \
+	test/bib_super.tex           test/essential.tex      test/logo.tex          \
+	test/bibentry_apalike.bib    test/excalibur.tex      test/misc1.tex         \
+	test/bibentry_apalike.tex    test/fancy.tex          test/misc2.tex         \
+	test/bibentry_plain.bib      test/fig_endfloat.tex   test/misc3.tex         \
+	test/bibentry_plain.tex      test/fig_oval.eps       test/misc4.tex         \
+	test/box.tex                 test/fig_oval.pict      test/oddchars.tex      \
+	test/bracecheck              test/fig_oval.png       test/overstrike.tex    \
+	test/ch.tex                  test/fig_size.tex       test/percent.tex       \
+	test/chem.tex                test/fig_test.eps       test/picture.tex       \
+	test/color.tex               test/fig_test.tex       test/qualisex.tex      \
+	test/dblspace.tex            test/fig_test2.tex      test/report.tex        \
+	test/defs.tex                test/fig_test3.tex      test/spago1.tex        \
+	test/enc_applemac.tex        test/fig_test4.tex      test/subsup.tex        \
+	test/enc_cp1250.tex          test/fig_testa.eps      test/tabbing.tex       \
+	test/enc_cp1251.tex          test/fig_testb.pdf      test/tabular.tex       \
+	test/enc_cp1252.tex          test/fig_testb.ps       test/theorem.tex       \
+	test/enc_cp437.tex           test/fig_testc.pdf      test/ttgfsr7.tex       \
+	test/enc_cp850.tex           test/fig_testc.ps       test/unicode.tex       \
+	test/enc_cp852.tex           test/fig_testd.pdf
 	
 OBJS=fonts.o direct.o encodings.o commands.o stack.o funct1.o tables.o \
 	chars.o ignore.o cfg.o main.o utils.o parser.o lengths.o counters.o \
