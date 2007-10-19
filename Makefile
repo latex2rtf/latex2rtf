@@ -86,7 +86,7 @@ SCRIPTS= scripts/version scripts/latex2png scripts/latex2png_1 scripts/latex2png
 	scripts/Makefile scripts/test1.tex scripts/test2.tex scripts/test3.tex \
 	scripts/test3a.tex scripts/test4.tex scripts/test1fig.eps
 
-TEST=   
+TEST=  \
 	test/Makefile                test/enc_cp852.tex      test/fig_testd.pdf     \
 	test/accentchars.tex         test/enc_cp855.tex      test/fig_testd.ps      \
 	test/align.tex               test/enc_cp865.tex      test/fig_teste.pdf     \
