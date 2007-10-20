@@ -134,7 +134,7 @@ OBJS=fonts.o direct.o encodings.o commands.o stack.o funct1.o tables.o \
 	preamble.o letterformat.o equations.o convert.o xrefs.o definitions.o graphics.o \
 	mygetopt.o styles.o preparse.o
 
-all : checkdir uptodate latex2rtf
+all : checkdir latex2rtf
 
 latex2rtf: $(OBJS) $(HDRS)
 	$(CC) $(CFLAGS) $(LINK_FLAGS) $(OBJS)	$(LIBS) -o $(BINARY_NAME)
@@ -186,8 +186,8 @@ dist: checkdir releasedate latex2rtf doc $(SRCS) $(HDRS) $(CFGS) $(README) Makef
 	$(RM) -rf latex2rtf-$(VERSION)
 
 uptodate:
-#	perl -pi.bak -e '$$date=scalar localtime; s/\(.*/($$date)";/' version.h
-#	$(RM) version.h.bak
+	perl -pi.bak -e '$$date=scalar localtime; s/\(.*/($$date)";/' version.h
+	$(RM) version.h.bak
 
 releasedate:
 	perl -pi.bak -e '$$date=scalar localtime; s/\(.*/(released $$date)";/; s/d ..../d /;s/\d\d:\d\d:\d\d //;' version.h
@@ -267,7 +267,7 @@ pkg:
 	
 	
 	
-.PHONY: all check checkdir clean depend dist doc install install_info realclean latex2rtf uptodate splint fullcheck
+.PHONY: all check checkdir clean depend dist doc install install_info realclean latex2rtf uptodate releasedate splint fullcheck
 
 # created using "make depend"
 commands.o: commands.c cfg.h main.h convert.h chars.h fonts.h preamble.h \
