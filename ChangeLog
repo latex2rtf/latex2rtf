@@ -243,3 +243,21 @@ r729
 Fix numbering of chapters in the appendix ... not perfect, but the latex
 default should work.
 
+r731
+ChangeLog for release.  Update the version number.  Edit comments in 
+graphics.c
+
+r732
+WH: fixed some minor bugs in test files (./test/*.tex)
+
+r733
+reformat and add a few missing test files
+
+r734
+Fix typo
+
+r735
+fix more typos in Makefile
+
+r736
+bump version.h for release 1.9.18
