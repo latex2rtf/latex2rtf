@@ -1087,7 +1087,8 @@ void CmdCaption(int code)
         c = 't';
     }
 
-    if (g_document_type != FORMAT_ARTICLE)
+    if (g_document_type != FORMAT_ARTICLE &&
+        g_document_type != FORMAT_APA)
         snprintf(number, 20, "%d.%d", getCounter("chapter"), n);
     else
         snprintf(number, 20, "%d", n);

@@ -41,6 +41,13 @@
 #define CITE_APA_CITE_METASTAR 202
 #define CITE_APA_CITE_A_TITLE  203
 #define CITE_APA_CITE_B_TITLE  204
+#define CITE_APA_CITE_INSERT   205
+#define CITE_APA_YMD           206
+#define CITE_APA_REF_A_TITLE   207
+#define CITE_APA_REF_B_TITLE   208
+#define CITE_APA_JVNP          209
+#define CITE_APA_REF_YEAR      210
+#define CITE_APA_ADD_PUB       211
 
 #define CITE_T             16
 #define CITE_T_STAR        17

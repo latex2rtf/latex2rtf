@@ -1328,7 +1328,8 @@ void CmdTable(int code)
                 fprintRTF("[");                     /* one for tables and one for */
                 ConvertBabelName("TABLENAME");      /* endfloat tables */
                 fprintRTF(" ");
-                if (g_document_type != FORMAT_ARTICLE)
+                if (g_document_type != FORMAT_ARTICLE &&
+                    g_document_type != FORMAT_APA)
                     fprintRTF("%d.", getCounter("chapter"));
                 fprintRTF("%d about here]", getCounter("endfloattable"));
             }

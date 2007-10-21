@@ -1950,6 +1950,94 @@ void CmdApaCite(int code)
             if (s) free(s);
             if (t) free(t);
             break;
+
+        case CITE_APA_CITE_INSERT:
+            s = getBraceParam();    /* discard \APACinsertmetastar{art 1} ?? */
+            if (s) free(s);
+            break;
+
+        case CITE_APA_YMD:
+            s = getBraceParam();    /* \APACrefYearMonthDay{1991}{month}{day} */
+            fprintRTF("(");
+            ConvertString(s);
+            if (s) free(s);
+            s = getBraceParam();    /* month */
+            ConvertString(s);
+            if (s) free(s);
+            s = getBraceParam();    /* day */
+            ConvertString(s);
+            if (s) free(s);
+            fprintRTF(")");
+            break;
+
+        case CITE_APA_REF_A_TITLE:
+            s = getBraceParam();    /* \APACrefatitle{title}{title} */
+            ConvertString(s);
+            if (s) free(s);
+            s = getBraceParam();    /* ignore second entry?? */
+            if (s) free(s);
+            break;
+            
+        case CITE_APA_REF_B_TITLE:
+            s = getBraceParam();    /* \APACrefbtitle{title}{title} */
+            fprintRTF("{\\i ");
+            ConvertString(s);
+            fprintRTF("}");
+            if (s) free(s);
+            s = getBraceParam();    /* ignore second entry?? */
+            if (s) free(s);
+            break;
+
+        case CITE_APA_JVNP:
+            s = getBraceParam();    /*  \APACjournalVolNumPages{Journal of nothingness}{2}{}{1-2} */
+            fprintRTF("{\\i ");
+            ConvertString(s);
+            fprintRTF("}");
+            if (s) free(s);
+            
+            s = getBraceParam();      /* volume */
+            if (s && *s) {
+            	fprintRTF(", {\\i ");
+           		ConvertString(s);
+           		fprintRTF("}");
+           		free(s);
+           	}
+            
+            s = getBraceParam();  
+            if (s && *s) {            /* number ... just guessing */
+            	fprintRTF(", (");
+           		ConvertString(s);
+           		fprintRTF(")");
+           		free(s);
+           	}
+
+            s = getBraceParam();  
+            if (s && *s) {            /* pages  */
+            	fprintRTF(", ");
+           		ConvertString(s);
+           		free(s);
+           	}
+            break;
+        
+        case CITE_APA_REF_YEAR:
+            s = getBraceParam();    /* \APACrefYear{1991} */
+            fprintRTF("(");
+            ConvertString(s);
+            fprintRTF(")");
+            break;
+        
+		case CITE_APA_ADD_PUB:
+            s = getBraceParam();    /* \APACaddressPublisher{Somewhere}{PublishCo} */
+            if (s && *s) {
+            	ConvertString(s);
+            	fprintRTF(": ");
+            	free(s);
+            }
+            s = getBraceParam();    
+            ConvertString(s);
+            if (s) free(s);
+            break;
+		
        default:;
     }
 }
