@@ -37,6 +37,11 @@
 #define CITE_YEAR          13
 #define CITE_YEAR_NP       14
 
+#define CITE_APA_CITE_YEAR     201
+#define CITE_APA_CITE_METASTAR 202
+#define CITE_APA_CITE_A_TITLE  203
+#define CITE_APA_CITE_B_TITLE  204
+
 #define CITE_T             16
 #define CITE_T_STAR        17
 #define CITE_P             18

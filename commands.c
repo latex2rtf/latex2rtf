@@ -951,8 +951,13 @@ static CommandArray apaciteCommands[] = {
     {"BCntIP", CmdApaCite, 34}, /* convert number to letter */
     {"BBA", CmdApaCite, 35},    /* "&" in paren, "and" otherwise */
     {"AX", CmdApaCite, 36},     /* index name */
+    {"APACyear", CmdApaCite, CITE_APA_CITE_YEAR},
+    {"APACmetastar", CmdApaCite, CITE_APA_CITE_METASTAR},
+	{"APACciteatitle", CmdApaCite, CITE_APA_CITE_A_TITLE},
+	{"APACcitebtitle", CmdApaCite, CITE_APA_CITE_B_TITLE},
     {"Bem", CmdEmphasize, F_EMPHASIZE_2},
     {"BCAY", CmdBCAY, 0},
+    {"citeauthoryear", CmdBCAY, 0},
     {"fullcite", CmdCite, CITE_FULL},
     {"shortcite", CmdCite, CITE_SHORT},
     {"citeNP", CmdCite, CITE_CITE_NP},

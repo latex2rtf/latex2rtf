@@ -1805,7 +1805,7 @@ purpose: handles apacite stuff
 void CmdApaCite(int code)
 {
     int n;
-    char *s;
+    char *s, *t;
 
     switch (code) {
         case 0:
@@ -1925,7 +1925,32 @@ void CmdApaCite(int code)
             if (s)
                 free(s);
             break;
-        default:;
+        case CITE_APA_CITE_METASTAR:
+            ConvertString("$\\star");
+            break;
+       
+        case CITE_APA_CITE_YEAR:
+            s = getBraceParam();    /* \APACyear{1991} */
+            ConvertString(s);
+            if (s) free(s);
+            break;
+
+        case CITE_APA_CITE_A_TITLE:
+            s = getBraceParam();    /* \APACciteatitle{title} */
+            fprintRTF("\\ldblquote ");
+            ConvertString(s);
+            fprintRTF("\\rdblquote ");
+            if (s) free(s);
+            break;
+
+         case CITE_APA_CITE_B_TITLE:
+            s = getBraceParam();    /* \APACcitebtitle{title} */
+            strdup_together3("\\emph{",s,"}");
+            ConvertString(t);
+            if (s) free(s);
+            if (t) free(t);
+            break;
+       default:;
     }
 }
 
