@@ -737,6 +737,10 @@ char *FormatUnitNumber(char *name)
 {
     char label[20];
 
+    if (g_document_type == FORMAT_APA) { /* no numbers in apa at all! */
+    	return strdup("");
+    }
+    
     label[0] = '\0';
     if (strcmp(name, "part") == 0) {
         char *s = roman_item(getCounter(name), TRUE);
@@ -889,45 +893,61 @@ parameter: code: type of section-recursion-level
         case SECT_NORM:
         case SECT_NORM_STAR:
             CmdVspace(VSPACE_BIG_SKIP);
-            CmdStartParagraph("section", TITLE_INDENT);
-            fprintRTF("{");
-            InsertStyle("section");
-            fprintRTF(" ");
-            if (code == SECT_NORM && getCounter("secnumdepth") >= 0) {
-                incrementCounter("section");
-                setCounter("subsection", 0);
-                setCounter("subsubsection", 0);
-                setCounter("paragraph", 0);
-                setCounter("subparagraph", 0);
-                resetTheoremCounter("section");
-                unit_label = FormatUnitNumber("section");
-                InsertBookmark(g_section_label, unit_label);
-                fprintRTF("  ");
-                free(unit_label);
+            if (g_document_type == FORMAT_APA) {
+            	ConvertString("\\begin{center}");
+            	CmdStartParagraph("apa_section", ANY_INDENT);
+			} else {        	
+            	CmdStartParagraph("section", TITLE_INDENT);
+            	fprintRTF("{");
+				InsertStyle("section");
+				fprintRTF(" ");
+            
+				if (code == SECT_NORM && getCounter("secnumdepth") >= 0) {
+					incrementCounter("section");
+					setCounter("subsection", 0);
+					setCounter("subsubsection", 0);
+					setCounter("paragraph", 0);
+					setCounter("subparagraph", 0);
+					resetTheoremCounter("section");
+					unit_label = FormatUnitNumber("section");
+					InsertBookmark(g_section_label, unit_label);
+					fprintRTF("  ");
+					free(unit_label);
+				}
             }
             ConvertString(heading);
-            CmdEndParagraph(0);
-            fprintRTF("}");
+            if (g_document_type == FORMAT_APA)
+            	ConvertString("\\end{center}");
+            else {
+            	CmdEndParagraph(0);
+	            fprintRTF("}");
+            }
             CmdVspace(VSPACE_SMALL_SKIP);
             break;
 
         case SECT_SUB:
         case SECT_SUB_STAR:
             CmdVspace(VSPACE_MEDIUM_SKIP);
-            CmdStartParagraph("subsection", TITLE_INDENT);
-            fprintRTF("{");
-            InsertStyle("subsection");
-            fprintRTF(" ");
-            if (code == SECT_SUB && getCounter("secnumdepth") >= 1) {
-                incrementCounter("subsection");
-                setCounter("subsubsection", 0);
-                setCounter("paragraph", 0);
-                setCounter("subparagraph", 0);
-                resetTheoremCounter("subsection");
-                unit_label = FormatUnitNumber("subsection");
-                InsertBookmark(g_section_label, unit_label);
-                fprintRTF("  ");
-                free(unit_label);
+            if (g_document_type == FORMAT_APA) {
+            	ConvertString("\\noindent");
+				CmdStartParagraph("apa_subsection", ANY_INDENT);
+				fprintRTF("{\\i ");
+			} else {        	
+				CmdStartParagraph("subsection", TITLE_INDENT);
+				fprintRTF("{");
+				InsertStyle("subsection");
+				fprintRTF(" ");          
+				if (code == SECT_SUB && getCounter("secnumdepth") >= 1) {
+					incrementCounter("subsection");
+					setCounter("subsubsection", 0);
+					setCounter("paragraph", 0);
+					setCounter("subparagraph", 0);
+					resetTheoremCounter("subsection");
+					unit_label = FormatUnitNumber("subsection");
+					InsertBookmark(g_section_label, unit_label);
+					fprintRTF("  ");
+					free(unit_label);
+				}
             }
             ConvertString(heading);
             CmdEndParagraph(0);
@@ -938,25 +958,35 @@ parameter: code: type of section-recursion-level
         case SECT_SUBSUB:
         case SECT_SUBSUB_STAR:
             CmdVspace(VSPACE_MEDIUM_SKIP);
-            CmdStartParagraph("subsubsection", TITLE_INDENT);
-            fprintRTF("{");
-            InsertStyle("subsubsection");
-            fprintRTF(" ");
-            if (code == SECT_SUBSUB && (getCounter("secnumdepth") > 2 ||
-                (g_document_type == FORMAT_ARTICLE && getCounter("secnumdepth") == 2))) {
-                incrementCounter("subsubsection");
-                setCounter("paragraph", 0);
-                setCounter("subparagraph", 0);
-                resetTheoremCounter("subsubsection");
-                unit_label = FormatUnitNumber("subsubsection");
-                InsertBookmark(g_section_label, unit_label);
-                fprintRTF("  ");
-                free(unit_label);
+            if (g_document_type == FORMAT_APA) {
+				CmdStartParagraph("apa_subsubsection", ANY_INDENT);
+				fprintRTF("{\\i ");
+			} else {        	
+				CmdStartParagraph("subsubsection", TITLE_INDENT);
+				fprintRTF("{");
+				InsertStyle("subsubsection");
+				fprintRTF(" ");
+				
+				if (code == SECT_SUBSUB && (getCounter("secnumdepth") > 2 ||
+					(g_document_type == FORMAT_ARTICLE && getCounter("secnumdepth") == 2))) {
+					incrementCounter("subsubsection");
+					setCounter("paragraph", 0);
+					setCounter("subparagraph", 0);
+					resetTheoremCounter("subsubsection");
+					unit_label = FormatUnitNumber("subsubsection");
+					InsertBookmark(g_section_label, unit_label);
+					fprintRTF("  ");
+					free(unit_label);
+				}
             }
             ConvertString(heading);
-            CmdEndParagraph(0);
-            fprintRTF("}");
-            CmdVspace(VSPACE_SMALL_SKIP);
+            if (g_document_type == FORMAT_APA) {
+            	fprintRTF(".} ");
+            } else {
+            	CmdEndParagraph(0);
+            	fprintRTF("}");
+            	CmdVspace(VSPACE_SMALL_SKIP);
+            }
             break;
 
         case SECT_SUBSUBSUB:

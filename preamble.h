@@ -1,8 +1,9 @@
 #define FORMAT_ARTICLE 1
-#define FORMAT_REPORT 2
-#define FORMAT_BOOK 3
-#define FORMAT_SLIDES 4
-#define FORMAT_LETTER 5
+#define FORMAT_REPORT  2
+#define FORMAT_BOOK    3
+#define FORMAT_SLIDES  4
+#define FORMAT_LETTER  5
+#define FORMAT_APA     6
 
 #define TITLE_TITLE 1
 #define TITLE_AUTHOR 2

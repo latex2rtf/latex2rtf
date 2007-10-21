@@ -466,6 +466,11 @@ static void setDocumentOptions(char *optionlist)
             diagnostics(WARNING, "Limited endnote support");
         } else if (strcmp(option, "paralist") == 0) {
             diagnostics(WARNING, "Limited paralist support");
+        } else if (strcmp(option, "man") == 0 ||
+                   strcmp(option, "jou") == 0) {
+            diagnostics(WARNING, "ignoring [%s], assuming [doc]", option);
+        } else if (strcmp(option, "doc") == 0) {
+            diagnostics(WARNING, "Limited support for apa class");
         } else if (!TryVariableIgnore(option)) {
             diagnostics(WARNING, "Unknown style option %s ignored", option);
         }
@@ -508,8 +513,13 @@ void CmdDocumentStyle(int code)
     else if (strcmp(format, "slides") == 0)
         g_document_type = FORMAT_SLIDES;
 
-    else
-        fprintf(stderr, "\nDocument format <%s> unknown, using article format", format);
+    else if (strcmp(format, "apa") == 0) {
+        g_document_type = FORMAT_APA;
+        g_document_bibstyle = BIBSTYLE_APACITE;
+        PushEnvironment(APACITE_MODE);
+        diagnostics(WARNING, "Meager support for \\documentclass{apa}");
+    } else
+        diagnostics(WARNING, "Document format <%s> unknown, using article format", format);
 
     if (options_with_spaces) {
         options = strdup_noblanks(options_with_spaces);
