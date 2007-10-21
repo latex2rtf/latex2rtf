@@ -61,6 +61,8 @@ static char *g_preambleTitle = NULL;
 static char *g_preambleAuthor = NULL;
 static char *g_preambleDate = NULL;
 static char *g_preambleEncoding = NULL;
+static char *g_preambleAffiliation = NULL;
+static char *g_preambleAbstract = NULL;
 
 static char *g_preambleCFOOT = NULL;
 static char *g_preambleLFOOT = NULL;
@@ -813,6 +815,16 @@ void CmdTitle(int code)
             UpdateLineNumber(g_preambleDate);
             break;
 
+        case TITLE_AFFILIATION:
+            g_preambleAffiliation = getBraceParam();
+            UpdateLineNumber(g_preambleAffiliation);
+            break;
+
+        case TITLE_ABSTRACT:
+            g_preambleAbstract = getBraceParam();
+            UpdateLineNumber(g_preambleAbstract);
+            break;
+
         case TITLE_TITLEPAGE:
             g_preambleTitlepage = TRUE;
             break;
@@ -871,12 +883,24 @@ void CmdMakeTitle(int code)
     fprintRTF("}");
 
     fprintRTF("\n\\par\\pard\\qc {%s ", date_begin);
+    if (g_preambleAffiliation != NULL && strcmp(g_preambleAffiliation, "") != 0)
+        ConvertString(g_preambleAffiliation);
+    fprintRTF("}");
+
+    fprintRTF("\n\\par\\pard\\qc {%s ", date_begin);
     if (g_preambleDate != NULL && strcmp(g_preambleDate, "") != 0)
         ConvertString(g_preambleDate);
     fprintRTF("}");
 
     CmdEndParagraph(0);
     alignment = JUSTIFIED;
+
+    if (g_preambleAbstract != NULL && strcmp(g_preambleAbstract, "") != 0) {
+    	char *s = strdup_together3("{",g_preambleAbstract,"}");
+    	PushSource(NULL,s);
+    	CmdAbstract(3);
+    	free(s);
+    }
 
     if (g_preambleTitlepage)
         fprintRTF("\\page ");

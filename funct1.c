@@ -2030,13 +2030,13 @@ void CmdAbstract(int code)
 {
     static char oldalignment;
 	    	    
-    if (code == 2 || code == (1 | ON) ) {
+    if (code == 3 || code == 2 || code == (1 | ON) ) {
 	    CmdEndParagraph(0);
         oldalignment = alignment;
         if (g_document_type == FORMAT_REPORT || titlepage)
             CmdNewPage(NewPage);
 
-        CmdStartParagraph("abstract", FIRST_INDENT);
+        CmdStartParagraph("abstract", FIRST_INDENT);		
         fprintRTF("\\qc{\\b ");
         ConvertBabelName("ABSTRACTNAME");
         fprintRTF("}");
@@ -2047,13 +2047,14 @@ void CmdAbstract(int code)
 
     } 
     
-    if (code == 2) {
+    if (code == 2 || code == 3) {
     	char *s = getBraceParam();
+    	if (code == 3) ConvertString("\\noindent");
     	ConvertString(s);
     	free(s);
     }
     
-    if (code == 2 || code == (1 | OFF) ) {
+    if (code == 3 || code == 2 || code == (1 | OFF) ) {
         CmdIndent(INDENT_USUAL);
     	CmdEndParagraph(0);
         g_left_margin_indent -= 1024;

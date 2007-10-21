@@ -5,10 +5,12 @@
 #define FORMAT_LETTER  5
 #define FORMAT_APA     6
 
-#define TITLE_TITLE 1
-#define TITLE_AUTHOR 2
-#define TITLE_DATE 3
-#define TITLE_TITLEPAGE 4
+#define TITLE_TITLE       1
+#define TITLE_AUTHOR      2
+#define TITLE_DATE        3
+#define TITLE_TITLEPAGE   4
+#define TITLE_AFFILIATION 5
+#define TITLE_ABSTRACT    6
 
 #define GRAPHICS_NONE     0
 #define GRAPHICS_GRAPHICS 1

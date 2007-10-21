@@ -203,6 +203,9 @@ static CommandArray commands[] = {
     {"author", CmdTitle, TITLE_AUTHOR},
     {"and", CmdAnd, 0},
     {"date", CmdTitle, TITLE_DATE},
+    {"affiliation", CmdTitle, TITLE_AFFILIATION},
+    {"abstract", CmdTitle, TITLE_ABSTRACT},
+
     {"maketitle", CmdMakeTitle, 0},
     {"par", CmdEndParagraph, 0},
     {"noindent", CmdIndent, INDENT_NONE},
