@@ -895,7 +895,6 @@ parameter: code: type of section-recursion-level
             CmdVspace(VSPACE_BIG_SKIP);
             if (g_document_type == FORMAT_APA) {
             	ConvertString("\\begin{center}");
-            	CmdStartParagraph("apa_section", ANY_INDENT);
 			} else {        	
             	CmdStartParagraph("section", TITLE_INDENT);
             	fprintRTF("{");
@@ -916,9 +915,11 @@ parameter: code: type of section-recursion-level
 				}
             }
             ConvertString(heading);
-            if (g_document_type == FORMAT_APA)
+            if (g_document_type == FORMAT_APA) {
             	ConvertString("\\end{center}");
-            else {
+            	CmdEndParagraph(0);
+            	CmdStartParagraph("apa_section", ANY_INDENT);
+            } else {
             	CmdEndParagraph(0);
 	            fprintRTF("}");
             }
@@ -930,7 +931,7 @@ parameter: code: type of section-recursion-level
             CmdVspace(VSPACE_MEDIUM_SKIP);
             if (g_document_type == FORMAT_APA) {
             	ConvertString("\\noindent");
-				CmdStartParagraph("apa_subsection", ANY_INDENT);
+				CmdStartParagraph("apa_subsection", FIRST_INDENT);
 				fprintRTF("{\\i ");
 			} else {        	
 				CmdStartParagraph("subsection", TITLE_INDENT);
@@ -2047,14 +2048,13 @@ void CmdAbstract(int code)
 
     } 
     
-    if (code == 2 || code == 3) {
+    if (code == 2) {
     	char *s = getBraceParam();
-    	if (code == 3) ConvertString("\\noindent");
     	ConvertString(s);
     	free(s);
     }
     
-    if (code == 3 || code == 2 || code == (1 | OFF) ) {
+    if (code == 4 || code == 2 || code == (1 | OFF) ) {
         CmdIndent(INDENT_USUAL);
     	CmdEndParagraph(0);
         g_left_margin_indent -= 1024;

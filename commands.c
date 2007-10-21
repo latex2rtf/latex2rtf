@@ -965,7 +965,7 @@ static CommandArray apaciteCommands[] = {
 	{"APACjournalVolNumPages", CmdApaCite, CITE_APA_JVNP},
 	{"APACrefYear", CmdApaCite, CITE_APA_REF_YEAR},
 	{"APACaddressPublisher", CmdApaCite, CITE_APA_ADD_PUB},
-	
+	{"PrintBackRefs", CmdApaCite, CITE_PRINT_BACK_REFS},
 	{"Bem", CmdEmphasize, F_EMPHASIZE_2},
     {"BCAY", CmdBCAY, 0},
     {"citeauthoryear", CmdBCAY, 0},

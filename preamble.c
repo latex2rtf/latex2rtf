@@ -897,15 +897,20 @@ void CmdMakeTitle(int code)
 
     if (g_preambleAbstract != NULL && strcmp(g_preambleAbstract, "") != 0) {
     	char *s = strdup_together3("{",g_preambleAbstract,"}");
-    	PushSource(NULL,s);
     	CmdAbstract(3);
+    	ConvertString("\\noindent");
+    	ConvertString(s);
+    	CmdAbstract(4);
     	free(s);
     }
 
     if (g_preambleTitlepage)
         fprintRTF("\\page ");
 
-    PopTrackLineNumber();
+    if (g_document_type == FORMAT_APA)
+    	CmdStartParagraph("body",FIRST_INDENT);
+
+	PopTrackLineNumber();
 }
 
 void CmdPreambleBeginEnd(int code)

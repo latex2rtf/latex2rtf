@@ -48,6 +48,7 @@
 #define CITE_APA_JVNP          209
 #define CITE_APA_REF_YEAR      210
 #define CITE_APA_ADD_PUB       211
+#define CITE_PRINT_BACK_REFS   212
 
 #define CITE_T             16
 #define CITE_T_STAR        17

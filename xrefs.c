@@ -442,9 +442,13 @@ void CmdThebibliography(int code)
 
         CmdEndParagraph(0);
         CmdVspace(VSPACE_MEDIUM_SKIP);
-        CmdStartParagraph("bibliography", TITLE_INDENT);
 
-        fprintRTF("{\\plain\\b\\fs32 ");
+        if (g_document_type == FORMAT_APA) {
+            ConvertString("\\begin{center}");
+        } else {
+        	CmdStartParagraph("bibliography", TITLE_INDENT);
+        	fprintRTF("{\\plain\\b\\fs32 ");
+        }
         i = existsDefinition("refname");    /* see if refname has * been redefined */
         if (i > -1) {
             char *str = expandDefinition(i);
@@ -452,13 +456,18 @@ void CmdThebibliography(int code)
             ConvertString(str);
             free(str);
         } else {
-            if (g_document_type == FORMAT_ARTICLE)
+            if (g_document_type == FORMAT_ARTICLE || g_document_type == FORMAT_APA)
                 ConvertBabelName("REFNAME");
             else
                 ConvertBabelName("BIBNAME");
         }
-        fprintRTF("}");
-        CmdEndParagraph(0);
+
+        if (g_document_type == FORMAT_APA) {
+            ConvertString("\\end{center}");
+        } else {
+        	fprintRTF("}");
+        	CmdEndParagraph(0);
+        }
         CmdVspace(VSPACE_SMALL_SKIP);
 
         PushEnvironment(BIBLIOGRAPHY_MODE);
@@ -2037,7 +2046,10 @@ void CmdApaCite(int code)
             ConvertString(s);
             if (s) free(s);
             break;
-		
+	
+		case CITE_PRINT_BACK_REFS:  /* ignore \PrintBackRefs{\CurrentBib} */
+			s = getBraceParam();
+			if (s) free(s);
        default:;
     }
 }

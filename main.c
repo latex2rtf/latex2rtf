@@ -414,9 +414,10 @@ static void ConvertWholeDocument(void)
     g_processing_preamble = FALSE;
     preParse(&body, &sec_head, &label);
 
-    diagnostics(2, "*******************\nbody=%s", (body) ? body : "<empty>");
-    diagnostics(2, "*******************\nsec_head=%s", (sec_head) ? sec_head : "<none>");
-    diagnostics(2, "*******************\nlabel=%s", (g_section_label) ? g_section_label : "<none>");
+    diagnostics(2, "*******************body=\n%s", (body) ? body : "<empty>");
+    diagnostics(2, "********sec_head=%s", (sec_head) ? sec_head : "<none>");
+    diagnostics(2, "********label=%s", (g_section_label) ? g_section_label : "<none>");
+    
     ConvertString(body);
     free(body);
     if (label)

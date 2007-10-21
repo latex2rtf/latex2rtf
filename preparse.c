@@ -333,7 +333,7 @@ void preParse(char **body, char **header, char **label)
 					*(section_buffer + section_buffer_end + 1) = '\0';
 					i = existsDefinition(section_buffer + section_buffer_end - cmd_pos + 1);
 					if (i > -1) {
-						diagnostics(2, "matched <%s> ", section_buffer + section_buffer_end - cmd_pos);
+						diagnostics(6, "matched <%s> ", section_buffer + section_buffer_end - cmd_pos);
 						if (cNext == ' ') {
 							cNext = getNonSpace();
 							ungetTexChar(cNext);
@@ -376,8 +376,8 @@ void preParse(char **body, char **header, char **label)
 					}
 	
 					if (str) {          /* found */
-						diagnostics(2, "matched <%s}>", p);
-						diagnostics(3, "expanded to <%s>", str);
+						diagnostics(6, "matched <%s}>", p);
+						diagnostics(6, "expanded to <%s>", str);
 	
 						PushSource(NULL, str);
 						move_end_of_buffer(-cmd_pos-1); /* remove \begin{userenvironment} */
@@ -400,7 +400,7 @@ void preParse(char **body, char **header, char **label)
 				else
 					possible_match[i] = FALSE;
 
-				diagnostics(2,"cmd_pos = %d, char = %c, possible match %s, size=%d, possible=%d", \
+				diagnostics(6,"cmd_pos = %d, char = %c, possible match %s, size=%d, possible=%d", \
 					cmd_pos,cThis,command[i],strlen(command[i]),possible_match[i]);
             }
         }
@@ -605,7 +605,4 @@ void preParse(char **body, char **header, char **label)
     *body = text;
     *header = next_header;
     PopTrackLineNumber();
-    
-    diagnostics(3, "body = %s", text);
-    diagnostics(2, "next header = '%s'", next_header);
 }
