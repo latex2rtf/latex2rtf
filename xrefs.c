@@ -1808,13 +1808,33 @@ void CmdBCAY(int code)
     free(year);
 }
 
+static void ConvertBraceParam(char *pre, char *post)
+{
+	char *s;
+	s = getBraceParam();
+	if (s && strlen(s) > 0) {
+		fprintRTF("%s",pre);
+		ConvertString(s);
+		fprintRTF("%s",post);
+	}
+		
+	if (s) free(s);
+}
+
+static void WasteBraceParam(void)
+{
+	char *s;
+	s = getBraceParam();
+	if (s) free(s);
+}
+
 /******************************************************************************
 purpose: handles apacite stuff
 ******************************************************************************/
 void CmdApaCite(int code)
 {
     int n;
-    char *s, *t;
+    char *s;
 	char * month[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 	switch (code) {
         case 0:
@@ -1929,10 +1949,8 @@ void CmdApaCite(int code)
             fprintRTF("%s", (g_current_cite_paren) ? "&" : "and");  /* BBA */
             break;
         case 36:
-            s = getBraceParam();    /* \AX{entry} */
+            WasteBraceParam();    /* \AX{entry} */
             diagnostics(4, "Ignoring \\AX{%s}", s);
-            if (s)
-                free(s);
             break;
         case 37:
             fprintRTF(". ");
@@ -1946,162 +1964,77 @@ void CmdApaCite(int code)
             break;
        
         case CITE_APA_CITE_YEAR:
-            s = getBraceParam();    /* \APACyear{1991} */
-            ConvertString(s);
-            if (s) free(s);
+			ConvertBraceParam("","");     /* \APACyear{1991} */
             break;
 
         case CITE_APA_CITE_A_TITLE:
-            s = getBraceParam();    /* \APACciteatitle{title} */
-            fprintRTF("\\ldblquote ");
-            ConvertString(s);
-            fprintRTF("\\rdblquote ");
-            if (s) free(s);
+            ConvertBraceParam("\\ldblquote ","\\rdblquote ");
             break;
 
          case CITE_APA_CITE_B_TITLE:
-            s = getBraceParam();    /* \APACcitebtitle{title} */
-            strdup_together3("\\emph{",s,"}");
-            ConvertString(t);
-            if (s) free(s);
-            if (t) free(t);
+            ConvertBraceParam("{\\i ","}");  /* \APACcitebtitle{title} */
             break;
 
         case CITE_APA_CITE_INSERT:
-            s = getBraceParam();    /* discard \APACinsertmetastar{art 1} ?? */
-            if (s) free(s);
+            WasteBraceParam();    /* discard \APACinsertmetastar{art 1} ?? */
             break;
 
         case CITE_APA_YMD:
-            s = getBraceParam();    /* \APACrefYearMonthDay{1991}{month}{day} */
             fprintRTF("(");
-            ConvertString(s);
-            if (s) free(s);
-            s = getBraceParam();    /* month */
-            if (s && *s) {
-            	fprintRTF(", ");
-            	ConvertString(s);
-            	free(s);
-            }
-            s = getBraceParam();    /* day */
-            if (s && *s) {
-            	fprintRTF(" ");
-            	ConvertString(s);
-            	free(s);
-            }
+            ConvertBraceParam("","");     /* \APACrefYearMonthDay{1991}{month}{day} */
+            ConvertBraceParam(", ","");   /* month */
+            ConvertBraceParam(" ","");    /* day */
             fprintRTF(")");
             break;
 
         case CITE_APA_REF_A_TITLE:
-            s = getBraceParam();    /* \APACrefatitle{title}{title} */
-            ConvertString(s);
-            if (s) free(s);
-            s = getBraceParam();    /* ignore second entry?? */
-            if (s) free(s);
+            WasteBraceParam();    /* ignore first entry?? */
+            ConvertBraceParam("","");   /* \APACrefatitle{title}{title} */
             break;
             
         case CITE_APA_REF_B_TITLE:
-            s = getBraceParam();    /* \APACrefbtitle{title}{title} */
-            fprintRTF("{\\i ");
-            ConvertString(s);
-            fprintRTF("}");
-            if (s) free(s);
-            s = getBraceParam();    /* ignore second entry?? */
-            if (s) free(s);
+            WasteBraceParam();    /* ignore first entry?? */
+            ConvertBraceParam("{\\i ","}");    /* \APACrefbtitle{title}{title} */
             break;
 
         case CITE_APA_JVNP:
-            s = getBraceParam();    /*  \APACjournalVolNumPages{Journal of nothingness}{2}{}{1-2} */
-            fprintRTF("{\\i ");
-            ConvertString(s);
-            fprintRTF("}");
-            if (s) free(s);
-            
-            s = getBraceParam();      /* volume */
-            if (s && *s) {
-            	fprintRTF(", {\\i ");
-           		ConvertString(s);
-           		fprintRTF("}");
-           		free(s);
-           	}
-            
-            s = getBraceParam();  
-            if (s && *s) {            /* number (10) */
-            	fprintRTF("(");
-           		ConvertString(s);
-           		fprintRTF(")");
-           		free(s);
-           	}
-
-            s = getBraceParam();  
-            if (s && *s) {            /* pages  */
-            	fprintRTF(", ");
-           		ConvertString(s);
-           		free(s);
-           	}
+            ConvertBraceParam("{\\i ","}");    /*  \APACjournalVolNumPages{Journal of nothingness}{2}{}{1-2} */           
+            ConvertBraceParam(", {\\i ","}");   /* volume */
+			ConvertBraceParam("(",")"); /* number (10) */
+			ConvertBraceParam(", ",""); /* pages */
             break;
         
         case CITE_APA_REF_YEAR:
-            s = getBraceParam();    /* \APACrefYear{1991} */
-            fprintRTF("(");
-            ConvertString(s);
-            fprintRTF(")");
-            if (s) free(s);
+            ConvertBraceParam("(",")");  /* \APACrefYear{1991} */
             break;
         
 		case CITE_APA_ADD_PUB:
-            s = getBraceParam();    /* \APACaddressPublisher{Somewhere}{PublishCo} */
-            if (s && *s) {
-            	ConvertString(s);
-            	fprintRTF(": ");
-            	free(s);
-            }
-            s = getBraceParam();    
-            ConvertString(s);
-            if (s) free(s);
+            ConvertBraceParam("",": ");    /* \APACaddressPublisher{Somewhere}{PublishCo} */
+            ConvertBraceParam("","");  
             break;
 	
 		case CITE_PRINT_BACK_REFS:  /* ignore \PrintBackRefs{\CurrentBib} */
-			s = getBraceParam();
-			if (s) free(s);
+			WasteBraceParam();			
 			break;
 
-		case CITE_PRINT_CARDINAL:  /* ignore \PrintBackRefs{\CurrentBib} */
-			s = getBraceParam();
-            ConvertString(s);
-			if (s) free(s);
+		case CITE_PRINT_CARDINAL:  
+			ConvertBraceParam("","");
 			break;
 
 		case CITE_APA_ADD_PUB_EQ_AUTHOR:  
       /* \APACaddressPublisherEqAuth{Washington, DC}{{American Psychiatric Association}} */
-            s = getBraceParam();    
-            if (s && *s) {
-            	ConvertString(s);
-            	fprintRTF(": Author");
-            	free(s);
-            }
-            s = getBraceParam();    
-            if (s) free(s);
+            ConvertBraceParam("",": Author");
+			WasteBraceParam();			
             break;
 
 		case CITE_APA_REF_A_E_TITLE:   /* english translation of article */
-			s = getBraceParam();
-			if (s) free(s);
-			s = getBraceParam();
-            fprintRTF("[");
-            ConvertString(s);
-            fprintRTF("]");
-			if (s) free(s);
+			WasteBraceParam();			
+            ConvertBraceParam("[","]");
 			break;
 			
 		case CITE_APA_REF_B_E_TITLE:   /* english translation of book */
-			s = getBraceParam();
-			if (s) free(s);
-			s = getBraceParam();
-            fprintRTF("[");
-            ConvertString(s);
-            fprintRTF("]");
-			if (s) free(s);
+			WasteBraceParam();			
+            ConvertBraceParam("[","]");
 			break;
 
 		case CITE_APA_MONTH:
@@ -2114,104 +2047,54 @@ void CmdApaCite(int code)
 			break;
 			
 		case CITE_APA_B_VOL_ED_TR:    /* \APACbVolEdTR{}{tech report}*/
-			s = getBraceParam();
-			if (s) free(s);
-            s = getBraceParam();   
-            fprintRTF("(");
-            ConvertString(s);
-            if (s) free(s);
-            fprintRTF(")");
+			WasteBraceParam();			
+            ConvertBraceParam("(",")");
 			break;
 			
-		case CITE_APA_B_VOL_ED_TR_PGS:    /* \APACbVolEdTRpgs{}{tech report}*/
-			s = getBraceParam();
-			if (s) free(s);
-            s = getBraceParam();   
+		case CITE_APA_B_VOL_ED_TR_PGS:    /* \APACbVolEdTRpgs{}{tech report}{}*/
             fprintRTF("(");
-            ConvertString(s);
-            if (s) free(s);
-            s = getBraceParam();   
-            if (s && *s) {
-            	fprintRTF(", ");
-            	ConvertString(s);
-            	free(s);
-            }
+			WasteBraceParam();			
+            ConvertBraceParam("","");     /* \APACbVolEdTRpgs{}{tech report}{}*/
+            ConvertBraceParam(", ","");   /* more info */
             fprintRTF(")");
 			break;
 			
 		case CITE_APA_ADD_INST:   /* APACaddressInstitution{add}{inst} */
-			s = getBraceParam();
-            if (s && *s) {
-            	ConvertString(s);
-            	fprintRTF(": ");
-            	free(s);
-            }
-            s = getBraceParam();    
-            ConvertString(s);
-			if (s) free(s);
+            ConvertBraceParam("","");
+            ConvertBraceParam(": ","");   /* more info */
 			break;
 			
 		case CITE_APA_HOW:
-			s = getBraceParam();
-            ConvertString(s);
-			if (s) free(s);
+            ConvertBraceParam("","");
 			break;
 			
-		case CITE_CORIG_YEAR_NOTE:
-			s = getBraceParam();
-            fprintRTF("(Original work published ");
-            ConvertString(s);
-            fprintRTF(")");
-			if (s) free(s);
-            ConvertString(s);
-			if (s) free(s);
+		case CITE_APA_ORIG_YEAR_NOTE:
+            ConvertBraceParam("(Original work published ",")");
+			WasteBraceParam();			
 			break;
 
 		case CITE_APA_ORIG_JOUR:
 			s = getBraceParam();   /* year */
-			t = getBraceParam();   /* article */
-            fprintRTF("(Reprinted from {\\i ");
-            ConvertString(t);
-            fprintRTF("}");
-            free(t);
+            ConvertBraceParam("(Reprinted from {\\i  ","}"); /* article */
             if (s && *s) {
             	fprintRTF(", ");
             	ConvertString(s);
             	free(s);
             }
-			s = getBraceParam();    /* vol */
-            if (s && *s) {
-            	fprintRTF(", {\\i ");
-            	ConvertString(s);
-            	fprintRTF("}");
-            	free(s);
-            }
-
-			s = getBraceParam();   /* number */
-            if (s && *s) {
-            	fprintRTF("(");
-            	ConvertString(s);
-            	fprintRTF(")");
-            	free(s);
-            }
-
-			s = getBraceParam();  /* pages */
-            if (s && *s) {
-            	fprintRTF(", ");
-            	ConvertString(s);
-            	free(s);
-            }
+            
+            ConvertBraceParam(", {\\i ","}");   /* volume */
+			ConvertBraceParam("(",")"); /* number (10) */
+			ConvertBraceParam(", ",""); /* pages */
             fprintRTF(")");
 			break;
 
 		case CITE_APA_REF_NOTE:
-			s = getBraceParam();
-			fprintRTF("(");
-            ConvertString(s);
-			fprintRTF(")");
-			if (s) free(s);
+			ConvertBraceParam("(",")"); 
 			break;
 
+		case CITE_APA_UNSKIP:   /*do nothing! */
+			break;
+			
        default:;
     }
 }

@@ -56,11 +56,12 @@
 #define CITE_APA_B_VOL_ED_TR   217
 #define CITE_APA_ADD_INST      218
 #define CITE_APA_HOW           219
-#define CITE_CORIG_YEAR_NOTE   220
+#define CITE_APA_ORIG_YEAR_NOTE   220
 #define CITE_APA_REF_NOTE      221
 #define CITE_APA_REF_B_E_TITLE 223
 #define CITE_APA_ORIG_JOUR     224
 #define CITE_APA_B_VOL_ED_TR_PGS 225
+#define CITE_APA_UNSKIP        226
 
 #define CITE_T             16
 #define CITE_T_STAR        17

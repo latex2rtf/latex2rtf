@@ -977,11 +977,12 @@ static CommandArray apaciteCommands[] = {
 	{"APACbVolEdTR", CmdApaCite, CITE_APA_B_VOL_ED_TR},
 	{"APACaddressInstitution", CmdApaCite, CITE_APA_ADD_INST},
 	{"APAChowpublished", CmdApaCite, CITE_APA_HOW},
-	{"APACorigyearnote", CmdApaCite, CITE_CORIG_YEAR_NOTE},
+	{"APACorigyearnote", CmdApaCite, CITE_APA_ORIG_YEAR_NOTE},
 	{"APACrefnote", CmdApaCite, CITE_APA_REF_NOTE},
 	{"APACbVolEdTRpgs", CmdApaCite, CITE_APA_B_VOL_ED_TR_PGS},
 	{"APACorigjournalnote", CmdApaCite, CITE_APA_ORIG_JOUR},
 	{"APACaddressInstitutionEqAuth", CmdApaCite, CITE_APA_ADD_PUB_EQ_AUTHOR},
+	{"unskip", CmdApaCite, CITE_APA_UNSKIP},
 	
 	{"Bem", CmdEmphasize, F_EMPHASIZE_2},
     {"BCAY", CmdBCAY, 0},
