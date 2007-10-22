@@ -84,6 +84,7 @@ static char *g_bibpunct_numbers_sep = NULL;
 static char *g_bibpunct_postnote_sep = NULL;
 static bool g_bibpunct_touched = FALSE;
 static int   g_bibpunct_style = BIB_STYLE_ALPHA;
+static bool g_in_bibliography = FALSE;
 
 void InitializeBibliography(void)
 {
@@ -417,7 +418,8 @@ void CmdBibliography(int code)
     free(s);
 
     err = PushSource(g_bbl_name, NULL);
-
+	g_in_bibliography = TRUE;
+	
     if (!err) {
         diagnostics(4, "CmdBibliography ... begin Convert()");
         Convert();
@@ -425,6 +427,8 @@ void CmdBibliography(int code)
         PopSource();
     } else
         diagnostics(WARNING, "Cannot open bibliography file.  Create %s using BibTeX", g_bbl_name);
+
+	g_in_bibliography = FALSE;
 }
 
 /******************************************************************************
@@ -1946,7 +1950,10 @@ void CmdApaCite(int code)
             free(s);
             break;
         case 35:
-            fprintRTF("%s", (g_current_cite_paren) ? "&" : "and");  /* BBA */
+            if (g_current_cite_paren || g_in_bibliography)
+            	fprintRTF("&");
+            else
+            	fprintRTF("and");    /* BBA */
             break;
         case 36:
             WasteBraceParam();    /* \AX{entry} */
