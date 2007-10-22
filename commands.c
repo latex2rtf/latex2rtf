@@ -929,7 +929,7 @@ static CommandArray apaciteCommands[] = {
     {"BCBL", CmdApaCite, 10},   /* Comma Default is "," */
     {"BOthers", CmdApaCite, 11},    /* Used for ``others'' Default is "et~al." */
     {"BIP", CmdApaCite, 12},    /* ``In press'', Default is "in press" */
-    {"BAnd", CmdApaCite, 13},   /* Used as ``and'' Default is "and" */
+    {"BAnd", CmdApaCite, 13},   /* Used as ``and'' Default is "&" */
     {"BED", CmdApaCite, 14},    /* Editor Default is "Ed." */
     {"BEDS", CmdApaCite, 15},   /* Editors Default is "Eds." */
     {"BTRANS", CmdApaCite, 16}, /* Translator. Default is "Trans." */
@@ -954,6 +954,9 @@ static CommandArray apaciteCommands[] = {
     {"BCntIP", CmdApaCite, 34}, /* convert number to letter */
     {"BBA", CmdApaCite, 35},    /* "&" in paren, "and" otherwise */
     {"AX", CmdApaCite, 36},     /* index name */
+    {"BPBI", CmdApaCite,37},    /* Period between initials */
+	{"BIn", CmdApaCite, 38},
+    
     {"APACyear", CmdApaCite, CITE_APA_CITE_YEAR},
     {"APACmetastar", CmdApaCite, CITE_APA_CITE_METASTAR},
 	{"APACciteatitle", CmdApaCite, CITE_APA_CITE_A_TITLE},
@@ -965,7 +968,21 @@ static CommandArray apaciteCommands[] = {
 	{"APACjournalVolNumPages", CmdApaCite, CITE_APA_JVNP},
 	{"APACrefYear", CmdApaCite, CITE_APA_REF_YEAR},
 	{"APACaddressPublisher", CmdApaCite, CITE_APA_ADD_PUB},
-	{"PrintBackRefs", CmdApaCite, CITE_PRINT_BACK_REFS},
+	{"PrintBackRefs", CmdApaCite, CITE_PRINT_BACK_REFS}, 
+	{"PrintCardinal", CmdApaCite, CITE_PRINT_CARDINAL},
+	{"APACaddressPublisherEqAuth", CmdApaCite, CITE_APA_ADD_PUB_EQ_AUTHOR},
+	{"APACrefaetitle", CmdApaCite, CITE_APA_REF_A_E_TITLE},
+	{"APACrefbetitle", CmdApaCite, CITE_APA_REF_B_E_TITLE},
+	{"APACmonth", CmdApaCite, CITE_APA_MONTH},
+	{"APACbVolEdTR", CmdApaCite, CITE_APA_B_VOL_ED_TR},
+	{"APACaddressInstitution", CmdApaCite, CITE_APA_ADD_INST},
+	{"APAChowpublished", CmdApaCite, CITE_APA_HOW},
+	{"APACorigyearnote", CmdApaCite, CITE_CORIG_YEAR_NOTE},
+	{"APACrefnote", CmdApaCite, CITE_APA_REF_NOTE},
+	{"APACbVolEdTRpgs", CmdApaCite, CITE_APA_B_VOL_ED_TR_PGS},
+	{"APACorigjournalnote", CmdApaCite, CITE_APA_ORIG_JOUR},
+	{"APACaddressInstitutionEqAuth", CmdApaCite, CITE_APA_ADD_PUB_EQ_AUTHOR},
+	
 	{"Bem", CmdEmphasize, F_EMPHASIZE_2},
     {"BCAY", CmdBCAY, 0},
     {"citeauthoryear", CmdBCAY, 0},

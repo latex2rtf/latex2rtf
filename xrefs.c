@@ -1815,8 +1815,8 @@ void CmdApaCite(int code)
 {
     int n;
     char *s, *t;
-
-    switch (code) {
+	char * month[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+	switch (code) {
         case 0:
             fprintRTF("(");
             break;              /* BBOP */
@@ -1934,6 +1934,13 @@ void CmdApaCite(int code)
             if (s)
                 free(s);
             break;
+        case 37:
+            fprintRTF(". ");
+            break;              /* BPBI */
+        case 38:
+            fprintRTF("In");
+            break;              /* BIn */
+
         case CITE_APA_CITE_METASTAR:
             ConvertString("$\\star");
             break;
@@ -1971,11 +1978,17 @@ void CmdApaCite(int code)
             ConvertString(s);
             if (s) free(s);
             s = getBraceParam();    /* month */
-            ConvertString(s);
-            if (s) free(s);
+            if (s && *s) {
+            	fprintRTF(", ");
+            	ConvertString(s);
+            	free(s);
+            }
             s = getBraceParam();    /* day */
-            ConvertString(s);
-            if (s) free(s);
+            if (s && *s) {
+            	fprintRTF(" ");
+            	ConvertString(s);
+            	free(s);
+            }
             fprintRTF(")");
             break;
 
@@ -2013,8 +2026,8 @@ void CmdApaCite(int code)
            	}
             
             s = getBraceParam();  
-            if (s && *s) {            /* number ... just guessing */
-            	fprintRTF(", (");
+            if (s && *s) {            /* number (10) */
+            	fprintRTF("(");
            		ConvertString(s);
            		fprintRTF(")");
            		free(s);
@@ -2033,6 +2046,7 @@ void CmdApaCite(int code)
             fprintRTF("(");
             ConvertString(s);
             fprintRTF(")");
+            if (s) free(s);
             break;
         
 		case CITE_APA_ADD_PUB:
@@ -2050,6 +2064,154 @@ void CmdApaCite(int code)
 		case CITE_PRINT_BACK_REFS:  /* ignore \PrintBackRefs{\CurrentBib} */
 			s = getBraceParam();
 			if (s) free(s);
+			break;
+
+		case CITE_PRINT_CARDINAL:  /* ignore \PrintBackRefs{\CurrentBib} */
+			s = getBraceParam();
+            ConvertString(s);
+			if (s) free(s);
+			break;
+
+		case CITE_APA_ADD_PUB_EQ_AUTHOR:  
+      /* \APACaddressPublisherEqAuth{Washington, DC}{{American Psychiatric Association}} */
+            s = getBraceParam();    
+            if (s && *s) {
+            	ConvertString(s);
+            	fprintRTF(": Author");
+            	free(s);
+            }
+            s = getBraceParam();    
+            if (s) free(s);
+            break;
+
+		case CITE_APA_REF_A_E_TITLE:   /* english translation of article */
+			s = getBraceParam();
+			if (s) free(s);
+			s = getBraceParam();
+            fprintRTF("[");
+            ConvertString(s);
+            fprintRTF("]");
+			if (s) free(s);
+			break;
+			
+		case CITE_APA_REF_B_E_TITLE:   /* english translation of book */
+			s = getBraceParam();
+			if (s) free(s);
+			s = getBraceParam();
+            fprintRTF("[");
+            ConvertString(s);
+            fprintRTF("]");
+			if (s) free(s);
+			break;
+
+		case CITE_APA_MONTH:
+			s = getBraceParam();
+			if (s && *s) {
+				sscanf(s, "%d", &n);
+            	ConvertString(month[n-1]);
+				free(s);
+			}
+			break;
+			
+		case CITE_APA_B_VOL_ED_TR:    /* \APACbVolEdTR{}{tech report}*/
+			s = getBraceParam();
+			if (s) free(s);
+            s = getBraceParam();   
+            fprintRTF("(");
+            ConvertString(s);
+            if (s) free(s);
+            fprintRTF(")");
+			break;
+			
+		case CITE_APA_B_VOL_ED_TR_PGS:    /* \APACbVolEdTRpgs{}{tech report}*/
+			s = getBraceParam();
+			if (s) free(s);
+            s = getBraceParam();   
+            fprintRTF("(");
+            ConvertString(s);
+            if (s) free(s);
+            s = getBraceParam();   
+            if (s && *s) {
+            	fprintRTF(", ");
+            	ConvertString(s);
+            	free(s);
+            }
+            fprintRTF(")");
+			break;
+			
+		case CITE_APA_ADD_INST:   /* APACaddressInstitution{add}{inst} */
+			s = getBraceParam();
+            if (s && *s) {
+            	ConvertString(s);
+            	fprintRTF(": ");
+            	free(s);
+            }
+            s = getBraceParam();    
+            ConvertString(s);
+			if (s) free(s);
+			break;
+			
+		case CITE_APA_HOW:
+			s = getBraceParam();
+            ConvertString(s);
+			if (s) free(s);
+			break;
+			
+		case CITE_CORIG_YEAR_NOTE:
+			s = getBraceParam();
+            fprintRTF("(Original work published ");
+            ConvertString(s);
+            fprintRTF(")");
+			if (s) free(s);
+            ConvertString(s);
+			if (s) free(s);
+			break;
+
+		case CITE_APA_ORIG_JOUR:
+			s = getBraceParam();   /* year */
+			t = getBraceParam();   /* article */
+            fprintRTF("(Reprinted from {\\i ");
+            ConvertString(t);
+            fprintRTF("}");
+            free(t);
+            if (s && *s) {
+            	fprintRTF(", ");
+            	ConvertString(s);
+            	free(s);
+            }
+			s = getBraceParam();    /* vol */
+            if (s && *s) {
+            	fprintRTF(", {\\i ");
+            	ConvertString(s);
+            	fprintRTF("}");
+            	free(s);
+            }
+
+			s = getBraceParam();   /* number */
+            if (s && *s) {
+            	fprintRTF("(");
+            	ConvertString(s);
+            	fprintRTF(")");
+            	free(s);
+            }
+
+			s = getBraceParam();  /* pages */
+            if (s && *s) {
+            	fprintRTF(", ");
+            	ConvertString(s);
+            	free(s);
+            }
+            fprintRTF(")");
+			break;
+
+		case CITE_APA_REF_NOTE:
+			s = getBraceParam();
+			fprintRTF("(");
+            ConvertString(s);
+			fprintRTF(")");
+			if (s) free(s);
+			break;
+
        default:;
     }
 }

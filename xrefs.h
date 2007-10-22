@@ -48,7 +48,19 @@
 #define CITE_APA_JVNP          209
 #define CITE_APA_REF_YEAR      210
 #define CITE_APA_ADD_PUB       211
-#define CITE_PRINT_BACK_REFS   212
+#define CITE_PRINT_CARDINAL    212
+#define CITE_PRINT_BACK_REFS   213
+#define CITE_APA_ADD_PUB_EQ_AUTHOR 214
+#define CITE_APA_REF_A_E_TITLE 215
+#define CITE_APA_MONTH         216
+#define CITE_APA_B_VOL_ED_TR   217
+#define CITE_APA_ADD_INST      218
+#define CITE_APA_HOW           219
+#define CITE_CORIG_YEAR_NOTE   220
+#define CITE_APA_REF_NOTE      221
+#define CITE_APA_REF_B_E_TITLE 223
+#define CITE_APA_ORIG_JOUR     224
+#define CITE_APA_B_VOL_ED_TR_PGS 225
 
 #define CITE_T             16
 #define CITE_T_STAR        17
