@@ -1842,7 +1842,7 @@ void CmdApaCite(int code)
 	char * month[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 	switch (code) {
         case 0:
-            fprintRTF("(");
+            fprintRTF(" (");
             break;              /* BBOP */
         case 1:
             fprintRTF("&");
