@@ -413,7 +413,8 @@ void preParse(char **body, char **header, char **label)
 				diagnostics(5, "testing for <%s>", command[i]);
 				
 				/* right length? */
-				if (cmd_pos + 1 == strlen(command[i])) {
+				
+				if (cmd_pos+1 == strlen(command[i])) {
 
 					if (i<=e_comment_item || i==e_comment_item) { 
 						/* these entries are complete matches */ 
@@ -422,8 +423,9 @@ void preParse(char **body, char **header, char **label)
 						/* these entries we need to be a bit more careful and check next character */
 						cNext = getRawTexChar();
 						ungetTexChar(cNext);
-			
-						if (cNext == ' ' || cNext == '{' || cNext == '\n' || cNext == '\0') {
+						
+						/* this test for the end of commands may still need tweaking */
+						if (!isalpha(cNext) && cNext != '*') {
 							found = TRUE;
 						}
 					}
@@ -431,7 +433,7 @@ void preParse(char **body, char **header, char **label)
             }
             
             if (found == TRUE) {
-				diagnostics(5,"matched <%s> entry number %d",command[i],i);
+				diagnostics(3,"matched <%s> entry number %d",command[i],i);
 				i_match = i;
 				break;
 			}
@@ -470,11 +472,15 @@ void preParse(char **body, char **header, char **label)
 
         if (i_match == verb_item) {  /* slurp \verb#text# */
         	char cc;
+        	
+        	cNext = getRawTexChar();
+            add_chr_to_buffer(cNext);
+			diagnostics(6, "verb char = %c", cNext);
  
             do {
             	cc = getRawTexChar();
             	add_chr_to_buffer(cc);
-            } while (cc != '\0' && cc != cThis);
+            } while (cc != '\0' && cc != cNext);
             
             cmd_pos = 0;          /* reset the command position */
             continue;
