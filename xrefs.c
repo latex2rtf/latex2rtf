@@ -1825,7 +1825,7 @@ static void ConvertBraceParam(char *pre, char *post)
 	if (s) free(s);
 }
 
-static void WasteBraceParam(void)
+static void DiscardBraceParam(void)
 {
 	char *s;
 	s = getBraceParam();
@@ -1956,7 +1956,7 @@ void CmdApaCite(int code)
             	fprintRTF("and");    /* BBA */
             break;
         case 36:
-            WasteBraceParam();    /* \AX{entry} */
+            DiscardBraceParam();    /* \AX{entry} */
             diagnostics(4, "Ignoring \\AX{%s}", s);
             break;
         case 37:
@@ -1983,7 +1983,7 @@ void CmdApaCite(int code)
             break;
 
         case CITE_APA_CITE_INSERT:
-            WasteBraceParam();    /* discard \APACinsertmetastar{art 1} ?? */
+            DiscardBraceParam();    /* discard \APACinsertmetastar{art 1} ?? */
             break;
 
         case CITE_APA_YMD:
@@ -1995,12 +1995,12 @@ void CmdApaCite(int code)
             break;
 
         case CITE_APA_REF_A_TITLE:
-            WasteBraceParam();    /* ignore first entry?? */
+            DiscardBraceParam();    /* ignore first entry?? */
             ConvertBraceParam("","");   /* \APACrefatitle{title}{title} */
             break;
             
         case CITE_APA_REF_B_TITLE:
-            WasteBraceParam();    /* ignore first entry?? */
+            DiscardBraceParam();    /* ignore first entry?? */
             ConvertBraceParam("{\\i ","}");    /* \APACrefbtitle{title}{title} */
             break;
 
@@ -2021,7 +2021,7 @@ void CmdApaCite(int code)
             break;
 	
 		case CITE_PRINT_BACK_REFS:  /* ignore \PrintBackRefs{\CurrentBib} */
-			WasteBraceParam();			
+			DiscardBraceParam();			
 			break;
 
 		case CITE_PRINT_CARDINAL:  
@@ -2031,16 +2031,16 @@ void CmdApaCite(int code)
 		case CITE_APA_ADD_PUB_EQ_AUTHOR:  
       /* \APACaddressPublisherEqAuth{Washington, DC}{{American Psychiatric Association}} */
             ConvertBraceParam("",": Author");
-			WasteBraceParam();			
+			DiscardBraceParam();			
             break;
 
 		case CITE_APA_REF_A_E_TITLE:   /* english translation of article */
-			WasteBraceParam();			
+			DiscardBraceParam();			
             ConvertBraceParam("[","]");
 			break;
 			
 		case CITE_APA_REF_B_E_TITLE:   /* english translation of book */
-			WasteBraceParam();			
+			DiscardBraceParam();			
             ConvertBraceParam("[","]");
 			break;
 
@@ -2054,13 +2054,13 @@ void CmdApaCite(int code)
 			break;
 			
 		case CITE_APA_B_VOL_ED_TR:    /* \APACbVolEdTR{}{tech report}*/
-			WasteBraceParam();			
+			DiscardBraceParam();			
             ConvertBraceParam("(",")");
 			break;
 			
 		case CITE_APA_B_VOL_ED_TR_PGS:    /* \APACbVolEdTRpgs{}{tech report}{}*/
             fprintRTF("(");
-			WasteBraceParam();			
+			DiscardBraceParam();			
             ConvertBraceParam("","");     /* \APACbVolEdTRpgs{}{tech report}{}*/
             ConvertBraceParam(", ","");   /* more info */
             fprintRTF(")");
@@ -2077,7 +2077,7 @@ void CmdApaCite(int code)
 			
 		case CITE_APA_ORIG_YEAR_NOTE:
             ConvertBraceParam("(Original work published ",")");
-			WasteBraceParam();			
+			DiscardBraceParam();			
 			break;
 
 		case CITE_APA_ORIG_JOUR:
