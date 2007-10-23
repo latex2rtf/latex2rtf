@@ -1598,35 +1598,72 @@ void CmdEuro(int code)
 	free(s);
 }
 
+int identifyBase(char c)
+{
+	if (c == '\'')
+		return 8;
+	else if (c == '"')
+		return 16;
+	else if (c == '`')     /* next character is treated differently */
+		return -1;
+	else if (isdigit(c))
+		return 10;
+	else 
+		return 0;
+}
+
+static int isOctal(int c)
+{
+	if ((int) '0' <= (int) c && (int) c <= (int) '7') return TRUE;
+	return FALSE;
+}
+
+static int isHex(int c)
+{
+	if (isdigit(c)) return TRUE;
+	if ((int) 'A' <= (int) c && (int) c <= (int) 'F') return TRUE;
+	if ((int) 'a' <= (int) c && (int) c <= (int) 'f') return TRUE;
+	return FALSE;
+}
+
 /******************************************************************************
  purpose: 
- 		code = 0, handles \char'35
+ 		code = 0, handles \char'35 or \char"35 or \char35 or \char`b
  		code = 1, handles \symbol{\'22} or \symbol{\"22}
  ******************************************************************************/
 void CmdSymbol(int code)
 {
     char c, *s, *t;
-    int n;
+    int n, base;
 
 	if (code == 0) {
 	
-		char octal_num[5];
+		char num[4];
 		int i;
 	
 		c = getNonSpace();
-		if (c != '\'') {  /* something is wrong */
-			ungetTexChar(c);
+		base = identifyBase(c);
+		
+		if (base == 0)
+			return;
+			
+		if (base == -1) {
+			c = getTexChar();   /* \char`b case */
+			CmdChar((int) c);
 			return;
 		}
-	
-		for (i=0; i<5; i++) {
-			octal_num[i] = getTexChar();
-		 	if (!isdigit(octal_num[i]) ) break;
-		 }
-		ungetTexChar(octal_num[i]);
-		octal_num[i] = '\0';
 		
-		n = (int) strtol(octal_num,&s,8);
+		/* read sequence of digits */
+		for (i=0; i<4; i++) {
+			num[i] = getTexChar();
+		 	if (base == 10 && ! isdigit(num[i]) ) break;
+		 	if (base == 8  && ! isOctal(num[i]) ) break;
+		 	if (base == 16 && ! isHex  (num[i]) ) break;
+		 }
+		ungetTexChar(num[i]);
+		num[i] = '\0';
+		
+		n = (int) strtol(num,&s,base);
 		CmdChar(n);
 		
 	} else {
@@ -1635,15 +1672,18 @@ void CmdSymbol(int code)
 		t = strdup_noendblanks(s);
 		free(s);
 		
-		if (*t == '\'') {
-			n = (int) strtol(t+1,&s,8);
-			CmdChar(n);
-		} else if (*t == '"') {
-			n = (int) strtol(t+1,&s,16);
-			CmdChar(n);
-		} else {
-			diagnostics(1, "\\symbol{%s} has a bad argument", t);
+		base = identifyBase(*t);
+		
+		if (base == 0)
+			return;
+			
+		if (base == -1) {
+			CmdChar((int) *(t+1));   /* \char`b case */
+			return;
 		}
+
+		n = (int) strtol(t+1,&s,base);
+		CmdChar(n);
 		free(t);
 	}
 	
@@ -1732,13 +1772,16 @@ void CmdChar(int code)
 
         case 14:
         	if (UsingTypewriter())
-				fprintRTF("\\'bf ");    /* inverted / open question mark */
-			else
-	            fprintRTF("ffi");
+        		fprintRTF("\\'a1 ");   /* inverted exclamation */
+        	else
+            	fprintRTF("ffl");
             break;
 
         case 15:
-            fprintRTF("ffl");
+        	if (UsingTypewriter())
+				fprintRTF("\\'bf ");    /* inverted / open question mark */
+			else
+	            fprintRTF("ffi");
             break;
 
         case 16:
