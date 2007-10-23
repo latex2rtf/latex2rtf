@@ -35,6 +35,7 @@ This file is available from http://sourceforge.net/projects/latex2rtf/
 #include "chars.h"
 #include "funct1.h"
 #include "convert.h"
+#include "utils.h"
 
 void TeXlogo();
 void LaTeXlogo();
@@ -1597,22 +1598,73 @@ void CmdEuro(int code)
 	free(s);
 }
 
+/******************************************************************************
+ purpose: 
+ 		code = 0, handles \char'35
+ 		code = 1, handles \symbol{\'22} or \symbol{\"22}
+ ******************************************************************************/
+void CmdSymbol(int code)
+{
+    char c, *s, *t;
+    int n;
+
+	if (code == 0) {
+	
+		char octal_num[5];
+		int i;
+	
+		c = getNonSpace();
+		if (c != '\'') {  /* something is wrong */
+			ungetTexChar(c);
+			return;
+		}
+	
+		for (i=0; i<5; i++) {
+			octal_num[i] = getTexChar();
+		 	if (!isdigit(octal_num[i]) ) break;
+		 }
+		ungetTexChar(octal_num[i]);
+		octal_num[i] = '\0';
+		
+		n = (int) strtol(octal_num,&s,8);
+		CmdChar(n);
+		
+	} else {
+
+		s = getBraceParam();
+		t = strdup_noendblanks(s);
+		free(s);
+		
+		if (*t == '\'') {
+			n = (int) strtol(t+1,&s,8);
+			CmdChar(n);
+		} else if (*t == '"') {
+			n = (int) strtol(t+1,&s,16);
+			CmdChar(n);
+		} else {
+			diagnostics(1, "\\symbol{%s} has a bad argument", t);
+		}
+		free(t);
+	}
+	
+}
+
+static int UsingTypewriter(void)
+{
+	if (CurrentFontFamily() ==TexFontNumber("Typewriter"))
+		return TRUE;
+	else
+		return FALSE;
+}
+
+/******************************************************************************
+ purpose: emits a character based on the TeX encoding
+          code is assumed to be in base 10
+ ******************************************************************************/
 void CmdChar(int code)
 {
-    char cThis;
-    int num;
 
-    cThis = getNonSpace();
-    if (cThis != '\'') {
-        ungetTexChar(cThis);
-        return;
-    }
-
-    num = 64 * ((int) getTexChar() - (int) '0');
-    num += 8 * ((int) getTexChar() - (int) '0');
-    num += ((int) getTexChar() - (int) '0');
-
-    switch (num) {
+    switch (code) {
         case 0:
         	CmdSymbolChar((int) 'G');			/* Gamma */
             break;
@@ -1658,19 +1710,31 @@ void CmdChar(int code)
             break;
 
         case 11:
-            fprintRTF("ff");
+        	if (UsingTypewriter())
+        		CmdSymbolChar(0xAD);    /* up arrow */
+        	else
+            	fprintRTF("ff");
             break;
 
         case 12:
-            fprintRTF("fi");
+        	if (UsingTypewriter())
+        		CmdSymbolChar(0xAF);    /* down arrow */
+        	else
+            	fprintRTF("fi");
             break;
 
         case 13:
-            fprintRTF("fl");
+        	if (UsingTypewriter())
+        		fprintRTF("'");
+        	else
+            	fprintRTF("fl");
             break;
 
         case 14:
-            fprintRTF("ffi");
+        	if (UsingTypewriter())
+				fprintRTF("\\'bf ");    /* inverted / open question mark */
+			else
+	            fprintRTF("ffi");
             break;
 
         case 15:
@@ -1742,35 +1806,63 @@ void CmdChar(int code)
             break;
 
         case 32:
-            fprintRTF(" ");     /* space differs with font */
+        	if (UsingTypewriter())
+        		fprintRTF("_");     /* should be u shaped */
+        	else
+            	fprintRTF(" "); 
             break;
 
         case 60:
-            fprintRTF("<");     /* less than differs with font */
+        	if (UsingTypewriter())
+            	fprintRTF("<");   
+        	else
+        		fprintRTF("\\'a1 ");   /* inverted exclamation */
             break;
 
         case 62:
-            fprintRTF(">");     /* greater than differs with font */
+        	if (UsingTypewriter())
+            	fprintRTF(">");   
+        	else
+        		fprintRTF("\\'bf ");   /* inverted question */
+            break;
+
+        case 92:
+        	if (UsingTypewriter())
+        		fprintRTF("\\\\");   /* backslash */
+        	else
+            	fprintRTF("\\ldblquote ");   
+            break;
+
+        case 95:
+        	if (UsingTypewriter())
+        		fprintRTF("_");   /* underscore */
+        	else
+            	fprintRTF(".");   /* should be elevated dot */
             break;
 
         case 123:
-            fprintRTF("\\{");   /* open brace differs with font */
+        	if (UsingTypewriter())
+            	fprintRTF("\\{");   /* open brace differs with font */
+        	else
+            	fprintRTF(".");   /* should be elevated dot */
             break;
 
         case 124:
-            fprintRTF("\\\\");  /* backslash differs with font */
+        	if (UsingTypewriter())
+            	fprintRTF("|");   /* open brace differs with font */
+        	else
+				fprintRTF("\\emdash ");
             break;
 
         case 125:
-            fprintRTF("\\}");   /* close brace differs with font */
-            break;
-
-        case 127:
-            fprintRTF("\\'a8"); /* diaeresis differs with font */
+        	if (UsingTypewriter())
+            	fprintRTF("\\}");   /* close brace differs with font */
+        	else
+				fprintRTF("\\emdash ");
             break;
 
         default:
-            putRtfCharEscaped((char) num);
+            putRtfCharEscaped((char) code);
             break;
     }
 }

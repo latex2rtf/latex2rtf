@@ -383,7 +383,8 @@ static CommandArray commands[] = {
 
     {"nonumber", CmdNonumber, EQN_NO_NUMBER},
     {"notag", CmdNonumber, EQN_NO_NUMBER},
-    {"char", CmdChar, 0},
+    {"char", CmdSymbol, 0},
+    {"symbol", CmdSymbol, 1},
     {"htmladdnormallink", CmdHtml, LABEL_HTMLADDNORMALREF},
     {"htmlref", CmdHtml, LABEL_HTMLREF},
     {"nobreakspace", CmdNonBreakSpace, 0},
