@@ -51,7 +51,7 @@ static void increase_buffer_size(void)
     section_buffer = new_section_buffer;
     diagnostics(4, "Expanded buffer size is now %ld", section_buffer_size);
 }
-
+/* commented out by W.Hennings 2007-10-24 10:30 GMT+2 because not used anywhere
 static void show_buffer(char *s)
 {
 	long i;
@@ -68,7 +68,7 @@ static void show_buffer(char *s)
 		fprintf(stderr,"%c",c);
 	}
 }
-
+*/
 static void add_chr_to_buffer(char c)
 {
     if (section_buffer == NULL) {
@@ -630,3 +630,4 @@ void preParse(char **body, char **header, char **label)
     *header = next_header;
     PopTrackLineNumber();
 }
+
