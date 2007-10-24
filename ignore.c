@@ -63,8 +63,14 @@ returns : TRUE if variable was ignored correctly, otherwise FALSE
     const char *RtfCommand;
     char TexCommand[128];
     bool result = TRUE;
-
-    if (strlen(command) >= 100) {
+	int len;
+	
+	diagnostics(5, "trying to ignore '%s'", command);
+	len = strlen(command);
+	
+	if (len == 0) return TRUE;
+	
+    if (len >= 100) {
         diagnostics(WARNING, "Command <%s> is too long", command);
         return FALSE;           /* command too long */
     }

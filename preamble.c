@@ -402,6 +402,8 @@ static void setDocumentOptions(char *optionlist)
 {
     char *option;
 
+	if (optionlist == NULL) return;
+	
     option = strtok(optionlist, ",");
 
     while (option) {
@@ -410,19 +412,23 @@ static void setDocumentOptions(char *optionlist)
         diagnostics(3, " (setDocumentOptions) option <%s>", option);
         if (strcmp(option, "10pt") == 0 || strcmp(option, "11pt") == 0 || strcmp(option, "12pt") == 0)
             setPointSize(option);
-        else if (strcmp(option, "a4") == 0 ||
-          strcmp(option, "a4paper") == 0 ||
-          strcmp(option, "a4wide") == 0 ||
-          strcmp(option, "b5paper") == 0 ||
-          strcmp(option, "a5paper") == 0 ||
-          strcmp(option, "letterpaper") == 0 || strcmp(option, "landscape") == 0 || strcmp(option, "legalpaper") == 0)
+        else if (strcmp(option, "a4"         ) == 0 ||
+                 strcmp(option, "a4paper"    ) == 0 ||
+                 strcmp(option, "a4wide"     ) == 0 ||
+                 strcmp(option, "b5paper"    ) == 0 ||
+                 strcmp(option, "a5paper"    ) == 0 ||
+                 strcmp(option, "letterpaper") == 0 || 
+                 strcmp(option, "landscape"  ) == 0 || 
+                 strcmp(option, "legalpaper" ) == 0)
             setPaperSize(option);
-        else if (strcmp(option, "german") == 0 ||
-          strcmp(option, "ngerman") == 0 ||
-          strcmp(option, "spanish") == 0 ||
-          strcmp(option, "english") == 0 ||
-          strcmp(option, "russian") == 0 ||
-          strcmp(option, "czech") == 0 || strcmp(option, "frenchb") == 0 || strcmp(option, "french") == 0)
+        else if (strcmp(option, "german" ) == 0 ||
+                 strcmp(option, "ngerman") == 0 ||
+                 strcmp(option, "spanish") == 0 ||
+                 strcmp(option, "english") == 0 ||
+                 strcmp(option, "russian") == 0 ||
+                 strcmp(option, "czech"  ) == 0 || 
+                 strcmp(option, "frenchb") == 0 || 
+                 strcmp(option, "french") == 0)
             setPackageBabel(option);
         else if (strcmp(option, "twoside") == 0)
             g_preambleTwoside = TRUE;
@@ -473,8 +479,8 @@ static void setDocumentOptions(char *optionlist)
             diagnostics(WARNING, "ignoring [%s], assuming [doc]", option);
         } else if (strcmp(option, "doc") == 0) {
             diagnostics(WARNING, "Limited support for apa class");
-        } else if (!TryVariableIgnore(option)) {
-            diagnostics(WARNING, "Unknown style option %s ignored", option);
+        } else {
+            diagnostics(WARNING, "Package/option '%s' ignored.  Good luck!", option);
         }
         option = strtok(NULL, ",");
     }
@@ -537,8 +543,10 @@ void CmdDocumentStyle(int code)
 ******************************************************************************/
 static void CmdUseOnepackage(char* package, char *options)
 {
+     diagnostics(4, "CmdUseOnepackage \\usepackage[%s]{%s}", options, package);
+
     if (strcmp(package, "inputenc") == 0 && options)
-	setPackageInputenc(options);
+		setPackageInputenc(options);
     
     else if (strcmp(package, "graphics") == 0)
         g_graphics_package = GRAPHICS_GRAPHICS;
@@ -556,10 +564,12 @@ static void CmdUseOnepackage(char* package, char *options)
 		if (options)
 			setPackageBabel(options);
 
-    } else if (strcmp(package, "german") == 0 ||
-	    strcmp(package, "ngerman") == 0 ||
-	    strcmp(package, "czech") == 0 || strcmp(package, "frenchb") == 0 || strcmp(package, "french") == 0)
-		setPackageBabel(package);
+    } else if ( strcmp(package, "german")  == 0 ||
+	    		strcmp(package, "ngerman") == 0 ||
+	    		strcmp(package, "czech")   == 0 || 
+	    		strcmp(package, "frenchb") == 0 || 
+	    		strcmp(package, "french") == 0)
+		    setPackageBabel(package);
 
     else if (strcmp(package, "palatino") == 0 ||
 	     strcmp(package, "times") == 0 ||
@@ -579,29 +589,29 @@ static void CmdUseOnepackage(char* package, char *options)
 		set_compressed_citations();
 
     } else if (strcmp(package, "natbib") == 0) {
-	if (options && strstr(options, "longnamesfirst"))
-	    set_longnamesfirst();
-	if (options && strstr(options, "super"))
-	    set_bibpunct_style_super();
-	if (options && strstr(options, "comma"))
-	    set_bibpunct_style_separator(",");
-	if (options && strstr(options, "colon"))
-	    set_bibpunct_style_separator(":");
-	if (options && strstr(options, "round"))
-	    set_bibpunct_style_paren("(",")");
-	if (options && strstr(options, "square"))
-	    set_bibpunct_style_paren("[","]");
-	if (options && strstr(options, "curly"))
-	    set_bibpunct_style_paren("{","}");
-	if (options && strstr(options, "angle"))
-	    set_bibpunct_style_paren("<",">");
-	if (options && strstr(options, "sort"))
-	    set_sorted_citations();
-	if (options && strstr(options, "compress"))
-	    set_compressed_citations();
-      
-	PushEnvironment(NATBIB_MODE);
-	g_document_bibstyle = BIBSTYLE_NATBIB;
+		if (options && strstr(options, "longnamesfirst"))
+			set_longnamesfirst();
+		if (options && strstr(options, "super"))
+			set_bibpunct_style_super();
+		if (options && strstr(options, "comma"))
+			set_bibpunct_style_separator(",");
+		if (options && strstr(options, "colon"))
+			set_bibpunct_style_separator(":");
+		if (options && strstr(options, "round"))
+			set_bibpunct_style_paren("(",")");
+		if (options && strstr(options, "square"))
+			set_bibpunct_style_paren("[","]");
+		if (options && strstr(options, "curly"))
+			set_bibpunct_style_paren("{","}");
+		if (options && strstr(options, "angle"))
+			set_bibpunct_style_paren("<",">");
+		if (options && strstr(options, "sort"))
+			set_sorted_citations();
+		if (options && strstr(options, "compress"))
+			set_compressed_citations();
+		  
+		PushEnvironment(NATBIB_MODE);
+		g_document_bibstyle = BIBSTYLE_NATBIB;
 	
     } else if (strcmp(package, "geometry") == 0) {
 
@@ -622,7 +632,7 @@ static void CmdUseOnepackage(char* package, char *options)
 	    }
 	
     } else
-	setDocumentOptions(package);
+		setDocumentOptions(package);
 	  
 }
 
