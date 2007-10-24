@@ -57,9 +57,9 @@ LaTeX2RTF
 @subtitle 
 A converter from @latex{} to RTF
 
-Edition 0.7.3
+Edition 0.7.4
 
-for program version 1.9.17
+for program version 1.9.19
 
 @author Georg Lehner,
 updated by Wilfried Hennings and Scott Prahl,
@@ -142,8 +142,9 @@ Features
 
 Configuration 
 
-* Input processing::            
-* Output formatting::           
+* Input Processing::            
+* Conditional Parsing::           
+* Output Formatting::           
 * Direct Conversion::           
 * Ignore Command::              
 * Font Configuration::          
@@ -1187,15 +1188,16 @@ there are a lot of HTML oriented commands in Hyperlatex that we simply can
 @chapter Configuration 
 
 @menu
-* Input processing::            
-* Output formatting::           
+* Input Processing::            
+* Conditional Parsing::
+* Output Formatting::           
 * Direct Conversion::           
 * Ignore Command::              
 * Font Configuration::          
 * Language Configuration::      
 @end menu
 
-@node Input processing, Output formatting, Configuration, Configuration
+@node Input Processing, Conditional Parsing, Configuration, Configuration
 @section Input processing 
 @cindex input processing
 @cindex direct.cfg
@@ -1229,24 +1231,29 @@ sets.  If the @latex{} lacks the @code{\package[codepage]@{inputenc@}}
 definition, then you may need to use the command line switch to manually
 select the proper code page (@pxref{Input Encoding}).
 
-@cindex conditional parsing
+@node Conditional Parsing, Output Formatting, Input Processing, Configuration
+@section Conditional Parsing
+@cindex Conditional Parsing
 @cindex %latex2rtf
 @cindex iflatextortf
-As of @ltor{} 1.9.17, there are two options for including content that
-will be ignored by @latex{} but parsed by @ltor{}. The first is simply
-to begin a line with @code{%latex2rtf:}, as in the following:
+
+Starting with @ltor{} 1.9.18, there is a handy method for controlling which content
+should be processed by @latex{} or by @ltor{}.  Control is achieved using the
+standard @code{\if} facility of @TeX{}.  If you include the following line in
+the preamble of your document (i.e., before @code{\begin@{document@}})
 
 @example
-%latex2rtf: These lines will only appear in the latex2rtf output, 
-%latex2rtf: not in the LaTeX output.
+\newif\iflatextortf
 @end example
 
-More sophisticated processing is available with the @code{\iflatextortf}
-command:
+Then you will create a new @code{\iflatextortf} command in @latex{}.  
+@TeX{} sets the value of this to @code{false} by default.  Now,
+@ltor{} internally sets @code{\iflatextortf} to be true, and to ensure that
+this is always the case, @ltor{} ignores the command @code{\latextortffalse}.
+This means that you can control how different applications
+process your document by 
 
 @example
-\newif\iflatextortf  %all \newif constructs ignored by latex2rtf
-\latextortffalse     %ignored by latex2rtf, so file works in latex
 \iflatextortf
 This code is processed only by latex2rtf
 \else
@@ -1260,10 +1267,28 @@ boundaries. Also, it will only work on complete table or figure
 environments. Due to the mechanism used by @ltor{} in processing these
 environments, at this time the only way to conditionally parse tables
 and figures is to include two complete versions of the environment in
-question, nested within an appropriate \iflatex2rtf structure.
+question, nested within an appropriate @code{\iflatex2rtf} structure.
 
-@node Output formatting, Direct Conversion, Input processing, Configuration
-@section Output formatting 
+@ltor{} versions 1.9.15 to 1.9.18 had the ability to hide contents from @latex{}
+but expose them to @ltor{} by starting a line with @code{%latex2rtf:}.  This
+code was horribly broken, and it was removed.  The same functionality is readily
+achieved using the @code{\iflatextortf} mechanism.  For example, the old
+method allowed 
+
+@example
+%latex2rtf: This line will only appear in the latex2rtf output, 
+@end example
+To get the same behavior, define @code{\iflatextortf} and use
+
+@example
+\iflatextortf
+This code is processed only by latex2rtf
+\fi
+@end example
+
+
+@node Output Formatting, Direct Conversion, Conditional Parsing, Configuration
+@section Output Formatting 
 
 On writing output, @ltor{} generates @code{\n} as line ending code.
 Your RTF Reader should accept this on any platform. If you ftp your RTF file
@@ -1276,7 +1301,7 @@ but it does offer some.  This flexibility resides in four files @file{direct.cfg
 @file{ignore.cfg}, @file{fonts.cfg}, and @file{language.cfg}.  These filese
 are documented in the next four sections.
 
-@node Direct Conversion, Ignore Command, Output formatting, Configuration
+@node Direct Conversion, Ignore Command, Output Formatting, Configuration
 @section Direct Conversion 
 
 The file @file{direct.cfg} is used for converting @latex{} commands by simple text
