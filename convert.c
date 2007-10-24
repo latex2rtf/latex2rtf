@@ -765,12 +765,14 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
                 SetTexMode(MODE_HORIZONTAL);
             CmdTildeChar(0);
             return;
+            
         case '^':
             if (mode == MODE_VERTICAL)
                 SetTexMode(MODE_HORIZONTAL);
             
             cThis = getTexChar();
-            if (cThis=='^') {		/* replace \^^M with space */
+            if (cThis=='^') {
+            	/* usually \^^M ... just replace with a blank */
             	cThis = getTexChar();
             	fprintRTF(" ");
             } else {
