@@ -343,7 +343,7 @@ void renewDefinition(char *name, char *opt_param, char *def, int params)
 
     if (i < 0) {
         newDefinition(name, opt_param, def, params);
-        diagnostics(WARNING, "No existing definition for \\%s", name);
+        diagnostics(2, "No existing definition for \\%s", name);
 
     } else {
         free(Definitions[i].def);
@@ -510,7 +510,7 @@ void renewEnvironment(char *name, char *opt_param, char *begdef, char *enddef, i
 
     if (i < 0) {
         newEnvironment(name, opt_param, begdef, enddef, params);
-        diagnostics(WARNING, "No existing \\newevironment{%s}", name);
+        diagnostics(2, "No existing \\newevironment{%s}", name);
 
     } else {
         free(NewEnvironments[i].begdef);
