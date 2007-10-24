@@ -43,3 +43,4 @@ char *	ExtractAndRemoveTag(char *tag, char *text);
 char *  keyvalue_pair(char *t, char **key, char **value);
 int     getStringDimension(char *s);
 char *  getStringBraceParam(char **s);
+void show_string(char *s, char *label);

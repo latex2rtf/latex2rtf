@@ -605,7 +605,6 @@ static CommandArray PreambleCommands[] = {
     {"listoffiles", CmdIgnoreParameter, 0},
     {"nofiles", CmdIgnoreParameter, 0},
     {"makelabels", CmdIgnoreParameter, 0},
-    {"verbositylevel", CmdVerbosityLevel, 0},
     {"hoffset", CmdSetTexLength, SL_HOFFSET},
     {"voffset", CmdSetTexLength, SL_VOFFSET},
     {"parindent", CmdSetTexLength, SL_PARINDENT},
@@ -636,12 +635,13 @@ static CommandArray PreambleCommands[] = {
     {"degreecelsius", CmdDegreeCelsius},
     {"resizebox", CmdResizeBox, 0},
     {"resizebox*", CmdResizeBox, 1},    
+    {"geometry",CmdGeometry,0},
+	{"doublespacing", CmdDoubleSpacing, 0},
+    {"verbositylevel", CmdVerbosityLevel, 0},
     {"iflatextortf",CmdIflatextortf,0},
     {"latextortftrue",CmdIgnore,1}, 
     {"latextortffalse",CmdIgnore,0}, 
     {"newif",CmdNewif,0},
-    {"geometry",CmdGeometry,0},
-	{"doublespacing", CmdDoubleSpacing, 0},
     {"", NULL, 0}
 };                              /* end of list */
 

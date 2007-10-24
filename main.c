@@ -65,9 +65,6 @@ char *g_ttt_name = NULL;
 char *g_bbl_name = NULL;
 char *g_home_dir = NULL;
 
-/*** interpret comment lines that follow the '%' with this string ***/
-const char *InterpretCommentString = "latex2rtf:";
-
 char *progname;                 /* name of the executable file */
 bool GermanMode = FALSE;        /* support germanstyle */
 bool FrenchMode = FALSE;        /* support frenchstyle */
@@ -414,10 +411,12 @@ static void ConvertWholeDocument(void)
     g_processing_preamble = FALSE;
     preParse(&body, &sec_head, &label);
 
-    diagnostics(2, "*******************body=\n%s", (body) ? body : "<empty>");
-    diagnostics(2, "********sec_head=%s", (sec_head) ? sec_head : "<none>");
-    diagnostics(2, "********label=%s", (g_section_label) ? g_section_label : "<none>");
-    
+	if (g_verbosity_level>1) {
+		show_string(body, "body ");
+		show_string(label, "label");
+		show_string(sec_head, "next ");
+	}	
+
     ConvertString(body);
     free(body);
     if (label)
@@ -431,12 +430,14 @@ static void ConvertWholeDocument(void)
                 free(g_section_label);
             g_section_label = label;
         }
-        diagnostics(2, "\n========this section head==========\n%s", (sec_head) ? sec_head : "<none>");
-        diagnostics(2, "\n============ label ================\nlabel=%s",
-          (g_section_label) ? g_section_label : "<none>");
-        diagnostics(2,
-          "\n==============body=================\n%s\n=========end	body=================", (body) ? body : "<empty>");
-        diagnostics(2, "\n========next section head==========\n%s", (sec_head2) ? sec_head2 : "<none>");
+        
+        if (g_verbosity_level>1) {
+        	show_string(sec_head,"head ");
+        	show_string(g_section_label, "label");
+        	show_string(body, "body ");
+        	show_string(sec_head2, "next ");
+        }	
+
         ConvertString(sec_head);
         ConvertString(body);
         free(body);
@@ -686,25 +687,6 @@ static void InitializeLatexLengths(void)
     setLength("marginparsep", 10 * 20);
 }
 
-static void RemoveInterpretCommentString(char *s)
-
-/****************************************************************************
-purpose: removes %InterpretCommentString from preamble (usually "%latex2rtf:")
- ****************************************************************************/
-{
-    char *p, *t;
-    int n = strlen(InterpretCommentString);
-
-    t = s;
-    while ((p = strstr(t, InterpretCommentString))) {
-        t = p - 1;
-        if (*t == '%')
-            strcpy(t, t + n + 1);
-        else
-            t += n + 1;
-    }
-}
-
 static void ConvertLatexPreamble(void)
 
 /****************************************************************************
@@ -719,7 +701,6 @@ purpose: reads the LaTeX preamble (to \begin{document} ) for the file
     fRtf = stderr;
 
     g_preamble = getSpacedTexUntil(t, 1);
-    RemoveInterpretCommentString(g_preamble);
 
     diagnostics(4, "Entering ConvertString() from ConvertLatexPreamble <%s>", g_preamble);
     ConvertString(g_preamble);

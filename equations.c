@@ -1007,10 +1007,12 @@ parameter: type of operand
 {
     char *upper_limit = NULL;
     char *lower_limit = NULL;
+    int possible_limits = TRUE;
+	char * command = NULL;
     char cThis;
-    int no_limits = FALSE;
-    int limits = FALSE;
-
+	
+	diagnostics(4, "Entering CmdIntegral");
+	
     /* is there an exponent/subscript ? */
     cThis = getNonBlank();
 
@@ -1020,56 +1022,55 @@ parameter: type of operand
         ungetTexChar(cThis);
         command = getSimpleCommand();
         if (strcmp(command, "\\nolimits") == 0) {
-            no_limits = TRUE;
-            diagnostics(WARNING, "\\nolimits found");
             free(command);
+            command = NULL;
+            possible_limits = FALSE;
         } else if (strcmp(command, "\\limits") == 0) {
-            limits = TRUE;
-            diagnostics(WARNING, "\\limits found");
             free(command);
+            command = NULL;
+        	cThis = getNonBlank();
         } else {
-            diagnostics(WARNING, "pushing <%s>",command);
-            PushSource(NULL, command);
+            possible_limits = FALSE;
         }    
-        
-        cThis = getNonBlank();
     }
-
-    if (cThis == '_')
-        lower_limit = getBraceParam();
-    else if (cThis == '^')
-        upper_limit = getBraceParam();
-    else
-        ungetTexChar(cThis);
-
-    if (upper_limit || lower_limit) {
-        cThis = getNonBlank();
-        if (cThis == '_')
-            lower_limit = getBraceParam();
-        else if (cThis == '^')
-            upper_limit = getBraceParam();
-        else
-            ungetTexChar(cThis);
-    }
-
+    
+    if (possible_limits) {
+		if (cThis == '_')
+			lower_limit = getBraceParam();
+		else if (cThis == '^')
+			upper_limit = getBraceParam();
+		else
+			ungetTexChar(cThis);
+	
+		if (upper_limit || lower_limit) {
+			cThis = getNonBlank();
+			if (cThis == '_')
+				lower_limit = getBraceParam();
+			else if (cThis == '^')
+				upper_limit = getBraceParam();
+			else
+				ungetTexChar(cThis);
+		}
+	}
+	
     if (g_fields_use_EQ) {
 
         fprintRTF(" \\\\i ");
         switch (code) {
             case 4:
-                if (limits)
+                if (upper_limit || lower_limit)
                     fprintRTF("( %c %c )\\\\I", g_field_separator, g_field_separator);
                 else
                     fprintRTF("\\\\in( %c %c )\\\\I", g_field_separator, g_field_separator);
                 /* \iiint --- fall through */
             case 3:
-                if (limits)
+                if (upper_limit || lower_limit)
                     fprintRTF("( %c %c )\\\\I", g_field_separator, g_field_separator);
                 else
                     fprintRTF("\\\\in( %c %c )\\\\I", g_field_separator, g_field_separator);
                 /* \iint --- fall through */
             case 0:
-                if (limits)
+                if (upper_limit || lower_limit)
                     fprintRTF("(", g_field_separator, g_field_separator);
                 else
                     fprintRTF("\\\\in(", g_field_separator, g_field_separator);
@@ -1129,6 +1130,10 @@ parameter: type of operand
         }
     }
 
+	if (command) {
+		ConvertString(command);
+		free(command);
+	}
     if (lower_limit)
         free(lower_limit);
     if (upper_limit)

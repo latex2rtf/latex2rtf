@@ -52,6 +52,23 @@ static void increase_buffer_size(void)
     diagnostics(4, "Expanded buffer size is now %ld", section_buffer_size);
 }
 
+static void show_buffer(char *s)
+{
+	long i;
+	char c;
+	for (i=0; i<=section_buffer_end; i++) {
+	
+		if (i==0) 
+			fprintf(stderr, "\n%-*ld: ", (int) strlen(s), section_buffer_end);
+		else if (i % 100 == 0) 
+			fprintf(stderr, "\n%s: ",s);
+		c = section_buffer[i];
+		if (c == '\n') c = '=';
+		if (c == '\0') c = '*';
+		fprintf(stderr,"%c",c);
+	}
+}
+
 static void add_chr_to_buffer(char c)
 {
     if (section_buffer == NULL) {
@@ -73,6 +90,7 @@ static void add_chr_to_buffer(char c)
 			fprintf(stderr, "[\\n]");
 		else
 			fprintf(stderr, "[%c]", (int) c);
+		fprintf(stderr, "<%ld>", section_buffer_end);
 	}
 }
 
@@ -87,16 +105,17 @@ static void add_str_to_buffer(const char *s)
 static int matches_buffer_tail(const char *s)
 {
 	size_t len;
-	return FALSE;
-	if (s==NULL) return FALSE;
-	
-	len = strlen(s);
-	if (len>section_buffer_end) return FALSE;
-	
-	if (strncmp(s,section_buffer+section_buffer_end-len,len))
-		return TRUE;
 
-	return FALSE;
+	if (s==NULL) return FALSE;
+	len = strlen(s);
+	
+	if (len > section_buffer_end+1) return FALSE;
+	
+	if (strncmp(s,section_buffer+section_buffer_end-len,len)==0) {
+		return TRUE;
+	} else {
+		return FALSE;
+	}
 }
 
 static void reset_buffer(void)
@@ -107,6 +126,13 @@ static void reset_buffer(void)
 static void move_end_of_buffer(size_t n)
 {
 	section_buffer_end += n;
+
+	if (0) {
+		if (n<0)
+			fprintf(stderr, "[removing %ld chars]", -n);
+		else 
+			fprintf(stderr, "[adding %ld chars]", n);
+	}
 
 	if (0) {
 		diagnostics(1,"last 5 characters are [%c][%c][%c][%c][%c]\n", 
@@ -137,12 +163,13 @@ static char *getBeginEndParam(void)
     if (s == '\n')
         s = getNonSpace();
 
-    PushTrackLineNumber(FALSE);
 
     if (s != '{') {
         ungetTexChar(s);
         return NULL;
     }
+
+    PushTrackLineNumber(FALSE);
     
     raw = getDelimitedText('{', '}', FALSE);
     text = strdup_noendblanks(raw);
@@ -249,6 +276,7 @@ void preParse(char **body, char **header, char **label)
         cThis = getRawTexChar();
         while (cThis == '\0' && getParserDepth() > 0) {
             PopSource();
+            diagnostics(4,"parser depth is now %d", getParserDepth());
             cThis = getRawTexChar();
         }
 
@@ -263,23 +291,13 @@ void preParse(char **body, char **header, char **label)
 
         if (cThis == '\0') break;
 
-        /* slurp TeX comments but retain stuff following %latex2rtf: */
-        /* if we did not have the %latex2rtf: feature then we could just */
-        /* discard the entire line following a '%'.  Instead we must collect */
-        /* the line and then see if there is a %latex2rtf:, if there is not */
-        /* then just discard the entire line, otherwise just the %latex2rtf: */
         if (cThis == '%' && even(bs_count)) {   
-            int n = 1;
+            int n = 1;  /* remove initial % */
             do {
             	cNext = getRawTexChar();
         		add_chr_to_buffer(cNext);
             	n++;
-            	if (matches_buffer_tail(InterpretCommentString)) {
-            		n = strlen(InterpretCommentString)+1;
-            		break;
-            	}
-            } while (cNext != '\n' && cNext != '\0');
-            
+            } while (cNext != '\n' && cNext != '\0');        
             move_end_of_buffer(-n);
             continue;
         }
@@ -433,7 +451,7 @@ void preParse(char **body, char **header, char **label)
             }
             
             if (found == TRUE) {
-				diagnostics(3,"matched <%s> entry number %d",command[i],i);
+				diagnostics(3,"preparse matched '%s'",command[i]);
 				i_match = i;
 				break;
 			}
@@ -480,8 +498,8 @@ void preParse(char **body, char **header, char **label)
             do {
             	cc = getRawTexChar();
             	add_chr_to_buffer(cc);
-            } while (cc != '\0' && cc != cNext);
-            
+            } while (cc != cNext && cc != '\0');
+              
             cmd_pos = 0;          /* reset the command position */
             continue;
         }
@@ -591,14 +609,14 @@ void preParse(char **body, char **header, char **label)
             continue;
         }
 
-        diagnostics(5, "possible end of section");
-        diagnostics(5, "label_depth = %d", label_depth);
+        diagnostics(4, "possible end of section");
+        diagnostics(4, "label_depth = %d", label_depth);
 
         if (label_depth > 0)    /* still in a \begin{xxx} environment? */
             continue;
 
         /* actually found command to end the section */
-        diagnostics(4, "getSection found command to end section");
+        diagnostics(4, "preParse() found command to end section");
         s = getBraceParam();
         next_header = strdup_together4(command[i], "{", s, "}");
         free(s);

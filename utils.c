@@ -477,3 +477,32 @@ int getStringDimension(char *s)
 	
 	return size;
 }
+
+void show_string(char *s, char *label)
+{
+	int width=100;
+	long i;
+	char c;
+	long len;
+	
+	if (s == NULL) {
+		fprintf(stderr, "\n%s: NULL",label);
+		return;
+	}
+		
+	len = strlen(s);
+	fprintf(stderr, "\n%s: ", label);
+
+	for (i=0; i<len; i++) {
+	
+		if (i==width)
+			fprintf(stderr, "\n%-*d: ", (int) strlen(label), (int) strlen(s));
+		else if (i>1 && i % width == 0) 
+			fprintf(stderr, "\n%s: ",label);
+		c = s[i];
+		if (c == '\n') c = '=';
+		if (c == '\0') c = '*';
+		fprintf(stderr,"%c",c);
+	}
+}
+

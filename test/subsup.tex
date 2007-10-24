@@ -1,16 +1,19 @@
 \documentclass{article}
 
-\begin{document}
+\newif\iflatextortf
+\latextortffalse  %ignored by latex2rtf
 
-%latex2rtf: \begin{comment}
+\iflatextortf
+\else
 \makeatletter
 \DeclareRobustCommand*\textsubscript[1]{%
  \@textsubscript{\selectfont#1}}
 \newcommand{\@textsubscript}[1]{%
  {\m@th\ensuremath{_{\mbox{\fontsize\sf@size\z@#1}}}}}
 \makeatother
-%latex2rtf: \end{comment}
+\fi
 
+\begin{document}
 
 This text is nonsense but only written to make the use
 of \verb#\textsuperscript{-17}# visible.

@@ -754,7 +754,8 @@ char *getSimpleCommand(void)
 
 /**************************************************************************
      purpose: returns a simple command e.g., \alpha\beta will return "\beta"
-                                                   ^
+                                                  ^
+                                              \! will return \!
  **************************************************************************/
 {
     char buffer[128];
@@ -765,7 +766,9 @@ char *getSimpleCommand(void)
     if (buffer[0] != '\\')
         return NULL;
 
-    for (size = 1; size < 127; size++) {
+	buffer[1] = getTexChar();
+
+    for (size = 2; size < 127; size++) {
         buffer[size] = getRawTexChar(); /* \t \r '%' all end command */
 
         if (!isalpha((int) buffer[size])) {
