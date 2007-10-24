@@ -148,6 +148,10 @@ static void putOverstrikeChar(const char *font, char *s,
 	
 		fprintRTF("\\'%x",overstrike);	
 		
+	} else if (strcmp(font,"twice")==0 ) {
+	
+		fprintRTF("%c%c",overstrike,overstrike);	
+
 	} else if (strcmp(font,"unicode")==0 ) {
 	
 		fprintRTF("\\u%u",overstrike);
@@ -282,7 +286,8 @@ void CmdUmlauteChar(int code)
 	}
 
 	if (!done) 
-		putOverstrikeChar("unicode", cParam, 776, 0.1);
+		putOverstrikeChar("twice", cParam, '.', 0.6);
+/*		putOverstrikeChar("unicode", cParam, 776, 0.1); */
 
     free(cParam);
 }
@@ -604,7 +609,7 @@ void CmdMacronChar(int code)
 	}
 	
 	if (!done) 
-		putOverstrikeChar("unicode", cParam, 175, 0.1);
+		putOverstrikeChar("MT Extra", cParam, 195, 0.0);
 
     free(cParam);
 }
@@ -1020,7 +1025,7 @@ void CmdBreveChar(int code)
 	}
 	
 	if (!done) 
-		putOverstrikeChar("MT Extra", cParam, 184, 0.1);
+		putOverstrikeChar("MT Extra", cParam, 252, 0.1);
 
     free(cParam);
 }
@@ -1180,7 +1185,8 @@ void CmdCaronChar(int code)
 	}
 	
 	if (!done) 
-		putOverstrikeChar("unicode", cParam, 780, 0.05);
+		putOverstrikeChar("MT Extra", cParam, 253, 0.1);
+		/* putOverstrikeChar("unicode", cParam, 780, 0.05); */
 
     free(cParam);
 }
