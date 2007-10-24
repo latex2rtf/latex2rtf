@@ -888,5 +888,5 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
     if (TryVariableIgnore(cCommand))
         return;
 
-    diagnostics(WARNING, "Command \\%s not found - ignored", cCommand);
+    diagnostics(WARNING, "Command '\\%s' ignored", cCommand);
 }

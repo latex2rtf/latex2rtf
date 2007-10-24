@@ -230,6 +230,7 @@ static CommandArray commands[] = {
     {"verb", CmdVerb, VERB_VERB},
     {"verb*", CmdVerb, VERB_STAR},
     {"url", CmdVerb, VERB_URL},
+/*    {"urlstyle", CmdIgnoreParameter, No_Opt_One_NormParam},*/
     {"onecolumn", CmdColumn, One_Column},
     {"twocolumn", CmdColumn, Two_Column},
     {"includegraphics", CmdGraphics, FIGURE_INCLUDEGRAPHICS},

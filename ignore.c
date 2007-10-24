@@ -37,82 +37,70 @@ Authors:
 #include "commands.h"
 #include "parser.h"
 #include "convert.h"
+#include "utils.h"
 
 static void IgnoreVar(void);
 static void IgnoreCmd(void);
 
-bool TryVariableIgnore(char *command)
+bool TryVariableIgnore(const char *command)
 
 /****************************************************************************
 purpose : ignores variable-formats shown in file "ignore.cfg"
 returns : TRUE if variable was ignored correctly, otherwise FALSE
 
 #  NUMBER        simple numeric value
-#  MEASURE : numeric value with following unit of measure
-#  OTHER: ignores anything to the first character after '='
-#	 and from there to next space. eg. \setbox\bak=\hbox
+#  MEASURE 		 numeric value with following unit of measure
+#  OTHER         ignores anything to the first character after '='
+#	             and from there to next space. eg. \setbox\bak=\hbox
 #  COMMAND       ignores anything to next '\' and from there to occurence
 #	             of anything but a letter. eg. \newbox\bak
 #  SINGLE        ignore single command. eg. \noindent
 #  PARAMETER	 ignores a command with one paramter
 #  PACKAGE		 does not produce a Warning message if PACKAGE is encountered
 #  ENVCMD		 proceses contents of unknown environment as if it were plain latex
-#  ENVIRONMENT   ignores contentents of that environment
+#  ENVIRONMENT   ignores contents of that environment
  ****************************************************************************/
 {
     const char *RtfCommand;
-    char TexCommand[128];
-    bool result = TRUE;
-	int len;
+    char *TexCommand;
 	
-	diagnostics(5, "trying to ignore '%s'", command);
-	len = strlen(command);
+	diagnostics(4, "trying to ignore '%s'", command);
 	
-	if (len == 0) return TRUE;
-	
-    if (len >= 100) {
-        diagnostics(WARNING, "Command <%s> is too long", command);
-        return FALSE;           /* command too long */
-    }
-    TexCommand[0] = '\\';
-    TexCommand[1] = '\0';
-    strcat(TexCommand, command);
-
+    TexCommand = strdup_together("\\", command);
     RtfCommand = SearchRtfCmd(TexCommand, IGNORE_A);
-    if (RtfCommand == NULL)
-        result = FALSE;
-    else if (strcmp(RtfCommand, "NUMBER") == 0)
+    free(TexCommand);
+    
+    if (RtfCommand == NULL) return FALSE;
+    
+    if (strcmp(RtfCommand, "NUMBER") == 0) {
         IgnoreVar();
-    else if (strcmp(RtfCommand, "MEASURE") == 0)
+    } else if (strcmp(RtfCommand, "MEASURE") == 0) {
         IgnoreVar();
-    else if (strcmp(RtfCommand, "OTHER") == 0)
+    } else if (strcmp(RtfCommand, "OTHER") == 0) {
         IgnoreVar();
-    else if (strcmp(RtfCommand, "COMMAND") == 0)
+    } else if (strcmp(RtfCommand, "COMMAND") == 0) {
         IgnoreCmd();
-    else if (strcmp(RtfCommand, "SINGLE") == 0) {
-    } else if (strcmp(RtfCommand, "PARAMETER") == 0)
+    } else if (strcmp(RtfCommand, "SINGLE") == 0) {
+    
+    } else if (strcmp(RtfCommand, "PARAMETER") == 0) {
         CmdIgnoreParameter(No_Opt_One_NormParam);
-    else if (strcmp(RtfCommand, "TWOPARAMETER") == 0)
+    } else if (strcmp(RtfCommand, "TWOPARAMETER") == 0) {
         CmdIgnoreParameter(No_Opt_Two_NormParam);
 
-/*	else if (strcmp(RtfCommand, "LINE") == 0) skipToEOL(); */
-    else if (strcmp(RtfCommand, "ENVIRONMENT") == 0) {
-        char *str;
+/*	} else if (strcmp(RtfCommand, "LINE") == 0) {
+      	skipToEOL(); */
 
-        str = malloc(strlen(command) + 5);  /* envelope: end{..} */
-        if (str == NULL)
-            diagnostics(ERROR, "malloc error -> out of memory!\n");
-        strcpy(str, "end{");
-        strcat(str, command);
-        strcat(str, "}");
+    } else if (strcmp(RtfCommand, "ENVIRONMENT") == 0) {
+		char *str = strdup_together3("end{", command, "}");
         Ignore_Environment(str);
         free(str);
-    } else if (strcmp(RtfCommand, "ENVCMD") == 0)
+    } else if (strcmp(RtfCommand, "ENVCMD") == 0) {
         PushEnvironment(IGNORE_MODE);
-    else if (strcmp(RtfCommand, "PACKAGE") == 0) {
-    } else
-        result = FALSE;
-    return (result);
+    } else if (strcmp(RtfCommand, "PACKAGE") == 0) {
+    
+    } 
+    
+    return TRUE;
 }
 
 

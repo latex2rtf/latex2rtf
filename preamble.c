@@ -480,7 +480,7 @@ static void setDocumentOptions(char *optionlist)
         } else if (strcmp(option, "doc") == 0) {
             diagnostics(WARNING, "Limited support for apa class");
         } else {
-            diagnostics(WARNING, "Package/option '%s' ignored.  Good luck!", option);
+            diagnostics(WARNING, "Package/option '%s' ignored.", option);
         }
         option = strtok(NULL, ",");
     }

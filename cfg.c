@@ -300,6 +300,8 @@ static ConfigEntryT **search_rtf(const char *theTexCommand, int WhichCfg)
     compare_item.TexCommand = theTexCommand;
     compare_item.RtfCommand = "";
     compare_ptr = &compare_item;
+    
+    if (theTexCommand == NULL) return NULL;
 
     assert(WhichCfg >= 0 && (size_t) WhichCfg < CONFIG_SIZE);
     assert(configinfo[WhichCfg].config_info != NULL);

@@ -99,7 +99,7 @@ char *my_strndup(char *src, size_t n)
 /******************************************************************************
  purpose:  returns a new string consisting of s+t
 ******************************************************************************/
-char *strdup_together(char *s, char *t)
+char *strdup_together(const char *s, const char *t)
 {
     char *both;
 
@@ -123,7 +123,7 @@ char *strdup_together(char *s, char *t)
 /******************************************************************************
  purpose:  returns a new string consisting of s+t+u
 ******************************************************************************/
-char *strdup_together3(char *s, char *t, char *u)
+char *strdup_together3(const char *s, const char *t, const char *u)
 {
     char *two, *three;
 	two = strdup_together(s,t);
@@ -135,7 +135,7 @@ char *strdup_together3(char *s, char *t, char *u)
 /******************************************************************************
  purpose:  returns a new string consisting of s+t+u+v
 ******************************************************************************/
-char *strdup_together4(char *s, char *t, char *u, char *v)
+char *strdup_together4(const char *s, const char *t, const char *u, const char *v)
 {
     char *four, *three;
 	three = strdup_together3(s,t,u);
