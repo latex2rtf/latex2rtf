@@ -182,6 +182,27 @@ static char my_getc(FILE *f)
 	return (char) c;
 }
 
+/* specifically written to avoid '\\''\n' being seen as the end of a line */
+static char * my_fgets(FILE *f)
+{
+    char AuxLine[2048];
+	int last_char_was_bs = FALSE;
+	int i = 0;
+	char c  = my_getc(f);
+	
+	while (c != '\0' && i < 2047 && c != '\n' && !last_char_was_bs) {
+		AuxLine[i] = c;
+		i++;
+		last_char_was_bs = ( c == '\\') ? 1 : 0;
+		c = my_getc(f);
+	}
+	
+	if (i==0 && feof(f)) return NULL;
+	
+	AuxLine[i] = '\0';
+	return strdup(AuxLine);
+}
+
 /*************************************************************************
 purpose: obtains a reference from .aux file
     code==0 means \token{reference}{number}       -> "number"
@@ -191,15 +212,14 @@ purpose: obtains a reference from .aux file
 static char *ScanAux(char *token, char *reference, int code, char *aux_name)
 {
     FILE *fAux = NULL;
-    char AuxLine[2048];
     char target[512];
-    char *s, *t;
+    char *s, *t, *AuxLine;
     int braces;
 
     if (g_aux_file_missing || strlen(token) == 0) {
         return NULL;
     }
-    diagnostics(4, "seeking in .aux for <%s>", reference);
+    diagnostics(3, "seeking in .aux for <%s>", reference);
 
     snprintf(target, 512, "\\%s{%s}", token, reference);
 
@@ -210,7 +230,9 @@ static char *ScanAux(char *token, char *reference, int code, char *aux_name)
         return NULL;
     }
 
-    while (fgets(AuxLine, 2047, fAux) != NULL) {
+	AuxLine = my_fgets(fAux);
+	
+    while (AuxLine != NULL) {
 
 		s = strstr(AuxLine, "\\@input{");
 		if (s) {
@@ -258,6 +280,8 @@ static char *ScanAux(char *token, char *reference, int code, char *aux_name)
 			fclose(fAux);
 			return strdup(s + 1);
 		}
+		free(AuxLine);
+		AuxLine = my_fgets(fAux);
     }
     fclose(fAux);
     return NULL;

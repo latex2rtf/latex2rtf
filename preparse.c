@@ -319,6 +319,14 @@ void preParse(char **body, char **header, char **label)
 
         if (cmd_pos == 0) continue;
 
+		/* replace "\ " and "\\n" with a space */
+		if (cmd_pos == 1 &&  (cThis == '\n' || cThis == ' ') ) {
+			move_end_of_buffer(-1);
+			add_chr_to_buffer(' ');
+			cmd_pos = 0;
+			continue;
+		}
+		
 		/* at this point we are have encountered a command and may have to do something.
 		   if it is a user definition, then the user definition is expanded here
 		   if it is a user environment, then expansion also happens here

@@ -12,9 +12,6 @@ Potential Features:
 	
 	New diagnostic level to replace Warning for expected stuff
 
-	add support for \symbol{\'134}
-	finish special cases for \char 'xxx
-	
 	Add support for \usepackage{fullpage}
 	Add support for \usepackage{doublespace}
 	Add support for \usepackage{endnote}

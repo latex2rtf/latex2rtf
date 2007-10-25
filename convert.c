@@ -680,8 +680,15 @@ globals: fTex, fRtf, command-functions have side effects or recursive calls;
             CmdSlashSlash(0);
             return;
 
+        case 0x0D:  /*handle any CRLF that might have snuck in*/
+			cNext = getTexChar();
+			if (cNext != 0x0A)
+				ungetTexChar(cNext);
+			/* fall through */
+
+        case '\t':  /* tabs should already be spaces */
         case ' ':
-        case '\n':
+        case 0x0A:
             if (mode == MODE_VERTICAL)
                 SetTexMode(MODE_HORIZONTAL);
             fprintRTF(" ");     /* ordinary interword space */
