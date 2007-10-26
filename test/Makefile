@@ -166,6 +166,7 @@ bibentry_apalike.rtf: bibentry_apalike.tex bibentry_apalike.bib
 
 bib_super.rtf: bib_super.tex
 	$(LATEX) bib_super $(LATEX_LOG)
+	$(BIBTEX) bib_super > bibtex.log
 	$(LATEX) bib_super $(LATEX_LOG)
 	$(LATEX2RTF) $(OPTIONS) bib_super
 

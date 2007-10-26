@@ -300,7 +300,7 @@ static void PrepareRtfEquation(int code, int EQ_Needed)
             break;
 
         case EQN_ENSUREMATH:
-            diagnostics(4, "PrepareRtfEquation ... \ensuremath{}");
+            diagnostics(4, "PrepareRtfEquation ... \\ensuremath{}");
             fprintRTF("{");
             SetTexMode(MODE_MATH);
             break;
@@ -455,7 +455,7 @@ static void FinishRtfEquation(int code, int EQ_Needed)
             break;
 
         case EQN_ENSUREMATH:
-            diagnostics(4, "FinishRtfEquation -- \ensuremath{}");
+            diagnostics(4, "FinishRtfEquation -- \e\nsuremath{}");
             fprintRTF("}");
             SetTexMode(MODE_HORIZONTAL);
             break;

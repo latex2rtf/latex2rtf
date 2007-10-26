@@ -162,44 +162,49 @@ static int citation_used(char *citation)
 #define CR (char) 0x0d
 #define LF (char) 0x0a
 
-static char my_getc(FILE *f)
+static int my_fgetc(FILE *f)
 {
 	int c;
 	
-	if (!f) return '\0';
-	c = getc(f);
-	if (c==EOF) return '\0';
+	c = fgetc(f);
+	if (feof(f)) return '\0';
 		
 	if (c==CR) {
-		c = getc(f);
+		c = fgetc(f);
 		if (c == LF) return '\n';
 		ungetc(c,f);
 		return '\n';
-	} if (c==LF)
-		return '\n';
-	else if (c=='\t')
-		return ' ';
+	} 
 	
-	return (char) c;
+	if (c == LF ) return '\n';
+	if (c =='\t') return ' ';
+	
+	return c;
 }
 
-/* specifically written to avoid '\\''\n' being seen as the end of a line */
+/* written to avoid '\\''\n' being seen as the end of a line */
 static char * my_fgets(FILE *f)
 {
     char AuxLine[2048];
-	int last_char_was_bs = FALSE;
-	int i = 0;
-	char c  = my_getc(f);
+	int i;
+	int cLast = '\0';
 	
-	while (c != '\0' && i < 2047 && c != '\n' && !last_char_was_bs) {
-		AuxLine[i] = c;
-		i++;
-		last_char_was_bs = ( c == '\\') ? 1 : 0;
-		c = my_getc(f);
+	if (f == NULL || feof(f)) return NULL;
+	
+	for(i=0; i<2048; i++) {
+		AuxLine[i] = my_fgetc(f);
+	
+		if (feof(f)) break;
+		
+		if (AuxLine[i] == '\n') {
+			if (cLast == '\\')
+				AuxLine[i] = ' ';  /* replace backslash-newline with backslash-space */
+			else 
+				break;
+		} 
+		cLast = AuxLine[i];
 	}
-	
-	if (i==0 && feof(f)) return NULL;
-	
+		
 	AuxLine[i] = '\0';
 	return strdup(AuxLine);
 }
@@ -297,15 +302,16 @@ purpose: obtains a \bibentry{reference} from the .bbl file
 static char *ScanBbl(char *reference)
 {
     static FILE *f_bbl = NULL;
-    char buffer[4096];
-    char *s, *t;
+    char *buffer, *target;
+    char *s;
 	char last_c;
 	int  i=1;
 	
     if (g_bbl_file_missing || strlen(reference) == 0) {
         return NULL;
     }
-    diagnostics(4, "seeking '\\bibitem{%s}' in .bbl", reference);
+    target = strdup_together3("\\bibitem{", reference,"}");
+    diagnostics(1, "seeking '%s' in .bbl", target);
 	
     if (f_bbl == NULL && (f_bbl = my_fopen(g_bbl_name, "r")) == NULL) {
         diagnostics(WARNING, "No .bbl file.  Run LaTeX to create %s\n", g_bbl_name);
@@ -315,35 +321,33 @@ static char *ScanBbl(char *reference)
     rewind(f_bbl);
 
 	/* scan each line for \bibentry{reference} */
-    while (fgets(buffer, 4095, f_bbl) != NULL) {
-        t = strstr(buffer, "\\bibitem");
-        if (t) {
-        	s = strstr(buffer+8, reference);
-        	if (s) break;
-        }
-    }
-
+	while ((buffer = my_fgets(f_bbl)) != NULL) {
+		s = strstr(buffer,target);
+		if (s) break;
+		free(buffer);
+	}
+	
+	free(target);
 	if (!s) return NULL;
-		
+	buffer = malloc(4096);
+	
 	/* scan bbl file until we encounter \n\n */
-	s = buffer;
 	last_c = '\0';
-	*s = my_getc(f_bbl);
-	while ( !feof(f_bbl) && !(last_c == '\n' && *s == '\n') && i< 4095) {
-		last_c = *s;
-		s++;
-		*s = my_getc(f_bbl);
-		i++;
+	for (i=0; i<4096; i++) {		
+		buffer[i] = my_fgetc(f_bbl);
+		if (feof(f_bbl)) break;
+		if (buffer[i] == '\n' && last_c == '\n') break;		
+		last_c = buffer[i];
 	}
 		
 	/* strip trailing . and any spaces at the end */
-	while (*s==' ' || *s == '\n') s--;
-	if (*s == '.') s--;
+	while (buffer[i] ==' ' || buffer[i] == '\n') i--;
+	if (buffer[i] == '.') i--;
 	
-	s++;
-	*s = '\0';
-	
-	return strdup(buffer);
+	buffer[i+1] = '\0';
+	s = strdup(buffer);
+	free(buffer);
+	return s;
 }
 
 /******************************************************************************
