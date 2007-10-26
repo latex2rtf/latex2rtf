@@ -7,7 +7,7 @@ LATEX2RTF= ../latex2rtf
 OPTIONS  = -Z3 -P ../cfg/:../scripts/ -T ../tmp/
 
 LATEX_LOG = >latex.log
-LATEX_LOG = 
+#LATEX_LOG = 
 
 RTF=	align.rtf	array.rtf 		box.rtf 			ch.rtf	\
 		chem.rtf 	color.rtf 		dblspace.rtf		defs.rtf\

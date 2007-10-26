@@ -46,6 +46,7 @@ char *g_table_label = NULL;
 char *g_equation_label = NULL;
 char *g_section_label = NULL;
 int g_suppress_name = FALSE;
+static int g_warned_once = FALSE;
 
 #define MAX_LABELS 200
 #define MAX_CITATIONS 1000
@@ -526,7 +527,11 @@ void CmdBibitem(int code)
     s = ScanAux("bibcite", key, 0, g_aux_name);
 
     if (label && !s) {          /* happens when file needs to be latex'ed again */
-        diagnostics(WARNING, "file needs to be latexed again for references");
+    	if (!g_warned_once){
+        diagnostics(WARNING, "Cannot locate \\bibcite{%s} in .aux file",key);
+        diagnostics(WARNING, "**** The .tex file probably needs to be LaTeXed again ***",g_tex_name);
+        g_warned_once = TRUE;
+        }
         fprintRTF("[");
         ConvertString(label);
         fprintRTF("]");
