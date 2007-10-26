@@ -117,7 +117,7 @@ void *open_cfg(const char *name, int quit_on_error)
 purpose: open config by trying multiple paths
  ****************************************************************************/
 {
-    char *env_path, *p, *p1;
+    char *env_path, *p, *p1, *pf;
     char *lib_path;
     FILE *fp;
 
@@ -149,6 +149,26 @@ purpose: open config by trying multiple paths
         free(env_path);
     }
 
+/* try the environment variable ProgramFiles */
+    p = getenv("PROGRAMFILES");
+    if (p) {
+        pf = strdup_together(p, "/latex2rtf/cfg");
+        p = pf;
+        while (p) {
+            p1 = strchr(p, ENVSEP);
+            if (p1)
+                *p1 = '\0';
+
+            fp = try_path(p, name);
+            if (fp) {
+                free(pf);
+                return fp;
+            }
+
+            p = (p1) ? p1 + 1 : NULL;
+        }
+    }
+
 /* last resort.  try CFGDIR */
     lib_path = strdup(CFGDIR);
     if (lib_path) {
@@ -178,6 +198,7 @@ purpose: open config by trying multiple paths
         diagnostics(WARNING, "   (3) recompile latex2rtf with CFGDIR defined properly");
         diagnostics(WARNING, "Current RTFPATH: %s", getenv("RTFPATH"));
         diagnostics(WARNING, "Current  CFGDIR: %s", CFGDIR);
+        diagnostics(WARNING, "Also not found in : %s", pf);
         diagnostics(ERROR, " Giving up.  Please don't hate me.");
     }
     return NULL;
