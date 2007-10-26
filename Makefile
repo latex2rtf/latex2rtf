@@ -127,7 +127,8 @@ TEST=  \
 	test/enc_cp1251.tex          test/fig_testb.pdf      test/tabular.tex       \
 	test/enc_cp1252.tex          test/fig_testb.ps       test/theorem.tex       \
 	test/enc_cp437.tex           test/fig_testc.pdf      test/ttgfsr7.tex       \
-	test/enc_cp850.tex           test/fig_testc.ps       test/unicode.tex
+	test/enc_cp850.tex           test/fig_testc.ps       test/unicode.tex       \
+	test/bib_apa.tex             test/bib_apa.bib
 	
 OBJS=fonts.o direct.o encodings.o commands.o stack.o funct1.o tables.o \
 	chars.o ignore.o cfg.o main.o utils.o parser.o lengths.o counters.o \

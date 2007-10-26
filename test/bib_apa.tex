@@ -1,0 +1,71 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                      %
+% Athanassios Protopapas, October 2005 %
+% Mini-example for using apa.cls       %
+%                                      %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[man]{apa}
+
+\title{Example of an APA-style manuscript}
+\author{Athanassios Protopapas}
+\affiliation{Institute for Language \& Speech Processing\\ Athens, Greece}
+
+\abstract{This is an example of a minimal ``manuscript'' using the \LaTeX\ apa.cls document class to typeset manuscripts according to the Americal Psychological Association (APA) manual, fifth edition.}
+
+\acknowledgements{Written at the request of the Prac\TeX\ journal editors.
+
+Comments may be sent to the author at protopap@ilsp.gr.}
+
+\shorttitle{APA style manuscript}
+\rightheader{APA style manuscript}
+\leftheader{A.\ Protopapas}
+
+\begin{document}
+\maketitle                            
+Here goes the text of the article. Note that the content begins immediately after \texttt{maketitle} and there is no blank line between the title command and the article text. This first section of the article is typically the introduction and, according to APA style, should not bear a section heading.\footnote{That is, there is no ``Introduction'' section.} Subsequent sections, however, are titled according to the psychological conventions.
+
+\section{Experiment 1} 
+Manuscripts in APA style often contain descriptions of experiments.  The APA manual specifications for referring to experiments are to use a lowercase ``e'' when speaking generally, as in the previous phrase, but an uppercase ``E'' when mentioning a particular experiment (as in the following phrase), such as Experiment~1.
+
+\subsection{Method}
+The ``method'' is a subsection of the experimental presentation in which all the details of setting up and conducting the experiment are described.  There a number of more or less standard components to a method, shown below.
+\subsubsection{Participants}
+Psychological experiments are conducted with participants, usually humans. Note that these used to be called ``subjects'' but apparently APA now finds it inappropriate to refer to people with this term.  Here we mention how many participants there were, their ages and other information about them.
+\subsubsection{Apparatus}
+Sometimes it is necessary to give the apparatus a special section.
+\subsubsection{Stimuli}
+What the subjects saw, heard, or felt.
+\subsubsection{Procedure}
+What happened to the poor subjects.
+\subsection{Results}
+In this subsection, one shows numbers and statistical analyses.  Students are especially unlikely to read this section, but seasoned researchers often avoid it in the first reading, especially if the article is not of particular interest for their own research.
+\subsection{Discussion}
+If the results of the experiment mean anything, this is the place to talk about it. 
+
+\section{Experiment 2}
+Usually one experiment is not enough to convince anyone; you need additional control experiments to make your point.
+\subsection{Method}
+The method can be the same as for the previous experiment, since here we are simply interested in showing the structure of the manuscript.
+\subsection{Results \& Discussion}
+This is a good point to show an example of a table following APA conventions. Note that we don't use any vertical separators and that columns can be grouped with partial horizontal lines.  
+Also keep in mind that the caption must precede the table. The label is entirely optional, but useful for referring to the table in the text, for example this one would be Table~\ref{tab:tab1}.
+\begin{table}[tbp]
+\caption{Some numbers that could be experimental data.}
+\label{tab:tab1}
+\begin{tabular}{lcc}\hline
+          & \multicolumn{2}{c}{Factor 2} \\ \cline{2-3}
+Factor 1  & Condition A  & Condition B   \\ \hline
+First     & 586 (231)    & 649 (255)     \\
+          &    2.2       &    7.5        \\
+Second    & 590 (195)    & 623 (231)     \\
+          &    2.8       &    2.5        \\ \hline
+\end{tabular}
+\end{table}
+
+\section{General Discussion}
+In psychological articles there is usually some point to the whole experimental exercise, and in the end we get to discuss how important it all is.  Although literature is supposed to have been covered in the introduction, for this example we can illustrate the use of bibliographic citations in this final section \cite{art1}. The accompanying package ``apacite'' by Erik Meijer provides everything an APA-style writer needs for citations, such as in-text citations in which one can claim that \citeA{boo1} mentioned or failed to mention something.
+
+\bibliography{bib_apa}
+
+\end{document}

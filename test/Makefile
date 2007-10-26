@@ -16,13 +16,13 @@ RTF=	align.rtf	array.rtf 		box.rtf 			ch.rtf	\
 		geotest.rtf	german.rtf		head_article.rtf	head_book.rtf \
 		list.rtf 	ifclause.rtf	include.rtf			linux.rtf\
 		logo.rtf 	misc1.rtf 		misc3.rtf 			misc4.rtf\
-		percent.rtf	report.rtf		tabbing.rtf			tabular.rtf\
+		percent.rtf	report.rtf		tabbing.rtf			tabular.rtf
 
 BIB_TESTS=  bib_apacite.rtf        bib_harvard.rtf        bib_super.rtf      \
 			bib_apacite_dblsp.rtf  bib_natbib1.rtf        bib_apalike.rtf    \
 			bib_natbib2.rtf        bibentry_apalike.rtf   bib_apalike2.rtf   \
 			bib_natbib3.rtf        bib_apanat.rtf         bibentry_plain.rtf \
-			bib_authordate.rtf     bib_simple.rtf
+			bib_authordate.rtf     bib_simple.rtf         bib_apa.rtf
 	
 FIG_TESTS=  fig_endfloat.rtf  fig_test.rtf      fig_test3.rtf \
             fig_size.rtf      fig_test2.rtf     fig_test4.rtf \
@@ -103,6 +103,13 @@ bib_apalike.rtf: bib_apalike.tex
 	$(LATEX) bib_apalike $(LATEX_LOG)
 	$(LATEX) bib_apalike $(LATEX_LOG)
 	$(LATEX2RTF) $(OPTIONS) bib_apalike
+
+bib_apa.rtf: bib_apa.tex
+	$(LATEX) bib_apa $(LATEX_LOG)
+	$(BIBTEX) bib_apa > bibtex.log
+	$(LATEX) bib_apa $(LATEX_LOG)
+	$(LATEX) bib_apa $(LATEX_LOG)
+	$(LATEX2RTF) $(OPTIONS) bib_apa
 
 bib_apacite.rtf: bib_apacite.tex
 	$(LATEX) bib_apacite $(LATEX_LOG)

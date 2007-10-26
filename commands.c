@@ -62,7 +62,7 @@ static CommandArray commands[] = {
     {"begin", CmdBeginEnd, CMD_BEGIN},
     {"end", CmdBeginEnd, CMD_END},
     {"today", CmdToday, 0},
-    {"footnote", CmdFootNote, FOOTNOTE},
+	{"footnote", CmdFootNote, FOOTNOTE},
 	{"endnote", CmdFootNote, FOOTNOTE | FOOTNOTE_ENDNOTE},
 
 	{"rmfamily", CmdFontFamily, F_FAMILY_ROMAN  },
@@ -1002,6 +1002,11 @@ static CommandArray apaciteCommands[] = {
     {"shortciteauthor", CmdCite, CITE_SHORT_AUTHOR},
     {"citeyear", CmdCite, CITE_YEAR},
     {"citeyearNP", CmdCite, CITE_YEAR_NP},
+	{"acknowledgements", CmdFootNote, FOOTNOTE},
+    {"shorttitle", CmdIgnoreParameter, No_Opt_One_NormParam},
+    {"rightheader", CmdIgnoreParameter, No_Opt_One_NormParam},
+    {"leftheader", CmdIgnoreParameter, No_Opt_One_NormParam},
+
     {"", NULL, 0}
 };
 
