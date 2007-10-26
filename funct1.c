@@ -894,7 +894,7 @@ parameter: code: type of section-recursion-level
         case SECT_NORM_STAR:
             CmdVspace(VSPACE_BIG_SKIP);
             if (g_document_type == FORMAT_APA) {
-            	ConvertString("\\begin{center}");
+            	ConvertString("\\begin{center}\\bf");
 			} else {        	
             	CmdStartParagraph("section", TITLE_INDENT);
             	fprintRTF("{");
