@@ -311,7 +311,7 @@ static char *ScanBbl(char *reference)
         return NULL;
     }
     target = strdup_together3("\\bibitem{", reference,"}");
-    diagnostics(1, "seeking '%s' in .bbl", target);
+    diagnostics(3, "seeking '%s' in .bbl", target);
 	
     if (f_bbl == NULL && (f_bbl = my_fopen(g_bbl_name, "r")) == NULL) {
         diagnostics(WARNING, "No .bbl file.  Run LaTeX to create %s\n", g_bbl_name);
@@ -843,7 +843,7 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first, i
     abbv = getBraceParam();
     full = getBraceParam();
     PopSource();
-    diagnostics(2, "natbib pre=[%s] post=<%s> n=<%s> year=<%s> abbv=<%s> full=<%s>", pre, post, n, year, abbv, full);
+    diagnostics(4, "natbib pre=[%s] post=<%s> n=<%s> year=<%s> abbv=<%s> full=<%s>", pre, post, n, year, abbv, full);
     author_repeated = FALSE;
     year_repeated = FALSE;
 
@@ -867,23 +867,27 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first, i
 
         case CITE_CITE:			
             v = abbv;
-            if (!isEmptyName(full)) 
+            if (g_citation_longnamesfirst && !isEmptyName(full)) 
             	v = full;
+            	
 			if (isEmptyName(v))
 				v = n;
 				
             if (strcmp(v, g_last_author_cited) == 0)
                 author_repeated = TRUE;
 
-	    if (strncmp(year, g_last_year_cited, 4) == 0)   /* over simplistic test * ... */
-		year_repeated = TRUE;
+	    	if (strncmp(year, g_last_year_cited, 4) == 0)   /* over simplistic test * ... */
+				year_repeated = TRUE;
 
             if (!first && !author_repeated) {
-		ConvertString(g_bibpunct_close);
             	ConvertString(g_bibpunct_cite_sep);
                 fprintRTF(" ");
             }
             ConvertString(v);
+			fprintRTF(" ");
+			ConvertString(g_bibpunct_open);
+			ConvertString(year);
+			ConvertString(g_bibpunct_close);
             break;
 
         case CITE_T:
@@ -901,49 +905,50 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first, i
                 author_repeated = TRUE;
 
             if (!first && !author_repeated) {
-		ConvertString(g_bibpunct_close);
+				ConvertString(g_bibpunct_close);
             	ConvertString(g_bibpunct_cite_sep);
                 fprintRTF(" ");
             }
 	    
-	    if (CITE_T_CAP == code) {
-	        v[1]=toupper(v[1]);
-	    }
-
-	    if (!author_repeated) { /* suppress repeated names */
-                ConvertString(v);
-                strcpy(g_last_author_cited, v);
-                strcpy(g_last_year_cited, year);
-		if (g_bibpunct_style == BIB_STYLE_ALPHA) {
-			fprintRTF(" ");
-			ConvertString(g_bibpunct_open);
-			if (pre) {
-				ConvertString(pre);
-				fprintRTF(" ");
+			if (CITE_T_CAP == code) {
+				v[1]=toupper(v[1]);
 			}
-			ConvertString(year);
-		}
-	    } else if (g_bibpunct_style == BIB_STYLE_ALPHA) {
-		if (!year_repeated) {
-			ConvertString(g_bibpunct_numbers_sep);
-			fprintRTF(" ");
-			ConvertString(year);
-                } else {
-			char *s = strdup(year + 4);
-			ConvertString(g_bibpunct_numbers_sep);
-			ConvertString(s);
-			free(s);
-                }
-            }
-	    if (g_bibpunct_style == BIB_STYLE_ALPHA) {
-		if (last && post && !isEmptyName(post)) {
-			ConvertString(g_bibpunct_postnote_sep);
-			ConvertString(post);
-		}
-		if (last)
-			ConvertString(g_bibpunct_close);
-            }
-            break;
+	
+			if (!author_repeated) { /* suppress repeated names */
+				ConvertString(v);
+				strcpy(g_last_author_cited, v);
+				strcpy(g_last_year_cited, year);
+				if (g_bibpunct_style == BIB_STYLE_ALPHA) {
+					fprintRTF(" ");
+					ConvertString(g_bibpunct_open);
+					if (pre) {
+						ConvertString(pre);
+						fprintRTF(" ");
+					}
+					ConvertString(year);
+				}
+			} else if (g_bibpunct_style == BIB_STYLE_ALPHA) {
+				if (!year_repeated) {
+					ConvertString(g_bibpunct_numbers_sep);
+					fprintRTF(" ");
+					ConvertString(year);
+				} else {
+					char *s = strdup(year + 4);
+					ConvertString(g_bibpunct_numbers_sep);
+					ConvertString(s);
+					free(s);
+				}
+			}
+			
+			if (g_bibpunct_style == BIB_STYLE_ALPHA) {
+				if (last && post && !isEmptyName(post)) {
+					ConvertString(g_bibpunct_postnote_sep);
+					ConvertString(post);
+				}
+				if (last)
+					ConvertString(g_bibpunct_close);
+			}
+			break;
 
         case CITE_ALT:
         case CITE_ALT_STAR:
@@ -953,42 +958,42 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first, i
             if (strcmp(v, g_last_author_cited) == 0)
                 author_repeated = TRUE;
 
-	    if (strncmp(year, g_last_year_cited, 4) == 0)   /* over simplistic test * ... */
-                year_repeated = TRUE;
-
-            if (!first && !author_repeated) {
-            	ConvertString(g_bibpunct_cite_sep);
-                fprintRTF(" ");
-            }
-
-	    if (CITE_ALT_CAP == code) {
-	        v[1]=toupper(v[1]);
-	    }
-
-            if (!author_repeated) { /* suppress repeated names */
-                ConvertString(v);
-                strcpy(g_last_author_cited, v);
-                strcpy(g_last_year_cited, year);
-		fprintRTF(" ");
-		if (pre) {
-			ConvertString(pre);
-			fprintRTF(" ");
-		}
-		ConvertString(year);
-	    } else {
-		if (!year_repeated) {
-			ConvertString(g_bibpunct_numbers_sep);
-			fprintRTF(" ");
-			ConvertString(year);
-		} else {
-			char *s = strdup(year + 4);
-			ConvertString(g_bibpunct_numbers_sep);
-			ConvertString(s);
-			free(s);
-		}
-	    }
+			if (strncmp(year, g_last_year_cited, 4) == 0)   /* over simplistic test * ... */
+				year_repeated = TRUE;
+	
+			if (!first && !author_repeated) {
+				ConvertString(g_bibpunct_cite_sep);
+				fprintRTF(" ");
+			}
+	
+			if (CITE_ALT_CAP == code) {
+				v[1]=toupper(v[1]);
+			}
+	
+			if (!author_repeated) { /* suppress repeated names */
+				ConvertString(v);
+				strcpy(g_last_author_cited, v);
+				strcpy(g_last_year_cited, year);
+				fprintRTF(" ");
+				if (pre) {
+					ConvertString(pre);
+					fprintRTF(" ");
+				}
+				ConvertString(year);
+			} else {
+				if (!year_repeated) {
+					ConvertString(g_bibpunct_numbers_sep);
+					fprintRTF(" ");
+					ConvertString(year);
+				} else {
+					char *s = strdup(year + 4);
+					ConvertString(g_bibpunct_numbers_sep);
+					ConvertString(s);
+					free(s);
+				}
+			}
 			if (last && post && !isEmptyName(post)) {
-			        ConvertString(g_bibpunct_postnote_sep);
+			    ConvertString(g_bibpunct_postnote_sep);
 				ConvertString(post);
 			}
             break;
@@ -1008,14 +1013,14 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first, i
                 fprintRTF(" ");
             }
 
-	    if (pre && g_current_cite_item == 1) {
-                ConvertString(pre);
-            	fprintRTF(" ");
-            }
+			if (pre && g_current_cite_item == 1) {
+					ConvertString(pre);
+					fprintRTF(" ");
+				}
 
-	    if (CITE_P_CAP == code) {
-	        v[1]=toupper(v[1]);
-	    }
+			if (CITE_P_CAP == code) {
+				v[1]=toupper(v[1]);
+			}
 
             if (!author_repeated) { /* suppress repeated names */
                 ConvertString(v);
@@ -1055,18 +1060,18 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first, i
                 year_repeated = TRUE;
 
             if (pre && g_current_cite_item == 1) {
-			ConvertString(pre);
-                 	fprintRTF(" ");
-                 }
+				ConvertString(pre);
+                 fprintRTF(" ");
+            }
 
             if (!first && !author_repeated) {
             	ConvertString(g_bibpunct_cite_sep);
                 fprintRTF(" ");
             }
 
-	    if (CITE_ALP_CAP == code) {
-	        v[1]=toupper(v[1]);
-	    }
+			if (CITE_ALP_CAP == code) {
+				v[1]=toupper(v[1]);
+			}
 
             if (!author_repeated) { /* suppress repeated names */
                 ConvertString(v);
@@ -1103,22 +1108,22 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first, i
                 fprintRTF(" ");
             }
             if (CITE_AUTHOR == code && g_citation_longnamesfirst && !g_current_cite_seen)
-	      if (!isEmptyName(full))
-                v = full;
+	      		if (!isEmptyName(full))
+                	v = full;
 
-	    if (CITE_AUTHOR_CAP == code) {
-	        v[1]=toupper(v[1]);
-	    }
+			if (CITE_AUTHOR_CAP == code) {
+				v[1]=toupper(v[1]);
+			}
 
             if (CITE_AUTHOR_STAR == code)
                 if (!isEmptyName(full))
                     v = full;
+                    
             ConvertString(v);
             if (last && post && !isEmptyName(post)) {
              	ConvertString(g_bibpunct_postnote_sep);
                 ConvertString(post);
             }
-
             break;
 
         case CITE_YEAR:
@@ -1609,7 +1614,7 @@ void CmdNatbibCite(int code)
         
         key = next_keys;
         next_keys = popCommaName(key);
-	last_key = !next_keys;
+		last_key = !next_keys;
     }
 
     if (g_current_cite_paren)
@@ -2210,7 +2215,7 @@ void CmdContentsLine(int code)
     text = getBraceParam();
     num = getBraceParam();
 
-    diagnostics(1, "Entering CmdContentsLine %s [%s]", type, text);
+    diagnostics(3, "Entering CmdContentsLine %s [%s]", type, text);
 
     CmdStartParagraph("contents", TITLE_INDENT);
     fprintRTF("{");
