@@ -55,8 +55,6 @@ typedef int		bool;
 
 void			diagnostics(int level, char *format,...);
 
-extern /* @dependent@ */ FILE *fRtf;	/* file pointer to RTF file */
-extern			char *g_tex_name;
 extern			char *g_aux_name;
 extern			char *g_toc_name;
 extern			char *g_lof_name;

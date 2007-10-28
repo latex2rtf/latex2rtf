@@ -1282,12 +1282,12 @@ static void macukr_enc(int index)
     CmdCyrillicStrChar(s);
 }
 
-void WriteEightBitChar(char cThis)
+void WriteEightBitChar(char cThis, FILE *f)
 {
     int index = (int) cThis + 128;
 
 	if ( (unsigned char) cThis <= 127) {
-		fputc(cThis, fRtf);
+		fputc(cThis, f);
 		return;
 	}
 

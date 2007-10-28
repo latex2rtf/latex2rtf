@@ -1326,7 +1326,6 @@ void CmdLeftRight(int code)
     ldelim = getNonSpace();
     
     if (ldelim=='\0') {
-        diagnostics(1,"right here");
         PopSource();
         ldelim = getNonSpace();
      }

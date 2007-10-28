@@ -74,8 +74,7 @@ static void newLength(char *s, int d)
     Lengths[iLengthCount].name = strdup(s);
 
     if (Lengths[iLengthCount].name == NULL) {
-        fprintf(stderr, "\nCannot allocate name for length \\%s\n", s);
-        exit(1);
+        diagnostics(ERROR, "Cannot allocate name for length \\%s", s);
     }
 
     iLengthCount++;

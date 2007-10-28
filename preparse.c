@@ -59,13 +59,13 @@ static void show_buffer(char *s)
 	for (i=0; i<=section_buffer_end; i++) {
 	
 		if (i==0) 
-			fprintf(stderr, "\n%-*ld: ", (int) strlen(s), section_buffer_end);
+			diagnostics(WARNING, "\n%-*ld: ", (int) strlen(s), section_buffer_end);
 		else if (i % 100 == 0) 
-			fprintf(stderr, "\n%s: ",s);
+			diagnostics(WARNING, "\n%s: ",s);
 		c = section_buffer[i];
 		if (c == '\n') c = '=';
 		if (c == '\0') c = '*';
-		fprintf(stderr,"%c",c);
+		diagnostics(WARNING,"%c",c);
 	}
 }
 
@@ -85,12 +85,12 @@ static void add_chr_to_buffer(char c)
 
 	if (0) {
 		if (c == '\0')
-			fprintf(stderr, "[\\0]");
+			diagnostics(WARNING, "[\\0]");
 		else if (c == '\n')
-			fprintf(stderr, "[\\n]");
+			diagnostics(WARNING, "[\\n]");
 		else
-			fprintf(stderr, "[%c]", (int) c);
-		fprintf(stderr, "<%ld>", section_buffer_end);
+			diagnostics(WARNING, "[%c]", (int) c);
+		diagnostics(WARNING, "<%ld>", section_buffer_end);
 	}
 }
 
@@ -129,13 +129,13 @@ static void move_end_of_buffer(size_t n)
 
 	if (0) {
 		if (n<0)
-			fprintf(stderr, "[removing %ld chars]", -n);
+			diagnostics(WARNING, "[removing %ld chars]", -n);
 		else 
-			fprintf(stderr, "[adding %ld chars]", n);
+			diagnostics(WARNING, "[adding %ld chars]", n);
 	}
 
 	if (0) {
-		diagnostics(1,"last 5 characters are [%c][%c][%c][%c][%c]\n", 
+		diagnostics(WARNING,"last 5 characters are [%c][%c][%c][%c][%c]\n", 
 		*(section_buffer+section_buffer_end-4),
 		*(section_buffer+section_buffer_end-3),
 		*(section_buffer+section_buffer_end-2),

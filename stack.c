@@ -44,14 +44,14 @@ void myprintStack(void)
 {
     int i, lev, brack;
 
-    fprintf(stderr, "\nStack Status top=%d\n", top);
+    diagnostics(WARNING, "\nStack Status top=%d", top);
     i = 0;
     while (2 * i < top) {
         lev = stack[2 * i + 1];
         brack = stack[2 * i + 2];
         i++;
 
-        fprintf(stderr, " #%d lev=%d bracket=%d\n", i, lev, brack);
+        diagnostics(WARNING, " #%d lev=%d bracket=%d", i, lev, brack);
     }
 }
 

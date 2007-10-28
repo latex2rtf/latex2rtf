@@ -533,7 +533,7 @@ void CmdBibitem(int code)
     if (label && !s) {          /* happens when file needs to be latex'ed again */
     	if (!g_warned_once){
         diagnostics(WARNING, "Cannot locate \\bibcite{%s} in .aux file",key);
-        diagnostics(WARNING, "**** The .tex file probably needs to be LaTeXed again ***",g_tex_name);
+        diagnostics(WARNING, "**** The .tex file probably needs to be LaTeXed again ***");
         g_warned_once = TRUE;
         }
         fprintRTF("[");

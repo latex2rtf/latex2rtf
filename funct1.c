@@ -1143,7 +1143,7 @@ void CmdCounter(int code)
 
         } else if (sscanf(s2, "%d", &num) != 1) {
 
-            fprintf(stderr, "\nBad parameter in set/addcounter{%s}{%s}\n", s, s2);
+            diagnostics(WARNING, "\nBad parameter in set/addcounter{%s}{%s}", s, s2);
             free(s2);
             free(s);
             return;

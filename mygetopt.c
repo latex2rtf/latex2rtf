@@ -67,14 +67,13 @@ int my_getopt(int argc, char **argv, char *optstring)
                 if (optind < argc)
                     optarg = argv[optind];
                 else {
-                    fprintf(stderr, "Missing argument after -%c\n", c);
-                    exit(1);
+                    diagnostics(ERROR, "Missing argument after -%c\n", c);
                 }
             }
         } else
             rem++;
     } else {
-        fprintf(stderr, "%s: illegal option -- %c\n", argv[0], c);
+        diagnostics(WARNING, "%s: illegal option -- %c\n", argv[0], c);
         c = '?';
         rem++;
     }

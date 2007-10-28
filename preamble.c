@@ -63,6 +63,7 @@ static char *g_preambleDate = NULL;
 static char *g_preambleEncoding = NULL;
 static char *g_preambleAffiliation = NULL;
 static char *g_preambleAbstract = NULL;
+static char *g_preambleAck = NULL;
 
 static char *g_preambleCFOOT = NULL;
 static char *g_preambleLFOOT = NULL;
@@ -223,7 +224,7 @@ static void setPackageFont(char *font)
 
 /*    InitializeDocumentFont(fnumber, -1, -1, -1); */
     if (fnumber == -1)
-        diagnostics(1, "Font Package <%s> not supported.", font);
+        diagnostics(WARNING, "Font Package <%s> not supported.", font);
 }
 
 static void setThree(char *s, int ten, int eleven, int twelve)
@@ -835,6 +836,11 @@ void CmdTitle(int code)
             UpdateLineNumber(g_preambleAbstract);
             break;
 
+        case TITLE_ACKNOWLEDGE:
+            g_preambleAck = getBraceParam();
+            UpdateLineNumber(g_preambleAck);
+            break;
+
         case TITLE_TITLEPAGE:
             g_preambleTitlepage = TRUE;
             break;
@@ -900,6 +906,11 @@ void CmdMakeTitle(int code)
     fprintRTF("\n\\par\\pard\\qc {%s ", date_begin);
     if (g_preambleDate != NULL && strcmp(g_preambleDate, "") != 0)
         ConvertString(g_preambleDate);
+    fprintRTF("}");
+
+    fprintRTF("\n\\par\\pard\\qc {%s ", date_begin);
+    if (g_preambleAck != NULL && strcmp(g_preambleAck, "") != 0)
+        ConvertString(g_preambleAck);
     fprintRTF("}");
 
     CmdEndParagraph(0);

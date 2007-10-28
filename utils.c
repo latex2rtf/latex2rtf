@@ -60,7 +60,7 @@ double my_rint(double nr)
 /******************************************************************************
  purpose:  count the number of occurences of the string t in the string s
 ******************************************************************************/
-int strstr_count(char *s, char *t)
+int strstr_count(const char *s, char *t)
 {
     int n = 0;
     size_t len;
@@ -83,7 +83,7 @@ int strstr_count(char *s, char *t)
 /******************************************************************************
  purpose:  returns a new string with n characters from s (with '\0' at the end)
 ******************************************************************************/
-char *my_strndup(char *src, size_t n)
+char *my_strndup(const char *src, size_t n)
 {
     char *dst;
 
@@ -147,7 +147,7 @@ char *strdup_together4(const char *s, const char *t, const char *u, const char *
 /******************************************************************************
  purpose:  duplicates a string but removes TeX  %comment\n
 ******************************************************************************/
-char *strdup_nocomments(char *s)
+char *strdup_nocomments(const char *s)
 {
     char *p, *dup;
 
@@ -178,7 +178,7 @@ char *strdup_nocomments(char *s)
 /******************************************************************************
  purpose:  duplicates a string without including spaces or newlines
 ******************************************************************************/
-char *strdup_noblanks(char *s)
+char *strdup_noblanks(const char *s)
 {
     char *p, *dup;
 
@@ -201,7 +201,7 @@ char *strdup_noblanks(char *s)
 /*************************************************************************
 purpose: duplicate text with only a..z A..Z 0..9 and _
 **************************************************************************/
-char *strdup_nobadchars(char *text)
+char *strdup_nobadchars(const char *text)
 {
     char *dup, *s;
 
@@ -220,7 +220,7 @@ char *strdup_nobadchars(char *text)
 /******************************************************************************
  purpose:  duplicates a string without newlines and CR replaced by '\n' or '\r'
 ******************************************************************************/
-char *strdup_printable(char *s)
+char *strdup_printable(const char *s)
 {
     char *dup;
     int i;
@@ -281,7 +281,7 @@ void strncpy_printable(char* dst, char *src, int n)
 /******************************************************************************
  purpose:  duplicates a string without spaces or newlines at front or end
 ******************************************************************************/
-char *strdup_noendblanks(char *s)
+char *strdup_noendblanks(const char *s)
 {
     char *p, *t;
 
@@ -290,11 +290,13 @@ char *strdup_noendblanks(char *s)
     if (*s == '\0')
         return strdup("");
 
-    t = s;
+	/* find pointer to first non-space character in string */
+    t = (char *) s;
     while (*t == ' ' || *t == '\n')
         t++;                    /* first non blank char */
 
-    p = s + strlen(s) - 1;
+	/* find pointer to last non-space character in string */
+    p = (char *) s + strlen(s) - 1;
     while (p >= t && (*p == ' ' || *p == '\n'))
         p--;                    /* last non blank char */
 
@@ -305,7 +307,7 @@ char *strdup_noendblanks(char *s)
 /******************************************************************************
   purpose: return a copy of tag from \label{tag} in the string text
  ******************************************************************************/
-char *ExtractLabelTag(char *text)
+char *ExtractLabelTag(const char *text)
 {
     char *s, *label_with_spaces, *label;
 
@@ -478,7 +480,7 @@ int getStringDimension(char *s)
 	return size;
 }
 
-void show_string(char *s, char *label)
+void show_string(const char *s, const char *label)
 {
 	int width=100;
 	long i;
@@ -486,23 +488,23 @@ void show_string(char *s, char *label)
 	long len;
 	
 	if (s == NULL) {
-		fprintf(stderr, "\n%s: NULL",label);
+		diagnostics(WARNING, "\n%s: NULL",label);
 		return;
 	}
 		
 	len = strlen(s);
-	fprintf(stderr, "\n%s: ", label);
+	diagnostics(WARNING, "\n%s: ", label);
 
 	for (i=0; i<len; i++) {
 	
 		if (i==width)
-			fprintf(stderr, "\n%-*d: ", (int) strlen(label), (int) strlen(s));
+			diagnostics(WARNING, "\n%-*d: ", (int) strlen(label), (int) strlen(s));
 		else if (i>1 && i % width == 0) 
-			fprintf(stderr, "\n%s: ",label);
+			diagnostics(WARNING, "\n%s: ",label);
 		c = s[i];
 		if (c == '\n') c = '=';
 		if (c == '\0') c = '*';
-		fprintf(stderr,"%c",c);
+		diagnostics(WARNING,"%c",c);
 	}
 }
 

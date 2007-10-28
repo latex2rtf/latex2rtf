@@ -101,28 +101,20 @@ int GetTexMode(void)
     return g_TeX_mode;
 }
 
-void ConvertString(char *string)
+void ConvertString(const char *string)
 
 /******************************************************************************
      purpose : converts string in TeX-format to Rtf-format
  ******************************************************************************/
 {
-    char temp[256];
-
     if (string == NULL)
         return;
 
-    if (strlen(string) < 250)
-        strncpy(temp, string, 250);
-    else {
-        strncpy(temp, string, 125);
-        strncpy(temp + 125, "\n...\n", 5);
-        strncpy(temp + 130, string + strlen(string) - 125, 125);
-        temp[255] = '\0';
-    }
-
     if (PushSource(NULL, string) == 0) {
-        diagnostics(4, "Entering Convert() from ConvertString()\n******\n%s\n*****", temp);
+        diagnostics(4, "Entering Convert() from ConvertString()");
+
+		if (g_verbosity_level>3) 
+				show_string(string, "convert");
 
         while (StillSource())
             Convert();
@@ -184,7 +176,6 @@ void Convert()
 
 /****************************************************************************
 purpose: converts inputfile and writes result to outputfile
-globals: fTex, fRtf and all global flags for convert (see above)
  ****************************************************************************/
 {
     char cThis = '\n';
@@ -617,14 +608,11 @@ void TranslateCommand()
 purpose: The function is called on a backslash in input file and
 	 tries to call the command-function for the following command.
 returns: success or not
-globals: fTex, fRtf, command-functions have side effects or recursive calls;
-         global flags for convert
  ****************************************************************************/
 {
     char cCommand[MAXCOMMANDLEN];
     int i, mode;
     int cThis,cNext;
-
 
     cThis = getTexChar();
     mode = GetTexMode();

@@ -313,7 +313,7 @@ static char *SysGraphicsConvert(int opt, int offset, char *in, char *out)
 	
 #endif
 
-    diagnostics(1, "sys command = [%s]", cmd);
+    diagnostics(WARNING, "sys command = [%s]", cmd);
     err = system(cmd);
 
     if (err != 0) {
@@ -555,7 +555,7 @@ static char *pdf_to_png(char *pdf)
 {
     char *png, *out;
 
-    diagnostics(1, "converting %s to png file", pdf);
+    diagnostics(WARNING, "converting %s to png file", pdf);
 
     if (strstr(pdf, ".pdf") != NULL)
     	png = strdup_new_extension(pdf, ".pdf", ".png");

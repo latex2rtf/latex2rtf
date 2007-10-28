@@ -84,12 +84,12 @@ static int strequal(char *a, char *b)
 /* static void printDefinitions(void)
 {
 int i=0;
-	fprintf(stderr, "\n");
+	diagnostics(WARNING, "\n");
 	while(i < iDefinitionCount ) {
-		fprintf(stderr, "[%d] name     =<%s>\n",i, Definitions[i].name);
-		fprintf(stderr, "    opt_param=<%s>\n", Definitions[i].opt_param);
-		fprintf(stderr, "    def      =<%s>\n", Definitions[i].def);
-		fprintf(stderr, "    params   =<%d>\n", Definitions[i].params);
+		diagnostics(WARNING, "[%d] name     =<%s>\n",i, Definitions[i].name);
+		diagnostics(WARNING, "    opt_param=<%s>\n", Definitions[i].opt_param);
+		diagnostics(WARNING, "    def      =<%s>\n", Definitions[i].def);
+		diagnostics(WARNING, "    params   =<%d>\n", Definitions[i].params);
 		i++;
 	}
 }
@@ -97,12 +97,12 @@ int i=0;
 static void printTheorems(void)
 {
 int i=0;
-	fprintf(stderr, "\n");
+	diagnostics(WARNING, "\n");
 	for (i=0; i< iNewTheoremCount; i++) {
-		fprintf(stderr, "[%d] name   =<%s>\n",i, NewTheorems[i].name);
-		fprintf(stderr, "    caption    =<%s>\n", NewTheorems[i].caption);
-		fprintf(stderr, "    like =<%s>\n", NewTheorems[i].numbered_like);
-		fprintf(stderr, "    within    =<%s>\n", NewTheorems[i].within);
+		diagnostics(WARNING, "[%d] name   =<%s>\n",i, NewTheorems[i].name);
+		diagnostics(WARNING, "    caption    =<%s>\n", NewTheorems[i].caption);
+		diagnostics(WARNING, "    like =<%s>\n", NewTheorems[i].numbered_like);
+		diagnostics(WARNING, "    within    =<%s>\n", NewTheorems[i].within);
 	}
 }
 */
@@ -233,7 +233,7 @@ int maybeDefinition(char *s, size_t n)
     for (i = 0; i < iDefinitionCount; i++) {
     	/*
     	char *ss = my_strndup(s,strlen(Definitions[i].name));
-        diagnostics(1, "def seeking=<%s>, i=%d, current=<%s>", ss, i, Definitions[i].name);
+        diagnostics(WARNING, "def seeking=<%s>, i=%d, current=<%s>", ss, i, Definitions[i].name);
         free(ss);
         */
         if (strncmp(s, Definitions[i].name, n) == 0)
@@ -255,13 +255,13 @@ int existsDefinition(char *s)
     for (i = 0; i < iDefinitionCount; i++) {
     /*
 		char *tt = my_strndup(s,strlen(Definitions[i].name));
-		diagnostics(1, "def text has=<%s>, i=%d, trying=<%s>", tt, i, Definitions[i].name);
+		diagnostics(WARNING, "def text has=<%s>, i=%d, trying=<%s>", tt, i, Definitions[i].name);
 		free(tt);
 	*/
         if (strcmp(s, Definitions[i].name) == 0) {
     /*
 			char *ss = my_strndup(s,strlen(Definitions[i].name));
-			diagnostics(1, "def text has=<%s>, i=%d, matched=<%s>", ss, i, Definitions[i].name);
+			diagnostics(WARNING, "def text has=<%s>, i=%d, matched=<%s>", ss, i, Definitions[i].name);
 			free(ss);
 	*/
             break;
@@ -426,14 +426,14 @@ int maybeEnvironment(char *s, size_t n)
     
 		if (0) {
 		char *ss = my_strndup(s,n);
-		diagnostics(1, "trying env seeking=<%s>, i=%d, current=<%s>", ss, i, NewEnvironments[i].endname);
+		diagnostics(2, "trying env seeking=<%s>, i=%d, current=<%s>", ss, i, NewEnvironments[i].endname);
 		free(ss);
 		}
 		
         if (strncmp(s, NewEnvironments[i].begname, n) == 0) {
 			if (0) {
 			char *ss = my_strndup(s,n);
-			diagnostics(1, "possible env seeking=<%s>, i=%d, current=<%s>", ss, i, NewEnvironments[i].begname);
+			diagnostics(2, "possible env seeking=<%s>, i=%d, current=<%s>", ss, i, NewEnvironments[i].begname);
 			free(ss);
 			}
             return TRUE;
@@ -443,7 +443,7 @@ int maybeEnvironment(char *s, size_t n)
         if (strncmp(s, NewEnvironments[i].endname, n) == 0) {
 			if (0) {
 			char *ss = my_strndup(s,n);
-			diagnostics(1, "possible env seeking=<%s>, i=%d, current=<%s>", ss, i, NewEnvironments[i].endname);
+			diagnostics(2, "possible env seeking=<%s>, i=%d, current=<%s>", ss, i, NewEnvironments[i].endname);
 			free(ss);
 			}
             return TRUE;
@@ -452,7 +452,7 @@ int maybeEnvironment(char *s, size_t n)
 
 	if (0) {
 	char *ss = my_strndup(s,n);
-	diagnostics(1, "failed all env seeking=<%s>", ss);
+	diagnostics(2, "failed all env seeking=<%s>", ss);
 	free(ss);
 	}
     return FALSE;

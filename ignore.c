@@ -74,28 +74,32 @@ returns : TRUE if variable was ignored correctly, otherwise FALSE
     
     if (strcmp(RtfCommand, "NUMBER") == 0) {
         IgnoreVar();
+        
     } else if (strcmp(RtfCommand, "MEASURE") == 0) {
         IgnoreVar();
+        
     } else if (strcmp(RtfCommand, "OTHER") == 0) {
         IgnoreVar();
+        
     } else if (strcmp(RtfCommand, "COMMAND") == 0) {
         IgnoreCmd();
+        
     } else if (strcmp(RtfCommand, "SINGLE") == 0) {
     
     } else if (strcmp(RtfCommand, "PARAMETER") == 0) {
         CmdIgnoreParameter(No_Opt_One_NormParam);
+        
     } else if (strcmp(RtfCommand, "TWOPARAMETER") == 0) {
         CmdIgnoreParameter(No_Opt_Two_NormParam);
-
-/*	} else if (strcmp(RtfCommand, "LINE") == 0) {
-      	skipToEOL(); */
-
+        
     } else if (strcmp(RtfCommand, "ENVIRONMENT") == 0) {
 		char *str = strdup_together3("end{", command, "}");
         Ignore_Environment(str);
         free(str);
+        
     } else if (strcmp(RtfCommand, "ENVCMD") == 0) {
         PushEnvironment(IGNORE_MODE);
+        
     } else if (strcmp(RtfCommand, "PACKAGE") == 0) {
     
     } 

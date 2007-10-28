@@ -60,7 +60,7 @@ static void newCounter(char *s, int n)
 **************************************************************************/
 {
     if (iCounterCount == MAX_COUNTERS) {
-        fprintf(stderr, "Too many counters, ignoring %s", s);
+        diagnostics(WARNING, "Too many counters, ignoring %s", s);
         return;
     }
 
@@ -68,7 +68,7 @@ static void newCounter(char *s, int n)
     Counters[iCounterCount].name = strdup(s);
 
     if (Counters[iCounterCount].name == NULL) {
-        fprintf(stderr, "\nCannot allocate name for counter \\%s\n", s);
+        diagnostics(WARNING, "\nCannot allocate name for counter \\%s\n", s);
         exit(1);
     }
 
@@ -118,7 +118,7 @@ int getCounter(char *s)
     i = existsCounter(s);
 
     if (i < 0) {
-        fprintf(stderr, "No counter of type <%s>", s);
+        diagnostics(WARNING, "No counter of type <%s>", s);
         return 0;
     }
 

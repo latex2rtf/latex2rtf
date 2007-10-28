@@ -871,7 +871,7 @@ void CmdTabular(int code)
 			char *p;
 			int num = TexFontNumber("Typewriter");
 	
-			diagnostics(1, "Nested tabular/tabbing environments not allowed");
+			diagnostics(WARNING, "Nested tabular/tabbing environments not allowed");
 			diagnostics(2, "table_table_table_table_table\n%stable_table_table_table_table", table);
 			fprintRTF("\\pard\\ql\\b0\\i0\\scaps0\\f%d ", num);
 			p = begin;

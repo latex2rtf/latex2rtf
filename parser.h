@@ -7,7 +7,7 @@
  */
 
 char	*CurrentFileName(void);
-int		PushSource(char * filename, char * string);
+int		PushSource(const char * filename, const char * string);
 int		StillSource(void);
 void	PopSource(void);
 

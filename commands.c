@@ -205,6 +205,7 @@ static CommandArray commands[] = {
     {"date", CmdTitle, TITLE_DATE},
     {"affiliation", CmdTitle, TITLE_AFFILIATION},
     {"abstract", CmdTitle, TITLE_ABSTRACT},
+	{"acknowledgements", CmdTitle, TITLE_ACKNOWLEDGE},
 
     {"maketitle", CmdMakeTitle, 0},
     {"par", CmdEndParagraph, 0},
@@ -1002,7 +1003,6 @@ static CommandArray apaciteCommands[] = {
     {"shortciteauthor", CmdCite, CITE_SHORT_AUTHOR},
     {"citeyear", CmdCite, CITE_YEAR},
     {"citeyearNP", CmdCite, CITE_YEAR_NP},
-	{"acknowledgements", CmdFootNote, FOOTNOTE},
     {"shorttitle", CmdIgnoreParameter, No_Opt_One_NormParam},
     {"rightheader", CmdIgnoreParameter, No_Opt_One_NormParam},
     {"leftheader", CmdIgnoreParameter, No_Opt_One_NormParam},
@@ -1281,7 +1281,7 @@ static void WriteEnvironmentStack(void)
         
     for (i=0; i<iEnvCount; i++) {
     	s=EnvironmentName(Environments[i]);
-    	diagnostics(1, "Environments[%2d]=\"%12s\"", i, s);
+    	diagnostics(WARNING, "Environments[%2d]=\"%12s\"", i, s);
     	free(s);
     }
 }

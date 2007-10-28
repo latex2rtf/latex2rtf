@@ -148,7 +148,7 @@ char *CurrentFileName(void)
 	The following two routines allow parsing of multiple files and strings
 */
 
-int PushSource(char *filename, char *string)
+int PushSource(const char *filename, const char *string)
 
 /***************************************************************************
  purpose:     change the source used by getRawTexChar() to either file or string
@@ -163,15 +163,15 @@ int PushSource(char *filename, char *string)
     int line = 1;
 
     if (0) {
-        diagnostics(1, "Before PushSource** line=%d, g_parser_depth=%d, g_parser_include_level=%d",
+        diagnostics(WARNING, "Before PushSource** line=%d, g_parser_depth=%d, g_parser_include_level=%d",
           g_parser_line, g_parser_depth, g_parser_include_level);
         for (i = 0; i <= g_parser_depth; i++) {
             if (g_parser_stack[i].file)
-                diagnostics(1, "i=%d file   =%s, line=%d", i, g_parser_stack[i].file_name, g_parser_stack[i].file_line);
+                diagnostics(WARNING, "i=%d file   =%s, line=%d", i, g_parser_stack[i].file_name, g_parser_stack[i].file_line);
 
             else {
                 strncpy_printable(s, g_parser_stack[i].string, 25);
-                diagnostics(1, "i=%d string =%s, line=%d", i, s, g_parser_stack[i].file_line);
+                diagnostics(WARNING, "i=%d string =%s, line=%d", i, s, g_parser_stack[i].file_line);
             }
         }
     }
@@ -191,7 +191,7 @@ int PushSource(char *filename, char *string)
 
         /* if not then try to open a file */
     } else if (filename) {
-        p = my_fopen(filename, "rb");
+        p = my_fopen((char *)filename, "rb");
         if (p == NULL)
             return 1;
         g_parser_include_level++;
@@ -225,15 +225,15 @@ int PushSource(char *filename, char *string)
     }
 
     if (0) {
-        diagnostics(1, "After PushSource** line=%d, g_parser_depth=%d, g_parser_include_level=%d",
+        diagnostics(WARNING, "After PushSource** line=%d, g_parser_depth=%d, g_parser_include_level=%d",
           g_parser_line, g_parser_depth, g_parser_include_level);
         for (i = 0; i <= g_parser_depth; i++) {
             if (g_parser_stack[i].file)
-                diagnostics(1, "i=%d file   =%s, line=%d", i, g_parser_stack[i].file_name, g_parser_stack[i].file_line);
+                diagnostics(WARNING, "i=%d file   =%s, line=%d", i, g_parser_stack[i].file_name, g_parser_stack[i].file_line);
 
             else {
                 strncpy_printable(s, g_parser_stack[i].string, 25);
-                diagnostics(1, "i=%d string =%s, line=%d", i, s, g_parser_stack[i].file_line);
+                diagnostics(WARNING, "i=%d string =%s, line=%d", i, s, g_parser_stack[i].file_line);
             }
         }
     }
@@ -275,15 +275,15 @@ void PopSource(void)
         diagnostics(ERROR, "More PopSource() calls than PushSource() ");
 
     if (0) {
-        diagnostics(1, "Before PopSource** line=%d, g_parser_depth=%d, g_parser_include_level=%d",
+        diagnostics(WARNING, "Before PopSource** line=%d, g_parser_depth=%d, g_parser_include_level=%d",
           g_parser_line, g_parser_depth, g_parser_include_level);
         for (i = 0; i <= g_parser_depth; i++) {
             if (g_parser_stack[i].file)
-                diagnostics(1, "i=%d file   =%s, line=%d", i, g_parser_stack[i].file_name, g_parser_stack[i].file_line);
+                diagnostics(WARNING, "i=%d file   =%s, line=%d", i, g_parser_stack[i].file_name, g_parser_stack[i].file_line);
 
             else {
                 strncpy_printable(s, g_parser_stack[i].string, 25);
-                diagnostics(1, "i=%d string =%s, line=%d", i, s, g_parser_stack[i].file_line);
+                diagnostics(WARNING, "i=%d string =%s, line=%d", i, s, g_parser_stack[i].file_line);
             }
         }
     }
@@ -328,15 +328,15 @@ void PopSource(void)
     }
 
     if (0) {
-        diagnostics(1, "After PopSource** line=%d, g_parser_depth=%d, g_parser_include_level=%d",
+        diagnostics(WARNING, "After PopSource** line=%d, g_parser_depth=%d, g_parser_include_level=%d",
           g_parser_line, g_parser_depth, g_parser_include_level);
         for (i = 0; i <= g_parser_depth; i++) {
             if (g_parser_stack[i].file)
-                diagnostics(1, "i=%d file   =%s, line=%d", i, g_parser_stack[i].file_name, g_parser_stack[i].file_line);
+                diagnostics(WARNING, "i=%d file   =%s, line=%d", i, g_parser_stack[i].file_name, g_parser_stack[i].file_line);
 
             else {
                 strncpy_printable(s, g_parser_stack[i].string, 25);
-                diagnostics(1, "i=%d string =%s, line=%d", i, s, g_parser_stack[i].file_line);
+                diagnostics(WARNING, "i=%d string =%s, line=%d", i, s, g_parser_stack[i].file_line);
             }
         }
     }
@@ -1040,9 +1040,9 @@ char *getSpacedTexUntil(char *target, int raw)
         
         if (0) {
 		if (buffer[buffer_pos] != '\n')
-			diagnostics(1, "this char = <%c>, %d, %d, max=%d", buffer[buffer_pos], buffer_pos, target_pos, max_buffer_pos);
+			diagnostics(WARNING, "this char = <%c>, %d, %d, max=%d", buffer[buffer_pos], buffer_pos, target_pos, max_buffer_pos);
 		else
-			diagnostics(1, "this char = <\\n>, %d, %d, max=%d", buffer[buffer_pos], buffer_pos, target_pos, max_buffer_pos);
+			diagnostics(WARNING, "this char = <\\n>, %d, %d, max=%d", buffer[buffer_pos], buffer_pos, target_pos, max_buffer_pos);
 		}
 		
         buffer_pos++;

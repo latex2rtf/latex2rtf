@@ -158,7 +158,7 @@ bool TryStyleConvert(char *command)
 
         *comma = '\0';
         rtf_piece[i] = strdup(rtf);
-        diagnostics(1, "piece %d is %s", i, rtf_piece[i]);
+        diagnostics(WARNING, "piece %d is %s", i, rtf_piece[i]);
         *comma = ',';
         rtf = comma + 1;
     }

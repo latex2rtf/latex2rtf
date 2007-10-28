@@ -22,7 +22,8 @@ BIB_TESTS=  bib_apacite.rtf        bib_harvard.rtf        bib_super.rtf      \
 			bib_apacite_dblsp.rtf  bib_natbib1.rtf        bib_apalike.rtf    \
 			bib_natbib2.rtf        bibentry_apalike.rtf   bib_apalike2.rtf   \
 			bib_natbib3.rtf        bib_apanat.rtf         bibentry_plain.rtf \
-			bib_authordate.rtf     bib_simple.rtf         bib_apa.rtf
+			bib_authordate.rtf     bib_simple.rtf         bib_apa.rtf        \
+			bib_apacite2.rtf
 	
 FIG_TESTS=  fig_endfloat.rtf  fig_test.rtf      fig_test3.rtf \
             fig_size.rtf      fig_test2.rtf     fig_test4.rtf \
@@ -115,6 +116,13 @@ bib_apacite.rtf: bib_apacite.tex
 	$(LATEX) bib_apacite $(LATEX_LOG)
 	$(LATEX) bib_apacite $(LATEX_LOG)
 	$(LATEX2RTF) $(OPTIONS) bib_apacite
+
+bib_apacite2.rtf: bib_apacite2.tex
+	$(LATEX) bib_apacite2 $(LATEX_LOG)
+	$(BIBTEX) bib_apacite2 > bibtex.log
+	$(LATEX) bib_apacite2 $(LATEX_LOG)
+	$(LATEX) bib_apacite2 $(LATEX_LOG)
+	$(LATEX2RTF) $(OPTIONS) bib_apacite2
 
 bib_apacite_dblsp.rtf: bib_apacite_dblsp.tex
 	$(LATEX) bib_apacite_dblsp $(LATEX_LOG)

@@ -205,7 +205,7 @@ int main(int argc, char **argv)
             case 'D':
                 sscanf(optarg, "%d", &g_dots_per_inch);
                 if (g_dots_per_inch < 25 || g_dots_per_inch > 600)
-                    fprintf(stderr, "Dots per inch must be between 25 and 600 dpi\n");
+                    diagnostics(WARNING, "Dots per inch must be between 25 and 600 dpi\n");
                 break;
             case 'F':
                 g_latex_figures = TRUE;
@@ -693,20 +693,29 @@ static void ConvertLatexPreamble(void)
 purpose: reads the LaTeX preamble (to \begin{document} ) for the file
  ****************************************************************************/
 {
-    FILE *hidden;
     char t[] = "\\begin|{|document|}";
+    FILE *rtf_file;
 
-    diagnostics(4, "Reading LaTeX Preamble");
-    hidden = fRtf;
-    fRtf = stderr;
+	/* Here we switch the file pointers ... it is important that nothing
+	   get printed to fRtf until the entire preamble has been processed.  
+	   This is really hard to track down, so the processed RTF get sent
+	   directly to stderr instead.
+	*/
+	rtf_file = fRtf;
+	fRtf = stderr;
+	
+    diagnostics(2, "Reading LaTeX Preamble");
 
     g_preamble = getSpacedTexUntil(t, 1);
 
-    diagnostics(4, "Entering ConvertString() from ConvertLatexPreamble <%s>", g_preamble);
-    ConvertString(g_preamble);
-    diagnostics(4, "Exiting ConvertString() from ConvertLatexPreamble");
+    diagnostics(3, "Entering ConvertString() from ConvertLatexPreamble");
 
-    fRtf = hidden;
+	if (g_verbosity_level>1) 
+		show_string(g_preamble, "preamble");	
+
+    ConvertString(g_preamble);
+    diagnostics(3, "Exiting ConvertString() from ConvertLatexPreamble");
+    fRtf = rtf_file;
 }
 
 
@@ -815,7 +824,7 @@ purpose: output a formatted string to the RTF file.  It is assumed that the
 
     while (*text) {
 
-		WriteEightBitChar(text[0]);
+		WriteEightBitChar(text[0], fRtf);
 	
 		if (*text == '{' && last != '\\')
 			PushFontSettings();
@@ -927,7 +936,7 @@ void debug_malloc(void)
 {
     char c;
 
-    diagnostics(1, "Malloc Debugging --- press return to continue");
+    diagnostics(WARNING, "Malloc Debugging --- press return to continue");
     fflush(NULL);
     fscanf(stdin, "%c", &c);
 }
