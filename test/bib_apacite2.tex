@@ -1,0 +1,130 @@
+
+\documentclass[12pt,a4paper]{article}
+\usepackage{doc,apacite}
+
+\title{Test of the \texttt{apacite} package and bibstyle}
+\author{Erik Meijer\\
+        Department of Psychometrics and Research Methodology\\
+        Leiden University\\
+        PO Box 9555\\
+        2300 RB Leiden\\
+        The Netherlands\\
+        E-Mail: Meijer@rulfsw.LeidenUniv.nl
+}
+\renewcommand{\date}{December 22, 1994}
+\MakeShortVerb\|
+\begin{document}
+\maketitle
+\begin{abstract}
+   In this document, the examples of the APA manual (3rd ed., 1984)
+   are cited to test the |apacite| package and bibstyle. 
+   A description of the |apacite| package and bibstyle can be found
+   in the file |apacite.tex|. See also the |readme.apa| file.
+   The file |apacite.sty| must be in a directory that \TeX\ can find.
+   The files |apacite.bst| and |testAPA.bib| must be in directories
+   that \textsc{Bib}\TeX\ can find.
+\end{abstract}
+\section{The in-text citations}
+The following enumerated list gives the example number, and
+the two basic in-text citation commands, both in a full and
+short form, of all examples in the APA manual. 
+\begin{enumerate}
+\item \cite{1}  \\ \cite{1} \\ \fullciteA{1}  \\ \citeA{1}
+\item \cite{2}  \\ \cite{2} \\ \fullciteA{2}  \\ \citeA{2}
+\item \cite{3}  \\ \cite{3} \\ \fullciteA{3}  \\ \citeA{3}
+\item \cite{4}  \\ \cite{4} \\ \fullciteA{4}  \\ \citeA{4}
+\item \cite{5}  \\ \cite{5} \\ \fullciteA{5}  \\ \citeA{5}
+\item \cite{6}  \\ \cite{6} \\ \fullciteA{6}  \\ \citeA{6} 
+                            % 6--10:magazine/newspaper
+\item \cite{7}  \\ \cite{7} \\ \fullciteA{7}  \\ \citeA{7}
+\item \cite{8}  \\ \cite{8} \\ \fullciteA{8}  \\ \citeA{8}
+\item \cite{9}  \\ \cite{9} \\ \fullciteA{9}  \\ \citeA{9}
+\item \cite{10} \\ \cite{10} \\ \fullciteA{10} \\ \citeA{10}
+\item \cite{11} \\ \cite{11} \\ \fullciteA{11} \\ \citeA{11} 
+                            % special issue of journal: formatted as article 
+                            % with editors instead of authors
+\item \cite{12} \\ \cite{12}\\ \fullciteA{12}\\ \citeA{12}
+\item \cite{13} \\ \cite{13}\\ \fullciteA{13}\\ \citeA{13}
+\item \cite{14} \\ \cite{14}\\ \fullciteA{14}\\ \citeA{14}
+\item \cite{15} \\ \cite{15}\\ \fullciteA{15}\\ \citeA{15}
+\item \cite{16} \\ \cite{16}\\ \fullciteA{16}\\ \citeA{16}
+\item \cite{17} \\ \cite{17}\\ \fullciteA{17}\\ \citeA{17}
+\item \cite{18} \\ \cite{18}\\ \fullciteA{18}\\ \citeA{18}
+\item \cite{19} \\ \cite{19}\\ \fullciteA{19}\\ \citeA{19}
+\item \cite{20} \\ \cite{20}\\ \fullciteA{20}\\ \citeA{20}
+\item \cite{21} \\ \cite{21}\\ \fullciteA{21}\\ \citeA{21}
+\item \cite{22} \\ \cite{22}\\ \fullciteA{22}\\ \citeA{22}
+\item \cite{23} \\ \cite{23}\\ \fullciteA{23}\\ \citeA{23}
+\item \cite{24} \\ \cite{24}\\ \fullciteA{24}\\ \citeA{24}
+\item \cite{25} \\ \cite{25}\\ \fullciteA{25}\\ \citeA{25}  
+                              % book with no author or editor
+\item \cite{26} \\ \cite{26}\\ \fullciteA{26}\\ \citeA{26}
+\item \cite{27} \\ \cite{27}\\ \fullciteA{27}\\ \citeA{27}
+\item \cite{28} \\ \cite{28}\\ \fullciteA{28}\\ \citeA{28}
+\item \cite{29} \\ \cite{29}\\ \fullciteA{29}\\ \citeA{29}  
+                              % translated book with original work published
+                              % in another year than translation
+\item \cite{30} \\ \cite{30}\\ \fullciteA{30}\\ \citeA{30}
+\item \cite{31} \\ \cite{31}\\ \fullciteA{31}\\ \citeA{31}
+\item \cite{32} \\ \cite{32}\\ \fullciteA{32}\\ \citeA{32}
+\item \cite{33} \\ \cite{33}\\ \fullciteA{33}\\ \citeA{33}
+\item \cite{34} \\ \cite{34}\\ \fullciteA{34}\\ \citeA{34}  
+                              % translated chapter in edited book
+\item \cite{35} \\ \cite{35}\\ \fullciteA{35}\\ \citeA{35}  
+                              % idem
+\item \cite{36} \\ \cite{36}\\ \fullciteA{36}\\ \citeA{36}
+\item \cite{37} \\ \cite{37}\\ \fullciteA{37}\\ \citeA{37}
+\item \cite{38} \\ \cite{38}\\ \fullciteA{38}\\ \citeA{38}
+\item \cite{39} \\ \cite{39}\\ \fullciteA{39}\\ \citeA{39}
+\item \cite{40} \\ \cite{40}\\ \fullciteA{40}\\ \citeA{40}  
+                              % article in tech. report
+\item \cite{41} \\ \cite{41}\\ \fullciteA{41}\\ \citeA{41}
+\item \cite{42} \\ \cite{42}\\ \fullciteA{42}\\ \citeA{42}  
+                              % edited technical report
+\item \cite{43} \\ \cite{43}\\ \fullciteA{43}\\ \citeA{43}  
+                              % report from corporate author
+\item \cite{44} \\ \cite{44}\\ \fullciteA{44}\\ \citeA{44}
+\item \cite{45} \\ \cite{45}\\ \fullciteA{45}\\ \citeA{45}
+\item \cite{46} \\ \cite{46} \\ \fullciteA{46} \\ \citeA{46} 
+                              % lecture ``In editor (Chair), symposium''
+\item \cite{47} \\ \cite{47}\\ \fullciteA{47}\\ \citeA{47}  
+                              % lecture 
+\item \cite{48} \\ \cite{48}\\ \fullciteA{48}\\ \citeA{48}
+\item \cite{49} \\ \cite{49}\\ \fullciteA{49}\\ \citeA{49}
+\item \cite{50} \\ \cite{50}\\ \fullciteA{50}\\ \citeA{50}
+\item \cite{51} \\ \cite{51}\\ \fullciteA{51}\\ \citeA{51}
+\item \cite{52} \\ \cite{52}\\ \fullciteA{52}\\ \citeA{52}
+\item \cite{53} \\ \cite{53}\\ \fullciteA{53}\\ \citeA{53}
+\item \cite{54} \\ \cite{54}\\ \fullciteA{54}\\ \citeA{54}
+\item \cite{55} \\ \cite{55}\\ \fullciteA{55}\\ \citeA{55}
+\item \cite{56} \\ \cite{56}\\ \fullciteA{56}\\ \citeA{56} 
+                              % unpublished with editor
+\item \cite{57} \\ \cite{57}\\ \fullciteA{57}\\ \citeA{57} 
+                              % book review
+\item \cite{58} \\ \cite{58}\\ \fullciteA{58}\\ \citeA{58} 
+                              % film review
+\item \cite{59} \\ \cite{59}\\ \fullciteA{59}\\ \citeA{59} 
+                              % untitled interview
+\item \cite{60} \\ \cite{60}\\ \fullciteA{60}\\ \citeA{60} 
+                              % film
+\item \cite{61} \\ \cite{61}\\ \fullciteA{61}\\ \citeA{61} 
+                              % cassette recording
+\item \cite{62} \\ \cite{62}\\ \fullciteA{62}\\ \citeA{62} 
+                              % machine-readable data file
+\item \cite{63} \\ \cite{63}\\ \fullciteA{63}\\ \citeA{63} 
+                              % computer program
+
+\end{enumerate}
+
+
+
+
+
+
+
+
+
+\bibliographystyle{apacite}
+\bibliography{bib_apacite2}
+
+\end{document}
