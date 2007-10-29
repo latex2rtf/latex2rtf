@@ -777,8 +777,8 @@ These switches can be combined to get different effects.  Handy examples are
     @end table
 Bitmap conversion requires that you have installed a working latex2png script.
 Producing bitmaps is slow.@*
-Under Windows XP, generating more than 26 or 27 bitmapped equations fails. We
-yet don't know why.
+Under Windows XP, generating more than 26 or 27 bitmapped equations for one 
+@latex{} input file (one run of @ltor{}) fails. We yet don't know why.
 
 @item -o outputfile
 Unless an @file{outputfile} is specified with the @code{-o} option, the resulting RTF
@@ -808,7 +808,15 @@ If any of the directory names contains a blank, the directory string must be
 enclosed in single (Unix, Mac) or double (DOS, Windows) quotes.@*
 Examples:@*
 (Unix:) @code{latex2rtf -P ./cfg/:./scripts/ foo}@*
-(DOS/Windows:) @code{latex2rt -P "C:\Program Files\latex2rtf\cfg" foo}
+(DOS/Windows:) @code{latex2rt -P "C:\Program Files\latex2rtf\cfg" foo}@*
+Note that without specifying the -P option, @ltor{} tries to find its cfg files 
+in the following locations:@*
+1. the directory specified by the environment variable @code{RTFPATH}, if this variable exists;@*
+2. the directory @code{C:/%PROGRAMFILES%/latex2rtf/cfg} -- this is the directory 
+in which @ltor{} is installed by the Windows GUI installer with default settings;@*
+3. the directory specified during compilation by the variable
+@code{CFGDIR}. This is set in the Makefile. The DOS/Windows version is compiled
+with @code{CFGDIR=C:/l2r}.
 
 @item -S
 used to specify that semicolons should be used to separate arguments in RTF fields
