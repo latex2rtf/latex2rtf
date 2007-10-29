@@ -206,6 +206,7 @@ static char * my_fgets(FILE *f)
 	}
 		
 	AuxLine[i] = '\0';
+	diagnostics(1,"my_fgets = \"%s\"", AuxLine);
 	return strdup(AuxLine);
 }
 
