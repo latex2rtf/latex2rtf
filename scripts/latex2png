@@ -95,8 +95,10 @@ if [ -z "$1" ] ; then
 fi
 
 # is it an eps file?
-if [ `echo $1 | ${GREP} -c eps$` -eq 1 ] ; then
-    ext="eps"
+# WH (2007-10-29) fixed following line
+# if [ `echo $1 | ${GREP} -c eps$` -eq 1 ] ; then
+if [ `echo $1 | ${GREP} -c eps` -eq 1 ] ; then
+   ext="eps"
 fi
 
 #process 'latex2png file.tex' and 'latex2png file' equivalently

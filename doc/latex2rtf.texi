@@ -760,7 +760,10 @@ where # selects the type of equation conversion.  Use
     insert Word comment field that contains the original equation text
     @item -M32  
     insert the raw latex equation delimited by @code{<<:} and @code{:>>}.  This
-    is potential useful when using version 6 of the MathType equation editor.
+    is potential useful when using version 6 of the MathType equation editor,
+    which converts typed or pasted TeX code into a MathType equation.@*
+    Probably this could also be useful for use in OpenOffice, as OO has an 
+    equation syntax which partially resembles TeX syntax.
     @end table
     
 These switches can be combined to get different effects.  Handy examples are
@@ -773,7 +776,9 @@ These switches can be combined to get different effects.  Handy examples are
     convert both inline and displayed equations to bitmaps
     @end table
 Bitmap conversion requires that you have installed a working latex2png script.
-Producing bitmaps is slow.
+Producing bitmaps is slow.@*
+Under Windows XP, generating more than 26 or 27 bitmapped equations fails. We
+yet don't know why.
 
 @item -o outputfile
 Unless an @file{outputfile} is specified with the @code{-o} option, the resulting RTF
@@ -793,7 +798,17 @@ This is an option because it will break typesetting equations with non-matching
 parentheses (because an unmatched unquoted parenthesis would terminate the field).
 
 @item -P /path/to/cfg
-used to specify the directory that contains the @code{.cfg} files
+used to specify the directory that contains the @code{.cfg} files 
+and/or the directory that contains the latex2png script.@*
+The directory that contains the latex2png script must be prepended by a ":"
+(Unix, Mac). Under DOS or Windows, the scripts directory is not used, the 
+scripts are always taken from the search path, therefore the directory 
+containing latex2rt.exe and the DOS scripts must be the first in the search path. 
+If any of the directory names contains a blank, the directory string must be 
+enclosed in single (Unix, Mac) or double (DOS, Windows) quotes.@*
+Examples:@*
+(Unix:) @code{latex2rtf -P ./cfg/:./scripts/ foo}@*
+(DOS/Windows:) @code{latex2rt -P "C:\Program Files\latex2rtf\cfg" foo}
 
 @item -S
 used to specify that semicolons should be used to separate arguments in RTF fields

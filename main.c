@@ -241,7 +241,7 @@ int main(int argc, char **argv)
                 break;
 
             case 'P':          /* -P path/to/cfg:path/to/script or -P path/to/cfg or -P :path/to/script */
-                p = strchr(optarg, ':');
+                p = strchr(optarg, ENVSEP);
                 if (p) {
                     *p = '\0';
                     g_script_dir = strdup(p + 1);
