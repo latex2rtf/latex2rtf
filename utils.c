@@ -498,13 +498,13 @@ void show_string(const char *s, const char *label)
 	for (i=0; i<len; i++) {
 	
 		if (i==width)
-			diagnostics(WARNING, "\n%-*d: ", (int) strlen(label), (int) strlen(s));
+			fprintf(stderr, "\n%-*d: ", (int) strlen(label), (int) strlen(s));
 		else if (i>1 && i % width == 0) 
-			diagnostics(WARNING, "\n%s: ",label);
+			fprintf(stderr, "\n%s: ",label);
 		c = s[i];
 		if (c == '\n') c = '=';
 		if (c == '\0') c = '*';
-		diagnostics(WARNING,"%c",c);
+		fprintf(stderr,"%c",c);
 	}
 }
 
