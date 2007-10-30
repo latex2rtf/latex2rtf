@@ -964,10 +964,10 @@ char *getTexUntil(char *target, int raw)
 
     PopTrackLineNumber();
 
-    diagnostics(3, "buffer size =[%d], actual=[%d]", strlen(buffer), i - len);
+    diagnostics(5, "buffer size =[%d], actual=[%d]", strlen(buffer), i - len);
 
     s = strdup(buffer);
-    diagnostics(3, "strdup result = %s", s);
+    diagnostics(5, "strdup result = %s", s);
     return s;
 }
 
@@ -990,7 +990,7 @@ char *getSpacedTexUntil(char *target, int raw)
 	
     PushTrackLineNumber(FALSE);
 
-    diagnostics(2, "getSpaceTexUntil target = <%s> raw_search = %d ", target, raw);
+    diagnostics(5, "getSpaceTexUntil target = <%s> raw_search = %d ", target, raw);
 
 	matched = FALSE;	
 	buffer_pos = 0;

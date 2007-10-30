@@ -1130,7 +1130,7 @@ globals: command-functions have side effects or recursive calls
     user_def_index = existsDefinition(cCommand);
     if (user_def_index > -1) {
         macro_string = expandDefinition(user_def_index);
-        diagnostics(3, "CallCommandFunc <%s> expanded to <%s>", cCommand, macro_string);
+        diagnostics(5, "CallCommandFunc <%s> expanded to <%s>", cCommand, macro_string);
         ConvertString(macro_string);
         free(macro_string);
         return TRUE;
@@ -1144,7 +1144,7 @@ globals: command-functions have side effects or recursive calls
         while (strcmp(Environments[iEnv][iCommand].cpCommand, "") != 0) {
 
           /*  if (iCommand<10)
-            	diagnostics(3,"CallCommandFunc (%d,%3d) Trying %s",iEnv,iCommand,Environments[iEnv][iCommand].cpCommand);
+            	diagnostics(55555,"CallCommandFunc (%d,%3d) Trying %s",iEnv,iCommand,Environments[iEnv][iCommand].cpCommand);
 		*/
 		
             if (strcmp(Environments[iEnv][iCommand].cpCommand, cCommand) == 0) {

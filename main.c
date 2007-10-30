@@ -180,7 +180,6 @@ int main(int argc, char **argv)
                 break;
             case 'f':
                 sscanf(optarg, "%d", &x);
-                diagnostics(2, "Field option = %s x=%d", optarg, x);
                 g_fields_use_EQ = (x & 1) ? TRUE : FALSE;
                 g_fields_use_REF = (x & 2) ? TRUE : FALSE;
                 break;
@@ -212,19 +211,19 @@ int main(int argc, char **argv)
                 break;
             case 'M':
                 sscanf(optarg, "%d", &x);
-                diagnostics(2, "Math option = %s x=%d", optarg, x);
+                diagnostics(3, "Math option = %s x=%d", optarg, x);
                 g_equation_display_rtf   = (x &  1) ? TRUE : FALSE;
                 g_equation_inline_rtf    = (x &  2) ? TRUE : FALSE;
                 g_equation_display_bitmap= (x &  4) ? TRUE : FALSE;
                 g_equation_inline_bitmap = (x &  8) ? TRUE : FALSE;
                 g_equation_comment       = (x & 16) ? TRUE : FALSE;
                 g_equation_raw_latex     = (x & 32) ? TRUE : FALSE;
-                diagnostics(2, "Math option g_equation_display_rtf    = %d", g_equation_display_rtf);
-                diagnostics(2, "Math option g_equation_inline_rtf     = %d", g_equation_inline_rtf);
-                diagnostics(2, "Math option g_equation_display_bitmap = %d", g_equation_display_bitmap);
-                diagnostics(2, "Math option g_equation_inline_bitmap  = %d", g_equation_inline_bitmap);
-                diagnostics(2, "Math option g_equation_comment        = %d", g_equation_comment);
-                diagnostics(2, "Math option g_equation_raw_latex      = %d", g_equation_raw_latex);
+                diagnostics(3, "Math option g_equation_display_rtf    = %d", g_equation_display_rtf);
+                diagnostics(3, "Math option g_equation_inline_rtf     = %d", g_equation_inline_rtf);
+                diagnostics(3, "Math option g_equation_display_bitmap = %d", g_equation_display_bitmap);
+                diagnostics(3, "Math option g_equation_inline_bitmap  = %d", g_equation_inline_bitmap);
+                diagnostics(3, "Math option g_equation_comment        = %d", g_equation_comment);
+                diagnostics(3, "Math option g_equation_raw_latex      = %d", g_equation_raw_latex);
                 if (!g_equation_comment && !g_equation_inline_rtf && !g_equation_inline_bitmap && !g_equation_raw_latex)
                     g_equation_inline_rtf = TRUE;
                 if (!g_equation_comment && !g_equation_display_rtf && !g_equation_display_bitmap && !g_equation_raw_latex)
@@ -233,11 +232,11 @@ int main(int argc, char **argv)
 
             case 't':
                 sscanf(optarg, "%d", &x);
-                diagnostics(2, "Table option = %s x=%d", optarg, x);
+                diagnostics(3, "Table option = %s x=%d", optarg, x);
                 g_tabular_display_rtf    = (x &  1) ? TRUE : FALSE;
                 g_tabular_display_bitmap = (x &  2) ? TRUE : FALSE;
-                diagnostics(2, "Table option g_tabular_display_rtf     = %d", g_equation_display_rtf);
-                diagnostics(2, "Table option g_tabular_display_bitmap  = %d", g_equation_inline_rtf);
+                diagnostics(3, "Table option g_tabular_display_rtf     = %d", g_equation_display_rtf);
+                diagnostics(3, "Table option g_tabular_display_bitmap  = %d", g_equation_inline_rtf);
                 break;
 
             case 'P':          /* -P path/to/cfg:path/to/script or -P path/to/cfg or -P :path/to/script */
@@ -353,11 +352,11 @@ int main(int argc, char **argv)
         g_ttt_name = strdup_together(basename, ".ttt");
 
     if (basename) {
-        diagnostics(3, "latex filename is <%s>", g_tex_name);
-        diagnostics(3, "  rtf filename is <%s>", g_rtf_name);
-        diagnostics(3, "  aux filename is <%s>", g_aux_name);
-        diagnostics(3, "  bbl filename is <%s>", g_bbl_name);
-        diagnostics(3, "home directory is <%s>", (g_home_dir) ? g_home_dir : "");
+        diagnostics(2, "latex filename is <%s>", g_tex_name);
+        diagnostics(2, "  rtf filename is <%s>", g_rtf_name);
+        diagnostics(2, "  aux filename is <%s>", g_aux_name);
+        diagnostics(2, "  bbl filename is <%s>", g_bbl_name);
+        diagnostics(2, "home directory is <%s>", (g_home_dir) ? g_home_dir : "");
     }
 
     ReadCfg();
@@ -708,13 +707,13 @@ purpose: reads the LaTeX preamble (to \begin{document} ) for the file
 
     g_preamble = getSpacedTexUntil(t, 1);
 
-    diagnostics(3, "Entering ConvertString() from ConvertLatexPreamble");
+    diagnostics(5, "Entering ConvertString() from ConvertLatexPreamble");
 
 	if (g_verbosity_level>1) 
 		show_string(g_preamble, "preamble");	
 
     ConvertString(g_preamble);
-    diagnostics(3, "Exiting ConvertString() from ConvertLatexPreamble");
+    diagnostics(5, "Exiting ConvertString() from ConvertLatexPreamble");
     fRtf = rtf_file;
 }
 
@@ -740,7 +739,7 @@ params: filename - name of outputfile, possibly NULL for already open file
         else
             name = strdup(filename);
 
-        diagnostics(3, "Opening RTF file <%s>", name);
+        diagnostics(2, "Opening RTF file <%s>", name);
         *f = fopen(name, "w");
 
         if (*f == NULL)
@@ -894,7 +893,7 @@ purpose: duplicate string --- exists to ease porting
         diagnostics(ERROR, "Cannot allocate memory to duplicate string");
     strcpy(s, str);
 
-/*	diagnostics(3,"ptr %x",(unsigned long)s);*/
+/*	diagnostics(5,"ptr %x",(unsigned long)s);*/
     return s;
 }
 
@@ -907,7 +906,7 @@ purpose: opens "g_home_dir/path"  and
     char *name;
     FILE *p;
 
-    diagnostics(3, "Opening <%s>, mode=[%s]", path, mode);
+    diagnostics(2, "Opening <%s>, mode=[%s]", path, mode);
 
     if (path == NULL || mode == NULL)
         return (NULL);
@@ -917,7 +916,7 @@ purpose: opens "g_home_dir/path"  and
     else
         name = strdup_together(g_home_dir, path);
 
-    diagnostics(3, "Opening <%s>", name);
+    diagnostics(2, "Opening <%s>", name);
     p = fopen(name, mode);
 
     if (p == NULL && strstr(path, ".tex"))

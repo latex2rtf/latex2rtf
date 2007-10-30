@@ -410,7 +410,7 @@ static void setDocumentOptions(char *optionlist)
     while (option) {
 
 /*		while (*option == ' ') option++;  skip leading blanks */
-        diagnostics(3, " (setDocumentOptions) option <%s>", option);
+        diagnostics(2, " (setDocumentOptions) option <%s>", option);
         if (strcmp(option, "10pt") == 0 || strcmp(option, "11pt") == 0 || strcmp(option, "12pt") == 0)
             setPointSize(option);
         else if (strcmp(option, "a4"         ) == 0 ||

@@ -303,7 +303,7 @@ void CmdNewDef(int code)
 
     }
 
-    diagnostics(3, "CmdNewDef name=<%s> param=%d opt_param=<%s> def=<%s>", 
+    diagnostics(2, "CmdNewDef name=<%s> param=%d opt_param=<%s> def=<%s>", 
                    (name) ? name : "",
                    param, 
                    (opt_param) ? opt_param : "",
@@ -340,9 +340,9 @@ void CmdNewEnvironment(int code)
             diagnostics(ERROR, "non-numeric number of parameters in newcommand");
     }
 
-    diagnostics(3, "CmdNewEnvironment name=<%s> param=%d", name, param);
-    diagnostics(3, "CmdNewEnvironment begdef=<%s>", begdef);
-    diagnostics(3, "CmdNewEnvironment enddef=<%s>", enddef);
+    diagnostics(2, "CmdNewEnvironment name=<%s> param=%d", name, param);
+    diagnostics(2, "CmdNewEnvironment begdef=<%s>", begdef);
+    diagnostics(2, "CmdNewEnvironment enddef=<%s>", enddef);
 
     if (code == DEF_NEW)
         newEnvironment(name, opt_param, begdef, enddef, param);
@@ -373,9 +373,9 @@ void CmdNewTheorem(int code)
     UpdateLineNumber(caption);
     UpdateLineNumber(within);
 
-    diagnostics(3, "CmdNewTheorem name=<%s>", name);
-    diagnostics(3, "CmdNewTheorem caption=<%s>", caption);
-    diagnostics(3, "CmdNewTheorem like=<%s>", (numbered_like) ? numbered_like : "");
+    diagnostics(2, "CmdNewTheorem name=<%s>", name);
+    diagnostics(2, "CmdNewTheorem caption=<%s>", caption);
+    diagnostics(2, "CmdNewTheorem like=<%s>", (numbered_like) ? numbered_like : "");
     newTheorem(name, caption, numbered_like, within);
 
     free(name);
@@ -1189,7 +1189,7 @@ void CmdLength(int code)
             if (cThis == '{') {
                 num = getDimension();
 
-                diagnostics(3, "size is <%d> twips", num);
+                diagnostics(4, "size is <%d> twips", num);
                 cThis = getTexChar();
 
                 while (cThis && cThis != '}')
@@ -1453,7 +1453,7 @@ void CmdBox(int code)
     char BoxName[5][10] = { "hbox", "vbox", "mbox", "fbox", "parbox" };
     int mode = GetTexMode();
 
-    diagnostics(2, "Entering CmdBox() [%s]", BoxName[code - 1]);
+    diagnostics(4, "Entering CmdBox() [%s]", BoxName[code - 1]);
     if (g_processing_fields)
         g_processing_fields++;  /* hack to stop fields within fields */
 
@@ -1485,7 +1485,7 @@ void CmdBox(int code)
         SetTexMode(mode);
     }
 
-    diagnostics(2, "Exited CmdBox() [%s]", BoxName[code - 1]);
+    diagnostics(4, "Exited CmdBox() [%s]", BoxName[code - 1]);
 }
 
 void CmdVerb(int code)

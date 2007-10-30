@@ -225,13 +225,13 @@ static char *ScanAux(char *token, char *reference, int code, char *aux_name)
     if (g_aux_file_missing || strlen(token) == 0) {
         return NULL;
     }
-    diagnostics(3, "seeking in .aux for <%s>", reference);
+    diagnostics(4, "seeking in .aux for <%s>", reference);
 
     snprintf(target, 512, "\\%s{%s}", token, reference);
 
     fAux = my_fopen(aux_name, "rb"); /* WH: changed to binary 2007-10-30 */
     if (fAux == NULL) {
-        diagnostics(3, "No .aux file.  Run LaTeX to create %s\n", aux_name);
+        diagnostics(WARNING, "No .aux file.  Run LaTeX to create %s\n", aux_name);
         g_aux_file_missing = TRUE;
         return NULL;
     }
@@ -311,7 +311,7 @@ static char *ScanBbl(char *reference)
         return NULL;
     }
     target = strdup_together3("{", reference,"}");
-    diagnostics(3, "seeking '%s' in .bbl", target);
+    diagnostics(4, "seeking '%s' in .bbl", target);
 	
     if (f_bbl == NULL && (f_bbl = my_fopen(g_bbl_name, "rb")) == NULL) {
         diagnostics(WARNING, "No .bbl file.  Run LaTeX to create %s\n", g_bbl_name);
@@ -347,7 +347,6 @@ static char *ScanBbl(char *reference)
 	buffer[i+1] = '\0';
 	s = strdup(buffer);
 	free(buffer);
-    diagnostics(3, "found '%s' in .bbl", s);
 	return s;
 }
 
@@ -667,10 +666,10 @@ void InsertBookmark(char *name, char *text)
     signet = strdup_nobadchars(name);
 
     if (ExistsBookmark(signet)) {
-        diagnostics(3, "bookmark %s already exists", signet);
+        diagnostics(4, "bookmark %s already exists", signet);
 
     } else {
-        diagnostics(3, "bookmark %s being inserted around <%s>", signet, text);
+        diagnostics(4, "bookmark %s being inserted around <%s>", signet, text);
         RecordBookmark(signet);
         if (g_fields_use_REF)
             fprintRTF("{\\*\\bkmkstart BM%s}", signet);
@@ -712,7 +711,7 @@ void CmdLabel(int code)
                 break;
             if (mode == MODE_DISPLAYMATH) {
                 g_equation_label = strdup_nobadchars(text);
-                diagnostics(3, "equation label is <%s>", text);
+                diagnostics(4, "equation label is <%s>", text);
             } else
                 InsertBookmark(text, "");
             break;
@@ -1162,7 +1161,7 @@ static void ConvertHarvard(char *s, int code, char *pre, char *post, int first)
     abbv = getBraceParam();
     year = getBraceParam();
     PopSource();
-    diagnostics(2, "harvard pre=[%s] post=<%s> full=<%s> abbv=<%s> year=<%s>", pre, post, full, abbv, year);
+    diagnostics(4, "harvard pre=[%s] post=<%s> full=<%s> abbv=<%s> year=<%s>", pre, post, full, abbv, year);
     author_repeated = FALSE;
     year_repeated = FALSE;
     switch (code) {
@@ -1598,7 +1597,7 @@ void CmdNatbibCite(int code)
 			/* look up citation and write it to the RTF stream */
 			s = ScanAux("bibcite", key, 0, g_aux_name);
 				
-			diagnostics(3, "natbib key=[%s] <%s> ", key, s);
+			diagnostics(4, "natbib key=[%s] <%s> ", key, s);
 			if (s) {
 				g_current_cite_seen = citation_used(key);
 				ConvertNatbib(s, code, pretext, option, first_key, last_key);
@@ -1702,7 +1701,7 @@ void CmdHarvardCite(int code)
 
         s = ScanAux("harvardcite", key, 2, g_aux_name); /* look up bibliographic reference */
             
-		diagnostics(2, "harvard key=[%s] <%s>", key, s);
+		diagnostics(4, "harvard key=[%s] <%s>", key, s);
 		
 		if (!first_key) {
 			ConvertString(g_bibpunct_cite_sep);
@@ -2216,7 +2215,7 @@ void CmdContentsLine(int code)
     text = getBraceParam();
     num = getBraceParam();
 
-    diagnostics(3, "Entering CmdContentsLine %s [%s]", type, text);
+    diagnostics(4, "Entering CmdContentsLine %s [%s]", type, text);
 
     CmdStartParagraph("contents", TITLE_INDENT);
     fprintRTF("{");

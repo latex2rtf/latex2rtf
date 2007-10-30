@@ -121,7 +121,7 @@ purpose: open config by trying multiple paths
     char *lib_path;
     FILE *fp;
 
-    diagnostics(3, "Open file in cfg directories <%s>", name);
+    diagnostics(2, "Open file in cfg directories <%s>", name);
 
 /* try path specified on the line */
     fp = try_path(g_config_path, name);

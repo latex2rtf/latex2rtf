@@ -804,14 +804,14 @@ void CmdEnsuremath(int code)
 {
 	int mode = GetTexMode();
 
-    diagnostics(2, "Entering CmdEnsuremath");
+    diagnostics(4, "Entering CmdEnsuremath");
 	if (mode == MODE_MATH || mode == MODE_DISPLAYMATH) {
 		char *eq = getBraceParam();
-        diagnostics(2, "already in math mode <%s>", eq);
+        diagnostics(4, "already in math mode <%s>", eq);
 		ConvertString(eq);
 		free(eq);
 	} else {
-        diagnostics(2, "need to start new equation");
+        diagnostics(4, "need to start new equation");
 		CmdEquation(EQN_ENSUREMATH);
 	}
 }
