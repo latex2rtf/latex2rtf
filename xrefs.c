@@ -206,7 +206,6 @@ static char * my_fgets(FILE *f)
 	}
 		
 	AuxLine[i] = '\0';
-	diagnostics(1,"my_fgets = \"%s\"", AuxLine);
 	return strdup(AuxLine);
 }
 
@@ -230,7 +229,7 @@ static char *ScanAux(char *token, char *reference, int code, char *aux_name)
 
     snprintf(target, 512, "\\%s{%s}", token, reference);
 
-    fAux = my_fopen(aux_name, "r");
+    fAux = my_fopen(aux_name, "rb"); /* WH: changed to binary 2007-10-30 */
     if (fAux == NULL) {
         diagnostics(3, "No .aux file.  Run LaTeX to create %s\n", aux_name);
         g_aux_file_missing = TRUE;
