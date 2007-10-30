@@ -493,7 +493,7 @@ void show_string(const char *s, const char *label)
 	}
 		
 	len = strlen(s);
-	diagnostics(WARNING, "\n%s: ", label);
+	fprintf(stderr, "\n%s: ", label);
 
 	for (i=0; i<len; i++) {
 	

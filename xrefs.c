@@ -310,7 +310,7 @@ static char *ScanBbl(char *reference)
     if (g_bbl_file_missing || strlen(reference) == 0) {
         return NULL;
     }
-    target = strdup_together3("\\bibitem{", reference,"}");
+    target = strdup_together3("{", reference,"}");
     diagnostics(3, "seeking '%s' in .bbl", target);
 	
     if (f_bbl == NULL && (f_bbl = my_fopen(g_bbl_name, "r")) == NULL) {
@@ -347,6 +347,7 @@ static char *ScanBbl(char *reference)
 	buffer[i+1] = '\0';
 	s = strdup(buffer);
 	free(buffer);
+    diagnostics(3, "found '%s' in .bbl", s);
 	return s;
 }
 
