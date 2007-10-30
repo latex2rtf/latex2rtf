@@ -1608,7 +1608,7 @@ char *exists_with_extension(char *s, char *ext)
     FILE *fp;
 
     t = strdup_together(s, ext);
-    fp = fopen(t, "r");
+    fp = fopen(t, "rb");
     diagnostics(4, "trying to open %s, result = %0x", t, fp);
     if (fp) {
         fclose(fp);
@@ -1621,7 +1621,7 @@ char *exists_with_extension(char *s, char *ext)
     t = strdup_together(s, x);
     free(x);
 
-    fp = fopen(t, "r");
+    fp = fopen(t, "rb");
     diagnostics(4, "trying to open %s, result = %0x", t, fp);
     if (fp) {
         fclose(fp);

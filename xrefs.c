@@ -313,7 +313,7 @@ static char *ScanBbl(char *reference)
     target = strdup_together3("{", reference,"}");
     diagnostics(3, "seeking '%s' in .bbl", target);
 	
-    if (f_bbl == NULL && (f_bbl = my_fopen(g_bbl_name, "r")) == NULL) {
+    if (f_bbl == NULL && (f_bbl = my_fopen(g_bbl_name, "rb")) == NULL) {
         diagnostics(WARNING, "No .bbl file.  Run LaTeX to create %s\n", g_bbl_name);
         g_bbl_file_missing = TRUE;
         return NULL;

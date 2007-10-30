@@ -106,7 +106,7 @@ static FILE *try_path(const char *path, const char *file)
     }
 
     strcat(both, file);
-    fp = fopen(both, "r");
+    fp = fopen(both, "rb");
     free(both);
     return fp;
 }
