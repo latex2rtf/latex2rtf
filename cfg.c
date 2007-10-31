@@ -92,13 +92,14 @@ static FILE *try_path(const char *path, const char *cfg_file)
     if (path == NULL || cfg_file == NULL)
         return NULL;
 
-    diagnostics(2, "trying path=<%s> file=<%s>", path, cfg_file);
 
     /* fix path ending if needed */
     if (path[strlen(path)] != PATHSEP) 
     	both = strdup_together3(path,separator,cfg_file);
     else
     	both = strdup_together(path,cfg_file);
+
+    diagnostics(2, "trying to open '%s'", both);
 
     fp = fopen(both, "rb");
     free(both);
@@ -114,8 +115,6 @@ purpose: open config by trying multiple paths
     char *env_path, *p, *p1, *pf;
     char *lib_path;
     FILE *fp;
-
-    diagnostics(2, "Open file in cfg directories <%s>", name);
 
 /* try path specified on the line */
     fp = try_path(g_config_path, name);

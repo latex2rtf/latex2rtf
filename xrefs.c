@@ -231,7 +231,7 @@ static char *ScanAux(char *token, char *reference, int code, char *aux_name)
 
     fAux = my_fopen(aux_name, "rb"); /* WH: changed to binary 2007-10-30 */
     if (fAux == NULL) {
-        diagnostics(WARNING, "No .aux file.  Run LaTeX to create %s\n", aux_name);
+        diagnostics(WARNING, "No .aux file.  Run LaTeX to create one.");
         g_aux_file_missing = TRUE;
         return NULL;
     }
@@ -314,7 +314,7 @@ static char *ScanBbl(char *reference)
     diagnostics(4, "seeking '%s' in .bbl", target);
 	
     if (f_bbl == NULL && (f_bbl = my_fopen(g_bbl_name, "rb")) == NULL) {
-        diagnostics(WARNING, "No .bbl file.  Run LaTeX to create %s\n", g_bbl_name);
+        diagnostics(WARNING, "No .bbl file.  Run LaTeX to create one.");
         g_bbl_file_missing = TRUE;
         return NULL;
     }

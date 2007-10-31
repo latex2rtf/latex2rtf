@@ -4,7 +4,7 @@
 LATEX= latex
 BIBTEX= bibtex
 LATEX2RTF= ../latex2rtf
-OPTIONS  = -Z3 -P ../cfg/:../scripts/ -T ../tmp/
+OPTIONS  = -Z3 -P ../cfg/:../scripts/ -T tmp/
 
 LATEX_LOG = >latex.log
 #LATEX_LOG = 
@@ -50,7 +50,7 @@ bib:
 	$(MAKE) bib_tests
 
 fig:
-	mkdir -p ../tmp
+	mkdir -p tmp
 	$(MAKE) fig_tests
 
 enc:
@@ -66,7 +66,7 @@ char:
 	$(MAKE) char_tests
 
 all:
-	mkdir -p ../tmp
+	mkdir -p tmp
 	$(MAKE) basic_tests
 	$(MAKE) bib_tests
 	$(MAKE) eqn_tests
@@ -247,6 +247,6 @@ clean:
 	mv fig_testc.tmp fig_testc.pdf
 	mv fig_testd.tmp fig_testd.pdf
 	mv fig_teste.tmp fig_teste.pdf
-	rm -rf ../tmp
+	rm -rf tmp
 
 .PHONY: clean all check

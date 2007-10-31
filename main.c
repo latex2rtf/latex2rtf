@@ -411,8 +411,10 @@ static void ConvertWholeDocument(void)
     preParse(&body, &sec_head, &label);
 
 	if (g_verbosity_level>1) {
-		show_string(body, "body ");
-		show_string(label, "label");
+        if (g_verbosity_level>2){
+			show_string(body, "body ");
+			show_string(label, "label");
+		}
 		show_string(sec_head, "next ");
 	}	
 
@@ -432,8 +434,10 @@ static void ConvertWholeDocument(void)
         
         if (g_verbosity_level>1) {
         	show_string(sec_head,"head ");
-        	show_string(g_section_label, "label");
-        	show_string(body, "body ");
+        	if (g_verbosity_level>2) {
+        		show_string(g_section_label, "label");
+        		show_string(body, "body ");
+        	}
         	show_string(sec_head2, "next ");
         }	
 
@@ -703,13 +707,12 @@ purpose: reads the LaTeX preamble (to \begin{document} ) for the file
 	rtf_file = fRtf;
 	fRtf = stderr;
 	
-    diagnostics(2, "Reading LaTeX Preamble");
-
     g_preamble = getSpacedTexUntil(t, 1);
 
+    diagnostics(2, "Read LaTeX Preamble");
     diagnostics(5, "Entering ConvertString() from ConvertLatexPreamble");
 
-	if (g_verbosity_level>1) 
+	if (g_verbosity_level>2) 
 		show_string(g_preamble, "preamble");	
 
     ConvertString(g_preamble);
@@ -739,12 +742,12 @@ params: filename - name of outputfile, possibly NULL for already open file
         else
             name = strdup(filename);
 
-        diagnostics(2, "Opening RTF file <%s>", name);
         *f = fopen(name, "w");
 
         if (*f == NULL)
             diagnostics(ERROR, "Error opening RTF file <%s>\n", name);
 
+        diagnostics(2, "Opened RTF file <%s>", name);
         free(name);
     }
 }
@@ -906,8 +909,6 @@ purpose: opens "g_home_dir/path"  and
     char *name;
     FILE *p;
 
-    diagnostics(2, "Opening <%s>, mode=[%s]", path, mode);
-
     if (path == NULL || mode == NULL)
         return (NULL);
 
@@ -916,14 +917,16 @@ purpose: opens "g_home_dir/path"  and
     else
         name = strdup_together(g_home_dir, path);
 
-    diagnostics(2, "Opening <%s>", name);
     p = fopen(name, mode);
 
-    if (p == NULL && strstr(path, ".tex"))
-        p = (FILE *) open_cfg(path, FALSE);
-
     if (p == NULL) {
-        diagnostics(WARNING, "Cannot open <%s>", name);
+    	if (strstr(path, ".tex") != NULL)
+        	p = (FILE *) open_cfg(path, FALSE);
+	} else
+    	diagnostics(2, "Opened '%s'", name);
+	
+    if (p == NULL) {
+        diagnostics(WARNING, "Cannot open '%s'", name);
         fflush(NULL);
     }
 
