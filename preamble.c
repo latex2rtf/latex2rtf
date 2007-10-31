@@ -1165,7 +1165,7 @@ static void WriteStyleHeader(void)
     style = CfgStartIterate(STYLE_A);
     while ((style = CfgNext(STYLE_A, style)) != NULL) {
         rtf = (*style)->RtfCommand;
-        diagnostics(4, "style <%s>=<%s>", (*style)->TexCommand, rtf);
+        diagnostics(5, "style <%s>=<%s>", (*style)->TexCommand, rtf);
         fprintRTF("{");
         InsertBasicStyle(rtf, TRUE);
         fprintRTF(";}\n");

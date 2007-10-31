@@ -624,8 +624,8 @@ static char *eps_to_emf(char *name)
  ******************************************************************************/
 static void AdjustScaling(double h, double w, double target_h, double target_w, double s, int *sx, int *sy)
 {
-	diagnostics(4,"AdjustScaling h       =%f w       =%f s=%f", h, w, s);
-	diagnostics(4,"AdjustScaling target_h=%f target_w=%f", target_h, target_w);
+	diagnostics(5,"AdjustScaling h       =%f w       =%f s=%f", h, w, s);
+	diagnostics(5,"AdjustScaling target_h=%f target_w=%f", target_h, target_w);
 
 	if (target_h != 0 && h != 0) 
 		*sy = (int) my_rint(100.0 * target_h / h);
@@ -641,7 +641,7 @@ static void AdjustScaling(double h, double w, double target_h, double target_w, 
 	if (target_h == 0 && target_w != 0)
 		*sy = *sx;
 
-	diagnostics(4,"AdjustScaling xscale=%d yscale=%d", *sx, *sy);
+	diagnostics(5,"AdjustScaling xscale=%d yscale=%d", *sx, *sy);
 }
 
 /******************************************************************************
@@ -745,7 +745,7 @@ static unsigned char * getPngChunk(FILE *fp, char *s)
 	
 	head[4]='\0';
 	
-	diagnostics(4, "getPngChunk ... seeking <%s>",s);
+	diagnostics(6, "getPngChunk ... seeking <%s>",s);
 	data = NULL;
 	do {
 		int i;
@@ -761,7 +761,7 @@ static unsigned char * getPngChunk(FILE *fp, char *s)
 
 		if (strcmp(head,"IEND") == 0) return NULL;
 		
-		diagnostics(4,"found chunk <%s> size %ld bytes",head,size);
+		diagnostics(6,"found chunk <%s> size %ld bytes",head,size);
 		data = malloc(size);
 		if (data == NULL) return NULL;
 		
@@ -837,9 +837,9 @@ static void GetPngSize(char *s, unsigned long *w, unsigned long *h, unsigned lon
 	/* dots per inch, not per meter! */
 	if (*xres < POINTS_PER_METER) {
 		*bad_res = 1;
-		diagnostics(4, "bogus resolution in png image! ");
-		diagnostics(4, "xres = %ld, yres = %ld, pixels/meter", *xres, *yres);
-		diagnostics(4, "xres = %ld, yres = %ld, pixels/in", 
+		diagnostics(6, "bogus resolution in png image! ");
+		diagnostics(6, "xres = %ld, yres = %ld, pixels/meter", *xres, *yres);
+		diagnostics(6, "xres = %ld, yres = %ld, pixels/in", 
 		(unsigned long)( (double)(*xres *72.0)/POINTS_PER_METER), 
 		(unsigned long)((double)(*yres * 72.0) /POINTS_PER_METER));
 		*xres *= POINTS_PER_METER/72.0;
@@ -848,8 +848,8 @@ static void GetPngSize(char *s, unsigned long *w, unsigned long *h, unsigned lon
 		*bad_res = 0;
 	
 	
-    diagnostics(4, "xres = %ld, yres = %ld, pixels/meter", *xres, *yres);
-    diagnostics(4, "xres = %ld, yres = %ld, pixels/in", 
+    diagnostics(6, "xres = %ld, yres = %ld, pixels/meter", *xres, *yres);
+    diagnostics(6, "xres = %ld, yres = %ld, pixels/in", 
     (unsigned long)( (double)(*xres *72.0)/POINTS_PER_METER), 
     (unsigned long)((double)(*yres * 72.0) /POINTS_PER_METER));
     
@@ -921,11 +921,11 @@ void PutPngFile(char *s, double height_goal, double width_goal, double scale,
     
 	AdjustScaling(height,width,height_goal,width_goal,scale,&sx,&sy);
 	
-	diagnostics(4, "scale      = %6.3f,            convert     = %6.3f", scale, convert_scale);
-    diagnostics(4, "width_goal = %6ld twips,      height_goal = %6ld twips", (int)width_goal, (int)height_goal);
-    diagnostics(4, "picw       = %6ld microns,    pich        = %6ld microns", w*10, h*10);
-    diagnostics(4, "picwgoal   = %6ld twips,      pichgoal    = %6ld twips", width, height);
-    diagnostics(4, "sx         = %6ld percent,    sy          = %6ld percent", sx, sy);
+	diagnostics(5, "scale      = %6.3f,            convert     = %6.3f", scale, convert_scale);
+    diagnostics(5, "width_goal = %6ld twips,      height_goal = %6ld twips", (int)width_goal, (int)height_goal);
+    diagnostics(5, "picw       = %6ld microns,    pich        = %6ld microns", w*10, h*10);
+    diagnostics(5, "picwgoal   = %6ld twips,      pichgoal    = %6ld twips", width, height);
+    diagnostics(5, "sx         = %6ld percent,    sy          = %6ld percent", sx, sy);
     
     /* Write the header for the png bitmap */
     fprintRTF("\n{");
@@ -1836,9 +1836,9 @@ static void HandleGraphicsOptions(char *opt, char *opt2, double *h, double *w, d
 		if (value) free(value);	
 	}
 
-    diagnostics(3, "image scale  = %lf", *s);
-    diagnostics(3, "image height = %lf", *h);
-    diagnostics(3, "image width  = %lf", *w);
+    diagnostics(5, "image scale  = %lf", *s);
+    diagnostics(5, "image height = %lf", *h);
+    diagnostics(5, "image width  = %lf", *w);
 	
 	if (urx)
 		*w=urx-llx;

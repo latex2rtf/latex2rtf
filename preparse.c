@@ -460,7 +460,7 @@ void preParse(char **body, char **header, char **label)
             }
             
             if (found == TRUE) {
-				diagnostics(3,"preparse matched '%s'",command[i]);
+				diagnostics(6,"preparse matched '%s'",command[i]);
 				i_match = i;
 				break;
 			}
@@ -492,8 +492,8 @@ void preParse(char **body, char **header, char **label)
         	*header = strdup(command[e_document_item]);
 	    	*body = strdup(section_buffer);
     		PopTrackLineNumber();
-			diagnostics(3, "body = %s", section_buffer);
-			diagnostics(3, "next header = '%s'", command[e_document_item]);
+			diagnostics(6, "body = %s", section_buffer);
+			diagnostics(6, "next header = '%s'", command[e_document_item]);
 	    	return;
         }
 

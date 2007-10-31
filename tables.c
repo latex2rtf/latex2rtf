@@ -97,7 +97,7 @@ static char *ConvertFormatString(char *s)
     char *simple, *t;
 
     simple = strdup(s);         /* largest possible */
-    diagnostics(4, "Entering ConvertFormatString, input=<%s>", s);
+    diagnostics(5, "Entering ConvertFormatString, input=<%s>", s);
 
     iCol = 0;
     while (*s) {
@@ -132,7 +132,7 @@ static char *ConvertFormatString(char *s)
         s++;
     }
     simple[iCol] = '\0';
-    diagnostics(4, "Exiting ConvertFormatString, output=<%s>", simple);
+    diagnostics(5, "Exiting ConvertFormatString, output=<%s>", simple);
     return simple;
 }
 
@@ -155,7 +155,7 @@ static void TabularCountVert(char *s, int vert[])
 {
     int braces, i;
 
-    diagnostics(4, "Entering TabularCountVert, input=<%s>", s);
+    diagnostics(5, "Entering TabularCountVert, input=<%s>", s);
 
     i = 0;
     while (*s) {
@@ -186,7 +186,7 @@ static void TabularCountVert(char *s, int vert[])
         }
         s++;
     }
-    diagnostics(4, "Exiting TabularCountVert");
+    diagnostics(5, "Exiting TabularCountVert");
 }
 
 static TabularT TabularPreamble(char *text, char *width, char *pos, char *cols)
@@ -262,7 +262,7 @@ static void TabularGetRow(char *table, char **row, char **next_row, int *height)
     strncpy(*row, table, row_chars);
     (*row)[row_chars] = '\0';
 
-    diagnostics(4, "row =<%s>", *row);
+    show_string(5, *row, "row");
     if (!slashslash)
         return;
 
@@ -299,7 +299,7 @@ static void TabularGetRow(char *table, char **row, char **next_row, int *height)
 
     *height = getStringDimension(dimension);
 
-    diagnostics(3, "height =<%s>=%d twpi", dimension, height);
+    diagnostics(5, "height =<%s>=%d twpi", dimension, height);
     free(dimension);
 
     /* skip blanks */
@@ -757,7 +757,7 @@ static void TabularMeasureRow(TabularT tabular, char *this_row, char *next_row, 
     if (this_row == NULL || strlen(this_row) == 0)
         return;
 
-    diagnostics(4, "TabularMeasureRow height=%d twpi, row <%s>", height, this_row);
+    diagnostics(5, "TabularMeasureRow height=%d twpi, row <%s>", height, this_row);
 
     cell_start = this_row;
     while (cell_start) {
@@ -872,7 +872,7 @@ void CmdTabular(int code)
 			int num = TexFontNumber("Typewriter");
 	
 			diagnostics(WARNING, "Nested tabular/tabbing environments not allowed");
-			diagnostics(3, "table_table_table_table_table\n%stable_table_table_table_table", table);
+			diagnostics(5, "table_table_table_table_table\n%stable_table_table_table_table", table);
 			fprintRTF("\\pard\\ql\\b0\\i0\\scaps0\\f%d ", num);
 			p = begin;
 			while (*p)
@@ -886,9 +886,9 @@ void CmdTabular(int code)
 	
 		} else {
 	
-			diagnostics(3, "Entering CmdTabular() options [%s], format {%s}", (pos) ? pos : "", cols);
+			diagnostics(4, "Entering CmdTabular() options [%s], format {%s}", (pos) ? pos : "", cols);
 			tabular = TabularPreamble(table, width, pos, cols);
-			diagnostics(3, "table_table_table_table_table\n%stable_table_table_table_table", table);
+			diagnostics(5, "table_table_table_table_table\n%stable_table_table_table_table", table);
 	
 			row_start = table;
 			TabularGetRow(row_start, &this_row, &next_row_start, &this_height);
@@ -1033,7 +1033,7 @@ static char *TabbingNextCell(char *cell_start, char **cell_end)
 
     dup2 = strdup_noendblanks(dup);
     free(dup);
-    diagnostics(4,"next cell = [[%s]]", dup);
+    diagnostics(5,"next cell = [[%s]]", dup);
     return dup2;
 }
 
@@ -1066,7 +1066,7 @@ static void TabbingWriteRow(char *this_row, int n, int n_total, char *align)
     char *start, *end, *cell;
     int i;
 
-    diagnostics(4, "TabbingWriteRow n=%d <%s> [%s]", n, align, this_row);
+    diagnostics(5, "TabbingWriteRow n=%d <%s> [%s]", n, align, this_row);
 
     if (this_row == NULL || n == 0)
         return;
@@ -1083,7 +1083,7 @@ static void TabbingWriteRow(char *this_row, int n, int n_total, char *align)
         BeginCellRtf(align[i]);
         cell = TabbingNextCell(start, &end);
         if (cell) {
-            diagnostics(4, "cell=<%s>", cell);
+            diagnostics(5, "cell=<%s>", cell);
             ConvertString(cell);
             free(cell);
         }
@@ -1142,7 +1142,7 @@ static void TabbingGetRow(char *table, char **row, char **next_row)
     strncpy(arow, table, row_chars);
     arow[row_chars] = '\0';
 
-    diagnostics(4, "TabbingGetRow obtained=<%s> remaining[%s]", arow, *next_row);
+    diagnostics(5, "TabbingGetRow obtained=<%s> remaining[%s]", arow, *next_row);
 
     *row = strdup_noendblanks(arow);
     free(arow);
@@ -1250,7 +1250,7 @@ void CmdTabbing(int code)
 		row_start = table;
 		TabbingGetRow(row_start, &this_row, &next_row_start);
 	
-		diagnostics(4, "tabbing_tabbing_tabbing\n%s\ntabbing_tabbing_tabbing", table);
+		diagnostics(5, "tabbing_tabbing_tabbing\n%s\ntabbing_tabbing_tabbing", table);
 	
 		if (GetTexMode() != MODE_HORIZONTAL) {
 			CmdIndent(INDENT_NONE);
@@ -1261,7 +1261,7 @@ void CmdTabbing(int code)
 	
 		n_total = 0;
 		while (this_row && strlen(this_row) >= 0) {
-			diagnostics(4, "row=<%s>", this_row);
+			show_string(5, this_row, "row");
 	
 			TabbingGetColumnAlignments(this_row, align, &n, &next_left);
 			if (n > n_total)

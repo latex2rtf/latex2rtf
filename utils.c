@@ -480,13 +480,15 @@ int getStringDimension(char *s)
 	return size;
 }
 
-void show_string(const char *s, const char *label)
+void show_string(int level, const char *s, const char *label)
 {
 	int width=100;
 	long i;
 	char c;
 	long len;
 	
+	if (g_verbosity_level<level) return;
+		
 	if (s == NULL) {
 		diagnostics(WARNING, "\n%s: NULL",label);
 		return;

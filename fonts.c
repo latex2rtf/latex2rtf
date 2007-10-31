@@ -144,7 +144,7 @@ int TexFontNumber(char *Fname)
 {
     int index;
     index= SearchRtfIndex(Fname, FONT_A);
-	diagnostics(4, "seeking <%s> which has value %d", Fname, index);
+	diagnostics(5, "seeking <%s> which has value %d", Fname, index);
 	return index;
 }
 
@@ -163,7 +163,7 @@ void CmdFontFamily(int code)
 
     true_code = code & ~ON;
 
-    diagnostics(4, "CmdFontFamily (before) depth=%d, family=%d, size=%d, shape=%d, series=%d",
+    diagnostics(5, "CmdFontFamily (before) depth=%d, family=%d, size=%d, shape=%d, series=%d",
       FontInfoDepth, RtfFontInfo[FontInfoDepth].family,
       RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape, RtfFontInfo[FontInfoDepth].series);
 
@@ -240,7 +240,7 @@ void CmdFontFamily(int code)
             break;
     }
 
-    diagnostics(4, "CmdFontFamily (after) depth=%d, family=%d, size=%d, shape=%d, series=%d",
+    diagnostics(5, "CmdFontFamily (after) depth=%d, family=%d, size=%d, shape=%d, series=%d",
       FontInfoDepth, RtfFontInfo[FontInfoDepth].family,
       RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape, RtfFontInfo[FontInfoDepth].series);
 }
@@ -259,7 +259,7 @@ void CmdFontShape(int code)
 {
     int true_code = code & ~ON;
 
-    diagnostics(4, "CmdFontShape (before) depth=%d, family=%d, size=%d, shape=%d, series=%d",
+    diagnostics(5, "CmdFontShape (before) depth=%d, family=%d, size=%d, shape=%d, series=%d",
       FontInfoDepth, RtfFontInfo[FontInfoDepth].family,
       RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape, RtfFontInfo[FontInfoDepth].series);
 
@@ -335,7 +335,7 @@ void CmdFontShape(int code)
         free(s);
     }
 
-    diagnostics(4, "CmdFontShape (after) depth=%d, family=%d, size=%d, shape=%d, series=%d",
+    diagnostics(5, "CmdFontShape (after) depth=%d, family=%d, size=%d, shape=%d, series=%d",
       FontInfoDepth, RtfFontInfo[FontInfoDepth].family,
       RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape, RtfFontInfo[FontInfoDepth].series);
 }
@@ -354,7 +354,7 @@ void CmdFontSeries(int code)
 {
     int true_code = code & ~ON;
 
-    diagnostics(4, "CmdFontSeries (before) depth=%d, family=%d, size=%d, shape=%d, series=%d",
+    diagnostics(5, "CmdFontSeries (before) depth=%d, family=%d, size=%d, shape=%d, series=%d",
       FontInfoDepth, RtfFontInfo[FontInfoDepth].family,
       RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape, RtfFontInfo[FontInfoDepth].series);
 
@@ -402,7 +402,7 @@ void CmdFontSeries(int code)
         free(s);
     }
 
-    diagnostics(4, "CmdFontShape (after) depth=%d, family=%d, size=%d, shape=%d, series=%d",
+    diagnostics(5, "CmdFontShape (after) depth=%d, family=%d, size=%d, shape=%d, series=%d",
       FontInfoDepth, RtfFontInfo[FontInfoDepth].family,
       RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape, RtfFontInfo[FontInfoDepth].series);
 }
@@ -415,7 +415,7 @@ void CmdFontSize(int code)
 {
     int scaled_size;
 
-    diagnostics(4, "CmdFontSize (before) depth=%d, family=%d, size=%d, shape=%d, series=%d",
+    diagnostics(5, "CmdFontSize (before) depth=%d, family=%d, size=%d, shape=%d, series=%d",
       FontInfoDepth, RtfFontInfo[FontInfoDepth].family,
       RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape, RtfFontInfo[FontInfoDepth].series);
 
@@ -428,7 +428,7 @@ void CmdFontSize(int code)
 
     fprintRTF("\\fs%d ", scaled_size);
 
-    diagnostics(4, "CmdFontSize (after) depth=%d, family=%d, size=%d, shape=%d, series=%d",
+    diagnostics(5, "CmdFontSize (after) depth=%d, family=%d, size=%d, shape=%d, series=%d",
       FontInfoDepth, RtfFontInfo[FontInfoDepth].family,
       RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape, RtfFontInfo[FontInfoDepth].series);
 }
@@ -451,7 +451,7 @@ void CmdEmphasize(int code)
 {
     int true_code = code & ~ON;
 
-    diagnostics(4, "CmdEmphasize (before) depth=%d, family=%d, size=%d, shape=%d, series=%d",
+    diagnostics(5, "CmdEmphasize (before) depth=%d, family=%d, size=%d, shape=%d, series=%d",
       FontInfoDepth, RtfFontInfo[FontInfoDepth].family,
       RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape, RtfFontInfo[FontInfoDepth].series);
 
@@ -474,7 +474,7 @@ void CmdEmphasize(int code)
 
     }
 
-    diagnostics(4, "CmdEmphasize (after) depth=%d, family=%d, size=%d, shape=%d, series=%d",
+    diagnostics(5, "CmdEmphasize (after) depth=%d, family=%d, size=%d, shape=%d, series=%d",
       FontInfoDepth, RtfFontInfo[FontInfoDepth].family,
       RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape, RtfFontInfo[FontInfoDepth].series);
 
@@ -488,14 +488,14 @@ void CmdUnderline(int code)
 {
     char *s;
 
-    diagnostics(4, "Entering CmdUnderline");
+    diagnostics(5, "Entering CmdUnderline");
 
     fprintRTF("{\\ul ");
     s = getBraceParam();
     ConvertString(s);
     free(s);
     fprintRTF("}");
-    diagnostics(4, "Exiting CmdUnderline");
+    diagnostics(5, "Exiting CmdUnderline");
 }
 
 void CmdTextNormal(int code)
@@ -512,7 +512,7 @@ void CmdTextNormal(int code)
 {
     int true_code = code & ~ON;
 
-    diagnostics(4, "CmdTextNormal (before) depth=%d, family=%d, size=%d, shape=%d, series=%d",
+    diagnostics(5, "CmdTextNormal (before) depth=%d, family=%d, size=%d, shape=%d, series=%d",
       FontInfoDepth, RtfFontInfo[FontInfoDepth].family,
       RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape, RtfFontInfo[FontInfoDepth].series);
 
@@ -543,7 +543,7 @@ void CmdTextNormal(int code)
         fprintRTF("}");
     }
 
-    diagnostics(4, "CmdTextNormal (after) depth=%d, family=%d, size=%d, shape=%d, series=%d",
+    diagnostics(5, "CmdTextNormal (after) depth=%d, family=%d, size=%d, shape=%d, series=%d",
       FontInfoDepth, RtfFontInfo[FontInfoDepth].family,
       RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape, RtfFontInfo[FontInfoDepth].series);
 }
@@ -605,31 +605,31 @@ void InitializeDocumentFont(int family, int size, int shape, int series)
     if (series >= 0)
         RtfFontInfo[0].series = series;
 
-    diagnostics(4, "InitializeDocumentFont family=%d, size=%d, shape=%d, series=%d",
+    diagnostics(5, "InitializeDocumentFont family=%d, size=%d, shape=%d, series=%d",
       RtfFontInfo[0].family, RtfFontInfo[0].size, RtfFontInfo[0].shape, RtfFontInfo[0].series);
 }
 
 int DefaultFontFamily(void)
 {
-    diagnostics(4, "DefaultFontFamily -- family=%d", RtfFontInfo[0].family);
+    diagnostics(5, "DefaultFontFamily -- family=%d", RtfFontInfo[0].family);
     return RtfFontInfo[0].family;
 }
 
 int DefaultFontSize(void)
 {
-    diagnostics(4, "DefaultFontSize -- size=%d", RtfFontInfo[0].size);
+    diagnostics(5, "DefaultFontSize -- size=%d", RtfFontInfo[0].size);
     return RtfFontInfo[0].size;
 }
 
 int DefaultFontShape(void)
 {
-    diagnostics(4, "DefaultFontShape -- shape=%d", RtfFontInfo[0].shape);
+    diagnostics(5, "DefaultFontShape -- shape=%d", RtfFontInfo[0].shape);
     return RtfFontInfo[0].shape;
 }
 
 int DefaultFontSeries(void)
 {
-    diagnostics(4, "DefaultFontSeries -- series=%d", RtfFontInfo[0].series);
+    diagnostics(5, "DefaultFontSeries -- series=%d", RtfFontInfo[0].series);
     return RtfFontInfo[0].series;
 }
 
@@ -639,7 +639,7 @@ int CurrentFontFamily(void)
   purpose: returns the current RTF family
  ******************************************************************************/
 {
-    diagnostics(4, "CurrentFontFamily -- family=%d", RtfFontInfo[FontInfoDepth].family);
+    diagnostics(5, "CurrentFontFamily -- family=%d", RtfFontInfo[FontInfoDepth].family);
     return RtfFontInfo[FontInfoDepth].family;
 }
 
@@ -757,7 +757,7 @@ int CurrentFontShape(void)
   purpose: returns the current RTF shape
  ******************************************************************************/
 {
-    diagnostics(4, "CurrentFontShape -- shape=%d", RtfFontInfo[FontInfoDepth].shape);
+    diagnostics(5, "CurrentFontShape -- shape=%d", RtfFontInfo[FontInfoDepth].shape);
     return RtfFontInfo[FontInfoDepth].shape;
 }
 
@@ -767,7 +767,7 @@ int CurrentFontSize(void)
   purpose: returns the current RTF size in twips
  ******************************************************************************/
 {
-    diagnostics(4, "CurrentFontSize -- size=%d", RtfFontInfo[FontInfoDepth].size);
+    diagnostics(5, "CurrentFontSize -- size=%d", RtfFontInfo[FontInfoDepth].size);
 
     return RtfFontInfo[FontInfoDepth].size;
 }
@@ -778,7 +778,7 @@ int CurrentFontSeries(void)
   purpose: returns the current RTF series
  ******************************************************************************/
 {
-    diagnostics(4, "CurrentFontSeries -- series=%d", RtfFontInfo[FontInfoDepth].series);
+    diagnostics(5, "CurrentFontSeries -- series=%d", RtfFontInfo[FontInfoDepth].series);
     return RtfFontInfo[FontInfoDepth].series;
 }
 

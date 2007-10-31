@@ -128,12 +128,12 @@ void CmdStartParagraph(const char *style, int indenting)
 
     parindent = getLength("parindent");
 
-    diagnostics(4, "CmdStartParagraph mode = %s", TexModeName[GetTexMode()]);
-    diagnostics(4, "Noindent is         %s", (g_paragraph_no_indent) ? "TRUE" : "FALSE");
-    diagnostics(4, "Inhibit is          %s", (g_paragraph_inhibit_indent) ? "TRUE" : "FALSE");
-    diagnostics(4, "indent is           %d", g_left_margin_indent);
-    diagnostics(4, "right indent is     %d", g_right_margin_indent);
-    diagnostics(4, "paragraph indent is %d", getLength("parindent"));
+    diagnostics(5, "CmdStartParagraph mode = %s", TexModeName[GetTexMode()]);
+    diagnostics(5, "Noindent is         %s", (g_paragraph_no_indent) ? "TRUE" : "FALSE");
+    diagnostics(5, "Inhibit is          %s", (g_paragraph_inhibit_indent) ? "TRUE" : "FALSE");
+    diagnostics(5, "indent is           %d", g_left_margin_indent);
+    diagnostics(5, "right indent is     %d", g_right_margin_indent);
+    diagnostics(5, "paragraph indent is %d", getLength("parindent"));
 
     if (g_page_new) {
         fprintRTF("\\page{} ");   /* causes new page */
@@ -1059,14 +1059,16 @@ void CmdCaption(int code)
 
     lst_entry = getBracketParam();
     thecaption = getBraceParam();
-    diagnostics(4, "in CmdCaption [%s]", thecaption);
 
     if (lst_entry) {
-        diagnostics(4, "entering CmdCaption [%s]{%20s ...}", lst_entry,thecaption);
+        diagnostics(4, "entering \\caption[%s]{}", lst_entry);
+        show_string(4, thecaption, "caption");
         free(lst_entry);
-    } else
-        diagnostics(4, "entering CmdCaption {%20s ...}",thecaption);
-
+    } else {
+        diagnostics(4, "entering \\caption{}");
+        show_string(4, thecaption, "caption");
+	}
+	
     if (GetTexMode() != MODE_VERTICAL)
         CmdEndParagraph(0);
     vspace = getLength("abovecaptionskip");

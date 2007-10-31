@@ -557,7 +557,7 @@ static CommandArray commands[] = {
 	{"xi", CmdSymbolChar, (int) 'x'},
 	{"Xi", CmdSymbolChar, (int) 'X'},
 	{"zeta", CmdSymbolChar, (int) 'z'},
-
+	{"efloatseparator", CmdIgnoreParameter,0},
     {"", NULL, 0}
 };
 

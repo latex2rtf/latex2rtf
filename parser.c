@@ -218,10 +218,10 @@ int PushSource(const char *filename, const char *string)
     g_parser_string = g_parser_stack[g_parser_depth].string;
 
     if (g_parser_file) {
-        diagnostics(5, "Opening Source File %s", g_parser_stack[g_parser_depth].file_name);
+        diagnostics(3, "Opening Source File %s", g_parser_stack[g_parser_depth].file_name);
     } else {
-        strncpy(s, g_parser_string, 25);
-        diagnostics(5, "Opening Source string <%s>", s);
+        diagnostics(4, "Opening Source string");
+        show_string(5, g_parser_string, "opening");
     }
 
     if (0) {
@@ -321,10 +321,10 @@ void PopSource(void)
     }
 
     if (g_parser_file)
-        diagnostics(5, "Resuming Source File %s", g_parser_stack[g_parser_depth].file_name);
+        diagnostics(4, "Resuming Source File '%s'", g_parser_stack[g_parser_depth].file_name);
     else {
-        strncpy(s, g_parser_string, 25);
-        diagnostics(5, "Resuming Source string <%s>", s);
+        diagnostics(5, "Resuming Source string");
+        show_string(5,g_parser_string,"resuming");
     }
 
     if (0) {

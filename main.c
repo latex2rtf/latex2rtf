@@ -410,8 +410,7 @@ static void ConvertWholeDocument(void)
     g_processing_preamble = FALSE;
     preParse(&body, &sec_head, &label);
 
-	if (g_verbosity_level>2)
-		show_string(body, "body ");
+	show_string(3, body, "body ");
 		
 	diagnostics(3,"label for this section is'%s'", label);
 	diagnostics(3, "next section '%s'", sec_head);	
@@ -433,8 +432,7 @@ static void ConvertWholeDocument(void)
 		diagnostics(2, "section is '%s'", sec_head);	
 		diagnostics(3, "label is   '%s'", g_section_label);
 		diagnostics(3, "next  is   '%s'", sec_head2);	
-		if (g_verbosity_level>2) 
-			show_string(body, "body ");
+		show_string(3, body, "body ");
 
         ConvertString(sec_head);
         ConvertString(body);
@@ -707,8 +705,7 @@ purpose: reads the LaTeX preamble (to \begin{document} ) for the file
     diagnostics(2, "Read LaTeX Preamble");
     diagnostics(5, "Entering ConvertString() from ConvertLatexPreamble");
 
-	if (g_verbosity_level>2) 
-		show_string(g_preamble, "preamble");	
+	show_string(3, g_preamble, "preamble");	
 
     ConvertString(g_preamble);
     diagnostics(5, "Exiting ConvertString() from ConvertLatexPreamble");

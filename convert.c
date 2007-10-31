@@ -80,7 +80,7 @@ char TexModeName[7][25] = { "bad", "internal vertical", "horizontal",
 void SetTexMode(int mode)
 {
     if (abs(mode) != g_TeX_mode)
-        diagnostics(4, "TeX mode changing from [%s] -> [%s]", TexModeName[g_TeX_mode], TexModeName[abs(mode)]);
+        diagnostics(5, "TeX mode changing from [%s] -> [%s]", TexModeName[g_TeX_mode], TexModeName[abs(mode)]);
 
     if (mode < 0) {             /* hack to allow CmdStartParagraph to set mode directly */
         g_TeX_mode = -mode;
@@ -111,16 +111,15 @@ void ConvertString(const char *string)
         return;
 
     if (PushSource(NULL, string) == 0) {
-        diagnostics(4, "Entering Convert() from ConvertString()");
+        diagnostics(5, "Entering Convert() from ConvertString()");
 
-		if (g_verbosity_level>3) 
-				show_string(string, "convert");
+		show_string(5, string, "convert");
 
         while (StillSource())
             Convert();
 
         PopSource();
-        diagnostics(4, "Exiting Convert() from ConvertString()");
+        diagnostics(5, "Exiting Convert() from ConvertString()");
     }
 }
 
@@ -183,7 +182,7 @@ purpose: converts inputfile and writes result to outputfile
     char cNext;
     int mode, count, pending_new_paragraph;
 
-    diagnostics(4, "Entering Convert ret = %d", ret);
+    diagnostics(5, "Entering Convert ret = %d", ret);
     RecursionLevel++;
     PushLevels();
 
@@ -192,10 +191,10 @@ purpose: converts inputfile and writes result to outputfile
         mode = GetTexMode();
 
         if (cThis == '\n')
-            diagnostics(5, "Current character is '\\n' mode = %d ret = %d level = %d", GetTexMode(), ret,
+            diagnostics(6, "Current character is '\\n' mode = %d ret = %d level = %d", GetTexMode(), ret,
               RecursionLevel);
         else
-            diagnostics(5, "Current character is '%c' mode = %d ret = %d level = %d", cThis, GetTexMode(), ret,
+            diagnostics(6, "Current character is '%c' mode = %d ret = %d level = %d", cThis, GetTexMode(), ret,
               RecursionLevel);
 
         pending_new_paragraph--;

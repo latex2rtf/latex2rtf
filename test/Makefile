@@ -233,6 +233,11 @@ eqnnumber2.rtf: eqnnumber2.tex
 	$(LATEX) eqnnumber2 $(LATEX_LOG)
 	$(LATEX2RTF) $(OPTIONS) eqnnumber2
 
+fig_endfloat.rtf: fig_endfloat.tex
+	$(LATEX) fig_endfloat $(LATEX_LOG)
+	$(LATEX) fig_endfloat $(LATEX_LOG)
+	$(LATEX2RTF) $(OPTIONS) fig_endfloat
+
 check:
 	./bracecheck
 	
