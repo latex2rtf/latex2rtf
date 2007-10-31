@@ -74,7 +74,7 @@ static int cfg_compare(ConfigEntryT ** el1, ConfigEntryT ** el2)
     return strcmp((*el1)->TexCommand, (*el2)->TexCommand);
 }
 
-static FILE *try_path(const char *path, const char *file)
+static FILE *try_path(const char *path, const char *cfg_file)
 
 /****************************************************************************
  * purpose:  append path to .cfg file name and open
@@ -83,29 +83,23 @@ static FILE *try_path(const char *path, const char *file)
  ****************************************************************************/
 {
     char *both;
-    FILE *fp = NULL;
-    size_t lastchar;
-
-    if (path == NULL || file == NULL)
+    FILE *fp;
+	char separator[2];
+	
+	separator[0] = PATHSEP;
+	separator[1] = '\0';
+	
+    if (path == NULL || cfg_file == NULL)
         return NULL;
 
-    diagnostics(4, "trying path=<%s> file=<%s>", path, file);
-
-    lastchar = strlen(path);
-
-    both = malloc(strlen(path) + strlen(file) + 2);
-    if (both == NULL)
-        diagnostics(ERROR, "Could not allocate memory for both strings.");
-
-    strcpy(both, path);
+    diagnostics(2, "trying path=<%s> file=<%s>", path, cfg_file);
 
     /* fix path ending if needed */
-    if (both[lastchar] != PATHSEP) {
-        both[lastchar] = PATHSEP;
-        both[lastchar + 1] = '\0';
-    }
+    if (path[strlen(path)] != PATHSEP) 
+    	both = strdup_together3(path,separator,cfg_file);
+    else
+    	both = strdup_together(path,cfg_file);
 
-    strcat(both, file);
     fp = fopen(both, "rb");
     free(both);
     return fp;
@@ -408,8 +402,7 @@ void ReadLanguage(char *lang)
     if (langfn == NULL)
         diagnostics(ERROR, "Could not allocate memory for language filename.");
 
-    strcpy(langfn, lang);
-    strcat(langfn, ".cfg");
+	langfn = strdup_together(lang, ".cfg");
 
     fp = (FILE *) open_cfg(langfn, TRUE);
     free(langfn);
