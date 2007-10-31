@@ -276,7 +276,7 @@ static char *SysGraphicsConvert(int opt, int offset, char *in, char *out)
 	
 	if (opt == CONVERT_PDF) {
 		#ifdef __APPLE__
-		char format_apple[] = "/usr/bin/sips -s format png -s dpiHeight %d -s dpiWidth %d --out '%s' '%s'";
+		char format_apple[] = "/usr/bin/sips -s format png -s dpiHeight %d -s dpiWidth %d --out '%s' '%s' > /dev/null";
 		snprintf(cmd, N, format_apple, dpi, dpi, out_tmp, in);
 		#else
 		char format_unix[] = "gs -q -dNOPAUSE -dSAFER -dBATCH -sDEVICE=pngalpha -r%d -sOutputFile='%s' '%s'";
@@ -313,7 +313,7 @@ static char *SysGraphicsConvert(int opt, int offset, char *in, char *out)
 	
 #endif
 
-    diagnostics(WARNING, "sys command = [%s]", cmd);
+    diagnostics(3, "command `%s`", cmd);
     err = system(cmd);
 
     if (err != 0) {
@@ -555,7 +555,7 @@ static char *pdf_to_png(char *pdf)
 {
     char *png, *out;
 
-    diagnostics(WARNING, "converting %s to png file", pdf);
+    diagnostics(WARNING, "converting '%s' to png file", pdf);
 
     if (strstr(pdf, ".pdf") != NULL)
     	png = strdup_new_extension(pdf, ".pdf", ".png");

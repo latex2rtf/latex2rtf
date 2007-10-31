@@ -872,7 +872,7 @@ void CmdTabular(int code)
 			int num = TexFontNumber("Typewriter");
 	
 			diagnostics(WARNING, "Nested tabular/tabbing environments not allowed");
-			diagnostics(2, "table_table_table_table_table\n%stable_table_table_table_table", table);
+			diagnostics(3, "table_table_table_table_table\n%stable_table_table_table_table", table);
 			fprintRTF("\\pard\\ql\\b0\\i0\\scaps0\\f%d ", num);
 			p = begin;
 			while (*p)
@@ -888,7 +888,7 @@ void CmdTabular(int code)
 	
 			diagnostics(3, "Entering CmdTabular() options [%s], format {%s}", (pos) ? pos : "", cols);
 			tabular = TabularPreamble(table, width, pos, cols);
-			diagnostics(2, "table_table_table_table_table\n%stable_table_table_table_table", table);
+			diagnostics(3, "table_table_table_table_table\n%stable_table_table_table_table", table);
 	
 			row_start = table;
 			TabularGetRow(row_start, &this_row, &next_row_start, &this_height);
@@ -1238,7 +1238,7 @@ void CmdTabbing(int code)
 
     end = strdup("\\end{tabbing}");
     table = getTexUntil(end, FALSE);
-    diagnostics(2, "Entering CmdTabbing()");
+    diagnostics(4, "Entering CmdTabbing()");
 
 	if (g_tabular_display_bitmap) {		
 		PrepareDisplayedBitmap("tabbing");
@@ -1250,7 +1250,7 @@ void CmdTabbing(int code)
 		row_start = table;
 		TabbingGetRow(row_start, &this_row, &next_row_start);
 	
-		diagnostics(2, "tabbing_tabbing_tabbing\n%s\ntabbing_tabbing_tabbing", table);
+		diagnostics(4, "tabbing_tabbing_tabbing\n%s\ntabbing_tabbing_tabbing", table);
 	
 		if (GetTexMode() != MODE_HORIZONTAL) {
 			CmdIndent(INDENT_NONE);

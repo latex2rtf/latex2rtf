@@ -410,13 +410,11 @@ static void ConvertWholeDocument(void)
     g_processing_preamble = FALSE;
     preParse(&body, &sec_head, &label);
 
-	if (g_verbosity_level>1) {
-        if (g_verbosity_level>2){
-			show_string(body, "body ");
-			show_string(label, "label");
-		}
-		show_string(sec_head, "next ");
-	}	
+	if (g_verbosity_level>2)
+		show_string(body, "body ");
+		
+	diagnostics(3,"label for this section is'%s'", label);
+	diagnostics(3, "next section '%s'", sec_head);	
 
     ConvertString(body);
     free(body);
@@ -432,14 +430,11 @@ static void ConvertWholeDocument(void)
             g_section_label = label;
         }
         
-        if (g_verbosity_level>1) {
-        	show_string(sec_head,"head ");
-        	if (g_verbosity_level>2) {
-        		show_string(g_section_label, "label");
-        		show_string(body, "body ");
-        	}
-        	show_string(sec_head2, "next ");
-        }	
+		diagnostics(2, "section is '%s'", sec_head);	
+		diagnostics(3, "label is   '%s'", g_section_label);
+		diagnostics(3, "next  is   '%s'", sec_head2);	
+		if (g_verbosity_level>2) 
+			show_string(body, "body ");
 
         ConvertString(sec_head);
         ConvertString(body);

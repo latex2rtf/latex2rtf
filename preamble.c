@@ -645,7 +645,7 @@ void CmdGeometry(int code)
     char *options;
     options = getBraceParam();
     if (options) {
-    	diagnostics(WARNING, "geometry command, argument %s\n", options);
+    	diagnostics(2, "geometry command, argument %s\n", options);
     	ParseOptGeometry(options);
     	free(options);
     }
@@ -664,7 +664,7 @@ void ParseOptGeometry(char *options)
 		next = keyvalue_pair(options,&key,&value1);
 				
 		if (value1 == NULL) {
-			diagnostics(WARNING, "geometry package, single option=[%s]\n", key);
+			diagnostics(2, "geometry package, single option=[%s]", key);
 			ExecGeomOptions (key, NULL, NULL);
 		}
 		else if (*value1 == '{') {
@@ -674,19 +674,19 @@ void ParseOptGeometry(char *options)
 			PopSource();
 			value1 = strtok(value1, comma);
 			value2 = strtok(NULL, comma);
-			diagnostics(WARNING, "option=%s with values %s and %s\n", key, value1, value2);
+			diagnostics(2, "option=%s with values %s and %s", key, value1, value2);
 			ExecGeomOptions (key, value1, value2);
 			free(value1);
 		}
 		else if (strchr(value1, ':')) {
 			value1 = strtok(value1, colon);
 			value2 = strtok(NULL, colon);
-			diagnostics(WARNING, "option=%s with ratio '%s:%s'\n", key, value1, value2);
+			diagnostics(2, "option=%s with ratio '%s:%s'", key, value1, value2);
 			ExecGeomOptions (key, value1, value2);
 			free(value1);
 		}
 		else {
-			diagnostics(WARNING, "geometry package, option=[%s], value=%s\n", key, value1);
+			diagnostics(2, "geometry package, option=[%s], value=%s", key, value1);
 			value2=value1;
 			ExecGeomOptions (key, value1, value2);
 			free(value1);
@@ -715,20 +715,20 @@ void ExecGeomOptions (char *key, char *value1, char *value2)
 	} else { /* each value is part of a single ratio */
 	    dist1 = dist3 = atoi(value1);
 	    dist2 = dist4 = atoi(value2);
-	    diagnostics(WARNING, "one ratio parameter, %d:%d\n", dist1, dist2);
+	    diagnostics(3, "one ratio parameter, %d:%d", dist1, dist2);
 	}
     } else if (strstr(key, "centering") == NULL) {
 		dist1=getStringDimension(value1);
 		dist2=getStringDimension(value2);
-		diagnostics(WARNING, "twips paramters, %d and %d\n", dist1, dist2);
+		diagnostics(3, "twips paramters, %d and %d", dist1, dist2);
     }
 
     if (strcmp(key, "vmargin") == 0) {
-		diagnostics(WARNING, "vmargin distance(top)=%d, distance (bottom)=%d twips\n", dist1, dist2);
+		diagnostics(3, "vmargin distance(top)=%d, distance (bottom)=%d twips", dist1, dist2);
 		g_geomMargt = dist1;
 		g_geomMargb = dist2;
     } else if (strcmp(key, "hmargin") == 0) {
-		diagnostics(WARNING, "hmargin distance(left)=%d, distance (right)=%d twips\n", dist1, dist2);
+		diagnostics(3, "hmargin distance(left)=%d, distance (right)=%d twips", dist1, dist2);
 		g_geomMargl = dist1;
 		g_geomMargr = dist2;
     } else if (strcmp(key, "margin") == 0) {
@@ -746,9 +746,9 @@ void ExecGeomOptions (char *key, char *value1, char *value2)
 		ratio_sum = dist1 + dist2;
 		margin_sum = g_geomMargl + g_geomMargr;
 		g_geomMargl = (int) (((float) dist1 / (float) ratio_sum) * (float) margin_sum);
-		diagnostics(WARNING, "g_geomMargl %d\n", g_geomMargl);
+		diagnostics(3, "g_geomMargl %d", g_geomMargl);
 		g_geomMargr = (int) (((float) dist2 / (float) ratio_sum) * (float) margin_sum);
-		diagnostics(WARNING, "g_geomMargr %d\n", g_geomMargr);
+		diagnostics(3, "g_geomMargr %d", g_geomMargr);
     } else if (strcmp(key, "vmarginratio") == 0) {
 		ratio_sum = dist1 + dist2;
 		margin_sum = g_geomMargt + g_geomMargb;
@@ -1223,8 +1223,8 @@ static void WritePageSize(void)
       diagnostics(4, "Writepagesize bottom margin =%d pt", n / 20);
     } else {
       /* Insert geometry dimensions here */
-      diagnostics(WARNING, "Using geometry package");
-      diagnostics(WARNING, "[l,r,t,b] = [%d,%d,%d,%d]",g_geomMargl,g_geomMargr,
+      diagnostics(2, "Using geometry package");
+      diagnostics(2, "[l,r,t,b] = [%d,%d,%d,%d]",g_geomMargl,g_geomMargr,
                                                        g_geomMargt,g_geomMargb);
       fprintRTF("\\margl%d", g_geomMargl);
       fprintRTF("\\margr%d", g_geomMargr);
