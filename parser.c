@@ -289,7 +289,7 @@ void PopSource(void)
     }
 
     if (g_parser_file) {
-        diagnostics(5, "Closing Source File %s", g_parser_stack[g_parser_depth].file_name);
+        diagnostics(3, "Closing Source File %s", g_parser_stack[g_parser_depth].file_name);
         fclose(g_parser_file);
         free(g_parser_stack[g_parser_depth].file_name);
         g_parser_stack[g_parser_depth].file_name = NULL;
@@ -517,7 +517,7 @@ purpose: rewind the filepointer in the LaTeX-file by one
     g_parser_lastChar = g_parser_penultimateChar;
     g_parser_penultimateChar = '\0';    /* no longer know what that it was */
     g_parser_backslashes = 0;
-    diagnostics(5, "after ungetTexChar=<%c> backslashes=%d line=%ld", c, g_parser_backslashes, g_parser_line);
+    diagnostics(6, "after ungetTexChar=<%c> backslashes=%d line=%ld", c, g_parser_backslashes, g_parser_line);
 }
 
 char getTexChar()
@@ -805,12 +805,12 @@ char *getBracketParam(void)
 
     if (c == '[') {
         text = getDelimitedText('[', ']', FALSE);
-        diagnostics(5, "getBracketParam [%s]", text);
+        diagnostics(6, "getBracketParam [%s]", text);
 
     } else {
         ungetTexChar(c);
         text = NULL;
-        diagnostics(5, "getBracketParam []");
+        diagnostics(6, "getBracketParam []");
     }
 
     PopTrackLineNumber();
@@ -854,7 +854,7 @@ char *getBraceParam(void)
     }
 
     PopTrackLineNumber();
-    diagnostics(5, "Leaving getBraceParam {%s}", text);
+    diagnostics(6, "Leaving getBraceParam {%s}", text);
     return text;
 }
 
@@ -964,10 +964,10 @@ char *getTexUntil(char *target, int raw)
 
     PopTrackLineNumber();
 
-    diagnostics(5, "buffer size =[%d], actual=[%d]", strlen(buffer), i - len);
+    diagnostics(6, "buffer size =[%d], actual=[%d]", strlen(buffer), i - len);
 
     s = strdup(buffer);
-    diagnostics(5, "strdup result = %s", s);
+    diagnostics(6, "getTexUntil result = %s", s);
     return s;
 }
 
@@ -1060,7 +1060,7 @@ char *getSpacedTexUntil(char *target, int raw)
     PopTrackLineNumber();
 
     s = strdup(buffer);
-    diagnostics(5, "getSpacedTexUntil result = %s", s);
+    diagnostics(6, "getSpacedTexUntil result = %s", s);
     return s;
 }
 

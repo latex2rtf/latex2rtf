@@ -372,7 +372,9 @@ int main(int argc, char **argv)
         CloseRtf(&fRtf);
         printf("\n");
 
-/*		debug_malloc();*/
+/*		debug malloc() 
+  		printf("Done!");
+  		while (1) {} do nothing */
 
         return 0;
     } else {
@@ -413,7 +415,8 @@ static void ConvertWholeDocument(void)
 	show_string(3, body, "body ");
 		
 	diagnostics(3,"label for this section is'%s'", label);
-	diagnostics(3, "next section '%s'", sec_head);	
+	diagnostics(3, "next section '%s'", sec_head);
+	
 
     ConvertString(body);
     free(body);
@@ -446,12 +449,7 @@ static void ConvertWholeDocument(void)
         if (PushSource(g_fff_name, NULL) == 0) {
         	CmdNewPage(NewPage);
         	CmdListOf(LIST_OF_FIGURES);
-			preParse(&body, &sec_head2, &g_section_label);
-			ConvertString(sec_head);
-			ConvertString(body);
-			if (g_section_label) free(g_section_label);
-			free(body);
-			free(sec_head);
+        	Convert();
         }
      }
     
@@ -460,12 +458,7 @@ static void ConvertWholeDocument(void)
         if (PushSource(g_ttt_name, NULL) == 0) {
         	CmdNewPage(NewPage);
         	CmdListOf(LIST_OF_TABLES);
-			preParse(&body, &sec_head2, &g_section_label);
-			ConvertString(sec_head);
-			ConvertString(body);
-			if (g_section_label) free(g_section_label);
-			free(body);
-			free(sec_head);
+        	Convert();
         }
      }
      

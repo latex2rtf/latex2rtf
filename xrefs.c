@@ -724,16 +724,20 @@ void CmdLabel(int code)
             s = ScanAux("newlabel", text, 1, g_aux_name);
             if (code == LABEL_EQREF)
                 fprintRTF("(");
+                
             if (g_fields_use_REF) {
                 fprintRTF("{\\field{\\*\\fldinst{\\lang1024 REF BM%s \\\\* MERGEFORMAT }}", signet);
                 fprintRTF("{\\fldrslt{");
             }
+            
             if (s)
                 ConvertString(s);
             else
                 fprintRTF("?");
+                
             if (g_fields_use_REF)
                 fprintRTF("}}}");
+                
             if (code == LABEL_EQREF)
                 fprintRTF(")");
 
@@ -749,8 +753,7 @@ void CmdLabel(int code)
             }
 
             free(signet);
-            if (s)
-                free(s);
+            if (s) free(s);
                             
             break;
 

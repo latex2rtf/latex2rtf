@@ -555,7 +555,7 @@ static char *pdf_to_png(char *pdf)
 {
     char *png, *out;
 
-    diagnostics(WARNING, "converting '%s' to png file", pdf);
+    diagnostics(2, "converting '%s' to png file", pdf);
 
     if (strstr(pdf, ".pdf") != NULL)
     	png = strdup_new_extension(pdf, ".pdf", ".png");

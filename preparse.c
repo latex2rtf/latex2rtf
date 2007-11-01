@@ -163,7 +163,6 @@ static char *getBeginEndParam(void)
     if (s == '\n')
         s = getNonSpace();
 
-
     if (s != '{') {
         ungetTexChar(s);
         return NULL;
@@ -176,7 +175,7 @@ static char *getBeginEndParam(void)
     free(raw);
 
     PopTrackLineNumber();
-    diagnostics(5, "Leaving getBeginEndParam {%s}", text);
+    diagnostics(6, "Leaving getBeginEndParam {%s}", text);
     return text;
 }
 
@@ -281,11 +280,11 @@ void preParse(char **body, char **header, char **label)
         }
 
         if (cThis == '\0')
-            diagnostics(5, "[%ld] xchar=000 '\\0' (backslash count=%d)", section_buffer_end, bs_count);
+            diagnostics(6, "[%ld] xchar=000 '\\0' (backslash count=%d)", section_buffer_end, bs_count);
         else if (cThis == '\n')
-            diagnostics(5, "[%ld] xchar=012 '\\n' (backslash count=%d)", section_buffer_end, bs_count);
+            diagnostics(6, "[%ld] xchar=012 '\\n' (backslash count=%d)", section_buffer_end, bs_count);
         else
-            diagnostics(5, "[%ld] xchar=%03d '%c' (backslash count=%d)", section_buffer_end, (int) cThis, cThis, bs_count);
+            diagnostics(6, "[%ld] xchar=%03d '%c' (backslash count=%d)", section_buffer_end, (int) cThis, cThis, bs_count);
 
         add_chr_to_buffer(cThis);
 
@@ -437,7 +436,7 @@ void preParse(char **body, char **header, char **label)
         i_match = -1;
         for (i = 2; i < ncommands; i++) {   /* discover any exact matches */
             if (possible_match[i]) {
-				diagnostics(5, "testing for <%s>", command[i]);
+				diagnostics(6, "testing for <%s>", command[i]);
 				
 				/* right length? */
 				
@@ -477,7 +476,7 @@ void preParse(char **body, char **header, char **label)
             continue;
 
         if (i_match == endinput_item) {
-            diagnostics(5, "\\endinput");
+            diagnostics(6, "\\endinput");
             move_end_of_buffer(-9);         /* remove \endinput */
             PopSource();
             cmd_pos = 0;          /* keep looking */
