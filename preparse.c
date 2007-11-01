@@ -485,7 +485,7 @@ void preParse(char **body, char **header, char **label)
 
 		/* \end{document} reached! Stop processing */
         if (i_match == e_document_item) {
-            diagnostics(2, "\\end{document}");
+            diagnostics(6, "\\end{document}");
         	move_end_of_buffer(-strlen(command[e_document_item]));
         	add_chr_to_buffer('\0');
         	*header = strdup(command[e_document_item]);

@@ -95,6 +95,7 @@ static char *ConvertFormatString(char *s)
 {
     int iCol, width;
     char *simple, *t;
+    static int warned_once = FALSE;
 
     simple = strdup(s);         /* largest possible */
     diagnostics(5, "Entering ConvertFormatString, input=<%s>", s);
@@ -121,10 +122,11 @@ static char *ConvertFormatString(char *s)
                 iCol++;
                 break;
             case '*':
-                diagnostics(WARNING, " '*{num}{cols}' not supported.\n");
+                diagnostics(WARNING, " '*{num}{cols}' not supported.");
                 break;
             case '@':
-                diagnostics(WARNING, " '@{text}' not supported.\n");
+                if (!warned_once) diagnostics(WARNING, " '@{text}' not supported.");
+                warned_once = TRUE;
                 break;
             default:
                 break;

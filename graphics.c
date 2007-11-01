@@ -234,13 +234,13 @@ static char *SysGraphicsConvert(int opt, int offset, char *in, char *out)
 #ifdef UNIX
 
 	if (strchr(in, (int) '\'')) {
-		diagnostics(WARNING, "single quote found in filename <%s>.  skipping conversion", in);
+		diagnostics(WARNING, "single quote found in filename '%s'.  skipping conversion", in);
 		free(out_tmp);
 		return NULL;
 	}
 	
 	if (out && strchr(out_tmp, (int) '\'')) {
-		diagnostics(WARNING, "single quote found in filename <%s>.  skipping conversion", out_tmp);
+		diagnostics(WARNING, "single quote found in filename '%s'.  skipping conversion", out_tmp);
 		free(out_tmp);
 		return NULL;
 	}
@@ -406,7 +406,7 @@ static char *eps_to_pict(char *s)
     FILE *fp_pict_eps = NULL;
 	int offset = 0;
 	
-    diagnostics(2, "eps_to_pict filename = <%s>", s);
+    diagnostics(3, "eps_to_pict '%s'", s);
 
     /* Create filename for bitmap */
     pict = strdup_new_extension(s, ".eps", "a.pict");
@@ -529,7 +529,7 @@ static char *eps_to_png(char *name)
 {
     char *png, *out;
 	
-    diagnostics(2, " eps_to_png file = <%s>", name);
+    diagnostics(3, " eps_to_png '%s'", name);
 
     if (strstr(name, ".eps") != NULL)
     	png = strdup_new_extension(name, ".eps", ".png");
@@ -582,7 +582,7 @@ static char *eps_to_emf(char *name)
     long width, height;
 
 	outfile = NULL;
-    diagnostics(2, "filename = <%s>", name);
+    diagnostics(3, "filename = '%s'", name);
 
     if (strstr(name, ".eps") != NULL)
     	outfile = strdup_new_extension(name, ".eps", ".wmf");
@@ -677,7 +677,7 @@ static void PutPictFile(char *s, double height0, double width0, double scale, do
         pict = strdup(s);
     else
         pict = strdup_together(g_home_dir, s);
-    diagnostics(2, "PutPictFile <%s>", pict);
+    diagnostics(2, "PutPictFile '%s'", pict);
 
     fp = fopen(pict, "rb");
     free(pict);
@@ -685,7 +685,7 @@ static void PutPictFile(char *s, double height0, double width0, double scale, do
         return;
 
     if (fseek(fp, 514L, SEEK_SET) || fread(buffer, 2, 4, fp) != 4) {
-        diagnostics(WARNING, "Cannot read graphics file <%s>", s);
+        diagnostics(WARNING, "Cannot read graphics file '%s'", s);
         fclose(fp);
         return;
     }
@@ -745,7 +745,7 @@ static unsigned char * getPngChunk(FILE *fp, char *s)
 	
 	head[4]='\0';
 	
-	diagnostics(6, "getPngChunk ... seeking <%s>",s);
+	diagnostics(6, "getPngChunk ... seeking '%s'",s);
 	data = NULL;
 	do {
 		int i;
@@ -761,7 +761,7 @@ static unsigned char * getPngChunk(FILE *fp, char *s)
 
 		if (strcmp(head,"IEND") == 0) return NULL;
 		
-		diagnostics(6,"found chunk <%s> size %ld bytes",head,size);
+		diagnostics(6,"found chunk '%s' size %ld bytes",head,size);
 		data = malloc(size);
 		if (data == NULL) return NULL;
 		
@@ -798,20 +798,20 @@ static void GetPngSize(char *s, unsigned long *w, unsigned long *h, unsigned lon
         return;
 
     if (fread(buffer, 1, 8, fp) < 8) {
-        diagnostics(WARNING, "Cannot read graphics file <%s>", s);
+        diagnostics(WARNING, "Cannot read graphics file '%s'", s);
         fclose(fp);
         return;
     }
 
     if (memcmp(buffer, reftag, 8) != 0) {
-        diagnostics(WARNING, "Graphics file <%s> is not a PNG file!", s);
+        diagnostics(WARNING, "Graphics file '%s' is not a PNG file!", s);
         fclose(fp);
         return;
     }
 
 	data = getPngChunk(fp,"IHDR");
 	if (data == NULL) {
-        diagnostics(WARNING, "Graphics file <%s>: could not locate IHDR chunk!", s);
+        diagnostics(WARNING, "Graphics file '%s': could not locate IHDR chunk!", s);
         return;
 	}
 
@@ -823,7 +823,7 @@ static void GetPngSize(char *s, unsigned long *w, unsigned long *h, unsigned lon
 	
 	data = getPngChunk(fp,"pHYs");
 	if (data == NULL) {
-        diagnostics(4, "Graphics file <%s>: could not locate pHYs chunk!", s);
+        diagnostics(4, "Graphics file '%s': could not locate pHYs chunk!", s);
         return;
 	}
 
@@ -890,7 +890,7 @@ void PutPngFile(char *s, double height_goal, double width_goal, double scale,
         png = strdup(s);
     else
         png = strdup_together(g_home_dir, s);
-    diagnostics(4, "PutPngFile <%s>", png);
+    diagnostics(2, "PutPngFile '%s'", png);
 
     GetPngSize(png, &width, &height, &xres, &yres,&bad_res);
     if (width == 0 || height == 0) return;
@@ -957,6 +957,8 @@ static void PutJpegFile(char *s, double height0, double width0, double scale, do
     int sx, sy;
 
     jpg = strdup_together(g_home_dir, s);
+    diagnostics(2, "PutJpegFile '%s'", jpg);
+
     fp = fopen(jpg, "rb");
     free(jpg);
     if (fp == NULL)
@@ -964,7 +966,7 @@ static void PutJpegFile(char *s, double height0, double width0, double scale, do
 
     if ((c = fgetc(fp)) != 0xFF && (c = fgetc(fp)) != 0xD8) {
         fclose(fp);
-        diagnostics(WARNING, "<%s> is not really a JPEG file --- skipping");
+        diagnostics(WARNING, "'%s' is not really a JPEG file --- skipping");
         return;
     }
 
@@ -980,7 +982,7 @@ static void PutJpegFile(char *s, double height0, double width0, double scale, do
       m != 0xC9 && m != 0xCA && m != 0xCB && m != 0xCD && m != 0xCE && m != 0xCF);
 
     if (fseek(fp, 3, SEEK_CUR) || fread(buffer, 2, 2, fp) != 2) {
-        diagnostics(WARNING, "Cannot read graphics file <%s>", s);
+        diagnostics(WARNING, "Cannot read graphics file '%s'", s);
         fclose(fp);
         return;
     }
@@ -1032,7 +1034,7 @@ static void PutEmfFile(char *s, double height0, double width0, double scale, dou
         emf = strdup(s);
     else
         emf = strdup_together(g_home_dir, s);
-    diagnostics(2, "PutEmfFile <%s>", emf);
+    diagnostics(2, "PutEmfFile '%s'", emf);
     fp = fopen(emf, "rb");
     free(emf);
     if (fp == NULL)
@@ -1123,7 +1125,7 @@ static void PutWmfFile(char *s, double height0, double width0, double scale, dou
 
     /* open the proper file */
     wmf = strdup_together(g_home_dir, s);
-    diagnostics(2, "PutWmfFile <%s>", wmf);
+    diagnostics(2, "PutWmfFile '%s'", wmf);
     fp = fopen(wmf, "rb");
     free(wmf);
     if (fp == NULL)
@@ -1206,7 +1208,7 @@ static void PutPdfFile(char *s, double height0, double width0, double scale, dou
     char *png;
     double convert_scale = 72.0 / g_dots_per_inch;
     
-    diagnostics(4, "PutPdfFile filename = <%s>", s);
+    diagnostics(2, "PutPdfFile '%s'", s);
 
     png = pdf_to_png(s);
         	
@@ -1225,7 +1227,7 @@ static void PutEpsFile(char *s, double height0, double width0, double scale, dou
     char *png, *emf, *pict;
     double convert_scale = 72.0 / g_dots_per_inch;
 
-    diagnostics(4, "PutEpsFile filename = <%s>, scale=%f5.3", s,scale);
+    diagnostics(2, "PutEpsFile '%s', scale=%f5.3", s, scale);
 
     if (1) {
         png = eps_to_png(s);
@@ -1263,7 +1265,7 @@ static void PutTiffFile(char *s, double height0, double width0, double scale, do
     char *tiff, *png, *out;
     double convert_scale = 0.0;
 
-    diagnostics(2, "filename = <%s>", s);
+    diagnostics(2, "PutTiffFile '%s'", s);
     png = strdup_new_extension(s, ".tiff", ".png");
     if (png == NULL) {
         png = strdup_new_extension(s, ".TIFF", ".png");
@@ -1292,7 +1294,7 @@ static void PutGifFile(char *s, double height0, double width0, double scale, dou
     char *gif, *png, *out;
 	double convert_scale = 0.0;
 	
-    diagnostics(2, "filename = <%s>", s);
+    diagnostics(2, "PutGifFile '%s'", s);
     png = strdup_new_extension(s, ".gif", ".png");
     if (png == NULL) {
         png = strdup_new_extension(s, ".GIF", ".png");
@@ -1361,7 +1363,7 @@ long GetBaseline(char *s, char *pre)
     pbm = strdup_together(s, ".pbm");
     baseline = 4;
 
-    diagnostics(4, "GetBaseline opening=<%s>", pbm);
+    diagnostics(4, "GetBaseline opening='%s'", pbm);
 
     fp = fopen(pbm, "rb");
     if (fp == NULL) {
@@ -1445,7 +1447,7 @@ void PutLatexFile(char *latex, double height0, double width0, double scale, char
 
         GetPngSize(png, &width, &height,&xres,&yres,&bad_res);
         baseline = GetBaseline(latex, pre);
-        diagnostics(2, "png=<%s> size height=%d baseline=%d width=%d",png, height, baseline, width);
+        diagnostics(4, "png='%s' size height=%d baseline=%d width=%d",png, height, baseline, width);
 
         if ((width > maxsize && height != 0) || (height > maxsize && width != 0)) {
             second_pass = TRUE;
@@ -1737,7 +1739,7 @@ static void HandleGraphicsOptions(char *opt, char *opt2, double *h, double *w, d
 	*h=0;
 	*w=0;
 
-	diagnostics(2,"HandleGraphicsOptions <%s> <%s>",opt,opt2);
+	diagnostics(4,"HandleGraphicsOptions <%s> <%s>",opt,opt2);
 			
 /*  \includegraphics[llx,lly][urx,ury]{filename} */
 	if (opt && opt2) {
@@ -1856,7 +1858,7 @@ static void HandlePsfigOptions(char *opt, char **filename, double *h, double *w,
 	*w=0.0;
 	*filename = NULL;
 	
-	diagnostics(2,"HandlePsfigOptions <%s>",opt);
+	diagnostics(4,"HandlePsfigOptions <%s>",opt);
 		
 	while (opt) {
 		char *key, *value;

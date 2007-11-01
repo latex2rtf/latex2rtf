@@ -1386,7 +1386,7 @@ globals: changes Environment - array of active environments
      
     iEnvCount++;
     diag = EnvironmentNameByNumber(iEnvCount-1);
-    diagnostics(3, "New environment [%d] \\begin{%s}", iEnvCount-1, diag);
+    diagnostics(3, "\\begin{%s} [%d]", diag, iEnvCount-1);
 	free(diag);
 
   /*  WriteEnvironmentStack();*/
@@ -1414,7 +1414,7 @@ void PopEnvironment()
     alignment = g_align_array[iEnvCount];
     PopFontSettings();
 
-    diagnostics(3, "End environment [%d] \\end{%s}",  iEnvCount-1, this_env);
+    diagnostics(3, "\\end{%s} [%d]", this_env, iEnvCount-1);
    
 	free(this_env);
 	free(last_env);

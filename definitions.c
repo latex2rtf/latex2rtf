@@ -282,7 +282,7 @@ void newDefinition(char *name, char *opt_param, char *def, int params)
               define \hd, name = "hd"
 **************************************************************************/
 {
-    diagnostics(2, "Adding macro <%s>=<%s>", name, def);
+    diagnostics(2, "Adding macro '%s' = [%s]", name, def);
 
     if (strcmp(name, "LaTeX") == 0)
         return;
@@ -327,7 +327,7 @@ void newDefinition(char *name, char *opt_param, char *def, int params)
     }
 
     iDefinitionCount++;
-    diagnostics(2, "Successfully added macro #%d", iDefinitionCount);
+    diagnostics(4, "Successfully added macro #%d", iDefinitionCount);
 }
 
 void renewDefinition(char *name, char *opt_param, char *def, int params)

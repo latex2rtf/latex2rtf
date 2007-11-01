@@ -303,7 +303,7 @@ void CmdNewDef(int code)
 
     }
 
-    diagnostics(2, "CmdNewDef name=<%s> param=%d opt_param=<%s> def=<%s>", 
+    diagnostics(4, "CmdNewDef name=<%s> param=%d opt_param=<%s> def=<%s>", 
                    (name) ? name : "",
                    param, 
                    (opt_param) ? opt_param : "",

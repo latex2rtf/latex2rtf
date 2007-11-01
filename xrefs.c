@@ -217,7 +217,8 @@ purpose: obtains a reference from .aux file
  ************************************************************************/
 static char *ScanAux(char *token, char *reference, int code, char *aux_name)
 {
-    FILE *fAux = NULL;
+    static FILE *fAux = NULL;
+    static int warned_once = FALSE;
     char target[512];
     char *s, *t, *AuxLine;
     int braces;
@@ -229,10 +230,15 @@ static char *ScanAux(char *token, char *reference, int code, char *aux_name)
 
     snprintf(target, 512, "\\%s{%s}", token, reference);
 
-    fAux = my_fopen(aux_name, "rb"); /* WH: changed to binary 2007-10-30 */
-    if (fAux == NULL) {
+    if (fAux == NULL)
+    	fAux = my_fopen(aux_name, "rb"); /* WH: changed to binary 2007-10-30 */
+    else
+    	rewind(fAux);
+    	
+    if (fAux == NULL && !warned_once) {
         diagnostics(WARNING, "No .aux file.  Run LaTeX to create one.");
         g_aux_file_missing = TRUE;
+        warned_once = TRUE;
         return NULL;
     }
 
@@ -250,7 +256,7 @@ static char *ScanAux(char *token, char *reference, int code, char *aux_name)
 			diagnostics(WARNING, "In ScanAux, filename = %s", filename);
 			ret_val = ScanAux(token,reference,code,filename);
 			free(filename);
-			if (ret_val != NULL) {fclose(fAux); return ret_val;}
+			if (ret_val != NULL) {return ret_val;}
 		}
 
 		s = strstr(AuxLine, target);
@@ -260,7 +266,6 @@ static char *ScanAux(char *token, char *reference, int code, char *aux_name)
 			
 			if (code == 2) {
 				diagnostics(4, "found <%s>", s);
-				fclose(fAux);
 				return strdup_noendblanks(s);
 			}
 				
@@ -276,20 +281,17 @@ static char *ScanAux(char *token, char *reference, int code, char *aux_name)
 				if (*t == '}')
 					braces--;
 				if (*t == '\0') {
-					fclose(fAux);
 					return NULL;
 				}
 			}
 
 			*t = '\0';
 			diagnostics(4, "found <%s>", s + 1);
-			fclose(fAux);
 			return strdup(s + 1);
 		}
 		free(AuxLine);
 		AuxLine = my_fgets(fAux);
     }
-    fclose(fAux);
     return NULL;
 }
 

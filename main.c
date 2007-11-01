@@ -412,12 +412,11 @@ static void ConvertWholeDocument(void)
     g_processing_preamble = FALSE;
     preParse(&body, &sec_head, &label);
 
-	show_string(3, body, "body ");
-		
-	diagnostics(3,"label for this section is'%s'", label);
-	diagnostics(3, "next section '%s'", sec_head);
+    diagnostics(2, "\\begin{document}");
+	diagnostics(5,"label for this section is'%s'", label);
+	diagnostics(5, "next section '%s'", sec_head);
+	show_string(5, body, "body ");
 	
-
     ConvertString(body);
     free(body);
     if (label)
@@ -432,10 +431,10 @@ static void ConvertWholeDocument(void)
             g_section_label = label;
         }
         
-		diagnostics(2, "section is '%s'", sec_head);	
-		diagnostics(3, "label is   '%s'", g_section_label);
-		diagnostics(3, "next  is   '%s'", sec_head2);	
-		show_string(3, body, "body ");
+		diagnostics(2, "processing '%s'", sec_head);	
+		diagnostics(5, "label is   '%s'", g_section_label);
+		diagnostics(5, "next  is   '%s'", sec_head2);	
+		show_string(5, body, "body ");
 
         ConvertString(sec_head);
         ConvertString(body);
@@ -462,9 +461,10 @@ static void ConvertWholeDocument(void)
         }
      }
      
-    if (strcmp(sec_head,"\\end{document}")==0) 
+    if (strcmp(sec_head,"\\end{document}")==0) {
+        diagnostics(2, "\\end{document}");
     	ConvertString(sec_head);
-
+	}
 }
 
 static void print_version(void)
@@ -698,7 +698,7 @@ purpose: reads the LaTeX preamble (to \begin{document} ) for the file
     diagnostics(2, "Read LaTeX Preamble");
     diagnostics(5, "Entering ConvertString() from ConvertLatexPreamble");
 
-	show_string(3, g_preamble, "preamble");	
+	show_string(5, g_preamble, "preamble");	
 
     ConvertString(g_preamble);
     diagnostics(5, "Exiting ConvertString() from ConvertLatexPreamble");
