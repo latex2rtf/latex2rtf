@@ -1811,6 +1811,7 @@ void CmdFigure(int code)
 	static char     oldalignment;
 	
     if (code & ON) {
+        setCounter("subfigure", 0);
 		CmdEndParagraph(0);
 		oldalignment = alignment;
 		alignment = JUSTIFIED;
@@ -1864,6 +1865,33 @@ void CmdFigure(int code)
 		CmdEndParagraph(0);
 		CmdVspace(VSPACE_BIG_SKIP);
     }
+}
+
+void CmdSubFigure(int code)
+{
+	char *caption, *contents;
+	
+	diagnostics(4,"CmdSubFigure");
+	
+	caption = getBracketParam();
+	contents = getBraceParam();
+	
+    CmdStartParagraph("subfigure", FIRST_INDENT);
+    
+    /* insert the figure */
+	ConvertString(contents);
+    free(contents);
+
+	/* now the caption */
+	if (caption) {
+    	int n;
+    	CmdStartParagraph("subfigure", FIRST_INDENT);
+        n = getCounter("subfigure");
+	    fprintRTF("(%c) ", (char) (n + (int) 'a'));
+		ConvertString(caption);
+        incrementCounter("subfigure");
+		free(caption);
+	}		
 }
 
 void FixTildes(char *s)

@@ -263,6 +263,7 @@ static CommandArray commands[] = {
     {"newblock", CmdNewblock, 0},
     {"newsavebox", CmdIgnoreParameter, No_Opt_One_NormParam},
     {"usebox", CmdIgnoreParameter, No_Opt_One_NormParam},
+    {"subfigure", CmdSubFigure, 0},
 
 /*	{"fbox", CmdIgnoreParameter, No_Opt_One_NormParam}, */
     {"quad", CmdQuad, 1},

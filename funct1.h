@@ -169,6 +169,7 @@ extern bool  g_processing_list_environment;
 
 void CmdIgnoreEnviron(int code);
 void CmdFigure(int code);
+void CmdSubFigure(int code);
 void Cmd_OptParam_Without_braces(int code);
 void CmdColumn(int code);
 void CmdNewPage(int code);

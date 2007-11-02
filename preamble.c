@@ -589,6 +589,9 @@ static void CmdUseOnepackage(char* package, char *options)
 		set_sorted_citations();
 		set_compressed_citations();
 
+    } else if (strcmp(package, "subfigure") == 0) {
+		diagnostics(WARNING, "partial support for subfigure package");
+
     } else if (strcmp(package, "natbib") == 0) {
 		if (options && strstr(options, "longnamesfirst"))
 			set_longnamesfirst();
