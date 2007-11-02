@@ -146,6 +146,8 @@ typedef struct _GdiCommentMultiFormats {
 #define CONVERT_LATEX  3
 #define CONVERT_PDF    4
 
+static char * g_psset_info = NULL;
+
 /******************************************************************************
      purpose : portable routine to delete filename
  ******************************************************************************/
@@ -1467,7 +1469,8 @@ void PutLatexFile(char *latex, double height0, double width0, double scale, char
     free(png);
 }
 
-static char *SaveEquationAsFile(char *pre, char *eq_with_spaces, char *post)
+static char *SaveEquationAsFile(const char *post_begin_document,
+                                const char *pre, const char *eq_with_spaces, const char *post)
 {
     FILE *f;
     char name[15];
@@ -1495,6 +1498,7 @@ static char *SaveEquationAsFile(char *pre, char *eq_with_spaces, char *post)
         fprintf(f, "%s", g_preamble);
         fprintf(f, "\\thispagestyle{empty}\n");
         fprintf(f, "\\begin{document}\n");
+        if (post_begin_document) fprintf(f, "%s\n", post_begin_document);
         fprintf(f, "\\setcounter{equation}{%d}\n", getCounter("equation"));
         if ((strcmp(pre, "$") == 0) || (strcmp(pre, "\\begin{math}") == 0) || (strcmp(pre, "\\(") == 0)) {
             fprintf(f, "%%INLINE_DOT_ON_BASELINE\n");
@@ -1554,30 +1558,38 @@ void WriteLatexAsBitmap(char *pre, char *eq, char *post)
     scale = g_png_equation_scale;
     if (strstr(pre, "music") || strstr(pre, "figure") 
                              || strstr(pre, "picture")
-                             || strstr(pre, "longtable") )
+                             || strstr(pre, "longtable")
+                             || strstr(pre, "psgraph")
+                             || strstr(pre, "pspicture"))
         scale = g_png_figure_scale;
 
 /* suppress bitmap equation numbers in eqnarrays with zero or one \label{}'s*/
     if (strcmp(pre, "\\begin{eqnarray}") == 0) {
+    
         p = strstr(eq, "\\label");
         if (p != NULL && strlen(p) > 6) /* found one ... is there a second? */
             p = strstr(p + 6, "\\label");
         if (p == NULL)
-            name = SaveEquationAsFile("\\begin{eqnarray*}", eq, "\\end{eqnarray*}");
+            name = SaveEquationAsFile(NULL, "\\begin{eqnarray*}", eq, "\\end{eqnarray*}");
         else
-            name = SaveEquationAsFile(pre, eq, post);
+            name = SaveEquationAsFile(NULL, pre, eq, post);
 
     } else if (strcmp(pre, "\\begin{align}") == 0) {
+    
         p = strstr(eq, "\\label");
         if (p != NULL && strlen(p) > 6) /* found one ... is there a second? */
             p = strstr(p + 6, "\\label");
         if (p == NULL)
-            name = SaveEquationAsFile("\\begin{align*}", eq, "\\end{align*}");
+            name = SaveEquationAsFile(NULL, "\\begin{align*}", eq, "\\end{align*}");
         else
-            name = SaveEquationAsFile(pre, eq, post);
+            name = SaveEquationAsFile(NULL, pre, eq, post);
+            
+    } else if (strstr(pre, "psgraph") || strstr(pre, "pspicture")){
+    
+        name = SaveEquationAsFile(g_psset_info, pre, eq, post);
+        
     } else
-
-        name = SaveEquationAsFile(pre, eq, post);
+        name = SaveEquationAsFile(NULL, pre, eq, post);
 
     PutLatexFile(name, 0, 0, scale, pre);
 }
@@ -1999,6 +2011,71 @@ void CmdGraphics(int code)
 		free(fullpathname);
     }
 }
+
+/******************************************************************************
+  purpose: handle \begin{pspicture} ... \end{pspicture}
+           by converting to png image and inserting
+ ******************************************************************************/
+void CmdPsPicture(int code)
+{
+    char *contents;
+    char post[] = "\\end{pspicture}";
+
+    if (!(code & ON)) {
+        diagnostics(4, "exiting CmdPsPicture");
+        return;
+    }
+
+	contents = getTexUntil(post, 0);
+
+	PrepareDisplayedBitmap("PS picture");
+	WriteLatexAsBitmap("\\begin{pspicture}", contents, post);
+	FinishDisplayedBitmap();
+
+	ConvertString(post);    /* to balance the \begin{picture} */
+	free(contents);
+    
+}
+
+/******************************************************************************
+  purpose: handle \begin{psgraph} ... \end{psgraph}
+           by converting to png image and inserting
+ ******************************************************************************/
+void CmdPsGraph(int code)
+{
+    char *contents;
+    char post[] = "\\end{psgraph}";
+
+    if (!(code & ON)) {
+        diagnostics(4, "exiting CmdPsgraph");
+        return;
+    }
+
+	contents = getTexUntil(post, 0);
+
+	PrepareDisplayedBitmap("PS Graph");
+	WriteLatexAsBitmap("\\begin{psgraph}", contents, post);
+	FinishDisplayedBitmap();
+
+	ConvertString(post);    /* to balance the \begin{graph} */
+	free(contents);
+    
+}
+
+/******************************************************************************
+  purpose: handle \psset{info}
+           by converting saving to a local global
+ ******************************************************************************/
+void CmdPsset(int code)
+{
+    char *contents = getBraceParam();
+	if (g_psset_info) free(g_psset_info);
+	
+	g_psset_info = strdup_together3("\\psset{", contents, "}");
+	free(contents);
+}
+
+
 
 /******************************************************************************
   purpose: handle \begin{picture} ... \end{picture}

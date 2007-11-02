@@ -350,6 +350,7 @@ static CommandArray commands[] = {
     {"longleftrightarrows", CmdArrows, LONG_LEFTRIGHT},
     {"longleftarrow", CmdArrows, LONG_LEFT},
     {"longrightarrow", CmdArrows, LONG_RIGHT},
+    {"psset", CmdPsset, 0},
 
     {"mho",               CmdMTExtraChar, MTEXTRA_MHO},
     {"ddots",             CmdMTExtraChar, MTEXTRA_DDOTS},
@@ -833,6 +834,8 @@ static CommandArray params[] = {
     {"minipage", CmdMinipage, 0},
     {"music", CmdMusic, 0},
     {"small", CmdTolerateEnviron, 0},
+    {"pspicture", CmdPsPicture, 0},
+    {"psgraph", CmdPsGraph, 0},
 
     {"quote", CmdQuote, QUOTE_MODE},
     {"quotation", CmdQuote, QUOTATION_MODE},
