@@ -1881,6 +1881,7 @@ void CmdSubFigure(int code)
     /* insert the figure */
 	ConvertString(contents);
     free(contents);
+    CmdEndParagraph(0);
 
 	/* now the caption */
 	if (caption) {
@@ -1889,9 +1890,10 @@ void CmdSubFigure(int code)
         n = getCounter("subfigure");
 	    fprintRTF("(%c) ", (char) (n + (int) 'a'));
 		ConvertString(caption);
-        incrementCounter("subfigure");
+    	CmdEndParagraph(0);
 		free(caption);
 	}		
+    incrementCounter("subfigure");
 }
 
 void FixTildes(char *s)
