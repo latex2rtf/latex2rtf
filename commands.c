@@ -164,6 +164,7 @@ static CommandArray commands[] = {
     {"tilde", CmdTildeChar, 0},
     {"bar", CmdMacronChar, 0},
     {"vec", CmdVecChar, 0},
+    {"overrightarrow", CmdVecChar, 0},
     {"dot", CmdDotChar, 0},
     {"ddot", CmdUmlauteChar, 0},
     {"\"", CmdUmlauteChar, 0},
