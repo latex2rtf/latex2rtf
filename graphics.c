@@ -1210,7 +1210,7 @@ static void PutPdfFile(char *s, double height0, double width0, double scale, dou
     char *png;
     double convert_scale = 72.0 / g_dots_per_inch;
     
-    diagnostics(2, "PutPdfFile '%s'", s);
+    diagnostics(WARNING, "Rendering '%s' as PNG", s);
 
     png = pdf_to_png(s);
         	
@@ -1229,7 +1229,7 @@ static void PutEpsFile(char *s, double height0, double width0, double scale, dou
     char *png, *emf, *pict;
     double convert_scale = 72.0 / g_dots_per_inch;
 
-    diagnostics(2, "PutEpsFile '%s', scale=%f5.3", s, scale);
+    diagnostics(WARNING, "Rendering '%s' as PNG", s);
 
     if (1) {
         png = eps_to_png(s);
@@ -1541,17 +1541,42 @@ void FinishDisplayedBitmap(void)
     CmdIndent(INDENT_INHIBIT);
 }
 
+static char * abbreviate(const char *s, int len)
+{
+	char *t;
+	int i;
+	
+	if (s==NULL) return strdup("<NULL>");
+	
+	t = strdup(s);
+	if (strlen(t) > len) {	
+		t[len-3] = '.';
+		t[len-2] = '.';
+		t[len-1] = '.';
+		t[len-0] = '\0';	
+	}
+	
+	for (i=0; i<len-3; i++)
+		if (t[i] == '\n') t[i] = ' ';
+		
+	return t;
+	
+}
+
 void WriteLatexAsBitmap(char *pre, char *eq, char *post)
 
 /******************************************************************************
  purpose   : Convert LaTeX to Bitmap and write to RTF file
  ******************************************************************************/
 {
-    char *p, *name;
+    char *p, *name, *abbrev;
     double scale;
 
-    diagnostics(4, "Entering WriteEquationAsBitmap");
-
+	abbrev = abbreviate(eq, 30);
+	
+    diagnostics(WARNING, "rendering PNG for '%s%s%s'", pre, abbrev, post);
+	free(abbrev);
+	
     if (eq == NULL)
         return;
 
@@ -2024,7 +2049,9 @@ void CmdPsPicture(int code)
     if (!(code & ON)) {
         diagnostics(4, "exiting CmdPsPicture");
         return;
-    }
+    } else 
+        diagnostics(4, "entering CmdPsPicture");
+    
 
 	contents = getTexUntil(post, 0);
 
@@ -2047,9 +2074,10 @@ void CmdPsGraph(int code)
     char post[] = "\\end{psgraph}";
 
     if (!(code & ON)) {
-        diagnostics(4, "exiting CmdPsgraph");
+        diagnostics(4, "exiting CmdPsGraph");
         return;
-    }
+    } else 
+        diagnostics(4, "entering CmdPsGraph");
 
 	contents = getTexUntil(post, 0);
 
@@ -2089,7 +2117,8 @@ void CmdPicture(int code)
     if (!(code & ON)) {
         diagnostics(4, "exiting CmdPicture");
         return;
-    }
+    } else 
+        diagnostics(4, "entering CmdPicture");
 
 	picture = getTexUntil(post, 0);
 
@@ -2113,7 +2142,8 @@ void CmdMusic(int code)
     if (!(code & ON)) {
         diagnostics(4, "exiting CmdMusic");
         return;
-    }
+    } else 
+        diagnostics(4, "entering CmdMusic");
 
     diagnostics(4, "entering CmdMusic");
     contents = getTexUntil(endmusic, TRUE);

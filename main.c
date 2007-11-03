@@ -550,6 +550,8 @@ void diagnostics(int level, char *format, ...)
 purpose: Writes the message to stderr depending on debugging level
  ****************************************************************************/
 {
+    static int first = TRUE;
+    
     char buffer[512], *buff_ptr;
     va_list apf;
     int i, iEnvCount;
@@ -562,7 +564,9 @@ purpose: Writes the message to stderr depending on debugging level
 
         iEnvCount = CurrentEnvironmentCount();
 
-        fprintf(stderr, "\n%s:%d ",CurrentFileName(),CurrentLineNumber());
+        if (!first) fprintf(stderr,"\n");
+        
+        fprintf(stderr, "%s:%-3d ",CurrentFileName(),CurrentLineNumber());
         switch (level) {
             case 0:
                 fprintf(stderr, "Error! ");
@@ -597,6 +601,7 @@ purpose: Writes the message to stderr depending on debugging level
                 break;
         }
         vfprintf(stderr, format, apf);
+    	first = FALSE;
     }
     va_end(apf);
 
@@ -769,6 +774,7 @@ globals: g_tex_name;
     }
     *f = NULL;
     diagnostics(4, "Closed RTF file");
+    fprintf(stderr,"\n");
 }
 
 void putRtfCharEscaped(char cThis)
