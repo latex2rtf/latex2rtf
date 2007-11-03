@@ -402,12 +402,11 @@ static void ConvertWholeDocument(void)
     char *body, *sec_head, *sec_head2, *label;
     char t[] = "\\begin{document}";
 
+    PushEnvironment(DOCUMENT_MODE);  /* because we use ConvertString in preamble.c */
     PushEnvironment(PREAMBLE_MODE);
     SetTexMode(MODE_VERTICAL);
     ConvertLatexPreamble();
     WriteRtfHeader();
-
-    PushEnvironment(DOCUMENT_MODE);  /* because we use ConvertString in preamble.c */
     ConvertString(t);
 
     g_processing_preamble = FALSE;
