@@ -1746,64 +1746,105 @@ void CmdHarvardCite(int code)
 }
 
 /******************************************************************************
+purpose: just create a hyperlink using word fields
+******************************************************************************/
+static void InsertRtfHyperlink(const char *text,    const char *url, 
+                               const char *baseurl, const char *style)
+{
+	
+	char * fullurl = strdup_together(baseurl,url);
+	fprintRTF("{\\field{\\*\\fldinst{ HYPERLINK \"%s\" }{{}}}", fullurl);
+	fprintRTF("{\\fldrslt{");
+	ConvertString(text);
+	fprintRTF("}}}");
+	free(fullurl);
+}
+
+/******************************************************************************
 purpose: handles \htmladdnormallink{text}{link}
 ******************************************************************************/
 void CmdHtml(int code)
 {
-    char *text, *ref, *s, *url, *desc;
+    static char *baseurl = NULL;
+    static char *urlstyle = NULL;
+    char *text=NULL;
+    char *url=NULL;
+    char *s = NULL;
 
-    if (code == LABEL_HTMLADDNORMALREF) {
-        text = getBraceParam();
-        ref = getBraceParam();
+	switch (code) {
+		case LABEL_HTMLADDNORMALREF:
+			
+			text = getBraceParam();
+			url = getBraceParam();
+	
+			while ((s = strstr(text, "\\~{}")) != NULL) {
+				*s = '~';
+				strcpy(s + 1, s + 4);
+			}
+			while ((s = strstr(url, "\\~{}")) != NULL) {
+				*s = '~';
+				strcpy(s + 1, s + 4);
+			}
+			InsertRtfHyperlink(text, url, NULL, NULL);
+			break;
 
-        while ((s = strstr(text, "\\~{}")) != NULL) {
-            *s = '~';
-            strcpy(s + 1, s + 4);
-        }
-        while ((s = strstr(ref, "\\~{}")) != NULL) {
-            *s = '~';
-            strcpy(s + 1, s + 4);
-        }
-
-        fprintRTF("{\\field{\\*\\fldinst{ HYPERLINK \"%s\" }{{}}}", ref);
-        fprintRTF("{\\fldrslt{\\ul %s}}}", text);
-        free(text);
-        free(ref);
         
-    } else if (code == LABEL_HTMLREF) {
-        text = getBraceParam();
-        ref = getBraceParam();
-        ConvertString(text);
-        free(text);
-        free(ref);
+		case LABEL_HTMLREF:
+			text = getBraceParam();
+			url = getBraceParam();
+			ConvertString(text);
+			break;
         
-    } else if (code == LABEL_HREF) {
-        url = getBraceParam();
-        desc = getBraceParam();
-        fprintRTF("{\\field{\\*\\fldinst{ HYPERLINK \"%s\" }{{}}}", url);
-        fprintRTF("{\\fldrslt{\\ul ");
-        ConvertString(desc);
-        fprintRTF("}}}");
-        free(desc);
-        free(ref);
+		case LABEL_HYPERREF:
+			/* \hyperref[label]{text} or \hyperref{url}{category}{name}{text} */
+			url = getBracketParam();
+			if (!url) {
+				char *a, *b, *category, *name;
+				a = getBraceParam();
+				category = getBraceParam();
+				name = getBraceParam();
+				b = strdup_together3(a,"#",category);
+				url = strdup_together3(b,".",name);
+				free(b);
+				free(name);
+				free(category);
+				free(a);
+			}
+			text = getBraceParam();
+			InsertRtfHyperlink(text, url, baseurl, urlstyle);
+			break;
 
-    } else if (code == LABEL_URL) {
-        url = getBraceParam();
-        desc = strdup_together3("\\begin{verbatim}", url, "\\end{verbatim}");
-        fprintRTF("{\\field{\\*\\fldinst{ HYPERLINK \"%s\" }{{}}}", url);
-        fprintRTF("{\\fldrslt{\\ul ");
-        ConvertString(desc);
-        fprintRTF("}}}");
-        free(desc);
-        free(ref);
+		case LABEL_HREF:
+			url = getBraceParam();
+			text = getBraceParam();
+			InsertRtfHyperlink(text, url, baseurl, urlstyle);
+			break;
 
-    } else if (code == LABEL_NO_LINK_URL) {
-        url = getBraceParam();
-        desc = strdup_together3("\\begin{verbatim}", url, "\\end{verbatim}");
-        ConvertString(desc);
-        free(desc);
-        free(ref);
+		case LABEL_URL:
+	        url = getBraceRawParam();
+	        text = strdup_together3("\\begin{verbatim}", url, "\\end{verbatim}");
+			InsertRtfHyperlink(text, url, baseurl, urlstyle);
+			break;
+
+		case LABEL_NO_LINK_URL:
+	        url = getBraceParam();
+	        text = strdup_together3("\\begin{verbatim}", url, "\\end{verbatim}");
+			ConvertString(text);
+			break;
+
+		case LABEL_BASE_URL:
+    		if (baseurl) free(baseurl);
+        	baseurl = getBraceParam();
+			break;
+
+		case LABEL_URLSTYLE:
+    		if (urlstyle) free(urlstyle);
+        	urlstyle = getBraceParam();
+			break;
     }
+
+	if (text) free(text);
+	if (url) free(url);
 }
 
 void CmdBCAY(int code)

@@ -25,6 +25,7 @@ void	skipSpaces(void);
 void	CmdIgnoreParameter(int);
 void    CmdInclude(int code);
 char	*getBraceParam(void);
+char    *getBraceRawParam(void);
 char	*getLeftRightParam(void);
 char	*getBracketParam(void);
 char	*getSimpleCommand(void);

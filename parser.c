@@ -817,7 +817,7 @@ char *getBracketParam(void)
     return text;
 }
 
-char *getBraceParam(void)
+static char *getBraceParam0(int raw_flag)
 
 /**************************************************************************
      purpose: allocates and returns the next parameter in the LaTeX file
@@ -846,7 +846,7 @@ char *getBraceParam(void)
         text = getSimpleCommand();
 
     } else if (s[0] == '{')
-        text = getDelimitedText('{', '}', FALSE);
+        text = getDelimitedText('{', '}', raw_flag);
 
     else {
         s[1] = '\0';
@@ -856,6 +856,16 @@ char *getBraceParam(void)
     PopTrackLineNumber();
     diagnostics(6, "Leaving getBraceParam {%s}", text);
     return text;
+}
+
+char *getBraceParam(void)
+{
+	return getBraceParam0(FALSE);
+}
+
+char *getBraceRawParam(void)
+{
+	return getBraceParam0(TRUE);
 }
 
 char *getLeftRightParam(void)
