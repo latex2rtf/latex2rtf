@@ -14,6 +14,9 @@
 #define LABEL_HTMLREF       9
 #define LABEL_EQREF			10
 #define LABEL_VREF          11
+#define LABEL_HREF          12
+#define LABEL_URL           13
+#define LABEL_NO_LINK_URL   14
 
 #define BIBSTYLE_STANDARD   1
 #define BIBSTYLE_APALIKE    2

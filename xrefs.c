@@ -1750,7 +1750,7 @@ purpose: handles \htmladdnormallink{text}{link}
 ******************************************************************************/
 void CmdHtml(int code)
 {
-    char *text, *ref, *s;
+    char *text, *ref, *s, *url, *desc;
 
     if (code == LABEL_HTMLADDNORMALREF) {
         text = getBraceParam();
@@ -1769,11 +1769,39 @@ void CmdHtml(int code)
         fprintRTF("{\\fldrslt{\\ul %s}}}", text);
         free(text);
         free(ref);
+        
     } else if (code == LABEL_HTMLREF) {
         text = getBraceParam();
         ref = getBraceParam();
         ConvertString(text);
         free(text);
+        free(ref);
+        
+    } else if (code == LABEL_HREF) {
+        url = getBraceParam();
+        desc = getBraceParam();
+        fprintRTF("{\\field{\\*\\fldinst{ HYPERLINK \"%s\" }{{}}}", url);
+        fprintRTF("{\\fldrslt{\\ul ");
+        ConvertString(desc);
+        fprintRTF("}}}");
+        free(desc);
+        free(ref);
+
+    } else if (code == LABEL_URL) {
+        url = getBraceParam();
+        desc = strdup_together3("\\begin{verbatim}", url, "\\end{verbatim}");
+        fprintRTF("{\\field{\\*\\fldinst{ HYPERLINK \"%s\" }{{}}}", url);
+        fprintRTF("{\\fldrslt{\\ul ");
+        ConvertString(desc);
+        fprintRTF("}}}");
+        free(desc);
+        free(ref);
+
+    } else if (code == LABEL_NO_LINK_URL) {
+        url = getBraceParam();
+        desc = strdup_together3("\\begin{verbatim}", url, "\\end{verbatim}");
+        ConvertString(desc);
+        free(desc);
         free(ref);
     }
 }

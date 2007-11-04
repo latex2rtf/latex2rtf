@@ -224,8 +224,6 @@ static CommandArray commands[] = {
     {"input", CmdIgnoreParameter, No_Opt_One_NormParam},    /* should not happen */
     {"verb", CmdVerb, VERB_VERB},
     {"verb*", CmdVerb, VERB_STAR},
-    {"url", CmdVerb, VERB_URL},
-/*    {"urlstyle", CmdIgnoreParameter, No_Opt_One_NormParam},*/
     {"onecolumn", CmdColumn, One_Column},
     {"twocolumn", CmdColumn, Two_Column},
     {"includegraphics", CmdGraphics, FIGURE_INCLUDEGRAPHICS},
@@ -384,6 +382,13 @@ static CommandArray commands[] = {
     {"symbol", CmdSymbol, 1},
     {"htmladdnormallink", CmdHtml, LABEL_HTMLADDNORMALREF},
     {"htmlref", CmdHtml, LABEL_HTMLREF},
+
+    {"url", CmdHtml, LABEL_URL},
+    {"href", CmdHtml, LABEL_HREF},
+    {"urlstyle", CmdIgnoreParameter, No_Opt_One_NormParam},
+	{"hypersetup", CmdIgnoreParameter, No_Opt_One_NormParam},
+	{"nolinkurl", CmdHtml, LABEL_NO_LINK_URL},
+	
     {"nobreakspace", CmdNonBreakSpace, 0},
     {"abstract", CmdAbstract, 2},
     {"endinput", CmdEndInput, 0},
