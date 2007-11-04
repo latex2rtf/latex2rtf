@@ -1753,8 +1753,9 @@ static void InsertRtfHyperlink(const char *text,    const char *url,
 {
 	
 	char * fullurl = strdup_together(baseurl,url);
-	fprintRTF("{\\field{\\*\\fldinst{ HYPERLINK \"%s\" }{{}}}", fullurl);
-	fprintRTF("{\\fldrslt{");
+	fprintRTF("{\\field{\\*\\fldinst{ HYPERLINK \"");
+	putRtfStrEscaped(fullurl);
+	fprintRTF("\" }{{}}}{\\fldrslt{");
 	ConvertString(text);
 	fprintRTF("}}}");
 	free(fullurl);
@@ -1821,20 +1822,25 @@ void CmdHtml(int code)
 			break;
 
 		case LABEL_URL:
+			/* cannot use insertHyperlink because url has toxic characters */
 	        url = getBraceRawParam();
-	        text = strdup_together3("\\begin{verbatim}", url, "\\end{verbatim}");
-			InsertRtfHyperlink(text, url, baseurl, urlstyle);
+			text = strdup_together(baseurl,url);
+			fprintRTF("{\\field{\\*\\fldinst{ HYPERLINK \"");
+			putRtfStrEscaped(text);
+			fprintRTF("\" }{{}}}{\\fldrslt{\\ul ");
+			putRtfStrEscaped(text);
+			fprintRTF("}}}");
 			break;
 
 		case LABEL_NO_LINK_URL:
-	        url = getBraceParam();
-	        text = strdup_together3("\\begin{verbatim}", url, "\\end{verbatim}");
-			ConvertString(text);
+	        url = getBraceRawParam();
+	        text = strdup_together(baseurl,url);
+    		while (*text) putRtfCharEscaped(*text++);
 			break;
 
 		case LABEL_BASE_URL:
     		if (baseurl) free(baseurl);
-        	baseurl = getBraceParam();
+        	baseurl = getBraceRawParam();
 			break;
 
 		case LABEL_URLSTYLE:

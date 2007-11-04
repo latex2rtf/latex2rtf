@@ -144,6 +144,7 @@ extern bool		g_tableofcontents;
 
 void fprintRTF(char *format, ...);
 void putRtfCharEscaped(char cThis);
+void putRtfStrEscaped(const char * string);
 char *getTmpPath(void);
 char *my_strdup(const char *str);
 FILE *my_fopen(char *path, char *mode);

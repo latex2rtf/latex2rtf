@@ -1494,7 +1494,6 @@ void CmdVerb(int code)
 
 /******************************************************************************
  purpose: converts the LaTeX-verb-environment to a similar Rtf-style
- 		  \url probably does not handle line feeds properly
  ******************************************************************************/
 {
     char cThis, *text, *s;
@@ -1504,24 +1503,6 @@ void CmdVerb(int code)
     SetTexMode(MODE_HORIZONTAL);
     num = TexFontNumber("Typewriter");
     fprintRTF("{\\b0\\i0\\scaps0\\f%d ", num);
-
-    if (code == VERB_URL) {
-        cThis = getNonSpace();
-        if (cThis == '{') {     /* \url{http://} */
-            text = getDelimitedText('{', '}', TRUE);
-            s = text;
-            diagnostics(4, "CmdVerbatim \\url{%s}", text);
-            while (*s) {
-                putRtfCharEscaped(*s);
-                s++;
-            }
-            fprintRTF("}");
-            free(text);
-            return;
-        } else
-            markingchar = cThis;    /* \url|http://| */
-
-    }
 
     if (code == VERB_STAR || code == VERB_VERB) {
 
@@ -1591,10 +1572,8 @@ void CmdVerbatim(int code)
 
         else if (true_code == VERBATIM_1 || true_code == VERBATIM_2) {
 
-            while (*vptr) {
-                diagnostics(5, "Verbatim character <%c>", *vptr);
-                putRtfCharEscaped(*vptr++);
-            }
+            show_string(5, verbatim_text, "verbatim");
+            putRtfStrEscaped(verbatim_text);
         }
 
         free(verbatim_text);

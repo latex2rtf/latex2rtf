@@ -252,12 +252,9 @@ static void WriteEquationAsRawLatex(char *pre, char *eq, char *post)
  ******************************************************************************/
 {
     fprintRTF("<<:");
-    while (*pre)
-        putRtfCharEscaped(*pre++);
-    while (*eq)
-        putRtfCharEscaped(*eq++);
-    while (*post)
-        putRtfCharEscaped(*post++);
+    putRtfStrEscaped(pre);
+    putRtfStrEscaped(eq);
+    putRtfStrEscaped(post);
     fprintRTF(":>>");
 }
 
@@ -268,12 +265,9 @@ static void WriteEquationAsComment(char *pre, char *eq, char *post)
  ******************************************************************************/
 {
     fprintRTF("{\\field{\\*\\fldinst{ COMMENTS \" ");
-    while (*pre)
-        putRtfCharEscaped(*pre++);
-    while (*eq)
-        putRtfCharEscaped(*eq++);
-    while (*post)
-        putRtfCharEscaped(*post++);
+    putRtfStrEscaped(pre);
+    putRtfStrEscaped(eq);
+    putRtfStrEscaped(post);
     fprintRTF("\" }{ }}{\\fldrslt }}");
 }
 

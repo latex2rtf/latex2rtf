@@ -796,6 +796,18 @@ purpose: output a single escaped character to the RTF file
         fprintRTF("%c",cThis);
 }
 
+/****************************************************************************
+purpose: output a string with escaped characters to the RTF file
+         this is primarily useful for the verbatim-like enviroments
+ ****************************************************************************/
+void putRtfStrEscaped(const char * string)
+{
+	char *s = string;
+	if (string == NULL) return;
+    while (*s) putRtfCharEscaped(*s++);
+}
+
+
 void fprintRTF(char *format, ...)
 
 /****************************************************************************
