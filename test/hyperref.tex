@@ -1,0 +1,24 @@
+\documentclass{article}
+\usepackage{hyperref}
+\usepackage{times}
+\begin{document}
+
+\section{The first section}
+hello a 
+\href{http://www-fourier.ujf-grenoble.fr:80/cgi-bin/zbfr/ZB/math-fr.html?AU=Taylor,+R&format=complete&type=html&maxdocs=10}{weird}
+reference
+
+a second reference 
+\href{http://www.tug.org/}{tug}
+to the \TeX{} website 
+
+\subsection{\verb#\url{}#}
+We can use the \verb#\url# command to do this as
+well like so: \url{http://www.tug.org}.  
+
+The \verb#\nolinkurl{}# is similar but non-functional: \nolinkurl{http://www.tug.org}. 
+
+\section{The second section}
+\hypertarget{TestTarget}{goodbye}
+
+\end{document}
