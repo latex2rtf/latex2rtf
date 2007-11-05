@@ -365,11 +365,10 @@ void CmdInclude(int code)
         name[0] = cNext;
         for (i = 1; i < 50; i++) {
             name[i] = getTexChar();
-            if (isspace((int) name[i])) {
-                name[i] = '\0';
-                break;
-            }
+            if (name[i] == '\0' || isspace((int) name[i]))
+                break;         
         }
+        name[i] = '\0';
         basename = strdup(name);
     }
 
@@ -422,7 +421,7 @@ char getRawTexChar(void)
 
     if (g_parser_file) {
         thechar = getc(g_parser_file);
-        if (thechar == EOF)
+        while (thechar == EOF) {
             if (!feof(g_parser_file))
                 diagnostics(ERROR, "Unknown file I/O error reading latex file\n");
             else if (g_parser_include_level > 1) {
@@ -430,7 +429,8 @@ char getRawTexChar(void)
                 thechar = getRawTexChar();  /* get next char from parent file */
             } else
                 thechar = '\0';
-        else if (thechar == CR) {   /* convert CR, CRLF, or LF to \n */
+        }
+        if (thechar == CR) {   /* convert CR, CRLF, or LF to \n */
             thechar = getc(g_parser_file);
             if (thechar != LF && !feof(g_parser_file))
                 ungetc(thechar, g_parser_file);
