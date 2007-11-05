@@ -350,7 +350,8 @@ void CmdInclude(int code)
           code == 1 for \input
  ******************************************************************************/
 {
-    char name[50], cNext;
+    int cNext;
+    char name[100];
     int i;
     char *basename=NULL;
     char *texname=NULL;
@@ -362,13 +363,21 @@ void CmdInclude(int code)
         basename = getBraceParam();
 
     } else {                    /* \input gnu */
-        name[0] = cNext;
-        for (i = 1; i < 50; i++) {
-            name[i] = getTexChar();
-            if (name[i] == '\0' || isspace((int) name[i]))
-                break;         
+        i = 0;
+        while (cNext != '\0' && !isspace(cNext)) {
+        	if (i<99) name[i] = (char) cNext;
+        	i++;
+        	cNext = getTexChar();
         }
-        name[i] = '\0';
+        
+        if (i<99) 
+        	name[i] = '\0';
+		else {
+        	name[99] = '\0';
+        	diagnostics(WARNING, "\\input filename '%s' more than 100 chars, skipping",name);
+        	return;
+        }
+ 
         basename = strdup(name);
     }
 
@@ -389,7 +398,7 @@ void CmdInclude(int code)
         texname = strdup_together(basename, ".tex");
 
     if (texname && PushSource(texname, NULL) == 0)            /* Try the .tex name first*/
-        diagnostics(WARNING, "Including file <%s>", texname);
+        diagnostics(WARNING, "Including file <%s> (.tex appended)", texname);
       
     else if (basename && PushSource(basename, NULL) == 0)     /* Try the basename second*/
         diagnostics(WARNING, "Including file <%s>", basename);
