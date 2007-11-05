@@ -1496,7 +1496,7 @@ void CmdVerb(int code)
  purpose: converts the LaTeX-verb-environment to a similar Rtf-style
  ******************************************************************************/
 {
-    char cThis, *text, *s;
+    char cThis;
     char markingchar='#';
     int num;
 	

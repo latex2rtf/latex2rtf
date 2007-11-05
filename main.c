@@ -802,7 +802,7 @@ purpose: output a string with escaped characters to the RTF file
  ****************************************************************************/
 void putRtfStrEscaped(const char * string)
 {
-	char *s = string;
+	char *s = (char *) string;
 	if (string == NULL) return;
     while (*s) putRtfCharEscaped(*s++);
 }
