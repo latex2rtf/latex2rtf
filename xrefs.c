@@ -222,12 +222,15 @@ static char *ScanAux(char *token, char *reference, int code, char *aux_name)
     char target[512];
     char *s, *t, *AuxLine;
     int braces;
+    static int once = 0;
+    
+    once++;
 
     if (g_aux_file_missing || strlen(token) == 0) {
         return NULL;
     }
-    diagnostics(4, "seeking in .aux for <%s>", reference);
-
+    diagnostics(4, "seeking '%s' in '%s' calls:%d ", reference, aux_name, once);
+	
     snprintf(target, 512, "\\%s{%s}", token, reference);
 
     if (fAux == NULL)
@@ -249,13 +252,17 @@ static char *ScanAux(char *token, char *reference, int code, char *aux_name)
 		s = strstr(AuxLine, "\\@input{");
 		if (s) {
 			char *t, *ret_val, *filename;
+			FILE *old_fAux = fAux;
 			
 			t = strchr(s, '}');
 			filename = my_strndup(s+8,t-s-8);
 			
-			diagnostics(WARNING, "In ScanAux, filename = %s", filename);
+			diagnostics(4, "In ScanAux, handling \\@input{%s}", filename);
+			fAux=NULL;
 			ret_val = ScanAux(token,reference,code,filename);
 			free(filename);
+			fclose(fAux);
+			fAux = old_fAux;
 			if (ret_val != NULL) {return ret_val;}
 		}
 

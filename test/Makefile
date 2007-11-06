@@ -238,6 +238,10 @@ fig_endfloat.rtf: fig_endfloat.tex
 	$(LATEX) fig_endfloat $(LATEX_LOG)
 	$(LATEX2RTF) $(OPTIONS) fig_endfloat
 
+include.rtf: include.tex include1.tex include2.tex include3.tex
+	$(LATEX) include $(LATEX_LOG)
+	$(LATEX2RTF) $(OPTIONS) include
+
 check:
 	./bracecheck
 	

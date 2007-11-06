@@ -867,10 +867,6 @@ parameter: code: type of section-recursion-level
             if (code == SECT_CHAPTER && getCounter("secnumdepth") >= -1) {
                 incrementCounter("chapter");
                 setCounter("section", 0);
-                setCounter("subsection", 0);
-                setCounter("subsubsection", 0);
-                setCounter("paragraph", 0);
-                setCounter("subparagraph", 0);
         		setCounter("figure",0);
        			setCounter("table",0);
        			setCounter("equation",0);
@@ -904,9 +900,6 @@ parameter: code: type of section-recursion-level
 				if (code == SECT_NORM && getCounter("secnumdepth") >= 0) {
 					incrementCounter("section");
 					setCounter("subsection", 0);
-					setCounter("subsubsection", 0);
-					setCounter("paragraph", 0);
-					setCounter("subparagraph", 0);
 					resetTheoremCounter("section");
 					unit_label = FormatUnitNumber("section");
 					InsertBookmark(g_section_label, unit_label);
@@ -941,8 +934,6 @@ parameter: code: type of section-recursion-level
 				if (code == SECT_SUB && getCounter("secnumdepth") >= 1) {
 					incrementCounter("subsection");
 					setCounter("subsubsection", 0);
-					setCounter("paragraph", 0);
-					setCounter("subparagraph", 0);
 					resetTheoremCounter("subsection");
 					unit_label = FormatUnitNumber("subsection");
 					InsertBookmark(g_section_label, unit_label);

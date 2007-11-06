@@ -403,6 +403,10 @@ void CmdInclude(int code)
     else if (basename && PushSource(basename, NULL) == 0)     /* Try the basename second*/
         diagnostics(WARNING, "Including file <%s>", basename);
 
+	/* \include{file} always starts a new page */
+	if (code == 0)
+		PushSource(NULL, "\\pagebreak ");
+		
     if (basename) free(basename);
     if (texname)  free(texname);
 }

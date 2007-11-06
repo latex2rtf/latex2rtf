@@ -6,7 +6,13 @@
 \begin{document}
 
 \iflatextortf
+Most of this first page will be blank in RTF because we begin this file with an 
+include file.  We have a short message from our rtf text that will start on the 
+next page.
+
 \include{inc_test}
+
+We return you to the normal latex file now.
 \fi
 
 \section{This is the first section in file \texttt{include.tex}}
@@ -46,7 +52,9 @@ Here is a reference to the first subsection in \texttt{include1.tex}
 \ref{section11}. And finally one to the first section of this 
 file \ref{section01}.
 
-\input include3.tex
+\input include5.tex
+This is the content following \verb#\input include5.tex#.  There should be no
+pagebreak.
 
 \end{document}
 
