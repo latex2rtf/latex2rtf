@@ -14,3 +14,4 @@ void CmdPsPicture(int code);
 void CmdPsGraph(int code);
 void CmdMusic(int code);
 void CmdPsset(int code);
+void CmdNewPsStyle(int code);

@@ -341,6 +341,7 @@ static CommandArray commands[] = {
     {"longleftarrow", CmdArrows, LONG_LEFT},
     {"longrightarrow", CmdArrows, LONG_RIGHT},
     {"psset", CmdPsset, 0},
+    {"newpsstyle", CmdNewPsStyle, 0},
 
     {"mho",               CmdMTExtraChar, MTEXTRA_MHO},
     {"ddots",             CmdMTExtraChar, MTEXTRA_DDOTS},

@@ -146,7 +146,8 @@ typedef struct _GdiCommentMultiFormats {
 #define CONVERT_LATEX  3
 #define CONVERT_PDF    4
 
-static char * g_psset_info = NULL;
+static char *g_psset_info   = NULL;
+static char *g_psstyle_info = NULL;
 
 /******************************************************************************
      purpose : portable routine to delete filename
@@ -1609,10 +1610,11 @@ void WriteLatexAsBitmap(char *pre, char *eq, char *post)
         else
             name = SaveEquationAsFile(NULL, pre, eq, post);
             
-    } else if (strstr(pre, "psgraph") || strstr(pre, "pspicture")){
-    
-        name = SaveEquationAsFile(g_psset_info, pre, eq, post);
-        
+    } else if (strstr(pre, "psgraph") != NULL || strstr(pre, "pspicture") != NULL ){
+    	char *s = strdup_together(g_psset_info, g_psstyle_info);
+        name = SaveEquationAsFile(s, pre, eq, post);
+        if (s) free(s);
+        show_string(1,name,"contents");
     } else
         name = SaveEquationAsFile(NULL, pre, eq, post);
 
@@ -2103,6 +2105,24 @@ void CmdPsset(int code)
 	free(contents);
 }
 
+/******************************************************************************
+  purpose: handle \psnewstyle{info}{moreinfo}
+           by appending to g_psstyle_info
+ ******************************************************************************/
+void CmdNewPsStyle(int code)
+{
+	char *a, *b, *c;
+	
+    a = getBraceParam();
+    b = getBraceParam();
+    c = strdup_together4(g_psstyle_info,"\\newpsstyle{",a,"}{");
+	if (g_psstyle_info) free(g_psstyle_info);
+    g_psstyle_info = strdup_together3(c,b,"} ");
+	
+	free(a);
+	free(b);
+	free(c);
+}
 
 
 /******************************************************************************
