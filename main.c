@@ -236,7 +236,7 @@ int main(int argc, char **argv)
                 g_tabular_display_rtf    = (x &  1) ? TRUE : FALSE;
                 g_tabular_display_bitmap = (x &  2) ? TRUE : FALSE;
                 diagnostics(3, "Table option g_tabular_display_rtf     = %d", g_tabular_display_rtf);
-                diagnostics(3, "Table option g_tabular_display_bitmap  = %d", g_tabular_display_bitmap_rtf);
+                diagnostics(3, "Table option g_tabular_display_bitmap  = %d", g_tabular_display_bitmap);
                 break;
 
             case 'P':          /* -P path/to/cfg:path/to/script or -P path/to/cfg or -P :path/to/script */
