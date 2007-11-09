@@ -393,71 +393,91 @@ directory.
 
 
 @node DOS or Windows, Win32 systems, UNIX, Installation
-@section DOS or Windows
+@section DOS
 
 The @acronym{UNIX} and Mac distributions do not contain an executable for DOS 
-or Windows. 
-Instead, get the DOS port as file @file{latex2rtf-x.x.x_dos.zip}
-or the Windows (Win32 = Win95, Win98, WinME, WinNT, Win2000, WinXP) version as 
-file @file{latex2rtf-x.x.x_win.exe} (where x.x.x is the version number) from  
-@uref{http://sourceforge.net/projects/latex2rtf/,SourceForge}@*
+or Windows. You may compile it yourself (with djgpp or MinGW)
+or get the DOS distribution as file @file{latex2rtf-x.x.x_dos.zip}
+(where x.x.x is the version number) 
+from @uref{http://sourceforge.net/projects/latex2rtf/,SourceForge}@*
 
-The DOS distribution contains a precompiled executable (djgpp compiler) 
+The DOS distribution contains a precompiled executable 
 which should run under plain DOS and also in the command prompt 
 (or ``console'') of any MS Windows system up to XP and Server 2003.@*
-However in Windows Vista the DPMI memory is limited to 32 MB, and 
-we yet don't know whether this is sufficient to run @ltor{} or not, 
-so please tell us any experiences regarding Windows Vista.@*
-If the memory limitation under Windows Vista turns out to be a problem, 
-one can use an executable compiled with Cygwin, 
-but for now this isn't provided in the distributions.@*
-Moreover, the command processor ``command.com'' is not provided by Vista,
-so conversion of pictures and of equations to bitmaps will definitely 
-not work under Vista.
+@strong{Limitations of the DOS version:}
+In Windows Vista the DPMI memory is limited to 32 MB, and 
+we yet don't know whether this is sufficient to run @ltor{} or not.
+Moreover, the DOS version has a bug which causes conversion of equations 
+to bitmaps to fail for the remaining equations after successfully 
+converting the first 26 of them.
 
-The Win32 version starting from 1.9.14a has the same executable but 
-additionally an optional Win32 GUI interface (@ltor{} Shell) 
-and is wrapped in an automatic installer, see @ref{Win32 systems}.@*
+So @strong{if you run a Win32 system} (Win9x, WinME, WinNT, Win2000, WinXP, 
+WinVista) @strong{it is highly recommended to use the
+Windows version}.
+The Win32 version starting from 1.9.14a also has a Win32 GUI interface 
+(@ltor{} Shell) and is wrapped in an automatic installer, 
+see @ref{Win32 systems}.
 
-To install @ltor{}, extract all files from the zip archive to @file{C:\l2r}
-or to another folder (i.e. directory) of your choice,
-preserving the folder structure (winzip: check ``use folder names'').@*
-If you extracted them to another folder (e.g. @file{C:\Program Files\l2r}),
-edit the files @file{L2R.BAT}, @file{L2RSEM.BAT} and @file{L2RPREP.BAT} 
-and change the folder @file{C:\l2r} to where you put them.
-If there is a blank in any of the folder names
-(as in e.g. ``Program Files''), then you need to enclose both
-the file-ID and the cfg path in double quotes, e.g. @*
-@file{"C:\Program Files\l2r\latex2rt" -P "C:\Program Files\l2r\cfg" %1 %2 ...}@*
-or use the DOS filename equivalent instead, e.g. @*
-@file{C:\Progra~1\l2r\latex2rt -P C:\Progra~1\l2r\cfg %1 %2 ...}
+To install the DOS version of @ltor{}, extract all files from the zip archive, 
+preserving the folder structure (winzip: check ``use folder names''),
+preferably to @file{C:\l2r}, because then it will find its cfg files 
+by default.@*
+If you extracted them to another folder (e.g. @file{C:\my files\l2r}),
+either edit the file @file{L2RPREP.BAT} 
+and change the folder @file{C:\l2r} to where you put them, or specify the 
+path to the cfg folder in the command line.
 
-If you install @ltor{} under WinNT, Win2000 or WinXP and 
-you want other users to be able to use @ltor{}, you must assign the
-files and folders appropriate user permissions (at least read & execute).
-If you don't know about user permissions, put @ltor{} into
-@file{C:\Program Files\l2r} or what else the standard folder 
-for installing applications is named (e.g. in the German version it 
-is @file{C:\Programme\l2r}). 
-
-Make sure that the folder containing the file
-@file{L2RPREP.BAT}  
+Make sure that the folder containing the file @file{L2RPREP.BAT}  
 is in your search path, or put this file into a folder 
-which is in your search path (e.g. @file{C:\Windows}).@*
-To display the current search path, enter @file{path} 
+which is in your search path.@*
+To display the current search path, enter @file{PATH} 
 from the command prompt (with no arguments).
 
-To add a folder -- e.g. C:\l2r -- to the search path:
+Under plain DOS, conversion of equations or figures to bitmaps is not 
+possible because Ghostscript and ImageMagick are not available
+for plain DOS.
+
+
+@node Win32 systems, Macintosh, DOS or Windows, Installation
+@section Win32 systems
+
+To install @ltor{} on a Win32 system (Win9x, WinME, WinNT, Win2000, WinXP, 
+WinVista), download and execute the @file{latex2rtf-x.x.x_win.exe} 
+(where x.x.x is the version number) and follow the instructions.
+
+To start the program double-click the @ltor{} icon, 
+or drag and drop a @file{.tex} file onto the icon.
+
+If your @latex{} document refers to external graphic files, e.g. eps, 
+or you want to use the option to convert equations to bitmaps,
+you must have LaTeX, ImageMagick and Ghostscript installed. These programs are 
+freely available for download at @uref{http://www.miktex.org/}, 
+@uref{http://www.imagemagick.org} and @uref{http://www.ghostscript.com}
+
+If MikTeX, ImageMagick and Ghostscript are installed before installing @ltor{},
+the pathes to their executables are automatically found in the windows registry 
+by the installer. Otherwise, these pathes may have to be specified manually 
+in the ``Environment'' tab of the @ltor{} GUI shell window.
+
+If you need to start @ltor{} not from its own shell but from another 
+Windows application, you need to add the folder containing 
+the latex2png script and the helper programs to the search path.@*
+Some applications (e.g. Lyx) allow to temporarily add the path by
+specifying it in the options.@*
+If this is not possible, you can add the latex2rtf folder to Windows'
+default path like follows:
+
+To add a folder -- e.g. C:\Program Files\latex2rtf -- to the search path:
 @itemize
 @item
-DOS, Win3.1, Win95, Win98, WinME
+Win95, Win98, WinME
 @itemize
 @item
 Open the file @file{C:\Autoexec.bat} either with Edit (DOS) or 
 with Notepad (Windows).
 @item
 At the end of that file, add the line @*
-@file{PATH=C:\l2r;%PATH%} 
+@file{PATH=C:\PROGRA~1\latex2rtf;%PATH%} 
 @item
 Save the file to its original location. Shutdown and reboot the PC.
 @end itemize
@@ -471,101 +491,30 @@ NT: Click the ``Environment'' tab;@*
 XP: Click the ``Extended'' tab, then the ``Environment variables'' button;
 @item
 Find the line beginning with @file{PATH=} and insert the string @*
-@file{C:\l2r;}@*
+@file{C:\PROGRA~1\latex2rtf;}@*
 so that the complete line looks like @*
-@file{PATH=C:\l2r;C:\WINDOWS;...}
+@file{PATH=C:\PROGRA~1\latex2rtf;C:\WINDOWS;...}
 @item
 Click "OK"
 @end itemize
 @end itemize
 
-To start the program under Windows:
-@itemize
-@item
-open a command prompt (or console window)@*
--- under DOS you are already at the command prompt --,@*
-@item
-use @file{cd <folder>} to make the folder with your TeX files the
-current folder, @*
-@item
-then enter either @file{L2R <filename> <options>} or @file{L2RSEM
-<filename> <options>} where <filename> is the name of your TeX file
-without the .tex extension.@* @file{L2R.BAT} and @file{L2RSEM.BAT} only
-differ in the character being used as parameter separator in the EQ
-fields, see @ref{Equations}.
-@end itemize
-
-If your @latex{} document refers to external graphic files, e.g. eps, 
-or you want to use the option to convert equations to bitmaps (-M# where
-# is greater than 3), you must have TeX, ImageMagick and Ghostscript installed. 
-These programs are freely available for download at @uref{http://www.miktex.org/}, 
-@uref{http://www.imagemagick.org} and @uref{http://www.ghostscript.com}.
-This works only on win32 systems (Win95, Win98, WinME, WinNT4, Win2000, WinXP)
-because ImageMagick is available only for win32, not for pure DOS.
-
 Either the folders where TeX, ImageMagick and Ghostscript are installed
 must be in your search path, or you must edit the file @file{L2RPREP.BAT}, 
 ensure that the pathes in this file point to the folders where 
 TeX, ImageMagick and Ghostscript are installed on your machine,
-and call @file{L2RPREP} once after opening your command prompt window and
-before calling @file{l2r}, @file{l2rsem} or @file{latex2rt}.
-Under Windows you can create another command prompt link in which you 
-can include the call to @file{L2RPREP.BAT}. 
+and call @file{L2RPREP} before calling @file{latex2rt}. @*
+Or you edit @file{L2R.BAT} and call @file{L2R} instead of
+calling @file{LATEX2RT.EXE}.
 
 When equations are to be converted to bitmaps, for each equation
 @ltor{} first writes a temporary .tex file to disk which consists of only 
-the equation to be converted. It then sends the call for latex2pn.bat to
-the operating system. There were problems that this didn't work although
-manually calling latex2pn.bat from the command prompt worked.@*
-There are several bugs in interfacing between Windows XP and DJGPP which 
-finally caused this. One fix needed was truncating the filename of 
-@file{latex2png.bat} to the DOS convention of 8.3 characters so that it is 
-now named @file{latex2pn.bat} and the executable program @file{latex2rt.exe}.
-The other fix is now hardcoded in latex2rt.exe, making sure the DOS environment 
-space in which latex2pn.bat is executed is large enough to store the needed 
-variables.
-
-If you get the message ``Out of environment space'' (should occur only under 
-plain DOS, Windows 3.1, Windows 95, Windows 98 or Windows ME) then@*
-add to your config.sys a line like the following@*
-@code{SHELL=C:\COMMAND.COM C:\ /E:4096 /P}@*
-or, if there already is such a line, modify it so that it supplies a 
-sufficiently large environment space @code{/E:}.  
-Shutdown and reboot the PC.
-
-@node Win32 systems, Macintosh, DOS or Windows, Installation
-@section Win32 systems
-
-To install @ltor{} on a Win32 system (Win9x, WinME, WinNT, Win2000, WinXP), 
-download and execute the @file{latex2rtf-x.x.x_win.exe} 
-(where x.x.x is the version number) and follow the instructions.
-
-If there is a newer version of @ltor{} for DOS but not for Windows, 
-you can download the newer DOS package and unzip it to the same folder where 
-the windows version is installed, thus overwriting the files with their newer
-versions. The GUI shell is not updated in this case.
-
-To start the program double-click the @ltor{} icon, 
-or drag and drop a @file{.tex} file onto the icon.
-
-If your @latex{} document refers to external graphic files, e.g. eps, 
-or you want to use the option to convert equations to bitmaps,
-you must have LaTeX, ImageMagick and Ghostscript installed. These programs are 
-freely available for download at @uref{http://www.miktex.org/}, 
-@uref{http://www.imagemagick.org} and @uref{http://www.ghostscript.com}
-
-If MikTeX, ImageMagick and Ghostscript are installed before installing @ltor{},
-the pathes to the executables are automatically found in the windows registry 
-by the installer. Otherwise, these pathes may have to be specified manually 
-in the ``Environment'' tab of the @ltor{} window.
-
-If you get the message ``Out of environment space'' (should occur only under 
-Windows 95, Windows 98 or Windows ME) then@*
-add to your config.sys a line like the following@*
-@code{SHELL=C:\COMMAND.COM C:\ /E:4096 /P}@*
-or, if there already is such a line, modify it so that it supplies a 
-sufficiently large environment space @code{/E:}.  
-Shutdown and reboot the PC.
+the equation to be converted. It then sends the call for 
+@file{"bash latex2png l2r_nnnn.tex"} to the operating system. @*
+In previous versions of latex2rtf, some users got the message 
+``Out of environment space'' (can occur only under Windows 95, Windows 98 
+or Windows ME); this should be solved now 
+by using bash.exe instead of command.com. 
 
 
 @node Macintosh, Problems Compiling, Win32 systems, Installation
@@ -662,6 +611,12 @@ look similar to the original.  The command line syntax is:
 
 @example
 latex2rtf [-options] inputfile[.tex]
+@end example
+
+or for the DOS and Windows versions:
+
+@example
+latex2rt [-options] inputfile[.tex]
 @end example
 
 The @code{-options} may consist of one or more of the following
@@ -777,8 +732,14 @@ These switches can be combined to get different effects.  Handy examples are
     @end table
 Bitmap conversion requires that you have installed a working latex2png script.
 Producing bitmaps is slow.@*
-Under Windows XP, generating more than 26 or 27 bitmapped equations for one 
-@latex{} input file (one run of @ltor{}) fails. We yet don't know why.
+When running the DOS version, conversion to bitmaps works for the first 26
+equations but fails for the rest with the message@*
+"latex2png: pipe error: Too many open files (EMFILE)".@*
+This is probably a bug in the djgpp 2.04 compiler; I chose this version
+because of its better support of long filenames under Win32 (95, 98, ME, 2000,
+XP).@*
+The Windows version, compiled with Cygwin in MinGW mode, successfully 
+converts at least 79 equations to bitmaps.
 
 @item -o outputfile
 Unless an @file{outputfile} is specified with the @code{-o} option, the resulting RTF
@@ -798,33 +759,57 @@ This is an option because it will break typesetting equations with non-matching
 parentheses (because an unmatched unquoted parenthesis would terminate the field).
 
 @item -P /path/to/cfg
-used to specify the directory that contains the @code{.cfg} files 
-and/or the directory that contains the latex2png script.@*
-The directory that contains the latex2png script must be prepended by a ":"
-(Unix, Mac). Under DOS or Windows, the scripts directory is not used, the 
-scripts are always taken from the search path, therefore the directory 
-containing latex2rt.exe and the DOS scripts must be the first in the search path. 
-If any of the directory names contains a blank, the directory string must be 
+used to specify the folder (i.e. directory) that contains the @code{.cfg} files 
+and/or the folder that contains the latex2png script.@*
+The folder that contains the latex2png script must be prepended by a ":"
+(Unix, Mac). Under DOS or Windows, the scripts folder is not used, the 
+scripts are always taken from the search path, therefore the folder 
+containing the scripts and the helper programs must be the first in the search path. 
+You can either add it to the search path permanently or add it temporarily by 
+calling l2rprep.bat before starting conversions.
+If any of the folder names contains a blank, the folder string must be 
 enclosed in single (Unix, Mac) or double (DOS, Windows) quotes.@*
 Examples:@*
 (Unix:) @code{latex2rtf -P ./cfg/:./scripts/ foo}@*
 (DOS/Windows:) @code{latex2rt -P "C:\Program Files\latex2rtf\cfg" foo}@*
 Note that without specifying the -P option, @ltor{} tries to find its cfg files 
 in the following locations:@*
-1. the directory specified by the environment variable @code{RTFPATH}, if this variable exists;@*
-2. the directory @code{C:/%PROGRAMFILES%/latex2rtf/cfg} -- this is the directory 
-in which @ltor{} is installed by the Windows GUI installer with default settings;@*
-3. the directory specified during compilation by the variable
-@code{CFGDIR}. This is set in the Makefile. The DOS/Windows version is compiled
+1. the folder specified by the environment variable @code{RTFPATH}, if this variable exists;@*
+2. the folder @code{C:/%PROGRAMFILES%/latex2rtf/cfg}, if the variable 
+@code{%PROGRAMFILES%} exists -- this is the folder in which @ltor{} is installed 
+by the Windows GUI installer with default settings;@*
+3. the folder specified during compilation by the variable
+@code{CFGDIR}. This is set in the Makefile. The DOS and Windows versions are compiled
 with @code{CFGDIR=C:/l2r}.
+
+@item -se#
+selects the scale for equation conversion, where # is the scale factor 
+(default 1.22).
+
+@item -sf#
+selects the scale for figure conversion, where # is the scale factor
+(default 1.35).
+
+@item -t# 
+where # selects the type of table conversion.  Use
+    @table @code
+    @item -t1   
+    convert tables to RTF (default)
+    @item -t2   
+    convert tables to bitmaps
+    @end table
+
+@item -v 
+prints version information on standard output and exits.
 
 @item -S
 used to specify that semicolons should be used to separate arguments in RTF fields
 (instead of commas).  Typically this is needed when the machine that opens the RTF file
 has a version of Windows that uses `,' for decimal points.
 
-@item -V 
-prints version information on standard output and exits.
+@item -T /path/to/tmp
+used to specify the folder where to put temporary files. Not used by the DOS and
+Windows versions.
 
 @item -W
 includes warnings directly in the RTF file

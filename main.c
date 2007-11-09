@@ -235,8 +235,8 @@ int main(int argc, char **argv)
                 diagnostics(3, "Table option = %s x=%d", optarg, x);
                 g_tabular_display_rtf    = (x &  1) ? TRUE : FALSE;
                 g_tabular_display_bitmap = (x &  2) ? TRUE : FALSE;
-                diagnostics(3, "Table option g_tabular_display_rtf     = %d", g_equation_display_rtf);
-                diagnostics(3, "Table option g_tabular_display_bitmap  = %d", g_equation_inline_rtf);
+                diagnostics(3, "Table option g_tabular_display_rtf     = %d", g_tabular_display_rtf);
+                diagnostics(3, "Table option g_tabular_display_bitmap  = %d", g_tabular_display_bitmap_rtf);
                 break;
 
             case 'P':          /* -P path/to/cfg:path/to/script or -P path/to/cfg or -P :path/to/script */
@@ -249,6 +249,7 @@ int main(int argc, char **argv)
                     g_config_path = strdup(optarg);
                 diagnostics(2, "cfg=%s, script=%s", g_config_path, g_script_dir);
                 break;
+
             case 's':
                 if (optarg && optarg[0] == 'e') {
                     if (sscanf(optarg, "e%lf", &xx) == 1 && xx > 0)
@@ -263,6 +264,7 @@ int main(int argc, char **argv)
                         diagnostics(WARNING, "Figure scale (-sf #) is not positive, ignoring");
                 }
                 break;
+
             case 'S':
                 g_field_separator = ';';
                 break;
