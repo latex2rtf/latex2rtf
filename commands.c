@@ -303,6 +303,9 @@ static CommandArray commands[] = {
     {"settowidth", CmdIgnoreParameter, No_Opt_Two_NormParam},
     {"nopagebreak", CmdIgnoreParameter, One_Opt_No_NormParam},
     {"samepage", CmdIgnore, 0},
+    {"expandafter", CmdIgnore, 0},
+    {"long", CmdIgnore, 0},
+    {"nobreak", CmdIgnore, 0},
     {"linebreak", CmdIgnoreParameter, One_Opt_No_NormParam},
     {"nolinebreak", CmdIgnoreParameter, One_Opt_No_NormParam},
     {"typein", CmdIgnoreParameter, One_Opt_One_NormParam},
@@ -1165,7 +1168,7 @@ globals: command-functions have side effects or recursive calls
                 if (Environments[iEnv][iCommand].func == NULL)
                     return FALSE;
                 if (*Environments[iEnv][iCommand].func == CmdIgnoreParameter) {
-                    diagnostics(2, "Command \\%s ignored", cCommand);
+                    diagnostics(2, "Command \\%s unknown", cCommand);
                 }
 
                 diagnostics(5, "CallCommandFunc Found %s iEnvCommand=%d number=%d", Environments[iEnv][iCommand].cpCommand, iEnv, iCommand);
@@ -1205,7 +1208,7 @@ globals: command-functions have side effects or recursive calls
     if (AddParam == ON) {
         snprintf(unknown_environment, 100, "\\%s%s%s", "end{", cCommand, "}");
         Ignore_Environment(cCommand);
-        diagnostics(WARNING, "Environment <%s> ignored.  Not defined in commands.c", cCommand);
+        diagnostics(WARNING, "Environment <%s> unknown.  Not defined in commands.c", cCommand);
     }
 }
 
@@ -1248,7 +1251,7 @@ static char *EnvironmentName(CommandArray *code)
 	if (code == FigureCommands)
 		return strdup("figure");
 	if (code == ignoreCommands)
-		return strdup("ignored environment");
+		return strdup("unknown environment");
 	if (code == hyperlatexCommands)
 		return strdup("hyperlatex");
 	if (code == apaciteCommands)

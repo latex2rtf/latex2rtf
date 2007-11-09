@@ -492,7 +492,7 @@ static void setDocumentOptions(char *optionlist)
         } else if (strcmp(option, "doc") == 0) {
             diagnostics(WARNING, "Some support for apa class");
         } else {
-            diagnostics(WARNING, "Package/option '%s' ignored.", option);
+            diagnostics(WARNING, "Package/option '%s' unknown.", option);
         }
         option = strtok(NULL, ",");
     }
@@ -1026,7 +1026,7 @@ Needs to be terminated for:
 		      provided by markboth, markright
 		      pagenumbering in header */
     } else {
-        diagnostics(WARNING, "Unknown \\pagestyle{%s} ignored", style);
+        diagnostics(WARNING, "\\pagestyle{%s} unknown", style);
     }
 }
 

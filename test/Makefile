@@ -258,6 +258,10 @@ eqns.rtf: eqns.tex
 	$(LATEX) eqns $(LATEX_LOG)
 	$(LATEX2RTF) $(OPTIONS) eqns
 
+essential.rtf: essential.tex
+	$(LATEX) essential $(LATEX_LOG)
+	$(LATEX2RTF) $(OPTIONS) essential
+
 check:
 	./bracecheck
 	
