@@ -183,15 +183,15 @@ void setPackageInputenc(char *option)
         strcpy(g_charset_encoding_name, "raw");
         
     } else if (strcmp(option, "utf8") == 0) {
-        diagnostics(WARNING, "\n Input Encoding utf8 - experimental support");
+        diagnostics(WARNING, "Input Encoding utf8 - experimental support");
         strcpy(g_charset_encoding_name, "utf8");
 
     } else if (strcmp(option, "utf8x") == 0) {
-        diagnostics(WARNING, "\n Input Encoding utf8x - experimental support");
+        diagnostics(WARNING, "Input Encoding utf8x - experimental support");
         strcpy(g_charset_encoding_name, "utf8");
 
     } else
-        diagnostics(WARNING, "\n Input Encoding <%s> not supported", option);
+        diagnostics(WARNING, "Input Encoding <%s> not supported", option);
 }
 
 static void setPackageFont(char *font)
@@ -465,21 +465,32 @@ static void setDocumentOptions(char *optionlist)
         } else if (strcmp(option, "apacite") == 0 || strcmp(option, "apacitex") == 0) {
             PushEnvironment(APACITE_MODE);
             g_document_bibstyle = BIBSTYLE_APACITE;
-        } else if (strcmp(option, "fancyhdr") == 0) {
-            diagnostics(WARNING, "Only partial support for %s", option);
-        } else if (strcmp(option, "textcomp") == 0 || strcmp(option, "fontenc") == 0) {
+        } else if (strcmp(option, "endnotes"    ) == 0 ||
+                   strcmp(option, "pstricks-add") == 0 ||
+                   strcmp(option, "fancyhdr"    ) == 0 ||
+                   strcmp(option, "html"        ) == 0 ||
+                   strcmp(option, "url"         ) == 0 ||
+                   strcmp(option, "alltt"       ) == 0 ||
+                   strcmp(option, "epsf"        ) == 0 ||
+                   strcmp(option, "psfig"       ) == 0 ||
+                   strcmp(option, "amsmath"     ) == 0 ||
+                   strcmp(option, "verbatim"    ) == 0 ||
+                   strcmp(option, "paralist"    ) == 0 ) {
+            diagnostics(WARNING, "Incomplete support for package/option '%s' ", option);
+
+        } else if (strcmp(option, "textcomp"    ) == 0 || 
+                   strcmp(option, "fontenc"     ) == 0 ||
+                   strcmp(option, "eurosym"     ) == 0 ||
+                   strcmp(option, "ucs"         ) == 0 ||
+                   strcmp(option, "amssymb"     ) == 0) {
             /* do nothing ... but don't complain */
         } else if (strcmp(option, "color") == 0) {
             diagnostics(WARNING, "Color support limited to eight basic colors");
-        } else if (strcmp(option, "endnotes") == 0) {
-            diagnostics(WARNING, "Limited endnote support");
-        } else if (strcmp(option, "paralist") == 0) {
-            diagnostics(WARNING, "Limited paralist support");
         } else if (strcmp(option, "man") == 0 ||
                    strcmp(option, "jou") == 0) {
             diagnostics(WARNING, "ignoring [%s], assuming [doc]", option);
         } else if (strcmp(option, "doc") == 0) {
-            diagnostics(WARNING, "Limited support for apa class");
+            diagnostics(WARNING, "Some support for apa class");
         } else {
             diagnostics(WARNING, "Package/option '%s' ignored.", option);
         }

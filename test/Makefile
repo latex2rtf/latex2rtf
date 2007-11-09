@@ -242,6 +242,22 @@ include.rtf: include.tex include1.tex include2.tex include3.tex
 	$(LATEX) include $(LATEX_LOG)
 	$(LATEX2RTF) $(OPTIONS) include
 
+report.rtf: report.tex
+	$(LATEX) report $(LATEX_LOG)
+	$(LATEX2RTF) $(OPTIONS) report
+
+excalibur.rtf: excalibur.tex
+	$(LATEX) excalibur $(LATEX_LOG)
+	$(LATEX2RTF) $(OPTIONS) excalibur
+
+dblspace.rtf: dblspace.tex
+	$(LATEX) dblspace $(LATEX_LOG)
+	$(LATEX2RTF) $(OPTIONS) dblspace
+
+eqns.rtf: eqns.tex
+	$(LATEX) eqns $(LATEX_LOG)
+	$(LATEX2RTF) $(OPTIONS) eqns
+
 check:
 	./bracecheck
 	

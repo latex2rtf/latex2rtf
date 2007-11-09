@@ -1545,19 +1545,25 @@ void FinishDisplayedBitmap(void)
 static char * abbreviate(const char *s, int len)
 {
 	char *t;
-	int i;
+	int i,n,half;
 	
 	if (s==NULL) return strdup("<NULL>");
 	
 	t = strdup(s);
-	if (strlen(t) > len) {	
-		t[len-3] = '.';
-		t[len-2] = '.';
-		t[len-1] = '.';
-		t[len-0] = '\0';	
+	n = strlen(t);
+	if (n > len) {	
+		half = (len-5)/2;
+		t[half+0] = ' ';
+		t[half+1] = '.';
+		t[half+2] = '.';
+		t[half+3] = '.';
+		t[half+4] = ' ';
+		for (i=0; i<half; i++)
+			t[half+5+i] = s[n-half+i];
+		t[len-1] = '\0';
 	}
 	
-	for (i=0; i<len-3; i++)
+	for (i=0; i<len; i++)
 		if (t[i] == '\n') t[i] = ' ';
 		
 	return t;
@@ -1573,10 +1579,12 @@ void WriteLatexAsBitmap(char *pre, char *eq, char *post)
     char *p, *name, *abbrev;
     double scale;
 
-	abbrev = abbreviate(eq, 30);
-	
-    diagnostics(WARNING, "rendering PNG for '%s%s%s'", pre, abbrev, post);
+	/* go to a bit a trouble to give the user some feedback */
+	name = strdup_together3(pre,eq,post);
+	abbrev = abbreviate(name, 50);
+    diagnostics(WARNING, "rendering PNG for '%s'", abbrev);
 	free(abbrev);
+	free(name);
 	
     if (eq == NULL)
         return;
@@ -1614,7 +1622,6 @@ void WriteLatexAsBitmap(char *pre, char *eq, char *post)
     	char *s = strdup_together(g_psset_info, g_psstyle_info);
         name = SaveEquationAsFile(s, pre, eq, post);
         if (s) free(s);
-        show_string(1,name,"contents");
     } else
         name = SaveEquationAsFile(NULL, pre, eq, post);
 
