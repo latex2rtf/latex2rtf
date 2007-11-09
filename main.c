@@ -252,16 +252,23 @@ int main(int argc, char **argv)
 
             case 's':
                 if (optarg && optarg[0] == 'e') {
-                    if (sscanf(optarg, "e%lf", &xx) == 1 && xx > 0)
+                    if (sscanf(optarg, "e%lf", &xx) == 1 && xx > 0) {
                         g_png_equation_scale = xx;
-                    else
-                        diagnostics(WARNING, "Equation scale (-se #) is not positive, ignoring");
-                }
-                if (optarg && optarg[0] == 'f') {
-                    if (sscanf(optarg, "f%lf", &xx) == 1 && xx > 0)
+                    } else {
+                        diagnostics(WARNING, "Mistake in command line number for scaling equations");
+                        diagnostics(WARNING, "Either use no spaces: '-se1.22' or write as '-s e1.22'");
+                    }
+                    
+                } else if (optarg && optarg[0] == 'f') {
+                
+                    if (sscanf(optarg, "f%lf", &xx) == 1 && xx > 0) {
                         g_png_figure_scale = xx;
-                    else
-                        diagnostics(WARNING, "Figure scale (-sf #) is not positive, ignoring");
+                    } else {
+                        diagnostics(WARNING, "Mistake in command line number for scaling figures");
+                        diagnostics(WARNING, "Either use no spaces: '-sf1.35' or write as '-s f1.35'");
+                    }
+                } else {
+                    diagnostics(WARNING, "Unknown option '-s' use '-se#' or '-sf#'");
                 }
                 break;
 
