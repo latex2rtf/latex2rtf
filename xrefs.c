@@ -1754,6 +1754,8 @@ void CmdHarvardCite(int code)
 
 static void putHtmlRTF(const char *style)
 {
+	int n;
+	
 	if (style) {
 		/*  possible styles are "tt", "rm", "sf", and "same" */
 		if (strstr(style,"rm")) 
@@ -1762,7 +1764,12 @@ static void putHtmlRTF(const char *style)
 			CmdFontFamily(F_FAMILY_TYPEWRITER);
 		else if (strstr(style,"sf"))
 			CmdFontFamily(F_FAMILY_SANSSERIF);
-	}
+	} else
+		CmdFontFamily(F_FAMILY_TYPEWRITER);
+		
+	n = existsDefinition("UrlFont");
+	if (n != -1) ConvertString("\\UrlFont");
+
 }
 /******************************************************************************
 purpose: just create a hyperlink using word fields
