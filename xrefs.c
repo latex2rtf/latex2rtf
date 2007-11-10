@@ -1752,6 +1752,18 @@ void CmdHarvardCite(int code)
         free(pretext);
 }
 
+static void putHtmlRTF(const char *style)
+{
+	if (style) {
+		/*  possible styles are "tt", "rm", "sf", and "same" */
+		if (strstr(style,"rm")) 
+			CmdFontFamily(F_FAMILY_ROMAN);
+		else if (strstr(style,"tt"))
+			CmdFontFamily(F_FAMILY_TYPEWRITER);
+		else if (strstr(style,"sf"))
+			CmdFontFamily(F_FAMILY_SANSSERIF);
+	}
+}
 /******************************************************************************
 purpose: just create a hyperlink using word fields
 ******************************************************************************/
@@ -1760,7 +1772,9 @@ static void InsertRtfHyperlink(const char *text,    const char *url,
 {
 	
 	char * fullurl = strdup_together(baseurl,url);
-	fprintRTF("{\\field{\\*\\fldinst{ HYPERLINK \"");
+	fprintRTF("{");
+	putHtmlRTF(style);
+	fprintRTF("\\field{\\*\\fldinst{ HYPERLINK \"");
 	putRtfStrEscaped(fullurl);
 	fprintRTF("\" }{{}}}{\\fldrslt{");
 	ConvertString(text);
@@ -1832,7 +1846,9 @@ void CmdHtml(int code)
 			/* cannot use insertHyperlink because url has toxic characters */
 	        url = getBraceRawParam();
 			text = strdup_together(baseurl,url);
-			fprintRTF("{\\field{\\*\\fldinst{ HYPERLINK \"");
+			fprintRTF("{");
+			putHtmlRTF(urlstyle);
+			fprintRTF("\\field{\\*\\fldinst{ HYPERLINK \"");
 			putRtfStrEscaped(text);
 			fprintRTF("\" }{{}}}{\\fldrslt{\\ul ");
 			putRtfStrEscaped(text);
