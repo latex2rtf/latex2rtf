@@ -1,263 +1,164 @@
-Changes between release 1.9.17 and 1.9.18
-
-r673
-first check-in for 1.9.18
-
-r674
-WH: update of the documentation (equation conversion)
-
-r675
-WH: update of the documentation (unicode input)
-
-r676
-Infrastructure changes to support stylesheets.  Modify
-CmdStartParagraph() to take two parameters (paragraph style and
-indenting).  Create style numbers in funct1.h for the different possible
-paragraph styles and use these as appropriate. No changes to translation
-or conversion have been made.
-
-r677
-Eliminate the numbers in favor of passing strings.  This will allow
-InsertStyle() to be called directly when the time comes to hook up these
-parameters.  I had forgotten about the existing style infrastructure in
-style.c and style.h.
-
-r678
-WH: updated main.c to include "help" text for -M32
-
-r679
-Support for list environments from paralist package.  While implementing
-this I noticed that some nested list environments were broken.  While
-tracing the problems, I discovered that an old optimization was broken. 
-I have taken it out and everything still seems to work fine.
-
-r680
-Mention that there is some support for paralist
-
-r681
-Add compactitem and compactdesc environment handling. Like the rest of
-paralist, there has been no attempt to reduce the line spacing.
-
-r682
-Add a few more test cases for paralist environments to list.tex
-
-r683
-Started to improve tabular widths.  Then realized that global variables
-for the tabular environment were used oddly.  Further investigation
-revealed that the global variable could be removed completely if the
-active column was placed in the TabularT type.  So I did this, and then
-needed to comment out some usage in funct1.c and convert.c.  Evidently,
-that stuff was never used.  Maybe I will get farther next time.
-
-r684
-Modify function to extract the contents of a brace from tables.c and put
-it in util.c because it is a handy little function.  Use in in xref.c to
-simplify some code.
-
-r685
-Make getStringBraceParam() work properly with \{ and \}
-
-r686
-modify testfile so that it does not create unnecessary warnings.
-
-r687
-fix problem with multicolumn in the last line of a table
-
-r688
-Fix equation numbering in reports and books so that equations use (2.3)
-format as appropriate.  Reset numbering at each chapter break.
-
-r689
-renaming files so that plurals are used more consistently
-
-r690
-More plurals for file names
-
-r691
-rename encode_tables.h to encoding_tables.h update dependencies in the
-Makefile
-
-r692
-New option -t # that allows the user to have tabular environments
-generated as bitmaps. Basically -t 1 is the default and generates RTF
-only.  -t 2 will convert tabular environments to bitmaps, -t 3 will
-generate both in the RTF document.
-
-r693
-WH: in counters.c corrected "util.h" -> "utils.h"
-
-r694
-WH: corrected latex2pn.bat to allow repeated call for reducing picture
-size
-
-r695
-Do not scale tables that are inserted as bitmaps.  Modify tabular.tex so
-that it typesets more nicely with latex.  Thanks Wilfried!
-
-r696
-Support tabbing environments as bitmaps.  Add a minimal documentation in
-help message.
-
-r697
-Refactoring code.  Move WriteLatexAsBitmap() to graphics.c.  Create new
-routines PrepareDisplayedBitmap() and FinishDisplayedBitmap() to
-simplify to localize paragraph starting and stopping.
-
-r698
-Once again, try to use ghostscript for pdf->png conversion.  Last time
-the command needed to be changed because it failed on Windows system.
-Now, under unix, use ghostscript conversion.  Under everything else
-continue to use ImageMagick.  Hopefully, this will make everyone happy.
-Or at least happier.
-
-r699
-Quote filenames passed to system() in pdf_to_png
-
-r700
-Single quote all filenames passed to shell via system().  Adam Maxwell++
-
-r701
-Convert 'filename' to "filename" in system commands because Windows
-treats single quotes differently than UNIX.  Also, fix up the lengths of
-the command strings.  This needs revisiting.
-
-r702
-Collect most of the code for creating command-line graphics conversion
-into a single routine SysGraphicsCommand().  This routine is both
-simpler and more robust than the code used in many other places in the
-code.
-
-r703
-hack to resolve doublespace environment problem
-
-r704
-fix for image scaling when the width is specified, but the height is
-not.  Adam Maxwell++
-
-r705
-implement rounding properly ... what was I thinking?
-
-r706
-add yet another test image file.  Maxwell++
-
-r707
-WH: added pdf2pnga scripts, called in graphics.c
-
-r708
-supply rint() as a substitute for round() because windows does not have
-round() defined in its math.h header.
-
-r709
-Collecting all the system dependent graphics conversion stuff into one
-place.  This eliminates a lot of code duplication and makes it clearer
-that all conversions are handled in a uniform fashion (i.e., -D -T and
--P command line flags).  Right now there are two basic sets of calls ...
-one for UNIX and one for XP.  (There is one minor sub-branch in the UNIX
-versions that uses native pdf handling on Apple systems.)
-
-Scaling on apple systems looks messed up ... sigh
-
-r710
-WH: (DOS version) in graphics.c, removed quotes from calls to
-latex2pn.bat and pdf2pnga.bat
-
-r711
-WH: (DOS version) in graphics.c, now calling bash instead of
-command.com, so that quotes in calls to latex2png are supported
-
-r712
-WH: in graphics.c, calling pdf2pnga script instead of sips (Apple) or gs
-(otherwise) Added Apple specific script pdf2pnga_apple (calling sips)
-
-r713
-Changes to pdf2pnga to make things work at least under OS X.  This
-probably breaks the XP stuff, and is only intended to start the process
-of coming up with script that will run properly cross-platform.
-
-r714
-refactoring the horrible horrible getSection().  In the process
-misc4.tex and linux.tex no longer translate properly.  More fixes
-coming.  This version will spew a whole bunch of diagnostic information.
-Wait for a later version before downloading.
-
-r715
-Fixing remaining bugs from the refactoring of getSection().  Things
-should make a bit more sense.  Files other than parser.c have ignorable
-tweaks.
-
-r716
-Clean separation of unix and windows graphics conversion.  Filenames are
-now single-quoted in unix as they should be.  Windows gets double
-quotes.  Use sips by default on apple systems.  Windows uses the script
-pdf2pnga for conversions.  I think that this should provide maximum
-functionality to all platforms.
-
-r717
-Move getSection() out of parser.c and into preparse.c
-
-r718
-Actually add the files to svn this time.  Rename getSection() to
-preParse()
-
-r719
-WH: latex2pnga script tests availability of Ghostscript or sips and
-issues system dependent call; unneeded scripts deleted
-
-r720
-WH: Makefile: script latex2pn.bat removed, pdf2pnga added
-
-r721
-WH: equations.c: one comment changed graphics.c: comments about pdf2png
-moved into function SysGraphicsConvert, command for debugging
-(non-)insertion of bitmap into rtf file inserted (marked with "/* WH
-*/")
-
-r722
-Fix problem with bitmapped equations not appearing when -M12 option is
-used.
-
-r723
-Make equation conversion to bitmap less noisy.
-
-r724
-If SysGraphicsConvert() returns null, then make sure that the return
-value is handled properly.  Catch a few cases when strings are not freed
-properly.
-
-r725
-WH: main.c: help text corrected
-
-r726
-WH: parser.c: Added exit to catch extra blank in \begin{document}
-Actually, it doesn't solve the problem that such extra blanks are
-allowed but at least it exits the progrm with a helpful error message.
-
-r727
-fix for '\begin {document}' parse error.  This solution has not been
-applied to any other \begin .. \end environments.
-
-r728
-remove debugging \end{document} from misc4.tex
-
-r729
-Fix numbering of chapters in the appendix ... not perfect, but the latex
-default should work.
-
-r731
-ChangeLog for release.  Update the version number.  Edit comments in 
-graphics.c
-
-r732
-WH: fixed some minor bugs in test files (./test/*.tex)
-
-r733
-reformat and add a few missing test files
-
-r734
-Fix typo
-
-r735
-fix more typos in Makefile
-
-r736
-bump version.h for release 1.9.18
+r752 support \symbol{\'23} and \symbol{\"13}.  Improve \char'23 so that
+     it changes if\tt is active
+
+r753 support \char92 and \char`b and \symbol{92}
+
+r754 rip out support for %latex2rtf: as a way of controlling parser. 
+     Replace uses in examples with \iflatex2rtf ... \else ... \fi.  Fix
+     mistake in getSimpleCommand() that did not allow '\!' to be
+     returned. Eliminate weird bug when a command follows an integral
+     sign ... $\int \cos$. Improve debugging output at -d2 level.
+
+r755 Do not try to ignore packages or package options.
+
+r756 Fixes for the regressions in overstrike.tex
+
+r757 WH: commented out unneeded 'show_buffer' function in preparse.c
+
+r758 add \urlstyle{} ignore.cfg.  Cleaned up TryIgnoreVariable().  Made
+     arguments to strdup_together be constant strings.  More of this
+     should be done.
+
+r759 silence \renewcommand{}{} warning.
+
+r760 no functional change ... just different code comment
+
+r762 Improve documentation for \iflatextortf and provide work-around for
+     %latex2rtf:
+
+r763 Fix for backslash-linefeed problem in .aux files.  Pretty obscure.
+
+r764 Suppress multiple warnings for missing \bibcite{} entries.  Change
+     Makefile in test directory to sup press all the output from latex.
+
+r765 WH: modified cfg.c so that latex2rtf also tries to find the cfg dir
+     in C:\%ProgramFiles%\latex2rtf\cfg (default if installed by windows
+     installer)
+
+r766 Fix typo in diagnotic message for \ensureeqn.  Fix Makefile for
+     bib_super.tex. Revise my_fgetc() in the hopes of making it more
+     portable.  Update ScanBbl() so that it uses the new routine.
+
+r767 Fix regressions in bib_natbib1.tex and bib_natbib2.tex.  Don't know
+     where this code went, but the use of plain old \cite{} in the
+     natbib style was broken.
+
+r768 Add tests for \documentclass{apa}
+
+r769 Make section headers bold for \documentclass{apa}
+
+r770 Fix the bug from the preamble of bib_apa.  Add 'const' to more
+     functions. Eliminate all unneeded fprintf(stderr,...).  Rename a
+     bunch of diagnostic(1,...) instances to diagnostic(WARNING, ...).
+
+r771 Adding two more test files
+
+r772 WH: Modified main.c so that -P option now works also under
+     DOS/Windows. Updated documentation of -P option and -M option.
+     Fixed bug in latex2png script.
+
+r773 WH: Updated documentation of -P option and -M option (again).
+
+r774 added diagnostic() line to my_fgets() to help sort out the problems
+     on Windows.
+
+r775 WH: xrefs.c: Open aux file in binary mode. Removed extra
+     diagnostic() line.
+
+r776 Use fprintf() in show_string() to produce better diagnostics
+
+r777 Fix for bibentry_apalike.tex
+
+r778 Make sure all fopen() calls use the mode "rb"
+
+r779 Starting the process of rationalizing the debug levels
+
+r780 remove a few instances of strcat
+
+r781 More clean-up of debugging information.  -d2 now shows nothing but
+     file manipulations.  Small tweaks to makefile in the test directory
+     to create temporary files in a folder within the current directory.
+
+r782 More diagnostics clean-up.  It is now possible to get relatively
+     noise-free output using -d2.  This diagnostic level shows file
+     handling and each section as it is handled.  The plan is to make
+     -d3 echo system commands and each section as it is preparsed.  -d4
+     will track each \command as it is used.
+
+r783 More rationalization for debugging levels.  One day -d5 will be
+     stuff that happens within CmdName() functions and -d6 will show
+     nearly everything but character processing, and -d7 will show each
+     character as it gets read and processed.
+
+r784 Fix for fig_endfloat conversion.  It mostly works.  A few more
+     diagnostic() tweaks.
+
+r785 More diagnostics() tweaks.
+
+r786 support \overrightarrow
+
+r787 preliminary support for subfigure package
+
+r788 test file for \subfigure[caption]{figure} command
+
+r789 Add proper paragraph ending to subfigure pieces.  Fix numbering of
+     subfigures.  Add tests.
+
+r790 Initial code to support the pstricks-add package.  Three commands
+     are recognized \psset{}, \begin{psgraph}, and \begin{pspicture}. 
+     One broken test file (at least I cannot latex it successfully) is
+     also included.
+
+r791 Emit information as latex2rtf is doing slow stuff (converting
+     latex->PNG or pdf->PNG).  Eliminate first linefeed and emit a final
+     linefeed when done.  This helps to group the output with the
+     previous command.
+
+r792 Clean up a few preamble problems in the test documents.
+
+r793 revert to placing the DOCUMENT_MODE environment before PREAMBLE
+     because there was no real reason to change and this might introduce
+     new subtle bugs.
+
+r794 add support for \href{url}{text}, \url{url}, \nolinkurl{url}.
+
+r795 start of a test file for hyperref features
+
+r796 refactoring the hyperlink code
+
+r797 more \url{ref} clean-up.  add putRtfStrEscaped() function.
+
+r798 eliminate some compiler warnings
+
+r799 Minor change to getRawTexChar() to handle EOF condition better. 
+     Small change to CmdInclude() to properly terminate with long file
+     names.
+
+r800 Make is so that long file names fail properly when \input is used. 
+     Extend the possible file name length to 99.
+
+r801 Fix bug in ScanAux() so that it handles \@input{file} properly. 
+     Enhance test/include.tex so that it can be properly processed by
+     latex.  Add pagebreak before every instance of \include{file} as
+     should be done.  Fix minor bug in subsubsection numbering when
+     section but not subsection is used.
+
+r802 preliminary code to support \newpsstyle{}{} ... unclear if it works
+     yet.
+
+r803 remove debugging commands since \newpsstyle{}{} seems to work.  Add
+     more packages with 'limited' support.  Have a number of test files
+     run latex first to generate .aux files.  Improve diagnostics for
+     writelatexasbitmap().
+
+r804 silently ignore \nobreak, \expandafter, \long.  Change warnings
+     from 'ignored' to 'unknown'.  More general cleanup.
+
+r805 WH: fixed a bug in main.c. Updated documentation.
+
+r806 WH: fixed my bugfix in main.c (should have tested it before
+     uploading!)
+
+r807 Minor clean-up of -se# and -sf# scaling options.  We don't properly
+     support long option names, currently '-se #' is an error.
+

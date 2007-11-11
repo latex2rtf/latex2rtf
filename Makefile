@@ -130,7 +130,7 @@ TEST=  \
 	test/enc_cp850.tex           test/fig_testc.ps       test/unicode.tex       \
 	test/bib_apa.tex             test/bib_apa.bib        test/bib_apacite2.tex  \
 	test/bib_apacite2.bib        test/fig_subfig.tex     test/include4.tex      \
-	test/include5.tex            test/hyperref.tex
+	test/include5.tex            test/hyperref.tex       test/bib_super.bib
 	
 OBJS=fonts.o direct.o encodings.o commands.o stack.o funct1.o tables.o \
 	chars.o ignore.o cfg.o main.o utils.o parser.o lengths.o counters.o \
@@ -163,6 +163,7 @@ checkdir: $(README) $(SRCS) $(HDRS) $(CFGS) $(SCRIPTS) $(TEST) doc/latex2rtf.tex
 
 clean: checkdir
 	$(RM) -f $(OBJS) core $(BINARY_NAME)
+	$(RM) -rf tmp
 
 depend: $(SRCS)
 	$(CC) -MM $(SRCS) >makefile.depend
