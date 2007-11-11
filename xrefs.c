@@ -704,10 +704,11 @@ purpose: handles \label \ref \pageref \cite
 ******************************************************************************/
 void CmdLabel(int code)
 {
-    char *text, *signet, *s;
+	int brace;
+    char *text, *signet, *s, *t, *p;
     char *option = NULL;
     int mode = GetTexMode();
-
+	
     option = getBracketParam();
     text = getBraceParam();
     if (strlen(text) == 0) {
@@ -779,7 +780,35 @@ void CmdLabel(int code)
             free(signet);
             break;
 
-
+		case LABEL_NAMEREF:
+            signet = strdup_nobadchars(text);
+            s = ScanAux("newlabel", text, 0, g_aux_name);
+            if (s) {
+				/* s should look like {2}{1}{Random Stuff\relax }{section.2}{} */
+				t = strchr(s,'{');
+				if (t) t=strchr(t+1,'{');
+				if (t) t=strchr(t+1,'{');
+				if (t) {
+					t++;
+					p=t;
+					brace = 1;
+					/* find end of string ... counting braces */
+					while (p && *p) {
+						if (*p=='{') brace++;
+						if (*p=='}') {
+							brace--;
+							if (brace == 0) break;
+						}
+						p++;
+					}
+					if (p) *p='\0';
+					ConvertString(t);
+				}
+		    }
+		    
+		    free(signet);
+            if (s) free(s);
+		    break;
     }
 
     free(text);
@@ -1865,7 +1894,7 @@ void CmdHtml(int code)
 		case LABEL_NO_LINK_URL:
 	        url = getBraceRawParam();
 	        text = strdup_together(baseurl,url);
-    		while (*text) putRtfCharEscaped(*text++);
+    		putRtfStrEscaped(text);
 			break;
 
 		case LABEL_BASE_URL:

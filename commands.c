@@ -243,6 +243,7 @@ static CommandArray commands[] = {
     {"vref", CmdLabel, LABEL_VREF},
     {"eqref", CmdLabel, LABEL_EQREF},
     {"pageref", CmdLabel, LABEL_PAGEREF},
+    {"nameref", CmdLabel, LABEL_NAMEREF},
     {"cite", CmdCite, CITE_CITE},
 	{"onlinecite", CmdCite, CITE_CITE},
 	{"citeonline", CmdCite, CITE_CITE},

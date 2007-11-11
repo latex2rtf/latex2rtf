@@ -1,7 +1,10 @@
 \documentclass{article}
 \usepackage{hyperref}
-\usepackage{times}
+\usepackage{nameref}
 \begin{document}
+
+\newcommand{\myref}[1]{`\nameref{#1}' (see p.\pageref{#1})}
+
 
 \section{The first section}
 hello a 
@@ -12,13 +15,23 @@ a second reference
 \href{http://www.tug.org/}{tug}
 to the \TeX{} website 
 
-\subsection{\verb#\url{}#}
+which when applied as follows:
+
+\section{Random Stuff}\label{randomlabel}
+This is very dependent on \myref{randomlabel}.
+
+
+\subsection{url}
 We can use the \verb#\url# command to do this as
 well like so: \url{http://www.tug.org}.  
 
+
 The \verb#\nolinkurl{}# is similar but non-functional: \nolinkurl{http://www.tug.org}. 
 
+\end{document}
+
 \section{The second section}
+
 \hypertarget{TestTarget}{goodbye}
 
 \end{document}

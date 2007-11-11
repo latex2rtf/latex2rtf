@@ -9,14 +9,15 @@ OPTIONS  = -Z3 -P ../cfg/:../scripts/ -T tmp/
 LATEX_LOG = >latex.log
 #LATEX_LOG = 
 
-RTF=	align.rtf	array.rtf 		box.rtf 			ch.rtf	\
-		chem.rtf 	color.rtf 		dblspace.rtf		defs.rtf\
-		endnote.rtf	essential.rtf	excalibur.rtf 		fancy.rtf\
-		fonts.rtf	fontsize.rtf 	fonttest.rtf  		geometry.rtf\
-		geotest.rtf	german.rtf		head_article.rtf	head_book.rtf \
-		list.rtf 	ifclause.rtf	include.rtf			linux.rtf\
-		logo.rtf 	misc1.rtf 		misc3.rtf 			misc4.rtf\
-		percent.rtf	report.rtf		tabbing.rtf			tabular.rtf
+RTF=	align.rtf	 array.rtf 		box.rtf 			ch.rtf	             \
+		chem.rtf 	 color.rtf 		dblspace.rtf		defs.rtf             \
+		endnote.rtf	 essential.rtf	excalibur.rtf 		fancy.rtf            \
+		fonts.rtf	 fontsize.rtf 	fonttest.rtf  		geometry.rtf         \
+		geotest.rtf  german.rtf		head_article.rtf	head_book.rtf        \
+		list.rtf 	 ifclause.rtf	include.rtf			linux.rtf            \
+		logo.rtf 	 misc1.rtf 		misc3.rtf 			misc4.rtf            \
+		percent.rtf	 report.rtf		tabbing.rtf			tabular.rtf          \
+		hyperref.rtf 
 
 BIB_TESTS=  bib_apacite.rtf        bib_harvard.rtf        bib_super.rtf      \
 			bib_apacite_dblsp.rtf  bib_natbib1.rtf        bib_apalike.rtf    \
@@ -261,6 +262,10 @@ eqns.rtf: eqns.tex
 essential.rtf: essential.tex
 	$(LATEX) essential $(LATEX_LOG)
 	$(LATEX2RTF) $(OPTIONS) essential
+
+hyperref.rtf: hyperref.tex
+	$(LATEX) hyperref $(LATEX_LOG)
+	$(LATEX2RTF) $(OPTIONS) hyperref
 
 check:
 	./bracecheck
