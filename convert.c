@@ -690,7 +690,8 @@ returns: success or not
             if (g_processing_tabbing) {
                 (void) PopBrace();
                 PushBrace();
-            } 
+            } else
+				fprintRTF("\\-");
             return;
 
         case '+':
