@@ -30,7 +30,7 @@ Authors:
 #include "main.h"
 #include "stack.h"
 
-#define STACKSIZE 2000
+#define STACKSIZE 10000
 
 static int stack[STACKSIZE];
 static int top = 0;
@@ -75,7 +75,7 @@ int BasicPush(int lev, int brack)
  ******************************************************************************/
 {
 
-/*	diagnostics(5,"pushing rec=%d and bra=%d on  stack",lev,brack);*/
+	diagnostics(5,"pushing rec=%d and bra=%d on  stack",lev,brack);
     ++top;
     stack[top] = lev;
     ++top;
