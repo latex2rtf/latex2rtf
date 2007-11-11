@@ -46,7 +46,7 @@ Authors:
 #include "graphics.h"
 
 typedef struct commandtag {
-    char *cpCommand;            /* LaTeX command name without \ */
+    char *cmd_name;            /* LaTeX command name without \ */
     void (*func) (int);         /* function to convert LaTeX to RTF */
     int param;                  /* used in various ways */
 } CommandArray;
@@ -1159,20 +1159,20 @@ globals: command-functions have side effects or recursive calls
     
     	/* test every command in the current enviroment */
         iCommand = 0;
-        while (strcmp(Environments[iEnv][iCommand].cpCommand, "") != 0) {
+        while (strcmp(Environments[iEnv][iCommand].cmd_name, "") != 0) {
 
           /*  if (iCommand<10)
-            	diagnostics(55555,"CallCommandFunc (%d,%3d) Trying %s",iEnv,iCommand,Environments[iEnv][iCommand].cpCommand);
+            	diagnostics(8,"CallCommandFunc (%d,%3d) Trying %s",iEnv,iCommand,Environments[iEnv][iCommand].cmd_name);
 		*/
 		
-            if (strcmp(Environments[iEnv][iCommand].cpCommand, cCommand) == 0) {
+            if (strcmp(Environments[iEnv][iCommand].cmd_name, cCommand) == 0) {
                 if (Environments[iEnv][iCommand].func == NULL)
                     return FALSE;
                 if (*Environments[iEnv][iCommand].func == CmdIgnoreParameter) {
-                    diagnostics(2, "Command \\%s unknown", cCommand);
+                    diagnostics(2, "Unknown command '\\%s'", cCommand);
                 }
 
-                diagnostics(5, "CallCommandFunc Found %s iEnvCommand=%d number=%d", Environments[iEnv][iCommand].cpCommand, iEnv, iCommand);
+                diagnostics(5, "CallCommandFunc Found '%s' iEnvCommand=%d number=%d", Environments[iEnv][iCommand].cmd_name, iEnv, iCommand);
                 (*Environments[iEnv][iCommand].func) ((Environments[iEnv][iCommand].param));
                 return TRUE;    /* Command Function found */
             }
@@ -1196,8 +1196,8 @@ globals: command-functions have side effects or recursive calls
     int i = 0;
     char unknown_environment[100];
 
-    while (strcmp(params[i].cpCommand, "") != 0) {
-        if (strcmp(params[i].cpCommand, cCommand) == 0) {
+    while (strcmp(params[i].cmd_name, "") != 0) {
+        if (strcmp(params[i].cmd_name, cCommand) == 0) {
             assert(params[i].func != NULL);
             (*params[i].func) ((params[i].param) | AddParam);
             return;             /* command function found */
@@ -1209,7 +1209,7 @@ globals: command-functions have side effects or recursive calls
     if (AddParam == ON) {
         snprintf(unknown_environment, 100, "\\%s%s%s", "end{", cCommand, "}");
         Ignore_Environment(cCommand);
-        diagnostics(WARNING, "Environment <%s> unknown.  Not defined in commands.c", cCommand);
+        diagnostics(WARNING, "Unknown environment \\begin{%s} ... \end{%s}", cCommand, cCommand);
     }
 }
 
@@ -1404,7 +1404,7 @@ globals: changes Environment - array of active environments
      
     iEnvCount++;
     diag = EnvironmentNameByNumber(iEnvCount-1);
-    diagnostics(3, "\\begin{%s} [%d]", diag, iEnvCount-1);
+    diagnostics(4, "\\begin{%s} [%d]", diag, iEnvCount-1);
 	free(diag);
 
   /*  WriteEnvironmentStack();*/

@@ -198,8 +198,8 @@ void preParse(char **body, char **header, char **label)
     int any_possible_match, found;
     char cNext, cThis, *s, *text, *next_header, *str;
     int i;
-    int possible_match[42];
-    char *command[42] = { "",   /* 0 entry is for user definitions */
+    int possible_match[43];
+    char *command[43] = { "",   /* 0 entry is for user definitions */
         "",                     /* 1 entry is for user environments */
         "\\begin{verbatim}", 
         "\\begin{figure}",      "\\begin{figure*}", 
@@ -215,11 +215,11 @@ void preParse(char **body, char **header, char **label)
         "\\end{description}",   "\\end{comment}",
         "\\part", "\\chapter",  "\\section", "\\subsection", "\\subsubsection",
         "\\section*", "\\subsection*", "\\subsubsection*",
-        "\\label", "\\input", "\\include", "\\verb", "\\url",
+        "\\label", "\\input", "\\include", "\\verb", "\\url", "\\nolinkurl",
         "\\newcommand", "\\def", "\\renewcommand", "\\endinput", "\\end{document}",
     };
 
-    int ncommands = 42;
+    int ncommands = 43;
 
     const int b_verbatim_item = 2;
     const int b_figure_item = 3;
@@ -251,11 +251,12 @@ void preParse(char **body, char **header, char **label)
     
     const int verb_item = 35;
     const int url_item = 36;
-    const int new_item = 37;
-    const int def_item = 38;
-    const int renew_item = 39;
-    const int endinput_item = 40;
-    const int e_document_item = 41;
+    const int nolinkurl_item = 37;
+    const int new_item = 38;
+    const int def_item = 39;
+    const int renew_item = 40;
+    const int endinput_item = 41;
+    const int e_document_item = 42;
 
     int bs_count = 0;          /* number of backslashes encountered in a row */
     size_t cmd_pos = 0;        /* position of start of command relative to end of buffer */
@@ -359,7 +360,7 @@ void preParse(char **body, char **header, char **label)
 					*(section_buffer + section_buffer_end + 1) = '\0';
 					i = existsDefinition(section_buffer + section_buffer_end - cmd_pos + 1);
 					if (i > -1) {
-						diagnostics(6, "matched <%s> ", section_buffer + section_buffer_end - cmd_pos);
+						diagnostics(4, "matched <%s> ", section_buffer + section_buffer_end - cmd_pos);
 						if (cNext == ' ') {
 							cNext = getNonSpace();
 							ungetTexChar(cNext);
@@ -402,8 +403,8 @@ void preParse(char **body, char **header, char **label)
 					}
 	
 					if (str) {          /* found */
-						diagnostics(6, "matched <%s}>", p);
-						diagnostics(6, "expanded to <%s>", str);
+						diagnostics(5, "matched <%s}>", p);
+						diagnostics(5, "expanded to <%s>", str);
 	
 						PushSource(NULL, str);
 						move_end_of_buffer(-cmd_pos-1); /* remove \begin{userenvironment} */
@@ -513,7 +514,7 @@ void preParse(char **body, char **header, char **label)
         }
 
 		/* cannot ignore this because it may contain unescaped '%' */
-        if (i_match == url_item) {  
+        if (i_match == url_item || i_match == nolinkurl_item) {  
         	char cc;
  
             do {

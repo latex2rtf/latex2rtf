@@ -1886,7 +1886,7 @@ void CmdHtml(int code)
 			putHtmlRTF(urlstyle);
 			fprintRTF("\\field{\\*\\fldinst{ HYPERLINK \"");
 			putRtfStrEscaped(text);
-			fprintRTF("\" }{{}}}{\\fldrslt{\\ul ");
+			fprintRTF("\" }{{}}}{\\fldrslt{");
 			putRtfStrEscaped(text);
 			fprintRTF("}}}");
 			break;
@@ -1894,7 +1894,10 @@ void CmdHtml(int code)
 		case LABEL_NO_LINK_URL:
 	        url = getBraceRawParam();
 	        text = strdup_together(baseurl,url);
+			fprintRTF("{");
+			putHtmlRTF(urlstyle);
     		putRtfStrEscaped(text);
+			fprintRTF("}");
 			break;
 
 		case LABEL_BASE_URL:

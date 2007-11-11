@@ -1,10 +1,17 @@
 \documentclass{article}
 \usepackage{hyperref}
 \usepackage{nameref}
+\newif\iflatextortf
+
 \begin{document}
 
 \newcommand{\myref}[1]{`\nameref{#1}' (see p.\pageref{#1})}
 
+\iflatextortf
+\newcommand{\myurl}[1]{\nolinkurl{#1}}
+\else
+\let\myurl\url
+\fi
 
 \section{The first section}
 hello a 
@@ -25,8 +32,11 @@ This is very dependent on \myref{randomlabel}.
 We can use the \verb#\url# command to do this as
 well like so: \url{http://www.tug.org}.  
 
-
 The \verb#\nolinkurl{}# is similar but non-functional: \nolinkurl{http://www.tug.org}. 
+
+Now this link \url{http://latex2rtf.sourceforge.net/some%20link.html} does not really
+exist, but it should show up in the RTF document without a hyperlink.  It should still
+have a link in the PDF file created using \texttt{pdflatex}.
 
 \end{document}
 

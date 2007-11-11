@@ -529,6 +529,7 @@ void CmdBeginEnd(int code)
 /* user defined environments */
     i = existsEnvironment(s);
     if (i > -1) {
+    	diagnostics(WARNING, "starting user-defined environment '%s'", s);
         str = expandEnvironment(i, code);
         ConvertString(str);
         free(str);

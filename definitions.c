@@ -130,7 +130,7 @@ static char *expandmacro(char *macro, char *opt_param, int params)
     }
 
     for (; i < params; i++) {
-        args[i] = getBraceParam();
+        args[i] = getBraceRawParam();
         buff_size += strlen(args[i]);
         diagnostics(3, "argument #%d <%s>", i + 1, args[i]);
     }
@@ -542,20 +542,27 @@ char *expandEnvironment(int thedef, int code)
      purpose: retrieves and expands a \newenvironment 
 **************************************************************************/
 {
+    char *s, *t;
+    
     if (thedef < 0 || thedef >= iNewEnvironmentCount)
         return NULL;
 
     if (code == CMD_BEGIN) {
 
         diagnostics(3, "\\begin{%s} <%s>", NewEnvironments[thedef].name, NewEnvironments[thedef].begdef);
-        return expandmacro(NewEnvironments[thedef].begdef,
+        s= expandmacro(NewEnvironments[thedef].begdef,
           NewEnvironments[thedef].opt_param, NewEnvironments[thedef].params);
+        t = strdup_together("{",s);
 
     } else {
 
         diagnostics(3, "\\end{%s} <%s>", NewEnvironments[thedef].name, NewEnvironments[thedef].enddef);
-        return expandmacro(NewEnvironments[thedef].enddef, NULL, 0);
+        s = expandmacro(NewEnvironments[thedef].enddef, NULL, 0);
+        t = strdup_together(s,"}");
     }
+
+    free(s);
+    return t;
 }
 
 void newTheorem(char *name, char *caption, char *numbered_like, char *within)
