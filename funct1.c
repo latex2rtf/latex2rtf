@@ -1700,24 +1700,33 @@ void GermanPrint(int code)
 }
 
 
-void CmdIgnoreLet( /* @unused@ */ int code)
+void CmdIgnoreLet(int code)
 
 /******************************************************************************
      purpose : ignore \let 
 	   Format: \let\XXXXX = \YYYYYY or \let\XXXXX\YYYYYY
  ******************************************************************************/
 {
+    char t[100];
     char cThis;
+    int i;
+    char *s;
 
-    while ((cThis = getTexChar()) && cThis != ' ' && cThis != '\\') {
-    }
-
-    if (cThis == ' ') {
-        skipSpaces();
-        while ((cThis = getTexChar()) && cThis != ' ') {
-        }
-        skipSpaces();
-    }
+	s = getSimpleCommand();
+	
+	cThis = getNonBlank();
+	if (cThis == '=') 
+		cThis = getNonBlank();
+	
+	t[0] = cThis;
+	for (i=1; i<100; i++) {
+		t[i] = getTexChar();
+		if (t[i]==' ' || t[i]=='\n') break;
+	}
+	t[i]='\0';
+	
+	newDefinition(s+1,NULL,t,0);
+	free(s);	
 }
 
 void CmdNewif( /* @unused@ */ int code)

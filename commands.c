@@ -387,12 +387,7 @@ static CommandArray commands[] = {
     {"symbol", CmdSymbol, 1},
 
     {"url",               CmdHtml, LABEL_URL},
-    {"href",              CmdHtml, LABEL_HREF},
     {"urlstyle",          CmdHtml, LABEL_URLSTYLE},
-	{"hypersetup",        CmdIgnoreParameter, No_Opt_One_NormParam},
-	{"nolinkurl",         CmdHtml, LABEL_NO_LINK_URL},
-	{"hyperbaseurl",      CmdHtml, LABEL_BASE_URL},
-	{"hyperref",          CmdHtml, LABEL_HYPERREF},
     {"htmladdnormallink", CmdHtml, LABEL_HTMLADDNORMALREF},
     {"htmlref",           CmdHtml, LABEL_HTMLREF},
 	
@@ -934,6 +929,19 @@ static CommandArray hyperlatexCommands[] = {
 };                              /* end of list */
 
 /********************************************************************
+purpose: commands for hyperref package 
+********************************************************************/
+static CommandArray hyperrefCommands[] = {
+    {"url",               CmdHtml, LABEL_URL_HYPER},
+    {"href",              CmdHtml, LABEL_HREF},
+	{"hypersetup",        CmdIgnoreParameter, No_Opt_One_NormParam},
+	{"nolinkurl",         CmdHtml, LABEL_NO_LINK_URL},
+	{"hyperbaseurl",      CmdHtml, LABEL_BASE_URL},
+	{"hyperref",          CmdHtml, LABEL_HYPERREF},
+    {"", NULL, 0}
+};                              /* end of list */
+
+/********************************************************************
 purpose: commands for apacite package 
 ********************************************************************/
 static CommandArray apaciteCommands[] = {
@@ -1393,6 +1401,9 @@ globals: changes Environment - array of active environments
             break;            
         case GENERIC_MODE:
             Environments[iEnvCount] = genericCommands;
+            break;
+        case HYPERREF_MODE:
+            Environments[iEnvCount] = hyperrefCommands;
             break;
         case IGNORE_MODE:
             Environments[iEnvCount] = ignoreCommands;

@@ -327,7 +327,7 @@ void newDefinition(char *name, char *opt_param, char *def, int params)
     }
 
     iDefinitionCount++;
-    diagnostics(4, "Successfully added macro #%d", iDefinitionCount);
+    diagnostics(3, "Successfully added macro #%d", iDefinitionCount);
 }
 
 void renewDefinition(char *name, char *opt_param, char *def, int params)

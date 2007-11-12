@@ -1878,7 +1878,7 @@ void CmdHtml(int code)
 			InsertRtfHyperlink(text, url, baseurl, urlstyle);
 			break;
 
-		case LABEL_URL:
+		case LABEL_URL_HYPER:
 			/* cannot use insertHyperlink because url has toxic characters */
 	        url = getBraceRawParam();
 			text = strdup_together(baseurl,url);
@@ -1891,6 +1891,7 @@ void CmdHtml(int code)
 			fprintRTF("}}}");
 			break;
 
+		case LABEL_URL:
 		case LABEL_NO_LINK_URL:
 	        url = getBraceRawParam();
 	        text = strdup_together(baseurl,url);

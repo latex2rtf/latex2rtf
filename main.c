@@ -424,7 +424,7 @@ static void ConvertWholeDocument(void)
     diagnostics(2, "\\begin{document}");
 	diagnostics(5,"label for this section is'%s'", label);
 	diagnostics(5, "next section '%s'", sec_head);
-	show_string(5, body, "body ");
+	show_string(4, body, "body ");
 	
     ConvertString(body);
     free(body);
@@ -443,7 +443,7 @@ static void ConvertWholeDocument(void)
 		diagnostics(2, "processing '%s'", sec_head);	
 		diagnostics(5, "label is   '%s'", g_section_label);
 		diagnostics(5, "next  is   '%s'", sec_head2);	
-		show_string(5, body, "body ");
+		show_string(4, body, "body ");
 
         ConvertString(sec_head);
         ConvertString(body);

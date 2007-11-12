@@ -289,7 +289,7 @@ void PopSource(void)
     }
 
     if (g_parser_file) {
-        diagnostics(3, "Closing Source File %s", g_parser_stack[g_parser_depth].file_name);
+        diagnostics(3, "Closing Source File '%s'", g_parser_stack[g_parser_depth].file_name);
         fclose(g_parser_file);
         free(g_parser_stack[g_parser_depth].file_name);
         g_parser_stack[g_parser_depth].file_name = NULL;
@@ -304,7 +304,7 @@ void PopSource(void)
             s[49] = '\0';
         }
 
-        diagnostics(5, "Closing Source string <%s>", s);
+        show_string(5, s, "closing");
         free(g_parser_stack[g_parser_depth].string_start);
         g_parser_stack[g_parser_depth].string_start = NULL;
     }

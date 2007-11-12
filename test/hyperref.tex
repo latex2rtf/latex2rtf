@@ -9,8 +9,12 @@
 
 \iflatextortf
 \newcommand{\myurl}[1]{\nolinkurl{#1}}
+\let\letequalurl=\nolinkurl
+\let\leturl\nolinkurl
 \else
 \let\myurl\url
+\let\letequalurl=\url
+\let\leturl\url
 \fi
 
 \section{The first section}
@@ -34,7 +38,7 @@ well like so: \url{http://www.tug.org}.
 
 The \verb#\nolinkurl{}# is similar but non-functional: \nolinkurl{http://www.tug.org}. 
 
-Now this link \url{http://latex2rtf.sourceforge.net/some%20link.html} does not really
+Now this link \myurl{http://latex2rtf.sourceforge.net/some%20link.html} does not really
 exist, but it should show up in the RTF document without a hyperlink.  It should still
 have a link in the PDF file created using \texttt{pdflatex}.
 
@@ -42,6 +46,28 @@ have a link in the PDF file created using \texttt{pdflatex}.
 
 \section{The second section}
 
-\hypertarget{TestTarget}{goodbye}
+\textit{Testing the nolinkurl}, Hewlett--Packard, \nolinkurl{http://docs.hp.com/cgi-bin/onlinedocs.py?mpn=B2355-90703&service=hpux&path=../B2355-90703/00/00/19&title=HP-UX%2011i%20Installation%20and%20Update%20Guide}
+
+%\hypertarget{TestTarget}{goodbye}
+
+\end{document}
+
+\section{Testing the let command}
+
+These don't work yet, that is why there is an \verb#\end{document}# above.
+
+\iflatextortf
+\let\letequalurl=\nolinkurl
+\let\leturl\nolinkurl
+\else
+\let\letequalurl=\url
+\let\leturl\url
+\fi
+
+Here is a test of the \verb#\let\letequalurl=\nolinkurl# implementation.  The following shouls be
+a simple url without a link. \letequalurl{http://simple}
+
+Here is a test of the \verb#\let\leturl\nolinkurl# implementation.  The following shouls be
+a simple url without a link.  \leturl{http://just.as.simple.com}
 
 \end{document}

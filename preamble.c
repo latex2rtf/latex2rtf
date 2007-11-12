@@ -465,6 +465,8 @@ static void setDocumentOptions(char *optionlist)
         } else if (strcmp(option, "apacite") == 0 || strcmp(option, "apacitex") == 0) {
             PushEnvironment(APACITE_MODE);
             g_document_bibstyle = BIBSTYLE_APACITE;
+        } else if (strcmp(option, "hyperref") == 0) {
+        	PushEnvironment(HYPERREF_MODE);
         } else if (strcmp(option, "endnotes"    ) == 0 ||
                    strcmp(option, "pstricks-add") == 0 ||
                    strcmp(option, "fancyhdr"    ) == 0 ||
@@ -480,7 +482,6 @@ static void setDocumentOptions(char *optionlist)
                    strcmp(option, "fontenc"     ) == 0 ||
                    strcmp(option, "eurosym"     ) == 0 ||
                    strcmp(option, "ucs"         ) == 0 ||
-                   strcmp(option, "hyperref"    ) == 0 ||
                    strcmp(option, "alltt"       ) == 0 ||
                    strcmp(option, "url"         ) == 0 ||
                    strcmp(option, "nameref"     ) == 0 ||
