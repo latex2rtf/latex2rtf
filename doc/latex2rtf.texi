@@ -745,7 +745,7 @@ equations but fails for the rest with the message@*
 "latex2png: pipe error: Too many open files (EMFILE)".@*
 This is probably a bug in the djgpp 2.04 compiler; I chose this version
 because of its better support of long filenames under Win32 (95, 98, ME, 2000,
-XP).@*
+XP, Vista).@*
 The Windows version, compiled with Cygwin in MinGW mode, successfully 
 converts at least 79 equations to bitmaps.
 
@@ -769,12 +769,13 @@ parentheses (because an unmatched unquoted parenthesis would terminate the field
 @item -P /path/to/cfg
 used to specify the folder (i.e. directory) that contains the @code{.cfg} files 
 and/or the folder that contains the latex2png script.@*
-The folder that contains the latex2png script must be prepended by a ":"
-(Unix, Mac). Under DOS or Windows, the scripts folder is not used, the 
+Unix, Mac: The folder that contains the latex2png script must be prepended 
+by a ":".@* 
+DOS, Windows: The scripts folder is not used, the 
 scripts are always taken from the search path, therefore the folder 
 containing the scripts and the helper programs must be the first in the search path. 
 You can either add it to the search path permanently or add it temporarily by 
-calling l2rprep.bat before starting conversions.
+calling l2rprep.bat before starting conversions.@*
 If any of the folder names contains a blank, the folder string must be 
 enclosed in single (Unix, Mac) or double (DOS, Windows) quotes.@*
 Examples:@*
@@ -784,9 +785,9 @@ Note that without specifying the -P option, @ltor{} tries to find its cfg files
 in the following locations:@*
 1. the folder specified by the environment variable @code{RTFPATH}, if this variable exists;@*
 2. the folder @code{C:/%PROGRAMFILES%/latex2rtf/cfg}, if the variable 
-@code{%PROGRAMFILES%} exists -- this is the folder in which @ltor{} is installed 
+@code{PROGRAMFILES} exists -- this is the folder in which @ltor{} is installed 
 by the Windows GUI installer with default settings;@*
-3. the folder specified during compilation by the variable
+3. the folder specified at compilation time by the variable
 @code{CFGDIR}. This is set in the Makefile. The DOS and Windows versions are compiled
 with @code{CFGDIR=C:/l2r}.
 
@@ -807,7 +808,7 @@ where # selects the type of table conversion.  Use
     convert tables to bitmaps
     @end table
 
-@item -v 
+@item -v or -V 
 prints version information on standard output and exits.
 
 @item -S
@@ -861,7 +862,7 @@ Reasonably high level debugging messages
 @item
 Show all function calls
 @item
-Show all each character as it is processed
+Show each character as it is processed
 @item
 Show processing of characters as they are output as well
 @end enumerate
@@ -1150,10 +1151,10 @@ Conversion of tabular and tabbing environments is somewhat lame.  The
 main difficulty is that @latex{} (and html) will size the columns of
 a table automatically.  There is no such feature in RTF.  Consequently,
 the conversion defaults to making all the columns have equal size.  This
-is suboptimal and should be revised.  One interesting suggestion is to 
-have an option to handle these environments the same way that equations
-are handles and have latex render them as bitmaps and insert the bitmaps
-into the RTF file.  Such a feature remains to be written.
+is suboptimal and should be revised. @*
+Another way is to use the option -t2
+to make latex render them as bitmaps and insert the bitmaps
+into the RTF file. This feature was added in version 1.9.19.
 
 @node Graphics, Pagestyles, Tables, Features
 @section Graphics
@@ -1239,7 +1240,7 @@ your additions to the @ltor{} mailing list for inclusion in later
 distributions.
 
 @ltor{} accepts Unix, MS-DOS, and Macintosh line ending codes (\n, \r\n
-and \r).  The files it creates are the line ending for the platform on
+and \r).  The files it creates get the line ending for the platform on
 which @ltor{} was compiled.
 
 The @latex{} file may have been created with a wide variety of character
@@ -1306,10 +1307,10 @@ This code is processed only by latex2rtf
 @node Output Formatting, Direct Conversion, Conditional Parsing, Configuration
 @section Output Formatting 
 
-On writing output, @ltor{} generates @code{\n} as line ending code.
-Your RTF Reader should accept this on any platform. If you ftp your RTF file
-from or to MS-DOS platforms the line ending code can be converted to @code{\r\n}. As
-this should also be legal to any RTF Reader the resulting RTF rendering should
+On writing output, @ltor{} generates the operating system specific line ending code
+(@code{\n} on Unix, @code{\r\n} on DOS or Windows), depending on which system
+@ltor{} was compiled.
+As both should be legal to any RTF Reader the resulting RTF rendering should
 not be affected.
 
 @ltor{} does not offer a whole lot of flexibility in how files are translated,
@@ -1507,7 +1508,7 @@ For subscription to these lists visit the page:
 or
 @uref{http://lists.sourceforge.net/lists/listinfo/latex2rtf-developers, developers list}
 
-As of October 2004, version 1.9.16 of @ltor{} is available. 
+As of November 2007, version 1.9.19 of @ltor{} is available. 
 One day there shall be a jump to Version 2.0, but this is not history but future ...
 
 The contents of this manual were composed by copying shamelessly what was

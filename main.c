@@ -163,7 +163,7 @@ int main(int argc, char **argv)
     InitializeLatexLengths();
 	InitializeBibliography();
 	
-    while ((c = my_getopt(argc, argv, "lhpuvFSWZ:o:a:b:d:f:i:s:u:C:D:M:P:T:t:")) != EOF) {
+    while ((c = my_getopt(argc, argv, "lhpuvFSVWZ:o:a:b:d:f:i:s:u:C:D:M:P:T:t:")) != EOF) {
         switch (c) {
             case 'a':
                 g_aux_name = optarg;
@@ -278,6 +278,9 @@ int main(int argc, char **argv)
             case 'T':
                 g_tmp_dir = strdup(optarg);
                 break;
+            case 'V':
+                print_version();
+                return (0);
             case 'W':
                 g_RTF_warnings = TRUE;
                 break;
