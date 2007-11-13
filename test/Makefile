@@ -17,7 +17,7 @@ RTF=	align.rtf	 array.rtf 		box.rtf 			ch.rtf	             \
 		list.rtf 	 ifclause.rtf	include.rtf			linux.rtf            \
 		logo.rtf 	 misc1.rtf 		misc3.rtf 			misc4.rtf            \
 		percent.rtf	 report.rtf		tabbing.rtf			tabular.rtf          \
-		hyperref.rtf 
+		hyperref.rtf longstack.rtf
 
 BIB_TESTS=  bib_apacite.rtf        bib_harvard.rtf        bib_super.rtf      \
 			bib_apacite_dblsp.rtf  bib_natbib1.rtf        bib_apalike.rtf    \
