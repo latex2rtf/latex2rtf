@@ -796,6 +796,7 @@ purpose: output a single escaped character to the RTF file
          this is primarily useful for the verbatim-like enviroments
  ****************************************************************************/
 {
+	SetTexMode(MODE_HORIZONTAL);
 	if (cThis == '\\')
         fprintRTF("%s","\\\\");
     else if (cThis == '{')
