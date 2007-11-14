@@ -1763,7 +1763,20 @@ void CmdSpace(float kk)
 {
     int size = CurrentFontSize() * kk;
 
+    SetTexMode(MODE_HORIZONTAL);
     fprintRTF("{\\fs%d  }", size);
+}
+
+void CmdNoBreakSpace(float kk)
+
+/******************************************************************************
+ purpose: inserts a space of width kk*space 
+ ******************************************************************************/
+{
+    int size = CurrentFontSize() * kk;
+
+	SetTexMode(MODE_HORIZONTAL);
+    fprintRTF("{\\fs%d\\~}", size);
 }
 
 /******************************************************************************

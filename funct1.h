@@ -185,6 +185,7 @@ void GetRequiredParam(char *string, int size);
 void CmdQuad(int kk);
 void CmdColsep(int code);
 void CmdSpace(float kk);
+void CmdNoBreakSpace(float kk);
 void CmdVerbosityLevel(int code);
 void CmdNonBreakSpace(int code);
 char *FormatUnitNumber(char *name);
