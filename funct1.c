@@ -2237,14 +2237,20 @@ char *roman_item(int n, bool upper)
 void CmdNonBreakSpace(int code)
 {
 	char cThis;
-    int size = CurrentFontSize() * ((float) code / 1000.0);
+/*    int size = CurrentFontSize() * ((float) code / 100.0);*/
 
     cThis = getNonSpace();
     ungetTexChar(cThis);
 
     if (GetTexMode() == MODE_VERTICAL)
 		SetTexMode(MODE_HORIZONTAL);
-    fprintRTF("{\\fs%d\\~}", size);
+/*    fprintRTF("{\\fs%d\\~}", size);*/
+
+	if (code == 100) 
+    	fprintRTF("\\~ ");
+	else
+    	fprintRTF("{\\charscalex%d\\~}", code);
+    
 }
 
 

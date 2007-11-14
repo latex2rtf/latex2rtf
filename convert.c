@@ -809,7 +809,7 @@ returns: success or not
         case ',':
             if (mode == MODE_VERTICAL)
                 SetTexMode(MODE_HORIZONTAL);
-            CmdNonBreakSpace(333);     /* \, produces a small space = (333/1000)*/
+            CmdNonBreakSpace(50);     /* \, produces a small space = 50% */
             return;
         case ';':
             if (mode == MODE_VERTICAL)
