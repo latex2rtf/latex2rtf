@@ -172,7 +172,7 @@ void CmdStartParagraph(const char *style, int indenting)
 
     fprintRTF("\\fi%d ", parindent);
 
-    SetTexMode(-MODE_HORIZONTAL);   /* negative value avoids calling CmdStartParagraph! */
+    SetTexMode(-GetTexMode());   /* negative value avoids calling CmdStartParagraph! */
 
     if (!g_processing_list_environment) {
         g_paragraph_no_indent = FALSE;
@@ -666,7 +666,8 @@ void CmdToday(int code)
     purpose: converts LaTeX \today into RTF \chdate
  ******************************************************************************/
 {
-    SetTexMode(MODE_HORIZONTAL);
+    if (GetTexMode() == MODE_VERTICAL)
+    	SetTexMode(MODE_HORIZONTAL);
     fprintRTF("\\chdate ");
 }
 
@@ -1492,7 +1493,8 @@ void CmdVerb(int code)
     char markingchar='#';
     int num;
 	
-    SetTexMode(MODE_HORIZONTAL);
+    if (GetTexMode() == MODE_VERTICAL)
+    	SetTexMode(MODE_HORIZONTAL);
     num = TexFontNumber("Typewriter");
     fprintRTF("{\\b0\\i0\\scaps0\\f%d ", num);
 
@@ -1763,20 +1765,9 @@ void CmdSpace(float kk)
 {
     int size = CurrentFontSize() * kk;
 
-    SetTexMode(MODE_HORIZONTAL);
+    if (GetTexMode() == MODE_VERTICAL)
+    	SetTexMode(MODE_HORIZONTAL);
     fprintRTF("{\\fs%d  }", size);
-}
-
-void CmdNoBreakSpace(float kk)
-
-/******************************************************************************
- purpose: inserts a space of width kk*space 
- ******************************************************************************/
-{
-    int size = CurrentFontSize() * kk;
-
-	SetTexMode(MODE_HORIZONTAL);
-    fprintRTF("{\\fs%d\\~}", size);
 }
 
 /******************************************************************************
@@ -2245,10 +2236,15 @@ char *roman_item(int n, bool upper)
 
 void CmdNonBreakSpace(int code)
 {
-    char cThis = getNonSpace();
+	char cThis;
+    int size = CurrentFontSize() * ((float) code / 1000.0);
 
+    cThis = getNonSpace();
     ungetTexChar(cThis);
-    fprintRTF("\\~");
+
+    if (GetTexMode() == MODE_VERTICAL)
+		SetTexMode(MODE_HORIZONTAL);
+    fprintRTF("{\\fs%d\\~}", size);
 }
 
 

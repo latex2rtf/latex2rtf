@@ -180,15 +180,13 @@ purpose: converts inputfile and writes result to outputfile
     char cThis = '\n';
     char cLast = '\0';
     char cNext;
-    int mode, count, pending_new_paragraph;
+    int count, pending_new_paragraph;
 
     diagnostics(5, "Entering Convert ret = %d", ret);
     RecursionLevel++;
     PushLevels();
 
     while ((cThis = getTexChar()) && cThis != '\0') {
-
-        mode = GetTexMode();
 
         if (cThis == '\n')
             diagnostics(6, "Current character is '\\n' mode = %d ret = %d level = %d", GetTexMode(), ret,
@@ -255,7 +253,7 @@ purpose: converts inputfile and writes result to outputfile
 
 
             case '{':
-                if (mode == MODE_VERTICAL)
+                if (GetTexMode() == MODE_VERTICAL)
                     SetTexMode(MODE_HORIZONTAL);
 
                 CleanStack();
@@ -276,7 +274,7 @@ purpose: converts inputfile and writes result to outputfile
                 break;
 
             case ' ':
-                if (mode == MODE_VERTICAL || mode == MODE_MATH || mode == MODE_DISPLAYMATH)
+                if (GetTexMode() == MODE_VERTICAL || GetTexMode() == MODE_MATH || GetTexMode() == MODE_DISPLAYMATH)
                     cThis = cLast;
 
                 else if (cLast != ' ' && cLast != '\n') {
@@ -292,7 +290,7 @@ purpose: converts inputfile and writes result to outputfile
             case '\n':
                 tabcounter = 0;
 
-                if (mode == MODE_MATH || mode == MODE_DISPLAYMATH) {
+                if (GetTexMode() == MODE_MATH || GetTexMode() == MODE_DISPLAYMATH) {
 
                     cNext = getNonBlank();
                     ungetTexChar(cNext);
@@ -308,7 +306,7 @@ purpose: converts inputfile and writes result to outputfile
 
                     } else {    /* add a space if needed */
                         ungetTexChar(cNext);
-                        if (mode != MODE_VERTICAL && cLast != ' ')
+                        if (GetTexMode() != MODE_VERTICAL && cLast != ' ')
                             fprintRTF(" ");
                     }
                 }
@@ -365,7 +363,7 @@ purpose: converts inputfile and writes result to outputfile
                 break;
 
             case '-':
-                if (mode == MODE_MATH || mode == MODE_DISPLAYMATH)
+                if (GetTexMode() == MODE_MATH || GetTexMode() == MODE_DISPLAYMATH)
                 	CmdSymbolChar(0x2d);
                 else {
                     SetTexMode(MODE_HORIZONTAL);
@@ -385,14 +383,14 @@ purpose: converts inputfile and writes result to outputfile
                 break;
 
             case '|':
-                if (mode == MODE_MATH || mode == MODE_DISPLAYMATH)
+                if (GetTexMode() == MODE_MATH || GetTexMode() == MODE_DISPLAYMATH)
                     fprintRTF("|");
                 else
                     fprintRTF("\\emdash ");
                 break;
 
             case '\'':
-                if (mode == MODE_MATH || mode == MODE_DISPLAYMATH)
+                if (GetTexMode() == MODE_MATH || GetTexMode() == MODE_DISPLAYMATH)
                     fprintRTF("'");
                 else {
                     SetTexMode(MODE_HORIZONTAL);
@@ -406,7 +404,8 @@ purpose: converts inputfile and writes result to outputfile
                 break;
 
             case '`':
-                SetTexMode(MODE_HORIZONTAL);
+                if (GetTexMode() == MODE_VERTICAL)
+                	SetTexMode(MODE_HORIZONTAL);
                 count = getSameChar('`') + 1;
                 if (count == 2)
                     fprintRTF("\\ldblquote ");
@@ -424,7 +423,7 @@ purpose: converts inputfile and writes result to outputfile
                 break;
 
             case '<':
-                if (mode == MODE_VERTICAL)
+                if (GetTexMode() == MODE_VERTICAL)
                     SetTexMode(MODE_HORIZONTAL);
                 if (GetTexMode() == MODE_HORIZONTAL) {
                     cNext = getTexChar();
@@ -450,7 +449,7 @@ purpose: converts inputfile and writes result to outputfile
                 break;
 
             case '>':
-                if (mode == MODE_VERTICAL)
+                if (GetTexMode() == MODE_VERTICAL)
                     SetTexMode(MODE_HORIZONTAL);
                 if (GetTexMode() == MODE_HORIZONTAL) {
                     cNext = getTexChar();
@@ -465,7 +464,7 @@ purpose: converts inputfile and writes result to outputfile
                 break;
 
             case '!':
-                if (mode == MODE_MATH || mode == MODE_DISPLAYMATH)
+                if (GetTexMode() == MODE_MATH || GetTexMode() == MODE_DISPLAYMATH)
                     fprintRTF("!");
                 else {
                     SetTexMode(MODE_HORIZONTAL);
@@ -489,7 +488,7 @@ purpose: converts inputfile and writes result to outputfile
                 break;
 
             case ':':
-                if (mode == MODE_MATH || mode == MODE_DISPLAYMATH)
+                if (GetTexMode() == MODE_MATH || GetTexMode() == MODE_DISPLAYMATH)
                     fprintRTF(":");
                 else {
                     SetTexMode(MODE_HORIZONTAL);
@@ -501,7 +500,7 @@ purpose: converts inputfile and writes result to outputfile
                 break;
 
             case '.':
-                if (mode == MODE_MATH || mode == MODE_DISPLAYMATH)
+                if (GetTexMode() == MODE_MATH || GetTexMode() == MODE_DISPLAYMATH)
                     fprintRTF(".");
                 else {
                     SetTexMode(MODE_HORIZONTAL);
@@ -574,7 +573,7 @@ purpose: converts inputfile and writes result to outputfile
                 break;
 
             default:
-                if (mode == MODE_MATH || mode == MODE_DISPLAYMATH) {
+                if (GetTexMode() == MODE_MATH || GetTexMode() == MODE_DISPLAYMATH) {
                 	if (('a' <= cThis && cThis <= 'z') || ('A' <= cThis && cThis <= 'Z')) {
                     	if (CurrentFontSeries() == F_SERIES_BOLD)    /* do not italicize */
                         	fprintRTF("%c", cThis);
@@ -810,7 +809,7 @@ returns: success or not
         case ',':
             if (mode == MODE_VERTICAL)
                 SetTexMode(MODE_HORIZONTAL);
-            CmdNoBreakSpace(0.33);     /* \, produces a small space */
+            CmdNonBreakSpace(333);     /* \, produces a small space = (333/1000)*/
             return;
         case ';':
             if (mode == MODE_VERTICAL)

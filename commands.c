@@ -391,7 +391,8 @@ static CommandArray commands[] = {
     {"htmladdnormallink", CmdHtml, LABEL_HTMLADDNORMALREF},
     {"htmlref",           CmdHtml, LABEL_HTMLREF},
 	
-    {"nobreakspace", CmdNonBreakSpace, 0},
+    {"nobreakspace", CmdNonBreakSpace, 1000},
+    {"thinspace", CmdNonBreakSpace, 333},
     {"abstract", CmdAbstract, 2},
     {"endinput", CmdEndInput, 0},
     {"textcolor", CmdTextColor, 0},
@@ -625,7 +626,7 @@ static CommandArray PreambleCommands[] = {
     {"endnotetext", CmdFootNote, FOOTNOTE_TEXT | FOOTNOTE_ENDNOTE},
     {"include", CmdInclude, 0},
     {"input", CmdInclude, 1},
-    {"nobreakspace", CmdNonBreakSpace, 0},
+    {"nobreakspace", CmdNonBreakSpace, 1000},
     {"signature", CmdSignature, 0},
     {"hline", CmdHline, 0},
     {"cline", CmdHline, 1},
