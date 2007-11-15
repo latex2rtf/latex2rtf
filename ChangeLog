@@ -162,3 +162,53 @@ r806 WH: fixed my bugfix in main.c (should have tested it before
 r807 Minor clean-up of -se# and -sf# scaling options.  We don't properly
      support long option names, currently '-se #' is an error.
 
+r808 support for \urlstyle{}
+
+r809 support \UrlFont{}
+
+r810 support for \nameref{}
+
+r811 add missing .bib file to tarball.  Update changelog.
+
+r812 Improve \nolinkurl{} so that it typesets correctly and works with
+	'%' in the url. Fix long-standing issue with user-defined
+	environments and scope.  Modify unknown command message...again.
+
+r813 Put \- hyphenation command back in. Originally removed before I
+	realised the problem was with OOwriter, not with rtf generally. It
+	appears to work fine with MSWord.
+
+r814 Increased the stack from 2000 to 10000. This was motivated by the
+	failure of longstack.tex to parse properly. The increased stack size
+	fixes this for now, but I suspect there is a problem with the stack
+	not getting emptied.
+
+r815 Evidently url.sty and hyperref.sty work differently.  Implement
+	accordingly.  Revert linux.tex to use the url.sty package and let
+	hyperref.tex test the hyperref package.
+
+r816 WH: Updated documentation reflecting successful testing under
+	Vista.
+
+r817 Attempting to revert r816
+
+r818 Add Wilfried's changes from r816
+
+r819 WH: documentation: Tables section (-t2 option) and editorial
+	changes. main.c: added handling of option -V (uppercase)
+
+r820 add test/longstack.tex to tarball and to the test suite
+
+r821 Fix for missing paragraph break for a \url{} that starts a new
+	paragraph.
+
+r822 Change how \, is translated.  Make it a small non-breaking space
+	instead of a just a small space.
+
+r823 CmdNoBreak() was so good it turned out that it was already in the
+	codebase as CmdNonBreak().  Eliminated duplicate routine.  Added
+	support for \thinspace
+
+r824 Use \charscalex instad of \fs to change the size of a non-breaking
+	space.
+
