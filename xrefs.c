@@ -669,6 +669,8 @@ void InsertBookmark(char *name, char *text)
     char *signet;
 
     if (!name) {
+		if (GetTexMode() == MODE_VERTICAL)
+			SetTexMode(MODE_HORIZONTAL);
         fprintRTF("%s", text);
         return;
     }
