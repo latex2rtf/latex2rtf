@@ -667,20 +667,21 @@ static void RecordBookmark(char *s)
 void InsertBookmark(char *name, char *text)
 {
     char *signet;
+    diagnostics(1, "InsertBookmark name='%s' text='%s'", name, text);
 
     if (!name) {
 		if (GetTexMode() == MODE_VERTICAL)
-			SetTexMode(MODE_HORIZONTAL);
+			SetTexMode(MODE_HORIZONTAL,FALSE);
         fprintRTF("%s", text);
         return;
     }
     signet = strdup_nobadchars(name);
 
     if (ExistsBookmark(signet)) {
-        diagnostics(4, "bookmark %s already exists", signet);
+        diagnostics(1, "bookmark %s already exists", signet);
 
     } else {
-        diagnostics(4, "bookmark %s being inserted around <%s>", signet, text);
+        diagnostics(1, "bookmark %s being inserted around <%s>", signet, text);
         RecordBookmark(signet);
         if (g_fields_use_REF)
             fprintRTF("{\\*\\bkmkstart BM%s}", signet);

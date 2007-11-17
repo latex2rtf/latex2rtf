@@ -7,7 +7,7 @@
 
 extern char TexModeName[7][25];
 
-void SetTexMode(int mode);
+void SetTexMode(int mode, int just_set_it);
 int  GetTexMode(void);
 
 void ConvertString(const char *string);

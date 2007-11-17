@@ -1583,7 +1583,7 @@ void CmdLdots( /* @unused@ */ int code)
     int num = RtfFontNumber("Symbol");
     
     if (GetTexMode() != MODE_MATH && GetTexMode() != MODE_DISPLAYMATH)
-        SetTexMode(MODE_HORIZONTAL);
+        SetTexMode(MODE_HORIZONTAL,FALSE);
 
 
 /*    should this just be CmdSymbolChar(0x85);   ????????? */
@@ -1959,7 +1959,7 @@ void CmdLogo(int code)
     int font_num, dnsize;
     float FloatFsize;
 
-    SetTexMode(MODE_HORIZONTAL);
+    SetTexMode(MODE_HORIZONTAL,FALSE);
     fprintRTF("{\\plain ");
 
     switch (code) {

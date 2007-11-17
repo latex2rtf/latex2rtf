@@ -1996,7 +1996,7 @@ void CmdGraphics(int code)
     }
 
     if (filename) {
-		SetTexMode(MODE_HORIZONTAL);
+		SetTexMode(MODE_HORIZONTAL,FALSE);
 	
 		fullname = strdup_absolute_path(filename);
 		fullpathname = append_graphic_extension(fullname);

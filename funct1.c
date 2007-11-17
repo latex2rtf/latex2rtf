@@ -172,7 +172,7 @@ void CmdStartParagraph(const char *style, int indenting)
 
     fprintRTF("\\fi%d ", parindent);
 
-    SetTexMode(-GetTexMode());   /* negative value avoids calling CmdStartParagraph! */
+    SetTexMode(MODE_HORIZONTAL,TRUE); 
 
     if (!g_processing_list_environment) {
         g_paragraph_no_indent = FALSE;
@@ -193,7 +193,7 @@ void CmdEndParagraph(int code)
     diagnostics(5, "CmdEndParagraph mode = %d", GetTexMode());
     if (mode != MODE_VERTICAL  && g_processing_fields == 0) {
         fprintRTF("\\par\n");
-        SetTexMode(-MODE_VERTICAL); /* negative value avoids calling CmdEndParagraph! */
+        SetTexMode(MODE_VERTICAL,TRUE); /* TRUE value avoids calling CmdEndParagraph! */
     }
 
     g_paragraph_inhibit_indent = FALSE;
@@ -667,7 +667,7 @@ void CmdToday(int code)
  ******************************************************************************/
 {
     if (GetTexMode() == MODE_VERTICAL)
-    	SetTexMode(MODE_HORIZONTAL);
+    	SetTexMode(MODE_HORIZONTAL,FALSE);
     fprintRTF("\\chdate ");
 }
 
@@ -1453,7 +1453,7 @@ void CmdBox(int code)
         g_processing_fields++;  /* hack to stop fields within fields */
 
     if (code == BOX_HBOX || code == BOX_MBOX)
-        SetTexMode(MODE_RESTRICTED_HORIZONTAL);
+        SetTexMode(MODE_RESTRICTED_HORIZONTAL,FALSE);
 
     if (code == BOX_PARBOX) {
         char *position, *width;
@@ -1477,7 +1477,7 @@ void CmdBox(int code)
         CmdIndent(INDENT_INHIBIT);
 
     } else {
-        SetTexMode(mode);
+        SetTexMode(mode,FALSE);
     }
 
     diagnostics(4, "Exited CmdBox() [%s]", BoxName[code - 1]);
@@ -1494,7 +1494,7 @@ void CmdVerb(int code)
     int num;
 	
     if (GetTexMode() == MODE_VERTICAL)
-    	SetTexMode(MODE_HORIZONTAL);
+    	SetTexMode(MODE_HORIZONTAL,FALSE);
     num = TexFontNumber("Typewriter");
     fprintRTF("{\\b0\\i0\\scaps0\\f%d ", num);
 
@@ -1766,7 +1766,7 @@ void CmdSpace(float kk)
     int size = CurrentFontSize() * kk;
 
     if (GetTexMode() == MODE_VERTICAL)
-    	SetTexMode(MODE_HORIZONTAL);
+    	SetTexMode(MODE_HORIZONTAL,FALSE);
     fprintRTF("{\\fs%d  }", size);
 }
 
@@ -2243,7 +2243,7 @@ void CmdNonBreakSpace(int code)
     ungetTexChar(cThis);
 
     if (GetTexMode() == MODE_VERTICAL)
-		SetTexMode(MODE_HORIZONTAL);
+		SetTexMode(MODE_HORIZONTAL,FALSE);
 /*    fprintRTF("{\\fs%d\\~}", size);*/
 
 	if (code == 100) 
