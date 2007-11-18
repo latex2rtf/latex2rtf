@@ -867,7 +867,7 @@ void CmdTitle(int code)
 
 void CmdTableOfContents(int code)
 {
-	startParagraph("contents", TITLE_INDENT);
+	startParagraph("contents", SECTION_TITLE_PARAGRAPH);
 	fprintRTF("{");
 	InsertStyle("contents_no_style");
 	fprintRTF(" ");
@@ -887,7 +887,7 @@ void CmdTableOfContents(int code)
 void CmdAnd(int code)
 {
 	CmdEndParagraph(0);
-	startParagraph("author", TITLE_INDENT);
+	startParagraph("author", GENERIC_PARAGRAPH);
 }
 
 
@@ -947,7 +947,7 @@ void CmdMakeTitle(int code)
         fprintRTF("\\page ");
 
     if (g_document_type == FORMAT_APA)
-    	startParagraph("body",FIRST_INDENT);
+    	startParagraph("body",FIRST_PARAGRAPH);
 
 	PopTrackLineNumber();
 }

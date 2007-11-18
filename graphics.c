@@ -1530,7 +1530,7 @@ void PrepareDisplayedBitmap(char *the_type)
     CmdEndParagraph(0);
     CmdVspace(VSPACE_SMALL_SKIP);
     CmdIndent(INDENT_NONE);
-    startParagraph(the_type, FIRST_INDENT);
+    startParagraph(the_type, FIRST_PARAGRAPH);
 }
 
 void FinishDisplayedBitmap(void)

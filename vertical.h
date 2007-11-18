@@ -1,6 +1,6 @@
-#define FIRST_INDENT      1
-#define ANY_INDENT        2
-#define TITLE_INDENT      3
+#define FIRST_PARAGRAPH      1
+#define GENERIC_PARAGRAPH        2
+#define SECTION_TITLE_PARAGRAPH      3
 
 #define INDENT_NONE    1
 #define INDENT_INHIBIT 2

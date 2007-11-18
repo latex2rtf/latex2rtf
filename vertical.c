@@ -71,6 +71,8 @@ char TexModeName[7][25] = { "bad", "internal vertical", "horizontal",
     "restricted horizontal", "math", "displaymath", "vertical"
 };
 
+char ParOptionName[4][10] = { "bad", "FIRST", "GENERIC", "SECTION"};
+
 /******************************************************************************
      left and right margin accessor functions
  ******************************************************************************/
@@ -78,14 +80,17 @@ void setLeftMarginIndent(int indent)
 {
 	g_left_margin_indent = indent;
 }
+
 void setRightMarginIndent(int indent)
 {
 	g_right_margin_indent = indent;
 }
+
 int getLeftMarginIndent(void)
 {
 	return g_left_margin_indent;
 }
+
 int getRightMarginIndent(void)
 {
 	return g_right_margin_indent;
@@ -116,6 +121,20 @@ int getVspace(void)
 {
 	return g_vertical_space_to_add;
 }
+
+/******************************************************************************
+     line spacing accessor functions
+ ******************************************************************************/
+void setLineSpacing(int spacing)
+{
+	g_line_spacing = spacing;
+}
+
+int getLineSpacing(void)
+{
+	return g_line_spacing;
+}
+
 
 /******************************************************************************
 TeX has six modes:
@@ -158,16 +177,13 @@ void changeTexMode(int mode)
     diagnostics(5, "TeX mode changing from [%s] -> [%s]", TexModeName[g_TeX_mode], TexModeName[mode]);
 
     if (g_TeX_mode == MODE_VERTICAL && mode == MODE_HORIZONTAL)
-        startParagraph("body", ANY_INDENT);
+        startParagraph("body", GENERIC_PARAGRAPH);
 
     if (g_TeX_mode == MODE_HORIZONTAL && mode == MODE_VERTICAL)
         CmdEndParagraph(0);
 
     g_TeX_mode = mode;
 }
-
-
-void startParagraph(const char *style, int indenting)
 
 /******************************************************************************
 	RTF codes to create a new paragraph.  If the paragraph should
@@ -185,9 +201,9 @@ void startParagraph(const char *style, int indenting)
 	indenting describes how this paragraph and (perhaps) the following
 	paragraph should be indented
 	
-	  TITLE_INDENT  (do not indent this paragraph or the next)
-	  FIRST_INDENT  (do not indent this paragraph but indent the next)
-	  ANY_INDENT    (indent as needed)
+	  SECTION_TITLE_PARAGRAPH  (do not indent this paragraph or the next)
+	  FIRST_PARAGRAPH  (do not indent this paragraph but indent the next)
+	  GENERIC_PARAGRAPH    (indent as needed)
 	
 	Sometimes it is necessary to know what the next paragraph will
 	be before it has been parsed.  For example, a section command
@@ -195,7 +211,7 @@ void startParagraph(const char *style, int indenting)
 	next paragraph encountered should be handled like as a first 
 	paragraph.  
 	
-	For FIRST_INDENT, then it is the first paragraph in a section.
+	For FIRST_PARAGRAPH, then it is the first paragraph in a section.
 	Usually the first paragraph is not indented.  However, when the
 	document is being typeset in french it should have normal indentation.
 	Another special case occurs when the paragraph being typeset is
@@ -207,26 +223,26 @@ void startParagraph(const char *style, int indenting)
 	flag or the g_paragraph_no_indent flag is TRUE, then do not indent
 	the next line.  Typically these flags are set just after a figure
 	or equation or table.
-	
  ******************************************************************************/
+void startParagraph(const char *style, int indenting)
 {
     int parindent;
 	static int status = 0;
 	
     parindent = getLength("parindent");
 
-    if (indenting == TITLE_INDENT) {      /* titles are never indented */
+    if (indenting == SECTION_TITLE_PARAGRAPH) {      /* titles are never indented */
         parindent = 0;
         status = 1;
-    	diagnostics(5, "TITLE_INDENT");
+    	diagnostics(5, "SECTION_TITLE_PARAGRAPH");
     }
-    else if (indenting == FIRST_INDENT) { /* French indents the first paragraph */
-    	diagnostics(5, "FIRST_INDENT");
+    else if (indenting == FIRST_PARAGRAPH) { /* French indents the first paragraph */
+    	diagnostics(5, "FIRST_PARAGRAPH");
     	status = 1;
     	if (!FrenchMode && !g_processing_list_environment)
         	parindent = 0;
 	} else {                              /* Worry about not indenting */
-    	diagnostics(5, "ANY_INDENT");
+    	diagnostics(5, "GENERIC_PARAGRAPH");
 	    if (g_paragraph_no_indent || g_paragraph_inhibit_indent)
         	parindent = 0;
         else if (status > 0) 
@@ -234,16 +250,17 @@ void startParagraph(const char *style, int indenting)
         status--;
 	}
 	
-    diagnostics(5, "startParagraph mode = %s", TexModeName[getTexMode()]);
-    diagnostics(5, "Noindent is         %s", (g_paragraph_no_indent) ? "TRUE" : "FALSE");
-    diagnostics(5, "Inhibit is          %s", (g_paragraph_inhibit_indent) ? "TRUE" : "FALSE");
-    diagnostics(5, "indent is           %d", g_left_margin_indent);
-    diagnostics(5, "right indent is     %d", g_right_margin_indent);
-    diagnostics(5, "current parindent   %d", getLength("parindent"));
-    diagnostics(5, "paragraph indent is %d", parindent);
+    diagnostics(5, "Paragraph mode    %s", TexModeName[getTexMode()]);
+    diagnostics(5, "Paragraph option  %s", ParOptionName[indenting]);
+    diagnostics(5, "Noindent is       %s", (g_paragraph_no_indent) ? "TRUE" : "FALSE");
+    diagnostics(5, "Inhibit is        %s", (g_paragraph_inhibit_indent) ? "TRUE" : "FALSE");
+    diagnostics(5, "left indent is    %d", g_left_margin_indent);
+    diagnostics(5, "right indent is   %d", g_right_margin_indent);
+    diagnostics(5, "current parindent %d", getLength("parindent"));
+    diagnostics(5, "this parindent    %d", parindent);
 
     if (g_page_new) {
-        fprintRTF("\\page{} ");   /* causes new page */
+        fprintRTF("\\page{}");   /* causes new page */
         g_page_new = FALSE;
         g_column_new = FALSE;
     }
@@ -253,11 +270,12 @@ void startParagraph(const char *style, int indenting)
         g_column_new = FALSE;
     }
 
-    fprintRTF("\\pard\\q%c\\sl%i\\slmult1 ", getAlignment(), g_line_spacing);
+    fprintRTF("\\pard\\q%c",      getAlignment());
+    fprintRTF("\\sl%i\\slmult1 ", getLineSpacing());
 
     if (g_vertical_space_to_add > 0)
-        fprintRTF("\\sb%d ", g_vertical_space_to_add);
-    g_vertical_space_to_add = 0;
+        fprintRTF("\\sb%d ", getVspace());
+    setVspace(0);
 
     if (g_left_margin_indent != 0)
         fprintRTF("\\li%d", g_left_margin_indent);
@@ -271,7 +289,7 @@ void startParagraph(const char *style, int indenting)
 
     if (!g_processing_list_environment) {
         g_paragraph_no_indent = FALSE;
-        if (indenting == TITLE_INDENT)
+        if (indenting == SECTION_TITLE_PARAGRAPH)
         	g_paragraph_inhibit_indent = TRUE;
         else
         	g_paragraph_inhibit_indent = FALSE;

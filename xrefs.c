@@ -368,7 +368,7 @@ void CmdTheEndNotes(int code)
     diagnostics(4, "Entering CmdTheEndNotes");
 
     CmdVspace(VSPACE_BIG_SKIP);
-    startParagraph("endnotes", TITLE_INDENT);
+    startParagraph("endnotes", SECTION_TITLE_PARAGRAPH);
     fprintRTF("{\\sect ");
     InsertStyle("section");
     fprintRTF(" Notes");
@@ -487,9 +487,9 @@ void CmdThebibliography(int code)
         CmdVspace(VSPACE_MEDIUM_SKIP);
 
         if (g_document_type == FORMAT_APA) {
-            ConvertString("\\begin{center}");
+            ConvertString("\\begin{center}{\\bf");
         } else {
-        	startParagraph("bibliography", TITLE_INDENT);
+        	startParagraph("bibliography", SECTION_TITLE_PARAGRAPH);
         	fprintRTF("{\\plain\\b\\fs32 ");
         }
         i = existsDefinition("refname");    /* see if refname has * been redefined */
@@ -506,7 +506,7 @@ void CmdThebibliography(int code)
         }
 
         if (g_document_type == FORMAT_APA) {
-            ConvertString("\\end{center}");
+            ConvertString("}\\end{center}");
         } else {
         	fprintRTF("}");
         	CmdEndParagraph(0);
@@ -515,7 +515,7 @@ void CmdThebibliography(int code)
 
         PushEnvironment(BIBLIOGRAPHY_MODE);
         setLength("parindent", -amount);
-        setLeftMarginIndent(getLeftMarginIndent() + 2 * amount);
+        setLeftMarginIndent(getLeftMarginIndent() + amount);
     } else {
         CmdEndParagraph(0);
         CmdVspace(VSPACE_SMALL_SKIP);
@@ -533,7 +533,7 @@ void CmdBibitem(int code)
 
     g_processing_list_environment = TRUE;
     CmdEndParagraph(0);
-    startParagraph("bibitem", FIRST_INDENT);
+    startParagraph("bibitem", FIRST_PARAGRAPH);
 
     label = getBracketParam();
     key = getBraceParam();
@@ -2363,7 +2363,7 @@ void CmdContentsLine(int code)
 
     diagnostics(4, "Entering CmdContentsLine %s [%s]", type, text);
 
-    startParagraph("contents", TITLE_INDENT);
+    startParagraph("contents", SECTION_TITLE_PARAGRAPH);
     fprintRTF("{");
     contents_type = strdup_together("contents_", type);
     InsertStyle(contents_type);
@@ -2387,7 +2387,7 @@ void CmdListOf(int code)
 	
     diagnostics(4, "Entering CmdListOf");
 
-	startParagraph("list", TITLE_INDENT);
+	startParagraph("list", SECTION_TITLE_PARAGRAPH);
 	fprintRTF("{");
 	InsertStyle("contents_no_style");
 	fprintRTF(" ");
