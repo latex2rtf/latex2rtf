@@ -42,7 +42,27 @@ vertical and horizontal modes.
 Why bother keeping track of modes?  Mostly so that paragraph indentation gets handled
 correctly, as well as vertical and horizontal space.
 
-*/
+The tricky part is that latex2rtf is a one-pass converter.  The right thing
+must be done with each character.  Consider the sequence 
+
+           \vspace{1cm}\noindent New paragraph.
+
+When latex2rtf reaches the 'N', then a new paragraph should be started.  We
+know it is a new paragraph because \vspace should have put the converter 
+into a MODE_VERTICAL and characters are only emitted in MODE_HORIZONTAL.  
+
+RTF needs to set up the entire paragraph at one time and the 
+
+    * text alignment
+    * line spacing
+	* vertical space above
+	* left margin
+	* right margin
+	* paragraph indentation 
+	
+must all be emitted at this time.  This file contains routines
+that affect these quantities
+ ******************************************************************************/
 
 #include <string.h>
 #include <stdlib.h>
@@ -57,36 +77,35 @@ correctly, as well as vertical and horizontal space.
 #include "vertical.h"
 
 static int g_TeX_mode = MODE_VERTICAL;
-
 static int g_line_spacing = 240;
-static bool g_paragraph_no_indent = FALSE;
-static bool g_paragraph_inhibit_indent = FALSE;
-static bool g_page_new = FALSE;
+static int g_paragraph_no_indent = FALSE;
+static int g_paragraph_inhibit_indent = FALSE;
 static int g_vertical_space_to_add = 0;
-int g_right_margin_indent;
-int g_left_margin_indent;
-static bool g_column_new = FALSE;
+static int g_right_margin_indent;
+static int g_left_margin_indent;
+static int g_page_new = FALSE;
+static int g_column_new = FALSE;
 
 char TexModeName[7][25] = { "bad", "internal vertical", "horizontal",
     "restricted horizontal", "math", "displaymath", "vertical"
 };
 
-/******************************************************************************
-    The whole paragraph concept in latex does not map very well onto the RTF
-    syntax.  LaTeX is concerned with ending paragraphs.  RTF is worried about
-    starting them.  Consider vertical space.  In latex you just write something
-    like \vspace{1cm}\noindent New paragraph.
-    
-    Now RTF needs to set up the entire paragraph at one time.  So we have emulate
-    the vertical mode of latex and accumulate vertical spacing and paragraph
-    indentation information while in vertical mode.  
-    
-    When 
-    
-    One issue is that RTF requires that the paragraph positioning and indentation
-    is known before the paragraph is emitted.  Latex just ends the last paragraph
-    with \n\n and purpose : converts string in TeX-format to Rtf-format
- ******************************************************************************/
+void setLeftMarginIndent(int indent)
+{
+	g_left_margin_indent = indent;
+}
+void setRightMarginIndent(int indent)
+{
+	g_right_margin_indent = indent;
+}
+int getLeftMarginIndent(void)
+{
+	return g_left_margin_indent;
+}
+int getRightMarginIndent(void)
+{
+	return g_right_margin_indent;
+}
 
 void SetTexMode(int mode, int just_set_it)
 {

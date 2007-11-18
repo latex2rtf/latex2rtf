@@ -34,3 +34,8 @@ void CmdStartParagraph(const char *style, int indenting);
 void CmdIndent(int code);
 void SetVspaceDirectly(int space);
 void CmdNewPage(int code);
+
+void setLeftMarginIndent(int indent);
+void setRightMarginIndent(int indent);
+int  getLeftMarginIndent(void);
+int  getRightMarginIndent(void);

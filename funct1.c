@@ -1024,16 +1024,16 @@ void CmdQuote(int code)
             PushEnvironment(QUOTE_MODE);
             diagnostics(4, "Entering \\begin{quotation}");
             CmdVspace(VSPACE_SMALL_SKIP);
-            g_left_margin_indent += 512;
-            g_right_margin_indent += 512;
+            setLeftMarginIndent(getLeftMarginIndent()+512);
+            setRightMarginIndent(getRightMarginIndent()+512);
 			CmdStartParagraph("quote", INDENT_USUAL);			
         }
         else {
             PushEnvironment(QUOTATION_MODE);
             diagnostics(4, "Entering \\begin{quote}");
             CmdVspace(VSPACE_SMALL_SKIP);
-            g_left_margin_indent += 512;
-            g_right_margin_indent += 512;
+            setLeftMarginIndent(getLeftMarginIndent()+512);
+            setRightMarginIndent(getRightMarginIndent()+512);
             setLength("parindent", 0);
 			CmdStartParagraph("quote", INDENT_USUAL);			
 		}
@@ -1070,7 +1070,7 @@ void CmdList(int code)
             SetVspaceDirectly(vspace);
             PushEnvironment(ITEMIZE_MODE);
             setLength("parindent", -amount);
-            g_left_margin_indent += 2 * amount;
+            setLeftMarginIndent(getLeftMarginIndent() + 2 * amount);
             CmdIndent(INDENT_USUAL);
             break;
 
@@ -1080,7 +1080,7 @@ void CmdList(int code)
             g_enumerate_depth++;
             CmdItem(RESET_ITEM_COUNTER);
             setLength("parindent", -amount);
-            g_left_margin_indent += 2 * amount;
+            setLeftMarginIndent(getLeftMarginIndent() + 2 * amount);
             CmdIndent(INDENT_USUAL);
             break;
 
@@ -1088,7 +1088,7 @@ void CmdList(int code)
             SetVspaceDirectly(vspace);
             PushEnvironment(DESCRIPTION_MODE);
             setLength("parindent", -amount);
-            g_left_margin_indent += amount;
+            setLeftMarginIndent(getLeftMarginIndent() + 2 * amount);
             CmdIndent(INDENT_USUAL);
             break;
 
@@ -1393,7 +1393,7 @@ void CmdVerse(int code)
         case ON:
             PushEnvironment(VERSE_MODE);
             CmdIndent(INDENT_USUAL);
-            g_left_margin_indent += 1134;
+            setLeftMarginIndent(getLeftMarginIndent() + 1134);
             setLength("parindent", 0);
             break;
         case OFF:
@@ -1835,8 +1835,8 @@ void CmdAbstract(int code)
         ConvertBabelName("ABSTRACTNAME");
         fprintRTF("}");
         CmdEndParagraph(0);
-        g_left_margin_indent += 1024;
-        g_right_margin_indent += 1024;
+        setLeftMarginIndent(getLeftMarginIndent() + 1024);
+        setRightMarginIndent(getRightMarginIndent() + 1024);
         alignment = JUSTIFIED;
 
     } 
@@ -1850,8 +1850,8 @@ void CmdAbstract(int code)
     if (code == 4 || code == 2 || code == (1 | OFF) ) {
         CmdIndent(INDENT_USUAL);
     	CmdEndParagraph(0);
-        g_left_margin_indent -= 1024;
-        g_right_margin_indent -= 1024;
+        setLeftMarginIndent(getLeftMarginIndent() - 1024);
+        setRightMarginIndent(getRightMarginIndent() - 1024);
         alignment = oldalignment;
         CmdVspace(VSPACE_MEDIUM_SKIP);  /* put \medskip after abstract */
     }

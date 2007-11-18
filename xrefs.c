@@ -515,7 +515,7 @@ void CmdThebibliography(int code)
 
         PushEnvironment(BIBLIOGRAPHY_MODE);
         setLength("parindent", -amount);
-        g_left_margin_indent += 2 * amount;
+        setLeftMarginIndent(getLeftMarginIndent() + 2 * amount);
     } else {
         CmdEndParagraph(0);
         CmdVspace(VSPACE_SMALL_SKIP);
