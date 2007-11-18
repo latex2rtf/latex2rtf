@@ -21,6 +21,7 @@ void	ungetTexChar(char c);
 
 void	skipToEOL(void);
 void	skipSpaces(void);
+void	skipWhiteSpace(void);
 
 void	CmdIgnoreParameter(int);
 void    CmdInclude(int code);

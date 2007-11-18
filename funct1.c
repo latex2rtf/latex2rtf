@@ -76,64 +76,78 @@ bool g_processing_list_environment = FALSE;
 void CmdStartParagraph(const char *style, int indenting)
 
 /******************************************************************************
-     purpose : RTF codes to create a new paragraph.  If the paragraph should
-               not be indented then emit \fi0 otherwise use the current value
-               of \parindent as the indentation of the first line.
-               
-               style describes the type of paragraph ... 
-                  "body"
-                  "caption"
-                  "author"
-                  "bibitem"
-                  "section"
-                  etc.
-                  
-               indenting describes how this paragraph and (perhaps) the following
-               paragraph should be indented
-               
-                  TITLE_INDENT  (do not indent this paragraph or the next)
-                  FIRST_INDENT  (do not indent this paragraph but indent the next)
-                  ANY_INDENT    (indent as needed)
-
-               Sometimes it is necessary to know what the next paragraph will
-               be before it has been parsed.  For example, a section command
-               should create a paragraph for the section title and then the
-               next paragraph encountered should be handled like as a first 
-               paragraph.  So status is set to 2 and decremented to 1 when the
-               section title paragraph is started.
-               
-               If the status is 1, then it is the first paragraph in a section.
-               Usually the first paragraph is not indented.  However, when the
-               document is being typeset in french it should have normal indentation.
-               Another special case occurs when the paragraph being typeset is
-               in a list environment.  In this case, we need to indent according
-               to the current parindent to obtain the proper hanging indentation
-               
-               If the status is 0, then use the default is to indent according to
-               the current parindent.  However, if the g_paragraph_inhibit_indent
-               flag or the g_paragraph_no_indent flag is TRUE, then do not indent
-               the next line.  Typically these flags are set just after a figure
-               or equation or table.
-               
-               Note that when the indenting is ANY_INDENT, the status flag is not touched.
+	RTF codes to create a new paragraph.  If the paragraph should
+	not be indented then emit \fi0 otherwise use the current value
+	of \parindent as the indentation of the first line.
+	
+	style describes the type of paragraph ... 
+	  "body"
+	  "caption"
+	  "author"
+	  "bibitem"
+	  "section"
+	  etc.
+	  
+	indenting describes how this paragraph and (perhaps) the following
+	paragraph should be indented
+	
+	  TITLE_INDENT  (do not indent this paragraph or the next)
+	  FIRST_INDENT  (do not indent this paragraph but indent the next)
+	  ANY_INDENT    (indent as needed)
+	
+	Sometimes it is necessary to know what the next paragraph will
+	be before it has been parsed.  For example, a section command
+	should create a paragraph for the section title and then the
+	next paragraph encountered should be handled like as a first 
+	paragraph.  
+	
+	For FIRST_INDENT, then it is the first paragraph in a section.
+	Usually the first paragraph is not indented.  However, when the
+	document is being typeset in french it should have normal indentation.
+	Another special case occurs when the paragraph being typeset is
+	in a list environment.  In this case, we need to indent according
+	to the current parindent to obtain the proper hanging indentation
+	
+	The default is to indent according to
+	the current parindent.  However, if the g_paragraph_inhibit_indent
+	flag or the g_paragraph_no_indent flag is TRUE, then do not indent
+	the next line.  Typically these flags are set just after a figure
+	or equation or table.
+	
  ******************************************************************************/
 {
-    static int status;
     int parindent;
-
-    if (indenting == TITLE_INDENT)
-        status = 2;
-    if (indenting == FIRST_INDENT)
-        status = 1;
-
+	static int status = 0;
+	
     parindent = getLength("parindent");
+
+    if (indenting == TITLE_INDENT) {      /* titles are never indented */
+        parindent = 0;
+        status = 1;
+    	diagnostics(5, "TITLE_INDENT");
+    }
+    else if (indenting == FIRST_INDENT) { /* French indents the first paragraph */
+    	diagnostics(5, "FIRST_INDENT");
+    	status = 1;
+    	if (!FrenchMode && !g_processing_list_environment)
+        	parindent = 0;
+	} else {                              /* Worry about not indenting */
+    	diagnostics(5, "ANY_INDENT");
+	    if (g_paragraph_no_indent || g_paragraph_inhibit_indent)
+        	parindent = 0;
+        else if (status > 0) 
+        	parindent = 0;
+        status--;
+	}
+	
 
     diagnostics(5, "CmdStartParagraph mode = %s", TexModeName[GetTexMode()]);
     diagnostics(5, "Noindent is         %s", (g_paragraph_no_indent) ? "TRUE" : "FALSE");
     diagnostics(5, "Inhibit is          %s", (g_paragraph_inhibit_indent) ? "TRUE" : "FALSE");
     diagnostics(5, "indent is           %d", g_left_margin_indent);
     diagnostics(5, "right indent is     %d", g_right_margin_indent);
-    diagnostics(5, "paragraph indent is %d", getLength("parindent"));
+    diagnostics(5, "current parindent   %d", getLength("parindent"));
+    diagnostics(5, "paragraph indent is %d", parindent);
 
     if (g_page_new) {
         fprintRTF("\\page{} ");   /* causes new page */
@@ -158,28 +172,17 @@ void CmdStartParagraph(const char *style, int indenting)
     if (g_right_margin_indent != 0)
         fprintRTF("\\ri%d", g_right_margin_indent);
 
-    /* titles are never indented */
-    if (status == 2)
-        parindent = 0;
-
-    /* French indents the first paragraph */
-    if (status == 1 && !FrenchMode && !g_processing_list_environment)
-        parindent = 0;
-
-    /* use indent flags for ANY_INDENT */
-    if (status <= 0 && (g_paragraph_no_indent || g_paragraph_inhibit_indent))
-        parindent = 0;
-
     fprintRTF("\\fi%d ", parindent);
 
     SetTexMode(MODE_HORIZONTAL,TRUE); 
 
     if (!g_processing_list_environment) {
         g_paragraph_no_indent = FALSE;
-        g_paragraph_inhibit_indent = FALSE;
+        if (indenting == TITLE_INDENT)
+        	g_paragraph_inhibit_indent = TRUE;
+        else
+        	g_paragraph_inhibit_indent = FALSE;
     }
-
-    status--;
 }
 
 void CmdEndParagraph(int code)
@@ -243,6 +246,7 @@ void CmdVspace(int code)
             break;
     }
 
+	SetTexMode(MODE_VERTICAL,TRUE);
     DirectVspace(vspace);
 }
 
@@ -1234,7 +1238,8 @@ void CmdQuote(int code)
             CmdVspace(VSPACE_SMALL_SKIP);
             g_left_margin_indent += 512;
             g_right_margin_indent += 512;
-            CmdIndent(INDENT_USUAL);
+			CmdStartParagraph("quote", INDENT_USUAL);			
+			skipWhiteSpace();
         }
         else {
             PushEnvironment(QUOTATION_MODE);
@@ -1243,8 +1248,9 @@ void CmdQuote(int code)
             g_left_margin_indent += 512;
             g_right_margin_indent += 512;
             setLength("parindent", 0);
-            CmdIndent(INDENT_USUAL);
-        }
+			CmdStartParagraph("quote", INDENT_USUAL);			
+			skipWhiteSpace();
+		}
 	}
 	else {
 		PopEnvironment();
@@ -1573,6 +1579,7 @@ void CmdVerbatim(int code)
         free(verbatim_text);
         ConvertString(endtag);
         free(endtag);
+        
 
     } else {
         diagnostics(4, "Exiting CmdVerbatim");

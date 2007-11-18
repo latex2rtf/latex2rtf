@@ -132,7 +132,7 @@ static char *expandmacro(char *macro, char *opt_param, int params)
     for (; i < params; i++) {
         args[i] = getBraceRawParam();
         buff_size += strlen(args[i]);
-        diagnostics(3, "argument #%d <%s>", i + 1, args[i]);
+        diagnostics(5, "argument #%d <%s>", i + 1, args[i]);
     }
 
     dmacro = strdup(macro);
@@ -338,7 +338,7 @@ void renewDefinition(char *name, char *opt_param, char *def, int params)
 {
     int i;
 
-    diagnostics(3, "renewDefinition seeking <%s>\n", name);
+    diagnostics(3, "renewDefinition seeking '%s'\n", name);
     i = existsDefinition(name);
 
     if (i < 0) {
@@ -398,7 +398,7 @@ int existsEnvironment(char *s)
 
     n = strlen(s);
     while (i < iNewEnvironmentCount && !strequal(s, NewEnvironments[i].name)) {
-        diagnostics(4, "e seeking=<%s>, i=%d, current=<%s>", s, i, NewEnvironments[i].name);
+        diagnostics(6, "existsEnv seeking=<%s>, i=%d, current=<%s>", s, i, NewEnvironments[i].name);
         i++;
     }
 

@@ -610,7 +610,6 @@ char getNonSpace(void)
 }
 
 void skipSpaces(void)
-
 /***************************************************************************
  Description: skip to the next non-space character from the input stream
 ****************************************************************************/
@@ -621,6 +620,16 @@ void skipSpaces(void)
     }
     ungetTexChar(c);
 }
+
+void	skipWhiteSpace(void)
+/***************************************************************************
+ Description: skip over spaces and linefeeds
+****************************************************************************/
+{
+    char c=getNonBlank();
+    ungetTexChar(c);
+}
+
 
 int getSameChar(char c)
 

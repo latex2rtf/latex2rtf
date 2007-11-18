@@ -196,7 +196,7 @@ void preParse(char **body, char **header, char **label)
 **************************************************************************/
 {
     int any_possible_match, found;
-    char cNext, cThis, *s, *text, *next_header, *str;
+    char cNext, cThis, *s, *text, *next_header, *str, *p;
     int i;
     int possible_match[43];
     char *command[43] = { "",   /* 0 entry is for user definitions */
@@ -490,7 +490,9 @@ void preParse(char **body, char **header, char **label)
         	move_end_of_buffer(-strlen(command[e_document_item]));
         	add_chr_to_buffer('\0');
         	*header = strdup(command[e_document_item]);
-	    	*body = strdup(section_buffer);
+			p = section_buffer;
+			while (*p==' ' || *p == '\n') p++;
+	    	*body = strdup(p);
     		PopTrackLineNumber();
 			diagnostics(6, "body = %s", section_buffer);
 			diagnostics(6, "next header = '%s'", command[e_document_item]);
@@ -634,8 +636,12 @@ void preParse(char **body, char **header, char **label)
 		add_chr_to_buffer('\0');
         break;
     }
-    text = strdup(section_buffer);
-    *body = text;
+    
+    /*eliminate white space at beginning of buffer */
+    p = section_buffer;
+    while (*p==' ' || *p == '\n') p++;
+    
+    *body = strdup(p);
     *header = next_header;
     PopTrackLineNumber();
 }

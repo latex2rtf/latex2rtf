@@ -77,13 +77,30 @@ char TexModeName[7][25] = { "bad", "internal vertical", "horizontal",
     "restricted horizontal", "math", "displaymath", "vertical"
 };
 
+/******************************************************************************
+    The whole paragraph concept in latex does not map very well onto the RTF
+    syntax.  LaTeX is concerned with ending paragraphs.  RTF is worried about
+    starting them.  Consider vertical space.  In latex you just write something
+    like \vspace{1cm}\noindent New paragraph.
+    
+    Now RTF needs to set up the entire paragraph at one time.  So we have emulate
+    the vertical mode of latex and accumulate vertical spacing and paragraph
+    indentation information while in vertical mode.  
+    
+    When 
+    
+    One issue is that RTF requires that the paragraph positioning and indentation
+    is known before the paragraph is emitted.  Latex just ends the last paragraph
+    with \n\n and purpose : converts string in TeX-format to Rtf-format
+ ******************************************************************************/
+
 void SetTexMode(int mode, int just_set_it)
 {
     if (abs(mode) != g_TeX_mode)
         diagnostics(5, "TeX mode changing from [%s] -> [%s]", TexModeName[g_TeX_mode], TexModeName[abs(mode)]);
 
     if (just_set_it) {
-        g_TeX_mode = -mode;
+        g_TeX_mode = mode;
         return;
     }
 
@@ -301,8 +318,6 @@ purpose: converts inputfile and writes result to outputfile
                     if (cNext == '\n') {    /* new paragraph ... skip all ' ' and '\n' */
                         pending_new_paragraph = 2;
                         CmdEndParagraph(0);
-                        cNext = getNonBlank();
-                        ungetTexChar(cNext);
 
                     } else {    /* add a space if needed */
                         ungetTexChar(cNext);
