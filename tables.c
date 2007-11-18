@@ -217,7 +217,7 @@ static TabularT TabularPreamble(char *text, char *width, char *pos, char *cols)
 
     TabularCountVert(cols, tabular.vert);
 
-    if (GetTexMode() != MODE_HORIZONTAL) {
+    if (getTexMode() != MODE_HORIZONTAL) {
         CmdIndent(INDENT_NONE);
         startParagraph("tabular", FIRST_INDENT);
     }
@@ -1255,7 +1255,7 @@ void CmdTabbing(int code)
 	
 		diagnostics(5, "tabbing_tabbing_tabbing\n%s\ntabbing_tabbing_tabbing", table);
 	
-		if (GetTexMode() != MODE_HORIZONTAL) {
+		if (getTexMode() != MODE_HORIZONTAL) {
 			CmdIndent(INDENT_NONE);
 			startParagraph("tabbing", FIRST_INDENT);
 		}
@@ -1348,7 +1348,7 @@ void CmdTable(int code)
         	ConvertString("\\end{table*}");
     } else {
         g_processing_table = FALSE;
-        if (GetTexMode() != MODE_VERTICAL)
+        if (getTexMode() != MODE_VERTICAL)
             CmdEndParagraph(0);
         if (g_table_label)
             free(g_table_label);

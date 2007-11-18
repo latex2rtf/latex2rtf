@@ -15,8 +15,6 @@
 
 extern char TexModeName[7][25];
 
-void SetTexMode(int mode, int just_set_it);
-int  GetTexMode(void);
 
 #define VSPACE_VSPACE     -1
 #define VSPACE_VSKIP       0
@@ -32,13 +30,21 @@ void CmdSlashSlash(int code);
 void CmdDoubleSpacing(int code);
 void startParagraph(const char *style, int indenting);
 void CmdIndent(int code);
-void SetVspaceDirectly(int space);
 void CmdNewPage(int code);
 void CmdAlign(int code);
 
 void setLeftMarginIndent(int indent);
 void setRightMarginIndent(int indent);
+
 int  getLeftMarginIndent(void);
 int  getRightMarginIndent(void);
+
 void setAlignment(int align);
 int  getAlignment(void);
+
+int  getTexMode(void);
+void setTexMode(int mode);
+void changeTexMode(int mode);
+
+void setVspace(int space);
+int  getVspace(void);

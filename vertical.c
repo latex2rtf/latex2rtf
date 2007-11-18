@@ -18,29 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 This file is available from http://sourceforge.net/projects/latex2rtf/
 
-TeX has six modes:
-	
-	MODE_VERTICAL              Building the main vertical list, from which the 
-	                           pages of output are derived
-	              
-	MODE_INTERNAL_VERTICAL     Building a vertical list from a vbox
-	
-	MODE_HORIZONTAL            Building a horizontal list for a paragraph
-	
-	MODE_RESTICTED_HORIZONTAL  Building a horizontal list for an hbox
-	
-	MODE_MATH                  Building a mathematical formula to be placed in a 
-	                           horizontal list
-	                           
-	MODE_DISPLAYMATH           Building a mathematical formula to be placed on a
-	                           line by itself, temporarily interrupting the current paragraph
-	                           
-LaTeX has three modes: paragraph mode, math mode, or left-to-right mode.
-This is not a particularly useful, since paragraph mode is a combination of
-vertical and horizontal modes. 
-                         
-Why bother keeping track of modes?  Mostly so that paragraph indentation gets handled
-correctly, as well as vertical and horizontal space.
+**************************************************************************
 
 The tricky part is that latex2rtf is a one-pass converter.  The right thing
 must be done with each character.  Consider the sequence 
@@ -62,7 +40,7 @@ RTF needs to set up the entire paragraph at one time and the
 	
 must all be emitted at this time.  This file contains routines
 that affect these quantities
- ******************************************************************************/
+******************************************************************************/
 
 #include <string.h>
 #include <stdlib.h>
@@ -93,6 +71,9 @@ char TexModeName[7][25] = { "bad", "internal vertical", "horizontal",
     "restricted horizontal", "math", "displaymath", "vertical"
 };
 
+/******************************************************************************
+     left and right margin accessor functions
+ ******************************************************************************/
 void setLeftMarginIndent(int indent)
 {
 	g_left_margin_indent = indent;
@@ -110,6 +91,9 @@ int getRightMarginIndent(void)
 	return g_right_margin_indent;
 }
 
+/******************************************************************************
+     paragraph alignment accessor functions
+ ******************************************************************************/
 void setAlignment(int align)
 {
 	g_alignment = align;
@@ -120,16 +104,58 @@ int getAlignment(void)
 	return g_alignment;
 }
 
-void SetTexMode(int mode, int just_set_it)
+/******************************************************************************
+     vertical space between paragraph accessor functions
+ ******************************************************************************/
+void setVspace(int space)
 {
+    g_vertical_space_to_add = space;
+}
 
-    if (just_set_it) {
-        diagnostics(5, "Forcing mode change from [%s] -> [%s]", TexModeName[g_TeX_mode], TexModeName[mode]);
-        g_TeX_mode = mode;
-        return;
-    } else
-        diagnostics(5, "TeX mode changing from [%s] -> [%s]", TexModeName[g_TeX_mode], TexModeName[mode]);
+int getVspace(void)
+{
+	return g_vertical_space_to_add;
+}
 
+/******************************************************************************
+TeX has six modes:
+	
+	MODE_VERTICAL              Building the main vertical list, from which the 
+	                           pages of output are derived
+	              
+	MODE_INTERNAL_VERTICAL     Building a vertical list from a vbox
+	
+	MODE_HORIZONTAL            Building a horizontal list for a paragraph
+	
+	MODE_RESTICTED_HORIZONTAL  Building a horizontal list for an hbox
+	
+	MODE_MATH                  Building a mathematical formula to be placed in a 
+	                           horizontal list
+	                           
+	MODE_DISPLAYMATH           Building a mathematical formula to be placed on a
+	                           line by itself, temporarily interrupting the current paragraph
+	                           
+LaTeX has three modes: paragraph mode, math mode, or left-to-right mode.
+This is not a particularly useful, since paragraph mode is a combination of
+vertical and horizontal modes. 
+                         
+Why bother keeping track of modes?  Mostly so that paragraph indentation gets handled
+correctly, as well as vertical and horizontal space.
+ ******************************************************************************/
+void setTexMode(int mode)
+{
+    diagnostics(5, "TeX mode setting from [%s] -> [%s]", TexModeName[g_TeX_mode], TexModeName[mode]);
+    g_TeX_mode = mode;
+}
+
+int getTexMode(void)
+{
+    return g_TeX_mode;
+}
+
+void changeTexMode(int mode)
+{
+    diagnostics(5, "TeX mode changing from [%s] -> [%s]", TexModeName[g_TeX_mode], TexModeName[mode]);
 
     if (g_TeX_mode == MODE_VERTICAL && mode == MODE_HORIZONTAL)
         startParagraph("body", ANY_INDENT);
@@ -140,10 +166,6 @@ void SetTexMode(int mode, int just_set_it)
     g_TeX_mode = mode;
 }
 
-int GetTexMode(void)
-{
-    return g_TeX_mode;
-}
 
 void startParagraph(const char *style, int indenting)
 
@@ -212,8 +234,7 @@ void startParagraph(const char *style, int indenting)
         status--;
 	}
 	
-
-    diagnostics(5, "startParagraph mode = %s", TexModeName[GetTexMode()]);
+    diagnostics(5, "startParagraph mode = %s", TexModeName[getTexMode()]);
     diagnostics(5, "Noindent is         %s", (g_paragraph_no_indent) ? "TRUE" : "FALSE");
     diagnostics(5, "Inhibit is          %s", (g_paragraph_inhibit_indent) ? "TRUE" : "FALSE");
     diagnostics(5, "indent is           %d", g_left_margin_indent);
@@ -246,7 +267,7 @@ void startParagraph(const char *style, int indenting)
 
     fprintRTF("\\fi%d ", parindent);
 
-    SetTexMode(MODE_HORIZONTAL,TRUE); 
+    setTexMode(MODE_HORIZONTAL); 
 
     if (!g_processing_list_environment) {
         g_paragraph_no_indent = FALSE;
@@ -263,20 +284,15 @@ void CmdEndParagraph(int code)
      purpose : ends the current paragraph and return to MODE_VERTICAL.
  ******************************************************************************/
 {
-    int mode = GetTexMode();
+    int mode = getTexMode();
 
     diagnostics(5, "CmdEndParagraph mode = %s", TexModeName[mode]);
     if (mode != MODE_VERTICAL  && g_processing_fields == 0) {
         fprintRTF("\\par\n");
-        SetTexMode(MODE_VERTICAL,TRUE); /* TRUE value avoids calling CmdEndParagraph! */
+        setTexMode(MODE_VERTICAL);
     }
 
     g_paragraph_inhibit_indent = FALSE;
-}
-
-void SetVspaceDirectly(int vspace)
-{
-    g_vertical_space_to_add = vspace;
 }
 
 void CmdVspace(int code)
@@ -318,8 +334,8 @@ void CmdVspace(int code)
             break;
     }
 
-	SetTexMode(MODE_VERTICAL,TRUE);
-    SetVspaceDirectly(vspace);
+	setTexMode(MODE_VERTICAL);
+    setVspace(vspace);
 }
 
 void CmdIndent(int code)
@@ -335,7 +351,7 @@ void CmdIndent(int code)
            INDENT_USUAL has startParagraph() use the value of \parindent
  ******************************************************************************/
 {
-    diagnostics(5, "CmdIndent mode = %d", GetTexMode());
+    diagnostics(5, "CmdIndent mode = %d", getTexMode());
     if (code == INDENT_NONE)
         g_paragraph_no_indent = TRUE;
 
@@ -355,7 +371,6 @@ void CmdNewPage(int code)
 /******************************************************************************
   purpose: starts a new page
 parameter: code: newpage or newcolumn-option
- globals: twocolumn: true if twocolumn-mode is set
  ******************************************************************************/
 {
     switch (code) {

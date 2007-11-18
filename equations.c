@@ -285,31 +285,31 @@ static void PrepareRtfEquation(int code, int EQ_Needed)
 
         case EQN_MATH:
             diagnostics(4, "PrepareRtfEquation ... \\begin{math}");
-            SetTexMode(MODE_MATH,FALSE);
+            changeTexMode(MODE_MATH);
             break;
 
         case EQN_DOLLAR:
             diagnostics(4, "PrepareRtfEquation ... $");
             fprintRTF("{");
-            SetTexMode(MODE_MATH,FALSE);
+            changeTexMode(MODE_MATH);
             break;
 
         case EQN_ENSUREMATH:
             diagnostics(4, "PrepareRtfEquation ... \\ensuremath{}");
             fprintRTF("{");
-            SetTexMode(MODE_MATH,FALSE);
+            changeTexMode(MODE_MATH);
             break;
 
         case EQN_RND_OPEN:
             diagnostics(4, "PrepareRtfEquation ... \\(");
             fprintRTF("{");
-            SetTexMode(MODE_MATH,FALSE);
+            changeTexMode(MODE_MATH);
             break;
 
         case EQN_DOLLAR_DOLLAR:
             diagnostics(4, "PrepareRtfEquation -- $$");
             CmdEndParagraph(0);
-            SetTexMode(MODE_DISPLAYMATH,FALSE);
+            changeTexMode(MODE_DISPLAYMATH);
             g_show_equation_number = FALSE;
             fprintRTF("{\\pard\\tqc\\tx%d\\tab ", b);
             break;
@@ -324,7 +324,7 @@ static void PrepareRtfEquation(int code, int EQ_Needed)
             fprintRTF("\\par\\par\n\\pard");
             fprintRTF("\\tqc\\tx%d", b);
             fprintRTF("\\tab ");
-            SetTexMode(MODE_DISPLAYMATH,FALSE);
+            changeTexMode(MODE_DISPLAYMATH);
             break;
 
         case EQN_EQUATION_STAR:
@@ -333,7 +333,7 @@ static void PrepareRtfEquation(int code, int EQ_Needed)
             fprintRTF("\\par\\par\n\\pard");
             fprintRTF("\\tqc\\tx%d", b);
             fprintRTF("\\tab ");
-            SetTexMode(MODE_DISPLAYMATH,FALSE);
+            changeTexMode(MODE_DISPLAYMATH);
             break;
 
         case EQN_EQUATION:
@@ -344,7 +344,7 @@ static void PrepareRtfEquation(int code, int EQ_Needed)
             fprintRTF("\\par\\par\n\\pard");
             fprintRTF("\\tqc\\tx%d\\tqr\\tx%d", b, width);
             fprintRTF("\\tab ");
-            SetTexMode(MODE_DISPLAYMATH,FALSE);
+            changeTexMode(MODE_DISPLAYMATH);
             break;
 
         case EQN_ARRAY_STAR:
@@ -357,7 +357,7 @@ static void PrepareRtfEquation(int code, int EQ_Needed)
             fprintRTF("\\par\\par\n\\pard");
             fprintRTF("\\tqr\\tx%d\\tqc\\tx%d\\tql\\tx%d", a, b, c);
             fprintRTF("\\tab ");
-            SetTexMode(MODE_DISPLAYMATH,FALSE);
+            changeTexMode(MODE_DISPLAYMATH);
             break;
 
         case EQN_ARRAY:
@@ -369,7 +369,7 @@ static void PrepareRtfEquation(int code, int EQ_Needed)
             fprintRTF("\\par\\par\n\\pard");
             fprintRTF("\\tqr\\tx%d\\tqc\\tx%d\\tql\\tx%d\\tqr\\tx%d", a, b, c, width);
             fprintRTF("\\tab ");
-            SetTexMode(MODE_DISPLAYMATH,FALSE);
+            changeTexMode(MODE_DISPLAYMATH);
             break;
 
         case EQN_ALIGN_STAR:
@@ -381,7 +381,7 @@ static void PrepareRtfEquation(int code, int EQ_Needed)
             fprintRTF("\\par\\par\n\\pard");
             fprintRTF("\\tqr\\tx%d\\tql\\tx%d", a, b);
             fprintRTF("\\tab ");
-            SetTexMode(MODE_DISPLAYMATH,FALSE);
+            changeTexMode(MODE_DISPLAYMATH);
             break;
 
         case EQN_ALIGN:
@@ -394,7 +394,7 @@ static void PrepareRtfEquation(int code, int EQ_Needed)
             fprintRTF("\\par\\par\n\\pard");
             fprintRTF("\\tqr\\tx%d\\tql\\tx%d\\tqr\\tx%d", a, b, width);
             fprintRTF("\\tab ");
-            SetTexMode(MODE_DISPLAYMATH,FALSE);
+            changeTexMode(MODE_DISPLAYMATH);
             break;
             
         default:
@@ -440,25 +440,25 @@ static void FinishRtfEquation(int code, int EQ_Needed)
         case EQN_MATH:
             diagnostics(4, "FinishRtfEquation -- \\end{math}");
             CmdIndent(INDENT_INHIBIT);
-            SetTexMode(MODE_HORIZONTAL,FALSE);
+            changeTexMode(MODE_HORIZONTAL);
             break;
 
         case EQN_DOLLAR:
             diagnostics(4, "FinishRtfEquation -- $");
             fprintRTF("}");
-            SetTexMode(MODE_HORIZONTAL,FALSE);
+            changeTexMode(MODE_HORIZONTAL);
             break;
 
         case EQN_ENSUREMATH:
             diagnostics(4, "FinishRtfEquation -- \e\nsuremath{}");
             fprintRTF("}");
-            SetTexMode(MODE_HORIZONTAL,FALSE);
+            changeTexMode(MODE_HORIZONTAL);
             break;
 
         case EQN_RND_OPEN:
             diagnostics(4, "FinishRtfEquation -- \\)");
             fprintRTF("}");
-            SetTexMode(MODE_HORIZONTAL,FALSE);
+            changeTexMode(MODE_HORIZONTAL);
             break;
 
         case EQN_DOLLAR_DOLLAR:
@@ -797,7 +797,7 @@ void CmdEquation(int code)
  ******************************************************************************/
 void CmdEnsuremath(int code)
 {
-	int mode = GetTexMode();
+	int mode = getTexMode();
 
     diagnostics(4, "Entering CmdEnsuremath");
 	if (mode == MODE_MATH || mode == MODE_DISPLAYMATH) {

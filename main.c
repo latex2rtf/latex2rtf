@@ -417,7 +417,7 @@ static void ConvertWholeDocument(void)
 
     PushEnvironment(DOCUMENT_MODE);  /* because we use ConvertString in preamble.c */
     PushEnvironment(PREAMBLE_MODE);
-    SetTexMode(MODE_VERTICAL,TRUE);
+    setTexMode(MODE_VERTICAL);
     ConvertLatexPreamble();
     WriteRtfHeader();
     ConvertString(t);
@@ -797,8 +797,8 @@ purpose: output a single escaped character to the RTF file
          this is primarily useful for the verbatim-like enviroments
  ****************************************************************************/
 {
-	if (GetTexMode() == MODE_VERTICAL)
-		SetTexMode(MODE_HORIZONTAL,FALSE);
+	if (getTexMode() == MODE_VERTICAL)
+		changeTexMode(MODE_HORIZONTAL);
 	if (cThis == '\\')
         fprintRTF("%s","\\\\");
     else if (cThis == '{')

@@ -670,8 +670,8 @@ void InsertBookmark(char *name, char *text)
     char *signet;
 
     if (!name) {
-		if (GetTexMode() == MODE_VERTICAL)
-			SetTexMode(MODE_HORIZONTAL,FALSE);
+		if (getTexMode() == MODE_VERTICAL)
+			changeTexMode(MODE_HORIZONTAL);
         fprintRTF("%s", text);
         return;
     }
@@ -710,7 +710,7 @@ void CmdLabel(int code)
 	int brace;
     char *text, *signet, *s, *t, *p;
     char *option = NULL;
-    int mode = GetTexMode();
+    int mode = getTexMode();
 	
     option = getBracketParam();
     text = getBraceParam();

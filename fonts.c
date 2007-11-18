@@ -826,7 +826,7 @@ void MonitorFontChanges(char *text)
         RtfFontInfo[FontInfoDepth].series = F_SERIES_BOLD;
 
     else if (strstart(text, "\\i0")) {
-        int mode=GetTexMode();
+        int mode=getTexMode();
         if (mode==MODE_MATH || mode==MODE_DISPLAYMATH)
         	RtfFontInfo[FontInfoDepth].shape = F_SHAPE_MATH_UPRIGHT;
         else
@@ -836,7 +836,7 @@ void MonitorFontChanges(char *text)
         RtfFontInfo[FontInfoDepth].shape = F_SHAPE_ITALIC;
 
     else if (strstart(text, "\\scaps0")){
-        int mode=GetTexMode();
+        int mode=getTexMode();
         if (mode==MODE_MATH || mode==MODE_DISPLAYMATH)
         	RtfFontInfo[FontInfoDepth].shape = F_SHAPE_MATH_UPRIGHT;
         else

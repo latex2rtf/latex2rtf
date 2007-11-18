@@ -260,7 +260,7 @@ void CmdSlashSlash(int code)
 
 /* this should only happen for an array environment */
     if (g_processing_tabular) { /* tabular or array environment */
-        if (GetTexMode() == MODE_MATH || GetTexMode() == MODE_DISPLAYMATH) {    /* array */
+        if (getTexMode() == MODE_MATH || getTexMode() == MODE_DISPLAYMATH) {    /* array */
             fprintRTF("\\par\n\\tab ");
             return;
         }
@@ -372,8 +372,8 @@ void CmdToday(int code)
     purpose: converts LaTeX \today into RTF \chdate
  ******************************************************************************/
 {
-    if (GetTexMode() == MODE_VERTICAL)
-    	SetTexMode(MODE_HORIZONTAL,FALSE);
+    if (getTexMode() == MODE_VERTICAL)
+    	changeTexMode(MODE_HORIZONTAL);
     fprintRTF("\\chdate ");
 }
 
@@ -768,10 +768,10 @@ void CmdCaption(int code)
         show_string(4, thecaption, "caption");
 	}
 	
-    if (GetTexMode() != MODE_VERTICAL)
+    if (getTexMode() != MODE_VERTICAL)
         CmdEndParagraph(0);
     vspace = getLength("abovecaptionskip");
-    SetVspaceDirectly(vspace);
+    setVspace(vspace);
     startParagraph("caption", FIRST_INDENT);
     fprintRTF("{");
 
@@ -814,7 +814,7 @@ void CmdCaption(int code)
 
     CmdEndParagraph(0);
     vspace = getLength("belowcaptionskip") + getLength("textfloatsep");
-    SetVspaceDirectly(vspace);
+    setVspace(vspace);
     setAlignment(old_align);
     diagnostics(4, "exiting CmdCaption");
 }
@@ -973,7 +973,7 @@ void CmdList(int code)
     vspace = getLength("topsep") + getLength("parskip");
 
 	if (code != (INPARAENUM_MODE | ON) && code != (INPARAENUM_MODE | OFF) ) {
-		if (GetTexMode() == MODE_VERTICAL)
+		if (getTexMode() == MODE_VERTICAL)
 			vspace += getLength("partopsep");
 		else
 			CmdEndParagraph(0);
@@ -981,7 +981,7 @@ void CmdList(int code)
 	
     switch (code) {
         case (ITEMIZE_MODE | ON):
-            SetVspaceDirectly(vspace);
+            setVspace(vspace);
             PushEnvironment(ITEMIZE_MODE);
             setLength("parindent", -amount);
             setLeftMarginIndent(getLeftMarginIndent() + 2 * amount);
@@ -989,7 +989,7 @@ void CmdList(int code)
             break;
 
         case (ENUMERATE_MODE | ON):
-            SetVspaceDirectly(vspace);
+            setVspace(vspace);
             PushEnvironment(ENUMERATE_MODE);
             g_enumerate_depth++;
             CmdItem(RESET_ITEM_COUNTER);
@@ -999,7 +999,7 @@ void CmdList(int code)
             break;
 
         case (DESCRIPTION_MODE | ON):
-            SetVspaceDirectly(vspace);
+            setVspace(vspace);
             PushEnvironment(DESCRIPTION_MODE);
             setLength("parindent", -amount);
             setLeftMarginIndent(getLeftMarginIndent() + 2 * amount);
@@ -1025,7 +1025,7 @@ void CmdList(int code)
             PopEnvironment();
             CmdIndent(INDENT_USUAL);    /* need to reset INDENT_NONE from CmdItem */
             g_processing_list_environment = FALSE;
-            SetVspaceDirectly(vspace);
+            setVspace(vspace);
             break;
     }
 }
@@ -1061,7 +1061,7 @@ void CmdItem(int code)
 	if (code != INPARAENUM_MODE) {
     	CmdEndParagraph(0);
     	vspace = getLength("itemsep") + getLength("parsep");
-    	SetVspaceDirectly(vspace);
+    	setVspace(vspace);
 
     	CmdIndent(INDENT_USUAL);
     	startParagraph("item", FIRST_INDENT);
@@ -1152,14 +1152,14 @@ void CmdBox(int code)
  ******************************************************************************/
 {
     char BoxName[5][10] = { "hbox", "vbox", "mbox", "fbox", "parbox" };
-    int mode = GetTexMode();
+    int mode = getTexMode();
 
     diagnostics(4, "Entering CmdBox() [%s]", BoxName[code - 1]);
     if (g_processing_fields)
         g_processing_fields++;  /* hack to stop fields within fields */
 
     if (code == BOX_HBOX || code == BOX_MBOX)
-        SetTexMode(MODE_RESTRICTED_HORIZONTAL,FALSE);
+        changeTexMode(MODE_RESTRICTED_HORIZONTAL);
 
     if (code == BOX_PARBOX) {
         char *position, *width;
@@ -1183,7 +1183,7 @@ void CmdBox(int code)
         CmdIndent(INDENT_INHIBIT);
 
     } else {
-        SetTexMode(mode,FALSE);
+        changeTexMode(mode);
     }
 
     diagnostics(4, "Exited CmdBox() [%s]", BoxName[code - 1]);
@@ -1199,8 +1199,8 @@ void CmdVerb(int code)
     char markingchar='#';
     int num;
 	
-    if (GetTexMode() == MODE_VERTICAL)
-    	SetTexMode(MODE_HORIZONTAL,FALSE);
+    if (getTexMode() == MODE_VERTICAL)
+    	changeTexMode(MODE_HORIZONTAL);
     num = TexFontNumber("Typewriter");
     fprintRTF("{\\b0\\i0\\scaps0\\f%d ", num);
 
@@ -1474,8 +1474,8 @@ void CmdSpace(float kk)
 {
     int size = CurrentFontSize() * kk;
 
-    if (GetTexMode() == MODE_VERTICAL)
-    	SetTexMode(MODE_HORIZONTAL,FALSE);
+    if (getTexMode() == MODE_VERTICAL)
+    	changeTexMode(MODE_HORIZONTAL);
     fprintRTF("{\\fs%d  }", size);
 }
 
@@ -1853,7 +1853,7 @@ void CmdColsep(int code)
     diagnostics(0, "CmdColsep called");
   /*  actCol++;*/
 
-    if (GetTexMode() == MODE_DISPLAYMATH) { /* in an eqnarray or array environment */
+    if (getTexMode() == MODE_DISPLAYMATH) { /* in an eqnarray or array environment */
         fprintRTF("\\tab ");
     } else {
         fprintRTF("\\cell\\pard\\intbl ");
@@ -1933,8 +1933,8 @@ void CmdNonBreakSpace(int code)
     cThis = getNonSpace();
     ungetTexChar(cThis);
 
-    if (GetTexMode() == MODE_VERTICAL)
-		SetTexMode(MODE_HORIZONTAL,FALSE);
+    if (getTexMode() == MODE_VERTICAL)
+		changeTexMode(MODE_HORIZONTAL);
 /*    fprintRTF("{\\fs%d\\~}", size);*/
 
 	if (code == 100) 
