@@ -49,23 +49,11 @@ correctly, as well as vertical and horizontal space.
 #include <errno.h>
 #include <ctype.h>
 #include "main.h"
-#include "convert.h"
-#include "commands.h"
-#include "chars.h"
 #include "funct1.h"
-#include "fonts.h"
-#include "stack.h"
-#include "tables.h"
-#include "equations.h"
-#include "direct.h"
-#include "ignore.h"
 #include "cfg.h"
-#include "encodings.h"
 #include "utils.h"
 #include "parser.h"
 #include "lengths.h"
-#include "counters.h"
-#include "preamble.h"
 #include "vertical.h"
 
 static int g_TeX_mode = MODE_VERTICAL;

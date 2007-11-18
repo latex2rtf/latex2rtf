@@ -38,14 +38,6 @@ This file is available from http://sourceforge.net/projects/latex2rtf/
 #define BOX_FBOX       4
 #define BOX_PARBOX     5
 
-#define FIRST_INDENT      1
-#define ANY_INDENT        2
-#define TITLE_INDENT      3
-
-#define INDENT_NONE    1
-#define INDENT_INHIBIT 2
-#define INDENT_USUAL   3
-
 #define VERBATIM_1   1
 #define VERBATIM_2   2
 #define VERBATIM_3   3

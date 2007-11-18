@@ -1,3 +1,11 @@
+#define FIRST_INDENT      1
+#define ANY_INDENT        2
+#define TITLE_INDENT      3
+
+#define INDENT_NONE    1
+#define INDENT_INHIBIT 2
+#define INDENT_USUAL   3
+
 #define MODE_INTERNAL_VERTICAL     1
 #define MODE_HORIZONTAL            2
 #define MODE_RESTRICTED_HORIZONTAL 3
