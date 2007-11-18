@@ -75,6 +75,8 @@ that affect these quantities
 #include "parser.h"
 #include "lengths.h"
 #include "vertical.h"
+#include "convert.h"
+#include "commands.h"
 
 static int g_TeX_mode = MODE_VERTICAL;
 static int g_line_spacing = 240;
@@ -85,6 +87,7 @@ static int g_right_margin_indent;
 static int g_left_margin_indent;
 static int g_page_new = FALSE;
 static int g_column_new = FALSE;
+static int g_alignment = JUSTIFIED;
 
 char TexModeName[7][25] = { "bad", "internal vertical", "horizontal",
     "restricted horizontal", "math", "displaymath", "vertical"
@@ -105,6 +108,16 @@ int getLeftMarginIndent(void)
 int getRightMarginIndent(void)
 {
 	return g_right_margin_indent;
+}
+
+void setAlignment(int align)
+{
+	g_alignment = align;
+}
+
+int getAlignment(void)
+{
+	return g_alignment;
 }
 
 void SetTexMode(int mode, int just_set_it)
@@ -219,7 +232,7 @@ void CmdStartParagraph(const char *style, int indenting)
         g_column_new = FALSE;
     }
 
-    fprintRTF("\\pard\\q%c\\sl%i\\slmult1 ", alignment, g_line_spacing);
+    fprintRTF("\\pard\\q%c\\sl%i\\slmult1 ", getAlignment(), g_line_spacing);
 
     if (g_vertical_space_to_add > 0)
         fprintRTF("\\sb%d ", g_vertical_space_to_add);
@@ -362,4 +375,89 @@ parameter: code: newpage or newcolumn-option
 void CmdDoubleSpacing(int code)
 {
 	g_line_spacing = 480;
+}
+
+void CmdAlign(int code)
+
+/*****************************************************************************
+    purpose : sets the alignment for a paragraph
+  parameter : code: alignment centered, justified, left or right
+ ********************************************************************************/
+{
+    char *s;
+    static char old_alignment_before_center = JUSTIFIED;
+    static char old_alignment_before_right = JUSTIFIED;
+    static char old_alignment_before_left = JUSTIFIED;
+    static char old_alignment_before_centerline = JUSTIFIED;
+
+    if (code == PAR_VCENTER) {
+        s = getBraceParam();
+        free(s);
+        return;
+    }
+
+    CmdEndParagraph(0);
+    switch (code) {
+        case (PAR_CENTERLINE):
+            old_alignment_before_centerline = getAlignment();
+            setAlignment(CENTERED);
+            fprintRTF("{");
+            diagnostics(4, "Entering Convert from CmdAlign (centerline)");
+            Convert();
+            diagnostics(4, "Exiting Convert from CmdAlign (centerline)");
+            setAlignment(old_alignment_before_centerline);
+            CmdEndParagraph(0);
+            fprintRTF("}");
+            break;
+
+        case (PAR_RAGGEDRIGHT):
+            old_alignment_before_centerline = getAlignment();
+            setAlignment(LEFT);
+
+/*		fprintRTF("{"); */
+            diagnostics(4, "Entering Convert from CmdAlign (centerline)");
+            Convert();
+            diagnostics(4, "Exiting Convert from CmdAlign (centerline)");
+            setAlignment(old_alignment_before_centerline);
+            CmdEndParagraph(0);
+
+/*		fprintRTF("}");*/
+            break;
+
+        case (PAR_CENTER | ON):
+            CmdIndent(INDENT_NONE);
+            old_alignment_before_center = getAlignment();
+            setAlignment(CENTERED);
+            break;
+        case (PAR_CENTER | OFF):
+            setAlignment(old_alignment_before_center);
+            CmdEndParagraph(0);
+            CmdIndent(INDENT_INHIBIT);
+            break;
+
+        case (PAR_RIGHT | ON):
+            old_alignment_before_right = getAlignment();
+            setAlignment(RIGHT);
+            CmdIndent(INDENT_NONE);
+            break;
+        case (PAR_RIGHT | OFF):
+            setAlignment(old_alignment_before_right);
+            CmdIndent(INDENT_INHIBIT);
+            break;
+
+        case (PAR_LEFT | ON):
+            old_alignment_before_left = getAlignment();
+			setAlignment(LEFT);
+			CmdIndent(INDENT_NONE);
+            break;
+        case (PAR_LEFT | OFF):
+            setAlignment(old_alignment_before_left);
+            CmdIndent(INDENT_INHIBIT);
+            break;
+        case (PAR_CENTERING):
+            CmdIndent(INDENT_NONE);
+            old_alignment_before_center = getAlignment();
+            setAlignment(CENTERED);
+            break;
+    }
 }

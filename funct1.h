@@ -54,7 +54,6 @@ This file is available from http://sourceforge.net/projects/latex2rtf/
 void CmdNewDef(int code);
 void CmdNewEnvironment(int code);
 
-void CmdAlign(int code);
 void CmdToday(int code);
 void CmdIgnore(int code);
 void Environment(int code);

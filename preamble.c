@@ -905,7 +905,7 @@ void CmdMakeTitle(int code)
     snprintf(author_begin, 10, "%s%2d", "\\fs", (24 * CurrentFontSize()) / 20);
     snprintf(date_begin, 10, "%s%2d", "\\fs", (24 * CurrentFontSize()) / 20);
 
-    alignment = CENTERED;
+    setAlignment(CENTERED);
     fprintRTF("\n\\par\\pard\\qc {%s ", title_begin);
     if (g_preambleTitle != NULL && strcmp(g_preambleTitle, "") != 0)
         ConvertString(g_preambleTitle);
@@ -932,7 +932,7 @@ void CmdMakeTitle(int code)
     fprintRTF("}");
 
     CmdEndParagraph(0);
-    alignment = JUSTIFIED;
+    setAlignment(JUSTIFIED);
 
     if (g_preambleAbstract != NULL && strcmp(g_preambleAbstract, "") != 0) {
     	char *s = strdup_together3("{",g_preambleAbstract,"}");

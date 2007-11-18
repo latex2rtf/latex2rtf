@@ -1309,8 +1309,8 @@ void CmdTable(int code)
         if (location) free(location);
 
         CmdEndParagraph(0);
-        oldalignment = alignment;
-        alignment = JUSTIFIED;
+        oldalignment = getAlignment();
+        setAlignment(JUSTIFIED);
 
         CmdVspace(VSPACE_BIG_SKIP);
         CmdIndent(INDENT_NONE);
@@ -1325,7 +1325,7 @@ void CmdTable(int code)
         g_table_label = ExtractLabelTag(table_contents);
         if (g_endfloat_tables) {
             if (g_endfloat_markers) {
-                alignment = CENTERED;
+                setAlignment(CENTERED);
                 CmdStartParagraph("endfloat", ANY_INDENT);
                 incrementCounter("endfloattable");  /* two separate counters */
                 fprintRTF("[");                     /* one for tables and one for */
@@ -1352,7 +1352,7 @@ void CmdTable(int code)
             CmdEndParagraph(0);
         if (g_table_label)
             free(g_table_label);
-        alignment = oldalignment;
+        setAlignment(oldalignment);
         CmdEndParagraph(0);
         CmdVspace(VSPACE_BIG_SKIP);
     }

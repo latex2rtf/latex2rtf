@@ -72,7 +72,6 @@ extern int		headings;
 
 extern int		g_verbosity_level;
 extern int		RecursionLevel;
-extern char		alignment;
 
 /* table  & tabbing variables */
 extern long		pos_begin_kill;

@@ -32,6 +32,7 @@ Authors:
 #include "commands.h"
 #include "funct1.h"
 #include "convert.h"
+#include "vertical.h"
 
 static bool g_letterOpened = FALSE; /* true after \opening */
 
@@ -91,9 +92,9 @@ void CmdOpening(int code)
 
 /* put return address and date at the top right */
     g_letterOpened = TRUE;
-    oldalignment = alignment;
-    alignment = RIGHT;
-    fprintRTF("\n\\par\\pard\\q%c ", alignment);
+    oldalignment = getAlignment();
+    setAlignment(RIGHT);
+    fprintRTF("\n\\par\\pard\\q%c ", getAlignment());
     diagnostics(5, "Entering ConvertString() from CmdAddress");
     ConvertString(g_letterReturnAddress);
     diagnostics(5, "Exiting ConvertString() from CmdAddress");
@@ -102,8 +103,8 @@ void CmdOpening(int code)
     fprintRTF("\\par\\chdate ");
 
 /* put addressee on the left */
-    alignment = LEFT;
-    fprintRTF("\n\\par\\pard\\q%c ", alignment);
+    setAlignment(LEFT);
+    fprintRTF("\n\\par\\pard\\q%c ", getAlignment());
     diagnostics(4, "Entering Convert() from CmdOpening");
     ConvertString(g_letterToAddress);
     diagnostics(4, "Exiting Convert() from CmdOpening");
@@ -113,8 +114,8 @@ void CmdOpening(int code)
     ConvertString(s);
     free(s);
 
-    alignment = oldalignment;
-    fprintRTF("\n\\par\\pard\\q%c ", alignment);
+    setAlignment(oldalignment);
+    fprintRTF("\n\\par\\pard\\q%c ", getAlignment());
 }
 
 void CmdClosing( /* @unused@ */ int code)
@@ -122,17 +123,16 @@ void CmdClosing( /* @unused@ */ int code)
 /******************************************************************************
  purpose: special command in the LaTex-letter-environment will be converted to a
 	  similar Rtf-style
- globals: alignment
  ******************************************************************************/
 {
     char oldalignment;
     char *s;
 
-    oldalignment = alignment;
+    oldalignment = getAlignment();
 
 /* print closing on the right */
-    alignment = RIGHT;
-    fprintRTF("\n\\par\\pard\\q%c ", alignment);
+    setAlignment(RIGHT);
+    fprintRTF("\n\\par\\pard\\q%c ", getAlignment());
     diagnostics(5, "Entering ConvertString() from CmdClosing");
     s = getBraceParam();
     ConvertString(s);
@@ -147,8 +147,8 @@ void CmdClosing( /* @unused@ */ int code)
     diagnostics(5, "Exiting ConvertString() from CmdSignature");
 
     g_letterOpened = FALSE;
-    alignment = oldalignment;
-    fprintRTF("\n\\par\\pard\\q%c ", alignment);
+    setAlignment(oldalignment);
+    fprintRTF("\n\\par\\pard\\q%c ", getAlignment());
 }
 
 void CmdPs(int code)

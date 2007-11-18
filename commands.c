@@ -1330,7 +1330,7 @@ globals: changes Environment - array of active environments
     g_par_indent_array[iEnvCount] = getLength("parindent");
     g_left_indent_array[iEnvCount] = getLeftMarginIndent();
     g_right_indent_array[iEnvCount] = getRightMarginIndent();
-    g_align_array[iEnvCount] = alignment;
+    g_align_array[iEnvCount] = getAlignment();
 
     PushFontSettings();
 
@@ -1442,7 +1442,7 @@ void PopEnvironment()
     setLength("parindent", g_par_indent_array[iEnvCount]);
     setLeftMarginIndent(g_left_indent_array[iEnvCount]);
     setRightMarginIndent(g_right_indent_array[iEnvCount]);
-    alignment = g_align_array[iEnvCount];
+    setAlignment(g_align_array[iEnvCount]);
     PopFontSettings();
 
     diagnostics(3, "\\end{%s} [%d]", this_env, iEnvCount-1);

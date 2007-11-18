@@ -366,92 +366,6 @@ void CmdBeginEnd(int code)
     free(s);
 }
 
-void CmdAlign(int code)
-
-/*****************************************************************************
-    purpose : sets the alignment for a paragraph
-  parameter : code: alignment centered, justified, left or right
-     globals: alignment: alignment of paragraphs
- ********************************************************************************/
-{
-    char *s;
-    static char old_alignment_before_center = JUSTIFIED;
-    static char old_alignment_before_right = JUSTIFIED;
-    static char old_alignment_before_left = JUSTIFIED;
-    static char old_alignment_before_centerline = JUSTIFIED;
-
-    if (code == PAR_VCENTER) {
-        s = getBraceParam();
-        free(s);
-        return;
-    }
-
-    CmdEndParagraph(0);
-    switch (code) {
-        case (PAR_CENTERLINE):
-            old_alignment_before_centerline = alignment;
-            alignment = CENTERED;
-            fprintRTF("{");
-            diagnostics(4, "Entering Convert from CmdAlign (centerline)");
-            Convert();
-            diagnostics(4, "Exiting Convert from CmdAlign (centerline)");
-            alignment = old_alignment_before_centerline;
-            CmdEndParagraph(0);
-            fprintRTF("}");
-            break;
-
-        case (PAR_RAGGEDRIGHT):
-            old_alignment_before_centerline = alignment;
-            alignment = LEFT;
-
-/*		fprintRTF("{"); */
-            diagnostics(4, "Entering Convert from CmdAlign (centerline)");
-            Convert();
-            diagnostics(4, "Exiting Convert from CmdAlign (centerline)");
-            alignment = old_alignment_before_centerline;
-            CmdEndParagraph(0);
-
-/*		fprintRTF("}");*/
-            break;
-
-        case (PAR_CENTER | ON):
-            CmdIndent(INDENT_NONE);
-            old_alignment_before_center = alignment;
-            alignment = CENTERED;
-            break;
-        case (PAR_CENTER | OFF):
-            alignment = old_alignment_before_center;
-            CmdEndParagraph(0);
-            CmdIndent(INDENT_INHIBIT);
-            break;
-
-        case (PAR_RIGHT | ON):
-            old_alignment_before_right = alignment;
-            alignment = RIGHT;
-            CmdIndent(INDENT_NONE);
-            break;
-        case (PAR_RIGHT | OFF):
-            alignment = old_alignment_before_right;
-            CmdIndent(INDENT_INHIBIT);
-            break;
-
-        case (PAR_LEFT | ON):
-            old_alignment_before_left = alignment;
-            alignment = LEFT;
-            CmdIndent(INDENT_NONE);
-            break;
-        case (PAR_LEFT | OFF):
-            alignment = old_alignment_before_left;
-            CmdIndent(INDENT_INHIBIT);
-            break;
-        case (PAR_CENTERING):
-            CmdIndent(INDENT_NONE);
-            old_alignment_before_center = alignment;
-            alignment = CENTERED;
-            break;
-    }
-}
-
 void CmdToday(int code)
 
 /******************************************************************************
@@ -839,8 +753,8 @@ void CmdCaption(int code)
     char number[20];
     char c;
 
-    old_align = alignment;
-    alignment = CENTERED;
+    old_align = getAlignment();
+    setAlignment(CENTERED);
 
     lst_entry = getBracketParam();
     thecaption = getBraceParam();
@@ -901,7 +815,7 @@ void CmdCaption(int code)
     CmdEndParagraph(0);
     vspace = getLength("belowcaptionskip") + getLength("textfloatsep");
     SetVspaceDirectly(vspace);
-    alignment = old_align;
+    setAlignment(old_align);
     diagnostics(4, "exiting CmdCaption");
 }
 
@@ -1592,8 +1506,8 @@ void CmdFigure(int code)
     if (code & ON) {
         setCounter("subfigure", 0);
 		CmdEndParagraph(0);
-		oldalignment = alignment;
-		alignment = JUSTIFIED;
+		oldalignment = getAlignment();
+		setAlignment(JUSTIFIED);
 
 		CmdVspace(VSPACE_BIG_SKIP);
         loc = getBracketParam();
@@ -1605,7 +1519,7 @@ void CmdFigure(int code)
         g_figure_label = ExtractLabelTag(figure_contents);
         if (g_endfloat_figures) {
 			if (g_endfloat_markers) {
-				alignment = CENTERED;
+				setAlignment(CENTERED);
 				CmdStartParagraph("endfloat", ANY_INDENT);
 				incrementCounter("endfloatfigure");  /* two separate counters */
 				fprintRTF("[");                      /* one for figures and one for */
@@ -1640,7 +1554,7 @@ void CmdFigure(int code)
             free(g_figure_label);
         g_processing_figure = FALSE;
         diagnostics(4, "exiting CmdFigure");
-		alignment = oldalignment;
+		setAlignment(oldalignment);
 		CmdEndParagraph(0);
 		CmdVspace(VSPACE_BIG_SKIP);
     }
@@ -1826,7 +1740,7 @@ void CmdAbstract(int code)
 	    	    
     if (code == 3 || code == 2 || code == (1 | ON) ) {
 	    CmdEndParagraph(0);
-        oldalignment = alignment;
+        oldalignment = getAlignment();
         if (g_document_type == FORMAT_REPORT || titlepage)
             CmdNewPage(NewPage);
 
@@ -1837,7 +1751,7 @@ void CmdAbstract(int code)
         CmdEndParagraph(0);
         setLeftMarginIndent(getLeftMarginIndent() + 1024);
         setRightMarginIndent(getRightMarginIndent() + 1024);
-        alignment = JUSTIFIED;
+        setAlignment(JUSTIFIED);
 
     } 
     
@@ -1852,7 +1766,7 @@ void CmdAbstract(int code)
     	CmdEndParagraph(0);
         setLeftMarginIndent(getLeftMarginIndent() - 1024);
         setRightMarginIndent(getRightMarginIndent() - 1024);
-        alignment = oldalignment;
+        setAlignment(oldalignment);
         CmdVspace(VSPACE_MEDIUM_SKIP);  /* put \medskip after abstract */
     }
 }
@@ -1872,11 +1786,11 @@ CmdAcknowledgments(int code)
 		fprintRTF("Acknowledgments"); /* should be in cfg file, but it is not */
 		fprintRTF("}\n");
 		CmdEndParagraph(0);
-		oldalignment = alignment;
-		alignment = JUSTIFIED;
+		oldalignment = getAlignment();
+		setAlignment(JUSTIFIED);
 
 	} else {
-		alignment = oldalignment;
+		setAlignment(oldalignment);
 		CmdVspace(VSPACE_BIG_SKIP);				/* put \medskip after acknowledgments */
 	}
 }
@@ -1893,11 +1807,11 @@ CmdTitlepage(int code)
     switch (code && 0) {
         case ON:
             fprintRTF("\n\\par\\pard \\page "); /* new page */
-            fprintRTF("\n\\par\\q%c ", alignment);
+            fprintRTF("\n\\par\\q%c ", getAlignment());
             break;
         case OFF:
             fprintRTF("\\pard ");
-            fprintRTF("\n\\par\\q%c \\page ", alignment);
+            fprintRTF("\n\\par\\q%c \\page ", getAlignment());
             break;
     }
 }
