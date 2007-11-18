@@ -156,7 +156,7 @@ parameter: searchstring : includes the string to search for
     snprintf(unknown_environment, 100, "\\%s%s%s", "end{", cCommand, "}");
     font = TexFontNumber("Typewriter");
     CmdEndParagraph(0);
-    CmdStartParagraph("body", FIRST_INDENT);
+    startParagraph("body", FIRST_INDENT);
     fprintRTF("\\qc [Sorry. Ignored ");
     fprintRTF("{\\plain\\f%d\\\\begin\\{%s\\} ... \\\\end\\{%s\\}}]", font, cCommand, cCommand);
     CmdEndParagraph(0);

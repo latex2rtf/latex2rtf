@@ -368,7 +368,7 @@ void CmdTheEndNotes(int code)
     diagnostics(4, "Entering CmdTheEndNotes");
 
     CmdVspace(VSPACE_BIG_SKIP);
-    CmdStartParagraph("endnotes", TITLE_INDENT);
+    startParagraph("endnotes", TITLE_INDENT);
     fprintRTF("{\\sect ");
     InsertStyle("section");
     fprintRTF(" Notes");
@@ -489,7 +489,7 @@ void CmdThebibliography(int code)
         if (g_document_type == FORMAT_APA) {
             ConvertString("\\begin{center}");
         } else {
-        	CmdStartParagraph("bibliography", TITLE_INDENT);
+        	startParagraph("bibliography", TITLE_INDENT);
         	fprintRTF("{\\plain\\b\\fs32 ");
         }
         i = existsDefinition("refname");    /* see if refname has * been redefined */
@@ -533,7 +533,7 @@ void CmdBibitem(int code)
 
     g_processing_list_environment = TRUE;
     CmdEndParagraph(0);
-    CmdStartParagraph("bibitem", FIRST_INDENT);
+    startParagraph("bibitem", FIRST_INDENT);
 
     label = getBracketParam();
     key = getBraceParam();
@@ -2363,7 +2363,7 @@ void CmdContentsLine(int code)
 
     diagnostics(4, "Entering CmdContentsLine %s [%s]", type, text);
 
-    CmdStartParagraph("contents", TITLE_INDENT);
+    startParagraph("contents", TITLE_INDENT);
     fprintRTF("{");
     contents_type = strdup_together("contents_", type);
     InsertStyle(contents_type);
@@ -2387,7 +2387,7 @@ void CmdListOf(int code)
 	
     diagnostics(4, "Entering CmdListOf");
 
-	CmdStartParagraph("list", TITLE_INDENT);
+	startParagraph("list", TITLE_INDENT);
 	fprintRTF("{");
 	InsertStyle("contents_no_style");
 	fprintRTF(" ");

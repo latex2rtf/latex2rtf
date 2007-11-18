@@ -337,7 +337,7 @@ void CmdBeginEnd(int code)
             str = expandTheorem(i, option);
             CmdEndParagraph(0);
             CmdVspace(VSPACE_SMALL_SKIP);
-            CmdStartParagraph("theorem", FIRST_INDENT);
+            startParagraph("theorem", FIRST_INDENT);
             fprintRTF("{\\b %s} {\\i ", str);
             PushBrace();
             if (option)
@@ -545,7 +545,7 @@ parameter: code: type of section-recursion-level
         case SECT_PART:
         case SECT_PART_STAR:
             if (getCounter("part") > 0) CmdNewPage(NewPage);
-            CmdStartParagraph("part", TITLE_INDENT);
+            startParagraph("part", TITLE_INDENT);
             fprintRTF("{");
             InsertStyle("part");
             fprintRTF(" ");
@@ -566,7 +566,7 @@ parameter: code: type of section-recursion-level
         case SECT_CHAPTER_STAR:
             unit_label = NULL;
             if (getCounter("chapter") > 0) CmdNewPage(NewPage);
-            CmdStartParagraph("chapter", TITLE_INDENT);
+            startParagraph("chapter", TITLE_INDENT);
             fprintRTF("{");
             InsertStyle("chapter");
             fprintRTF(" ");
@@ -585,7 +585,7 @@ parameter: code: type of section-recursion-level
             }
             CmdEndParagraph(0);
             CmdVspace(VSPACE_BIG_SKIP);
-            CmdStartParagraph("chapter", TITLE_INDENT);
+            startParagraph("chapter", TITLE_INDENT);
             ConvertString(heading);
             CmdEndParagraph(0);
             fprintRTF("\\par\\par}");
@@ -600,7 +600,7 @@ parameter: code: type of section-recursion-level
             if (g_document_type == FORMAT_APA) {
             	ConvertString("\\begin{center}\\bf");
 			} else {        	
-            	CmdStartParagraph("section", TITLE_INDENT);
+            	startParagraph("section", TITLE_INDENT);
             	fprintRTF("{");
 				InsertStyle("section");
 				fprintRTF(" ");
@@ -619,7 +619,7 @@ parameter: code: type of section-recursion-level
             if (g_document_type == FORMAT_APA) {
             	ConvertString("\\end{center}");
             	CmdEndParagraph(0);
-            	CmdStartParagraph("apa_section", ANY_INDENT);
+            	startParagraph("apa_section", ANY_INDENT);
             } else {
             	CmdEndParagraph(0);
 	            fprintRTF("}");
@@ -632,10 +632,10 @@ parameter: code: type of section-recursion-level
             CmdVspace(VSPACE_MEDIUM_SKIP);
             if (g_document_type == FORMAT_APA) {
             	ConvertString("\\noindent");
-				CmdStartParagraph("apa_subsection", FIRST_INDENT);
+				startParagraph("apa_subsection", FIRST_INDENT);
 				fprintRTF("{\\i ");
 			} else {        	
-				CmdStartParagraph("subsection", TITLE_INDENT);
+				startParagraph("subsection", TITLE_INDENT);
 				fprintRTF("{");
 				InsertStyle("subsection");
 				fprintRTF(" ");          
@@ -659,10 +659,10 @@ parameter: code: type of section-recursion-level
         case SECT_SUBSUB_STAR:
             CmdVspace(VSPACE_MEDIUM_SKIP);
             if (g_document_type == FORMAT_APA) {
-				CmdStartParagraph("apa_subsubsection", ANY_INDENT);
+				startParagraph("apa_subsubsection", ANY_INDENT);
 				fprintRTF("{\\i ");
 			} else {        	
-				CmdStartParagraph("subsubsection", TITLE_INDENT);
+				startParagraph("subsubsection", TITLE_INDENT);
 				fprintRTF("{");
 				InsertStyle("subsubsection");
 				fprintRTF(" ");
@@ -692,7 +692,7 @@ parameter: code: type of section-recursion-level
         case SECT_SUBSUBSUB:
         case SECT_SUBSUBSUB_STAR:
             CmdVspace(VSPACE_MEDIUM_SKIP);
-            CmdStartParagraph("paragraph", TITLE_INDENT);
+            startParagraph("paragraph", TITLE_INDENT);
             fprintRTF("{");
             InsertStyle("paragraph");
             fprintRTF(" ");
@@ -714,7 +714,7 @@ parameter: code: type of section-recursion-level
         case SECT_SUBSUBSUBSUB:
         case SECT_SUBSUBSUBSUB_STAR:
             CmdVspace(VSPACE_MEDIUM_SKIP);
-            CmdStartParagraph("subparagraph", TITLE_INDENT);
+            startParagraph("subparagraph", TITLE_INDENT);
             fprintRTF("{");
             InsertStyle("subparagraph");
             fprintRTF(" ");
@@ -772,7 +772,7 @@ void CmdCaption(int code)
         CmdEndParagraph(0);
     vspace = getLength("abovecaptionskip");
     SetVspaceDirectly(vspace);
-    CmdStartParagraph("caption", FIRST_INDENT);
+    startParagraph("caption", FIRST_INDENT);
     fprintRTF("{");
 
     if (g_processing_figure) {
@@ -940,7 +940,7 @@ void CmdQuote(int code)
             CmdVspace(VSPACE_SMALL_SKIP);
             setLeftMarginIndent(getLeftMarginIndent()+512);
             setRightMarginIndent(getRightMarginIndent()+512);
-			CmdStartParagraph("quote", INDENT_USUAL);			
+			startParagraph("quote", INDENT_USUAL);			
         }
         else {
             PushEnvironment(QUOTATION_MODE);
@@ -949,7 +949,7 @@ void CmdQuote(int code)
             setLeftMarginIndent(getLeftMarginIndent()+512);
             setRightMarginIndent(getRightMarginIndent()+512);
             setLength("parindent", 0);
-			CmdStartParagraph("quote", INDENT_USUAL);			
+			startParagraph("quote", INDENT_USUAL);			
 		}
 	}
 	else {
@@ -1064,7 +1064,7 @@ void CmdItem(int code)
     	SetVspaceDirectly(vspace);
 
     	CmdIndent(INDENT_USUAL);
-    	CmdStartParagraph("item", FIRST_INDENT);
+    	startParagraph("item", FIRST_INDENT);
     }
 
     itemlabel = getBracketParam();
@@ -1242,7 +1242,7 @@ void CmdVerbatim(int code)
             PushEnvironment(VERBATIM_MODE);
             CmdEndParagraph(0);
             CmdIndent(INDENT_NONE);
-            CmdStartParagraph("verbatim", FIRST_INDENT);
+            startParagraph("verbatim", FIRST_INDENT);
             num = TexFontNumber("Typewriter");
             fprintRTF("\\pard\\ql\\b0\\i0\\scaps0\\f%d ", num);
         }
@@ -1520,7 +1520,7 @@ void CmdFigure(int code)
         if (g_endfloat_figures) {
 			if (g_endfloat_markers) {
 				setAlignment(CENTERED);
-				CmdStartParagraph("endfloat", ANY_INDENT);
+				startParagraph("endfloat", ANY_INDENT);
 				incrementCounter("endfloatfigure");  /* two separate counters */
 				fprintRTF("[");                      /* one for figures and one for */
 				ConvertBabelName("FIGURENAME");      /* endfloat figures */
@@ -1544,7 +1544,7 @@ void CmdFigure(int code)
             if (caption)
                 free(caption);
         } else {
-			CmdStartParagraph("figure", ANY_INDENT);
+			startParagraph("figure", ANY_INDENT);
             ConvertString(figure_contents);
         }
         free(figure_contents);
@@ -1569,7 +1569,7 @@ void CmdSubFigure(int code)
 	caption = getBracketParam();
 	contents = getBraceParam();
 	
-    CmdStartParagraph("subfigure", FIRST_INDENT);
+    startParagraph("subfigure", FIRST_INDENT);
     
     /* insert the figure */
 	ConvertString(contents);
@@ -1579,7 +1579,7 @@ void CmdSubFigure(int code)
 	/* now the caption */
 	if (caption) {
     	int n;
-    	CmdStartParagraph("subfigure", FIRST_INDENT);
+    	startParagraph("subfigure", FIRST_INDENT);
         n = getCounter("subfigure");
 	    fprintRTF("(%c) ", (char) (n + (int) 'a'));
 		ConvertString(caption);
@@ -1744,7 +1744,7 @@ void CmdAbstract(int code)
         if (g_document_type == FORMAT_REPORT || titlepage)
             CmdNewPage(NewPage);
 
-        CmdStartParagraph("abstract", FIRST_INDENT);		
+        startParagraph("abstract", FIRST_INDENT);		
         fprintRTF("\\qc{\\b ");
         ConvertBabelName("ABSTRACTNAME");
         fprintRTF("}");
@@ -1781,7 +1781,7 @@ CmdAcknowledgments(int code)
 	if (code == ON) {
 		
 		CmdVspace(VSPACE_BIG_SKIP);
-		CmdStartParagraph("acknowledgments", ANY_INDENT);
+		startParagraph("acknowledgments", ANY_INDENT);
 		fprintRTF("\n{\\b ");
 		fprintRTF("Acknowledgments"); /* should be in cfg file, but it is not */
 		fprintRTF("}\n");

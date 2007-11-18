@@ -132,7 +132,7 @@ void SetTexMode(int mode, int just_set_it)
 
 
     if (g_TeX_mode == MODE_VERTICAL && mode == MODE_HORIZONTAL)
-        CmdStartParagraph("body", ANY_INDENT);
+        startParagraph("body", ANY_INDENT);
 
     if (g_TeX_mode == MODE_HORIZONTAL && mode == MODE_VERTICAL)
         CmdEndParagraph(0);
@@ -145,7 +145,7 @@ int GetTexMode(void)
     return g_TeX_mode;
 }
 
-void CmdStartParagraph(const char *style, int indenting)
+void startParagraph(const char *style, int indenting)
 
 /******************************************************************************
 	RTF codes to create a new paragraph.  If the paragraph should
@@ -213,7 +213,7 @@ void CmdStartParagraph(const char *style, int indenting)
 	}
 	
 
-    diagnostics(5, "CmdStartParagraph mode = %s", TexModeName[GetTexMode()]);
+    diagnostics(5, "startParagraph mode = %s", TexModeName[GetTexMode()]);
     diagnostics(5, "Noindent is         %s", (g_paragraph_no_indent) ? "TRUE" : "FALSE");
     diagnostics(5, "Inhibit is          %s", (g_paragraph_inhibit_indent) ? "TRUE" : "FALSE");
     diagnostics(5, "indent is           %d", g_left_margin_indent);
@@ -325,14 +325,14 @@ void CmdVspace(int code)
 void CmdIndent(int code)
 
 /******************************************************************************
- purpose : set flags so that CmdStartParagraph() does the right thing
+ purpose : set flags so that startParagraph() does the right thing
      
      	   INDENT_INHIBIT allows the next paragraph to be indented if
-     	   a paragraph break occurs before CmdStartParagraph() is called
+     	   a paragraph break occurs before startParagraph() is called
      			     		
-           INDENT_NONE tells CmdStartParagraph() to not indent the next paragraph
+           INDENT_NONE tells startParagraph() to not indent the next paragraph
            
-           INDENT_USUAL has CmdStartParagraph() use the value of \parindent
+           INDENT_USUAL has startParagraph() use the value of \parindent
  ******************************************************************************/
 {
     diagnostics(5, "CmdIndent mode = %d", GetTexMode());

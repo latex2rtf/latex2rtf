@@ -30,7 +30,7 @@ void CmdIndent(int code);
 void CmdVspace(int code);
 void CmdSlashSlash(int code);
 void CmdDoubleSpacing(int code);
-void CmdStartParagraph(const char *style, int indenting);
+void startParagraph(const char *style, int indenting);
 void CmdIndent(int code);
 void SetVspaceDirectly(int space);
 void CmdNewPage(int code);
