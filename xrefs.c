@@ -40,6 +40,7 @@
 #include "styles.h"
 #include "definitions.h"
 #include "equations.h"
+#include "vertical.h"
 
 char *g_figure_label = NULL;
 char *g_table_label = NULL;

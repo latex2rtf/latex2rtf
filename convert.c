@@ -1,4 +1,3 @@
-
 /* convert.c - high level routines for LaTeX to RTF conversion
 
 Copyright (C) 2002 The Free Software Foundation
@@ -18,31 +17,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 This file is available from http://sourceforge.net/projects/latex2rtf/
-
-TeX has six modes:
-	
-	MODE_VERTICAL              Building the main vertical list, from which the 
-	                           pages of output are derived
-	              
-	MODE_INTERNAL_VERTICAL     Building a vertical list from a vbox
-	
-	MODE_HORIZONTAL            Building a horizontal list for a paragraph
-	
-	MODE_RESTICTED_HORIZONTAL  Building a horizontal list for an hbox
-	
-	MODE_MATH                  Building a mathematical formula to be placed in a 
-	                           horizontal list
-	                           
-	MODE_DISPLAYMATH           Building a mathematical formula to be placed on a
-	                           line by itself, temporarily interrupting the current paragraph
-	                           
-LaTeX has three modes: paragraph mode, math mode, or left-to-right mode.
-This is not a particularly useful, since paragraph mode is a combination of
-vertical and horizontal modes. 
-                         
-Why bother keeping track of modes?  Mostly so that paragraph indentation gets handled
-correctly, as well as vertical and horizontal space.
-
 */
 
 #include <string.h>
@@ -67,56 +41,11 @@ correctly, as well as vertical and horizontal space.
 #include "lengths.h"
 #include "counters.h"
 #include "preamble.h"
+#include "vertical.h"
 
 static void TranslateCommand(); /* converts commands */
 
 static int ret = 0;
-static int g_TeX_mode = MODE_VERTICAL;
-
-char TexModeName[7][25] = { "bad", "internal vertical", "horizontal",
-    "restricted horizontal", "math", "displaymath", "vertical"
-};
-
-/******************************************************************************
-    The whole paragraph concept in latex does not map very well onto the RTF
-    syntax.  LaTeX is concerned with ending paragraphs.  RTF is worried about
-    starting them.  Consider vertical space.  In latex you just write something
-    like \vspace{1cm}\noindent New paragraph.
-    
-    Now RTF needs to set up the entire paragraph at one time.  So we have emulate
-    the vertical mode of latex and accumulate vertical spacing and paragraph
-    indentation information while in vertical mode.  
-    
-    When 
-    
-    One issue is that RTF requires that the paragraph positioning and indentation
-    is known before the paragraph is emitted.  Latex just ends the last paragraph
-    with \n\n and purpose : converts string in TeX-format to Rtf-format
- ******************************************************************************/
-
-void SetTexMode(int mode, int just_set_it)
-{
-    if (abs(mode) != g_TeX_mode)
-        diagnostics(5, "TeX mode changing from [%s] -> [%s]", TexModeName[g_TeX_mode], TexModeName[abs(mode)]);
-
-    if (just_set_it) {
-        g_TeX_mode = mode;
-        return;
-    }
-
-    if (g_TeX_mode == MODE_VERTICAL && mode == MODE_HORIZONTAL)
-        CmdStartParagraph("body", ANY_INDENT);
-
-    if (g_TeX_mode == MODE_HORIZONTAL && mode == MODE_VERTICAL)
-        CmdEndParagraph(0);
-
-    g_TeX_mode = mode;
-}
-
-int GetTexMode(void)
-{
-    return g_TeX_mode;
-}
 
 void ConvertString(const char *string)
 

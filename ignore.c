@@ -38,6 +38,7 @@ Authors:
 #include "parser.h"
 #include "convert.h"
 #include "utils.h"
+#include "vertical.h"
 
 static void IgnoreVar(void);
 static void IgnoreCmd(void);

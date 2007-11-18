@@ -45,6 +45,7 @@ Authors:
 #include "xrefs.h"
 #include "chars.h"
 #include "preamble.h"
+#include "vertical.h"
 
 int g_equation_column = 1;
 

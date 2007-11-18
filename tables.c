@@ -37,6 +37,7 @@ This file is available from http://sourceforge.net/projects/latex2rtf/
 #include "lengths.h"
 #include "preamble.h"
 #include "graphics.h"
+#include "vertical.h"
 
 int g_tabbing_left_position = 0;
 int g_tabbing_current_position = 0;

@@ -36,6 +36,7 @@ This file is available from http://sourceforge.net/projects/latex2rtf/
 #include "funct1.h"
 #include "convert.h"
 #include "utils.h"
+#include "vertical.h"
 
 void TeXlogo();
 void LaTeXlogo();

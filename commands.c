@@ -44,6 +44,7 @@ Authors:
 #include "lengths.h"
 #include "definitions.h"
 #include "graphics.h"
+#include "vertical.h"
 
 typedef struct commandtag {
     char *cmd_name;            /* LaTeX command name without \ */

@@ -43,6 +43,7 @@ Authors:
 #include "xrefs.h"
 #include "direct.h"
 #include "styles.h"
+#include "vertical.h"
 
 extern char *Version;  /*storage and definition in version.h */
 

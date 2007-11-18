@@ -42,6 +42,7 @@ Authors:
 #include "funct1.h"
 #include "preamble.h"
 #include "counters.h"
+#include "vertical.h"
 
 /* number of points (72/inch) in a meter */
 #define POINTS_PER_METER 2834.65

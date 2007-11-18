@@ -75,7 +75,7 @@ int BasicPush(int lev, int brack)
  ******************************************************************************/
 {
 
-	diagnostics(5,"pushing rec=%d and bra=%d on  stack",lev,brack);
+	diagnostics(6,"pushing rec=%d and bra=%d on  stack",lev,brack);
     ++top;
     stack[top] = lev;
     ++top;
@@ -102,7 +102,7 @@ int BasicPop(int *lev, int *brack)
     if (top < 0)
         diagnostics(ERROR, "Nesting problem.  latex2rtf bug, if file TeXs properly");
 
-/*	diagnostics(5,"popped rec=%d and bra=%d off stack",*lev,*brack); */
+/*	diagnostics(6,"popped rec=%d and bra=%d off stack",*lev,*brack); */
     return top;
 }
 
@@ -112,7 +112,7 @@ void PushLevels(void)
   purpose: wrapper to hide BraceLevel from rest of program 
  ******************************************************************************/
 {
-    diagnostics(5, "PushLevels");
+    diagnostics(6, "PushLevels");
     CleanStack();
     (void) BasicPush(RecursionLevel, BraceLevel);
     /* myprintStack(); */
@@ -161,7 +161,7 @@ void CleanStack(void)
 {
     int PopLevel, PopBrack, PPopLevel, PPopBrack;
 
-    diagnostics(5, "Cleaning Stack");
+    diagnostics(6, "Cleaning Stack");
 
     if (top < 4)
         return;
@@ -187,7 +187,7 @@ void PushBrace(void)
  ******************************************************************************/
 {
 
-/*	diagnostics(5,"Pushing Brace Level");*/
+/*	diagnostics(6,"Pushing Brace Level");*/
     BasicPush(RecursionLevel, BraceLevel);
     ++BraceLevel;
 }

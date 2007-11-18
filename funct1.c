@@ -49,206 +49,22 @@ Authors:
 #include "direct.h"
 #include "styles.h"
 #include "graphics.h"
+#include "vertical.h"
 
 #define ARABIC_NUMBERING 0
 #define ALPHA_NUMBERING  1
 #define ROMAN_NUMBERING  2
 
 extern bool twocolumn;          /* true if twocolumn-mode is enabled */
-int g_right_margin_indent;
-int g_left_margin_indent;
 
 void CmdPagestyle( /* @unused@ */ int code);
 void CmdHeader(int code);
 char *roman_item(int n, bool upper);
 
-static bool g_paragraph_no_indent = FALSE;
-static bool g_paragraph_inhibit_indent = FALSE;
-static bool g_page_new = FALSE;
-static bool g_column_new = FALSE;
-static int g_vertical_space_to_add = 0;
-static int g_line_spacing = 240;
 static int g_chapter_numbering = ARABIC_NUMBERING;
 static bool g_appendix;
 
 bool g_processing_list_environment = FALSE;
-
-void CmdStartParagraph(const char *style, int indenting)
-
-/******************************************************************************
-	RTF codes to create a new paragraph.  If the paragraph should
-	not be indented then emit \fi0 otherwise use the current value
-	of \parindent as the indentation of the first line.
-	
-	style describes the type of paragraph ... 
-	  "body"
-	  "caption"
-	  "author"
-	  "bibitem"
-	  "section"
-	  etc.
-	  
-	indenting describes how this paragraph and (perhaps) the following
-	paragraph should be indented
-	
-	  TITLE_INDENT  (do not indent this paragraph or the next)
-	  FIRST_INDENT  (do not indent this paragraph but indent the next)
-	  ANY_INDENT    (indent as needed)
-	
-	Sometimes it is necessary to know what the next paragraph will
-	be before it has been parsed.  For example, a section command
-	should create a paragraph for the section title and then the
-	next paragraph encountered should be handled like as a first 
-	paragraph.  
-	
-	For FIRST_INDENT, then it is the first paragraph in a section.
-	Usually the first paragraph is not indented.  However, when the
-	document is being typeset in french it should have normal indentation.
-	Another special case occurs when the paragraph being typeset is
-	in a list environment.  In this case, we need to indent according
-	to the current parindent to obtain the proper hanging indentation
-	
-	The default is to indent according to
-	the current parindent.  However, if the g_paragraph_inhibit_indent
-	flag or the g_paragraph_no_indent flag is TRUE, then do not indent
-	the next line.  Typically these flags are set just after a figure
-	or equation or table.
-	
- ******************************************************************************/
-{
-    int parindent;
-	static int status = 0;
-	
-    parindent = getLength("parindent");
-
-    if (indenting == TITLE_INDENT) {      /* titles are never indented */
-        parindent = 0;
-        status = 1;
-    	diagnostics(5, "TITLE_INDENT");
-    }
-    else if (indenting == FIRST_INDENT) { /* French indents the first paragraph */
-    	diagnostics(5, "FIRST_INDENT");
-    	status = 1;
-    	if (!FrenchMode && !g_processing_list_environment)
-        	parindent = 0;
-	} else {                              /* Worry about not indenting */
-    	diagnostics(5, "ANY_INDENT");
-	    if (g_paragraph_no_indent || g_paragraph_inhibit_indent)
-        	parindent = 0;
-        else if (status > 0) 
-        	parindent = 0;
-        status--;
-	}
-	
-
-    diagnostics(5, "CmdStartParagraph mode = %s", TexModeName[GetTexMode()]);
-    diagnostics(5, "Noindent is         %s", (g_paragraph_no_indent) ? "TRUE" : "FALSE");
-    diagnostics(5, "Inhibit is          %s", (g_paragraph_inhibit_indent) ? "TRUE" : "FALSE");
-    diagnostics(5, "indent is           %d", g_left_margin_indent);
-    diagnostics(5, "right indent is     %d", g_right_margin_indent);
-    diagnostics(5, "current parindent   %d", getLength("parindent"));
-    diagnostics(5, "paragraph indent is %d", parindent);
-
-    if (g_page_new) {
-        fprintRTF("\\page{} ");   /* causes new page */
-        g_page_new = FALSE;
-        g_column_new = FALSE;
-    }
-
-    if (g_column_new) {
-        fprintRTF("\\column "); /* causes new page */
-        g_column_new = FALSE;
-    }
-
-    fprintRTF("\\pard\\q%c\\sl%i\\slmult1 ", alignment, g_line_spacing);
-
-    if (g_vertical_space_to_add > 0)
-        fprintRTF("\\sb%d ", g_vertical_space_to_add);
-    g_vertical_space_to_add = 0;
-
-    if (g_left_margin_indent != 0)
-        fprintRTF("\\li%d", g_left_margin_indent);
-
-    if (g_right_margin_indent != 0)
-        fprintRTF("\\ri%d", g_right_margin_indent);
-
-    fprintRTF("\\fi%d ", parindent);
-
-    SetTexMode(MODE_HORIZONTAL,TRUE); 
-
-    if (!g_processing_list_environment) {
-        g_paragraph_no_indent = FALSE;
-        if (indenting == TITLE_INDENT)
-        	g_paragraph_inhibit_indent = TRUE;
-        else
-        	g_paragraph_inhibit_indent = FALSE;
-    }
-}
-
-void CmdEndParagraph(int code)
-
-/******************************************************************************
-     purpose : ends the current paragraph and return to MODE_VERTICAL.
- ******************************************************************************/
-{
-    int mode = GetTexMode();
-
-    diagnostics(5, "CmdEndParagraph mode = %d", GetTexMode());
-    if (mode != MODE_VERTICAL  && g_processing_fields == 0) {
-        fprintRTF("\\par\n");
-        SetTexMode(MODE_VERTICAL,TRUE); /* TRUE value avoids calling CmdEndParagraph! */
-    }
-
-    g_paragraph_inhibit_indent = FALSE;
-}
-
-static void DirectVspace(int vspace)
-{
-    g_vertical_space_to_add = vspace;
-}
-
-void CmdVspace(int code)
-
-/******************************************************************************
-     purpose : vspace, vspace*, and vskip
-     		   code ==  0 if vspace or vspace*
-     		   code == -1 if vskip
-     		   code ==  1 if \smallskip
-     		   code ==  2 if \medskip
-     		   code ==  3 if \bigskip
- ******************************************************************************/
-{
-    int vspace=0;
-    char c;
-
-    switch (code) {
-        case VSPACE_VSPACE:
-            vspace = getDimension();
-            break;
-
-        case VSPACE_VSKIP:
-            while ((c = getTexChar()) && c != '{') {
-            }
-            vspace = getDimension();
-            parseBrace();
-            break;
-
-        case VSPACE_SMALL_SKIP:
-            vspace = getLength("smallskipamount");
-            break;
-
-        case VSPACE_MEDIUM_SKIP:
-            vspace = getLength("medskipamount");
-            break;
-
-        case VSPACE_BIG_SKIP:
-            vspace = getLength("bigskipamount");
-            break;
-    }
-
-	SetTexMode(MODE_VERTICAL,TRUE);
-    DirectVspace(vspace);
-}
 
 void CmdNewDef(int code)
 
@@ -388,34 +204,6 @@ void CmdNewTheorem(int code)
         free(numbered_like);
     if (within)
         free(within);
-}
-
-void CmdIndent(int code)
-
-/******************************************************************************
- purpose : set flags so that CmdStartParagraph() does the right thing
-     
-     	   INDENT_INHIBIT allows the next paragraph to be indented if
-     	   a paragraph break occurs before CmdStartParagraph() is called
-     			     		
-           INDENT_NONE tells CmdStartParagraph() to not indent the next paragraph
-           
-           INDENT_USUAL has CmdStartParagraph() use the value of \parindent
- ******************************************************************************/
-{
-    diagnostics(5, "CmdIndent mode = %d", GetTexMode());
-    if (code == INDENT_NONE)
-        g_paragraph_no_indent = TRUE;
-
-    else if (code == INDENT_INHIBIT)
-        g_paragraph_inhibit_indent = TRUE;
-
-    else if (code == INDENT_USUAL) {
-        g_paragraph_no_indent = FALSE;
-        g_paragraph_inhibit_indent = FALSE;
-    }
-    diagnostics(5, "Noindent is %d", (int) g_paragraph_no_indent);
-    diagnostics(5, "Inhibit  is %d", (int) g_paragraph_inhibit_indent);
 }
 
 void CmdSlashSlash(int code)
@@ -1069,7 +857,7 @@ void CmdCaption(int code)
     if (GetTexMode() != MODE_VERTICAL)
         CmdEndParagraph(0);
     vspace = getLength("abovecaptionskip");
-    DirectVspace(vspace);
+    SetVspaceDirectly(vspace);
     CmdStartParagraph("caption", FIRST_INDENT);
     fprintRTF("{");
 
@@ -1112,7 +900,7 @@ void CmdCaption(int code)
 
     CmdEndParagraph(0);
     vspace = getLength("belowcaptionskip") + getLength("textfloatsep");
-    DirectVspace(vspace);
+    SetVspaceDirectly(vspace);
     alignment = old_align;
     diagnostics(4, "exiting CmdCaption");
 }
@@ -1239,7 +1027,6 @@ void CmdQuote(int code)
             g_left_margin_indent += 512;
             g_right_margin_indent += 512;
 			CmdStartParagraph("quote", INDENT_USUAL);			
-			skipWhiteSpace();
         }
         else {
             PushEnvironment(QUOTATION_MODE);
@@ -1249,7 +1036,6 @@ void CmdQuote(int code)
             g_right_margin_indent += 512;
             setLength("parindent", 0);
 			CmdStartParagraph("quote", INDENT_USUAL);			
-			skipWhiteSpace();
 		}
 	}
 	else {
@@ -1281,7 +1067,7 @@ void CmdList(int code)
 	
     switch (code) {
         case (ITEMIZE_MODE | ON):
-            DirectVspace(vspace);
+            SetVspaceDirectly(vspace);
             PushEnvironment(ITEMIZE_MODE);
             setLength("parindent", -amount);
             g_left_margin_indent += 2 * amount;
@@ -1289,7 +1075,7 @@ void CmdList(int code)
             break;
 
         case (ENUMERATE_MODE | ON):
-            DirectVspace(vspace);
+            SetVspaceDirectly(vspace);
             PushEnvironment(ENUMERATE_MODE);
             g_enumerate_depth++;
             CmdItem(RESET_ITEM_COUNTER);
@@ -1299,7 +1085,7 @@ void CmdList(int code)
             break;
 
         case (DESCRIPTION_MODE | ON):
-            DirectVspace(vspace);
+            SetVspaceDirectly(vspace);
             PushEnvironment(DESCRIPTION_MODE);
             setLength("parindent", -amount);
             g_left_margin_indent += amount;
@@ -1325,7 +1111,7 @@ void CmdList(int code)
             PopEnvironment();
             CmdIndent(INDENT_USUAL);    /* need to reset INDENT_NONE from CmdItem */
             g_processing_list_environment = FALSE;
-            DirectVspace(vspace);
+            SetVspaceDirectly(vspace);
             break;
     }
 }
@@ -1361,7 +1147,7 @@ void CmdItem(int code)
 	if (code != INPARAENUM_MODE) {
     	CmdEndParagraph(0);
     	vspace = getLength("itemsep") + getLength("parsep");
-    	DirectVspace(vspace);
+    	SetVspaceDirectly(vspace);
 
     	CmdIndent(INDENT_USUAL);
     	CmdStartParagraph("item", FIRST_INDENT);
@@ -1587,6 +1373,8 @@ void CmdVerbatim(int code)
         if (true_code != VERBATIM_4) {
         	PopEnvironment();
             CmdEndParagraph(0);
+        	CmdVspace(VSPACE_SMALL_SKIP);
+        	skipWhiteSpace();
         }
             
         
@@ -1995,24 +1783,6 @@ parameter: number of columns
     }                           /* switch */
 }
 
-void CmdNewPage(int code)
-
-/******************************************************************************
-  purpose: starts a new page
-parameter: code: newpage or newcolumn-option
- globals: twocolumn: true if twocolumn-mode is set
- ******************************************************************************/
-{
-    switch (code) {
-        case NewPage:
-            g_page_new = TRUE;
-            break;
-
-        case NewColumn:
-            g_column_new = TRUE;
-            break;
-    }
-}
 
 void Cmd_OptParam_Without_braces( /* @unused@ */ int code)
 
@@ -2409,10 +2179,3 @@ void CmdIflatextortf(int code)
 	free(entire_if);
 }
 
-/******************************************************************************
-  purpose: support for \doublespacing
- ******************************************************************************/
-void CmdDoubleSpacing(int code)
-{
-	g_line_spacing = 480;
-}

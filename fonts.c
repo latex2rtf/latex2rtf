@@ -87,6 +87,7 @@ Authors:
 #include "cfg.h"
 #include "parser.h"
 #include "stack.h"
+#include "vertical.h"
 
 typedef struct RtfFontInfoType {
     int family;
