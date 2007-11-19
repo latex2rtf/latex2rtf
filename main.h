@@ -109,6 +109,7 @@ extern bool		g_bbl_file_missing;
 extern char		g_charset_encoding_name[20];
 extern int		g_fcharset_number;
 extern int      g_graphics_package;
+extern int      g_amsmath_package;
 
 extern char		*g_figure_label;
 extern char		*g_table_label;

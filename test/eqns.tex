@@ -158,8 +158,9 @@ Next comes an \verb#equation# environment
 \begin{equation}
 \nabla^2 \phi -{1\over c} {\partial \phi\over \partial t}  = 0
 \end{equation}
-Note that \verb#\nonumber# in an \verb#equation# environment still gets
-an equation number
+Note that \verb#\nonumber# in an \verb#equation# environment does not get
+an equation number usually.  However, when the \verb#amsmath# package gets
+loaded then it is suppressed,
 \begin{equation}
 \nabla^2 \phi -{1\over c} {\partial \phi\over \partial t}  = 0 \nonumber
 \end{equation}

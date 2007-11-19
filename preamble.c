@@ -468,13 +468,15 @@ static void setDocumentOptions(char *optionlist)
             g_document_bibstyle = BIBSTYLE_APACITE;
         } else if (strcmp(option, "hyperref") == 0) {
         	PushEnvironment(HYPERREF_MODE);
+        } else if (strcmp(option, "amsmath") == 0) {
+		 	g_amsmath_package = TRUE;
+            diagnostics(WARNING, "Incomplete support for package/option '%s' ", option);
         } else if (strcmp(option, "endnotes"    ) == 0 ||
                    strcmp(option, "pstricks-add") == 0 ||
                    strcmp(option, "fancyhdr"    ) == 0 ||
                    strcmp(option, "html"        ) == 0 ||
                    strcmp(option, "epsf"        ) == 0 ||
                    strcmp(option, "psfig"       ) == 0 ||
-                   strcmp(option, "amsmath"     ) == 0 ||
                    strcmp(option, "verbatim"    ) == 0 ||
                    strcmp(option, "paralist"    ) == 0 ) {
             diagnostics(WARNING, "Incomplete support for package/option '%s' ", option);
