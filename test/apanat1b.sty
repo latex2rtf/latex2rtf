@@ -1,0 +1,173 @@
+%
+% apanat1b.sty : a quick hack of apacite.sty
+%                intended to work with natbib.sty and apanat1b.bst
+% apacite.sty  : citation according to APA manual
+% EXPERIMENTAL!
+%
+% author: Erik Meijer (E.Meijer@eco.rug.nl)
+% date: 2003/03/27
+%
+% originally inspired by theapa.bst by Young U. Ryu
+%
+% documentation: not really available, but see apacite.tex, update.tex,
+%                the readme file, and the natbib documentation
+%
+% NO GUARANTEES!
+%
+% If you change anything to this file, you must rename it.
+%
+
+\NeedsTeXFormat{LaTeX2e}[1996/12/01]
+\ProvidesPackage{apanat1b}[2003/03/27 %
+                           natbib citation with apacite bibliography]
+
+%%% declare four parameters
+\newskip{\bibleftmargin}
+\newskip{\bibindent}
+\newskip{\bibparsep}
+\newskip{\bibitemsep}
+
+
+%%% There are 4th and 5th editions of the APA Publication Manual.
+%%% Since I don't have the 5th edition (yet), this package is probably not
+%%% consistent with it. Known differences between the 3rd and 4th
+%%% edition are stored in the options 3rded (3rd edition style)
+%%% and 4thed (4th edition style).
+
+%%% if 4th edition then
+\DeclareOption{4thed}{%
+    \bibleftmargin=0pt%
+    \bibindent=2.5em%
+}
+
+%%% if 3rd edition then
+\DeclareOption{3rded}{%
+    \bibleftmargin=2.5em
+    \bibindent=-\bibleftmargin
+}
+
+%%% use 3rd edition as default
+\ExecuteOptions{3rded}
+
+\ProcessOptions
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% some punctuation and other options %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\BBOP}{(}   % open parenthesis in bibliography
+\newcommand{\BBAA}{\&}  % "and" between authors in bibliography and citation
+\newcommand{\BBCP}{)}   % closing parenthesis in bibliography
+\newcommand{\BBOQ}{}    % open quote for article title
+\newcommand{\BBCQ}{}    % closing quote for article title
+%
+\newcommand{\BBA}{\BBAA} % "and" between authors in bibliography and citation
+%
+%
+\newcommand{\BCBT}{,}   % comma between authors in bibliography
+                        % when no. of authors = 2
+\newcommand{\BCBL}{,}   % comma before last author
+
+%
+\let\Bem\emph
+
+%%%%%%%%%%%%%%%
+% cite labels %
+%%%%%%%%%%%%%%%
+
+\newcommand{\BOthers}{et~al.}         % ``others''
+\newcommand{\BIP}{in press}           % used as year for in-press citations
+\newcommand{\BAnd}{and}               % for ``Ed. and Trans.''
+\newcommand{\BED}{Ed.}                % editor
+\newcommand{\BEDS}{Eds.}              % editors
+\newcommand{\BTRANS}{Trans.}          % translator
+\newcommand{\BTRANSS}{Trans.}         % translators
+\newcommand{\BCHAIR}{Chair}           % chair of symposium
+\newcommand{\BCHAIRS}{Chairs}         % chairs
+\newcommand{\BVOL}{Vol.}              % volume
+\newcommand{\BVOLS}{Vols.}            % volumes
+\newcommand{\BNUM}{No.}               % number
+\newcommand{\BNUMS}{Nos.}             % numbers
+\newcommand{\BEd}{ed.}                % edition
+\newcommand{\BPG}{p.}                 % page
+\newcommand{\BPGS}{pp.}               % pages
+\newcommand{\BTR}{Tech.\ Rep.}        % (default) technical report type name
+\newcommand{\BPhD}{Doctoral dissertation}
+                                      % (default) PhD thesis type name
+\newcommand{\BUPhD}{Unpublished doctoral dissertation}
+                                      % (default) unpublished PhD thesis
+                                      % type name
+\newcommand{\BMTh}{Master's thesis}   % (default) master's thesis type name
+\newcommand{\BUMTh}%
+    {Unpublished master's thesis}     % (default) unpublished
+                                      % master's thesis type name
+\newcommand{\BOWP}{Original work published }
+\newcommand{\BREPR}{Reprinted from }
+
+
+%
+% for multiple citations with same author-year
+% (Kruskal, 1964a, 1964b)
+%
+\newcounter{BibCnt}
+\newcommand{\BCnt}[1]{\setcounter{BibCnt}{#1}\alph{BibCnt}}
+%
+% in press
+%
+\newcommand{\BCntIP}[1]{\setcounter{BibCnt}{#1}{}-\alph{BibCnt}}
+%
+% to force another order (in Part 1, Part 2 cases)
+\newcommand{\bibphant}[1]{}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  bibliography style parameters
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%
+%
+% No labels in the bibliography.
+%
+
+\def\@biblabel#1{}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+\def\refname{References}
+\def\bibname{References}
+
+\bibparsep=0pt%
+\bibitemsep\z@ \@plus .3\p@\relax
+%\bibitemsep=0pt%
+\let\bibliographytypesize\normalsize
+%
+\def\thebibliography#1{%
+     \@ifundefined{chapter}%
+       {\section*{\refname}%
+        \@mkboth{{\refname}}{{\refname}}%
+        \addcontentsline{toc}{section}{\refname}%
+       }%
+       {\chapter*{\bibname}%
+        \@mkboth{{\bibname}}{{\bibname}}%
+        \addcontentsline{toc}{chapter}{\bibname}%
+       }%
+     \bibliographytypesize
+     \list{\relax}{\labelsep=0em%
+%                   \parskip\z@ \@plus .3\p@\relax
+                   \parsep=\bibparsep%
+                   \itemsep=\bibitemsep%
+                   \leftmargin=\bibleftmargin%
+                   \itemindent=\bibindent}% changed to cope with 4th ed.
+     \def\newblock{\hskip .11em plus .33em minus .07em}
+     \sloppy\clubpenalty4000\widowpenalty4000
+     \sfcode`\.=1000\relax
+}
+\def\endthebibliography{\endlist\normalsize}
+
+%
+% EOF apanat1b.sty
+%
+

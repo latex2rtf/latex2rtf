@@ -317,7 +317,9 @@ The MS-DOS version (1.8aa and up) will also run under all MS Windows versions
 (including Windows Vista). It requires an i386 processor or better.  
 
 The Win32 distribution (starting from @ltor{} 1.9.15) is the MS-DOS version 
-plus Win32 GUI program (l2rshell).
+plus Win32 GUI program (l2rshell).@*
+Starting from @ltor{} 1.9.19, the Win32 distribution differs from the MS-DOS
+distribution in being compiled with Cygwin and thus having less restrictions.
 
 There are a few people working on @ltor{}, and some more make 
 contributions, coordinated by
@@ -409,12 +411,14 @@ The DOS version has a bug which causes conversion of equations
 to bitmaps to fail for the remaining equations after successfully 
 converting the first 26 of them.
 
-So @strong{if you run a Win32 system} (Win9x, WinME, WinNT, Win2000, WinXP, 
+So @strong{if you run a Win32 system}, i.e. WinNT, Win2000, WinXP, 
 WinVista) @strong{it is highly recommended to use the
 Windows version}.
 The Win32 version starting from 1.9.14a also has a Win32 GUI interface 
 (@ltor{} Shell) and is wrapped in an automatic installer, 
-see @ref{Win32 systems}.
+see @ref{Win32 systems}. 
+But starting from 1.9.17, the installer and GUI interface do not
+support Windows 9x and ME. 
 
 To install the DOS version of @ltor{}, extract all files from the zip archive, 
 preserving the folder structure (winzip: check ``use folder names''),
@@ -439,9 +443,18 @@ for plain DOS.
 @node Win32 systems, Macintosh, DOS or Windows, Installation
 @section Win32 systems
 
-To install @ltor{} on a Win32 system (Win9x, WinME, WinNT, Win2000, WinXP, 
+To install @ltor{} on a Win32 system (WinNT, Win2000, WinXP, 
 WinVista), download and execute the @file{latex2rtf-x.x.x_win.exe} 
 (where x.x.x is the version number) and follow the instructions.
+
+Note: The installer and GUI shell do not support Win9x and WinMe
+since @ltor{} v.1.9.17. 
+If you have one of these systems, you should use an older Win32 version 
+or the current DOS version (without GUI) of @ltor{}. 
+As the DOS version of @code{latex2rt.exe} has a bug which causes conversion 
+of equations to bitmaps to fail for more than 26 equations, you should
+get and install @ltor{} v.1.9.19, delete @code{latex2rt.exe} 
+and rename @code{latex2rt_win.exe} to @code{latex2rt.exe}.
 
 To start the program double-click the @ltor{} icon, 
 or drag and drop a @file{.tex} file onto the icon.
@@ -452,10 +465,10 @@ you must have LaTeX, ImageMagick and Ghostscript installed. These programs are
 freely available for download at @uref{http://www.miktex.org/}, 
 @uref{http://www.imagemagick.org} and @uref{http://www.ghostscript.com}
 
-If MikTeX, ImageMagick and Ghostscript are installed before installing @ltor{},
-the pathes to their executables are automatically found in the windows registry 
-by the installer. Otherwise, these pathes may have to be specified manually 
-in the ``Environment'' tab of the @ltor{} GUI shell window.
+If MikTeX, ImageMagick and Ghostscript are installed, the paths to their 
+executables are detected automatically. If for any reason this doesn't 
+happen, these paths can be specified manually in the ``Environment'' 
+tab of the @ltor{} GUI shell window.
 
 If you need to start @ltor{} not from its own shell but from another 
 Windows application, you need to add the folder containing 
