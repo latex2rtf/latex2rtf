@@ -273,7 +273,7 @@ void startParagraph(const char *style, int indenting)
     fprintRTF("\\pard\\q%c",      getAlignment());
     fprintRTF("\\sl%i\\slmult1 ", getLineSpacing());
 
-    if (g_vertical_space_to_add > 0)
+    if (getVspace() > 0)
         fprintRTF("\\sb%d ", getVspace());
     setVspace(0);
 
@@ -317,26 +317,23 @@ void CmdVspace(int code)
 
 /******************************************************************************
      purpose : vspace, vspace*, and vskip
-     		   code ==  0 if vspace or vspace*
-     		   code == -1 if vskip
-     		   code ==  1 if \smallskip
-     		   code ==  2 if \medskip
-     		   code ==  3 if \bigskip
+     
+     note that \vskip3mm will end a paragraph, but \vspace{1cm} will not.
  ******************************************************************************/
 {
-    int vspace=0;
-    char c;
+    int vspace;
+    char *s;
 
     switch (code) {
         case VSPACE_VSPACE:
-            vspace = getDimension();
+        	s = getBraceParam();
+        	vspace = getStringDimension(s);
+            free(s);
             break;
 
         case VSPACE_VSKIP:
-            while ((c = getTexChar()) && c != '{') {
-            }
             vspace = getDimension();
-            parseBrace();
+			CmdEndParagraph(0);
             break;
 
         case VSPACE_SMALL_SKIP:
@@ -352,8 +349,8 @@ void CmdVspace(int code)
             break;
     }
 
-	setTexMode(MODE_VERTICAL);
-    setVspace(vspace);
+    if (getTexMode() == MODE_VERTICAL)
+    	setVspace(getVspace()+vspace);
 }
 
 void CmdIndent(int code)
