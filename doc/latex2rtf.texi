@@ -313,13 +313,16 @@ The latest version of @ltor{} is available at
 @uref{http://sourceforge.net/projects/latex2rtf/,SourceForge} and --- with some delay --- on
 CTAN sites: e.g., @uref{http://www.dante.de} or @uref{http://www.ctan.org}.
 
-The MS-DOS version (1.8aa and up) will also run under all MS Windows versions
-(including Windows Vista). It requires an i386 processor or better.  
+The DOS package (1.8aa and up) will also run under all MS Windows versions. 
+It requires an i386 processor or better.
 
-The Win32 distribution (starting from @ltor{} 1.9.15) is the MS-DOS version 
+The win package (starting from @ltor{} 1.9.19) is identical 
+to the DOS package except that it is compiled with Cygwin and 
+only runs under Win32 (Win9x, ME, NT, 2000, XP, 2003, Vista).
+
+The win-gui package (starting from @ltor{} 1.9.15) is the DOS package
+(up to @ltor{} 1.9.17) or the win package (@ltor{} 1.9.19 and up)
 plus Win32 GUI program (l2rshell).@*
-Starting from @ltor{} 1.9.19, the Win32 distribution differs from the MS-DOS
-distribution in being compiled with Cygwin and thus having less restrictions.
 
 There are a few people working on @ltor{}, and some more make 
 contributions, coordinated by
@@ -397,10 +400,11 @@ directory.
 @node DOS or Windows, Win32 systems, UNIX, Installation
 @section DOS
 
-The @acronym{UNIX} and Mac distributions do not contain an executable for DOS 
+The @acronym{UNIX} and Mac packages do not contain an executable for DOS 
 or Windows. You may compile it yourself (with djgpp or MinGW)
-or get the DOS distribution as file @file{latex2rtf-x.x.x_dos.zip}
-(where x.x.x is the version number) 
+or get the DOS package as file @file{latex2rtf-x.x.x_dos.zip}
+(where x.x.x is the version number)
+or the Windows package as file @file{latex2rtf-x.x.x_win.zip}
 from @uref{http://sourceforge.net/projects/latex2rtf/,SourceForge}@*
 
 The DOS distribution contains a precompiled executable 
@@ -411,19 +415,16 @@ The DOS version has a bug which causes conversion of equations
 to bitmaps to fail for the remaining equations after successfully 
 converting the first 26 of them.
 
-So @strong{if you run a Win32 system}, i.e. WinNT, Win2000, WinXP, 
-WinVista) @strong{it is highly recommended to use the
-Windows version}.
-The Win32 version starting from 1.9.14a also has a Win32 GUI interface 
-(@ltor{} Shell) and is wrapped in an automatic installer, 
-see @ref{Win32 systems}. 
-But starting from 1.9.17, the installer and GUI interface do not
-support Windows 9x and ME. 
+So @strong{if you run a Win32 system} (i.e. Win 9x, ME, NT, 2000, XP, 
+2003, Vista) @strong{it is highly recommended to use the
+Windows package}.
 
-To install the DOS version of @ltor{}, extract all files from the zip archive, 
-preserving the folder structure (winzip: check ``use folder names''),
-preferably to @file{C:\l2r}, because then it will find its cfg files 
-by default.@*
+To install the DOS or Windows package of @ltor{}, extract all files 
+from the zip archive, preserving the folder structure 
+(winzip: check ``use folder names''),
+preferably to @file{C:\l2r}, or under Windows, to your "Program Files" 
+folder (which ever it is named in your system)
+because then it will find its cfg files by default.@*
 If you extracted them to another folder (e.g. @file{C:\my files\l2r}),
 either edit the file @file{L2RPREP.BAT} 
 and change the folder @file{C:\l2r} to where you put them, or specify the 
@@ -444,17 +445,14 @@ for plain DOS.
 @section Win32 systems
 
 To install @ltor{} on a Win32 system (WinNT, Win2000, WinXP, 
-WinVista), download and execute the @file{latex2rtf-x.x.x_win.exe} 
+WinVista), download the win-gui package,
+execute the @file{latex2rtf-x.x.x_win.exe} 
 (where x.x.x is the version number) and follow the instructions.
 
 Note: The installer and GUI shell do not support Win9x and WinMe
 since @ltor{} v.1.9.17. 
-If you have one of these systems, you should use an older Win32 version 
-or the current DOS version (without GUI) of @ltor{}. 
-As the DOS version of @code{latex2rt.exe} has a bug which causes conversion 
-of equations to bitmaps to fail for more than 26 equations, you should
-get and install @ltor{} v.1.9.19, delete @code{latex2rt.exe} 
-and rename @code{latex2rt_win.exe} to @code{latex2rt.exe}.
+If you have one of these systems, you should use the 
+win package (1.9.19 and up) of @ltor{}. 
 
 To start the program double-click the @ltor{} icon, 
 or drag and drop a @file{.tex} file onto the icon.
