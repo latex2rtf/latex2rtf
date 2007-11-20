@@ -246,3 +246,19 @@ r835 Change accessors for the TeX mode.  These now follow the format of
 r836 rename ANY_INDENT to GENERIC_PARAGRAPH and other for clarity.  Fix
      the indent bug for paragraphs following a verbatim environment. 
      Make 'references' bold in APA style.
+     
+r837 Hopefully final update before 1.9.19 release.  Add linefeed to
+     vertical.h at end.  Touch version.h so that it is current.
+
+r838 WH: documentation: updated Win32 section. Added apanat1b.bst and
+     apanat1b.sty to 'test' folder.
+
+r839 Handle \vskip3mm and \vspace{3mm} correctly.  Oddly, in horizontal
+     mode, \vspace{3mm} seems to have no effect.
+
+r840 Fixes for alignment of displayed equations when the equations are
+     converted to bitmaps.  Vertical spacing can be poor, but now the
+     equation numbers are in the right places.  Numbering of bitmap
+     equations is much better (especially when the equations should not
+     be numbered).
+
