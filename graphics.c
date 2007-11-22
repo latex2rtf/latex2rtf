@@ -1580,7 +1580,6 @@ void WriteLatexAsBitmap(char *pre, char *eq, char *post)
  ******************************************************************************/
 {
     char *p, *name, *abbrev;
-    double scale;
 
 	/* go to a bit a trouble to give the user some feedback */
 	name = strdup_together3(pre,eq,post);
@@ -1591,16 +1590,6 @@ void WriteLatexAsBitmap(char *pre, char *eq, char *post)
 	
     if (eq == NULL)
         return;
-
-    scale = g_png_equation_scale;
-    if (strstr(pre, "music") || strstr(pre, "figure") 
-                             || strstr(pre, "picture")
-                             || strstr(pre, "tabular")
-                             || strstr(pre, "tabbing")
-                             || strstr(pre, "longtable")
-                             || strstr(pre, "psgraph")
-                             || strstr(pre, "pspicture"))
-        scale = g_png_figure_scale;
 
 /* suppress bitmap equation numbers in eqnarrays with zero or one \label{}'s*/
     if (strcmp(pre, "\\begin{eqnarray}") == 0) {
@@ -1630,7 +1619,18 @@ void WriteLatexAsBitmap(char *pre, char *eq, char *post)
     } else
         name = SaveEquationAsFile(NULL, pre, eq, post);
 
-    PutLatexFile(name, 0, 0, scale, pre);
+    if (strstr(pre, "music") || strstr(pre, "figure") 
+                             || strstr(pre, "picture")
+                             || strstr(pre, "tabular")
+                             || strstr(pre, "tabbing")
+                             || strstr(pre, "longtable")
+                             || strstr(pre, "psgraph")
+                             || strstr(pre, "pspicture")) 
+    {
+    	PutLatexFile(name, 0, 0, g_png_figure_scale, pre);
+    } else {
+    	PutLatexFile(name, 0, 0, g_png_equation_scale, pre);
+    }
 }
 
 char *upper_case_string(char *s)
