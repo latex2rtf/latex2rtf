@@ -1432,43 +1432,45 @@ void PutLatexFile(char *latex, double height0, double width0, double scale, char
 {
     char *png=NULL;
     char *pngpath = NULL;
-    int baseline, second_pass, bmoffset,bad_res;
+    int baseline, bmoffset,bad_res;
+	double convert_scale,resolution;
     unsigned long width, height, rw, rh, xres, yres;
     unsigned long maxsize = (unsigned long) (32767.0 / 20.0);
-	double convert_scale = 72.0 / g_dots_per_inch;
-	double resolution = g_dots_per_inch;
 	
     diagnostics(3, "Rendering LaTeX construct (e.g. equation) as a bitmap...");
 
     bmoffset = g_dots_per_inch / 72 + 2;
     png = strdup_together(latex, ".png");
 
-    do {
-        second_pass = FALSE;    /* only needed if png is too large for Word */
+    /* it is possible that the latex image is too wide or tall for Word
+       we only know this after we have tried once.  If the image is too
+       large then the resolution is made smaller and the PNG is remade */
+    
+	resolution = g_dots_per_inch;
+	pngpath = SysGraphicsConvert(CONVERT_LATEX, bmoffset, (int) resolution, latex, "");
+	if (pngpath == NULL)  goto the_end;
+	GetPngSize(png, &width, &height,&xres,&yres,&bad_res);
 
-    	pngpath = SysGraphicsConvert(CONVERT_LATEX, bmoffset, (int) resolution, latex, "");
-    	if (pngpath == NULL) break;
-
-        GetPngSize(png, &width, &height,&xres,&yres,&bad_res);
-        baseline = GetBaseline(latex, pre);
-        diagnostics(4, "png size height=%d baseline=%d width=%d resolution=%d", height, baseline, width, (int) resolution);
-
-        if ((width > maxsize && height != 0) || (height > maxsize && width != 0)) {
-            second_pass = TRUE;
-            rw = (unsigned long) ((resolution * maxsize) / width);
-            rh = (unsigned long) ((resolution * maxsize) / height);
-            resolution = rw < rh ? (int) rw : (int) rh;
-        }
-    } while (resolution > 10 && ((width > maxsize) || (height > maxsize)));
-
-    diagnostics(2, "calling PutPngFile %s, path=%s", png, pngpath);
+	if ((width > maxsize && height != 0) || (height > maxsize && width != 0)) {
+        free(pngpath);
+		rw = (unsigned long) ((resolution * maxsize) / width);
+		rh = (unsigned long) ((resolution * maxsize) / height);
+		resolution = rw < rh ? (int) rw : (int) rh;
+		pngpath = SysGraphicsConvert(CONVERT_LATEX, bmoffset, (int) resolution, latex, "");
+		if (pngpath == NULL) goto the_end;
+		GetPngSize(png, &width, &height,&xres,&yres,&bad_res);
+	}
+	convert_scale = 72.0 / resolution;
+	baseline = GetBaseline(latex, pre);
+	diagnostics(4, "png size height=%d baseline=%d width=%d resolution=%d", height, baseline, width, (int) resolution);
         
     if (pngpath != NULL) {
         PutPngFile(png, height0, width0, scale, convert_scale, (double) baseline, TRUE);
         free(pngpath);
     }
 
-    free(png);
+the_end:
+	free(png);
 }
 
 static char *SaveEquationAsFile(const char *post_begin_document,
