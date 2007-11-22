@@ -224,14 +224,13 @@ static char *strdup_tmp_path(char *s)
 	
  ******************************************************************************/
 
-static char *SysGraphicsConvert(int opt, int offset, char *in, char *out)
+static char *SysGraphicsConvert(int opt, int offset, int dpi, char *in, char *out)
 
 {
     char cmd[512], *out_tmp;
 	int err;
 
     int N = 512;	
-	int dpi   = g_dots_per_inch;
 	
     out_tmp = strdup_tmp_path(out);
    
@@ -317,7 +316,7 @@ static char *SysGraphicsConvert(int opt, int offset, char *in, char *out)
 	
 #endif
 
-    diagnostics(3, "command `%s`", cmd);
+    diagnostics(3, "`%s`", cmd);
     err = system(cmd);
 
     if (err != 0) {
@@ -433,7 +432,7 @@ static char *eps_to_pict(char *s)
     eps = strdup_together(g_home_dir, s);
 
     /* create a bitmap version of the eps file */
-    return_value = SysGraphicsConvert(CONVERT_CROP, offset, eps, pict);
+    return_value = SysGraphicsConvert(CONVERT_CROP, offset, g_dots_per_inch, eps, pict);
     free(pict);
 	if (return_value == NULL) goto Exit;
 	
@@ -546,7 +545,7 @@ static char *eps_to_png(char *name)
     else
     	return NULL;
 		
-    out = SysGraphicsConvert(CONVERT_CROP, 0, name, png);
+    out = SysGraphicsConvert(CONVERT_CROP, 0, g_dots_per_inch, name, png);
 
     free(png);
     return out;
@@ -568,7 +567,7 @@ static char *pdf_to_png(char *pdf)
 	else
 		return NULL;
 		
-    out = SysGraphicsConvert(CONVERT_PDF, 0, pdf, png);
+    out = SysGraphicsConvert(CONVERT_PDF, 0, g_dots_per_inch, pdf, png);
 	free(png);
     return out;
 }
@@ -791,6 +790,7 @@ static void GetPngSize(char *s, unsigned long *w, unsigned long *h, unsigned lon
     char reftag[9] = "\211PNG\r\n\032\n";
     unsigned char *data = NULL;
 
+    diagnostics(4, "GetPngSize of '%s'", s);
     *w = 0;
     *h = 0;
     *xres = (unsigned long) POINTS_PER_METER;
@@ -1278,7 +1278,7 @@ static void PutTiffFile(char *s, double height0, double width0, double scale, do
     }
 
     tiff = strdup_together(g_home_dir, s);
-	out = SysGraphicsConvert(CONVERT_SIMPLE, 0, tiff, png);
+	out = SysGraphicsConvert(CONVERT_SIMPLE, 0, g_dots_per_inch, tiff, png);
 	
 	if (out != NULL) {
     	PutPngFile(out, height0, width0, scale, convert_scale, baseline, TRUE);
@@ -1307,7 +1307,7 @@ static void PutGifFile(char *s, double height0, double width0, double scale, dou
     }
 
     gif = strdup_together(g_home_dir, s);
-    out = SysGraphicsConvert(CONVERT_SIMPLE, 0, gif, png);
+    out = SysGraphicsConvert(CONVERT_SIMPLE, 0, g_dots_per_inch, gif, png);
 
 	if (out != NULL) {
     	PutPngFile(out, height0, width0, scale, convert_scale, baseline, TRUE);
@@ -1367,7 +1367,7 @@ long GetBaseline(char *s, char *pre)
     pbm = strdup_together(s, ".pbm");
     baseline = 4;
 
-    diagnostics(4, "GetBaseline opening='%s'", pbm);
+    diagnostics(1, "GetBaseline opening='%s'", pbm);
 
     fp = fopen(pbm, "rb");
     if (fp == NULL) {
@@ -1438,7 +1438,7 @@ void PutLatexFile(char *latex, double height0, double width0, double scale, char
 	double convert_scale = 72.0 / g_dots_per_inch;
 	double resolution = g_dots_per_inch;
 	
-    diagnostics(2, "Rendering LaTeX construct (e.g. equation) as a bitmap...");
+    diagnostics(3, "Rendering LaTeX construct (e.g. equation) as a bitmap...");
 
     bmoffset = g_dots_per_inch / 72 + 2;
     png = strdup_together(latex, ".png");
@@ -1446,12 +1446,12 @@ void PutLatexFile(char *latex, double height0, double width0, double scale, char
     do {
         second_pass = FALSE;    /* only needed if png is too large for Word */
 
-    	pngpath = SysGraphicsConvert(CONVERT_LATEX, bmoffset, latex, "");
+    	pngpath = SysGraphicsConvert(CONVERT_LATEX, bmoffset, (int) resolution, latex, "");
     	if (pngpath == NULL) break;
 
         GetPngSize(png, &width, &height,&xres,&yres,&bad_res);
         baseline = GetBaseline(latex, pre);
-        diagnostics(4, "png='%s' size height=%d baseline=%d width=%d",png, height, baseline, width);
+        diagnostics(4, "png size height=%d baseline=%d width=%d resolution=%d", height, baseline, width, (int) resolution);
 
         if ((width > maxsize && height != 0) || (height > maxsize && width != 0)) {
             second_pass = TRUE;
@@ -1491,7 +1491,7 @@ static char *SaveEquationAsFile(const char *post_begin_document,
     fullname = strdup_together(tmp_dir, name);
     texname = strdup_together(fullname, ".tex");
 
-    diagnostics(4, "SaveEquationAsFile =%s", texname);
+    diagnostics(3, "SaveEquationAsFile =%s", texname);
 
     f = fopen(texname, "w");
     while (eq && (*eq == '\n' || *eq == ' '))
