@@ -1595,6 +1595,8 @@ void WriteLatexAsBitmap(char *pre, char *eq, char *post)
     scale = g_png_equation_scale;
     if (strstr(pre, "music") || strstr(pre, "figure") 
                              || strstr(pre, "picture")
+                             || strstr(pre, "tabular")
+                             || strstr(pre, "tabbing")
                              || strstr(pre, "longtable")
                              || strstr(pre, "psgraph")
                              || strstr(pre, "pspicture"))
