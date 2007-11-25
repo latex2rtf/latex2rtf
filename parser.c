@@ -914,7 +914,7 @@ char *getLeftRightParam(void)
                     return strdup(text);
                 }
             }
-            strcat(text + i, command);
+            my_strlcat(text + i, command, 5000);
             i += strlen(command);
             if (i > 4950)
                 diagnostics(ERROR, "Contents of \\left .. \\right too large.");

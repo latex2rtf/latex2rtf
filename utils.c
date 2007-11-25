@@ -102,7 +102,8 @@ char *my_strndup(const char *src, size_t n)
 char *strdup_together(const char *s, const char *t)
 {
     char *both;
-
+	size_t siz;
+	
     if (s == NULL) {
         if (t == NULL)
             return NULL;
@@ -111,12 +112,13 @@ char *strdup_together(const char *s, const char *t)
     if (t == NULL)
         return strdup(s);
 
-    both = malloc(strlen(s) + strlen(t) + 1);
+    siz = strlen(s) + strlen(t) + 1;
+    both = malloc(siz);
     if (both == NULL)
         diagnostics(ERROR, "Could not allocate memory for both strings.");
 
     strcpy(both, s);
-    strcat(both, t);
+    my_strlcat(both, t, siz);
     return both;
 }
 
