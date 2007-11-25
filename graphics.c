@@ -352,17 +352,30 @@ static void PicComment(short label, short size, FILE * fp)
     }
 }
 
-static char *strdup_new_extension(char *s, char *old_ext, char *new_ext)
+static char *strdup_new_extension(const char *s, const char *old_ext, const char *new_ext)
 {
     char *new_name, *p;
+	int s_len, o_len, n_len, siz;
+	
+	if (s==NULL || old_ext == NULL || new_ext == NULL) return NULL;
+	
+	s_len = strlen(s);
+	o_len = strlen(old_ext);
+	n_len = strlen(new_ext);
+	
+	/* make sure that old_ext exists */
+    p= (char *) s;
+    do {
+    	p = strstr(p, old_ext);
+    } while (p && p-s > s_len-o_len) ;
+    
+    if (p == NULL) return NULL;
 
-    p = strstr(s, old_ext);
-    if (p == NULL)
-        return NULL;
+	siz = s_len - o_len + n_len;	
+	new_name = malloc(siz);
+	my_strlcpy(new_name, s, s_len - o_len);
+	my_strlcat(new_name, new_ext, siz);
 
-    new_name = strdup_together(s, new_ext);
-    p = strstr(new_name, old_ext);
-    strcpy(p, new_ext);
     return new_name;
 }
 

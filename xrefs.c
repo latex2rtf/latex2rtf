@@ -54,6 +54,8 @@ static int g_warned_once = FALSE;
 #define BIB_STYLE_ALPHA  0
 #define BIB_STYLE_SUPER  1
 #define BIB_STYLE_NUMBER 2
+#define MAX_AUTHOR_SIZE  201
+#define MAX_YEAR_SIZE     51
 
 char *BIB_DASH_MARKER="%dash%";
 
@@ -71,8 +73,8 @@ static int g_last_citation = 0;
 static int g_current_cite_type = 0;
 static int g_current_cite_seen = 0;
 static int g_current_cite_paren = 0;
-static char g_last_author_cited[201];
-static char g_last_year_cited[51];
+static char g_last_author_cited[MAX_AUTHOR_SIZE];
+static char g_last_year_cited[MAX_YEAR_SIZE];
 static int g_citation_longnamesfirst = 0;
 static int g_current_cite_item = 0;
 static int g_sorted_citations = FALSE;
@@ -960,8 +962,8 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first, i
 	
 			if (!author_repeated) { /* suppress repeated names */
 				ConvertString(v);
-				strcpy(g_last_author_cited, v);
-				strcpy(g_last_year_cited, year);
+				my_strlcpy(g_last_author_cited, v, MAX_AUTHOR_SIZE);
+				my_strlcpy(g_last_year_cited, year, MAX_YEAR_SIZE);
 				if (g_bibpunct_style == BIB_STYLE_ALPHA) {
 					fprintRTF(" ");
 					ConvertString(g_bibpunct_open);
@@ -1016,8 +1018,8 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first, i
 	
 			if (!author_repeated) { /* suppress repeated names */
 				ConvertString(v);
-				strcpy(g_last_author_cited, v);
-				strcpy(g_last_year_cited, year);
+				my_strlcpy(g_last_author_cited, v, MAX_AUTHOR_SIZE);
+				my_strlcpy(g_last_year_cited, year, MAX_YEAR_SIZE);
 				fprintRTF(" ");
 				if (pre) {
 					ConvertString(pre);
@@ -1068,8 +1070,8 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first, i
 
             if (!author_repeated) { /* suppress repeated names */
                 ConvertString(v);
-                strcpy(g_last_author_cited, v);
-                strcpy(g_last_year_cited, year);
+                my_strlcpy(g_last_author_cited, v, MAX_AUTHOR_SIZE);
+                my_strlcpy(g_last_year_cited, year, MAX_YEAR_SIZE);
 				ConvertString(g_bibpunct_author_date_sep);
 				fprintRTF(" ");			
 			} else {			
@@ -1119,8 +1121,8 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first, i
 
             if (!author_repeated) { /* suppress repeated names */
                 ConvertString(v);
-                strcpy(g_last_author_cited, v);
-                strcpy(g_last_year_cited, year);
+                my_strlcpy(g_last_author_cited, v, MAX_AUTHOR_SIZE);
+                my_strlcpy(g_last_year_cited, year, MAX_YEAR_SIZE);
 				ConvertString(g_bibpunct_author_date_sep);
 				fprintRTF(" ");
 				ConvertString(year);
@@ -1943,8 +1945,8 @@ void CmdBCAY(int code)
         case CITE_CITE_A:
             if (strcmp(v, g_last_author_cited) != 0) {  /* suppress repeated names */
                 ConvertString(v);
-                strcpy(g_last_author_cited, v);
-                strcpy(g_last_year_cited, year);
+                my_strlcpy(g_last_author_cited, v, MAX_AUTHOR_SIZE);
+                my_strlcpy(g_last_year_cited, year, MAX_YEAR_SIZE);
 
                 if (g_current_cite_type == CITE_CITE_A)
                     fprintRTF(" (");

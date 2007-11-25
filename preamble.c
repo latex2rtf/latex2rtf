@@ -110,7 +110,7 @@ void setPackageBabel(char *option)
         PushEnvironment(CZECH_MODE);
         ReadLanguage("czech");
         g_fcharset_number = 238;    /* East European in RTF Specification */
-        strcpy(g_charset_encoding_name, "raw");
+        my_strlcpy(g_charset_encoding_name, "raw", 20);
     }
 
 }
@@ -120,7 +120,7 @@ void setPackageInputenc(char *option)
     g_preambleEncoding = strdup_noblanks(option);
 
     if (strcmp(option, "ansinew") == 0)
-        strcpy(g_charset_encoding_name, "cp1252");
+        my_strlcpy(g_charset_encoding_name, "cp1252", 20);
 
     else if (strcmp(option, "applemac") == 0 ||
       strcmp(option, "decmulti") == 0 ||
@@ -156,40 +156,40 @@ void setPackageInputenc(char *option)
       strcmp(option, "koi8-r") == 0 || 
       strcmp(option, "koi8-u") == 0) {
 
-        strcpy(g_charset_encoding_name, option);
+        my_strlcpy(g_charset_encoding_name, option, 20);
         g_fcharset_number = 0;  /* ANSI in RTF Specification */
 
     } else if (strcmp(option, "raw") == 0) {
-        strcpy(g_charset_encoding_name, "raw");
+        my_strlcpy(g_charset_encoding_name, "raw", 20);
         g_fcharset_number = 255;    /* OEM in RTF Specification */
 
     } else if (strcmp(option, "raw437") == 0) {
         g_fcharset_number = 254;    /* IBM PC in RTF Specification */
-        strcpy(g_charset_encoding_name, "raw");
+        my_strlcpy(g_charset_encoding_name, "raw", 20);
 
     } else if (strcmp(option, "raw852") == 0) {
         g_fcharset_number = 255;    /* Microsoft bug ... */
-        strcpy(g_charset_encoding_name, "raw");
+        my_strlcpy(g_charset_encoding_name, "raw", 20);
 
     } else if (strcmp(option, "raw1250") == 0) {
         g_fcharset_number = 238;    /* East European in RTF Specification */
-        strcpy(g_charset_encoding_name, "raw");
+        my_strlcpy(g_charset_encoding_name, "raw", 20);
 
     } else if (strcmp(option, "raw1251") == 0) {
         g_fcharset_number = 204;    /* Cyrillic in RTF Specification */
-        strcpy(g_charset_encoding_name, "raw");
+        my_strlcpy(g_charset_encoding_name, "raw", 20);
 
     } else if (strcmp(option, "raw1253") == 0) {
         g_fcharset_number = 161;    /* Greek in RTF Specification */
-        strcpy(g_charset_encoding_name, "raw");
+        my_strlcpy(g_charset_encoding_name, "raw", 20);
         
     } else if (strcmp(option, "utf8") == 0) {
         diagnostics(WARNING, "Input Encoding utf8 - experimental support");
-        strcpy(g_charset_encoding_name, "utf8");
+        my_strlcpy(g_charset_encoding_name, "utf8", 20);
 
     } else if (strcmp(option, "utf8x") == 0) {
         diagnostics(WARNING, "Input Encoding utf8x - experimental support");
-        strcpy(g_charset_encoding_name, "utf8");
+        my_strlcpy(g_charset_encoding_name, "utf8", 20);
 
     } else
         diagnostics(WARNING, "Input Encoding <%s> not supported", option);

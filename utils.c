@@ -117,7 +117,7 @@ char *strdup_together(const char *s, const char *t)
     if (both == NULL)
         diagnostics(ERROR, "Could not allocate memory for both strings.");
 
-    strcpy(both, s);
+    my_strlcpy(both, s, siz);
     my_strlcat(both, t, siz);
     return both;
 }

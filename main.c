@@ -907,12 +907,12 @@ purpose: duplicate string --- exists to ease porting
     char *s = NULL;
     unsigned long strsize;
 
-    strsize = strlen(str);
-    s = (char *) malloc(strsize + 1);
+    strsize = strlen(str) + 1;
+    s = (char *) malloc(strsize);
     *s = '\0';
     if (s == NULL)
         diagnostics(ERROR, "Cannot allocate memory to duplicate string");
-    strcpy(s, str);
+    my_strlcpy(s, str, strsize);
 
 /*	diagnostics(5,"ptr %x",(unsigned long)s);*/
     return s;

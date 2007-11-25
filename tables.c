@@ -1237,7 +1237,7 @@ void CmdTabbing(int code)
     g_processing_tabbing = TRUE;
     n = 0;
     g_tabbing_left_position = 0;
-    strcpy(align, "l");
+    my_strlcpy(align, "l", 31);
 
     end = strdup("\\end{tabbing}");
     table = getTexUntil(end, FALSE);
