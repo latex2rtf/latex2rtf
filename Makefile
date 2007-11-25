@@ -5,19 +5,16 @@ MKDIR=mkdir -p
 TAR=gnutar
 RM=rm
 
-CFLAGS:=-DUNIX
-#CFLAGS:=-DMSDOS         #Windows/DOS
-#CFLAGS:=-DMAC_CLASSIC   #MacOS 8/9
-#CFLAGS:=-DOS2           #OS/2
+CFLAGS:=$(CFLAGS) -DUNIX
+#CFLAGS:=$(CFLAGS) -DMSDOS         #Windows/DOS
+#CFLAGS:=$(CFLAGS) -DMAC_CLASSIC   #MacOS 8/9
+#CFLAGS:=$(CFLAGS) -DOS2           #OS/2
 
 #Uncomment for some windows machines (not needed for djgpp)
 #EXE_SUFFIX=.exe
 
 #Uncomment next line for windows machines
 #PREFIX_DRIVE=c:
-
-#Uncomment next line when using gcc compiler, target linux
-LINK_FLAGS = -lm
 
 #Uncomment next line when using rsx compiler, target win32
 #CFLAGS:=$(CFLAGS) -Zwin32  
@@ -39,7 +36,7 @@ CFG_INSTALL=$(PREFIX)/share/latex2rtf/cfg
 
 CFLAGS:=$(CFLAGS) -g -Wall -fsigned-char
 
-LIBS=
+LIBS= -lm
 #LIBS=-lMallocDebug -force_flat_namespace
 
 VERSION:="`scripts/version`"
@@ -141,7 +138,7 @@ OBJS=fonts.o direct.o encodings.o commands.o stack.o funct1.o tables.o \
 all : checkdir latex2rtf
 
 latex2rtf: $(OBJS) $(HDRS)
-	$(CC) $(CFLAGS) $(LINK_FLAGS) $(OBJS)	$(LIBS) -o $(BINARY_NAME)
+	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJS)	$(LIBS) -o $(BINARY_NAME)
 
 cfg.o: Makefile cfg.c
 	$(CC) $(CFLAGS) -DCFGDIR=\"$(CFG_INSTALL)\" -c cfg.c -o cfg.o
@@ -305,7 +302,7 @@ parser.o: parser.c main.h commands.h cfg.h stack.h utils.h parser.h \
 lengths.o: lengths.c main.h utils.h lengths.h parser.h
 counters.o: counters.c main.h utils.h counters.h
 letterformat.o: letterformat.c main.h parser.h letterformat.h cfg.h \
-  commands.h funct1.h convert.h
+  commands.h funct1.h convert.h vertical.h
 preamble.o: preamble.c main.h convert.h utils.h preamble.h fonts.h cfg.h \
   encodings.h parser.h funct1.h lengths.h ignore.h commands.h counters.h \
   xrefs.h direct.h styles.h vertical.h
@@ -327,4 +324,4 @@ styles.o: styles.c main.h direct.h fonts.h cfg.h utils.h parser.h
 preparse.o: preparse.c cfg.h main.h utils.h definitions.h parser.h \
   funct1.h
 vertical.o: vertical.c main.h funct1.h cfg.h utils.h parser.h lengths.h \
-  vertical.h
+  vertical.h convert.h commands.h
