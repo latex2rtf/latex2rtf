@@ -1,9 +1,10 @@
 # $Id: Makefile,v 1.113 2005/01/30 02:14:14 prahl Exp $
 
-CC=gcc
+CC?=gcc
+TAR?=gnutar
+RM?=rm
 MKDIR=mkdir -p
-TAR=gnutar
-RM=rm
+PKGMANDIR?=man
 
 CFLAGS:=$(CFLAGS) -DUNIX
 #CFLAGS:=$(CFLAGS) -DMSDOS         #Windows/DOS
@@ -20,14 +21,14 @@ CFLAGS:=$(CFLAGS) -DUNIX
 #CFLAGS:=$(CFLAGS) -Zwin32  
 
 #Base directory - adapt as needed
-PREFIX=$(PREFIX_DRIVE)/usr/local
+PREFIX?=$(PREFIX_DRIVE)/usr/local
 
 #Name of executable binary --- beware of 8.3 restriction under DOS
 BINARY_NAME=latex2rtf$(EXE_SUFFIX)
 
 # Location of binary, man, info, and support files - adapt as needed
 BIN_INSTALL=$(PREFIX)/bin
-MAN_INSTALL=$(PREFIX)/man/man1
+MAN_INSTALL=$(PREFIX)/$(PKGMANDIR)/man1
 INFO_INSTALL=$(PREFIX)/info
 SUPPORT_INSTALL=$(PREFIX)/share/latex2rtf
 CFG_INSTALL=$(PREFIX)/share/latex2rtf/cfg
