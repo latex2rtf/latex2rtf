@@ -1180,7 +1180,7 @@ static void WriteStyleHeader(void)
     ConfigEntryT **style;
     const char *rtf;
 
-    fprintRTF("{\\stylesheet\n{\\s0\\fs%d\\snext0 Normal;}\n", CurrentFontSize());
+    fprintRTF("{\\stylesheet\n{\\s0\\fs%d\\snext0 Normal;}\n", DefaultFontSize());
 
     style = CfgStartIterate(STYLE_A);
     while ((style = CfgNext(STYLE_A, style)) != NULL) {

@@ -271,6 +271,7 @@ void startParagraph(const char *style, int indenting)
     }
 
     fprintRTF("\\pard\\q%c",      getAlignment());
+    fprintRTF("\\fs%d",           CurrentFontSize());
     fprintRTF("\\sl%i\\slmult1 ", getLineSpacing());
 
     if (getVspace() > 0)
