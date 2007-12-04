@@ -260,7 +260,7 @@ void startParagraph(const char *style, int indenting)
     diagnostics(5, "this parindent    %d", parindent);
 
     if (g_page_new) {
-        fprintRTF("\\page{}");   /* causes new page */
+        fprintRTF("\\page\\par ");   /* causes new page */
         g_page_new = FALSE;
         g_column_new = FALSE;
     }

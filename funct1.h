@@ -149,7 +149,6 @@ void CmdFigure(int code);
 void CmdSubFigure(int code);
 void Cmd_OptParam_Without_braces(int code);
 void CmdColumn(int code);
-void CmdNewPage(int code);
 void GetInputParam(char *, int);
 void CmdBottom(int code);
 void CmdAbstract(int code);
