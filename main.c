@@ -653,6 +653,7 @@ static void InitializeLatexLengths(void)
     setLength("parskip", 0 * 20);
 
     setCounter("page", 0);
+    setCounter("part", 0);
     setCounter("chapter", 0);
     setCounter("section", 0);
     setCounter("subsection", 0);

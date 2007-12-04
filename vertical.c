@@ -55,6 +55,8 @@ that affect these quantities
 #include "vertical.h"
 #include "convert.h"
 #include "commands.h"
+#include "styles.h"
+#include "fonts.h"
 
 static int g_TeX_mode = MODE_VERTICAL;
 static int g_line_spacing = 240;
@@ -177,7 +179,7 @@ void changeTexMode(int mode)
     diagnostics(5, "TeX mode changing from [%s] -> [%s]", TexModeName[g_TeX_mode], TexModeName[mode]);
 
     if (g_TeX_mode == MODE_VERTICAL && mode == MODE_HORIZONTAL)
-        startParagraph("body", GENERIC_PARAGRAPH);
+        startParagraph("Normal", GENERIC_PARAGRAPH);
 
     if (g_TeX_mode == MODE_HORIZONTAL && mode == MODE_VERTICAL)
         CmdEndParagraph(0);
@@ -191,7 +193,7 @@ void changeTexMode(int mode)
 	of \parindent as the indentation of the first line.
 	
 	style describes the type of paragraph ... 
-	  "body"
+	  "Normal"
 	  "caption"
 	  "author"
 	  "bibitem"
@@ -295,6 +297,9 @@ void startParagraph(const char *style, int indenting)
         else
         	g_paragraph_inhibit_indent = FALSE;
     }
+    
+    InsertStyle(style);
+    
 }
 
 void CmdEndParagraph(int code)

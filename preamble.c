@@ -949,7 +949,7 @@ void CmdMakeTitle(int code)
         fprintRTF("\\page ");
 
     if (g_document_type == FORMAT_APA)
-    	startParagraph("body",FIRST_PARAGRAPH);
+    	startParagraph("Normal",FIRST_PARAGRAPH);
 
 	PopTrackLineNumber();
 }
@@ -1180,7 +1180,7 @@ static void WriteStyleHeader(void)
     ConfigEntryT **style;
     const char *rtf;
 
-    fprintRTF("{\\stylesheet\n{\\s0\\fs%d\\snext0 Normal;}\n", DefaultFontSize());
+    fprintRTF("{\\stylesheet\n");
 
     style = CfgStartIterate(STYLE_A);
     while ((style = CfgNext(STYLE_A, style)) != NULL) {

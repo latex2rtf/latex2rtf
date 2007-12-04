@@ -157,7 +157,7 @@ parameter: searchstring : includes the string to search for
     font = TexFontNumber("Typewriter");
     CmdEndParagraph(0);
     CmdIndent(INDENT_NONE);
-    startParagraph("body", GENERIC_PARAGRAPH);
+    startParagraph("Normal", GENERIC_PARAGRAPH);
     fprintRTF("\\qc [Sorry. Ignored ");
     fprintRTF("{\\plain\\f%d\\\\begin\\{%s\\} ... \\\\end\\{%s\\}}]", font, cCommand, cCommand);
     CmdEndParagraph(0);

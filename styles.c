@@ -43,41 +43,47 @@ void InsertBasicStyle(const char *rtf, bool include_header_info)
         rtf="\rtfsequence,\rtfheader"
  ******************************************************************************/
 {
-    const char *style;
-    char *comma;
+    char *style, *style_end, *comma;
     int font_number;
 
-    if (rtf == NULL)
-        return;
-
-    style = rtf;
+    if (rtf == NULL) return;
 
 /* skip over 0,0, */
-    comma = strchr(style, ',') + 1;
-    style = strchr(comma, ',') + 1;
+    style = strchr((char *) rtf, ',') + 1;
+    if (style == NULL) return;
 
+    style = strchr(style+1, ',');
+    if (style == NULL) return;
+
+/* skip blanks */
+	style++;
     while (*style == ' ')
-        style++;                /* skip blanks */
+        style++;                
 
+/* locate end of style */
     comma = strchr(style, ',');
-    if (comma == NULL)
-        return;
+    if (comma == NULL) return;
+
     if (include_header_info)
-        *comma = ' ';
+        style_end = style + strlen(style);
     else
-        *comma = '\0';
+        style_end = comma;
+        
+    while (style < style_end) {
 
-    while (*style != '\0') {
-
-        if (*style == '*')
-            font_number = WriteFontName(&style);
+        if (style == comma)
+        	fprintRTF(" ");
+        else if (*style == '*')
+            font_number = WriteFontName((const char **)&style);
         else
             fprintRTF("%c", *style);
 
         style++;
     }
-
-    *comma = ',';               /* change back to a comma */
+    
+ /* emit final blank to make sure that RTF is properly terminated */
+    if (!include_header_info)
+    	fprintRTF(" ");
 }
 
 static void StyleCount(char *rtfline, int *optional, int *mandated)
@@ -99,14 +105,16 @@ static void StyleCount(char *rtfline, int *optional, int *mandated)
         diagnostics(ERROR, "bad number of mandatory parameters in rtf command <%s> style.cfg", rtfline);
 }
 
-void InsertStyle(char *command)
+void InsertStyle(const char *command)
 {
     const char *rtf;
 
     rtf = SearchRtfCmd(command, STYLE_A);
-    if (rtf == NULL)
-        diagnostics(WARNING, "Cannot find style <%s>", command);
-    else
+    if (rtf == NULL) {
+        diagnostics(WARNING, "Cannot find '%s' style using 'Normal' style", command);
+    	rtf = SearchRtfCmd("Normal", STYLE_A);
+        InsertBasicStyle(rtf, FALSE);
+    } else
         InsertBasicStyle(rtf, FALSE);
 }
 

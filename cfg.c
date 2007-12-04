@@ -273,8 +273,7 @@ static size_t read_cfg(FILE * cfgfile, ConfigEntryT *** pointer_array, bool do_r
         bufindex++;
     }
 
-    qsort(*pointer_array, bufindex, sizeof(**pointer_array)
-      , (fptr) cfg_compare);
+    qsort(*pointer_array, bufindex, sizeof(**pointer_array), (fptr) cfg_compare);
 
     return bufindex;
 }
