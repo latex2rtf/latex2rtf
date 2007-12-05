@@ -2389,9 +2389,7 @@ void CmdListOf(int code)
 	
     diagnostics(4, "Entering CmdListOf");
 
-	startParagraph("list", SECTION_TITLE_PARAGRAPH);
-	fprintRTF("{");
-	InsertStyle("contents_no_style");
+	startParagraph("contents", SECTION_TITLE_PARAGRAPH);
 	fprintRTF(" ");
 	
 	switch (code) {
@@ -2411,12 +2409,13 @@ void CmdListOf(int code)
 			c = 'c';
 			break;
 	}
-	
+
 	CmdEndParagraph(0);
-	fprintRTF("}");
+
+	startParagraph("Normal", GENERIC_PARAGRAPH);
 	CmdVspace(VSPACE_SMALL_SKIP);
-	
 	g_tableofcontents = TRUE;
 	fprintRTF("{\\field{\\*\\fldinst TOC \\\\f %c }{\\fldrslt }}\n",c);  
 	CmdNewPage(NewPage);
+	CmdEndParagraph(0);
 }

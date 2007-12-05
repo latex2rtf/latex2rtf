@@ -870,17 +870,16 @@ void CmdTitle(int code)
 void CmdTableOfContents(int code)
 {
 	startParagraph("contents", SECTION_TITLE_PARAGRAPH);
-	fprintRTF("{");
-	InsertStyle("contents_no_style");
 	fprintRTF(" ");
 	ConvertBabelName("CONTENTSNAME");
 	CmdEndParagraph(0);
-	fprintRTF("}");
-	CmdVspace(VSPACE_SMALL_SKIP);
 	
 	g_tableofcontents = TRUE;
+	startParagraph("Normal", GENERIC_PARAGRAPH);
+	CmdVspace(VSPACE_SMALL_SKIP);
 	fprintRTF("{\\field{\\*\\fldinst TOC \\\\o \"1-3\" }{\\fldrslt }}\n");  
 	CmdNewPage(NewPage);
+	CmdEndParagraph(0);
 }
 
 /******************************************************************************
@@ -888,7 +887,6 @@ void CmdTableOfContents(int code)
  ******************************************************************************/
 void CmdAnd(int code)
 {
-	CmdEndParagraph(0);
 	startParagraph("author", GENERIC_PARAGRAPH);
 }
 

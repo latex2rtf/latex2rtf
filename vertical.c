@@ -262,18 +262,18 @@ void startParagraph(const char *style, int indenting)
     diagnostics(5, "this parindent    %d", parindent);
 
     if (g_page_new) {
-        fprintRTF("\\page\\par ");   /* causes new page */
+        fprintRTF("\\page ");   /* causes new page */
         g_page_new = FALSE;
         g_column_new = FALSE;
     }
 
     if (g_column_new) {
-        fprintRTF("\\column "); /* causes new page */
+        fprintRTF("\\column "); /* causes new column */
         g_column_new = FALSE;
     }
 
-    fprintRTF("\\pard\\q%c",      getAlignment());
-    fprintRTF("\\fs%d",           CurrentFontSize());
+    fprintRTF("\\pard\\plain");
+    InsertStyle(style);
     fprintRTF("\\sl%i\\slmult1 ", getLineSpacing());
 
     if (getVspace() > 0)
@@ -298,7 +298,7 @@ void startParagraph(const char *style, int indenting)
         	g_paragraph_inhibit_indent = FALSE;
     }
     
-    InsertStyle(style);
+/*    InsertStyle(style);  */
     
 }
 
