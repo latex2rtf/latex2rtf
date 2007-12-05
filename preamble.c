@@ -1132,7 +1132,7 @@ static void WriteFontHeader(void)
 
     config_handle = CfgStartIterate(FONT_A);
     i = 0;
-    while ((config_handle = CfgNext(FONT_A, config_handle)) != NULL) {
+    while ((config_handle = CfgNextByInsertion(FONT_A, config_handle)) != NULL) {
 
         font_type = (char *) (*config_handle)->TexCommand;
         font_name = (char *) (*config_handle)->RtfCommand;
@@ -1181,7 +1181,7 @@ static void WriteStyleHeader(void)
     fprintRTF("{\\stylesheet\n");
 
     style = CfgStartIterate(STYLE_A);
-    while ((style = CfgNext(STYLE_A, style)) != NULL) {
+    while ((style = CfgNextByInsertion(STYLE_A, style)) != NULL) {
         rtf = (*style)->RtfCommand;
         diagnostics(5, "style <%s>=<%s>", (*style)->TexCommand, rtf);
         fprintRTF("{");

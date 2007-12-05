@@ -270,6 +270,7 @@ static size_t read_cfg(FILE * cfgfile, ConfigEntryT *** pointer_array, bool do_r
 
         (*pointer_array)[bufindex]->TexCommand = line;
         (*pointer_array)[bufindex]->RtfCommand = cmdend + 1;
+        (*pointer_array)[bufindex]->original_id = bufindex;
         bufindex++;
     }
 
@@ -380,6 +381,36 @@ ConfigEntryT **CfgNext(int WhichCfg, ConfigEntryT ** last)
         return NULL;
     }
     return last;
+}
+
+ConfigEntryT **CfgNextByInsertion(int WhichCfg, ConfigEntryT ** last)
+
+/****************************************************************************
+ * purpose:  Get the next entry from specified configuration data
+ ****************************************************************************/
+{
+	size_t i, next_id, max;
+	ConfigEntryT ** first;
+	
+	if (last == NULL)
+		next_id = 0;
+	else
+		next_id = (**last).original_id + 1;
+		
+	max = configinfo[WhichCfg].config_info_size;
+
+	/* last is the final entry */
+	if (next_id > max) return NULL;
+	
+	/* now iterate through all the entries looking for the right one */
+	first = (ConfigEntryT **) configinfo[WhichCfg].config_info;
+	for (i=0; i<max; i++) {
+		if ( next_id == (**first).original_id ) return first;
+		first++;
+	}
+	
+	/* not found, should not be reached */
+	return NULL;
 }
 
 /****************************************************************************

@@ -27,6 +27,7 @@ typedef struct ConfigEntryT
 {
    const char  *TexCommand;
    const char  *RtfCommand;
+   size_t      original_id;
 } ConfigEntryT;
 
 void ReadLanguage(char *lang);
@@ -38,5 +39,6 @@ int 			SearchRtfIndex (const char *theCommand, int WhichArray);
 char   		   *SearchRtfCmd (const char *theCommand, int WhichArray);
 ConfigEntryT  **CfgStartIterate (int WhichCfg);
 ConfigEntryT  **CfgNext (int WhichCfg, ConfigEntryT **last);
+ConfigEntryT  **CfgNextByInsertion(int WhichCfg, ConfigEntryT ** last);
 
 void *			open_cfg(const char *name, int quit_on_error);
