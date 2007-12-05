@@ -112,6 +112,12 @@ int RtfFontNumber(char *Fname)
     ConfigEntryT **config_handle = CfgStartIterate(FONT_A);
 
     diagnostics(6, "seeking=%s", Fname);
+    
+    if (strstr(Fname,"CurrentFontSize")==0)
+    	return CurrentFontSize();
+    if (strstr(Fname,"DefaultFontSize")==0)
+    	return DefaultFontSize();
+    
     while ((config_handle = CfgNext(FONT_A, config_handle)) != NULL) {
         font_type = (char *) (*config_handle)->TexCommand;
         font_name = (char *) (*config_handle)->RtfCommand;
