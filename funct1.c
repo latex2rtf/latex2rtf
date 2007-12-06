@@ -1202,7 +1202,7 @@ void CmdVerbatim(int code)
 ******************************************************************************/
 {
     char *verbatim_text, *vptr, *endtag=NULL;
-    int num;
+/*  int num;  */
     int true_code = code & ~ON;
 
     if (code & ON) {
@@ -1215,8 +1215,9 @@ void CmdVerbatim(int code)
             CmdEndParagraph(0);
             CmdIndent(INDENT_NONE);
             startParagraph("verbatim", GENERIC_PARAGRAPH);
-            num = TexFontNumber("Typewriter");
-            fprintRTF("\\pard\\ql\\b0\\i0\\scaps0\\f%d ", num);
+/*          num = TexFontNumber("Typewriter");                                     */
+/*          fprintRTF("\\pard\\ql\\b0\\i0\\scaps0\\f%d ", num);                    */
+/*        WH: this is now unnecessary because it's already set in startParagraph() */
         }
 
         switch (true_code) {

@@ -111,7 +111,7 @@ int RtfFontNumber(const char *Fname)
     char *font_type, *font_name;
     ConfigEntryT **config_handle = CfgStartIterate(FONT_A);
 
-    diagnostics(1, "seeking=%s", Fname);
+    diagnostics(4, "seeking=%s", Fname);
     
     
     while ((config_handle = CfgNext(FONT_A, config_handle)) != NULL) {
