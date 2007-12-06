@@ -68,7 +68,7 @@ int WriteFontName(const char **buffpoint)
     }
 
     fontname[i] = '\0';
-    fnumber = RtfFontNumber(fontname);
+    fnumber = TexFontNumber(fontname);
 
     if (fnumber < 0)
         diagnostics(ERROR, "Unknown font <%s>\nFound in cfg file command <%s>", fontname, buff);
@@ -90,7 +90,7 @@ bool TryDirectConvert(char *command)
     int font_number;
 
     TexCommand = strdup_together("\\", command);
-    RtfCommand = SearchRtfCmd(TexCommand, DIRECT_A);
+    RtfCommand = SearchCfgRtf(TexCommand, DIRECT_A);
     if (RtfCommand == NULL)
         return FALSE;
 

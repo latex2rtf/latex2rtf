@@ -88,8 +88,8 @@ void	CmdEmphasize(int code);
 void	CmdUnderline(int code);
 void	CmdTextNormal(int code);
 
-int 	TexFontNumber(char *Fname);
-int 	RtfFontNumber(char *Fname);
+int 	TexFontNumber(const char *Fname);
+int 	RtfFontNumber(const char *Fname);
 
 void	PushFontSettings(void);
 void	PopFontSettings(void);

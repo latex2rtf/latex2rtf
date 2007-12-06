@@ -35,8 +35,8 @@ void ConvertBabelName(char *name);
 char *GetBabelName(char *name);
 
 void 			ReadCfg (void);
-int 			SearchRtfIndex (const char *theCommand, int WhichArray);
-char   		   *SearchRtfCmd (const char *theCommand, int WhichArray);
+ConfigEntryT  **SearchCfgEntry(const char *theTexCommand, int WhichCfg);
+char   		   *SearchCfgRtf(const char *theCommand, int WhichArray);
 ConfigEntryT  **CfgStartIterate (int WhichCfg);
 ConfigEntryT  **CfgNext (int WhichCfg, ConfigEntryT **last);
 ConfigEntryT  **CfgNextByInsertion(int WhichCfg, ConfigEntryT ** last);

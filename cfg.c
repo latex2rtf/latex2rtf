@@ -59,7 +59,7 @@ static ConfigInfoT configinfo[] = {
     {"english.cfg", NULL, 0, FALSE},
 };
 
-#define CONFIG_SIZE (sizeof(configinfo) / sizeof(ConfigInfoT))
+#define CONFIG_SIZE 5
 #define BUFFER_INCREMENT 1024
 
 char *ReadUptoMatch(FILE * infile, const char *scanchars);
@@ -71,7 +71,8 @@ static int cfg_compare(ConfigEntryT ** el1, ConfigEntryT ** el2)
  * params:   el1, el2: Config Entries to be compared
  ****************************************************************************/
 {
-    return strcmp((*el1)->TexCommand, (*el2)->TexCommand);
+//	diagnostics(1, "'%s' and '%s'",(**el1).TexCommand, (**el2).TexCommand);
+    return strcmp((**el1).TexCommand, (**el2).TexCommand);
 }
 
 static FILE *try_path(const char *path, const char *cfg_file)
@@ -271,6 +272,7 @@ static size_t read_cfg(FILE * cfgfile, ConfigEntryT *** pointer_array, bool do_r
         (*pointer_array)[bufindex]->TexCommand = line;
         (*pointer_array)[bufindex]->RtfCommand = cmdend + 1;
         (*pointer_array)[bufindex]->original_id = bufindex;
+        diagnostics(1,"tex='%s', rtf='%s', id=%d", line, cmdend+1, bufindex);
         bufindex++;
     }
 
@@ -293,7 +295,7 @@ void ReadCfg(void)
     for (i = 0; i < CONFIG_SIZE; i++) {
         fname = configinfo[i].filename;
         fp = (FILE *) open_cfg(fname, TRUE);
-        diagnostics(4, "reading config file %s", fname);
+        diagnostics(1, "reading config file %s", fname);
 
         configinfo[i].config_info_size = read_cfg(fp, &(configinfo[i].config_info)
           , configinfo[i].remove_leading_backslash);
@@ -301,7 +303,7 @@ void ReadCfg(void)
     }
 }
 
-static ConfigEntryT **search_rtf(const char *theTexCommand, int WhichCfg)
+ConfigEntryT **SearchCfgEntry(const char *theTexCommand, int WhichCfg)
 
 /****************************************************************************
  * purpose:  search theTexCommand in specified config data and return
@@ -309,10 +311,11 @@ static ConfigEntryT **search_rtf(const char *theTexCommand, int WhichCfg)
  ****************************************************************************/
 {
     ConfigEntryT compare_item;
-    ConfigEntryT *compare_ptr;
+    ConfigEntryT *compare_ptr, **p;
 
     compare_item.TexCommand = theTexCommand;
     compare_item.RtfCommand = "";
+    compare_item.original_id= 0;
     compare_ptr = &compare_item;
     
     if (theTexCommand == NULL) return NULL;
@@ -320,42 +323,30 @@ static ConfigEntryT **search_rtf(const char *theTexCommand, int WhichCfg)
     assert(WhichCfg >= 0 && (size_t) WhichCfg < CONFIG_SIZE);
     assert(configinfo[WhichCfg].config_info != NULL);
 
-    return (ConfigEntryT **) bsearch
+    p = (ConfigEntryT **) bsearch
       (&compare_ptr, configinfo[WhichCfg].config_info, configinfo[WhichCfg].config_info_size, sizeof(compare_ptr)
       , (fptr) cfg_compare);
+      
+    diagnostics(1,"p.tex='%s' target='%s'", (**p).TexCommand, theTexCommand);
+    
+    return p;
 }
 
-int SearchRtfIndex(const char *theTexCommand, int WhichCfg)
+char *SearchCfgRtf(const char *theTexCommand, int WhichCfg)
 
 /****************************************************************************
  * purpose:  search theTexCommand in a specified config data and return
- *           index
+ *           pointer to the corresponding RTF string
  ****************************************************************************/
 {
-    ConfigEntryT **help = search_rtf(theTexCommand, WhichCfg);
+    ConfigEntryT **p;
 
-    if (help == NULL) {
-        return 0;
-    }
-    /* LEG210698*** subtraction of two ConfigEntryT pointers */
-    return help - configinfo[WhichCfg].config_info;
-}
+    p = SearchCfgEntry(theTexCommand, WhichCfg);
 
-char *SearchRtfCmd(const char *theTexCommand, int WhichCfg)
-
-/****************************************************************************
- * purpose:  search theTexCommand in a specified config data and return
- *           pointer to the data
- ****************************************************************************/
-{
-    ConfigEntryT **help;
-
-    help = search_rtf(theTexCommand, WhichCfg);
-
-    if (help == NULL)
+    if (p == NULL)
         return NULL;
     else
-        return (char *) (*help)->RtfCommand;
+        return (char *) (**p).RtfCommand;
 }
 
 ConfigEntryT **CfgStartIterate(int WhichCfg)
@@ -450,7 +441,7 @@ void ReadLanguage(char *lang)
  ****************************************************************************/
 void ConvertBabelName(char *name)
 {
-    char *s = SearchRtfCmd(name, LANGUAGE_A);
+    char *s = SearchCfgRtf(name, LANGUAGE_A);
 
     if (s != NULL)
         ConvertString(s);
@@ -459,7 +450,7 @@ void ConvertBabelName(char *name)
 char *GetBabelName(char *name)
 {
     char *s = NULL;  
-    s = SearchRtfCmd(name, LANGUAGE_A);
+    s = SearchCfgRtf(name, LANGUAGE_A);
     return s;
 }
 

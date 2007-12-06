@@ -100,7 +100,7 @@ typedef struct RtfFontInfoType {
 static RtfFontInfoType RtfFontInfo[MAX_FONT_INFO_DEPTH];
 static int FontInfoDepth = 0;
 
-int RtfFontNumber(char *Fname)
+int RtfFontNumber(const char *Fname)
 
 /****************************************************************************
  *   purpose: returns the RTF font number from an RTF font name
@@ -112,11 +112,6 @@ int RtfFontNumber(char *Fname)
     ConfigEntryT **config_handle = CfgStartIterate(FONT_A);
 
     diagnostics(6, "seeking=%s", Fname);
-    
-    if (strstr(Fname,"CurrentFontSize")==0)
-    	return CurrentFontSize();
-    if (strstr(Fname,"DefaultFontSize")==0)
-    	return DefaultFontSize();
     
     while ((config_handle = CfgNext(FONT_A, config_handle)) != NULL) {
         font_type = (char *) (*config_handle)->TexCommand;
@@ -142,16 +137,29 @@ int RtfFontNumber(char *Fname)
     return TexFontNumber("Roman");  /* default font */
 }
 
-int TexFontNumber(char *Fname)
+int TexFontNumber(const char *Fname)
 
 /****************************************************************************
   purpose: returns the RTF font number for a particular LaTeX font
   example: TexFontNumber("Roman")
  ****************************************************************************/
 {
-    int index;
-    index= SearchRtfIndex(Fname, FONT_A);
-	diagnostics(5, "seeking <%s> which has value %d", Fname, index);
+    int index = 0;
+	ConfigEntryT **p;
+	
+    if (strstr(Fname,"CurrentFontSize")==0)
+    	index = CurrentFontSize();
+    else if (strstr(Fname,"DefaultFontSize")==0)
+    	index = DefaultFontSize();
+    else {
+    	p = SearchCfgEntry(Fname, FONT_A);
+    	if (p != NULL) {
+    		index = (**p).original_id;
+			diagnostics(1, "found '%s' -> '%s'", (**p).TexCommand,(**p).RtfCommand);
+		}
+    }
+    
+	diagnostics(1, "seeking '%s' which has value %d", Fname, index);
 	return index;
 }
 

@@ -68,7 +68,7 @@ returns : TRUE if variable was ignored correctly, otherwise FALSE
 	diagnostics(4, "trying to ignore '%s'", command);
 	
     TexCommand = strdup_together("\\", command);
-    RtfCommand = SearchRtfCmd(TexCommand, IGNORE_A);
+    RtfCommand = SearchCfgRtf(TexCommand, IGNORE_A);
     free(TexCommand);
     
     if (RtfCommand == NULL) return FALSE;

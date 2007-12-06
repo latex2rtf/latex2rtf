@@ -109,10 +109,10 @@ void InsertStyle(const char *command)
 {
     const char *rtf;
 
-    rtf = SearchRtfCmd(command, STYLE_A);
+    rtf = SearchCfgRtf(command, STYLE_A);
     if (rtf == NULL) {
         diagnostics(WARNING, "Cannot find '%s' style using 'Normal' style", command);
-    	rtf = SearchRtfCmd("Normal", STYLE_A);
+    	rtf = SearchCfgRtf("Normal", STYLE_A);
         InsertBasicStyle(rtf, FALSE);
     } else
         InsertBasicStyle(rtf, FALSE);
@@ -142,7 +142,7 @@ bool TryStyleConvert(char *command)
     int i;
 
     TexCommand = strdup_together("\\", command);
-    RtfCommand = SearchRtfCmd(TexCommand, STYLE_A);
+    RtfCommand = SearchCfgRtf(TexCommand, STYLE_A);
     if (RtfCommand == NULL)
         return FALSE;
 
