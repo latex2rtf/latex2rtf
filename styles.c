@@ -109,6 +109,7 @@ void InsertStyle(const char *command)
 {
     const char *rtf;
 
+    diagnostics(5, "Inserting style '%s'", command);
     rtf = SearchCfgRtf(command, STYLE_A);
     if (rtf == NULL) {
         diagnostics(WARNING, "Cannot find '%s' style using 'Normal' style", command);

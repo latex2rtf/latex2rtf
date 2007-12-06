@@ -71,7 +71,7 @@ static int cfg_compare(ConfigEntryT ** el1, ConfigEntryT ** el2)
  * params:   el1, el2: Config Entries to be compared
  ****************************************************************************/
 {
-//	diagnostics(1, "'%s' and '%s'",(**el1).TexCommand, (**el2).TexCommand);
+/*diagnostics(1, "'%s'<=>'%s'", (**el1).TexCommand, (**el2).TexCommand);*/
     return strcmp((**el1).TexCommand, (**el2).TexCommand);
 }
 
@@ -272,8 +272,8 @@ static size_t read_cfg(FILE * cfgfile, ConfigEntryT *** pointer_array, bool do_r
         (*pointer_array)[bufindex]->TexCommand = line;
         (*pointer_array)[bufindex]->RtfCommand = cmdend + 1;
         (*pointer_array)[bufindex]->original_id = bufindex;
-        diagnostics(1,"tex='%s', rtf='%s', id=%d", line, cmdend+1, bufindex);
         bufindex++;
+        diagnostics(6,"%3d Tex='%s' RTF='%s'", bufindex, line, cmdend+1);
     }
 
     qsort(*pointer_array, bufindex, sizeof(**pointer_array), (fptr) cfg_compare);
@@ -295,11 +295,14 @@ void ReadCfg(void)
     for (i = 0; i < CONFIG_SIZE; i++) {
         fname = configinfo[i].filename;
         fp = (FILE *) open_cfg(fname, TRUE);
-        diagnostics(1, "reading config file %s", fname);
+        diagnostics(3, "reading config file %s", fname);
 
         configinfo[i].config_info_size = read_cfg(fp, &(configinfo[i].config_info)
           , configinfo[i].remove_leading_backslash);
         (void) fclose(fp);
+        
+         diagnostics(1, "read %d entries for file %s", configinfo[i].config_info_size, fname);
+       
     }
 }
 
@@ -311,24 +314,27 @@ ConfigEntryT **SearchCfgEntry(const char *theTexCommand, int WhichCfg)
  ****************************************************************************/
 {
     ConfigEntryT compare_item;
-    ConfigEntryT *compare_ptr, **p;
-
+    ConfigEntryT *compare_ptr, **p, **base;
+	size_t size;
+	
     compare_item.TexCommand = theTexCommand;
     compare_item.RtfCommand = "";
     compare_item.original_id= 0;
     compare_ptr = &compare_item;
+    
+    size = configinfo[WhichCfg].config_info_size;
+    base = configinfo[WhichCfg].config_info;
     
     if (theTexCommand == NULL) return NULL;
 
     assert(WhichCfg >= 0 && (size_t) WhichCfg < CONFIG_SIZE);
     assert(configinfo[WhichCfg].config_info != NULL);
 
-    p = (ConfigEntryT **) bsearch
-      (&compare_ptr, configinfo[WhichCfg].config_info, configinfo[WhichCfg].config_info_size, sizeof(compare_ptr)
-      , (fptr) cfg_compare);
-      
-    diagnostics(1,"p.tex='%s' target='%s'", (**p).TexCommand, theTexCommand);
+    diagnostics(5, "seeking '%s' in %d of size %d  ", theTexCommand, WhichCfg, size);
+    p = (ConfigEntryT **) bsearch(&compare_ptr, base, size, sizeof(compare_ptr), (fptr) cfg_compare);
     
+    if (p)
+    	diagnostics(5, "seeking '%s'  found '%s'", theTexCommand, (**p).TexCommand);
     return p;
 }
 

@@ -1291,7 +1291,7 @@ void WriteEightBitChar(char cThis, FILE *f)
 		return;
 	}
 
-    diagnostics(5, "WriteEightBitChar char=%d index=%d encoding=%s", (int) cThis, index, g_charset_encoding_name);
+    diagnostics(5, "WriteEightBitChar char=%d index=%d encoding=%s", (unsigned int) cThis, index, g_charset_encoding_name);
 
     if (strcmp(g_charset_encoding_name, "raw") == 0)
         fprintRTF("\\'%2X", (unsigned char) cThis);

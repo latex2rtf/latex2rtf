@@ -111,7 +111,8 @@ int RtfFontNumber(const char *Fname)
     char *font_type, *font_name;
     ConfigEntryT **config_handle = CfgStartIterate(FONT_A);
 
-    diagnostics(6, "seeking=%s", Fname);
+    diagnostics(1, "seeking=%s", Fname);
+    
     
     while ((config_handle = CfgNext(FONT_A, config_handle)) != NULL) {
         font_type = (char *) (*config_handle)->TexCommand;
@@ -144,23 +145,22 @@ int TexFontNumber(const char *Fname)
   example: TexFontNumber("Roman")
  ****************************************************************************/
 {
-    int index = 0;
 	ConfigEntryT **p;
+	int number=0;
 	
-    if (strstr(Fname,"CurrentFontSize")==0)
-    	index = CurrentFontSize();
-    else if (strstr(Fname,"DefaultFontSize")==0)
-    	index = DefaultFontSize();
-    else {
-    	p = SearchCfgEntry(Fname, FONT_A);
-    	if (p != NULL) {
-    		index = (**p).original_id;
-			diagnostics(1, "found '%s' -> '%s'", (**p).TexCommand,(**p).RtfCommand);
-		}
-    }
+    if (strcmp(Fname,"CurrentFontSize")==0)
+    	return CurrentFontSize();
+
+    if (strcmp(Fname,"DefaultFontSize")==0)
+    	return DefaultFontSize();
+    			
+    p = SearchCfgEntry(Fname, FONT_A);
     
-	diagnostics(1, "seeking '%s' which has value %d", Fname, index);
-	return index;
+    if (p) number = (**p).original_id;
+    	
+    diagnostics(5,"TexFontNumber for '%s' is %d", Fname, number);
+    
+    return number;
 }
 
 void CmdFontFamily(int code)
