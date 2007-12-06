@@ -93,4 +93,4 @@ int 	RtfFontNumber(const char *Fname);
 
 void	PushFontSettings(void);
 void	PopFontSettings(void);
-void  	MonitorFontChanges(char *text);
+void  	MonitorFontChanges(const unsigned char *text);

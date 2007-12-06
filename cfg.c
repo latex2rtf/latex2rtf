@@ -295,13 +295,12 @@ void ReadCfg(void)
     for (i = 0; i < CONFIG_SIZE; i++) {
         fname = configinfo[i].filename;
         fp = (FILE *) open_cfg(fname, TRUE);
-        diagnostics(3, "reading config file %s", fname);
 
         configinfo[i].config_info_size = read_cfg(fp, &(configinfo[i].config_info)
           , configinfo[i].remove_leading_backslash);
         (void) fclose(fp);
         
-         diagnostics(1, "read %d entries for file %s", configinfo[i].config_info_size, fname);
+         diagnostics(2, "read %d entries for file %s", configinfo[i].config_info_size, fname);
        
     }
 }

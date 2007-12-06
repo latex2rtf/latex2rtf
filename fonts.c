@@ -563,7 +563,7 @@ void CmdTextNormal(int code)
       RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape, RtfFontInfo[FontInfoDepth].series);
 }
 
-static bool strstart(char *text, char *str)
+static bool strstart(const unsigned char *text, const char *str)
 
 /* returns true if text begins with str */
 {
@@ -578,11 +578,11 @@ static bool strstart(char *text, char *str)
         return TRUE;
 }
 
-static bool strstartnum(char *text, char *str, int *num)
+static bool strstartnum(const unsigned char *text, const char *str, int *num)
 
 /* returns true if text begins with str and followed by an integer*/
 {
-    char *numptr;
+    const unsigned char *numptr;
 
     *num = 0;
 
@@ -812,7 +812,7 @@ void PopFontSettings(void)
       RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape, RtfFontInfo[FontInfoDepth].series);
 }
 
-void MonitorFontChanges(char *text)
+void MonitorFontChanges(const unsigned char *text)
 {
     int n;
 

@@ -843,7 +843,6 @@ purpose: output a formatted string to the RTF file.  It is assumed that the
     va_end(apf);
     text = (unsigned char *) buffer;
 
-	diagnostics(3,"%s", text);
     while (*text) {
 
 		WriteEightBitChar(text[0], fRtf);
@@ -860,7 +859,6 @@ purpose: output a formatted string to the RTF file.  It is assumed that the
 		last= *text;
 		text++;
     }
-	diagnostics(3,"finished fprintRTF");
 }
 
 char *getTmpPath(void)

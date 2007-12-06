@@ -2,9 +2,9 @@
 #include <X11VMS/vmsutil.h>
 #endif
 
-#define DIRECT_A	0
-#define FONT_A		1
-#define IGNORE_A	2
+#define DIRECT_A    0
+#define FONT_A      1
+#define IGNORE_A    2
 #define STYLE_A     3
 #define LANGUAGE_A  4
 
@@ -34,9 +34,9 @@ void ReadLanguage(char *lang);
 void ConvertBabelName(char *name);
 char *GetBabelName(char *name);
 
-void 			ReadCfg (void);
+void            ReadCfg (void);
 ConfigEntryT  **SearchCfgEntry(const char *theTexCommand, int WhichCfg);
-char   		   *SearchCfgRtf(const char *theCommand, int WhichArray);
+char           *SearchCfgRtf(const char *theCommand, int WhichArray);
 ConfigEntryT  **SearchCfgEntryByID(const int id, int WhichCfg);
 ConfigEntryT  **CfgStartIterate (int WhichCfg);
 ConfigEntryT  **CfgNext (int WhichCfg, ConfigEntryT **last);
