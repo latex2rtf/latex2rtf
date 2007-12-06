@@ -148,8 +148,8 @@ main.o: Makefile main.c
 	$(CC) $(CFLAGS) -DCFGDIR=\"$(CFG_INSTALL)\" -c main.c -o main.o
 
 check test: latex2rtf
-	cd scripts && $(MAKE)
-	cd test && $(MAKE) 
+	cd test && $(MAKE) clean
+	cd test && $(MAKE)
 	cd test && $(MAKE) check
 	
 fullcheck: latex2rtf
