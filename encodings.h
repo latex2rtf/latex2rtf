@@ -1,1 +1,1 @@
-void WriteEightBitChar(char cThis, FILE *f);
+void WriteEightBitChar(unsigned char cThis, FILE *f);

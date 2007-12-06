@@ -57,15 +57,15 @@ void ConvertString(const char *string)
         return;
 
     if (PushSource(NULL, string) == 0) {
-        diagnostics(5, "Entering Convert() from ConvertString()");
+        diagnostics(3, "Entering Convert() from ConvertString()");
 
-		show_string(5, string, "convert");
+		show_string(3, string, "convert");
 
         while (StillSource())
             Convert();
 
         PopSource();
-        diagnostics(5, "Exiting Convert() from ConvertString()");
+        diagnostics(3, "Exiting Convert() from ConvertString()");
     }
 }
 
@@ -128,17 +128,17 @@ purpose: converts inputfile and writes result to outputfile
     char cNext;
     int count, pending_new_paragraph;
 
-    diagnostics(5, "Entering Convert ret = %d", ret);
+    diagnostics(3, "Entering Convert ret = %d", ret);
     RecursionLevel++;
     PushLevels();
 
     while ((cThis = getTexChar()) && cThis != '\0') {
 
         if (cThis == '\n')
-            diagnostics(6, "Current character is '\\n' mode = %d ret = %d level = %d", getTexMode(), ret,
+            diagnostics(3, "Current character is '\\n' mode = %d ret = %d level = %d", getTexMode(), ret,
               RecursionLevel);
         else
-            diagnostics(6, "Current character is '%c' mode = %d ret = %d level = %d", cThis, getTexMode(), ret,
+            diagnostics(3, "Current character is '%c' mode = %d ret = %d level = %d", cThis, getTexMode(), ret,
               RecursionLevel);
 
         pending_new_paragraph--;

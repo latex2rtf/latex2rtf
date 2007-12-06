@@ -37,6 +37,7 @@ char *GetBabelName(char *name);
 void 			ReadCfg (void);
 ConfigEntryT  **SearchCfgEntry(const char *theTexCommand, int WhichCfg);
 char   		   *SearchCfgRtf(const char *theCommand, int WhichArray);
+ConfigEntryT  **SearchCfgEntryByID(const int id, int WhichCfg);
 ConfigEntryT  **CfgStartIterate (int WhichCfg);
 ConfigEntryT  **CfgNext (int WhichCfg, ConfigEntryT **last);
 ConfigEntryT  **CfgNextByInsertion(int WhichCfg, ConfigEntryT ** last);

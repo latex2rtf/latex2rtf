@@ -1282,16 +1282,17 @@ static void macukr_enc(int index)
     CmdCyrillicStrChar(s);
 }
 
-void WriteEightBitChar(char cThis, FILE *f)
+void WriteEightBitChar(unsigned char cThis, FILE *f)
 {
-    int index = (int) cThis + 128;
+    int index;
 
-	if ( (unsigned char) cThis <= 127) {
+	if ( cThis <= 127) {
 		fputc(cThis, f);
 		return;
 	}
 
-    diagnostics(5, "WriteEightBitChar char=%d index=%d encoding=%s", (unsigned int) cThis, index, g_charset_encoding_name);
+	index = cThis - 128;
+    diagnostics(6, "WriteEightBitChar char=%d index=%d encoding=%s", (unsigned int) cThis, index, g_charset_encoding_name);
 
     if (strcmp(g_charset_encoding_name, "raw") == 0)
         fprintRTF("\\'%2X", (unsigned char) cThis);
@@ -1357,4 +1358,5 @@ void WriteEightBitChar(char cThis, FILE *f)
         maccyr_enc(index);
     else if (strcmp(g_charset_encoding_name, "macukr") == 0)
         macukr_enc(index);
+
 }

@@ -500,7 +500,7 @@ static void print_usage(void)
     fprintf(stdout, "Options:\n");
     fprintf(stdout, "  -a auxfile       use LaTeX auxfile rather than input.aux\n");
     fprintf(stdout, "  -b bblfile       use BibTex bblfile rather than input.bbl)\n");
-    fprintf(stdout, "  -C codepage      latex encoding charset (latin1, cp850, raw, etc.)\n");
+    fprintf(stdout, "  -C codepage      charset used by the latex document (latin1, cp850, raw, etc.)\n");
     fprintf(stdout, "  -d level         debugging output (level is 0-6)\n");
     fprintf(stdout, "  -f#              field handling\n");
     fprintf(stdout, "       -f0          do not use fields\n");
@@ -833,7 +833,7 @@ purpose: output a formatted string to the RTF file.  It is assumed that the
  ****************************************************************************/
 {
     char buffer[1024];
-    char *text;
+    unsigned char *text;
     char last='\0';
     
     va_list apf;
@@ -841,8 +841,9 @@ purpose: output a formatted string to the RTF file.  It is assumed that the
     va_start(apf, format);
     vsnprintf(buffer, 1024, format, apf);
     va_end(apf);
-    text = buffer;
+    text = (unsigned char *) buffer;
 
+	diagnostics(3,"%s", text);
     while (*text) {
 
 		WriteEightBitChar(text[0], fRtf);
@@ -859,6 +860,7 @@ purpose: output a formatted string to the RTF file.  It is assumed that the
 		last= *text;
 		text++;
     }
+	diagnostics(3,"finished fprintRTF");
 }
 
 char *getTmpPath(void)

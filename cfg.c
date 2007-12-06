@@ -338,6 +338,29 @@ ConfigEntryT **SearchCfgEntry(const char *theTexCommand, int WhichCfg)
     return p;
 }
 
+ConfigEntryT **SearchCfgEntryByID(const int id, int WhichCfg)
+
+/****************************************************************************
+ * purpose:  Get the entry with the given id
+ ****************************************************************************/
+{
+	size_t i, max;
+	ConfigEntryT ** entry;
+			
+	max = configinfo[WhichCfg].config_info_size;
+	if (id > max) return NULL;
+
+	/* now iterate through all the entries looking for the right one */
+	entry = (ConfigEntryT **) configinfo[WhichCfg].config_info;
+	for (i=0; i<max; i++) {
+		if ( id == (**entry).original_id ) return entry;
+		entry++;
+	}
+	
+	/* not found, should not be reached */
+	return NULL;
+}
+
 char *SearchCfgRtf(const char *theTexCommand, int WhichCfg)
 
 /****************************************************************************
@@ -386,28 +409,14 @@ ConfigEntryT **CfgNextByInsertion(int WhichCfg, ConfigEntryT ** last)
  * purpose:  Get the next entry from specified configuration data
  ****************************************************************************/
 {
-	size_t i, next_id, max;
-	ConfigEntryT ** first;
+	size_t next_id;
 	
 	if (last == NULL)
 		next_id = 0;
 	else
 		next_id = (**last).original_id + 1;
 		
-	max = configinfo[WhichCfg].config_info_size;
-
-	/* last is the final entry */
-	if (next_id > max) return NULL;
-	
-	/* now iterate through all the entries looking for the right one */
-	first = (ConfigEntryT **) configinfo[WhichCfg].config_info;
-	for (i=0; i<max; i++) {
-		if ( next_id == (**first).original_id ) return first;
-		first++;
-	}
-	
-	/* not found, should not be reached */
-	return NULL;
+	return SearchCfgEntryByID(next_id, WhichCfg);
 }
 
 /****************************************************************************

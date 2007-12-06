@@ -665,18 +665,13 @@ int CurrentCyrillicFontFamily(void)
            if the current font is cyrillic font then -1 is returned
  ******************************************************************************/
 {
-    int num, i;
-    char *font_type;
+    int num;
+    const char *font_type;
     ConfigEntryT **font_handle;
 
     num = CurrentFontFamily();
-
-/* obtain name and type of current active font */
-    font_handle = CfgStartIterate(FONT_A);
-    for (i = 0; i <= num - 3; i++)
-        font_handle = CfgNext(FONT_A, font_handle);
-
-    font_type = (char *) (*font_handle)->TexCommand;
+	font_handle = SearchCfgEntryByID(num, FONT_A);
+    font_type = (**font_handle).TexCommand;
     diagnostics(6, "CurrentCyrillicFontFamily current active font type =<%s>", font_type);
 
     if (strncmp(font_type, "Cyrillic", 8) == 0)
@@ -701,18 +696,13 @@ int CurrentLatin1FontFamily(void)
            if the current font is Latin1 font then -1 is returned
  ******************************************************************************/
 {
-    int num, i;
-    char *font_type;
+    int num;
+    const char *font_type;
     ConfigEntryT **font_handle;
 
     num = CurrentFontFamily();
-
-/* obtain name and type of current active font */
-    font_handle = CfgStartIterate(FONT_A);
-    for (i = 0; i <= num - 3; i++)
-        font_handle = CfgNext(FONT_A, font_handle);
-
-    font_type = (char *) (*font_handle)->TexCommand;
+	font_handle = SearchCfgEntryByID(num, FONT_A);
+    font_type = (**font_handle).TexCommand;
     diagnostics(6, "CurrentLatin1FontFamily current active font type =<%s>", font_type);
 
     if (strcmp(font_type, "Roman") == 0)
@@ -737,18 +727,16 @@ int CurrentLatin2FontFamily(void)
            if the current font is Latin2 font then -1 is returned
  ******************************************************************************/
 {
-    int num, i;
-    char *font_type;
+    int num;
+    const char *font_type;
     ConfigEntryT **font_handle;
 
     num = CurrentFontFamily();
 
 /* obtain name and type of current active font */
     font_handle = CfgStartIterate(FONT_A);
-    for (i = 0; i <= num - 3; i++)
-        font_handle = CfgNext(FONT_A, font_handle);
-
-    font_type = (char *) (*font_handle)->TexCommand;
+	font_handle = SearchCfgEntryByID(num, FONT_A);
+    font_type = (**font_handle).TexCommand;
     diagnostics(6, "CurrentLatin2FontFamily current active font type =<%s>", font_type);
 
     if (strncmp(font_type, "Latin2", 8) == 0)
