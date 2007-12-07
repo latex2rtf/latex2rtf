@@ -31,6 +31,40 @@ Authors:
 #include "cfg.h"
 #include "utils.h"
 #include "parser.h"
+#include "styles.h"
+
+static char *g_current_style = NULL;
+
+void SetCurrentStyle(const char *style)
+{
+	if (g_current_style)
+		free(g_current_style);
+	g_current_style = strdup(style);
+}
+
+char *GetCurrentStyle(void)
+{
+	return g_current_style;
+}
+
+int IsSameAsCurrentStyle(const char *s)
+{
+	if (g_current_style==NULL)
+		return FALSE;
+		
+	if (strcmp(s,g_current_style)==0) 
+		return TRUE;
+	else
+		return FALSE;
+}
+
+void InsertCurrentStyle(void)
+{
+	if (g_current_style==NULL)
+		InsertStyle("Normal");
+	else
+		InsertStyle(g_current_style);
+}
 
 void InsertBasicStyle(const char *rtf, bool include_header_info)
 
@@ -113,10 +147,13 @@ void InsertStyle(const char *command)
     rtf = SearchCfgRtf(command, STYLE_A);
     if (rtf == NULL) {
         diagnostics(WARNING, "Cannot find '%s' style using 'Normal' style", command);
+    	SetCurrentStyle("Normal");
     	rtf = SearchCfgRtf("Normal", STYLE_A);
         InsertBasicStyle(rtf, FALSE);
-    } else
+    } else {
+    	SetCurrentStyle(command);
         InsertBasicStyle(rtf, FALSE);
+    }
 }
 
 
