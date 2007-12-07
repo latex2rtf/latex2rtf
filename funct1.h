@@ -142,6 +142,11 @@ void CmdMinipage(int code);
 #define NewPage 1
 #define NewColumn 2
 
+#define ABSTRACT_SIMPLE             1
+#define ABSTRACT_BEGIN_END          2
+#define ABSTRACT_PRELUDE_BEGIN      3
+#define ABSTRACT_PRELUDE_END        4
+
 extern bool  g_processing_list_environment;
 
 void CmdIgnoreEnviron(int code);

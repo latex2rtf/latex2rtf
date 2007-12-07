@@ -1711,30 +1711,35 @@ void CmdAbstract(int code)
 {
     static char oldalignment;
 	    	    
-    if (code == 3 || code == 2 || code == (1 | ON) ) {
+    if (code == ABSTRACT_PRELUDE_BEGIN || 
+        code == ABSTRACT_SIMPLE        || 
+        code == (ABSTRACT_BEGIN_END | ON) ) {
 	    CmdEndParagraph(0);
         oldalignment = getAlignment();
         if (g_document_type == FORMAT_REPORT || titlepage)
             CmdNewPage(NewPage);
 
-        startParagraph("abstract", FIRST_PARAGRAPH);		
-        fprintRTF("\\qc{\\b ");
+        startParagraph("abstract_title", GENERIC_PARAGRAPH);		
         ConvertBabelName("ABSTRACTNAME");
-        fprintRTF("}");
-        CmdEndParagraph(0);
+
         setLeftMarginIndent(getLeftMarginIndent() + 1024);
         setRightMarginIndent(getRightMarginIndent() + 1024);
         setAlignment(JUSTIFIED);
+        CmdEndParagraph(0);
 
+        CmdIndent(INDENT_USUAL);
+        startParagraph("Normal", GENERIC_PARAGRAPH);		
     } 
     
-    if (code == 2) {
+    if (code == ABSTRACT_SIMPLE) {
     	char *s = getBraceParam();
     	ConvertString(s);
     	free(s);
     }
     
-    if (code == 4 || code == 2 || code == (1 | OFF) ) {
+    if (code == ABSTRACT_PRELUDE_END || 
+        code == ABSTRACT_BEGIN_END   || 
+        code == (ABSTRACT_BEGIN_END | OFF) ) {
         CmdIndent(INDENT_USUAL);
     	CmdEndParagraph(0);
         setLeftMarginIndent(getLeftMarginIndent() - 1024);

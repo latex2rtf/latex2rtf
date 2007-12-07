@@ -394,7 +394,7 @@ static CommandArray commands[] = {
 	
     {"nobreakspace", CmdNonBreakSpace, 100},
     {"thinspace", CmdNonBreakSpace, 50},
-    {"abstract", CmdAbstract, 2},
+    {"abstract", CmdAbstract, ABSTRACT_SIMPLE},
     {"endinput", CmdEndInput, 0},
     {"textcolor", CmdTextColor, 0},
     {"tableofcontents", CmdTableOfContents, 0},
@@ -884,7 +884,7 @@ static CommandArray params[] = {
     {"table", CmdTable, TABLE},
     {"table*", CmdTable, TABLE_STAR},
     {"thebibliography", CmdThebibliography, 0},
-    {"abstract", CmdAbstract, 1},
+    {"abstract", CmdAbstract, ABSTRACT_BEGIN_END},
 	{"acknowledgments", CmdAcknowledgments, 0},
     {"titlepage", CmdTitlepage, 0},
 

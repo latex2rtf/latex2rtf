@@ -936,10 +936,10 @@ void CmdMakeTitle(int code)
 
     if (g_preambleAbstract != NULL && strcmp(g_preambleAbstract, "") != 0) {
     	char *s = strdup_together3("{",g_preambleAbstract,"}");
-    	CmdAbstract(3);
+    	CmdAbstract(ABSTRACT_PRELUDE_BEGIN);
     	ConvertString("\\noindent");
     	ConvertString(s);
-    	CmdAbstract(4);
+    	CmdAbstract(ABSTRACT_PRELUDE_END);
     	free(s);
     }
 
