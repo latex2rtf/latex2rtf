@@ -1022,7 +1022,7 @@ char *getSpacedTexUntil(char *target, int raw)
 	
     PushTrackLineNumber(FALSE);
 
-    diagnostics(5, "getSpaceTexUntil target = <%s> raw_search = %d ", target, raw);
+    diagnostics(5, "getSpacedTexUntil target = <%s> raw_search = %d ", target, raw);
 
 	matched = FALSE;	
 	buffer_pos = 0;

@@ -332,15 +332,16 @@ void preParse(char **body, char **header, char **label)
 		   if it is a user environment, then expansion also happens here
 		   it it is something else then we may or may not have to mess with it. */
 
-		/* hack to convert '\begin { environment}' --> '\begin{environ}' */
-        if (matches_buffer_tail("\\begin") || matches_buffer_tail("\\end") ) {
-        	char *env = getBeginEndParam();
-        	if (env != NULL) {    /* now add '{environ}' to buffer */
-        		add_chr_to_buffer('{');
-        		add_str_to_buffer(env);
-        		add_chr_to_buffer('}');
-       			free(env);
-        	}
+		/* hack to convert '\begin   {' --> '\begin{' */
+        if (cThis==' ' && (matches_buffer_tail("\\begin") || matches_buffer_tail("\\end")) ) {
+        	diagnostics(5, "matched '\\begin ' or '\\end '");
+        	do {cThis = getRawTexChar();} while (cThis == ' ');
+        }
+        
+		/* hack to convert '\begin{   ' --> '\begin{' */
+        if (cThis==' ' && (matches_buffer_tail("\\begin{") || matches_buffer_tail("\\end{")) ) {
+        	diagnostics(5, "matched '\\begin{ ' or '\\end{ '");
+        	do {cThis = getRawTexChar();} while (cThis == ' ');
         }
         
         any_possible_match = FALSE;
