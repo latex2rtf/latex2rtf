@@ -10,6 +10,7 @@
 #define SL_TEXTWIDTH      10
 #define SL_ODDSIDEMARGIN  11
 #define SL_EVENSIDEMARGIN 12
+#define SL_LINEWIDTH      13
 
 void setLength(char * s, int d);
 int getLength(char * s);

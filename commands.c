@@ -621,6 +621,7 @@ static CommandArray PreambleCommands[] = {
     {"headheight", CmdSetTexLength, SL_HEADHEIGHT},
     {"headsep", CmdSetTexLength, SL_HEADSEP},
     {"textwidth", CmdSetTexLength, SL_TEXTWIDTH},
+    {"linewidth", CmdSetTexLength, SL_LINEWIDTH},
     {"oddsidemargin", CmdSetTexLength, SL_ODDSIDEMARGIN},
     {"evensidemargin", CmdSetTexLength, SL_EVENSIDEMARGIN},
     {"footnotetext", CmdFootNote, FOOTNOTE_TEXT},

@@ -166,5 +166,8 @@ void CmdSetTexLength(int code)
         case SL_EVENSIDEMARGIN:
             setLength("evensidemargin", d);
             break;
+        case SL_LINEWIDTH:
+            setLength("linewidth", d);
+            break;
     }
 }

@@ -264,6 +264,7 @@ static void setPaperSize(char *option)
         setLength("topmargin", 17 * 20);
         setLength("headsep", 25 * 20);
         setThree("textwidth", 345, 360, 390);
+        setThree("linewidth", 345, 360, 390);
         setLength("marginparsep", 10 * 20);
         setLength("columnsep", 10 * 20);
 
@@ -282,6 +283,7 @@ static void setPaperSize(char *option)
         setLength("topmargin", 0 * 20);
         setLength("headsep", 25 * 20);
         setThree("textwidth", 361, 376, 412);
+        setThree("linewidth", 361, 376, 412);
         setLength("marginparsep", 10 * 20);
         setLength("columnsep", 10 * 20);
 
@@ -300,6 +302,7 @@ static void setPaperSize(char *option)
         setLength("topmargin", 0 * 20);
         setLength("headsep", 25 * 20);
         setThree("textwidth", 425, 443, 461);
+        setThree("linewidth", 425, 443, 461);
         setLength("marginparsep", 10 * 20);
         setLength("columnsep", 10 * 20);
 
@@ -318,6 +321,7 @@ static void setPaperSize(char *option)
         setLength("topmargin", 18 * 20);
         setLength("headsep", 25 * 20);
         setThree("textwidth", 345, 360, 390);
+        setThree("linewidth", 345, 360, 390);
         setLength("marginparsep", 10 * 20);
         setLength("columnsep", 10 * 20);
 
@@ -336,6 +340,7 @@ static void setPaperSize(char *option)
         setLength("topmargin", 18 * 20);
         setLength("headsep", 25 * 20);
         setThree("textwidth", 345, 360, 390);
+        setThree("linewidth", 345, 360, 390);
         setLength("marginparsep", 10 * 20);
         setLength("columnsep", 10 * 20);
 
@@ -354,6 +359,7 @@ static void setPaperSize(char *option)
         setLength("topmargin", 18 * 20);
         setLength("headsep", 25 * 20);
         setLength("textwidth", 276 * 20);
+        setLength("linewidth", 276 * 20);
         setLength("marginparsep", 10 * 20);
         setLength("columnsep", 10 * 20);
 
@@ -372,6 +378,7 @@ static void setPaperSize(char *option)
         setLength("topmargin", 19 * 20);
         setLength("headsep", 25 * 20);
         setLength("textwidth", 350 * 20);
+        setLength("linewidth", 350 * 20);
         setLength("marginparsep", 10 * 20);
         setLength("columnsep", 10 * 20);
     }
