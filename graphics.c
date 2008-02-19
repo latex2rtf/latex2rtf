@@ -1382,7 +1382,7 @@ long GetBaseline(char *s, char *pre)
     pbm = strdup_together(s, ".pbm");
     baseline = 4;
 
-    diagnostics(1, "GetBaseline opening='%s'", pbm);
+    diagnostics(4, "GetBaseline opening='%s'", pbm);
 
     fp = fopen(pbm, "rb");
     if (fp == NULL) {
@@ -1599,7 +1599,7 @@ void WriteLatexAsBitmap(char *pre, char *eq, char *post)
 	/* go to a bit a trouble to give the user some feedback */
 	name = strdup_together3(pre,eq,post);
 	abbrev = abbreviate(name, 50);
-    diagnostics(WARNING, "rendering PNG for '%s'", abbrev);
+    diagnostics(WARNING, "Rendering PNG for '%s'", abbrev);
 	free(abbrev);
 	free(name);
 	
