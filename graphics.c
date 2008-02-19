@@ -829,6 +829,7 @@ static void GetPngSize(char *s, unsigned long *w, unsigned long *h, unsigned lon
 	data = getPngChunk(fp,"IHDR");
 	if (data == NULL) {
         diagnostics(WARNING, "Graphics file '%s': could not locate IHDR chunk!", s);
+        fclose(fp);
         return;
 	}
 
@@ -841,6 +842,7 @@ static void GetPngSize(char *s, unsigned long *w, unsigned long *h, unsigned lon
 	data = getPngChunk(fp,"pHYs");
 	if (data == NULL) {
         diagnostics(4, "Graphics file '%s': could not locate pHYs chunk!", s);
+        fclose(fp);
         return;
 	}
 
