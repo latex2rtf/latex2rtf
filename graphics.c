@@ -1227,7 +1227,7 @@ static void PutPdfFile(char *s, double height0, double width0, double scale, dou
     char *png;
     double convert_scale = 72.0 / g_dots_per_inch;
     
-    diagnostics(WARNING, "Rendering '%s' as PNG", s);
+    diagnostics(WARNING, "Rendering PNG from '%s'", s);
 
     png = pdf_to_png(s);
         	
@@ -1246,7 +1246,7 @@ static void PutEpsFile(char *s, double height0, double width0, double scale, dou
     char *png, *emf, *pict;
     double convert_scale = 72.0 / g_dots_per_inch;
 
-    diagnostics(WARNING, "Rendering '%s' as PNG", s);
+    diagnostics(WARNING, "Rendering PNG from '%s'", s);
 
     if (1) {
         png = eps_to_png(s);
