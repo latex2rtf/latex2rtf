@@ -907,6 +907,8 @@ void CmdMakeTitle(int code)
     char author_begin[10];
     char date_begin[10];
 
+	diagnostics(4,"CmdMakeTitle with  title ='%s'",g_preambleTitle);
+	diagnostics(4,"CmdMakeTitle with author ='%s'",g_preambleAuthor);
     PushTrackLineNumber(FALSE);
     snprintf(title_begin, 10, "%s%2d", "\\fs", (30 * CurrentFontSize()) / 20);
     snprintf(author_begin, 10, "%s%2d", "\\fs", (24 * CurrentFontSize()) / 20);

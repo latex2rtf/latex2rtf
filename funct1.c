@@ -590,7 +590,7 @@ parameter: code: type of section-recursion-level
         case SECT_NORM_STAR:
             CmdVspace(VSPACE_BIG_SKIP);
             if (g_document_type == FORMAT_APA) {
-            	ConvertString("\\begin{center}\\bf");
+            	startParagraph("apa_section", SECTION_TITLE_PARAGRAPH);
 			} else {        	
             	startParagraph("section", SECTION_TITLE_PARAGRAPH);
             
@@ -605,13 +605,7 @@ parameter: code: type of section-recursion-level
 				}
             }
             ConvertString(heading);
-            if (g_document_type == FORMAT_APA) {
-            	ConvertString("\\end{center}");
-            	CmdEndParagraph(0);
-            	startParagraph("apa_section", GENERIC_PARAGRAPH);
-            } else {
-            	CmdEndParagraph(0);
-            }
+            CmdEndParagraph(0);
             CmdVspace(VSPACE_SMALL_SKIP);
             break;
 
@@ -619,9 +613,7 @@ parameter: code: type of section-recursion-level
         case SECT_SUB_STAR:
             CmdVspace(VSPACE_MEDIUM_SKIP);
             if (g_document_type == FORMAT_APA) {
-            	ConvertString("\\noindent");
-				startParagraph("apa_subsection", FIRST_PARAGRAPH);
-				fprintRTF("{\\i ");
+				startParagraph("apa_subsection", SECTION_TITLE_PARAGRAPH);
 			} else {        	
 				startParagraph("subsection", SECTION_TITLE_PARAGRAPH);
 				if (code == SECT_SUB && getCounter("secnumdepth") >= 1) {
@@ -634,9 +626,9 @@ parameter: code: type of section-recursion-level
 					free(unit_label);
 				}
             }
-            ConvertString(heading);
-            CmdEndParagraph(0);
-            CmdVspace(VSPACE_SMALL_SKIP);
+			ConvertString(heading);
+			CmdEndParagraph(0);
+			CmdVspace(VSPACE_SMALL_SKIP);
             break;
 
         case SECT_SUBSUB:
@@ -645,6 +637,8 @@ parameter: code: type of section-recursion-level
             if (g_document_type == FORMAT_APA) {
 				startParagraph("apa_subsubsection", GENERIC_PARAGRAPH);
 				fprintRTF("{\\i ");
+				ConvertString(heading);
+				fprintRTF(".} ");
 			} else {        	
 				startParagraph("subsubsection", SECTION_TITLE_PARAGRAPH);
 				
@@ -659,11 +653,7 @@ parameter: code: type of section-recursion-level
 					fprintRTF("  ");
 					free(unit_label);
 				}
-            }
-            ConvertString(heading);
-            if (g_document_type == FORMAT_APA) {
-            	fprintRTF(".} ");
-            } else {
+            	ConvertString(heading);
             	CmdEndParagraph(0);
             	CmdVspace(VSPACE_SMALL_SKIP);
             }
