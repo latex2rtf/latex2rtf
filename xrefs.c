@@ -2061,7 +2061,9 @@ void CmdApaCite(int code)
             fprintRTF(",");
             break;              /* BCBL */
         case 11:
+        	s = getBraceParam();
             fprintRTF("et al.");
+            free(s);
             break;              /* BOthers */
         case 12:
             fprintRTF("in press");
