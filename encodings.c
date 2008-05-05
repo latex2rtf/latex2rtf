@@ -1127,9 +1127,8 @@ static void latin9_enc(int index)
         CmdSymbolChar(hex_to_int(s));
         return;
     }
-    if (index + 128 == 0xA4) {  /* U+8364 unknown */
-
-/*		fprintRTF("TRANSLATION");*/
+    if (index + 128 == 0xA4) {  /* U+8364 EURO SIGN*/
+        fprintRTF("\\'80");
         return;
     }
     if (index + 128 == 0xB4) {  /* U+381 LATIN CAPITAL LETTER Z WITH CARON */
