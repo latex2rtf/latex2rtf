@@ -272,7 +272,7 @@ void startParagraph(const char *style, int indenting)
         g_column_new = FALSE;
     }
 
-    fprintRTF("\\pard\\plain");
+    fprintRTF("{\\pard\\plain");
     InsertStyle(style);
     fprintRTF("\\sl%i\\slmult1 ", getLineSpacing());
 
@@ -310,7 +310,7 @@ void CmdEndParagraph(int code)
 
     diagnostics(5, "CmdEndParagraph mode = %s", TexModeName[mode]);
     if (mode != MODE_VERTICAL  && g_processing_fields == 0) {
-        fprintRTF("\\par\n");
+        fprintRTF("\\par}\n");
         setTexMode(MODE_VERTICAL);
     }
 

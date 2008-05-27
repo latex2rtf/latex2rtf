@@ -321,8 +321,9 @@ static void PrepareRtfEquation(int code, int EQ_Needed)
                 diagnostics(4, "PrepareRtfEquation -- displaymath");
             else
                 diagnostics(4, "PrepareRtfEquation -- \\[");
+            CmdEndParagraph(0);
             g_show_equation_number = FALSE;
-            fprintRTF("\\par\\par\n\\pard");
+            fprintRTF("\\par\\par\n{\\pard");
             fprintRTF("\\tqc\\tx%d", b);
             fprintRTF("\\tab ");
             setTexMode(MODE_DISPLAYMATH);
@@ -330,8 +331,9 @@ static void PrepareRtfEquation(int code, int EQ_Needed)
 
         case EQN_EQUATION_STAR:
             diagnostics(4, "PrepareRtfEquation -- equation*");
+            CmdEndParagraph(0);
             g_show_equation_number = FALSE;
-            fprintRTF("\\par\\par\n\\pard");
+            fprintRTF("\\par\\par\n{\\pard");
             fprintRTF("\\tqc\\tx%d", b);
             fprintRTF("\\tab ");
             setTexMode(MODE_DISPLAYMATH);
@@ -339,10 +341,11 @@ static void PrepareRtfEquation(int code, int EQ_Needed)
 
         case EQN_EQUATION:
             diagnostics(4, "PrepareRtfEquation -- equation");
+            CmdEndParagraph(0);
             g_equation_column = 5;  /* avoid adding \tabs when finishing */
             g_show_equation_number = TRUE;
             g_suppress_equation_number = FALSE;
-            fprintRTF("\\par\\par\n\\pard");
+            fprintRTF("\\par\\par\n{\\pard");
             fprintRTF("\\tqc\\tx%d\\tqr\\tx%d", b, width);
             fprintRTF("\\tab ");
             setTexMode(MODE_DISPLAYMATH);
@@ -350,12 +353,13 @@ static void PrepareRtfEquation(int code, int EQ_Needed)
 
         case EQN_ARRAY_STAR:
             diagnostics(4, "PrepareRtfEquation -- eqnarray* ");
+            CmdEndParagraph(0);
             g_show_equation_number = FALSE;
             g_processing_eqnarray = TRUE;
             g_processing_tabular = TRUE;
             g_suppress_equation_number = FALSE;
             g_equation_column = 1;
-            fprintRTF("\\par\\par\n\\pard");
+            fprintRTF("\\par\\par\n{\\pard");
             if (g_equation_display_bitmap)
             	fprintRTF("\\tqc\\tx%d\\tqr\\tx%d", b, width);
             else
@@ -366,11 +370,12 @@ static void PrepareRtfEquation(int code, int EQ_Needed)
 
         case EQN_ARRAY:
             diagnostics(4, "PrepareRtfEquation --- eqnarray");
+            CmdEndParagraph(0);
             g_show_equation_number = TRUE;
             g_processing_eqnarray = TRUE;
             g_processing_tabular = TRUE;
             g_equation_column = 1;
-            fprintRTF("\\par\\par\n\\pard");
+            fprintRTF("\\par\\par\n{\\pard");
             if (g_equation_display_bitmap)
             	fprintRTF("\\tqc\\tx%d\\tqr\\tx%d", b, width);
             else
@@ -381,11 +386,12 @@ static void PrepareRtfEquation(int code, int EQ_Needed)
 
         case EQN_ALIGN_STAR:
             diagnostics(4, "PrepareRtfEquation -- align* ");
+            CmdEndParagraph(0);
             g_show_equation_number = FALSE;
             g_processing_eqnarray = TRUE;
             g_processing_tabular = TRUE;
             g_equation_column = 1;
-            fprintRTF("\\par\\par\n\\pard");
+            fprintRTF("\\par\\par\n{\\pard");
             if (g_equation_display_bitmap)
             	fprintRTF("\\tqc\\tx%d\\tqr\\tx%d", b, width);
             else
@@ -396,16 +402,17 @@ static void PrepareRtfEquation(int code, int EQ_Needed)
 
         case EQN_ALIGN:
             diagnostics(4, "PrepareRtfEquation --- align");
+            CmdEndParagraph(0);
             g_show_equation_number = TRUE;
             g_processing_eqnarray = TRUE;
             g_processing_tabular = TRUE;
             g_equation_column = 1;
-			fprintRTF("\\par\\par\n\\pard");
+            fprintRTF("\\par\\par\n{\\pard");
             if (g_equation_display_bitmap)
             	fprintRTF("\\tqc\\tx%d\\tqr\\tx%d", b, width);
             else
-				fprintRTF("\\tqr\\tx%d\\tql\\tx%d\\tqr\\tx%d", a, b, width);
-			fprintRTF("\\tab ");
+		fprintRTF("\\tqr\\tx%d\\tql\\tx%d\\tqr\\tx%d", a, b, width);
+		fprintRTF("\\tab ");
             setTexMode(MODE_DISPLAYMATH);
             break;
             
@@ -462,7 +469,7 @@ static void FinishRtfEquation(int code, int EQ_Needed)
             break;
 
         case EQN_ENSUREMATH:
-            diagnostics(4, "FinishRtfEquation -- \e\nsuremath{}");
+            diagnostics(4, "FinishRtfEquation -- \\ensuremath{}");
             fprintRTF("}");
             setTexMode(MODE_HORIZONTAL);
             break;
@@ -477,7 +484,7 @@ static void FinishRtfEquation(int code, int EQ_Needed)
             diagnostics(4, "FinishRtfEquation -- $$");
             CmdEndParagraph(0);
             CmdIndent(INDENT_INHIBIT);
-            fprintRTF("}");
+        /*    fprintRTF("}"); */
             break;
 
         case EQN_BRACKET_OPEN:
