@@ -2132,7 +2132,7 @@ void CmdApaCite(int code)
             fprintRTF("Reprinted from ");
             break;              /* BREPR */
         case 34:
-            s = getBraceParam();
+            s = getBraceParam();               /* BCnt {1} */
             if (sscanf(s, "%d", &n) == 1)
                 fprintRTF("%c", (char) 'a' + n - 1);
             free(s);
