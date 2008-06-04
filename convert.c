@@ -42,6 +42,7 @@ This file is available from http://sourceforge.net/projects/latex2rtf/
 #include "counters.h"
 #include "preamble.h"
 #include "vertical.h"
+#include "fields.h"
 
 static void TranslateCommand(); /* converts commands */
 
@@ -270,28 +271,26 @@ purpose: converts inputfile and writes result to outputfile
                 break;
 
             case '&':
-                if (g_processing_arrays) {
-                    fprintRTF("%c", g_field_separator);
-                    break;
-                }
+            
+            	/* just write '&' if we are not in math mode */
+                if (getTexMode() != MODE_MATH && getTexMode() != MODE_DISPLAYMATH) {    
+                	if (g_processing_tabular) 
+                		diagnostics(0,"should not happen! tabular should handle this!");
 
-                if (getTexMode() == MODE_MATH || getTexMode() == MODE_DISPLAYMATH) {    /* in eqnarray */
-                    if (g_processing_fields) fprintRTF("}}}{\\fldrslt }}");
-					fprintRTF("\\tab ");
-                    if (g_processing_fields) fprintRTF("{{\\field{\\*\\fldinst{ EQ ");
-                    g_equation_column++;
-                    break;
-                }
-
-                if (g_processing_tabular) { /* in tabular */
-                	diagnostics(0,"this should not happen tabular should handle this!");
-                	/*
-                    actCol++;
-                    fprintRTF("\\cell\\pard\\intbl\\q%c ", colFmt[actCol]);
-                    */
-                    break;
-                }
-                fprintRTF("&");
+ 	               	fprintRTF("&");
+ 	                break;
+ 	            }
+ 	            
+				/* are we are in the middle of \begin{array} ... \end{array} */
+				if (g_processing_arrays) {
+					fprintRTF("%c", g_field_separator);
+					break;
+				}
+				
+				/* must be in 'eqnarray' or 'align' environment */
+				endCurrentField();
+				fprintRTF("\\tab\n");
+                startField(FIELD_EQ);
                 break;
 
             case '~':
@@ -474,21 +473,21 @@ purpose: converts inputfile and writes result to outputfile
                 break;
 
             case '(':
-                if (g_processing_fields && g_escape_parens)
+                if (processing_fields() && g_escape_parens)
                     fprintRTF("\\\\(");
                 else
                     fprintRTF("(");
                 break;
 
             case ')':
-                if (g_processing_fields && g_escape_parens)
+                if (processing_fields() && g_escape_parens)
                     fprintRTF("\\\\)");
                 else
                     fprintRTF(")");
                 break;
 
             case ';':
-                if (g_field_separator == ';' && g_processing_fields)
+                if (g_field_separator == ';' && processing_fields())
                     fprintRTF("\\\\;");
                 else if (FrenchMode)
                     fprintRTF("\\~;");
@@ -497,7 +496,7 @@ purpose: converts inputfile and writes result to outputfile
                 break;
 
             case ',':
-                if (g_field_separator == ',' && g_processing_fields) {
+                if (g_field_separator == ',' && processing_fields()) {
                 	if (g_processing_arrays) {
                 	/* this is crazy, fields fail if \, is present in EQ array! */
                 	/* substitute semi-colon because it is least worst option   */
@@ -553,7 +552,7 @@ returns: success or not
  ****************************************************************************/
 {
     char cCommand[MAXCOMMANDLEN];
-    int i, mode;
+    int i, mode, height;
     int cThis,cNext;
 
     cThis = getTexChar();
@@ -607,7 +606,18 @@ returns: success or not
             return;
 
         case '\\':             /* \\[1mm] or \\*[1mm] possible */
-            CmdSlashSlash(0);
+            diagnostics(1,"here we are in TranslateCommand with '\\\\'");
+            height = getSlashSlashParam();
+			if (g_processing_arrays)			/* \begin{array} ... \end{array} */
+            	CmdArraySlashSlash(height);     /* may be contained in eqnarray environment */
+            else if (g_processing_eqnarray)
+            	CmdEqnArraySlashSlash(height);
+            else  if (g_processing_tabbing)
+            	diagnostics(1,"should not be processing \\\\ in tabbing here");
+            else if (g_processing_tabular)
+            	diagnostics(1,"should not be processing \\\\ in tabular here");
+            else
+            	CmdSlashSlash(height);
             return;
 
         case 0x0D:  /*handle any CRLF that might have snuck in*/

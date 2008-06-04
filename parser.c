@@ -1223,3 +1223,24 @@ int getDimension(void)
 
 }
 
+/***************************************************************************
+ purpose: return twips for \\, \\[1pt], \\*[1pt] 
+ ***************************************************************************/
+int getSlashSlashParam(void)
+{
+    char cThis, *vertical_space;
+	int height = 0;
+	
+    cThis = getTexChar();
+    if (cThis != '*')
+        ungetTexChar(cThis);
+
+    vertical_space = getBracketParam();
+    if (vertical_space) { 
+        height = getStringDimension(vertical_space);
+        free(vertical_space);
+    }
+	
+	return height;
+}
+

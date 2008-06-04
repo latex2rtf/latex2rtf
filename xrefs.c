@@ -41,6 +41,7 @@
 #include "definitions.h"
 #include "equations.h"
 #include "vertical.h"
+#include "fields.h"
 
 char *g_figure_label = NULL;
 char *g_table_label = NULL;
@@ -685,10 +686,10 @@ void InsertBookmark(char *name, char *text)
     } else {
         diagnostics(4, "bookmark %s being inserted around <%s>", signet, text);
         RecordBookmark(signet);
-        if (g_fields_use_REF)
+        if (fields_use_REF())
             fprintRTF("{\\*\\bkmkstart BM%s}", signet);
         fprintRTF("%s", text);
-        if (g_fields_use_REF)
+        if (fields_use_REF())
             fprintRTF("{\\*\\bkmkend BM%s}", signet);
     }
 
@@ -740,7 +741,7 @@ void CmdLabel(int code)
             if (code == LABEL_EQREF)
                 fprintRTF("(");
                 
-            if (g_fields_use_REF) {
+            if (fields_use_REF()) {
                 fprintRTF("{\\field{\\*\\fldinst{\\lang1024 REF BM%s \\\\* MERGEFORMAT }}", signet);
                 fprintRTF("{\\fldrslt{");
             }
@@ -750,7 +751,7 @@ void CmdLabel(int code)
             else
                 fprintRTF("?");
                 
-            if (g_fields_use_REF)
+            if (fields_use_REF())
                 fprintRTF("}}}");
                 
             if (code == LABEL_EQREF)
@@ -758,12 +759,12 @@ void CmdLabel(int code)
 
             if (code == LABEL_VREF) {
             	fprintRTF(" ");
-				if (g_fields_use_REF) {
+				if (fields_use_REF()) {
 					fprintRTF("{\\field{\\*\\fldinst{\\lang1024 PAGEREF BM%s \\\\p }}", signet);
 					fprintRTF("{\\fldrslt{");
 				}
 				fprintRTF("%s", signet);
-				if (g_fields_use_REF)
+				if (fields_use_REF())
 					fprintRTF("}}}");
             }
 
@@ -775,12 +776,12 @@ void CmdLabel(int code)
         case LABEL_HYPERPAGEREF:
         case LABEL_PAGEREF:
             signet = strdup_nobadchars(text);
-            if (g_fields_use_REF) {
+            if (fields_use_REF()) {
                 fprintRTF("{\\field{\\*\\fldinst{\\lang1024 PAGEREF BM%s \\\\* MERGEFORMAT }}", signet);
                 fprintRTF("{\\fldrslt{");
             }
             fprintRTF("%s", signet);
-            if (g_fields_use_REF)
+            if (fields_use_REF())
                 fprintRTF("}}}");
             free(signet);
             break;
@@ -1516,12 +1517,12 @@ void CmdCite(int code)
                 fprintRTF(" ");
             }
             t = s ? s : signet; /* if .aux is missing or * incomplete use original * citation */
-            if (g_fields_use_REF) {
+            if (fields_use_REF()) {
                 fprintRTF("{\\field{\\*\\fldinst{\\lang1024 REF BIB_%s \\\\* MERGEFORMAT }}", signet);
                 fprintRTF("{\\fldrslt{");
             }
             ConvertString(t);
-            if (g_fields_use_REF)
+            if (fields_use_REF())
                 fprintRTF("}}}");
             if (signet)
                 free(signet);

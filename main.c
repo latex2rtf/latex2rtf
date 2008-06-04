@@ -1,4 +1,3 @@
-
 /* main.c - LaTeX to RTF conversion program
 
 Copyright (C) 1995-2007 The Free Software Foundation
@@ -53,6 +52,7 @@ Authors:
 #include "xrefs.h"
 #include "preparse.h"
 #include "vertical.h"
+#include "fields.h"
 
 FILE *fRtf = NULL;              /* file pointer to RTF file */
 char *g_tex_name = NULL;
@@ -87,7 +87,6 @@ bool g_processing_preamble = TRUE;  /* flag set until \begin{document} */
 bool g_processing_figure = FALSE;   /* flag, set for figures and not tables */
 bool g_processing_eqnarray = FALSE; /* flag set when in an eqnarry */
 int g_processing_arrays = 0;
-int g_processing_fields = 0;
 
 bool g_show_equation_number = FALSE;
 int g_enumerate_depth = 0;
@@ -98,9 +97,6 @@ bool g_bbl_file_missing = FALSE;    /* assume that it exists */
 bool g_document_type = FORMAT_ARTICLE;
 int g_document_bibstyle = BIBSTYLE_STANDARD;
 
-bool g_fields_use_EQ = TRUE;
-bool g_fields_use_REF = TRUE;
-
 int g_safety_braces = 0;
 bool g_processing_equation = FALSE;
 bool g_RTF_warnings = FALSE;
@@ -108,7 +104,6 @@ char *g_config_path = NULL;
 char *g_script_dir = NULL;
 char *g_tmp_dir = NULL;
 char *g_preamble = NULL;
-char g_field_separator = ',';
 bool g_escape_parens = FALSE;
 
 bool g_equation_display_rtf = TRUE;
@@ -181,8 +176,8 @@ int main(int argc, char **argv)
                 break;
             case 'f':
                 sscanf(optarg, "%d", &x);
-                g_fields_use_EQ = (x & 1) ? TRUE : FALSE;
-                g_fields_use_REF = (x & 2) ? TRUE : FALSE;
+                set_fields_use_EQ(x & 1);
+                set_fields_use_REF(x & 2);
                 break;
             case 'i':
                 setPackageBabel(optarg);

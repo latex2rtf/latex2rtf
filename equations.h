@@ -41,3 +41,6 @@ int  script_shift(void);
 int  script_size(void);
 void CmdEnsuremath(int code);
 void CmdOverLine(int code);
+void CmdSlashSlash(int code);
+void CmdArraySlashSlash(int height);
+void CmdEqnArraySlashSlash(int height);

@@ -76,7 +76,7 @@ static void BeginCellRtf(char align)
  purpose:  emit RTF code to start each cell
  ******************************************************************************/
 {
-    fprintRTF("\\pard\\intbl\\q%c ", align);
+    fprintRTF("{\\pard\\intbl\\q%c ", align);
 }
 
 static void EndCellRtf(void)
@@ -85,7 +85,7 @@ static void EndCellRtf(void)
  purpose:  emit RTF code to end each cell
  ******************************************************************************/
 {
-    fprintRTF("\\cell\n");
+    fprintRTF("\\cell}\n");
 }
 
 static char *ConvertFormatString(char *s)
@@ -512,7 +512,7 @@ static void TabularBeginRow(TabularT tabular, char *this_row, char *next_row, in
     int top, left, bottom, right;   /* cell borders */
     char *cline;
 
-    fprintRTF("\\trowd");
+    fprintRTF("\n{\\trowd");
 
     row = this_row;
     cell_start = this_row;
@@ -588,7 +588,7 @@ void TabularEndRow(void)
  purpose:  emit RTF to finish one row of a table
  ******************************************************************************/
 {
-    fprintRTF("\\row\n");
+    fprintRTF("\\row}\n");
 }
 
 char TabularColumnAlignment(TabularT tabular, int column)
@@ -876,7 +876,7 @@ void CmdTabular(int code)
 	
 			diagnostics(WARNING, "Nested tabular/tabbing environments not allowed");
 			diagnostics(5, "table_table_table_table_table\n%stable_table_table_table_table", table);
-			fprintRTF("\\pard\\ql\\b0\\i0\\scaps0\\f%d ", num);
+			fprintRTF("{\\pard\\ql\\b0\\i0\\scaps0\\f%d ", num);
 			p = begin;
 			while (*p)
 				fprintRTF("%c",*p++);
@@ -1051,7 +1051,7 @@ static void TabbingBeginRow(int n, int n_total, char *align)
     if (n == 0)
         return;
 
-    fprintRTF("\\trowd");
+    fprintRTF("\n{\\trowd");
 
     for (i = 0; i < n; i++)
         fprintRTF("\\cellx%d", TabbingColumnPosition(i, n_total));
@@ -1093,7 +1093,7 @@ static void TabbingWriteRow(char *this_row, int n, int n_total, char *align)
         EndCellRtf();
         start = end;
     }
-    fprintRTF("\\row\n");
+    fprintRTF("\\row}\n");
 }
 
 static void TabbingGetRow(char *table, char **row, char **next_row)
@@ -1383,8 +1383,8 @@ void CmdMultiCol(int code)
     diagnostics(4, "Exiting Convert() from CmdMultiCol()");
 
     for (i = 1; i < numCol; i++) {
-        fprintRTF("}\\cell\n");
-        fprintRTF("\\pard\\intbl{");
+        fprintRTF("\\cell}\n");
+        fprintRTF("{\\pard\\intbl");
     }
 
     free(content);

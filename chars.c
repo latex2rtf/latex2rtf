@@ -37,6 +37,7 @@ This file is available from http://sourceforge.net/projects/latex2rtf/
 #include "convert.h"
 #include "utils.h"
 #include "vertical.h"
+#include "fields.h"
 
 void TeXlogo();
 void LaTeXlogo();
@@ -90,7 +91,7 @@ int isShortStr(char *s)
  *******************************************************************************/
 void CmdMTExtraChar(int code)
 {
-    if (g_processing_fields == 0) {
+    if (processing_fields() == 0) {
     	int num = RtfFontNumber("MT Extra");
     	fprintRTF("{\\f%d\\'%.2X}",num,code);
 
@@ -109,7 +110,7 @@ void CmdMTExtraChar(int code)
 void CmdSymbolChar(int code)
 {
     int num = RtfFontNumber("Symbol");
-    if (g_processing_fields == 0) {
+    if (processing_fields() == 0) {
     	fprintRTF("{\\f%d\\'%.2X}",num,code);
 
     } else {
@@ -133,7 +134,7 @@ void CmdSymbolChar(int code)
 static void putOverstrikeChar(const char *font, char *s, 
                               unsigned int overstrike, double raise)
 {
-	if (g_processing_fields==0) fprintRTF("{\\field{\\*\\fldinst EQ ");
+	if (processing_fields()==0) fprintRTF("{\\field{\\*\\fldinst EQ ");
 		
 	fprintRTF("\\\\O(");
     ConvertString(s);
@@ -171,7 +172,7 @@ static void putOverstrikeChar(const char *font, char *s,
 	
 	fprintRTF("})");
 
-	if (g_processing_fields==0) fprintRTF("}{\\fldrslt }}");
+	if (processing_fields()==0) fprintRTF("}{\\fldrslt }}");
 }
 
 /*****************************************************************************
@@ -200,7 +201,7 @@ void CmdUmlauteChar(int code)
         return;
 
 	/* These encodings will fail in equation field translation */
-    if (g_processing_fields==0) {
+    if (processing_fields()==0) {
 		switch (cParam[0]) {
 			case 'A':
 				fprintRTF("\\'c4");
@@ -306,7 +307,7 @@ void CmdGraveChar(int code)
         return;
 
 	/* These encodings will fail in equation field translation */
-    if (g_processing_fields==0) {
+    if (processing_fields()==0) {
 		switch (cParam[0]) {
 			case 'A':
 				fprintRTF("\\'c0");
@@ -384,7 +385,7 @@ void CmdAcuteChar(int code)
         return;
 
 	/* These encodings will fail in equation field translation */
-    if (g_processing_fields==0) {
+    if (processing_fields()==0) {
 		switch (cParam[0]) {
 			case 'A':
 				fprintRTF("\\'c1");
@@ -516,7 +517,7 @@ void CmdDoubleAcuteChar(int code)
         return;
 
 	/* These encodings will fail in equation field translation */
-    if (g_processing_fields==0) {
+    if (processing_fields()==0) {
 		switch (cParam[0]) {
 			case 'O':
 				putUnicodeChar(0x01,0x50,'O');
@@ -556,7 +557,7 @@ void CmdMacronChar(int code)
         return;
 
 	/* These encodings will fail in equation field translation */
-    if (g_processing_fields==0) {
+    if (processing_fields()==0) {
 		switch (cParam[0]) {
 			case 'A':
 				putUnicodeChar(0x01,0x00,'A');
@@ -628,10 +629,10 @@ void CmdHatChar(int code)
         return;
 
     diagnostics(4,"CmdHatChar letter='%s' in eq field=%d",cParam,
-                g_processing_fields);
+                processing_fields());
     
 	/* These encodings will fail in equation field translation */
-    if (g_processing_fields==0) {
+    if (processing_fields()==0) {
 		switch (cParam[0]) {
 			case 'A':
 					fprintRTF("\\'c2");
@@ -747,9 +748,9 @@ void CmdRingChar(int code)
         return;
 
     diagnostics(4,"CmdRingChar letter='%s' in eq field=%d",cParam,
-                g_processing_fields);
+                processing_fields());
     
-    if (g_processing_fields==0) {
+    if (processing_fields()==0) {
 		switch (cParam[0]) {
 			case 'A':
 				fprintRTF("\\'c5");
@@ -801,10 +802,10 @@ void CmdTildeChar(int code)
     if (cParam == NULL) return;
 	
     diagnostics(4,"CmdTildeChar letter='%s' in eq field=%d",cParam,
-                g_processing_fields);
+                processing_fields());
     
 	/* These fail in equation fields */
-    if (g_processing_fields==0) {
+    if (processing_fields()==0) {
 		switch (cParam[0]) {
 			case 'A':
 				fprintRTF("\\'c3");
@@ -868,10 +869,10 @@ void CmdCedillaChar(int code)
     if (cParam == NULL) return;
 	
     diagnostics(4,"CmdCedillaChar letter='%s' in eq field=%d",cParam,
-                g_processing_fields);
+                processing_fields());
     
 	/* These fail in equation fields */
-    if (g_processing_fields==0) {
+    if (processing_fields()==0) {
 		switch (cParam[0]) {
 			case 'C':
 				fprintRTF("\\'c7");
@@ -969,10 +970,10 @@ void CmdBreveChar(int code)
     if (cParam == NULL) return;
 	
     diagnostics(4,"CmdBreveChar letter='%s' in eq field=%d",cParam,
-                g_processing_fields);
+                processing_fields());
     
 	/* These fail in equation fields */
-    if (g_processing_fields==0) {
+    if (processing_fields()==0) {
 		switch (cParam[0]) {
 			case 'A':
 				putUnicodeChar(0x01,0x02,'A');
@@ -1045,10 +1046,10 @@ void CmdCaronChar(int code)
     if (cParam == NULL) return;
 	
     diagnostics(4,"CmdHacekChar letter='%s' in eq field=%d",cParam,
-                g_processing_fields);
+                processing_fields());
     
 	/* These fail in equation fields */
-    if (g_processing_fields==0) {
+    if (processing_fields()==0) {
 		switch (cParam[0]) {
 			case 'C':
 				putUnicodeChar(0x01,0x0C,'C');
@@ -1205,10 +1206,10 @@ void CmdDotChar(int code)
     if (cParam == NULL) return;
 	
     diagnostics(4,"CmdDotChar letter='%s' in eq field=%d",cParam,
-                g_processing_fields);
+                processing_fields());
     
 	/* These encodings will fail in equation field translation */
-    if (g_processing_fields==0) {
+    if (processing_fields()==0) {
 		switch (cParam[0]) {
 			case 'A':
 					fprintRTF("\\u550A");
@@ -1283,10 +1284,10 @@ void CmdUnderdotChar(int code)
     if (cParam == NULL) return;
 	
     diagnostics(4,"CmdUnderdotChar letter='%s' in eq field=%d",cParam,
-                g_processing_fields);
+                processing_fields());
     
 	/* These encodings will fail in equation field translation */
-    if (g_processing_fields==0) {
+    if (processing_fields()==0) {
 		switch (cParam[0]) {
 			case 'B':
 					putUnicodeChar(0x1E,0x04,'B');
@@ -1450,7 +1451,7 @@ void CmdVecChar(int code)
     if (cParam == NULL) return;
 	
     diagnostics(4,"CmdVecChar letter='%s' in eq field=%d",cParam,
-                g_processing_fields);
+                processing_fields());
     
 	putOverstrikeChar("MT Extra", cParam, 114, 0.70);
 
@@ -1469,10 +1470,10 @@ void CmdUnderbarChar(int code)
     if (cParam == NULL) return;
 
     diagnostics(4,"CmdUnderbarChar letter='%s' in eq field=%d",cParam,
-                g_processing_fields);
+                processing_fields());
     
 	/* These encodings will fail in equation field translation */
-    if (g_processing_fields==0) {
+    if (processing_fields()==0) {
 		switch (cParam[0]) {
 			case 'B':
 					putUnicodeChar(0x1E,0x06,'B');
@@ -1588,7 +1589,7 @@ void CmdLdots( /* @unused@ */ int code)
 
 
 /*    should this just be CmdSymbolChar(0x85);   ????????? */
-    if (!g_processing_fields) 
+    if (!processing_fields()) 
     	fprintRTF("\\u8230\\'85",num);
     else
    		fprintRTF("{\\f%d\\u-3908\\'85}",num);

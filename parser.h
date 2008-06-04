@@ -43,3 +43,4 @@ void	UpdateLineNumber(char *s);
 void	EndSource(void);
 int 	CurrentFileDescriptor(void);
 int 	getParserDepth(void);
+int 	getSlashSlashParam(void);

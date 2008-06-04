@@ -206,86 +206,6 @@ void CmdNewTheorem(int code)
         free(within);
 }
 
-void CmdSlashSlash(int code)
-
-/***************************************************************************
- purpose: handle \\, \\[1pt], \\*[1pt] 
- ***************************************************************************/
-{
-    char cThis, *vertical_space;
-
-    if (g_processing_arrays) {  /* array */
-        cThis = getNonBlank();
-        ungetTexChar(cThis);
-        fprintRTF("%c", g_field_separator);
-        return;
-    }
-
-    cThis = getTexChar();
-    if (cThis != '*')
-        ungetTexChar(cThis);
-
-    vertical_space = getBracketParam();
-    if (vertical_space)         /* ignore for now */
-        free(vertical_space);
-
-    if (g_processing_eqnarray) {    /* eqnarray */
-        if (g_processing_fields)
-            fprintRTF("}}{\\fldrslt }}");
-        if (g_show_equation_number && !g_suppress_equation_number) {
-            char number[20];
-
-            for (; g_equation_column < 3; g_equation_column++)
-                fprintRTF("\\tab ");
-            incrementCounter("equation");
-
-            fprintRTF("\\tab{\\b0 (");
-            snprintf(number, 20, "%d", getCounter("equation"));
-            InsertBookmark(g_equation_label, number);
-            if (g_equation_label) {
-                free(g_equation_label);
-                g_equation_label = NULL;
-            }
-            fprintRTF(")}");
-        }
-
-        fprintRTF("\\par\n\\tab ");
-        if (g_processing_fields)
-            fprintRTF("{\\field{\\*\\fldinst{ EQ ");
-
-        g_suppress_equation_number = FALSE;
-        g_equation_column = 1;
-        return;
-    }
-
-/* this should only happen for an array environment */
-    if (g_processing_tabular) { /* tabular or array environment */
-        if (getTexMode() == MODE_MATH || getTexMode() == MODE_DISPLAYMATH) {    /* array */
-            fprintRTF("\\par\n\\tab ");
-            return;
-        }
-    	fprintRTF("\\row\n");
-/*        for (; actCol < colCount; actCol++) {
-            fprintRTF("\\cell\\pard\\intbl");
-        }
-        actCol = 0;
-        fprintRTF("\\row\n\\pard\\intbl\\q%c ", colFmt[actCol]);
-*/
-        return;
-    }
-
-/* I don't think this should happen anymore either! */
-    if (g_processing_tabbing) {
-        PopBrace();
-        PushBrace();
-    }
-
-    /* simple end of line ... */
-    CmdEndParagraph(0);
-    CmdIndent(INDENT_INHIBIT);
-
-    tabcounter = 0;
-}
 
 void CmdBeginEnd(int code)
 
@@ -1117,8 +1037,8 @@ void CmdBox(int code)
     int mode = getTexMode();
 
     diagnostics(4, "Entering CmdBox() [%s]", BoxName[code - 1]);
-    if (g_processing_fields)
-        g_processing_fields++;  /* hack to stop fields within fields */
+/*    if (g_processing_fields)
+        g_processing_fields++;   hack to stop fields within fields */
 
     if (code == BOX_HBOX || code == BOX_MBOX)
         changeTexMode(MODE_RESTRICTED_HORIZONTAL);
@@ -1137,8 +1057,8 @@ void CmdBox(int code)
     Convert();
     diagnostics(4, "Exiting Convert() from CmdBox");
 
-    if (g_processing_fields)
-        g_processing_fields--;
+/*    if (g_processing_fields)
+        g_processing_fields--;*/
 
     if (code == BOX_VBOX) {
         CmdEndParagraph(0);
@@ -1205,9 +1125,6 @@ void CmdVerbatim(int code)
             CmdEndParagraph(0);
             CmdIndent(INDENT_NONE);
             startParagraph("verbatim", GENERIC_PARAGRAPH);
-/*          num = TexFontNumber("Typewriter");                                     */
-/*          fprintRTF("\\pard\\ql\\b0\\i0\\scaps0\\f%d ", num);                    */
-/*        WH: this is now unnecessary because it's already set in startParagraph() */
         }
 
         switch (true_code) {
@@ -1769,19 +1686,10 @@ CmdTitlepage(int code)
 /******************************************************************************
   purpose: \begin{titlepage} ... \end{titlepage}
            add pagebreaks before and after this environment
+           need to add code to supress page numbering and display
  ******************************************************************************/
 {
     CmdNewPage(NewPage);
-    switch (code && 0) {
-        case ON:
-            fprintRTF("\n\\par\\pard \\page "); /* new page */
-            fprintRTF("\n\\par\\q%c ", getAlignment());
-            break;
-        case OFF:
-            fprintRTF("\\pard ");
-            fprintRTF("\n\\par\\q%c \\page ", getAlignment());
-            break;
-    }
 }
 
 void CmdMinipage(int code)
@@ -1821,10 +1729,10 @@ void CmdColsep(int code)
     diagnostics(0, "CmdColsep called");
   /*  actCol++;*/
 
-    if (getTexMode() == MODE_DISPLAYMATH) { /* in an eqnarray or array environment */
-        fprintRTF("\\tab ");
+    if (getTexMode() == MODE_DISPLAYMATH || getTexMode() == MODE_MATH) { /* in an eqnarray or array environment */
+        fprintRTF("\\tab\n");
     } else {
-        fprintRTF("\\cell\\pard\\intbl ");
+        fprintRTF("\\cell}{\\pard\\intbl ");
         /*
         if (colFmt == NULL)
             diagnostics(WARNING, "Fatal, Fatal! CmdColsep called whith colFmt == NULL.");

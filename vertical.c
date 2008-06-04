@@ -57,6 +57,10 @@ that affect these quantities
 #include "commands.h"
 #include "styles.h"
 #include "fonts.h"
+#include "stack.h"
+#include "xrefs.h"
+#include "counters.h"
+#include "fields.h"
 
 static int g_TeX_mode = MODE_VERTICAL;
 static int g_line_spacing = 240;
@@ -68,6 +72,7 @@ static int g_left_margin_indent;
 static int g_page_new = FALSE;
 static int g_column_new = FALSE;
 static int g_alignment = JUSTIFIED;
+static int g_par_brace = 0;
 
 char TexModeName[7][25] = { "bad", "internal vertical", "horizontal",
     "restricted horizontal", "math", "displaymath", "vertical"
@@ -228,29 +233,56 @@ void changeTexMode(int mode)
  ******************************************************************************/
 void startParagraph(const char *style, int indenting)
 {
-    int parindent;
+    int width, a, b, c;
+    int parindent,parskip;
 	static int status = 0;
 	
     parindent = getLength("parindent");
+    parskip   = getLength("parskip");
 
-    if (indenting == SECTION_TITLE_PARAGRAPH) {      /* titles are never indented */
-        parindent = 0;
-        status = 1;
-    	diagnostics(5, "SECTION_TITLE_PARAGRAPH");
-    }
-    else if (indenting == FIRST_PARAGRAPH) { /* French indents the first paragraph */
-    	diagnostics(5, "FIRST_PARAGRAPH");
-    	status = 1;
-    	if (!FrenchMode && !g_processing_list_environment)
-        	parindent = 0;
-	} else {                              /* Worry about not indenting */
-    	diagnostics(5, "GENERIC_PARAGRAPH");
-	    if (g_paragraph_no_indent || g_paragraph_inhibit_indent)
-        	parindent = 0;
-        else if (status > 0) 
-        	parindent = 0;
-        status--;
+	if (g_par_brace !=0 )
+		diagnostics(1,"******************* starting %s paragraph with braces = %d", style, g_par_brace);		
+	
+	if (g_par_brace == 1)
+		CmdEndParagraph(0);
+
+	switch(indenting) {
+	
+		case SECTION_TITLE_PARAGRAPH:		/* titles are never indented */
+			diagnostics(5, "SECTION_TITLE_PARAGRAPH");
+			parindent = 0;
+			status = 1;
+			break;
+	
+		case FIRST_PARAGRAPH:  				/* French indents  first paragraph */
+			diagnostics(5, "FIRST_PARAGRAPH");
+			status = 1;
+			if (!FrenchMode && !g_processing_list_environment)
+				parindent = 0;
+			break;
+			
+		case EQUATION_PARAGRAPH:
+			diagnostics(5, "EQUATION_PARAGRAPH");
+			parindent = 0;
+			width = getLength("textwidth");
+    		a = (int) (0.45 * width);
+    		b = (int) (0.50 * width);
+    		c = (int) (0.55 * width);
+    		break;
+			
+		default:      						/* Worry about not indenting */
+			diagnostics(5, "GENERIC_PARAGRAPH");
+			if (g_paragraph_no_indent || g_paragraph_inhibit_indent)
+				parindent = 0;
+			else if (status > 0) 
+				parindent = 0;
+			status--;
+			break;
 	}
+	
+	if (g_par_brace != 0)
+		diagnostics(1,"starting paragraph with braces = %d", g_par_brace);		
+	g_par_brace++;
 	
     diagnostics(5, "Paragraph mode    %s", TexModeName[getTexMode()]);
     diagnostics(5, "Paragraph option  %s", ParOptionName[indenting]);
@@ -262,7 +294,7 @@ void startParagraph(const char *style, int indenting)
     diagnostics(5, "this parindent    %d", parindent);
 
     if (g_page_new) {
-        fprintRTF("\\page\\par ");   /* causes new page */
+        fprintRTF("\\page ");   /* causes new page */
         g_page_new = FALSE;
         g_column_new = FALSE;
     }
@@ -274,11 +306,27 @@ void startParagraph(const char *style, int indenting)
 
     fprintRTF("{\\pard\\plain");
     InsertStyle(style);
+    if (strcmp(style,"equation")==0)
+    	fprintRTF("\\tqc\\tx%d", b);
+    if (strcmp(style,"equationNum")==0)
+    	fprintRTF("\\tqc\\tx%d\\tqr\\tx%d", b, width);
+    if (strcmp(style,"equationAlign")==0)
+    	fprintRTF("\\tqr\\tx%d\\tql\\tx%d", a, b);
+    if (strcmp(style,"equationAlignNum")==0)
+        fprintRTF("\\tqr\\tx%d\\tql\\tx%d\\tqr\\tx%d", a, b, width);
+    if (strcmp(style,"equationArray")==0)
+    	fprintRTF("\\tqr\\tx%d\\tqc\\tx%d\\tql\\tx%d", a, b, c);
+    if (strcmp(style,"equationArrayNum")==0)
+        fprintRTF("\\tqr\\tx%d\\tqc\\tx%d\\tql\\tx%d\\tqr\\tx%d", a, b, c, width);
+
+    if (strcmp(style,"bitmapCenter")==0)
+    	fprintRTF("\\tqc\\tx%d\\tqr\\tx%d", b, width);
+    	
     fprintRTF("\\sl%i\\slmult1 ", getLineSpacing());
 
     if (getVspace() > 0)
         fprintRTF("\\sb%d ", getVspace());
-    setVspace(0);
+    setVspace(parskip);
 
     if (g_left_margin_indent != 0)
         fprintRTF("\\li%d", g_left_margin_indent);
@@ -288,6 +336,7 @@ void startParagraph(const char *style, int indenting)
 
     fprintRTF("\\fi%d ", parindent);
 
+    if (getTexMode() != MODE_MATH && getTexMode() != MODE_DISPLAYMATH)   
     setTexMode(MODE_HORIZONTAL); 
 
     if (!g_processing_list_environment) {
@@ -309,12 +358,18 @@ void CmdEndParagraph(int code)
     int mode = getTexMode();
 
     diagnostics(5, "CmdEndParagraph mode = %s", TexModeName[mode]);
-    if (mode != MODE_VERTICAL  && g_processing_fields == 0) {
+    	
+    if (g_par_brace == 1) {
+    	endAllFields();
         fprintRTF("\\par}\n");
         setTexMode(MODE_VERTICAL);
-    }
+		g_par_brace=0;
+	    g_paragraph_inhibit_indent = FALSE;
+    } else {
+    	if (getTexMode() != MODE_VERTICAL)
+			diagnostics(1,"*********************** ending paragraph with braces = %d", g_par_brace);
+	}
 
-    g_paragraph_inhibit_indent = FALSE;
 }
 
 void CmdVspace(int code)
@@ -495,3 +550,4 @@ void CmdAlign(int code)
             break;
     }
 }
+

@@ -1,6 +1,7 @@
-#define FIRST_PARAGRAPH      1
-#define GENERIC_PARAGRAPH        2
-#define SECTION_TITLE_PARAGRAPH      3
+#define FIRST_PARAGRAPH           1
+#define GENERIC_PARAGRAPH         2
+#define SECTION_TITLE_PARAGRAPH   3
+#define EQUATION_PARAGRAPH        4
 
 #define INDENT_NONE    1
 #define INDENT_INHIBIT 2
@@ -26,7 +27,6 @@ void CmdBeginEnd(int code);
 void CmdEndParagraph(int code);
 void CmdIndent(int code);
 void CmdVspace(int code);
-void CmdSlashSlash(int code);
 void CmdDoubleSpacing(int code);
 void startParagraph(const char *style, int indenting);
 void CmdIndent(int code);

@@ -90,14 +90,10 @@ extern bool		g_processing_tabbing;
 extern bool		g_processing_tabular;
 extern bool		g_processing_eqnarray;
 extern int		g_processing_arrays;
-extern int		g_processing_fields;
 extern int		g_dots_per_inch;
 
 extern int		g_document_type;
 extern int		g_document_bibstyle;
-
-extern bool		g_fields_use_EQ;
-extern bool		g_fields_use_REF;
 
 extern int		g_equation_number;
 extern bool		g_escape_parens;

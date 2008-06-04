@@ -54,12 +54,12 @@ DMG_DIR := "$(PWD)/macosx/dmg/latex2rtf-$(VERSION)"
 SRCS=commands.c chars.c direct.c encodings.c fonts.c funct1.c tables.c ignore.c \
 	main.c stack.c cfg.c utils.c parser.c lengths.c counters.c letterformat.c \
 	preamble.c equations.c convert.c xrefs.c definitions.c graphics.c \
-	mygetopt.c styles.c preparse.c vertical.c
+	mygetopt.c styles.c preparse.c vertical.c fields.c
 
 HDRS=commands.h chars.h direct.h encodings.h fonts.h funct1.h tables.h ignore.h \
     main.h stack.h cfg.h utils.h parser.h lengths.h counters.h letterformat.h \
     preamble.h equations.h convert.h xrefs.h definitions.h graphics.h encoding_tables.h \
-    version.h mygetopt.h styles.h preparse.h vertical.h
+    version.h mygetopt.h styles.h preparse.h vertical.h fields.h
 
 CFGS=cfg/fonts.cfg cfg/direct.cfg cfg/ignore.cfg cfg/style.cfg \
     cfg/afrikaans.cfg cfg/bahasa.cfg cfg/basque.cfg cfg/brazil.cfg cfg/breton.cfg \
@@ -134,7 +134,7 @@ TEST=  \
 OBJS=fonts.o direct.o encodings.o commands.o stack.o funct1.o tables.o \
 	chars.o ignore.o cfg.o main.o utils.o parser.o lengths.o counters.o \
 	preamble.o letterformat.o equations.o convert.o xrefs.o definitions.o graphics.o \
-	mygetopt.o styles.o preparse.o vertical.o
+	mygetopt.o styles.o preparse.o vertical.o fields.o
 
 all : checkdir latex2rtf
 
@@ -277,7 +277,7 @@ commands.o: commands.c cfg.h main.h convert.h chars.h fonts.h preamble.h \
   funct1.h tables.h equations.h letterformat.h commands.h parser.h \
   xrefs.h ignore.h lengths.h definitions.h graphics.h vertical.h
 chars.o: chars.c main.h commands.h fonts.h cfg.h ignore.h encodings.h \
-  parser.h chars.h funct1.h convert.h utils.h vertical.h
+  parser.h chars.h funct1.h convert.h utils.h vertical.h fields.h
 direct.o: direct.c main.h direct.h fonts.h cfg.h utils.h
 encodings.o: encodings.c main.h fonts.h funct1.h encodings.h \
   encoding_tables.h chars.h
@@ -294,7 +294,8 @@ ignore.o: ignore.c main.h direct.h fonts.h cfg.h ignore.h funct1.h \
   commands.h parser.h convert.h utils.h vertical.h
 main.o: main.c main.h mygetopt.h convert.h commands.h chars.h fonts.h \
   stack.h direct.h ignore.h version.h funct1.h cfg.h encodings.h utils.h \
-  parser.h lengths.h counters.h preamble.h xrefs.h preparse.h vertical.h
+  parser.h lengths.h counters.h preamble.h xrefs.h preparse.h vertical.h \
+  fields.h
 stack.o: stack.c main.h stack.h
 cfg.o: cfg.c main.h convert.h funct1.h cfg.h utils.h
 utils.o: utils.c main.h utils.h parser.h
@@ -309,20 +310,23 @@ preamble.o: preamble.c main.h convert.h utils.h preamble.h fonts.h cfg.h \
   xrefs.h direct.h styles.h vertical.h
 equations.o: equations.c main.h convert.h commands.h stack.h fonts.h \
   cfg.h ignore.h parser.h equations.h counters.h funct1.h lengths.h \
-  utils.h graphics.h xrefs.h chars.h preamble.h vertical.h
+  utils.h graphics.h xrefs.h chars.h preamble.h vertical.h fields.h
 convert.o: convert.c main.h convert.h commands.h chars.h funct1.h fonts.h \
   stack.h tables.h equations.h direct.h ignore.h cfg.h encodings.h \
-  utils.h parser.h lengths.h counters.h preamble.h vertical.h
+  utils.h parser.h lengths.h counters.h preamble.h vertical.h fields.h
 xrefs.o: xrefs.c main.h utils.h convert.h funct1.h commands.h cfg.h \
   xrefs.h parser.h preamble.h lengths.h fonts.h styles.h definitions.h \
-  equations.h vertical.h
+  equations.h vertical.h fields.h
 definitions.o: definitions.c main.h convert.h definitions.h parser.h \
   funct1.h utils.h cfg.h counters.h
 graphics.o: graphics.c cfg.h main.h graphics.h parser.h utils.h \
   commands.h convert.h funct1.h preamble.h counters.h vertical.h
 mygetopt.o: mygetopt.c main.h mygetopt.h
-styles.o: styles.c main.h direct.h fonts.h cfg.h utils.h parser.h
+styles.o: styles.c main.h direct.h fonts.h cfg.h utils.h parser.h \
+  styles.h
 preparse.o: preparse.c cfg.h main.h utils.h definitions.h parser.h \
   funct1.h
 vertical.o: vertical.c main.h funct1.h cfg.h utils.h parser.h lengths.h \
-  vertical.h convert.h commands.h
+  vertical.h convert.h commands.h styles.h fonts.h stack.h xrefs.h \
+  counters.h fields.h
+fields.o: fields.c main.h fields.h
