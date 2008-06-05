@@ -1567,11 +1567,11 @@ parameter: number of columns
 {
     switch (code) {
         case One_Column:
-            fprintRTF("\\page \\colsx709\\endnhere ");  /* new page & one column */
+            fprintRTF("\\page\n\\colsx709\\endnhere ");  /* new page & one column */
             twocolumn = FALSE;
             break;
         case Two_Column:
-            fprintRTF("\\page \\cols2\\colsx709\\endnhere ");   /* new page & two * columns */
+            fprintRTF("\\page\n\\cols2\\colsx709\\endnhere ");   /* new page & two * columns */
             twocolumn = TRUE;
             break;
     }                           /* switch */

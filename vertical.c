@@ -294,13 +294,13 @@ void startParagraph(const char *style, int indenting)
     diagnostics(5, "this parindent    %d", parindent);
 
     if (g_page_new) {
-        fprintRTF("\\page ");   /* causes new page */
+        fprintRTF("\\page\n");   /* causes new page */
         g_page_new = FALSE;
         g_column_new = FALSE;
     }
 
     if (g_column_new) {
-        fprintRTF("\\column "); /* causes new column */
+        fprintRTF("\\column\n"); /* causes new column */
         g_column_new = FALSE;
     }
 
@@ -336,7 +336,6 @@ void startParagraph(const char *style, int indenting)
 
     fprintRTF("\\fi%d ", parindent);
 
-    if (getTexMode() != MODE_MATH && getTexMode() != MODE_DISPLAYMATH)   
     setTexMode(MODE_HORIZONTAL); 
 
     if (!g_processing_list_environment) {
@@ -447,6 +446,7 @@ void CmdNewPage(int code)
 parameter: code: newpage or newcolumn-option
  ******************************************************************************/
 {
+    diagnostics(5, "CmdNewPage mode = %d", getTexMode());
     switch (code) {
         case NewPage:
             g_page_new = TRUE;
