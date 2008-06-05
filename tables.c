@@ -512,7 +512,7 @@ static void TabularBeginRow(TabularT tabular, char *this_row, char *next_row, in
     int top, left, bottom, right;   /* cell borders */
     char *cline;
 
-    fprintRTF("\n{\\trowd");
+    fprintRTF("{\\trowd");
 
     row = this_row;
     cell_start = this_row;
@@ -1051,7 +1051,7 @@ static void TabbingBeginRow(int n, int n_total, char *align)
     if (n == 0)
         return;
 
-    fprintRTF("\n{\\trowd");
+    fprintRTF("{\\trowd");
 
     for (i = 0; i < n; i++)
         fprintRTF("\\cellx%d", TabbingColumnPosition(i, n_total));
