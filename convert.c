@@ -371,17 +371,7 @@ purpose: converts inputfile and writes result to outputfile
                 if (getTexMode() == MODE_HORIZONTAL) {
                     cNext = getTexChar();
                     if (cNext == '<') {
-                        if (FrenchMode) {   /* not quite right */
-                            skipSpaces();
-                            cNext = getTexChar();
-                            if (cNext == '~')
-                                skipSpaces();
-                            else
-                                ungetTexChar(cNext);
-                            fprintRTF("\\'ab\\~");
-
-                        } else
-                            fprintRTF("\\'ab");
+                        fprintRTF("\\'ab");
                     } else {
                         ungetTexChar(cNext);
                         fprintRTF("<");
