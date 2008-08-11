@@ -1175,73 +1175,89 @@ void SubSupWorker(bool big)
         free(upper_limit);
 }
 
-void CmdSuperscript(int code)
+/******************************************************************************
+ purpose   : Emit simple RTF for sub or super- script 
+ ******************************************************************************/
+static void simpleRTFScript(int super)
+{
+    char *s = NULL;
+
+    s=getBraceParam();
+    fprintRTF("{\\%s%d\\fs%d ", super ? "up" : "dn", script_shift(), script_size());
+    ConvertString(s);
+    fprintRTF("}");
+    free(s);
+    
+}
+
+/******************************************************************************
+  purpose   : Emit either a field or simple RTF for sub or super- script 
+ ******************************************************************************/
+static void maybeFieldScript(int super)
+{
+    if (fields_use_EQ()) {
+        if (super)
+            ungetTexChar('^');
+        else
+            ungetTexChar('_');
+        SubSupWorker(FALSE);
+    } else 
+        simpleRTFScript(super);
+}
 
 /******************************************************************************
  purpose   : Handles superscripts ^\alpha, ^a, ^{a}       code=0
                                   \textsuperscript{a}     code=1
  ******************************************************************************/
+void CmdSuperscript(int code)
 {
-    char *s = NULL;
-
-    diagnostics(4, "CmdSuperscript() ... ");
-
-    if (code == 0 && fields_use_EQ()) {
-        ungetTexChar('^');
-        SubSupWorker(FALSE);
-        return;
-    }
-
-    if ((s = getBraceParam())) {
-        fprintRTF("{\\up%d\\fs%d ", script_shift(), script_size());
-        ConvertString(s);
-        fprintRTF("}");
-        free(s);
+    switch (code) {
+        case 0:
+            diagnostics(4, "CmdSuperscript() code==0, equation ");
+            maybeFieldScript(1);
+            break;
+     
+        case 1:
+            diagnostics(4, "CmdSuperscript() code==1, \\textsuperscript ");
+            simpleRTFScript(1);
+            break;
     }
 }
-
-void CmdSubscript(int code)
 
 /******************************************************************************
  purpose   : Handles subscripts _\alpha, _a, _{a},           code=0
                                 \textsubscript{script}       code=1
                                 \lower4emA                   code=2
  ******************************************************************************/
+void CmdSubscript(int code)
 {
     char *s = NULL;
     int size;
     
-
-    if (code == 0) {
-        diagnostics(4, "CmdSubscript() code==0, equation ");
-    	if (fields_use_EQ()) {
-			ungetTexChar('_');
-			SubSupWorker(FALSE);
-       }
+    switch (code) {
+        case 0:
+            diagnostics(4, "CmdSubscript() code==0, equation ");
+            maybeFieldScript(0);
+            break;
+     
+        case 1:
+            diagnostics(4, "CmdSubscript() code==1, \\textsubscript ");
+            simpleRTFScript(0);
+            break;
+    
+        case 2:
+            diagnostics(4, "CmdSubscript() code==2, \\lower ");
+            size = getDimension();  /* size is in half-points */
+            fprintRTF("{\\dn%d ", size);
+            s=getBraceParam();
+            if (strcmp(s,"\\hbox")==0)
+                CmdBox(BOX_HBOX);
+            else
+                ConvertString(s);
+            fprintRTF("}");
+            free(s);
+            break;
     }
-
-    if (code == 1) {
-        diagnostics(4, "CmdSubscript() code==1, \\textsubscript ");
-        s=getBraceParam();
-        fprintRTF("{\\dn%d\\fs%d ", script_shift(), script_size());
-        ConvertString(s);
-        fprintRTF("}");
-        free(s);
-    }
-
-    if (code == 2) {
-        diagnostics(4, "CmdSubscript() code==2, \\lower ");
-		size = getDimension();  /* size is in half-points */
-        fprintRTF("{\\dn%d ", size);
-        s=getBraceParam();
-        if (strcmp(s,"\\hbox")==0)
-        	CmdBox(BOX_HBOX);
-        else
-        	ConvertString(s);
-        fprintRTF("}");
-        free(s);
-    }
-
 }
 
 /* slight extension of getSimpleCommand to allow \{ and \| */
