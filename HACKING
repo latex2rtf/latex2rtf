@@ -1,0 +1,111 @@
+HACKING latex2rtf
+
+This document is intended to give a broad overview of how latex2rtf operates. 
+It is also intended to explain why somethings are the way that they are.
+
+The fundamental problem of latex2rtf is that LaTeX is a sophisticated set of
+macros that overlay the comple programming language of TeX.  RTF is a very
+limited mark-up language for describing what text should look like.  In
+principle, one could use the entire TeX engine to interpret the source latex
+file and then capture the characters as they are output at the end of TeX
+process.  Unfortunately, this just produces a character stream without
+preserving any of the document structure.
+
+To avoid this loss, latex2rtf tries to directly translate as many of the
+high-level latex macro instructions as it can.  In fact, no LaTeX macro is
+expanded into a stream of TeX macros, each of which is in turn interpreted. 
+Instead, some effort is made to translate the LaTeX command directly into the
+corresponding RTF.
+
+The central problem of latex2rtf from a programmer's point-of-view is that
+latex2rtf is a one-pass converter whose lexer and parser are all mixed together. 
+This was inherited from the original implementation which was just a student
+project. I have only made this problem worse over the years.
+
+************ OVERALL STRUCTURE 
+
+The translator is structured like this (from main.c):
+
+static void ConvertWholeDocument(void)
+{
+    ConvertLatexPreamble();
+    WriteRtfHeader();
+
+    preParse(&body, &sec_head, &label);
+	
+    ConvertString(body);
+
+    while (strcmp(sec_head,"\\end{document}")!=0) {
+        preParse(&body, &sec_head2, &g_section_label);
+        ConvertString(sec_head);
+        ConvertString(body);
+        sec_head = sec_head2;
+    }
+}
+
+The LaTeX preamble is read and parsed.  The RTF header is emitted.  Then each
+section is processed one at a time.  This is important because RTF requires that
+the document be specified pretty completely before anything else happens:
+
+void WriteRtfHeader(void)
+{
+    fprintRTF("{\\rtf1\\ansi\\uc1\\deff%d\\deflang1024\n", DefaultFontFamily());
+    WriteFontHeader();
+    WriteColorTable();
+    WriteStyleHeader();
+    WriteInfo();
+    WriteHeadFoot();
+    WritePageSize();
+}
+
+ConvertString() calls Convert() which basically looks at a character and
+translates it the its RTF equivalent.  If the character is the start of a LaTeX
+command then the command is looked up in the tables at the start of commands.c 
+and the proper subroutine is called to handle the details.
+
+The function preParse() is a horrible hack.  It was introduced so that cross
+references could be properly placed in RTF.  For example, \label{thisSection}
+can occur nearly anywhere in a section.  To place the cross reference 
+properly in RTF, it is necessary to place the RTF tags at the point where
+the section number is emitted.  So preParse() essentially slurps an entire
+section and then converts one section at a time to RTF. The text returned by 
+preParse() has all the TeX comments removed, line-endings normalized, and tabs 
+converted to spaces.  User-defined macros are also expanded.
+
+preParse() is somewhat fragile.  Don't look at it cross-eyed or it will fail.
+
+************ IMAGES
+
+RTF has very limited support for images.  The basic idea is that latex2rtf
+converts all images to a bitmap (largely using other command-line utilities)
+and then inserts the bitmap into the RTF stream.
+
+************ EQUATIONS 
+
+Equations can be handled in three ways at the moment.  First, they can be
+converted to images and inserted as above.  Second, they can be converted
+using Word's quirky FIELD commands.  Finally, some attempt can be made to 
+make the conversion without either of the above, but the results are only
+satisfactory for the very simplest of equations.
+
+************ TABLES
+
+The primary difficulty with converting tables is that LaTeX automatically
+makes the columns the correct width.  There is no facility for doing this
+in RTF and so the column widths must be estimated.  Currently, the widths
+of all columns are just made equal to one another.
+
+************ FIELDS
+
+Word fields are problematic and do not work well with any other editor.
+
+************ CHARACTERS
+
+TeX existed long before Unicode or any standard character set beyond the
+lower 128 ASCII characters.  RTF is also old and did not add support for
+unicode until well after latex2rtf was started.  Consequently RTF support
+for unicode characters is hit-or-miss.
+
+
+
+
