@@ -1287,12 +1287,12 @@ static void WriteHeadFoot(void)
         if (g_preambleLFOOT)
             ConvertString(g_preambleLFOOT);
 
-        fprintRTF("\\tab ");
+        fprintRTF("\\tab\n");
         if (g_preambleCFOOT)
             ConvertString(g_preambleCFOOT);
 
         if (g_preambleRFOOT) {
-            fprintRTF("\\tab ");
+            fprintRTF("\\tab\n");
             ConvertString(g_preambleRFOOT);
         }
 
@@ -1307,12 +1307,12 @@ static void WriteHeadFoot(void)
         if (g_preambleLHEAD)
             ConvertString(g_preambleLHEAD);
 
-        fprintRTF("\\tab ");
+        fprintRTF("\\tab\n");
         if (g_preambleCHEAD)
             ConvertString(g_preambleCHEAD);
 
         if (g_preambleRHEAD) {
-            fprintRTF("\\tab ");
+            fprintRTF("\\tab\n");
             ConvertString(g_preambleRHEAD);
         }
 

@@ -561,7 +561,7 @@ void CmdBibitem(int code)
             ConvertString(s);
             fprintRTF("{\\*\\bkmkend BIB_%s}", signet);
             fprintRTF("]");
-            fprintRTF("\\tab ");
+            fprintRTF("\\tab\n");
         }
         /* else emit nothing for APALIKE */
     }
@@ -2323,7 +2323,7 @@ void CmdNumberLine(int code)
     number = getBraceParam();
     diagnostics(4, "Entering CmdNumberLine [%s]", number);
     ConvertString(number);
-    fprintRTF("\\tab ");
+    fprintRTF("\\tab\n");
     free(number);
 }
 

@@ -321,7 +321,7 @@ static void PrepareRtfEquation(int code, int EQ_Needed)
 		
             g_show_equation_number = FALSE;
             startParagraph("equation", EQUATION_PARAGRAPH);
-            fprintRTF("\\tab ");
+            fprintRTF("\\tab\n");
             setTexMode(MODE_DISPLAYMATH);
             break;
 
@@ -332,7 +332,7 @@ static void PrepareRtfEquation(int code, int EQ_Needed)
             g_suppress_equation_number = FALSE;
 
             startParagraph("equationNum", EQUATION_PARAGRAPH);
-            fprintRTF("\\tab ");
+            fprintRTF("\\tab\n");
             setTexMode(MODE_DISPLAYMATH);
             break;
 
@@ -356,7 +356,7 @@ static void PrepareRtfEquation(int code, int EQ_Needed)
             else
             	startParagraph("equationArray", EQUATION_PARAGRAPH);
             
-            fprintRTF("\\tab ");
+            fprintRTF("\\tab\n");
             setTexMode(MODE_DISPLAYMATH);
             break;
 
@@ -380,7 +380,7 @@ static void PrepareRtfEquation(int code, int EQ_Needed)
             else
             	startParagraph("equationArrayNum", EQUATION_PARAGRAPH);
 
-            fprintRTF("\\tab ");
+            fprintRTF("\\tab\n");
             setTexMode(MODE_DISPLAYMATH);
             break;
 
@@ -494,7 +494,7 @@ static void FinishRtfEquation(int code, int EQ_Needed)
                incrementCounter("equation");
                if (!g_equation_display_bitmap) {
                 	for (; g_equation_column < 3; g_equation_column++)
-                    	fprintRTF("\\tab ");
+                    	fprintRTF("\\tab\n");
                 }
                 fprintRTF("\\tab{\\b0 (");
                 number = CreateEquationLabel();
@@ -1524,7 +1524,7 @@ void CmdEqnArraySlashSlash(int height)
 		char number[20];
 
 		for (; g_equation_column < 3; g_equation_column++)
-			fprintRTF("\\tab ");
+			fprintRTF("\\tab\n");
 		incrementCounter("equation");
 
 		fprintRTF("\\tab{\\b0 (");
@@ -1564,7 +1564,7 @@ void CmdEqnArraySlashSlash(int height)
         
 	}
 	
-	fprintRTF("\\tab ");
+	fprintRTF("\\tab\n");
 
     if (g_current_eqn_needs_EQ) 
     	startField(FIELD_EQ);
@@ -1583,7 +1583,7 @@ void CmdSlashSlash(int height)
 /* this should only happen for an array environment */
     if (g_processing_tabular) { /* tabular or array environment */
         if (getTexMode() == MODE_MATH || getTexMode() == MODE_DISPLAYMATH) {    /* array */
-            fprintRTF("\\par\n\\tab ");
+            fprintRTF("\\par\n\\tab\n");
             return;
         }
     	fprintRTF("\\row\n");

@@ -959,16 +959,16 @@ void CmdItem(int code)
         diagnostics(5, "Exiting ConvertString from CmdItem");
         fprintRTF("}");
         if (code != DESCRIPTION_MODE && code != INPARAENUM_MODE)
-            fprintRTF("\\tab ");
+            fprintRTF("\\tab\n");
     }
 
     switch (code) {
         case ITEMIZE_MODE:
             if (!itemlabel) {
                 if (FrenchMode)
-                    fprintRTF("\\endash\\tab ");
+                    fprintRTF("\\endash\\tab\n");
                 else
-                    fprintRTF("\\bullet\\tab ");
+                    fprintRTF("\\bullet\\tab\n");
             }
             break;
 
@@ -994,7 +994,7 @@ void CmdItem(int code)
 					break;
 			}
 			if (code != INPARAENUM_MODE)
-				fprintRTF("\\tab ");
+				fprintRTF("\\tab\n");
 			else
 				fprintRTF(" ");
 			
@@ -1882,7 +1882,7 @@ void CmdRule(int code)
 	
 	dim = getStringDimension(width);
 	
-	n = dim / CurrentFontSize();
+	n = dim / CurrentFontSize()/5;
 	
 	for (i=0; i<n; i++) 
 		fprintRTF("_");

@@ -63,7 +63,7 @@ typedef struct TabularT {
 
 void CmdTabjump(void)
 {
-    fprintRTF("\\tab ");
+    fprintRTF("\\tab\n");
 }
 
 void CmdTabset(void)
