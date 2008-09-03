@@ -1,4 +1,4 @@
-#!/bin/sh 
+#!bash 
 # Part of latex2rtf by Scott Prahl (Nov 2002)
 #
 # This version uses latex and dvips
@@ -83,20 +83,18 @@ case $1 in
     -H) home_dir=$2;       shift 2;;
     -v) version;           shift 1;;
     --) break;;
-    -*) echo "error: no such option $1"; exit 1;;
+    -*) echo "latex2png: error: no such option $1"; exit 1;;
     *)  break;;
 esac
 done
 
 # is there an input file?
 if [ -z "$1" ] ; then
-    echo "error: no input file specified"
+    echo "latex2png: error: no input file specified"
     exit 1
 fi
 
 # is it an eps file?
-# WH (2007-10-29) fixed following line
-# if [ `echo $1 | ${GREP} -c eps$` -eq 1 ] ; then
 if [ `echo $1 | ${GREP} -c eps` -eq 1 ] ; then
    ext="eps"
 fi
@@ -113,7 +111,7 @@ cd $dir
     
 # does the input file exist?
 if [ ! -f "$name.$ext" ] ; then
- echo "error: input file $name.$ext does not exist in directory $dir"
+ echo "latex2png: error: input file $name.$ext does not exist in directory $dir"
  exit 1
 fi
 
@@ -124,29 +122,29 @@ if [ $ext = "tex" ] ; then
     $LATEX $name > /dev/null
     
     if [ ! -e "$name.dvi" ] ; then
-        echo "error: latex failed to translate $name.tex to $name.dvi"
+        echo "latex2png: error: latex failed to translate $name.tex to $name.dvi"
         exit 1
     fi
     
     $DVIPS -o $name.tmp.eps $name.dvi
     
     if [ ! -e "$name.tmp.eps" ] ; then
-        echo "error: dvips failed to translate $name.dvi to $name.tmp.eps"
+        echo "latex2png: error: dvips failed to translate $name.dvi to $name.tmp.eps"
         exit 1
     fi
     
     #helps convert work with eps figures
     $EPS2EPS $name.tmp.eps $name.eps
     if [ ! -e "$name.eps" ] ; then
-        echo "error: eps2eps (Ghostscript) failed to translate $name.tmp.eps from $name.eps"
+        echo "latex2png: error: eps2eps (Ghostscript) failed to translate $name.tmp.eps to $name.eps"
         exit 1
     fi
 fi
 
-$CONVERT -crop 0x0 $out -units PixelsPerInch -density ${opt_d}x${opt_d} $name.eps $name.png
+$CONVERT $out -units PixelsPerInch -density ${opt_d}x${opt_d} $name.eps $name.png
 
 if [ ! -e "$name.png" ] ; then
-    echo "error: convert (ImageMagick) failed to translate $name.eps from $name.png"
+    echo "latex2png: error: convert (ImageMagick) failed to translate $name.eps to $name.png"
     exit 1
 fi
 
@@ -159,16 +157,11 @@ fi
 if [ $inline -eq 1 ] ; then
     rm -f $name.ppm
 
-# sjs added the pipe through pnmcrop to get rid of some 
-# left-over white space at the left of the image which meant 
-# it didn't find the dot, so the 2nd
-# pnmcrop further down just cropped to the dot! Feb 2006
-
-    pngtopnm $name.png | pnmcrop -white -left > $name.ppm
+    pngtopnm $name.png | pnmcrop > $name.ppm
 
 #    pngtopnm $name.png > $name.ppm
 
-# wh restored next line because $name.pbm is read by latex2rtf
+# next line is needed because $name.pbm is read by latex2rtf
     pnmcut -width 1 $name.ppm | ppmtopgm | pgmtopbm > $name.pbm
 
 #   offset=`expr ${opt_d} / 72 + 2`
