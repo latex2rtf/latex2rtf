@@ -840,6 +840,7 @@ static CommandArray params[] = {
     {"document", Environment, DOCUMENT_MODE},
     {"tabbing", CmdTabbing, TABBING},
     {"figure", CmdFigure, FIGURE},
+    {"wrapfigure", CmdFigure, WRAP_FIGURE},
     {"figure*", CmdFigure, FIGURE_1},
     {"picture", CmdPicture, 0},
     {"minipage", CmdMinipage, 0},
@@ -1261,7 +1262,7 @@ static char *EnvironmentName(CommandArray *code)
 	if (code == CzechModeCommands)
 		return strdup("czech");
 	if (code == FigureCommands)
-		return strdup("figure");
+		return strdup("figure or wrapfigure");
 	if (code == ignoreCommands)
 		return strdup("unknown environment");
 	if (code == hyperlatexCommands)

@@ -116,8 +116,9 @@ void CmdIgnoreDef(int code);
 void CmdItem(int code);
 void CmdMinipage(int code);
 
-#define FIGURE 1
-#define FIGURE_1 5
+#define FIGURE      1
+#define FIGURE_1    5
+#define WRAP_FIGURE 6
 
 #define IGNORE_HTMLONLY  1
 #define IGNORE_PICTURE   2

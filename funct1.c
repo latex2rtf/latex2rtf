@@ -1379,9 +1379,24 @@ void CmdFigure(int code)
   		   then process the environment as usual.
  ******************************************************************************/
 {
-    char *loc, *figure_contents;
-    char *endfigure = ((code & ~ON) == FIGURE) ? "\\end{figure}" : "\\end{figure*}";
+    char *figure_contents;
+    char endfigure[50];
 	static char     oldalignment;
+	int real_code = code & ~ON;
+	
+	switch (real_code) {
+		case FIGURE:
+			strcpy(endfigure, "\\end{figure}");
+			break;
+			
+		case FIGURE_1:
+			strcpy(endfigure, "\\end{figure*}");
+			break;
+	
+		case WRAP_FIGURE:
+			strcpy(endfigure, "\\end{wrapfigure}");
+			break;
+	}
 	
     if (code & ON) {
         setCounter("subfigure", 0);
@@ -1390,11 +1405,22 @@ void CmdFigure(int code)
 		setAlignment(JUSTIFIED);
 
 		CmdVspace(VSPACE_BIG_SKIP);
-        loc = getBracketParam();
-        diagnostics(4, "entering CmdFigure [%s]", (loc) ? loc : "");
+        
+        if (real_code == WRAP_FIGURE) {
+        	char *lines, *position, *width;
+        	lines = getBracketParam();
+        	position = getBraceParam();
+        	width = getBraceParam();
+        	if (lines) free(lines);
+        	if (position) free(position);
+        	if (width) free(width);
+        } else {
+			char * loc = getBracketParam();
+			diagnostics(4, "entering CmdFigure [%s]", (loc) ? loc : "");
+        	if (loc) free(loc);
+        }
+        
         g_processing_figure = TRUE;
-        if (loc)
-            free(loc);
         figure_contents = getTexUntil(endfigure, TRUE);
         g_figure_label = ExtractLabelTag(figure_contents);
         if (g_endfloat_figures) {
