@@ -1379,7 +1379,7 @@ void CmdFigure(int code)
   		   then process the environment as usual.
  ******************************************************************************/
 {
-    char *figure_contents;
+    char *figure_contents, *lines, *position, *width;
     char endfigure[50];
 	static char     oldalignment;
 	int real_code = code & ~ON;
@@ -1407,13 +1407,12 @@ void CmdFigure(int code)
 		CmdVspace(VSPACE_BIG_SKIP);
         
         if (real_code == WRAP_FIGURE) {
-        	char *lines, *position, *width;
-        	lines = getBracketParam();
+        	lines    = getBracketParam();
         	position = getBraceParam();
-        	width = getBraceParam();
-        	if (lines) free(lines);
+        	width    = getBraceParam();
+        	if (lines)    free(lines);
         	if (position) free(position);
-        	if (width) free(width);
+        	if (width)    free(width);
         } else {
 			char * loc = getBracketParam();
 			diagnostics(4, "entering CmdFigure [%s]", (loc) ? loc : "");
