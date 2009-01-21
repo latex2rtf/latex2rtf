@@ -1,4 +1,4 @@
-#!bash 
+#!/bin/bash
 # Part of latex2rtf by Scott Prahl (Nov 2002)
 #
 # This version uses latex and dvips
