@@ -100,40 +100,41 @@ typedef struct RtfFontInfoType {
 static RtfFontInfoType RtfFontInfo[MAX_FONT_INFO_DEPTH];
 static int FontInfoDepth = 0;
 
-int RtfFontNumber(const char *Fname)
-
 /****************************************************************************
  *   purpose: returns the RTF font number from an RTF font name
      example: RtfFontNumber("Times")
  ****************************************************************************/
+int RtfFontNumber(const char *Fname)
 {
-    int num = 0;
+    ConfigEntryT **config_handle;
     char *font_type, *font_name;
-    ConfigEntryT **config_handle = CfgStartIterate(FONT_A);
+    int font_id;
 
     diagnostics(4, "seeking=%s", Fname);
-    
-    
+
+    config_handle = CfgStartIterate(FONT_A);
+
     while ((config_handle = CfgNext(FONT_A, config_handle)) != NULL) {
         font_type = (char *) (*config_handle)->TexCommand;
         font_name = (char *) (*config_handle)->RtfCommand;
-        diagnostics(6, "name='%s' type='%s' num=%d", font_name, font_type, num);
+        font_id   = (int   ) (*config_handle)->original_id;
+        
+        diagnostics(6, "RTF font %d has name='%s' of type='%s'", font_id, font_name, font_type);
 
-        if (strcmp(font_name, Fname) == 0) {
+        if (strcmp(font_name, Fname) == 0) {  /* right name, now make sure charset is correct*/
 			int charset = 0;
 	
-			if (strncmp(font_name, "Symbol", 6) == 0)
-				return num;      /* Symbol is same in all charsets! */
-	
+			if (strncmp(font_name, "Symbol",   6) == 0 || strncmp(font_name, "MT Extra", 8) == 0)
+				return font_id;      /* Symbol and MT Extra is same in all charsets! */
+
 			if (strncmp(font_type, "Cyrillic", 8) == 0)
 				charset = 204;
 	
 			if (strncmp(font_type, "Latin2", 6) == 0)
 				charset = 238;
 
-			if (g_fcharset_number == charset) return num;
+			if (g_fcharset_number == charset) return font_id;
         }
-        num++;
     }
     return TexFontNumber("Roman");  /* default font */
 }

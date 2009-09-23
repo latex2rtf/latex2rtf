@@ -1132,7 +1132,7 @@ static void WriteFontHeader(void)
  \fcharset238:  E. European (codepage 852, 1250)
  ****************************************************************************/
 {
-    int i;
+    int num=0;
     ConfigEntryT **config_handle;
     char *font_type, *font_name;
     int charset;
@@ -1140,14 +1140,12 @@ static void WriteFontHeader(void)
     fprintRTF("{\\fonttbl");
 
     config_handle = CfgStartIterate(FONT_A);
-    i = 0;
     while ((config_handle = CfgNextByInsertion(FONT_A, config_handle)) != NULL) {
-
         font_type = (char *) (*config_handle)->TexCommand;
         font_name = (char *) (*config_handle)->RtfCommand;
         charset = g_fcharset_number;
 
-        if (strncmp(font_name, "Symbol", 6) == 0)
+		if (strncmp(font_name, "Symbol",   6) == 0 || strncmp(font_name, "MT Extra", 8) == 0)
             charset = 2;
 
         if (strncmp(font_type, "Cyrillic", 8) == 0)
@@ -1156,9 +1154,9 @@ static void WriteFontHeader(void)
         if (strncmp(font_type, "Latin2", 6) == 0)
             charset = 238;
 
-        fprintRTF("{\\f%d\\fnil\\fcharset%d %s;}\n", i, charset, font_name);
+        fprintRTF("{\\f%d\\fnil\\fcharset%d %s;}\n", num, charset, font_name);
 
-        i++;
+        num++;
     }
 
     fprintRTF("}\n");

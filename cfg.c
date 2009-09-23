@@ -392,13 +392,13 @@ ConfigEntryT **CfgNext(int WhichCfg, ConfigEntryT ** last)
  * purpose:  Get the next entry from specified configuration data
  ****************************************************************************/
 {
-    if (last == NULL) {
+    if (last == NULL) 
         return (ConfigEntryT **) configinfo[WhichCfg].config_info;
-    }
+    
     last++;
-    if (last > (ConfigEntryT **) configinfo[WhichCfg].config_info + configinfo[WhichCfg].config_info_size - 1) {
+    if (last > (ConfigEntryT **) configinfo[WhichCfg].config_info + configinfo[WhichCfg].config_info_size - 1) 
         return NULL;
-    }
+    
     return last;
 }
 
@@ -431,10 +431,6 @@ void ReadLanguage(char *lang)
 {
     FILE *fp;
     char *langfn;
-
-    langfn = malloc(strlen(lang) + strlen(".cfg") + 1);
-    if (langfn == NULL)
-        diagnostics(ERROR, "Could not allocate memory for language filename.");
 
 	langfn = strdup_together(lang, ".cfg");
 

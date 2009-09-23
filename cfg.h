@@ -27,7 +27,7 @@ typedef struct ConfigEntryT
 {
    const char  *TexCommand;
    const char  *RtfCommand;
-   size_t      original_id;
+   int      original_id;
 } ConfigEntryT;
 
 void ReadLanguage(char *lang);

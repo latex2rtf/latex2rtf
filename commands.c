@@ -371,8 +371,8 @@ static CommandArray commands[] = {
     {"coprod",            CmdMTExtraChar, MTEXTRA_COPROD},
  
     {"simeq",             CmdMTExtraChar, MTEXTRA_SIMEQ},
-    {"ll",                CmdMTExtraChar, MTEXTRA_LL},
-    {"gg",                CmdMTExtraChar, MTEXTRA_GG},
+    {"ll",                CmdUnicodeChar, 8810},
+    {"gg",                CmdUnicodeChar, 8811},
     {"doteq",             CmdMTExtraChar, MTEXTRA_DOTEQ},
     {"because",           CmdMTExtraChar, MTEXTRA_BECAUSE},
     {"measuredangle",     CmdMTExtraChar, MTEXTRA_MEASUREDANGLE},
@@ -451,6 +451,7 @@ static CommandArray commands[] = {
 	{"int", CmdSymbolChar, 0xf2},
 	{"iota", CmdSymbolChar, (int) 'i'},
 	{"kappa", CmdSymbolChar, (int) 'k'},
+/*	{"lambda", CmdSTIXChar, 0xE1A0}, */
 	{"lambda", CmdSymbolChar, (int) 'l'},
 	{"Lambda", CmdSymbolChar, (int) 'L'},
 	{"land", CmdSymbolChar, 0xd9},

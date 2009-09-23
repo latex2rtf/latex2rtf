@@ -69,11 +69,13 @@ static void put_ring_char(char c)
     fprintRTF("{\\fldrslt }}");
 }
 
-static void put_macron_char(char c)
+static void put_macron_char(char c, int unicode)
 {
-    fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(%c", c);
-    fprintRTF("%c\\\\S(\\'af))}", g_field_separator);
+    fprintRTF("\\u%d?",unicode);
+/*    fprintRTF("{\\field{\\*\\fldinst  EQ \\\\O(%c", c);
+    fprintRTF("%c\\\\S(\\'ee))}", g_field_separator);
     fprintRTF("{\\fldrslt }}");
+    */
 }
 
 static void put_tilde_char(char c)
@@ -868,7 +870,7 @@ static void latin4_enc(int index)
         return;
     }
     if (index + 128 == 0xAA) {  /* U+274 LATIN CAPITAL LETTER E WITH MACRON */
-        put_macron_char('E');
+        put_macron_char('E',274);
         return;
     }
     if (index + 128 == 0xAB) {  /* U+290 LATIN CAPITAL LETTER G WITH CEDILLA */
@@ -913,7 +915,7 @@ static void latin4_enc(int index)
         return;
     }
     if (index + 128 == 0xBA) {  /* U+275 LATIN SMALL LETTER E WITH MACRON */
-        put_macron_char('e');
+        put_macron_char('e',275);
         return;
     }
     if (index + 128 == 0xBB) {  /* U+291 LATIN SMALL LETTER G WITH CEDILLA */
@@ -941,7 +943,7 @@ static void latin4_enc(int index)
         return;
     }
     if (index + 128 == 0xC0) {  /* U+256 LATIN CAPITAL LETTER A WITH MACRON */
-        put_macron_char('A');
+        put_macron_char('A',256);
         return;
     }
     if (index + 128 == 0xC7) {  /* U+302 LATIN CAPITAL LETTER I WITH OGONEK */
@@ -964,7 +966,7 @@ static void latin4_enc(int index)
         return;
     }
     if (index + 128 == 0xCF) {  /* U+298 LATIN CAPITAL LETTER I WITH MACRON */
-        put_macron_char('I');
+        put_macron_char('I',298);
         return;
     }
     if (index + 128 == 0xD0) {  /* U+272 LATIN CAPITAL LETTER D WITH STROKE */
@@ -977,7 +979,7 @@ static void latin4_enc(int index)
         return;
     }
     if (index + 128 == 0xD2) {  /* U+332 LATIN CAPITAL LETTER O WITH MACRON */
-        put_macron_char('O');
+        put_macron_char('O',332);
         return;
     }
     if (index + 128 == 0xD3) {  /* U+310 LATIN CAPITAL LETTER K WITH CEDILLA */
@@ -994,11 +996,11 @@ static void latin4_enc(int index)
         return;
     }
     if (index + 128 == 0xDE) {  /* U+362 LATIN CAPITAL LETTER U WITH MACRON */
-        put_macron_char('U');
+        put_macron_char('U',362);
         return;
     }
     if (index + 128 == 0xE0) {  /* U+257 LATIN SMALL LETTER A WITH MACRON */
-        put_macron_char('a');
+        put_macron_char('a',256);
         return;
     }
     if (index + 128 == 0xE7) {  /* U+303 LATIN SMALL LETTER I WITH OGONEK */
@@ -1021,7 +1023,7 @@ static void latin4_enc(int index)
         return;
     }
     if (index + 128 == 0xEF) {  /* U+299 LATIN SMALL LETTER I WITH MACRON */
-        put_macron_char('i');
+        put_macron_char('i',299);
         return;
     }
     if (index + 128 == 0xF0) {  /* U+273 LATIN SMALL LETTER D WITH STROKE */
@@ -1034,7 +1036,7 @@ static void latin4_enc(int index)
         return;
     }
     if (index + 128 == 0xF2) {  /* U+333 LATIN SMALL LETTER O WITH MACRON */
-        put_macron_char('o');
+        put_macron_char('o',333);
         return;
     }
     if (index + 128 == 0xF3) {  /* U+311 LATIN SMALL LETTER K WITH CEDILLA */
@@ -1051,7 +1053,7 @@ static void latin4_enc(int index)
         return;
     }
     if (index + 128 == 0xFE) {  /* U+363 LATIN SMALL LETTER U WITH MACRON */
-        put_macron_char('u');
+        put_macron_char('u',363);
         return;
     }
     if (index + 128 == 0xFF) {  /* U+729 DOT ABOVE */
@@ -1096,7 +1098,7 @@ static void latin5_enc(int index)
         return;
     }
     if (index + 128 == 0xEF) {  /* U+299 LATIN SMALL LETTER I WITH MACRON */
-        put_macron_char('i');
+        put_macron_char('i',299);
         return;
     }
     if (index + 128 == 0xF0) {  /* U+287 LATIN SMALL LETTER G WITH BREVE */

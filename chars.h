@@ -26,6 +26,8 @@ void CmdUnderbarChar(int code);
 void CmdDotlessChar(int code);
 void CmdChar(int code);
 void CmdSymbol(int code);
+void CmdSTIXChar(int code);
+void CmdUnicodeChar(int code);
 
 void CmdLogo(int code);
 

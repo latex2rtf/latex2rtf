@@ -137,8 +137,12 @@ static void putOverstrikeChar(const char *font, char *s,
 	if (processing_fields()==0) fprintRTF("{\\field{\\*\\fldinst EQ ");
 		
 	fprintRTF("\\\\O(");
-    ConvertString(s);
-	fprintRTF("%c {", g_field_separator);
+    if (s) {
+    	ConvertString(s);
+		fprintRTF("%c {", g_field_separator);
+	} else {
+		fprintRTF("  {", g_field_separator);
+	}
 	
 	if (raise != 0) {
 	    /* raise 0.2 more for tall characters, do nothing if negative */
@@ -175,6 +179,14 @@ static void putOverstrikeChar(const char *font, char *s,
 	if (processing_fields()==0) fprintRTF("}{\\fldrslt }}");
 }
 
+/* output STIX Encoding */
+void CmdSTIXChar(int code)
+{
+    int num = RtfFontNumber("STIXGeneral");
+    fprintRTF("{\\f%d\\u%d%c}",num, code,'?');
+}
+
+
 /*****************************************************************************
  purpose: emit a unicode character.  values above 2^15 are negative
           the default_char should be a simple ascii 0-127 character
@@ -187,6 +199,17 @@ static void putUnicodeChar(unsigned char b1, unsigned char b2, char default_char
 		fprintRTF("\\u%d%c",b1*256+b2-65536,default_char);
 }
 
+
+/******************************************************************************
+ * purpose : inserts a Unicode character
+ *******************************************************************************/
+void CmdUnicodeChar(int code)
+{
+	unsigned char a,b;
+	a = code >> 8;
+	b = code - a *256;
+    putUnicodeChar(a,b,'?');
+}
 
 void CmdUmlauteChar(int code)
 
@@ -611,7 +634,7 @@ void CmdMacronChar(int code)
 	}
 	
 	if (!done) 
-		putOverstrikeChar("MT Extra", cParam, 195, 0.0);
+		putOverstrikeChar("unicode", cParam, 772, 0.1);
 
     free(cParam);
 }
@@ -852,7 +875,7 @@ void CmdTildeChar(int code)
 	}
 
 	if (!done) 
-		putOverstrikeChar("MT Extra", cParam, 37, 0.1);
+		putOverstrikeChar("simple", cParam, '~', 0.4);
 		
 	free(cParam);
 }
@@ -1027,7 +1050,7 @@ void CmdBreveChar(int code)
 	}
 	
 	if (!done) 
-		putOverstrikeChar("MT Extra", cParam, 252, 0.1);
+		putOverstrikeChar("unicode", cParam, 728, 0.1);
 
     free(cParam);
 }
@@ -1187,7 +1210,7 @@ void CmdCaronChar(int code)
 	}
 	
 	if (!done) 
-		putOverstrikeChar("MT Extra", cParam, 253, 0.1);
+		putOverstrikeChar("unicode", cParam, 711, 0.1);
 		/* putOverstrikeChar("unicode", cParam, 780, 0.05); */
 
     free(cParam);
