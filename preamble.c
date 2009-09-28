@@ -1301,7 +1301,7 @@ static void WriteHeadFoot(void)
             ConvertString(g_preambleRFOOT);
         }
 
-        fprintRTF("\\par}\n");
+        fprintRTF("\\par}}\n");
     } else {
 		fprintRTF("{\\footer\\pard\\plain\\f%d\\fs%d\\qc\\chpgn\\par}\n",family,size);
     }
@@ -1321,7 +1321,7 @@ static void WriteHeadFoot(void)
             ConvertString(g_preambleRHEAD);
         }
 
-        fprintRTF("\\par}\n");
+        fprintRTF("\\par}}\n");
     }
 }
 
