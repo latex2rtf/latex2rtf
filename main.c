@@ -639,6 +639,7 @@ static void InitializeLatexLengths(void)
     setLength("topmargin", 18 * 20);
     setLength("headsep", 25 * 20);
     setLength("textwidth", 345 * 20);
+    setLength("columnwidth", 345 * 20);
     setLength("linewidth", 345 * 20);
     setLength("columnsep", 10 * 20);
     setLength("evensidemargin", 11 * 20);

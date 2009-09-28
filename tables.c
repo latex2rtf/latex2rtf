@@ -39,27 +39,226 @@ This file is available from http://sourceforge.net/projects/latex2rtf/
 #include "graphics.h"
 #include "vertical.h"
 
+typedef struct TabularT {
+    int n;         /* number of columns, 0 column unused except in vert */
+    int i;         /* current column */
+    char *align;   /* align[1] is the alignment of the first column */
+    int  *chars;   /* chars[1] is the max number of chars in the first column */
+    int  *vert;    /* vert[0] is the number of |'s before first column */
+                   /* vert[1] is the number of |'s after first column */
+    int  *width;   /* width[1] is the width of the first column */
+    int  *cline;   /* cline[1] is true when line should be drawn across column 1 */
+    char **before; /* before[1] is TeX to be inserted before each entry in column 1 */
+    char **after;  /* after[1] is TeX to be inserted after each entry in column 1 */
+} TabularT;
+
+
 int g_tabbing_left_position = 0;
 int g_tabbing_current_position = 0;
-int *g_tabbing_locations = NULL;
+int *g_tabbing_locations  = NULL;
 int tabcounter = 0;
-bool tabbing_return = FALSE;
-bool tabbing_on_itself = FALSE;
+bool tabbing_return       = FALSE;
+bool tabbing_on_itself    = FALSE;
 long pos_begin_kill;
 bool g_processing_tabbing = FALSE;
 bool g_processing_tabular = FALSE;
-bool g_processing_table = FALSE;
+bool g_processing_table   = FALSE;
 
-typedef struct TabularT {
-    int n;                /* number of columns */
-    int i;                /* current column */
-    char *align;          /* align[1] is the alignment of the first column */
-    int *vert;            /* vert[0] is the number of |'s before first column 
-                             vert[1] is the number of |'s after first column
-                             vert[n] is the number of |'s after last column */
-    int *width;           /* width[1] is the width of the first column */
-    int *cline;           /* cline[1] is true when line should be draws across column 1 */
-} TabularT;
+static TabularT* NewTabular(int size)
+{
+	int i;
+	TabularT *table = (TabularT *) malloc(sizeof(TabularT));
+	
+	table->i = 0;
+	table->n = size;
+	table->align = (char *) malloc((size+1)*sizeof(char));
+	table->chars = (int  *) malloc((size+1)*sizeof(int));
+	table->vert  = (int  *) malloc((size+1)*sizeof(int));
+	table->width = (int  *) malloc((size+1)*sizeof(int));
+	table->cline = (int  *) malloc((size+1)*sizeof(int));
+	table->after = (char **) malloc((size+1)*sizeof(char *));
+	table->before= (char **) malloc((size+1)*sizeof(char *));
+	
+	/* fill with reasonable starting values */
+	for (i=0; i <= size; i++) {
+		table->align[i] = 'l';
+		table->chars[i] = 1;
+		table->vert[i]  = 0;
+		table->width[i] = -1;
+		table->cline[i] = 0;
+		table->after[i] = NULL;
+		table->before[i] = NULL;
+	}
+
+	return table;
+}
+
+static void FreeTabular(TabularT *table)
+{
+	int i;
+	for (i=0; i <= table->n; i++) {
+		if(table->after[i] ) free(table->after[i]);
+		if(table->before[i]) free(table->before[i]);
+	}
+	free(table->align);
+	free(table->vert);
+	free(table->chars);
+	free(table->width);
+	free(table->cline);
+	free(table->after);
+	free(table->before);
+	free(table);
+	table = NULL;
+}
+
+static void PrintTabular(TabularT *table)
+{
+	int i;
+	diagnostics(1, "tabular info %p, cols=%d, current col=%d", table, table->n, table->i);
+	for (i=0; i <= table->n; i++) {
+		diagnostics(1, "col %d, align=%c, chars=%d, vert=%d, width=%5d, cline=%d, before=%s, after=%s",
+		                i, table->align[i],table->chars[i],table->vert[i],table->width[i],
+		                   table->cline[i],table->before[i],table->after[i]);
+	}
+}
+
+/******************************************************************************
+ purpose: Just count the number of columns ...
+          very similar to the switch structure in InterpretTabularFormat
+ ******************************************************************************/
+static int countTabularColumns(char *format)
+{
+	char *t;
+	char *s=format;	
+    int iCol = 0;
+    
+    while (*s) {
+        switch (*s) {
+            case 'c':
+            case 'r':
+            case 'l':
+                iCol++;
+        		s++;
+                break;
+            case 'b':
+            case 'm':
+            case 'p':
+                iCol++;
+            	t=getStringBraceParam(&s);
+            	free(t);
+                break;
+            case '*':
+            	t=getStringBraceParam(&s);
+            	free(t);
+            	t=getStringBraceParam(&s);
+            	free(t);
+                break;
+            case '<':
+            case '>':
+            case '@':
+            case '!':
+            	t=getStringBraceParam(&s);
+            	free(t);
+                break;
+            default:
+        		s++;
+                break;
+        }
+    }
+    return iCol;
+}
+
+/******************************************************************************
+ purpose: convert the crazy tabular format string to something useable
+          and return a point to that structure.
+ ******************************************************************************/
+static TabularT *NewTabularFromFormat(char *format)
+{
+    int iCol;
+    char *t, *old, *s;
+    TabularT *table;
+    
+    static int warned_once = FALSE;
+    diagnostics(4, "Entering NewTabularFromFormat, format='%s'", format);
+
+	table = NewTabular(countTabularColumns(format));
+	
+    iCol = 0;  
+	s = format;
+    while (*s) {
+
+        switch (*s) {
+            case 'c':
+            case 'r':
+            case 'l':
+                iCol++;
+                table->align[iCol] = *s;
+                s++;
+                diagnostics(6,"%c item, residual='%s'",*(s-1),s);
+                break;
+            case 'b':
+            case 'm':
+            case 'p':
+                iCol++;
+                table->align[iCol] = 'l';
+            	t=getStringBraceParam(&s);
+            	table->width[iCol] = getStringDimension(t);
+            	free(t);
+                diagnostics(6,"p item, width=%d, residual='%s'",table->width[iCol], s);
+                break;
+            case '*':
+                diagnostics(WARNING, " '*{num}{cols}' not supported.");
+            	t=getStringBraceParam(&s);
+            	free(t);
+            	t=getStringBraceParam(&s);
+            	free(t);
+                break;
+            case '<':
+            	t=getStringBraceParam(&s);
+            	old = table->before[iCol+1];
+            	if (old) {
+            		table->before[iCol+1] = strdup_together(t, old);
+            		free(t);
+            		free(old);
+            	} else
+            		table->before[iCol+1] = t;
+                diagnostics(6,"< item, residual='%s'",s);
+                break;
+            case '>':
+            	t=getStringBraceParam(&s);
+            	old = table->after[iCol+1];
+            	if (old) {
+            		table->after[iCol+1] = strdup_together(t, old);
+            		free(t);
+            		free(old);
+            	} else
+            		table->after[iCol+1] = t;
+                diagnostics(6,"> item, residual='%s'",s);
+                break;
+            case '@':
+            case '!':
+                if (!warned_once) diagnostics(WARNING, " '@{decl.}' and !{decl.} not supported.");
+            	t=getStringBraceParam(&s);
+            	free(t);
+                warned_once = TRUE;
+                break;
+            case '|':
+            	table->vert[iCol]++;
+            	s++;
+            	break;
+            default:
+            	s++;
+                break;
+        }
+    }
+    table->n = iCol;
+    table->i = 0;
+    
+ /*   PrintTabular(table); */
+    diagnostics(5, "Exiting NewTabularFromFormat");
+    return table;
+}
+
 
 void CmdTabjump(void)
 {
@@ -88,134 +287,31 @@ static void EndCellRtf(void)
     fprintRTF("\\cell}\n");
 }
 
-static char *ConvertFormatString(char *s)
-
-/******************************************************************************
- purpose: convert latex formatting to something simpler
- ******************************************************************************/
-{
-    int iCol, width;
-    char *simple, *t;
-    static int warned_once = FALSE;
-
-    simple = strdup(s);         /* largest possible */
-    diagnostics(5, "Entering ConvertFormatString, input=<%s>", s);
-
-    iCol = 0;
-    while (*s) {
-
-        switch (*s) {
-            case 'c':
-            case 'r':
-            case 'l':
-                simple[iCol] = *s;
-                iCol++;
-                break;
-            case '{':          /* skip to balancing brace */
-            	t=getStringBraceParam(&s);
-            	free(t);
-                break;
-            case 'p':
-                simple[iCol] = 'l';
-            	t=getStringBraceParam(&s);
-            	width = getStringDimension(t);
-            	free(t);
-                iCol++;
-                break;
-            case '*':
-                diagnostics(WARNING, " '*{num}{cols}' not supported.");
-                break;
-            case '@':
-                if (!warned_once) diagnostics(WARNING, " '@{text}' not supported.");
-                warned_once = TRUE;
-                break;
-            default:
-                break;
-        }
-        s++;
-    }
-    simple[iCol] = '\0';
-    diagnostics(5, "Exiting ConvertFormatString, output=<%s>", simple);
-    return simple;
-}
-
-static int TabularColumnPosition(TabularT tabular, int n)
+static int TabularColumnPosition(TabularT *table, int n)
 
 /******************************************************************************
  purpose:  return position of nth column 
  ******************************************************************************/
 {
-    int colWidth = getLength("textwidth") / tabular.n;
+    int i, colWidth, oldWidth;
+    
+    colWidth = 0;
+    for (i=0; i<n; i++)
+    	colWidth += table->width[i];
 
-    return colWidth * (n + 1);
+	oldWidth = getLength("textwidth") * (n + 1) / (table->n);
+
+	diagnostics(5,"col=%d pos=%d even pos=%d",n,colWidth,oldWidth);
+    return oldWidth;
 }
 
-static void TabularCountVert(char *s, int vert[])
+static TabularT *TabularPreamble(char *format)
 
 /******************************************************************************
- purpose:  fill vert[] with number of '|' for each column
+ purpose:  analyze the format and create and fill a TabularT structure 
  ******************************************************************************/
 {
-    int braces, i;
-
-    diagnostics(5, "Entering TabularCountVert, input=<%s>", s);
-
-    i = 0;
-    while (*s) {
-
-        switch (*s) {
-            case 'c':
-            case 'r':
-            case 'l':
-            case 'p':
-                i++;
-                break;
-            case '{':          /* skip to balancing brace */
-                braces = 1;
-                s++;
-                while (*s && (braces > 1 || *s != '}')) {
-                    if (*s == '{')
-                        braces++;
-                    if (*s == '}')
-                        braces--;
-                    s++;
-                }
-                break;
-            case '|':
-                vert[i]++;
-                break;
-            default:
-                break;
-        }
-        s++;
-    }
-    diagnostics(5, "Exiting TabularCountVert");
-}
-
-static TabularT TabularPreamble(char *text, char *width, char *pos, char *cols)
-
-/******************************************************************************
- purpose:  calculate column widths 
- ******************************************************************************/
-{
-    TabularT tabular;
-    int i, colCount;
-    char *colFmt;
-
-    colFmt = ConvertFormatString(cols);
-    colCount = (int) strlen(colFmt);
-
-    tabular.i = 0;
-    tabular.n = colCount;
-    tabular.align = (char *) calloc(sizeof(char) * (colCount + 1), sizeof(char));
-    tabular.vert  = (int *)  calloc(sizeof(int)  * (colCount + 1), sizeof(int));
-    tabular.width = (int *)  calloc(sizeof(int)  * (colCount + 1), sizeof(int));
-    tabular.cline = (int *)  calloc(sizeof(int)  * (colCount + 1), sizeof(int));
-
-    for (i = 1; i <= colCount; i++)
-        tabular.align[i] = colFmt[i - 1];
-
-    TabularCountVert(cols, tabular.vert);
+	TabularT *tabular = NewTabularFromFormat(format);
 
     if (getTexMode() != MODE_HORIZONTAL) {
         CmdIndent(INDENT_NONE);
@@ -223,9 +319,8 @@ static TabularT TabularPreamble(char *text, char *width, char *pos, char *cols)
     }
 
     fprintRTF("\\par\n");
-    
     return tabular;
-}
+ }
 
 static void TabularGetRow(char *table, char **row, char **next_row, int *height)
 
@@ -364,7 +459,8 @@ static void TabularMultiParameters(char *cell, int *col_span, char *align, int *
            return col_span=0 if none are present
  ******************************************************************************/
 {
-    char *p, *format, *mformat, *num;
+    char *p, *format, *num;
+    TabularT *mtable;
     diagnostics(5, "TabularMultiParameters cell=\"%s\" ", cell);
 
     *col_span = 0;
@@ -373,36 +469,24 @@ static void TabularMultiParameters(char *cell, int *col_span, char *align, int *
     *rvert = 0;
 
     p = strstr(cell, "\\multicolumn");
-    if (p == NULL)
-        return;
+    if (p == NULL) return;
 
-	p      += strlen("\\multicolumn");
-	num     = getStringBraceParam(&p);
-	format  = getStringBraceParam(&p);
-    mformat = ConvertFormatString(format);
-
-    /* count '|' to the left of the column */
-    p = format;
-    while (p && *p && *p != 'c' && *p != 'l' && *p != 'r') {
-        if (*p == '|')
-            (*lvert)++;
-        p++;
-    }
-    if (p && *p)
-        p++;
-
-    /* count '|' to the right of the column */
-    while (p && *p && *p != 'c' && *p != 'l' && *p != 'r') {
-        if (*p == '|')
-            (*rvert)++;
-        p++;
-    }
-
+	p        += strlen("\\multicolumn");
+	num       = getStringBraceParam(&p);
+	format    = getStringBraceParam(&p);
+    mtable    = NewTabularFromFormat(format);
+    
+    *lvert    = mtable->vert[0];
+    *rvert    = mtable->vert[mtable->n];
+    *align    = mtable->align[1];
     *col_span = atoi(num);
-    *align = mformat[0];
+    
+  /*  PrintTabular(mtable); */
+
     free(num);
-    free(mformat);
     free(format);
+    FreeTabular(mtable);
+
     diagnostics(5, "TabularMultiParameters n=%d, align=%c", *col_span, *align);
 }
 
@@ -494,7 +578,7 @@ char *TabularCline(char *row, int columns)
     return cline;
 }
 
-static void TabularBeginRow(TabularT tabular, char *this_row, char *next_row, int first_row)
+static void TabularBeginRow(TabularT *table, char *this_row, char *next_row, int first_row)
 
 /******************************************************************************
  purpose:  emit RTF to start one row of a table
@@ -518,19 +602,19 @@ static void TabularBeginRow(TabularT tabular, char *this_row, char *next_row, in
     cell_start = this_row;
     column = 0;
 
-    cline = TabularCline(next_row, tabular.n);
+    cline = TabularCline(next_row, table->n);
 
 
     while (cell_start) {        /* for each cell */
 
         top = 0;
         left = 0;
-        right = tabular.vert[column + 1];
+        right = table->vert[column + 1];
         bottom = cline[column + 1];
         if (first_row)
             top = TabularHline(this_row);
         if (column == 0)
-            left = tabular.vert[0];
+            left = table->vert[0];
 
         cell = TabularNextCell(cell_start, &cell_end);
         TabularMultiParameters(cell, &n, &align, &lvert, &rvert);
@@ -554,7 +638,7 @@ static void TabularBeginRow(TabularT tabular, char *this_row, char *next_row, in
             fprintRTF("\\clbrdrr\\brdrs");
         if (right == 2 || (n == 1 && rvert == 2))
             fprintRTF("\\clbrdrr\\brdrdb");
-        fprintRTF("\\cellx%d", TabularColumnPosition(tabular, column));
+        fprintRTF("\\cellx%d", TabularColumnPosition(table, column));
         column++;
 
         for (i = 2; i <= n; i++) {
@@ -571,7 +655,7 @@ static void TabularBeginRow(TabularT tabular, char *this_row, char *next_row, in
                 fprintRTF("\\clbrdrr\\brdrs");
             if (i == n && rvert == 2)
                 fprintRTF("\\clbrdrr\\brdrdb");
-            fprintRTF("\\cellx%d", TabularColumnPosition(tabular, column));
+            fprintRTF("\\cellx%d", TabularColumnPosition(table, column));
             column++;
         }
 
@@ -591,22 +675,22 @@ void TabularEndRow(void)
     fprintRTF("\\row}\n");
 }
 
-char TabularColumnAlignment(TabularT tabular, int column)
+char TabularColumnAlignment(TabularT *table, int column)
 
 /******************************************************************************
  purpose:  alignment for a column
  ******************************************************************************/
 {
-    return tabular.align[column+1];
+    return table->align[column+1];
 }
 
-static void TabularWriteRow(TabularT tabular, char *this_row, char *next_row, int height, int first_row)
+static void TabularWriteRow(TabularT *table, char *this_row, char *next_row, int height, int first_row)
 {
     char *cell, *cell_start, *cell_end;
     char align;
     int n, lvert, rvert;
 
-    tabular.i = 0;
+    table->i = 0;
     if (this_row == NULL || strlen(this_row) == 0)
         return;
 
@@ -615,11 +699,11 @@ static void TabularWriteRow(TabularT tabular, char *this_row, char *next_row, in
     /* avoid writing anything for empty last row */
     if (next_row == NULL) {
     	/* do nothing if the row is empty */
-        if (tabular.n == 1 && strlen(this_row) == 0)
+        if (table->n == 1 && strlen(this_row) == 0)
             return;
             
         /* do nothing if there is more than one column, but no '&' */
-        if (tabular.n > 1 && !strchr(this_row, '&')) {
+        if (table->n > 1 && !strchr(this_row, '&')) {
         
         	/* except if the last line is multicolumn! */
             TabularMultiParameters(this_row, &n, &align, &lvert, &rvert);
@@ -627,7 +711,7 @@ static void TabularWriteRow(TabularT tabular, char *this_row, char *next_row, in
 		}
     }
 
-    TabularBeginRow(tabular, this_row, next_row, first_row);
+    TabularBeginRow(table, this_row, next_row, first_row);
     cell_start = this_row;
     while (cell_start) {
 
@@ -636,7 +720,7 @@ static void TabularWriteRow(TabularT tabular, char *this_row, char *next_row, in
         /* establish cell alignment */
         TabularMultiParameters(cell, &n, &align, &lvert, &rvert);
         if (n == 0) {
-            align = TabularColumnAlignment(tabular, tabular.i);
+            align = TabularColumnAlignment(table, table->i);
             n = 1;
         }
 
@@ -649,14 +733,14 @@ static void TabularWriteRow(TabularT tabular, char *this_row, char *next_row, in
         }
         EndCellRtf();
 
-        tabular.i += n;
+        table->i += n;
         cell_start = cell_end;
         if (cell != NULL)
             free(cell);
     }
 
-    if (tabular.i < tabular.n) {
-        align = TabularColumnAlignment(tabular, tabular.i);
+    if (table->i < table->n) {
+        align = TabularColumnAlignment(table, table->i);
         BeginCellRtf(align);
         EndCellRtf();
     }
@@ -746,7 +830,41 @@ int TabularMeasureCellx(char *cell)
     return strlen(cell);
 }
 
-static void TabularMeasureRow(TabularT tabular, char *this_row, char *next_row, int height, int first_row)
+/******************************************************************************
+ purpose:  determine the widths for all columns
+  ******************************************************************************/
+static void TabularSetWidths(TabularT *table)
+{
+	int total_chars;
+	int table_width;
+	int i;
+	
+	/* total of all characters in all unsized columns*/
+	for (i=1; i<=table->n; i++) {
+		if (table->width[i] == -1) 
+			total_chars=table->chars[i];
+	}
+	
+	/* put 100 twips on each edge of table */
+    table_width = getLength("textwidth") - 200;
+    table->width[0] = 100;
+
+	/* we only care about space that has not been allocated already! */
+	for (i=1; i<=table->n; i++) {
+		if (table->width[i] != -1) 
+			table_width -= table->width[i];
+	}
+	
+	/* distribute space proportional to spacing with minimum of 20 twips */
+	for (i=1; i<=table->n; i++) {
+		if (table->width[i] == -1) {
+			table->width[i] = table_width * table->chars[i] / total_chars;
+			if (table->width[i] < 20) table->width[i] = 20;
+		}
+	}
+}
+
+static void TabularMeasureRow(TabularT *table, char *this_row, char *next_row, int height, int first_row)
 
 /******************************************************************************
  purpose:  come up with relative widths for all cells in a row
@@ -754,35 +872,38 @@ static void TabularMeasureRow(TabularT tabular, char *this_row, char *next_row, 
 {
     char *cell, *cell_start, *cell_end;
     char align;
-    int n, lvert, rvert;
+    int n, lvert, rvert, len, iCol;
 
-    tabular.i = 0;
+    table->i = 0;
     if (this_row == NULL || strlen(this_row) == 0)
         return;
 
     diagnostics(5, "TabularMeasureRow height=%d twpi, row <%s>", height, this_row);
 
     cell_start = this_row;
+    iCol = 0;
+    
     while (cell_start) {
 
         cell = TabularNextCell(cell_start, &cell_end);
-
-        TabularMultiParameters(cell, &n, &align, &lvert, &rvert);
-        if (n == 0) {
-            n = 1;
-        }
-
-        if (cell != NULL) {
-            int len;
-
-            len = TabularMeasureCell(cell);
-            diagnostics(6, "col=%d n=%d len=%d cell=<%s>", tabular.i, n, len, cell);
-        }
-
-        tabular.i += n;
+		iCol++;
+		len = 0;
+		
+		if (cell != NULL) {
+			TabularMultiParameters(cell, &n, &align, &lvert, &rvert);
+			if (n <= 1) { /* only use  */			
+				len = TabularMeasureCell(cell);
+				/* diagnostics(1, "col=%d n=%d len=%d cell=<%s>", iCol, n, len, cell); */
+			} else {
+				iCol += n-1;
+			}
+		} 
+		
+        if (table->chars[iCol] < len) table->chars[iCol] = len;
+        
         cell_start = cell_end;
         if (cell != NULL)
-            free(cell);
+            free(cell);        
     }
 }
 
@@ -801,7 +922,7 @@ void CmdTabular(int code)
     char *pos = NULL;
     char *width = NULL;
     
-    TabularT tabular;
+    TabularT *tabular_layout;
 
     if (!(code & ON)) {
         diagnostics(4, "Exiting CmdTabular");
@@ -889,42 +1010,42 @@ void CmdTabular(int code)
 	
 		} else {
 	
-			diagnostics(4, "Entering CmdTabular() options [%s], format {%s}", (pos) ? pos : "", cols);
-			tabular = TabularPreamble(table, width, pos, cols);
+			diagnostics(5, "Entering CmdTabular() options [%s], format {%s}", (pos) ? pos : "", cols);
+			tabular_layout = TabularPreamble(cols);
 			diagnostics(5, "table_table_table_table_table\n%stable_table_table_table_table", table);
 	
 			row_start = table;
 			TabularGetRow(row_start, &this_row, &next_row_start, &this_height);
 	
-			/* scan entire table to get estimates for column widths */
+			/* scan entire table to get max number of chars in each column */
+			/* these are stored in tabular_layout->chars                   */
 			first_row = TRUE;
 			while (this_row) {
 				row_start = next_row_start;
 				TabularGetRow(row_start, &next_row, &next_row_start, &next_height);
-				TabularMeasureRow(tabular, this_row, next_row, this_height, first_row);
+				TabularMeasureRow(tabular_layout, this_row, next_row, this_height, first_row);
 				free(this_row);
 				this_row = next_row;
 				this_height = next_height;
 				first_row = FALSE;
 			}
 	
+			TabularSetWidths(tabular_layout);
+			
 			row_start = table;
 			TabularGetRow(row_start, &this_row, &next_row_start, &this_height);
 			first_row = TRUE;
 			while (this_row) {
 				row_start = next_row_start;
 				TabularGetRow(row_start, &next_row, &next_row_start, &next_height);
-				TabularWriteRow(tabular, this_row, next_row, this_height, first_row);
+				TabularWriteRow(tabular_layout, this_row, next_row, this_height, first_row);
 				free(this_row);
 				this_row = next_row;
 				this_height = next_height;
 				first_row = FALSE;
 			}
 	
-			free(tabular.cline);
-			free(tabular.align);
-			free(tabular.vert);
-			free(tabular.width);
+			/* free before and after strings */
 			if (cols)
 				free(cols);
 			if (pos)

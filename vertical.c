@@ -170,7 +170,7 @@ correctly, as well as vertical and horizontal space.
  ******************************************************************************/
 void setTexMode(int mode)
 {
-    diagnostics(5, "TeX mode setting from [%s] -> [%s]", TexModeName[g_TeX_mode], TexModeName[mode]);
+    diagnostics(6, "TeX mode setting from [%s] -> [%s]", TexModeName[g_TeX_mode], TexModeName[mode]);
     g_TeX_mode = mode;
 }
 
@@ -181,7 +181,7 @@ int getTexMode(void)
 
 void changeTexMode(int mode)
 {
-    diagnostics(5, "TeX mode changing from [%s] -> [%s]", TexModeName[g_TeX_mode], TexModeName[mode]);
+    diagnostics(6, "TeX mode changing from [%s] -> [%s]", TexModeName[g_TeX_mode], TexModeName[mode]);
 
     if (g_TeX_mode == MODE_VERTICAL && mode == MODE_HORIZONTAL)
         startParagraph("Normal", GENERIC_PARAGRAPH);
