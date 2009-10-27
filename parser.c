@@ -394,7 +394,7 @@ void CmdInclude(int code)
      	return;
 	}
 	
-    if (basename && strstr(basename, ".tex") == NULL)         /* append .tex if missing */
+    if (basename && strstr(basename, ".tex") == NULL && strstr(basename, ".ltx") == NULL)         /* append .tex if missing */
         texname = strdup_together(basename, ".tex");
 
     if (texname && PushSource(texname, NULL) == 0)            /* Try the .tex name first*/
