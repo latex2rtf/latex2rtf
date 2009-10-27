@@ -1513,53 +1513,6 @@ void FixTildes(char *s)
     }
 }
 
-void CmdTextColor(int code)
-
-/******************************************************************************
-  purpose: hyperlatex support for \textcolor{color}{words to be in color}
-******************************************************************************/
-{
-    char *color, *text, *color1, *text1;
-    int n;
-
-    diagnostics(4, "Entering CmdTextColor");
-    color1 = getBraceParam();
-    text1 = getBraceParam();
-    color = strdup_noendblanks(color1);
-    text = strdup_noendblanks(text1);
-    free(color1);
-    free(text1);
-
-    n = -1;
-    if (strcmp(color, "black") == 0)
-        n = 1;
-    else if (strcmp(color, "blue") == 0)
-        n = 2;
-    else if (strcmp(color, "cyan") == 0)
-        n = 3;
-    else if (strcmp(color, "green") == 0)
-        n = 4;
-    else if (strcmp(color, "magenta") == 0)
-        n = 5;
-    else if (strcmp(color, "red") == 0)
-        n = 6;
-    else if (strcmp(color, "yellow") == 0)
-        n = 7;
-    else if (strcmp(color, "white") == 0)
-        n = 8;
-    else if (strcmp(color, "gray") == 0)
-        n = 16;
-
-    if (n > 0) {
-        fprintRTF("{\\cf%d ", n);
-        ConvertString(text);
-        fprintRTF("}");
-    }
-
-    free(text);
-    free(color);
-}
-
 void CmdLink(int code)
 
 /******************************************************************************
@@ -1998,3 +1951,295 @@ void CmdIflatextortf(int code)
 	free(entire_if);
 }
 
+void CmdTextColor(int code)
+
+/******************************************************************************
+  purpose: support for \color{thecolor}  and \textcolor{color}{words to be in color}
+  horrible implementation ... but who uses color anyhow??
+******************************************************************************/
+{
+    char *color, *text, *color1, *text1;
+    int n;
+
+    diagnostics(4, "Entering CmdTextColor");
+    color1 = getBraceParam();
+    color = strdup_noendblanks(color1);
+    free(color1);
+    
+    if (code) {  /* non-zero code indicates \textcolor */
+    	text1 = getBraceParam();
+    	text = strdup_noendblanks(text1);
+    	free(text1);
+    	fprintRTF("{");
+    }
+
+    n = -1;
+    if (strcmp(color, "black") == 0)
+        n = 1;
+    else if (strcmp(color, "blue") == 0)
+        n = 2;
+    else if (strcmp(color, "cyan") == 0)
+        n = 3;
+    else if (strcmp(color, "green") == 0)
+        n = 4;
+    else if (strcmp(color, "magenta") == 0)
+        n = 5;
+    else if (strcmp(color, "red") == 0)
+        n = 6;
+    else if (strcmp(color, "yellow") == 0)
+        n = 7;
+    else if (strcmp(color, "white") == 0)
+        n = 8;
+    else if (strcmp(color, "gray") == 0)
+        n = 16;
+	else if (strcmp(color, "Almond") == 0)
+		n = 17;
+	else if (strcmp(color, "AntiqueBrass") == 0)
+		n = 18;
+	else if (strcmp(color, "Apricot") == 0)
+		n = 19;
+	else if (strcmp(color, "Aquamarine") == 0)
+		n = 20;
+	else if (strcmp(color, "Asparagus") == 0)
+		n = 21;
+	else if (strcmp(color, "AtomicTangerine") == 0)
+		n = 22;
+	else if (strcmp(color, "BananaMania") == 0)
+		n = 23;
+	else if (strcmp(color, "Beaver") == 0)
+		n = 24;
+	else if (strcmp(color, "Bittersweet") == 0)
+		n = 25;
+	else if (strcmp(color, "Black") == 0)
+		n = 26;
+	else if (strcmp(color, "Blue") == 0)
+		n = 27;
+	else if (strcmp(color, "BlueBell") == 0)
+		n = 28;
+	else if (strcmp(color, "BlueGreen") == 0)
+		n = 29;
+	else if (strcmp(color, "BlueViolet") == 0)
+		n = 30;
+	else if (strcmp(color, "Blush") == 0)
+		n = 31;
+	else if (strcmp(color, "BrickRed") == 0)
+		n = 32;
+	else if (strcmp(color, "Brown") == 0)
+		n = 33;
+	else if (strcmp(color, "BurntOrange") == 0)
+		n = 34;
+	else if (strcmp(color, "BurntSienna") == 0)
+		n = 35;
+	else if (strcmp(color, "CadetBlue") == 0)
+		n = 36;
+	else if (strcmp(color, "Canary") == 0)
+		n = 37;
+	else if (strcmp(color, "CaribbeanGreen") == 0)
+		n = 38;
+	else if (strcmp(color, "CarnationPink") == 0)
+		n = 39;
+	else if (strcmp(color, "Cerise") == 0)
+		n = 40;
+	else if (strcmp(color, "Cerulean") == 0)
+		n = 41;
+	else if (strcmp(color, "Chestnut") == 0)
+		n = 42;
+	else if (strcmp(color, "Copper") == 0)
+		n = 43;
+	else if (strcmp(color, "Cornflower") == 0)
+		n = 44;
+	else if (strcmp(color, "CottonCandy") == 0)
+		n = 45;
+	else if (strcmp(color, "Dandelion") == 0)
+		n = 46;
+	else if (strcmp(color, "Denim") == 0)
+		n = 47;
+	else if (strcmp(color, "DesertSand") == 0)
+		n = 48;
+	else if (strcmp(color, "Eggplant") == 0)
+		n = 49;
+	else if (strcmp(color, "ElectricLime") == 0)
+		n = 50;
+	else if (strcmp(color, "Fern") == 0)
+		n = 51;
+	else if (strcmp(color, "ForestGreen") == 0)
+		n = 52;
+	else if (strcmp(color, "Fuchsia") == 0)
+		n = 53;
+	else if (strcmp(color, "FuzzyWuzzyBrown") == 0)
+		n = 54;
+	else if (strcmp(color, "Gold") == 0)
+		n = 55;
+	else if (strcmp(color, "Goldenrod") == 0)
+		n = 56;
+	else if (strcmp(color, "GrannySmithApple") == 0)
+		n = 57;
+	else if (strcmp(color, "Gray") == 0)
+		n = 58;
+	else if (strcmp(color, "Green") == 0)
+		n = 59;
+	else if (strcmp(color, "GreenYellow") == 0)
+		n = 60;
+	else if (strcmp(color, "HotMagenta") == 0)
+		n = 61;
+	else if (strcmp(color, "InchWorm") == 0)
+		n = 62;
+	else if (strcmp(color, "Indigo") == 0)
+		n = 63;
+	else if (strcmp(color, "JazzberryJam") == 0)
+		n = 64;
+	else if (strcmp(color, "JungleGreen") == 0)
+		n = 65;
+	else if (strcmp(color, "LaserLemon") == 0)
+		n = 66;
+	else if (strcmp(color, "Lavender") == 0)
+		n = 67;
+	else if (strcmp(color, "MacaroniandCheese") == 0)
+		n = 68;
+	else if (strcmp(color, "Magenta") == 0)
+		n = 69;
+	else if (strcmp(color, "Mahogany") == 0)
+		n = 70;
+	else if (strcmp(color, "Manatee") == 0)
+		n = 71;
+	else if (strcmp(color, "MangoTango") == 0)
+		n = 72;
+	else if (strcmp(color, "Maroon") == 0)
+		n = 73;
+	else if (strcmp(color, "Mauvelous") == 0)
+		n = 74;
+	else if (strcmp(color, "Melon") == 0)
+		n = 75;
+	else if (strcmp(color, "MidnightBlue") == 0)
+		n = 76;
+	else if (strcmp(color, "MountainMeadow") == 0)
+		n = 77;
+	else if (strcmp(color, "NavyBlue") == 0)
+		n = 78;
+	else if (strcmp(color, "NeonCarrot") == 0)
+		n = 79;
+	else if (strcmp(color, "OliveGreen") == 0)
+		n = 80;
+	else if (strcmp(color, "Orange") == 0)
+		n = 81;
+	else if (strcmp(color, "Orchid") == 0)
+		n = 82;
+	else if (strcmp(color, "OuterSpace") == 0)
+		n = 83;
+	else if (strcmp(color, "OutrageousOrange") == 0)
+		n = 84;
+	else if (strcmp(color, "PacificBlue") == 0)
+		n = 85;
+	else if (strcmp(color, "Peach") == 0)
+		n = 86;
+	else if (strcmp(color, "Periwinkle") == 0)
+		n = 87;
+	else if (strcmp(color, "PiggyPink") == 0)
+		n = 88;
+	else if (strcmp(color, "PineGreen") == 0)
+		n = 89;
+	else if (strcmp(color, "PinkFlamingo") == 0)
+		n = 90;
+	else if (strcmp(color, "PinkSherbet") == 0)
+		n = 91;
+	else if (strcmp(color, "Plum") == 0)
+		n = 92;
+	else if (strcmp(color, "PurpleHeart") == 0)
+		n = 93;
+	else if (strcmp(color, "PurpleMountainsÕMajesty") == 0)
+		n = 94;
+	else if (strcmp(color, "PurplePizzazz") == 0)
+		n = 95;
+	else if (strcmp(color, "RadicalRed") == 0)
+		n = 96;
+	else if (strcmp(color, "RawSienna") == 0)
+		n = 97;
+	else if (strcmp(color, "RazzleDazzleRose") == 0)
+		n = 98;
+	else if (strcmp(color, "Razzmatazz") == 0)
+		n = 99;
+	else if (strcmp(color, "Red") == 0)
+		n = 100;
+	else if (strcmp(color, "RedOrange") == 0)
+		n = 101;
+	else if (strcmp(color, "RedViolet") == 0)
+		n = 102;
+	else if (strcmp(color, "RobinEggBlue") == 0)
+		n = 103;
+	else if (strcmp(color, "RoyalPurple") == 0)
+		n = 104;
+	else if (strcmp(color, "Salmon") == 0)
+		n = 105;
+	else if (strcmp(color, "Scarlet") == 0)
+		n = 106;
+	else if (strcmp(color, "ScreaminGreen") == 0)
+		n = 107;
+	else if (strcmp(color, "SeaGreen") == 0)
+		n = 108;
+	else if (strcmp(color, "Sepia") == 0)
+		n = 109;
+	else if (strcmp(color, "Shadow") == 0)
+		n = 110;
+	else if (strcmp(color, "Shamrock") == 0)
+		n = 111;
+	else if (strcmp(color, "ShockingPink") == 0)
+		n = 112;
+	else if (strcmp(color, "Silver") == 0)
+		n = 113;
+	else if (strcmp(color, "SkyBlue") == 0)
+		n = 114;
+	else if (strcmp(color, "SpringGreen") == 0)
+		n = 115;
+	else if (strcmp(color, "Sunglow") == 0)
+		n = 116;
+	else if (strcmp(color, "SunsetOrange") == 0)
+		n = 117;
+	else if (strcmp(color, "Tan") == 0)
+		n = 118;
+	else if (strcmp(color, "TickleMePink") == 0)
+		n = 119;
+	else if (strcmp(color, "Timberwolf") == 0)
+		n = 120;
+	else if (strcmp(color, "TropicalRainForest") == 0)
+		n = 121;
+	else if (strcmp(color, "Tumbleweed") == 0)
+		n = 122;
+	else if (strcmp(color, "TurquoiseBlue") == 0)
+		n = 123;
+	else if (strcmp(color, "UnmellowYellow") == 0)
+		n = 124;
+	else if (strcmp(color, "Violet(Purple)") == 0)
+		n = 125;
+	else if (strcmp(color, "VioletRed") == 0)
+		n = 126;
+	else if (strcmp(color, "VividTangerine") == 0)
+		n = 127;
+	else if (strcmp(color, "VividViolet") == 0)
+		n = 128;
+	else if (strcmp(color, "White") == 0)
+		n = 129;
+	else if (strcmp(color, "WildBlueYonder") == 0)
+		n = 130;
+	else if (strcmp(color, "WildStrawberry") == 0)
+		n = 131;
+	else if (strcmp(color, "WildWatermelon") == 0)
+		n = 132;
+	else if (strcmp(color, "Wisteria") == 0)
+		n = 133;
+	else if (strcmp(color, "Yellow") == 0)
+		n = 134;
+	else if (strcmp(color, "YellowGreen") == 0)
+		n = 135;
+	else if (strcmp(color, "YellowOrange") == 0)
+		n = 136;
+    if (n > 0) 
+        fprintRTF("\\cf%d ", n);
+   
+    if (code) {
+		ConvertString(text);
+        fprintRTF("}");
+    	free(text);
+	}
+    
+    free(color);
+}

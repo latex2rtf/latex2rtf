@@ -1392,7 +1392,127 @@ static void WriteColorTable(void)
     fprintRTF("\\red128\\green128\\blue0;\n");  /* dark yellow */
     fprintRTF("\\red128\\green128\\blue128;\n");    /* dark gray */
     fprintRTF("\\red192\\green192\\blue192;\n");    /* light gray */
-    fprintRTF("}\n");
+	fprintRTF("\\red239\\green219\\blue197;\n");	/* Almond */	
+	fprintRTF("\\red205\\green149\\blue117;\n");	/* Antique Brass */	
+	fprintRTF("\\red253\\green217\\blue181;\n");	/* Apricot */	
+	fprintRTF("\\red120\\green219\\blue226;\n");	/* Aquamarine */	
+	fprintRTF("\\red135\\green169\\blue107;\n");	/* Asparagus */	
+	fprintRTF("\\red255\\green164\\blue116;\n");	/* Atomic Tangerine */	
+	fprintRTF("\\red250\\green231\\blue181;\n");	/* Banana Mania */	
+	fprintRTF("\\red159\\green129\\blue112;\n");	/* Beaver */	
+	fprintRTF("\\red253\\green124\\blue110;\n");	/* Bittersweet */	
+	fprintRTF("\\red35\\green35\\blue35;\n");	/* Black */	
+	fprintRTF("\\red31\\green117\\blue254;\n");	/* Blue */	
+	fprintRTF("\\red173\\green173\\blue214;\n");	/* Blue Bell */	
+	fprintRTF("\\red25\\green158\\blue189;\n");	/* Blue Green */	
+	fprintRTF("\\red115\\green102\\blue189;\n");	/* Blue Violet */	
+	fprintRTF("\\red222\\green93\\blue131;\n");	/* Blush */	
+	fprintRTF("\\red203\\green65\\blue84;\n");	/* Brick Red */	
+	fprintRTF("\\red180\\green103\\blue77;\n");	/* Brown */	
+	fprintRTF("\\red255\\green127\\blue73;\n");	/* Burnt Orange */	
+	fprintRTF("\\red234\\green126\\blue93;\n");	/* Burnt Sienna */	
+	fprintRTF("\\red176\\green183\\blue198;\n");	/* Cadet Blue */	
+	fprintRTF("\\red255\\green255\\blue153;\n");	/* Canary */	
+	fprintRTF("\\red28\\green211\\blue162;\n");	/* Caribbean Green */	
+	fprintRTF("\\red255\\green170\\blue204;\n");	/* Carnation Pink */	
+	fprintRTF("\\red221\\green68\\blue146;\n");	/* Cerise */	
+	fprintRTF("\\red29\\green172\\blue214;\n");	/* Cerulean */	
+	fprintRTF("\\red188\\green93\\blue88;\n");	/* Chestnut */	
+	fprintRTF("\\red221\\green148\\blue117;\n");	/* Copper */	
+	fprintRTF("\\red154\\green206\\blue235;\n");	/* Cornflower */	
+	fprintRTF("\\red255\\green188\\blue217;\n");	/* Cotton Candy */	
+	fprintRTF("\\red253\\green219\\blue109;\n");	/* Dandelion */	
+	fprintRTF("\\red43\\green108\\blue196;\n");	/* Denim */	
+	fprintRTF("\\red239\\green205\\blue184;\n");	/* Desert Sand */	
+	fprintRTF("\\red110\\green81\\blue96;\n");	/* Eggplant */	
+	fprintRTF("\\red29\\green249\\blue20;\n");	/* Electric Lime */	
+	fprintRTF("\\red113\\green188\\blue120;\n");	/* Fern */	
+	fprintRTF("\\red109\\green174\\blue129;\n");	/* Forest Green */	
+	fprintRTF("\\red195\\green100\\blue197;\n");	/* Fuchsia */	
+	fprintRTF("\\red204\\green102\\blue102;\n");	/* Fuzzy Wuzzy Brown */	
+	fprintRTF("\\red231\\green198\\blue151;\n");	/* Gold */	
+	fprintRTF("\\red252\\green217\\blue117;\n");	/* Goldenrod */	
+	fprintRTF("\\red168\\green228\\blue160;\n");	/* Granny Smith Apple */	
+	fprintRTF("\\red149\\green145\\blue140;\n");	/* Gray */	
+	fprintRTF("\\red28\\green172\\blue120;\n");	/* Green */	
+	fprintRTF("\\red240\\green232\\blue145;\n");	/* Green Yellow */	
+	fprintRTF("\\red255\\green29\\blue206;\n");	/* Hot Magenta */	
+	fprintRTF("\\red178\\green236\\blue93;\n");	/* Inch Worm */	
+	fprintRTF("\\red93\\green118\\blue203;\n");	/* Indigo */	
+	fprintRTF("\\red202\\green55\\blue103;\n");	/* Jazzberry Jam */	
+	fprintRTF("\\red59\\green176\\blue143;\n");	/* Jungle Green */	
+	fprintRTF("\\red253\\green252\\blue116;\n");	/* Laser Lemon */	
+	fprintRTF("\\red252\\green180\\blue213;\n");	/* Lavender */	
+	fprintRTF("\\red255\\green189\\blue136;\n");	/* Macaroni and Cheese */	
+	fprintRTF("\\red246\\green100\\blue175;\n");	/* Magenta */	
+	fprintRTF("\\red205\\green74\\blue74;\n");	/* Mahogany */	
+	fprintRTF("\\red151\\green154\\blue170;\n");	/* Manatee */	
+	fprintRTF("\\red255\\green130\\blue67;\n");	/* Mango Tango */	
+	fprintRTF("\\red200\\green56\\blue90;\n");	/* Maroon */	
+	fprintRTF("\\red239\\green152\\blue170;\n");	/* Mauvelous */	
+	fprintRTF("\\red253\\green188\\blue180;\n");	/* Melon */	
+	fprintRTF("\\red26\\green72\\blue118;\n");	/* Midnight Blue */	
+	fprintRTF("\\red48\\green186\\blue143;\n");	/* Mountain Meadow */	
+	fprintRTF("\\red25\\green116\\blue210;\n");	/* Navy Blue */	
+	fprintRTF("\\red255\\green163\\blue67;\n");	/* Neon Carrot */	
+	fprintRTF("\\red186\\green184\\blue108;\n");	/* Olive Green */	
+	fprintRTF("\\red255\\green117\\blue56;\n");	/* Orange */	
+	fprintRTF("\\red230\\green168\\blue215;\n");	/* Orchid */	
+	fprintRTF("\\red65\\green74\\blue76;\n");	/* Outer Space */	
+	fprintRTF("\\red255\\green110\\blue74;\n");	/* Outrageous Orange */	
+	fprintRTF("\\red28\\green169\\blue201;\n");	/* Pacific Blue */	
+	fprintRTF("\\red255\\green207\\blue171;\n");	/* Peach */	
+	fprintRTF("\\red197\\green208\\blue230;\n");	/* Periwinkle */	
+	fprintRTF("\\red253\\green215\\blue228;\n");	/* Piggy Pink */	
+	fprintRTF("\\red21\\green128\\blue120;\n");	/* Pine Green */	
+	fprintRTF("\\red252\\green116\\blue253;\n");	/* Pink Flamingo */	
+	fprintRTF("\\red247\\green128\\blue161;\n");	/* Pink Sherbet */	
+	fprintRTF("\\red142\\green69\\blue133;\n");	/* Plum */	
+	fprintRTF("\\red116\\green66\\blue200;\n");	/* Purple Heart */	
+	fprintRTF("\\red157\\green129\\blue186;\n");	/* Purple Mountains’ Majesty */	
+	fprintRTF("\\red255\\green29\\blue206;\n");	/* Purple Pizzazz */	
+	fprintRTF("\\red255\\green73\\blue108;\n");	/* Radical Red */	
+	fprintRTF("\\red214\\green138\\blue89;\n");	/* Raw Sienna */	
+	fprintRTF("\\red255\\green72\\blue208;\n");	/* Razzle Dazzle Rose */	
+	fprintRTF("\\red227\\green37\\blue107;\n");	/* Razzmatazz */	
+	fprintRTF("\\red238\\green32\\blue77;\n");	/* Red */	
+	fprintRTF("\\red255\\green83\\blue73;\n");	/* Red Orange */	
+	fprintRTF("\\red192\\green68\\blue143;\n");	/* Red Violet */	
+	fprintRTF("\\red31\\green206\\blue203;\n");	/* Robin Egg Blue */	
+	fprintRTF("\\red120\\green81\\blue169;\n");	/* Royal Purple */	
+	fprintRTF("\\red255\\green155\\blue170;\n");	/* Salmon */	
+	fprintRTF("\\red252\\green40\\blue71;\n");	/* Scarlet */	
+	fprintRTF("\\red118\\green255\\blue122;\n");	/* Screamin Green */	
+	fprintRTF("\\red159\\green226\\blue191;\n");	/* Sea Green */	
+	fprintRTF("\\red165\\green105\\blue79;\n");	/* Sepia */	
+	fprintRTF("\\red138\\green121\\blue93;\n");	/* Shadow */	
+	fprintRTF("\\red69\\green206\\blue162;\n");	/* Shamrock */	
+	fprintRTF("\\red251\\green126\\blue253;\n");	/* Shocking Pink */	
+	fprintRTF("\\red205\\green197\\blue194;\n");	/* Silver */	
+	fprintRTF("\\red128\\green218\\blue235;\n");	/* Sky Blue */	
+	fprintRTF("\\red236\\green234\\blue190;\n");	/* Spring Green */	
+	fprintRTF("\\red255\\green207\\blue72;\n");	/* Sunglow */	
+	fprintRTF("\\red253\\green94\\blue83;\n");	/* Sunset Orange */	
+	fprintRTF("\\red250\\green167\\blue108;\n");	/* Tan */	
+	fprintRTF("\\red252\\green137\\blue172;\n");	/* Tickle Me Pink */	
+	fprintRTF("\\red219\\green215\\blue210;\n");	/* Timberwolf */	
+	fprintRTF("\\red23\\green128\\blue109;\n");	/* Tropical Rain Forest */	
+	fprintRTF("\\red222\\green170\\blue136;\n");	/* Tumbleweed */	
+	fprintRTF("\\red119\\green221\\blue231;\n");	/* Turquoise Blue */	
+	fprintRTF("\\red253\\green252\\blue116;\n");	/* Unmellow Yellow */	
+	fprintRTF("\\red146\\green110\\blue174;\n");	/* Violet (Purple) */	
+	fprintRTF("\\red247\\green83\\blue148;\n");	/* Violet Red */	
+	fprintRTF("\\red255\\green160\\blue137;\n");	/* Vivid Tangerine */	
+	fprintRTF("\\red143\\green80\\blue157;\n");	/* Vivid Violet */	
+	fprintRTF("\\red237\\green237\\blue237;\n");	/* White */	
+	fprintRTF("\\red162\\green173\\blue208;\n");	/* Wild Blue Yonder */	
+	fprintRTF("\\red255\\green67\\blue164;\n");	/* Wild Strawberry */	
+	fprintRTF("\\red252\\green108\\blue133;\n");	/* Wild Watermelon */	
+	fprintRTF("\\red205\\green164\\blue222;\n");	/* Wisteria */	
+	fprintRTF("\\red252\\green232\\blue131;\n");	/* Yellow */	
+	fprintRTF("\\red197\\green227\\blue132;\n");	/* Yellow Green */	
+	fprintRTF("\\red255\\green182\\blue83;\n");	/* Yellow Orange */	    
+	fprintRTF("}\n");
 }
 
 static void WriteInfo(void)

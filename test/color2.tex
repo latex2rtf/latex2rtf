@@ -1,0 +1,149 @@
+%% color-package-demo.tex
+%% Bent Petersen Oct 2000
+
+\documentclass[11pt]{article}
+\usepackage[usenames]{color}
+
+\title{\color{Blue}\jobname.tex}
+\author{Bent Petersen}
+\date{Oct 24, 2000}
+
+\pagestyle{plain}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{2.0ex plus 0.6ex minus 0.4ex}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+
+The easiest way to use color text in \LaTeXe{} is to use the color
+package. You load the color package in your preamble as usual
+\begin{verbatim}
+\documentclass[11pt]{article}
+\usepackage[usenames]{color}
+\end{verbatim}
+Here the option [usenames] causes the definitions for the 68 colors
+known to dvips (see next page) to be preloaded. Those colors can then
+be specified by name. For example \verb={\color{BrickRed} BrickRed}= 
+produces {\color{BrickRed} BrickRed}. Alternately one can use the 
+command 
+\begin{verbatim}
+\textcolor{BrickRed}{this is BrickRed}
+\end{verbatim}
+which produces \textcolor{BrickRed}{this is BrickRed}.
+
+If the 68 predefined colors do not suffice, or if you do not want
+to load the definitions of all of them, you may define your own
+custom colors.
+
+Here is a dark blue defined in terms of the RGB (red, green, blue) color model.
+\begin{verbatim}
+\definecolor{MyDarkBlue}{rgb}{0,0.08,0.45}
+\begin{center}
+{\color{MyDarkBlue}This color is MyDarkBlue}
+\end{center}
+\end{verbatim}
+%%
+\definecolor{MyDarkBlue}{rgb}{0.1,0,0.55}
+\begin{center}
+{\color{MyDarkBlue}This color is MyDarkBlue}
+\end{center}
+%%
+Once we have defined the new color we can use it anywhere in
+the current document. For example, 
+\verb=\textcolor{MyDarkBlue}{a nice blue}= produces
+\textcolor{MyDarkBlue}{a nice blue}.
+
+Custom colors may also be defined in terms of the CMYK 
+(cyan, magenta, yellow, black) 
+color model. Here is a light magenta.
+%%
+\begin{verbatim}
+\definecolor{MyLightMagenta}{cmyk}{0.1,0.8,0,0.1}
+\begin{center}
+{\color{MyLightMagenta}This color is MyLightMagenta}
+\end{center}
+\end{verbatim}
+%%
+\definecolor{MyLightMagenta}{cmyk}{0.1,0.8,0,0.1}
+\begin{center}
+{\color{MyLightMagenta}This color is MyLightMagenta}
+\end{center}
+
+\begin{center}\large
+The 68 standard colors known to dvips\vspace{0.5ex}
+\begin{tabular}{|l|l|l|l|}
+\hline
+{\color{Apricot} Apricot}&
+{\color{Aquamarine} Aquamarine}&
+{\color{Bittersweet} Bittersweet}&
+{\color{Black} Black}\\ \hline
+{\color{Blue} Blue}&
+{\color{BlueGreen} BlueGreen}&
+{\color{BlueViolet} BlueViolet}&
+{\color{BrickRed} BrickRed}\\  \hline
+{\color{Brown} Brown}&
+{\color{BurntOrange} BurntOrange}&
+{\color{CadetBlue} CadetBlue}&
+{\color{CarnationPink} CarnationPink}\\  \hline
+{\color{Cerulean} Cerulean}&
+{\color{CornflowerBlue} CornflowerBlue}&
+{\color{Cyan} Cyan}&
+{\color{Dandelion} Dandelion}\\  \hline
+{\color{DarkOrchid} DarkOrchid}&
+{\color{Emerald} Emerald}&
+{\color{ForestGreen} ForestGreen}&
+{\color{Fuchsia} Fuchsia}\\  \hline
+{\color{Goldenrod} Goldenrod}&
+{\color{Gray} Gray}&
+{\color{Green} Green}&
+{\color{GreenYellow} GreenYellow}\\  \hline
+{\color{JungleGreen} JungleGreen}&
+{\color{Lavender} Lavender}&
+{\color{LimeGreen} LimeGreen}&
+{\color{Magenta} Magenta}\\  \hline
+{\color{Mahogany} Mahogany}&
+{\color{Maroon} Maroon}&
+{\color{Melon} Melon}&
+{\color{MidnightBlue} MidnightBlue}\\  \hline
+{\color{Mulberry} Mulberry}&
+{\color{NavyBlue} NavyBlue}&
+{\color{OliveGreen} OliveGreen}&
+{\color{Orange} Orange}\\  \hline
+{\color{OrangeRed} OrangeRed}&
+{\color{Orchid} Orchid}&
+{\color{Peach} Peach}&
+{\color{Periwinkle} Periwinkle}\\  \hline
+{\color{PineGreen} PineGreen}&
+{\color{Plum} Plum}&
+{\color{ProcessBlue} ProcessBlue}&
+{\color{Purple} Purple}\\  \hline
+{\color{RawSienna} RawSienna}&
+{\color{Red} Red}&
+{\color{RedOrange} RedOrange}&
+{\color{RedViolet} RedViolet}\\  \hline
+{\color{Rhodamine} Rhodamine}&
+{\color{RoyalBlue} RoyalBlue}&
+{\color{RoyalPurple} RoyalPurple}&
+{\color{RubineRed} RubineRed}\\  \hline
+{\color{Salmon} Salmon}&
+{\color{SeaGreen} SeaGreen}&
+{\color{Sepia} Sepia}&
+{\color{SkyBlue} SkyBlue}\\  \hline
+{\color{SpringGreen} SpringGreen}&
+{\color{Tan} Tan}&
+{\color{TealBlue} TealBlue}&
+{\color{Thistle} Thistle}\\  \hline
+{\color{Turquoise} Turquoise}&
+{\color{Violet} Violet}&
+{\color{VioletRed} VioletRed}&
+{\color{White} White}\\  \hline
+{\color{WildStrawberry} WildStrawberry}&
+{\color{Yellow} Yellow}&
+{\color{YellowGreen} YellowGreen}&
+{\color{YellowOrange} YellowOrange}\\  \hline 
+\end{tabular}
+\end{center}
+
+\end{document}
