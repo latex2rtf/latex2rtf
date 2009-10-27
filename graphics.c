@@ -14,7 +14,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
+aint32_t with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 This file is available from http://sourceforge.net/projects/latex2rtf/
@@ -29,6 +29,7 @@ Authors:
 #include <ctype.h>
 #include <limits.h>
 #include <math.h>
+#include <stdint.h>
 #ifdef UNIX
 #include <unistd.h>
 #endif
@@ -77,68 +78,68 @@ Version 1.6 RTF files can include pictures as follows
 */
 
 typedef struct _WindowsMetaHeader {
-    unsigned short FileType;    /* Type of metafile (0=memory, 1=disk) */
-    unsigned short HeaderSize;  /* Size of header in WORDS (always 9) */
-    unsigned short Version;     /* Version of Microsoft Windows used */
-    unsigned long FileSize;     /* Total size of the metafile in WORDs */
-    unsigned short NumOfObjects;    /* Number of objects in the file */
-    unsigned long MaxRecordSize;    /* The size of largest record in WORDs */
-    unsigned short NumOfParams; /* Not Used (always 0) */
+    uint16_t FileType;    /* Type of metafile (0=memory, 1=disk) */
+    uint16_t HeaderSize;  /* Size of header in WORDS (always 9) */
+    uint16_t Version;     /* Version of Microsoft Windows used */
+    uint32_t FileSize;     /* Total size of the metafile in WORDs */
+    uint16_t NumOfObjects;    /* Number of objects in the file */
+    uint32_t MaxRecordSize;    /* The size of largest record in WORDs */
+    uint16_t NumOfParams; /* Not Used (always 0) */
 } WMFHEAD;
 
 typedef struct _PlaceableMetaHeader {
-    unsigned long Key;          /* Magic number (always 0x9AC6CDD7) */
-    unsigned short Handle;      /* Metafile HANDLE number (always 0) */
-    short Left;                 /* Left coordinate in twips */
-    short Top;                  /* Top coordinate in twips */
-    short Right;                /* Right coordinate in twips */
-    short Bottom;               /* Bottom coordinate in twips */
-    unsigned short Inch;        /* Scaling factor, 1440 => 1:1, 360 => 4:1, 2880 => 1:2 (half size) */
-    unsigned long Reserved;     /* Reserved (always 0) */
-    unsigned short Checksum;    /* Checksum value for previous 10 WORDs */
+    uint32_t Key;          /* Magic number (always 0x9AC6CDD7) */
+    uint16_t Handle;      /* Metafile HANDLE number (always 0) */
+    int16_t Left;                 /* Left coordinate in twips */
+    int16_t Top;                  /* Top coordinate in twips */
+    int16_t Right;                /* Right coordinate in twips */
+    int16_t Bottom;               /* Bottom coordinate in twips */
+    uint16_t Inch;        /* Scaling factor, 1440 => 1:1, 360 => 4:1, 2880 => 1:2 (half size) */
+    uint32_t Reserved;     /* Reserved (always 0) */
+    uint16_t Checksum;    /* Checksum value for previous 10 WORDs */
 } PLACEABLEMETAHEADER;
 
 typedef struct _EnhancedMetaHeader {
-    unsigned long RecordType;   /* Record type (always 0x00000001) */
-    unsigned long RecordSize;   /* Size of the record in bytes */
-    long BoundsLeft;            /* Left inclusive bounds */
-    long BoundsTop;             /* Top inclusive bounds */
-    long BoundsRight;           /* Right inclusive bounds */
-    long BoundsBottom;          /* Bottom inclusive bounds */
-    long FrameLeft;             /* Left side of inclusive picture frame */
-    long FrameTop;              /* Top side of inclusive picture frame */
-    long FrameRight;            /* Right side of inclusive picture frame */
-    long FrameBottom;           /* Bottom side of inclusive picture frame */
-    unsigned long Signature;    /* Signature ID (always 0x464D4520) */
-    unsigned long Version;      /* Version of the metafile */
-    unsigned long Size;         /* Size of the metafile in bytes */
-    unsigned long NumOfRecords; /* Number of records in the metafile */
-    unsigned short NumOfHandles;    /* Number of handles in the handle table */
-    unsigned short Reserved;    /* Not used (always 0) */
-    unsigned long SizeOfDescrip;    /* Size of description string in WORDs */
-    unsigned long OffsOfDescrip;    /* Offset of description string in metafile */
-    unsigned long NumPalEntries;    /* Number of color palette entries */
-    long WidthDevPixels;        /* Width of reference device in pixels */
-    long HeightDevPixels;       /* Height of reference device in pixels */
-    long WidthDevMM;            /* Width of reference device in millimeters */
-    long HeightDevMM;           /* Height of reference device in millimeters */
+    uint32_t RecordType;   /* Record type (always 0x00000001) */
+    uint32_t RecordSize;   /* Size of the record in bytes */
+    int32_t BoundsLeft;            /* Left inclusive bounds */
+    int32_t BoundsTop;             /* Top inclusive bounds */
+    int32_t BoundsRight;           /* Right inclusive bounds */
+    int32_t BoundsBottom;          /* Bottom inclusive bounds */
+    int32_t FrameLeft;             /* Left side of inclusive picture frame */
+    int32_t FrameTop;              /* Top side of inclusive picture frame */
+    int32_t FrameRight;            /* Right side of inclusive picture frame */
+    int32_t FrameBottom;           /* Bottom side of inclusive picture frame */
+    uint32_t Signature;    /* Signature ID (always 0x464D4520) */
+    uint32_t Version;      /* Version of the metafile */
+    uint32_t Size;         /* Size of the metafile in bytes */
+    uint32_t NumOfRecords; /* Number of records in the metafile */
+    uint16_t NumOfHandles;    /* Number of handles in the handle table */
+    uint16_t Reserved;    /* Not used (always 0) */
+    uint32_t SizeOfDescrip;    /* Size of description string in WORDs */
+    uint32_t OffsOfDescrip;    /* Offset of description string in metafile */
+    uint32_t NumPalEntries;    /* Number of color palette entries */
+    int32_t WidthDevPixels;        /* Width of reference device in pixels */
+    int32_t HeightDevPixels;       /* Height of reference device in pixels */
+    int32_t WidthDevMM;            /* Width of reference device in millimeters */
+    int32_t HeightDevMM;           /* Height of reference device in millimeters */
 } ENHANCEDMETAHEADER;
 
 typedef struct _EmrFormat {
-    unsigned long Signature;    /* 0x46535045 for EPS, 0x464D4520 for EMF */
-    unsigned long Version;      /* EPS version number or 0x00000001 for EMF */
-    unsigned long Data;         /* Size of data in bytes */
-    unsigned long OffsetToData; /* Offset to data */
+    uint32_t Signature;    /* 0x46535045 for EPS, 0x464D4520 for EMF */
+    uint32_t Version;      /* EPS version number or 0x00000001 for EMF */
+    uint32_t Data;         /* Size of data in bytes */
+    uint32_t OffsetToData; /* Offset to data */
 } EMRFORMAT;
 
 typedef struct _GdiCommentMultiFormats {
-    unsigned long Identifier;   /* Comment ID (0x43494447) */
-    unsigned long Comment;      /* Multiformats ID (0x40000004) */
-    long BoundsLeft;            /* Left side of bounding rectangle */
-    long BoundsRight;           /* Right side of bounding rectangle */
-    long BoundsTop;             /* Top side of bounding rectangle */
-    long BoundsBottom;          /* Bottom side of bounding rectangle */
-    unsigned long NumFormats;   /* Number of formats in comment */
+    uint32_t Identifier;   /* Comment ID (0x43494447) */
+    uint32_t Comment;      /* Multiformats ID (0x40000004) */
+    int32_t BoundsLeft;            /* Left side of bounding rectangle */
+    int32_t BoundsRight;           /* Right side of bounding rectangle */
+    int32_t BoundsTop;             /* Top side of bounding rectangle */
+    int32_t BoundsBottom;          /* Bottom side of bounding rectangle */
+    uint32_t NumFormats;   /* Number of formats in comment */
     EMRFORMAT *Data;            /* Array of comment data */
 } GDICOMMENTMULTIFORMATS;
 
@@ -328,11 +329,11 @@ static char *SysGraphicsConvert(int opt, int offset, int dpi, char *in, char *ou
 	return out_tmp;
 }
 
-static void PicComment(short label, short size, FILE * fp)
+static void PicComment(int16_t label, int16_t size, FILE * fp)
 {
-    short long_comment = 0x00A1;
-    short short_comment = 0x00A0;
-    short tag;
+    int16_t long_comment = 0x00A1;
+    int16_t short_comment = 0x00A0;
+    int16_t tag;
 
     tag = (size) ? long_comment : short_comment;
 
@@ -408,12 +409,12 @@ static char *strdup_absolute_path(char *s)
 static char *eps_to_pict(char *s)
 {
     char *p, *pict, buffer[560];
-    long ii, pict_bitmap_size, eps_size;
-    short handle_size;
+    int32_t ii, pict_bitmap_size, eps_size;
+    int16_t handle_size;
     unsigned char byte;
-    short PostScriptBegin = 190;
-    short PostScriptEnd = 191;
-    short PostScriptHandle = 192;
+    int16_t PostScriptBegin = 190;
+    int16_t PostScriptEnd = 191;
+    int16_t PostScriptHandle = 192;
     char *pict_eps = NULL;
     char *eps = NULL;
     char *return_value = NULL;
@@ -595,7 +596,7 @@ static char *eps_to_emf(char *name)
     size_t cmd_len;
 	
     char ans[50];
-    long width, height;
+    int32_t width, height;
 
 	outfile = NULL;
     diagnostics(3, "filename = '%s'", name);
@@ -615,7 +616,7 @@ static char *eps_to_emf(char *name)
     snprintf(cmd, cmd_len, "identify -format \"%%w %%h\" \"%s\"", name);
     fp = popen(cmd, "r");
     if (fgets(ans, 50, fp) != NULL)
-        sscanf(ans, "%ld %ld", &width, &height);
+        sscanf(ans, "%ld %ld", (long *)&width, (long *)&height);
     pclose(fp);
     free(cmd);
 
@@ -684,8 +685,8 @@ static void PutPictFile(char *s, double height0, double width0, double scale, do
 {
     FILE *fp;
     char *pict;
-    short buffer[5];
-    short top, left, bottom, right;
+    int16_t buffer[5];
+    int16_t top, left, bottom, right;
     int width, height;
     int sx,sy;
 
@@ -755,9 +756,10 @@ typedef struct _pHYsChunkEntry
 
 static unsigned char * getPngChunk(FILE *fp, char *s)
 {
-	unsigned long size, crc;
+	uint32_t size, crc;
 	char head[5];
 	unsigned char *data;
+	size_t n;
 	
 	head[4]='\0';
 	
@@ -767,7 +769,7 @@ static unsigned char * getPngChunk(FILE *fp, char *s)
 		int i;
 		if (data!=NULL) free(data);
 				
-		fread(&size, 4, 1, fp);
+		n=fread(&size, 4, 1, fp);
 		if (g_little_endian) size = LETONL(size);
 		
 		for (i=0; i<4; i++) {
@@ -777,12 +779,12 @@ static unsigned char * getPngChunk(FILE *fp, char *s)
 
 		if (strcmp(head,"IEND") == 0) return NULL;
 		
-		diagnostics(6,"found chunk '%s' size %ld bytes",head,size);
+		diagnostics(6,"found chunk '%s' size %ld bytes",head,(unsigned long) size);
 		data = malloc(size);
 		if (data == NULL) return NULL;
 		
-		fread(data, size, 1, fp);
-		fread(&crc, 4, 1, fp);
+		n=fread(data, size, 1, fp);
+		n=fread(&crc, 4, 1, fp);
 	
 		
 	} while (strcmp(s,head)!=0);
@@ -795,10 +797,10 @@ static unsigned char * getPngChunk(FILE *fp, char *s)
                w is the size in pixels
                xres is the number of pixels per meter
  ******************************************************************************/
-static void GetPngSize(char *s, unsigned long *w, unsigned long *h, unsigned long *xres, unsigned long *yres, int *bad_res)
+static void GetPngSize(char *s, uint32_t *w, uint32_t *h, uint32_t *xres, uint32_t *yres, int *bad_res)
 {
     FILE *fp;
-    unsigned long *p;
+    uint32_t *p;
     unsigned char buffer[16];
     char reftag[9] = "\211PNG\r\n\032\n";
     unsigned char *data = NULL;
@@ -806,8 +808,8 @@ static void GetPngSize(char *s, unsigned long *w, unsigned long *h, unsigned lon
     diagnostics(4, "GetPngSize of '%s'", s);
     *w = 0;
     *h = 0;
-    *xres = (unsigned long) POINTS_PER_METER;
-    *yres = (unsigned long) POINTS_PER_METER;
+    *xres = (uint32_t) POINTS_PER_METER;
+    *yres = (uint32_t) POINTS_PER_METER;
     *bad_res = 1;
     
     fp = fopen(s, "rb");
@@ -833,7 +835,7 @@ static void GetPngSize(char *s, unsigned long *w, unsigned long *h, unsigned lon
         return;
 	}
 
-	p = (unsigned long *) data;	
+	p = (uint32_t *) data;	
 	*w = (g_little_endian) ? LETONL(*p) : *p;
 	p++;
 	*h = (g_little_endian) ? LETONL(*p) : *p;
@@ -846,7 +848,7 @@ static void GetPngSize(char *s, unsigned long *w, unsigned long *h, unsigned lon
         return;
 	}
 
-	p = (unsigned long *) data;	
+	p = (uint32_t *) data;	
 	*xres = (g_little_endian) ? LETONL(*p) : *p;
 	p++;
 	*yres = (g_little_endian) ? LETONL(*p) : *p;
@@ -859,8 +861,8 @@ static void GetPngSize(char *s, unsigned long *w, unsigned long *h, unsigned lon
 		diagnostics(6, "bogus resolution in png image! ");
 		diagnostics(6, "xres = %ld, yres = %ld, pixels/meter", *xres, *yres);
 		diagnostics(6, "xres = %ld, yres = %ld, pixels/in", 
-		(unsigned long)( (double)(*xres *72.0)/POINTS_PER_METER), 
-		(unsigned long)((double)(*yres * 72.0) /POINTS_PER_METER));
+		(uint32_t)((double)(*xres *72.0)/POINTS_PER_METER), 
+		(uint32_t)((double)(*yres * 72.0) /POINTS_PER_METER));
 		*xres *= POINTS_PER_METER/72.0;
 		*yres *= POINTS_PER_METER/72.0;
 	} else 
@@ -869,8 +871,8 @@ static void GetPngSize(char *s, unsigned long *w, unsigned long *h, unsigned lon
 	
     diagnostics(6, "xres = %ld, yres = %ld, pixels/meter", *xres, *yres);
     diagnostics(6, "xres = %ld, yres = %ld, pixels/in", 
-    (unsigned long)( (double)(*xres *72.0)/POINTS_PER_METER), 
-    (unsigned long)((double)(*yres * 72.0) /POINTS_PER_METER));
+    (uint32_t)( (double)(*xres *72.0)/POINTS_PER_METER), 
+    (uint32_t)((double)(*yres * 72.0) /POINTS_PER_METER));
     
     fclose(fp);
 }
@@ -902,7 +904,7 @@ void PutPngFile(char *s, double height_goal, double width_goal, double scale,
 {
     FILE *fp;
     char *png;
-    unsigned long width, height, w, h, b, xres, yres;
+    uint32_t width, height, w, h, b, xres, yres;
 	int sx, sy, bad_res;
 	
     if (full_path)
@@ -934,9 +936,9 @@ void PutPngFile(char *s, double height_goal, double width_goal, double scale,
 	/*       dwips       100,000 (units)     1 points        meter      */
 	/* w =  -------- * ------------------ * ---------  * -----------    */
 	/*         1            1 meter          20 dwips      1 point      */
-    w = (unsigned long) (100000.0 * width           ) / (20 * POINTS_PER_METER);
-    h = (unsigned long) (100000.0 * height          ) / (20 * POINTS_PER_METER);
-    b = (unsigned long) (100000.0 * baseline * scale) / (20 * POINTS_PER_METER); 
+    w = (uint32_t) (100000.0 * width           ) / (20 * POINTS_PER_METER);
+    h = (uint32_t) (100000.0 * height          ) / (20 * POINTS_PER_METER);
+    b = (uint32_t) (100000.0 * baseline * scale) / (20 * POINTS_PER_METER); 
     
 	AdjustScaling(height,width,height_goal,width_goal,scale,&sx,&sy);
 	
@@ -969,10 +971,10 @@ static void PutJpegFile(char *s, double height0, double width0, double scale, do
 {
     FILE *fp;
     char *jpg;
-    unsigned short buffer[2];
+    uint16_t buffer[2];
     int m=0, c;
-    unsigned short width, height;
-    unsigned long w, h;
+    uint16_t width, height;
+    uint32_t w, h;
     int sx, sy;
 
     jpg = strdup_together(g_home_dir, s);
@@ -1010,14 +1012,14 @@ static void PutJpegFile(char *s, double height0, double width0, double scale, do
     height = buffer[0];
 
     if (g_little_endian) {
-        width = (unsigned short) LETONS(width);
-        height = (unsigned short) LETONS(height);
+        width = (uint16_t) LETONS(width);
+        height = (uint16_t) LETONS(height);
     }
 
     diagnostics(4, "width = %d, height = %d", width, height);
 
-    w = (unsigned long) (100000.0 * width) / (20 * POINTS_PER_METER);
-    h = (unsigned long) (100000.0 * height) / (20 * POINTS_PER_METER);
+    w = (uint32_t) (100000.0 * width) / (20 * POINTS_PER_METER);
+    h = (uint32_t) (100000.0 * height) / (20 * POINTS_PER_METER);
     fprintRTF("\n{\\pict\\jpegblip\\picw%ld\\pich%ld", w, h);
     fprintRTF("\\picwgoal%ld\\pichgoal%ld\n", width * 20, height * 20);
 
@@ -1035,18 +1037,18 @@ static void PutEmfFile(char *s, double height0, double width0, double scale, dou
 {
     FILE *fp;
     char *emf;
-    unsigned long RecordType;   /* Record type (always 0x00000001) */
-    unsigned long RecordSize;   /* Size of the record in bytes */
-    long BoundsLeft;            /* Left inclusive bounds */
-    long BoundsRight;           /* Right inclusive bounds */
-    long BoundsTop;             /* Top inclusive bounds */
-    long BoundsBottom;          /* Bottom inclusive bounds */
-    long FrameLeft;             /* Left side of inclusive picture frame */
-    long FrameRight;            /* Right side of inclusive picture frame */
-    long FrameTop;              /* Top side of inclusive picture frame */
-    long FrameBottom;           /* Bottom side of inclusive picture frame */
-    unsigned long Signature;    /* Signature ID (always 0x464D4520) */
-    unsigned long w, h, width, height;
+    uint32_t RecordType;   /* Record type (always 0x00000001) */
+    uint32_t RecordSize;   /* Size of the record in bytes */
+    int32_t BoundsLeft;            /* Left inclusive bounds */
+    int32_t BoundsRight;           /* Right inclusive bounds */
+    int32_t BoundsTop;             /* Top inclusive bounds */
+    int32_t BoundsBottom;          /* Bottom inclusive bounds */
+    int32_t FrameLeft;             /* Left side of inclusive picture frame */
+    int32_t FrameRight;            /* Right side of inclusive picture frame */
+    int32_t FrameTop;              /* Top side of inclusive picture frame */
+    int32_t FrameBottom;           /* Bottom side of inclusive picture frame */
+    uint32_t Signature;    /* Signature ID (always 0x464D4520) */
+    uint32_t w, h, width, height;
 	int sx, sy;
 	
     if (full_path)
@@ -1099,11 +1101,11 @@ static void PutEmfFile(char *s, double height0, double width0, double scale, dou
 
     if (RecordType != 1 || Signature != 0x464D4520)
         goto out;
-    height = (unsigned long) (BoundsBottom - BoundsTop);
-    width = (unsigned long) (BoundsRight - BoundsLeft);
+    height = (uint32_t) (BoundsBottom - BoundsTop);
+    width = (uint32_t) (BoundsRight - BoundsLeft);
 
-    w = (unsigned long) ((100000.0 * width) / (20 * POINTS_PER_METER));
-    h = (unsigned long) ((100000.0 * height) / (20 * POINTS_PER_METER));
+    w = (uint32_t) ((100000.0 * width) / (20 * POINTS_PER_METER));
+    h = (uint32_t) ((100000.0 * height) / (20 * POINTS_PER_METER));
     diagnostics(4, "width = %ld, height = %ld", width, height);
     fprintRTF("\n{\\pict\\emfblip\\picw%ld\\pich%ld", w, h);
     fprintRTF("\\picwgoal%ld\\pichgoal%ld\n", width * 20, height * 20);
@@ -1131,16 +1133,16 @@ static void PutWmfFile(char *s, double height0, double width0, double scale, dou
 {
     FILE *fp;
     char *wmf;
-    unsigned long Key;          /* Magic number (always 0x9AC6CDD7) */
-    unsigned short FileType;    /* Type of metafile (0=memory, 1=disk) */
-    unsigned short HeaderSize;  /* Size of header in WORDS (always 9) */
-    unsigned short Handle;      /* Metafile HANDLE number (always 0) */
-    short Left;                 /* Left coordinate in twips */
-    short Top;                  /* Top coordinate in twips */
-    short Right;                /* Right coordinate in twips */
-    short Bottom;               /* Bottom coordinate in twips */
-    int width, height, sx, sy;
-    unsigned long int magic_number = (unsigned long int) 0x9AC6CDD7;
+    uint32_t Key;          /* Magic number (always 0x9AC6CDD7) */
+    uint16_t FileType;    /* Type of metafile (0=memory, 1=disk) */
+    uint16_t HeaderSize;  /* Size of header in WORDS (always 9) */
+    uint16_t Handle;      /* Metafile HANDLE number (always 0) */
+    int16_t Left;                 /* Left coordinate in twips */
+    int16_t Top;                  /* Top coordinate in twips */
+    int16_t Right;                /* Right coordinate in twips */
+    int16_t Bottom;               /* Bottom coordinate in twips */
+    int32_t width, height, sx, sy;
+    uint32_t magic_number = 0x9AC6CDD7;
 
     /* open the proper file */
     wmf = strdup_together(g_home_dir, s);
@@ -1187,8 +1189,8 @@ static void PutWmfFile(char *s, double height0, double width0, double scale, dou
             goto out;
 
         if (!g_little_endian) {
-            FileType = (unsigned short) LETONS(FileType);
-            HeaderSize = (unsigned short) LETONS(HeaderSize);
+            FileType = (uint16_t) LETONS(FileType);
+            HeaderSize = (uint16_t) LETONS(HeaderSize);
         }
 
         if (FileType != 0 && FileType != 1)
@@ -1367,13 +1369,13 @@ purpose: reads a .pbm file to determine the baseline for an equation
 		 the .pbm file should have dimensions of 1 x height
 		 returns the baseline height in pixels
  ****************************************************************************/
-long GetBaseline(char *s, char *pre)
+int32_t GetBaseline(char *s, char *pre)
 {
     FILE *fp;
     int thechar;
     char *pbm;
     char magic[250];
-    long baseline, width, height, items, top, bottom;
+    int32_t baseline, width, height, items, top, bottom;
 
     /* baseline=0 if not an inline image */
     if ((strcmp(pre, "$") != 0) && (strcmp(pre, "\\begin{math}") != 0) && (strcmp(pre, "\\(") != 0))
@@ -1401,15 +1403,15 @@ long GetBaseline(char *s, char *pre)
         items = fscanf(fp, "%s", magic);
     }
 
-    items = sscanf(magic, "%ld", &width);   /* make sure image width is 1 */
+    items = sscanf(magic, "%ld", (long *)&width);   /* make sure image width is 1 */
     if ((items != 1) || (width != 1))
         goto Exit;
 
-    items = fscanf(fp, " %ld", &height);    /* read height */
+    items = fscanf(fp, " %ld", (long *)&height);    /* read height */
     if (items != 1)
         goto Exit;
 
-    diagnostics(4, "width=%ld height=%ld", width, height);
+    diagnostics(4, "width=%ld height=%ld", (long)width, (long)height);
 
     if (!ReadLine(fp))
         goto Exit;              /* pixel map should start on next line */
@@ -1449,8 +1451,8 @@ void PutLatexFile(char *latex, double height0, double width0, double scale, char
     char *pngpath = NULL;
     int baseline, bmoffset,bad_res;
 	double convert_scale,resolution;
-    unsigned long width, height, rw, rh, xres, yres;
-    unsigned long maxsize = (unsigned long) (32767.0 / 20.0);
+    uint32_t width, height, rw, rh, xres, yres;
+    uint32_t maxsize = (uint32_t) (32767.0 / 20.0);
 	
     diagnostics(3, "Rendering LaTeX construct (e.g. equation) as a bitmap...");
 
@@ -1468,8 +1470,8 @@ void PutLatexFile(char *latex, double height0, double width0, double scale, char
 
 	if ((width > maxsize && height != 0) || (height > maxsize && width != 0)) {
         free(pngpath);
-		rw = (unsigned long) ((resolution * maxsize) / width);
-		rh = (unsigned long) ((resolution * maxsize) / height);
+		rw = (uint32_t) ((resolution * maxsize) / width);
+		rh = (uint32_t) ((resolution * maxsize) / height);
 		resolution = rw < rh ? (int) rw : (int) rh;
 		pngpath = SysGraphicsConvert(CONVERT_LATEX, bmoffset, (int) resolution, latex, "");
 		if (pngpath == NULL) goto the_end;
@@ -1638,7 +1640,7 @@ void WriteLatexAsBitmap(char *pre, char *eq, char *post)
                              || strstr(pre, "picture")
                              || strstr(pre, "tabular")
                              || strstr(pre, "tabbing")
-                             || strstr(pre, "longtable")
+                             || strstr(pre, "int32_ttable")
                              || strstr(pre, "psgraph")
                              || strstr(pre, "pspicture")) 
     {

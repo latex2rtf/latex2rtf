@@ -2146,7 +2146,7 @@ void CmdApaCite(int code)
             break;
         case 36:
             DiscardBraceParam();    /* \AX{entry} */
-            diagnostics(4, "Ignoring \\AX{%s}", s);
+            diagnostics(4, "Ignoring \\AX{blah blah}");
             break;
         case 37:
             fprintRTF(". ");

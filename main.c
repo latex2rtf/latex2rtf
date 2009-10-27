@@ -953,8 +953,9 @@ purpose: opens "g_home_dir/path"  and
 void debug_malloc(void)
 {
     char c;
+    int n;
 
     diagnostics(WARNING, "Malloc Debugging --- press return to continue");
     fflush(NULL);
-    fscanf(stdin, "%c", &c);
+    n = fscanf(stdin, "%c", &c);
 }

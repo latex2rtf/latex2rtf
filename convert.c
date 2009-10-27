@@ -152,6 +152,8 @@ purpose: converts inputfile and writes result to outputfile
         	/* Get the number of bytes in the sequence        */
         	/* Must use an unsigned character for comparisons */
         	byte = cThis;
+        	len = 0;
+        	value = 0;
         	if (byte >= 0xF0) { 
         		len = 3; 
         		value = byte & ~0xF0; 

@@ -379,7 +379,7 @@ void CmdVspace(int code)
      note that \vskip3mm will end a paragraph, but \vspace{1cm} will not.
  ******************************************************************************/
 {
-    int vspace;
+    int vspace=0;
     char *s;
 
     switch (code) {

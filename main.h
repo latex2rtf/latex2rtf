@@ -3,6 +3,7 @@
 #if defined(UNIX)
 #define ENVSEP ':'
 #define PATHSEP '/'
+#define HAS_STRDUP
 #endif
 
 #if defined(MSDOS) || defined(OS2)

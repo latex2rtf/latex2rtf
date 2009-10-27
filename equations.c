@@ -687,7 +687,7 @@ void CmdEquation(int code)
  purpose   : Handle everything associated with equations
  ******************************************************************************/
 {
-    char *pre=NULL, *eq, *post=NULL;
+    char *pre=NULL, *eq=NULL, *post=NULL;
     int inline_equation, number, true_code;
 
     true_code = code & ~ON;

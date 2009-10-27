@@ -925,7 +925,8 @@ void CmdItem(int code)
     int vspace;
 
     if (code == RESET_ITEM_COUNTER) {
-        item_number[g_enumerate_depth] = 1;
+    	if (g_enumerate_depth < 4)
+        	item_number[g_enumerate_depth] = 1;
         return;
     }
 
@@ -991,6 +992,9 @@ void CmdItem(int code)
 
 				case 4:
 					fprintRTF("%c.", 'A' + item_number[g_enumerate_depth] - 1);
+					break;
+				
+				default:
 					break;
 			}
 			if (code != INPARAENUM_MODE)

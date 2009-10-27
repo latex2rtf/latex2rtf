@@ -8,9 +8,7 @@
 @setfilename latex2rtf.info
 @settitle LaTeX2rtf
 @setchapternewpage odd
-@direntry
-* Latex2rtf.
-@end direntry
+@dircategory Document Preparation
 @c %**end of header
 
 @ignore Permission is granted to process this file through TeX and print

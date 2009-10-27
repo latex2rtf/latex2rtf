@@ -7,6 +7,7 @@ MKDIR=mkdir -p
 PKGMANDIR?=man
 
 CFLAGS:=$(CFLAGS) -DUNIX
+#CFLAGS:=$(CFLAGS) -DUNIX -fexceptions -fstack-protector --param=ssp-buffer-size=4 -m64  -mtune=generic
 #CFLAGS:=$(CFLAGS) -DMSDOS         #Windows/DOS
 #CFLAGS:=$(CFLAGS) -DMAC_CLASSIC   #MacOS 8/9
 #CFLAGS:=$(CFLAGS) -DOS2           #OS/2
