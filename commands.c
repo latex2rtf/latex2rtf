@@ -1065,6 +1065,7 @@ static CommandArray natbibCommands[] = {
     {"Citealp", CmdNatbibCite, CITE_ALP_CAP},
     {"Citeauthor", CmdNatbibCite, CITE_AUTHOR_CAP},
     {"bibpunct", CmdBibpunct, 0},
+    {"natexlab", CmdNatexlab, 0},
     {"", NULL, 0}
 };
 

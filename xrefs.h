@@ -139,4 +139,5 @@ void CmdHarvard(int code);
 void CmdNatbibCite(int code);
 void CmdBibpunct(int code);
 void CmdBibEntry(int code);
+void CmdNatexlab(int code);
 

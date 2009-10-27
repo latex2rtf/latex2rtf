@@ -1258,6 +1258,14 @@ static void ConvertHarvard(char *s, int code, char *pre, char *post, int first)
     free(full);
 }
 
+void CmdNatexlab(int code) 
+{
+	char *s = getBracketParam();
+	if (!BIB_STYLE_NUMBER) 
+		ConvertString(s);
+	free(s);
+}
+
 /******************************************************************************
  Use \bibpunct (in the preamble only) with 6 mandatory arguments:
     1. opening bracket for citation
