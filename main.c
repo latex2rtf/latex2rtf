@@ -738,18 +738,12 @@ params: filename - name of outputfile, possibly NULL for already open file
 
     } else {
 
-        if (g_home_dir)
-            name = strdup_together(g_home_dir, filename);
-        else
-            name = strdup(filename);
-
-        *f = fopen(name, "w");
+        *f = fopen(filename, "w");
 
         if (*f == NULL)
-            diagnostics(ERROR, "Error opening RTF file <%s>\n", name);
+            diagnostics(ERROR, "Error opening RTF file <%s>\n", filename);
 
-        diagnostics(2, "Opened RTF file <%s>", name);
-        free(name);
+        diagnostics(2, "Opened RTF file <%s>", filename);
     }
 }
 
