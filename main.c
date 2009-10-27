@@ -730,8 +730,6 @@ params: filename - name of outputfile, possibly NULL for already open file
 	f - pointer to filepointer to store file ID
  ****************************************************************************/
 {
-    char *name;
-
     if (filename == NULL) {
         diagnostics(4, "Writing RTF to stdout");
         *f = stdout;

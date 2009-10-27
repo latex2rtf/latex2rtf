@@ -87,7 +87,8 @@ static char *g_bibpunct_cite_sep = NULL;
 static char *g_bibpunct_author_date_sep = NULL;
 static char *g_bibpunct_numbers_sep = NULL;
 static char *g_bibpunct_postnote_sep = NULL;
-static bool g_bibpunct_touched = FALSE;
+static bool g_bibpunct_cite_sep_touched = FALSE;
+static bool g_bibpunct_style_paren_touched = FALSE;
 static int   g_bibpunct_style = BIB_STYLE_ALPHA;
 static bool g_in_bibliography = FALSE;
 
@@ -99,7 +100,8 @@ void InitializeBibliography(void)
 	g_bibpunct_author_date_sep = strdup(",");
 	g_bibpunct_numbers_sep = strdup(",");
     g_bibpunct_postnote_sep = strdup(", ");
-    g_bibpunct_touched = FALSE;
+    g_bibpunct_cite_sep_touched = FALSE;
+    g_bibpunct_style_paren_touched = FALSE;
     g_bibpunct_style = BIB_STYLE_ALPHA;
 }
 
@@ -120,13 +122,13 @@ void set_bibpunct_style_number(void)
 
 void set_bibpunct_style_separator(char *s)
 {
-    g_bibpunct_touched = TRUE;
+    g_bibpunct_cite_sep_touched = TRUE;
 	g_bibpunct_cite_sep=strdup(s);
 }
 
 void set_bibpunct_style_paren(char *open, char *close)
 {
-    g_bibpunct_touched = TRUE;
+    g_bibpunct_style_paren_touched = TRUE;
 	g_bibpunct_open = strdup(open);
 	g_bibpunct_close = strdup(close);
 }
@@ -1309,7 +1311,8 @@ void CmdBibpunct(int code)
 	free(g_bibpunct_numbers_sep);
 	g_bibpunct_numbers_sep=getBraceParam();
 
-	g_bibpunct_touched = TRUE;
+	g_bibpunct_cite_sep_touched = TRUE;
+	g_bibpunct_style_paren_touched = TRUE;
 }
 
 static int CmpFunc( const void * _a, const void * _b)
@@ -1571,11 +1574,16 @@ void CmdNatbibCite(int code)
     g_last_author_cited[0] = '\0';
     g_last_year_cited[0] = '\0';
 
-	if (!g_bibpunct_touched) {
+	if (!g_bibpunct_cite_sep_touched) {
 		free(g_bibpunct_cite_sep);
 		g_bibpunct_cite_sep = strdup(";");
 	}
 	
+	if (!g_bibpunct_style_paren_touched) {
+		free(g_bibpunct_cite_sep);
+		g_bibpunct_cite_sep = strdup(";");
+	}
+
 	pretext = getBracketParam();
 	option = getBracketParam();
 	if (!option) {
