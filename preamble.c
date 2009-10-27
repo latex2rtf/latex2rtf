@@ -1271,7 +1271,6 @@ static void WritePageSize(void)
 }
 
 static void WriteHeadFoot(void)
-
 /****************************************************************************
   \headerl        The header is on left pages only.
   \headerr        The header is on right pages only.
@@ -1281,15 +1280,13 @@ static void WriteHeadFoot(void)
   \footerf        The footer is on the first page only.
 ****************************************************************************/
 {
-
-/*	fprintRTF("\\ftnbj\\sectd\\linex0\\endnhere\\qj\n"); */
-
     int family = DefaultFontFamily();
 	int size   = DefaultFontSize(); 
     int textwidth = getLength("textwidth");
 
     if (g_preambleLFOOT || g_preambleCFOOT || g_preambleRFOOT) {
         fprintRTF("{\\footer\\pard\\plain\\tqc\\tx%d\\tqr\\tx%d ", textwidth / 2, textwidth);
+    	setTexMode(MODE_HORIZONTAL); 
 
         if (g_preambleLFOOT)
             ConvertString(g_preambleLFOOT);
@@ -1303,13 +1300,14 @@ static void WriteHeadFoot(void)
             ConvertString(g_preambleRFOOT);
         }
 
-        fprintRTF("\\par}}\n");
+        fprintRTF("\\par}\n");
     } else {
 		fprintRTF("{\\footer\\pard\\plain\\f%d\\fs%d\\qc\\chpgn\\par}\n",family,size);
     }
 
     if (g_preambleLHEAD || g_preambleCHEAD || g_preambleRHEAD) {
         fprintRTF("{\\header\\pard\\plain\\tqc\\tx%d\\tqr\\tx%d ", textwidth / 2, textwidth);
+    	setTexMode(MODE_HORIZONTAL); 
 
         if (g_preambleLHEAD)
             ConvertString(g_preambleLHEAD);
@@ -1323,8 +1321,9 @@ static void WriteHeadFoot(void)
             ConvertString(g_preambleRHEAD);
         }
 
-        fprintRTF("\\par}}\n");
+        fprintRTF("\\par}\n");
     }
+    setTexMode(MODE_VERTICAL);
 }
 
 void CmdHeadFoot(int code)
