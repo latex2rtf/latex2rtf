@@ -11,20 +11,20 @@ LATEX_LOG = >latex.log
 
 RTF=	align.rtf	 array.rtf 		box.rtf 			ch.rtf	             \
 		chem.rtf 	 color.rtf 		dblspace.rtf		defs.rtf             \
-		endnote.rtf	 essential.rtf	excalibur.rtf 		fancy.rtf            \
+		endnote.rtf	 essential.rtf	fancy.rtf            \
 		fonts.rtf	 fontsize.rtf 	fonttest.rtf  		geometry.rtf         \
 		geotest.rtf  german.rtf		head_article.rtf	head_book.rtf        \
 		list.rtf 	 ifclause.rtf	include.rtf			linux.rtf            \
 		logo.rtf 	 misc1.rtf 		misc3.rtf 			misc4.rtf            \
-		percent.rtf	 report.rtf		tabbing.rtf			tabular.rtf          \
-		hyperref.rtf longstack.rtf	head_report.rtf
+		percent.rtf	 report.rtf		hyperref.rtf        longstack.rtf	     \
+		head_report.rtf
 
 BIB_TESTS=  bib_apacite.rtf        bib_harvard.rtf        bib_super.rtf      \
 			bib_apacite_dblsp.rtf  bib_natbib1.rtf        bib_apalike.rtf    \
 			bib_natbib2.rtf        bibentry_apalike.rtf   bib_apalike2.rtf   \
 			bib_natbib3.rtf        bib_apanat.rtf         bibentry_plain.rtf \
 			bib_authordate.rtf     bib_simple.rtf         bib_apa.rtf        \
-			bib_apacite2.rtf
+			bib_apacite2.rtf       bib_apacite3.rtf
 	
 FIG_TESTS=  fig_endfloat.rtf  fig_test.rtf      fig_test3.rtf \
             fig_size.rtf      fig_test2.rtf     fig_test4.rtf \
@@ -43,6 +43,10 @@ EQN_TESTS=  eqns.rtf	eqns2.rtf eqns-koi8.rtf ttgfsr7.rtf spago1.rtf misc2.rtf\
             frac.rtf	subsup.rtf	theorem.rtf eqnnumber.rtf eqnnumber2.rtf
 
 CHAR_TESTS= accentchars.rtf oddchars.rtf unicode.rtf overstrike.rtf
+
+TABLE_TESTS= tabbing.rtf tabular.rtf table_array1.rtf table_array2.rtf
+
+EXTRA_TESTS= excalibur.rtf
 
 basic:
 	$(MAKE) basic_tests
@@ -66,6 +70,12 @@ babel:
 char:
 	$(MAKE) char_tests
 
+table:
+	$(MAKE) table_tests
+
+extra:
+	$(MAKE) extra_tests
+	
 all:
 	mkdir -p tmp
 	$(MAKE) basic_tests
@@ -74,6 +84,8 @@ all:
 	$(MAKE) fig_tests
 	$(MAKE) enc_tests
 	$(MAKE) char_tests
+	$(MAKE) table_tests
+	$(MAKE) extra_tests
 
 basic_tests: $(RTF)
 
@@ -88,6 +100,10 @@ babel_tests: $(BABEL_TESTS)
 eqn_tests: $(EQN_TESTS)
 
 char_tests: $(CHAR_TESTS)
+
+table_tests: $(TABLE_TESTS)
+
+extra_tests: $(EXTRA_TESTS)
 
 #these tests require that some non-standard latex style be installed
 
@@ -118,12 +134,19 @@ bib_apacite.rtf: bib_apacite.tex
 	$(LATEX) bib_apacite $(LATEX_LOG)
 	$(LATEX2RTF) $(OPTIONS) bib_apacite
 
-bib_apacite2.rtf: bib_apacite2.tex
+bib_apacite2.rtf: bib_apacite2.tex bib_apacite2.bib
 	$(LATEX) bib_apacite2 $(LATEX_LOG)
 	$(BIBTEX) bib_apacite2 > bibtex.log
 	$(LATEX) bib_apacite2 $(LATEX_LOG)
 	$(LATEX) bib_apacite2 $(LATEX_LOG)
 	$(LATEX2RTF) $(OPTIONS) bib_apacite2
+
+bib_apacite3.rtf: bib_apacite3.tex bib_apacite3.bib
+	$(LATEX) bib_apacite3 $(LATEX_LOG)
+	$(BIBTEX) bib_apacite3 > bibtex.log
+	$(LATEX) bib_apacite3 $(LATEX_LOG)
+	$(LATEX) bib_apacite3 $(LATEX_LOG)
+	$(LATEX2RTF) $(OPTIONS) bib_apacite3
 
 bib_apacite_dblsp.rtf: bib_apacite_dblsp.tex
 	$(LATEX) bib_apacite_dblsp $(LATEX_LOG)

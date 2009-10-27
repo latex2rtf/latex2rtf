@@ -1986,6 +1986,14 @@ void CmdBCAY(int code)
         case CITE_SHORT_A:
         case CITE_SHORT_AUTHOR:
             ConvertString(t);
+            if (g_current_cite_type == CITE_SHORT_A)
+                fprintRTF(" (");
+            else
+                fprintRTF(", ");
+
+            ConvertString(year);
+            if (g_current_cite_type == CITE_SHORT_A)
+                fprintRTF(")");
             break;
 
         case CITE_YEAR:
@@ -2039,7 +2047,7 @@ void CmdApaCite(int code)
             break;              /* BBAB */
         case 3:
             fprintRTF(", ");
-            break;              /* BBAY */
+            break;              /* BBAY */ 
         case 4:
             fprintRTF("; ");
             break;              /* BBC */
