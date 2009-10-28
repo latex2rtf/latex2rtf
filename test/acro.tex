@@ -1,0 +1,39 @@
+\documentclass{article}
+\usepackage{acronym}
+
+\begin{document}
+
+\section{Test section}
+This is a test file for the acronyms.
+
+Each time a \ac{bgp} advertisement traverses an \ac{AS}, the \ac{aspath}
+attribute is modified. Additionally, \acp{AS} may introduce additional
+changes in the \ac{aspath} for traffic engineering purposes.
+
+Used following acronym macros
+
+\begin{verbatim}
+\usepackage{acronym}
+
+\acrodef{AS}{Autonomous System}
+
+\begin{acronym}
+\acrodef{aspath}[AS\_PATH]{AS Path}
+\acro{bgp}[BGP-4]{Border Gateway Protocol}
+\acro{isis}[IS-IS]{IS-IS Protocol}
+\acro{RIP}{RIPv2 Routing Protocol}
+\end{acronym}
+\end{verbatim}
+
+Only \textbf{\ac{bgp}} should appear as an acronym in the acronym section.
+
+\acrodef{AS}{Autonomous System}
+
+\begin{acronym}
+\acrodef{aspath}[AS\_PATH]{AS Path}
+\acro{bgp}[BGP-4]{Border Gateway Protocol}
+\acro{isis}[IS-IS]{IS-IS Protocol}
+\acro{RIP}{RIPv2 Routing Protocol}
+\end{acronym}
+
+\end{document}
