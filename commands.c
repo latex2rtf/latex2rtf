@@ -675,6 +675,8 @@ static CommandArray PreambleCommands[] = {
     {"latextortftrue",CmdIgnore,1}, 
     {"latextortffalse",CmdIgnore,0}, 
     {"newif",CmdNewif,0},
+    {"else",CmdElse,0},
+    {"fi",CmdFi,0},
     {"title", CmdTitle, TITLE_TITLE},
     {"author", CmdTitle, TITLE_AUTHOR},
     {"and", CmdAnd, 0},

@@ -181,5 +181,8 @@ void CmdRule(int code);
 void CmdTolerateEnviron(int code);
 void CmdIflatextortf(int code);
 void CmdNewif(int code);
+void CmdElse(int code);
+void CmdFi(int code);
+bool TryConditionSet(char *command);
 void CmdAppendix(int code);
 void CmdAcronymItem(int code);

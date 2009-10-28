@@ -1357,16 +1357,134 @@ void CmdIgnoreLet(int code)
 	free(s);	
 }
 
+typedef struct iftag {
+    char *if_name;            /* LaTeX newif name without \newif\if */
+    int is_true;              /* if this name is set to true */
+    int did_push_env;         /* keep track which of 'if' or 'else' is true */
+} IfName;
+
+/* ifCommands maintains all the \newif CONDitions */
+static int iIfNameCount = 0;   /* number of if condition names */
+static IfName ifCommands[100] = {
+    {NULL, 0}
+};
+
+/* ifEnvs/iIfDepth is used to handle nested conditions. */
+static IfName ifEnvs[100];
+static int iIfDepth = 0;   /* number of nested if conditions */
+
 void CmdNewif( /* @unused@ */ int code)
 
 /******************************************************************************
-     purpose : ignore \newif\ifsomething
+     purpose : initiate handing of \newif\ifsomething
+	: \newif\ifSOMETHING
+	:   => create a new ENTRY with SOMETHING with false
+	: \SOMETHINGfalse
+	:   => set SOMETHING to false
+	: \SOMETHINGtrue
+	:   => set SOMETHING to true
+	: \ifSOMETHING
+	:   => if SOMETHING is true, process it.
+	: \else
+	:   => if SOMETHING is NOT true, process it.
+	: \fi
  ******************************************************************************/
 {
     char *s;
 	s = getSimpleCommand();
 	diagnostics(4,"discarding %s",s);
+	if(strncmp(s, "\\if", 3) == 0)
+	{
+		int i;
+		for(i = 0; i < iIfNameCount; i++)
+		{
+			if(strcmp(ifCommands[i].if_name, &s[3]) == 0)
+				break;
+		}
+		if(i < iIfNameCount)
+	    		diagnostics(WARNING, "Duplicated \\newif command '%s'", s); 
+		else
+		{
+			ifCommands[iIfNameCount].if_name = strdup(&s[3]);
+			ifCommands[iIfNameCount].is_true = FALSE;
+			ifCommands[iIfNameCount].did_push_env = FALSE;
+			iIfNameCount++;
+		}
+	}
+	else
+	    diagnostics(WARNING, "Mystery \\newif command '%s'", s); 
 	if (s) free(s);
+}
+
+void CmdElse( /* @unused@ */ int code)
+{
+    iIfDepth--;
+	if(ifEnvs[iIfDepth].did_push_env) /* if-closure is true, so else is false */
+	{
+		fprintRTF("\" }");
+		ifEnvs[iIfDepth].did_push_env = FALSE;
+	}
+	else /* if-closure is false, so else is true */
+	{
+		ifEnvs[iIfDepth].did_push_env = TRUE;
+		fprintRTF("{\\v \"");
+	}
+    iIfDepth++;
+}
+
+void CmdFi( /* @unused@ */ int code)
+{
+    iIfDepth--;
+	if(ifEnvs[iIfDepth].did_push_env)
+	{
+		fprintRTF("\" }");
+	}
+}
+
+bool TryConditionSet(char *command)
+{
+    int i;
+    if(strncmp(command, "if", 2) == 0)
+    {
+        for(i = 0; i < iIfNameCount; i++)
+        {
+        	if(strcmp(&command[2], ifCommands[i].if_name) == 0)
+		{
+				ifEnvs[iIfDepth] = ifCommands[i];
+				if(ifCommands[i].is_true)
+				{
+					/* no-op */;
+				}
+				else
+				{
+					ifEnvs[iIfDepth].did_push_env = TRUE;
+					fprintRTF("{\\v \"");
+				}
+				iIfDepth++;
+			return TRUE;
+		}
+	}
+    }
+    for(i = 0; i < iIfNameCount; i++)
+    {
+        char *s = ifCommands[i].if_name;
+        char *t = strdup_together(s, "true");
+        char *f = strdup_together(s, "false");
+	if(strcmp(command, t) == 0)
+	{
+	    ifCommands[i].is_true = TRUE;
+	    free(t); free(f);
+	    return TRUE;
+	}
+	else if(strcmp(command, f) == 0)
+	{
+	    ifCommands[iIfNameCount].is_true = FALSE;
+	    free(t); free(f);
+	    return TRUE;
+	}
+	free(t); free(f);
+    }
+    return FALSE;
 }
 
 void CmdQuad(int kk)

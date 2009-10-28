@@ -830,5 +830,8 @@ returns: success or not
     if (TryVariableIgnore(cCommand))
         return;
 
+    if (TryConditionSet(cCommand))
+        return;
+
     diagnostics(WARNING, "Unknown command '\\%s'", cCommand);
 }
