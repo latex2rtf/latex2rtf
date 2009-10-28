@@ -42,6 +42,7 @@
 #include "equations.h"
 #include "vertical.h"
 #include "fields.h"
+#include "counters.h"
 
 char *g_figure_label = NULL;
 char *g_table_label = NULL;
@@ -220,6 +221,7 @@ purpose: obtains a reference from .aux file
     code==0 means \token{reference}{number}       -> "number"
     code==1 means \token{reference}{{sect}{line}} -> "sect"
     code==2 means \token{reference}{a}{b}{c}      -> "{a}{b}{c}"
+    code==3 means \token{reference}[options]{a}   -> "{a}{b}{c}"
  ************************************************************************/
 static char *ScanAux(char *token, char *reference, int code, char *aux_name)
 {
@@ -235,7 +237,7 @@ static char *ScanAux(char *token, char *reference, int code, char *aux_name)
     if (g_aux_file_missing || strlen(token) == 0) {
         return NULL;
     }
-    diagnostics(4, "seeking '%s' in '%s' calls:%d ", reference, aux_name, once);
+    diagnostics(1, "seeking '%s' in '%s' calls:%d ", reference, aux_name, once);
 	
     snprintf(target, 512, "\\%s{%s}", token, reference);
 
@@ -287,7 +289,7 @@ static char *ScanAux(char *token, char *reference, int code, char *aux_name)
 
 			t = s;
 			braces = 1;
-			while (braces >= 1) {   /* skip matched braces */
+			while (braces > 0 || (code==3 && braces >1)) {   /* skip matched braces */
 				t++;
 				if (*t == '{')
 					braces++;
@@ -2445,4 +2447,114 @@ void CmdListOf(int code)
 	fprintRTF("{\\field{\\*\\fldinst TOC \\\\f %c }{\\fldrslt }}\n",c);  
 	CmdNewPage(NewPage);
 	CmdEndParagraph(0);
+}
+
+static void GetAcronymFromAux(char *key, char **shortname, char **longname)
+{
+	char  *s, *t;
+	*shortname = NULL;
+	*longname = NULL;
+	
+	s = ScanAux("newacro", key, 3, g_aux_name); /* get short & long name */
+
+	t=s;
+	while (*t && *t != ']')
+		t++;
+	
+	if (*t == ']') 
+		*t = '\0';
+	else
+		return;
+	
+	*shortname = strdup(s);
+	*longname = strdup(t+1);
+	free(s);
+}
+
+/*
+\ac{acronym}  	Expand and identify the acronym the first time; use only the acronym thereafter
+\acf{acronym} 	Use the full name of the acronym.
+\acs{acronym} 	Use the acronym, even before the first corresponding \ac command
+\acl{acronym} 	Expand the acronym without using the acronym itself.
+
+\acf{SW}  	Scientific Word (SW) documents are beautifully typeset.
+\acs{SW} 	SW documents are beautifully typeset.
+\acl{SW} 	Scientific Word documents are beautifully typeset.
+
+\acp{label}
+    plural form of acronym by adding an s. \acfp. \acsp, \aclp work as well.
+
+\acfi{label}  Now like \acf{label}
+*/
+void CmdAcronymAc(int code)
+{
+	char      *ac, *shortname, *longname, *acro_counter;
+	int        mark_it_used;
+	int        true_code = code & 0x0f;
+	int        plural    = (true_code == 0x10);
+	int        star      = (true_code == ACRONYM_STAR);
+	
+	ac = getBraceParam();
+	GetAcronymFromAux(ac, &shortname, &longname);
+	
+	if (shortname == NULL) {
+		diagnostics(WARNING, "Undefined acronym '%s' not defined in .aux file", ac);
+		free(ac);
+		return;
+	}
+	
+	mark_it_used = 0;
+	
+	if (true_code == ACRONYM_AC) {
+		if (getCounter(acro_counter)) 
+			true_code = ACRONYM_ACS;
+		else 
+			true_code = ACRONYM_ACF;
+	}
+	
+	if (true_code == ACRONYM_ACF) {
+		ConvertString(longname);
+		if (plural == TRUE)
+			ConvertString("s (");
+		else
+			ConvertString(" (");
+		
+		ConvertString(shortname);
+		if (plural == TRUE)
+			ConvertString(")s");
+		else
+			ConvertString(")");
+
+		mark_it_used = (star == FALSE);
+	}
+	
+	if (true_code == ACRONYM_ACS) {
+		ConvertString(shortname);
+		if (plural == TRUE)
+			ConvertString("s");
+		mark_it_used = (star == FALSE);
+	}
+	
+	if (true_code == ACRONYM_ACL) {
+		ConvertString(longname);
+		if (plural == TRUE)
+			ConvertString("s");
+		mark_it_used = (star == FALSE);
+	}
+
+	if (true_code == ACRONYM_USED) 
+		mark_it_used = 1;
+
+	if (mark_it_used) {
+		acro_counter = strdup_together("ACRO~",ac);
+		incrementCounter(acro_counter);
+		free(acro_counter);
+	}
+
+	free(ac);
+}
+
+void CmdAcResetAll(int code)
+{
+	zeroKeyCounters("ACRO~");
 }

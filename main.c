@@ -67,6 +67,7 @@ char *g_bbl_name = NULL;
 char *g_home_dir = NULL;
 
 char *progname;                 /* name of the executable file */
+bool SpanishMode = FALSE;       /* support spanishstyle */
 bool GermanMode = FALSE;        /* support germanstyle */
 bool FrenchMode = FALSE;        /* support frenchstyle */
 bool RussianMode = FALSE;       /* support russianstyle */
