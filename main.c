@@ -335,8 +335,12 @@ int main(int argc, char **argv)
             g_tex_name = strdup_together(basename, ".tex");
         }
 
-        if (g_rtf_name == NULL)
-            g_rtf_name = strdup_together(basename, ".rtf");
+        if (g_rtf_name == NULL) {
+            if (g_home_dir)
+				g_rtf_name = strdup_together3(g_home_dir,basename,".rtf");
+			else
+            	g_rtf_name = strdup_together(basename, ".rtf");
+        }
     }
 
     if (g_aux_name == NULL && basename != NULL)

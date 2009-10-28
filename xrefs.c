@@ -237,7 +237,7 @@ static char *ScanAux(char *token, char *reference, int code, char *aux_name)
     if (g_aux_file_missing || strlen(token) == 0) {
         return NULL;
     }
-    diagnostics(1, "seeking '%s' in '%s' calls:%d ", reference, aux_name, once);
+    diagnostics(4, "seeking '%s' in '%s' calls:%d ", reference, aux_name, once);
 	
     snprintf(target, 512, "\\%s{%s}", token, reference);
 
@@ -276,7 +276,6 @@ static char *ScanAux(char *token, char *reference, int code, char *aux_name)
 
 		s = strstr(AuxLine, target);
 		if (s) {
-	
 			s += strlen(target);    /* move to \token{reference}{ */
 			
 			if (code == 2) {
@@ -289,7 +288,7 @@ static char *ScanAux(char *token, char *reference, int code, char *aux_name)
 
 			t = s;
 			braces = 1;
-			while (braces > 0 || (code==3 && braces >1)) {   /* skip matched braces */
+			while (braces > 1 || (code!=3 && braces >0)) {   /* skip matched braces */
 				t++;
 				if (*t == '{')
 					braces++;
@@ -2471,11 +2470,27 @@ static void GetAcronymFromAux(char *key, char **shortname, char **longname)
 	free(s);
 }
 
+static void incrementAcronymCounter(char *key)
+{
+	char *s = strdup_together("ACRO~",key);
+	incrementCounter(s);
+	free(s);
+}
+
+static int getAcronymCounter(char *key)
+{
+	int n;
+	char *s = strdup_together("ACRO~",key);
+	n=getCounter(s);
+	free(s);
+	return n;
+}
+
 /*
-\ac{acronym}  	Expand and identify the acronym the first time; use only the acronym thereafter
-\acf{acronym} 	Use the full name of the acronym.
-\acs{acronym} 	Use the acronym, even before the first corresponding \ac command
-\acl{acronym} 	Expand the acronym without using the acronym itself.
+\ac{key}  	Expand and identify the acronym the first time; use only the acronym thereafter
+\acf{key} 	Use the full name of the acronym.
+\acs{key} 	Use the acronym, even before the first corresponding \ac command
+\acl{key} 	Expand the acronym without using the acronym itself.
 
 \acf{SW}  	Scientific Word (SW) documents are beautifully typeset.
 \acs{SW} 	SW documents are beautifully typeset.
@@ -2488,25 +2503,29 @@ static void GetAcronymFromAux(char *key, char **shortname, char **longname)
 */
 void CmdAcronymAc(int code)
 {
-	char      *ac, *shortname, *longname, *acro_counter;
-	int        mark_it_used;
+	char      *key, *shortname, *longname;
 	int        true_code = code & 0x0f;
 	int        plural    = (true_code == 0x10);
 	int        star      = (true_code == ACRONYM_STAR);
+	int        mark_it_used = (true_code == ACRONYM_USED);
 	
-	ac = getBraceParam();
-	GetAcronymFromAux(ac, &shortname, &longname);
+	key = getBraceParam();
+	GetAcronymFromAux(key, &shortname, &longname);
+
+	diagnostics(5,"CmdAcronymAc key='%s'",key);
+	diagnostics(5,"code=%d, true_code=%d",code, true_code);
+	diagnostics(5,"short='%s'",shortname);
+	diagnostics(5,"long='%s'",longname);
+	diagnostics(5,"plural=%d, star=%d, used=%d",plural, star, mark_it_used);	
 	
 	if (shortname == NULL) {
-		diagnostics(WARNING, "Undefined acronym '%s' not defined in .aux file", ac);
-		free(ac);
+		diagnostics(WARNING, "Undefined acronym '%s' not defined in .aux file", key);
+		free(key);
 		return;
 	}
-	
-	mark_it_used = 0;
-	
+		
 	if (true_code == ACRONYM_AC) {
-		if (getCounter(acro_counter)) 
+		if (getAcronymCounter(key)) 
 			true_code = ACRONYM_ACS;
 		else 
 			true_code = ACRONYM_ACF;
@@ -2525,36 +2544,81 @@ void CmdAcronymAc(int code)
 		else
 			ConvertString(")");
 
-		mark_it_used = (star == FALSE);
+		mark_it_used |= (star == FALSE);
 	}
 	
 	if (true_code == ACRONYM_ACS) {
 		ConvertString(shortname);
 		if (plural == TRUE)
 			ConvertString("s");
-		mark_it_used = (star == FALSE);
+		mark_it_used |= (star == FALSE);
 	}
 	
 	if (true_code == ACRONYM_ACL) {
 		ConvertString(longname);
 		if (plural == TRUE)
 			ConvertString("s");
-		mark_it_used = (star == FALSE);
+		mark_it_used |= (star == FALSE);
 	}
 
 	if (true_code == ACRONYM_USED) 
 		mark_it_used = 1;
 
-	if (mark_it_used) {
-		acro_counter = strdup_together("ACRO~",ac);
-		incrementCounter(acro_counter);
-		free(acro_counter);
-	}
+	if (mark_it_used) 
+		incrementAcronymCounter(key);
 
-	free(ac);
+	free(key);
 }
 
-void CmdAcResetAll(int code)
+void CmdAcronymUsed(int code)
+{
+	char *key = getBraceParam();
+	incrementAcronymCounter(key);
+	free(key);
+}
+
+void CmdAcronymReset(int code)
 {
 	zeroKeyCounters("ACRO~");
 }
+
+void CmdAcronymDef(int code)
+{
+	CmdIgnoreParameter(21);
+}
+
+void CmdAcronym(int code)
+{
+/*
+if (code & ON) {
+		PushEnvironment(ACRONYM_MODE);
+		CmdVspace(VSPACE_BIG_SKIP);
+		startParagraph("section", SECTION_TITLE_PARAGRAPH);
+		fprintRTF("{");
+		InsertStyle("section");
+		ConvertString((SpanishMode) ? "Acr\\'{o}nimos" : "Acronyms");
+		CmdEndParagraph(0);
+		fprintRTF("}");
+		CmdVspace(VSPACE_SMALL_SKIP);
+	} else 
+		PopEnvironment();
+		
+		*/
+}
+
+void CmdAC(int code)
+{
+	char *shortAc, *key, c;
+	int i;
+	
+	/* skip '@hyperlink' */
+	for (i=0; i<strlen("@hyperlink"); i++) 
+		c=getTexChar();
+		
+	key = getBraceParam();
+	shortAc = getBraceParam();
+	ConvertString(shortAc);
+	free(shortAc);
+	free(key);
+}
+

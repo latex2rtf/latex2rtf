@@ -118,7 +118,7 @@ int getCounter(char *s)
     i = existsCounter(s);
 
     if (i < 0) {
-        diagnostics(WARNING, "No counter of type <%s>", s);
+        diagnostics(2, "No counter of type <%s>", s);
         return 0;
     }
 
