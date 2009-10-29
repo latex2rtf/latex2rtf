@@ -19,3 +19,4 @@ void set_fields_use_EQ(int i);
 int fields_use_EQ(void);
 
 int processing_fields(void);
+int EQ_field_active(void);

@@ -290,6 +290,7 @@ purpose: converts inputfile and writes result to outputfile
 				}
 				
 				/* must be in 'eqnarray' or 'align' environment */
+				diagnostics(1,"what am I doing here?");
 				endCurrentField();
 				fprintRTF("\\tab\n");
                 startField(FIELD_EQ);
@@ -488,6 +489,7 @@ purpose: converts inputfile and writes result to outputfile
                 break;
 
             case ',':
+            
                 if (g_field_separator == ',' && processing_fields()) {
                 	if (g_processing_arrays) {
                 	/* this is crazy, fields fail if \, is present in EQ array! */

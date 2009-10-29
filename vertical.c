@@ -235,8 +235,22 @@ void startParagraph(const char *style, int indenting)
 {
     int width, a, b, c;
     int parindent,parskip;
+	static char last_style[50], the_style[50];
+	static int last_indent;
 	static int status = 0;
 	
+	/* special style "last" will just repeat previous */
+	if (strcmp(style,"last")==0) {
+		diagnostics(1,"using last style = '%s'",last_style);
+		last_indent = indenting;
+		strcpy(the_style,last_style);
+	} else {
+		diagnostics(1,"using style = '%s'",style);
+		indenting = last_indent;
+		strcpy(last_style,style);
+		strcpy(the_style,style);
+	}
+		
     parindent = getLength("parindent");
     parskip   = getLength("parskip");
 
@@ -305,21 +319,21 @@ void startParagraph(const char *style, int indenting)
     }
 
     fprintRTF("{\\pard\\plain");
-    InsertStyle(style);
-    if (strcmp(style,"equation")==0)
+    InsertStyle(the_style);
+    if (strcmp(the_style,"equation")==0)
     	fprintRTF("\\tqc\\tx%d", b);
-    if (strcmp(style,"equationNum")==0)
+    if (strcmp(the_style,"equationNum")==0)
     	fprintRTF("\\tqc\\tx%d\\tqr\\tx%d", b, width);
-    if (strcmp(style,"equationAlign")==0)
+    if (strcmp(the_style,"equationAlign")==0)
     	fprintRTF("\\tqr\\tx%d\\tql\\tx%d", a, b);
-    if (strcmp(style,"equationAlignNum")==0)
+    if (strcmp(the_style,"equationAlignNum")==0)
         fprintRTF("\\tqr\\tx%d\\tql\\tx%d\\tqr\\tx%d", a, b, width);
-    if (strcmp(style,"equationArray")==0)
+    if (strcmp(the_style,"equationArray")==0)
     	fprintRTF("\\tqr\\tx%d\\tqc\\tx%d\\tql\\tx%d", a, b, c);
-    if (strcmp(style,"equationArrayNum")==0)
+    if (strcmp(the_style,"equationArrayNum")==0)
         fprintRTF("\\tqr\\tx%d\\tqc\\tx%d\\tql\\tx%d\\tqr\\tx%d", a, b, c, width);
 
-    if (strcmp(style,"bitmapCenter")==0)
+    if (strcmp(the_style,"bitmapCenter")==0)
     	fprintRTF("\\tqc\\tx%d\\tqr\\tx%d", b, width);
     	
     fprintRTF("\\sl%i\\slmult1 ", getLineSpacing());
@@ -367,6 +381,7 @@ void CmdEndParagraph(int code)
     } else {
     	if (getTexMode() != MODE_VERTICAL)
 			diagnostics(1,"*********************** ending paragraph with braces = %d", g_par_brace);
+        	fprintRTF("\\par\n");
 	}
 
 }

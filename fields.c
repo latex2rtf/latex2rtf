@@ -60,18 +60,30 @@ g_field_type       :
 EQ fields should never be nested
 */
 
-
+int EQ_field_active(void)
+{
+	int i;
+	for (i=0; i<=g_field_depth; i++) {
+		if (g_field[i] == FIELD_EQ) 
+			return 1;
+	}
+	return 0;
+}
 void startField(int type)
 {
+    int i;
+    
+    diagnostics(1, "start Fields allowed=%d",g_fields_allowed);
+    
     if (!g_fields_allowed) return;
     
     switch (type) {
     	case FIELD_EQ:
+    		diagnostics(6, "EQ fields allowed = %d",g_fields_use_EQ);
     		if (!g_fields_use_EQ) return;
-    		if (0 && g_field[g_field_depth] == FIELD_EQ) {
-    			diagnostics(1,"trying to nest EQ fields!");
-    			return;
-    		}
+    		if (EQ_field_active())
+    			diagnostics(1,"nested EQ fields ???");
+
     		fprintRTF("{\\field{\\*\\fldinst{ EQ ");
     		break;
     		
@@ -106,6 +118,7 @@ void startField(int type)
 
 void endCurrentField(void)
 {
+    diagnostics(6, "end Fields allowed=%d",g_fields_allowed);
     if (!g_fields_allowed) return;
     if (g_field_depth < 0) {
     	diagnostics(1, "oops, looks like fields are too shallow!");
@@ -187,3 +200,4 @@ int processing_fields(void)
 	else
 		return 0;
 }
+

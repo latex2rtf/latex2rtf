@@ -209,6 +209,9 @@ static int EquationNeedsFields(char *eq)
  purpose   : Determine if equation needs EQ field for RTF conversion
  ******************************************************************************/
 {
+    if (EQ_field_active())
+    	return 0;
+    
     if (strstr(eq, "\\frac"))
         return 1;
     if (strstr(eq, "\\sum"))
@@ -270,6 +273,7 @@ static void WriteEquationAsComment(char *pre, char *eq, char *post)
  purpose   : Writes equation to RTF file as text of COMMENT field
  ******************************************************************************/
 {
+    diagnostics(1,"WriteEquationAsComment");
     startField(FIELD_COMMENT);
     putRtfStrEscaped(pre);
     putRtfStrEscaped(eq);
@@ -389,7 +393,7 @@ static void PrepareRtfEquation(int code, int EQ_Needed)
             break;
     }
 
-    if (g_current_eqn_needs_EQ) 
+    if (g_current_eqn_needs_EQ && !processing_fields()) 
     	startField(FIELD_EQ);
 
 }
@@ -415,8 +419,10 @@ static char *CreateEquationLabel(void)
 
 static void FinishRtfEquation(int code, int EQ_Needed)
 {
-    endAllFields();
-    g_current_eqn_needs_EQ = 0;
+    if (EQ_Needed) {
+    	endCurrentField();
+		g_current_eqn_needs_EQ = 0;
+	}
 
     switch (code) {
 
@@ -1406,20 +1412,24 @@ void CmdArray(int code)
     if (code & ON) {
         v_align = getBracketParam();
         col_align = getBraceParam();
-        diagnostics(4, "CmdArray() ... \\begin{array}[%s]{%s}", v_align ? v_align : "", col_align);
+        diagnostics(1, "CmdArray() ... \\begin{array}[%s]{%s}", v_align ? v_align : "", col_align);
         if (v_align)
             free(v_align);
 
+
+        /* count columns */
         s = col_align;
         while (*s) {
             if (*s == 'c' || *s == 'l' || *s == 'r')
                 n++;
             s++;
         }
+ 
+        fprintRTF(" \\\\a \\\\a%c \\\\co%d (", *col_align, n);
         free(col_align);
+        if (v_align) free(v_align);
 
-        fprintRTF(" \\\\a \\\\ac \\\\co%d (", n);
-        g_processing_arrays++;
+		g_processing_arrays++;
 
     } else {
         fprintRTF(")");
@@ -1580,26 +1590,27 @@ void CmdSlashSlash(int height)
 {
     diagnostics(1, "CmdSlashSlash height = %d", height);
     
-/* this should only happen for an array environment */
-    if (g_processing_tabular) { /* tabular or array environment */
-        if (getTexMode() == MODE_MATH || getTexMode() == MODE_DISPLAYMATH) {    /* array */
+ /* array environment in math mode*/
+ /* this should only happen in an array environment 
+    if (g_processing_tabular) {
+    diagnostics(1, "CmdSlashSlash handling tabular or array");
+        if (getTexMode() == MODE_MATH || getTexMode() == MODE_DISPLAYMATH) {   
             fprintRTF("\\par\n\\tab\n");
             return;
         }
     	fprintRTF("\\row\n");
         return;
     }
+*/
 
-/* I don't think this should happen anymore either! */
     if (g_processing_tabbing) {
+diagnostics(1," I don't think this should happen anymore! ");
         PopBrace();
         PushBrace();
+    	tabcounter = 0;
     }
 
     /* simple end of line ... */
-    CmdEndParagraph(0);
-    CmdIndent(INDENT_INHIBIT);
-
-    tabcounter = 0;
+    startParagraph("last",0);
 }
 
