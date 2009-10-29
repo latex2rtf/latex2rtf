@@ -70,11 +70,7 @@ int EQ_field_active(void)
 	return 0;
 }
 void startField(int type)
-{
-    int i;
-    
-    diagnostics(1, "start Fields allowed=%d",g_fields_allowed);
-    
+{        
     if (!g_fields_allowed) return;
     
     switch (type) {

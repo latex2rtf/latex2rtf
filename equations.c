@@ -273,7 +273,7 @@ static void WriteEquationAsComment(char *pre, char *eq, char *post)
  purpose   : Writes equation to RTF file as text of COMMENT field
  ******************************************************************************/
 {
-    diagnostics(1,"WriteEquationAsComment");
+    diagnostics(3,"WriteEquationAsComment");
     startField(FIELD_COMMENT);
     putRtfStrEscaped(pre);
     putRtfStrEscaped(eq);
@@ -1412,7 +1412,7 @@ void CmdArray(int code)
     if (code & ON) {
         v_align = getBracketParam();
         col_align = getBraceParam();
-        diagnostics(1, "CmdArray() ... \\begin{array}[%s]{%s}", v_align ? v_align : "", col_align);
+        diagnostics(4, "CmdArray() ... \\begin{array}[%s]{%s}", v_align ? v_align : "", col_align);
         if (v_align)
             free(v_align);
 
@@ -1517,8 +1517,8 @@ void CmdOverLine(int code)
 void CmdArraySlashSlash(int height)
 {
 	char cThis = getNonBlank();
-    diagnostics(1, "CmdArraySlashSlash height = %d, type=%d", height,g_multiline_equation_type);
 	ungetTexChar(cThis);
+    diagnostics(5, "CmdArraySlashSlash height = %d, multiline=%d", height,g_multiline_equation_type);
 	fprintRTF("%c", g_field_separator);
 }
 
@@ -1527,7 +1527,7 @@ void CmdArraySlashSlash(int height)
  ***************************************************************************/
 void CmdEqnArraySlashSlash(int height)
 {
-    diagnostics(1, "CmdEqnArraySlashSlash height = %d, type=%d", height,g_multiline_equation_type);
+    diagnostics(5, "CmdEqnArraySlashSlash height = %d, multiline=%d", height,g_multiline_equation_type);
 	endAllFields();  /* equation number is just simple rtf */
 
 	if (g_show_equation_number && !g_suppress_equation_number) {
@@ -1588,29 +1588,21 @@ void CmdEqnArraySlashSlash(int height)
  ***************************************************************************/
 void CmdSlashSlash(int height)
 {
-    diagnostics(1, "CmdSlashSlash height = %d", height);
+    diagnostics(5, "CmdSlashSlash height = %d", height);
     
- /* array environment in math mode*/
- /* this should only happen in an array environment 
-    if (g_processing_tabular) {
-    diagnostics(1, "CmdSlashSlash handling tabular or array");
-        if (getTexMode() == MODE_MATH || getTexMode() == MODE_DISPLAYMATH) {   
-            fprintRTF("\\par\n\\tab\n");
-            return;
-        }
-    	fprintRTF("\\row\n");
-        return;
-    }
-*/
-
     if (g_processing_tabbing) {
-diagnostics(1," I don't think this should happen anymore! ");
+		diagnostics(3," I don't think this should happen anymore! ");
         PopBrace();
         PushBrace();
     	tabcounter = 0;
+    	return;
     }
 
-    /* simple end of line ... */
+	if (height>0)
+		setVspace(getVspace()+height);
+
+    /* we are ending a line in an environment that is unknown
+       so just start a new line with the whatever was used last */
     startParagraph("last",0);
 }
 

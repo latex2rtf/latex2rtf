@@ -241,12 +241,12 @@ void startParagraph(const char *style, int indenting)
 	
 	/* special style "last" will just repeat previous */
 	if (strcmp(style,"last")==0) {
-		diagnostics(1,"using last style = '%s'",last_style);
-		last_indent = indenting;
+		diagnostics(5,"using last style = '%s'",last_style);
+		indenting = last_indent;
 		strcpy(the_style,last_style);
 	} else {
-		diagnostics(1,"using style = '%s'",style);
-		indenting = last_indent;
+		diagnostics(5,"using style = '%s'",style);
+		last_indent = indenting;
 		strcpy(last_style,style);
 		strcpy(the_style,style);
 	}
@@ -255,7 +255,7 @@ void startParagraph(const char *style, int indenting)
     parskip   = getLength("parskip");
 
 	if (g_par_brace !=0 )
-		diagnostics(1,"******************* starting %s paragraph with braces = %d", style, g_par_brace);		
+		diagnostics(5,"******************* starting %s paragraph with braces = %d", style, g_par_brace);		
 	
 	if (g_par_brace == 1)
 		CmdEndParagraph(0);
@@ -295,7 +295,7 @@ void startParagraph(const char *style, int indenting)
 	}
 	
 	if (g_par_brace != 0)
-		diagnostics(1,"starting paragraph with braces = %d", g_par_brace);		
+		diagnostics(5,"starting paragraph with braces = %d", g_par_brace);		
 	g_par_brace++;
 	
     diagnostics(5, "Paragraph mode    %s", TexModeName[getTexMode()]);
@@ -380,8 +380,7 @@ void CmdEndParagraph(int code)
 	    g_paragraph_inhibit_indent = FALSE;
     } else {
     	if (getTexMode() != MODE_VERTICAL)
-			diagnostics(1,"*********************** ending paragraph with braces = %d", g_par_brace);
-        	fprintRTF("\\par\n");
+			diagnostics(5,"*********************** ending paragraph with braces = %d", g_par_brace);
 	}
 
 }

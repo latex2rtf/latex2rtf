@@ -290,7 +290,7 @@ purpose: converts inputfile and writes result to outputfile
 				}
 				
 				/* must be in 'eqnarray' or 'align' environment */
-				diagnostics(1,"what am I doing here?");
+				diagnostics(5,"what am I doing here?");
 				endCurrentField();
 				fprintRTF("\\tab\n");
                 startField(FIELD_EQ);
@@ -600,7 +600,7 @@ returns: success or not
             return;
 
         case '\\':             /* \\[1mm] or \\*[1mm] possible */
-            diagnostics(1,"here we are in TranslateCommand with '\\\\'");
+            diagnostics(5,"here we are in TranslateCommand with '\\\\'");
             height = getSlashSlashParam();
 			if (g_processing_arrays)			/* \begin{array} ... \end{array} */
             	CmdArraySlashSlash(height);     /* may be contained in eqnarray environment */

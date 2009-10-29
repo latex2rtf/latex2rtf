@@ -219,6 +219,11 @@ misc2.rtf: misc2.tex
 	$(LATEX) misc2 $(LATEX_LOG)
 	$(LATEX2RTF) $(OPTIONS) misc2
 
+misc4.rtf: misc4.tex
+	$(LATEX) misc4 $(LATEX_LOG)
+	$(LATEX) misc4 $(LATEX_LOG)
+	$(LATEX2RTF) $(OPTIONS) misc4
+
 german.rtf: german.tex
 	$(LATEX) german $(LATEX_LOG)
 	$(LATEX) german $(LATEX_LOG)
