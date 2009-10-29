@@ -639,20 +639,20 @@ static char *eps_to_emf(char *name)
         target_h and target_w are the desired height and width of the image in twips
         s                     is the scaling desired as a fraction
  ******************************************************************************/
-static void AdjustScaling(double h, double w, double target_h, double target_w, double s, int *sx, int *sy)
+static void AdjustScaling(double h, double w, double target_h, double target_w, double s, uint16_t *sx, uint16_t *sy)
 {
 	diagnostics(5,"AdjustScaling h       =%f w       =%f s=%f", h, w, s);
 	diagnostics(5,"AdjustScaling target_h=%f target_w=%f", target_h, target_w);
 
 	if (target_h != 0 && h != 0) 
-		*sy = (int) my_rint(100.0 * target_h / h);
+		*sy = (uint16_t) my_rint(100.0 * target_h / h);
 	else
-		*sy = (int) my_rint(s * 100);
+		*sy = (uint16_t) my_rint(s * 100);
 	
 	if (target_w == 0 || w == 0)
 		*sx = *sy;
 	else
-		*sx = (int) my_rint(100.0 * target_w / w);
+		*sx = (uint16_t) my_rint(100.0 * target_w / w);
 
 	/* catch the case when width is specified, but not height */
 	if (target_h == 0 && target_w != 0)
@@ -687,8 +687,8 @@ static void PutPictFile(char *s, double height0, double width0, double scale, do
     char *pict;
     int16_t buffer[5];
     int16_t top, left, bottom, right;
-    int width, height;
-    int sx,sy;
+    int16_t width, height;
+    uint16_t sx,sy;
 
     if (full_path)
         pict = strdup(s);
@@ -797,7 +797,7 @@ static unsigned char * getPngChunk(FILE *fp, char *s)
                w is the size in pixels
                xres is the number of pixels per meter
  ******************************************************************************/
-static void GetPngSize(char *s, uint32_t *w, uint32_t *h, uint32_t *xres, uint32_t *yres, int *bad_res)
+static void GetPngSize(char *s, uint32_t *w, uint32_t *h, uint32_t *xres, uint32_t *yres, bool *bad_res)
 {
     FILE *fp;
     uint32_t *p;
@@ -871,7 +871,7 @@ static void GetPngSize(char *s, uint32_t *w, uint32_t *h, uint32_t *xres, uint32
 	
     diagnostics(6, "xres = %ld, yres = %ld, pixels/meter", *xres, *yres);
     diagnostics(6, "xres = %ld, yres = %ld, pixels/in", 
-    (uint32_t)( (double)(*xres *72.0)/POINTS_PER_METER), 
+    (uint32_t)((double)(*xres *72.0)/POINTS_PER_METER), 
     (uint32_t)((double)(*yres * 72.0) /POINTS_PER_METER));
     
     fclose(fp);
@@ -905,7 +905,8 @@ void PutPngFile(char *s, double height_goal, double width_goal, double scale,
     FILE *fp;
     char *png;
     uint32_t width, height, w, h, b, xres, yres;
-	int sx, sy, bad_res;
+	uint16_t sx, sy;
+	bool bad_res;
 	
     if (full_path)
         png = strdup(s);
@@ -913,7 +914,7 @@ void PutPngFile(char *s, double height_goal, double width_goal, double scale,
         png = strdup_together(g_home_dir, s);
     diagnostics(2, "PutPngFile '%s'", png);
 
-    GetPngSize(png, &width, &height, &xres, &yres,&bad_res);
+    GetPngSize(png, &width, &height, &xres, &yres, &bad_res);
     if (width == 0 || height == 0) return;
 
 	/* make sure that we can open the file */
@@ -975,7 +976,7 @@ static void PutJpegFile(char *s, double height0, double width0, double scale, do
     int m=0, c;
     uint16_t width, height;
     uint32_t w, h;
-    int sx, sy;
+    uint16_t sx, sy;
 
     jpg = strdup_together(g_home_dir, s);
     diagnostics(2, "PutJpegFile '%s'", jpg);
@@ -1049,7 +1050,7 @@ static void PutEmfFile(char *s, double height0, double width0, double scale, dou
     int32_t FrameBottom;           /* Bottom side of inclusive picture frame */
     uint32_t Signature;    /* Signature ID (always 0x464D4520) */
     uint32_t w, h, width, height;
-	int sx, sy;
+	uint16_t sx, sy;
 	
     if (full_path)
         emf = strdup(s);
@@ -1133,15 +1134,15 @@ static void PutWmfFile(char *s, double height0, double width0, double scale, dou
 {
     FILE *fp;
     char *wmf;
-    uint32_t Key;          /* Magic number (always 0x9AC6CDD7) */
+    uint32_t Key;         /* Magic number (always 0x9AC6CDD7) */
     uint16_t FileType;    /* Type of metafile (0=memory, 1=disk) */
     uint16_t HeaderSize;  /* Size of header in WORDS (always 9) */
     uint16_t Handle;      /* Metafile HANDLE number (always 0) */
-    int16_t Left;                 /* Left coordinate in twips */
-    int16_t Top;                  /* Top coordinate in twips */
-    int16_t Right;                /* Right coordinate in twips */
-    int16_t Bottom;               /* Bottom coordinate in twips */
-    int32_t width, height, sx, sy;
+    uint16_t Left;        /* Left coordinate in twips */
+    uint16_t Top;         /* Top coordinate in twips */
+    uint16_t Right;       /* Right coordinate in twips */
+    uint16_t Bottom;      /* Bottom coordinate in twips */
+    uint16_t width, height, sx, sy;
     uint32_t magic_number = 0x9AC6CDD7;
 
     /* open the proper file */
@@ -1449,7 +1450,8 @@ void PutLatexFile(char *latex, double height0, double width0, double scale, char
 {
     char *png=NULL;
     char *pngpath = NULL;
-    int baseline, bmoffset,bad_res;
+    int baseline, bmoffset;
+    bool bad_res;
 	double convert_scale,resolution;
     uint32_t width, height, rw, rh, xres, yres;
     uint32_t maxsize = (uint32_t) (32767.0 / 20.0);
@@ -1466,7 +1468,7 @@ void PutLatexFile(char *latex, double height0, double width0, double scale, char
 	resolution = g_dots_per_inch;
 	pngpath = SysGraphicsConvert(CONVERT_LATEX, bmoffset, (int) resolution, latex, "");
 	if (pngpath == NULL)  goto the_end;
-	GetPngSize(png, &width, &height,&xres,&yres,&bad_res);
+	GetPngSize(png, &width, &height, &xres, &yres, &bad_res);
 
 	if ((width > maxsize && height != 0) || (height > maxsize && width != 0)) {
         free(pngpath);

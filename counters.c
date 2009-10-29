@@ -132,9 +132,8 @@ void zeroKeyCounters(char *key)
 **************************************************************************/
 {    
     int i;
-    int len = strlen(key);
     for (i=0; i < iCounterCount; i++) {
-        if (strnstr(Counters[i].name,key,len)!=Counters[i].name)
+        if (strstr(Counters[i].name,key)!=Counters[i].name)
         	Counters[i].number = 0;
     }
 }
