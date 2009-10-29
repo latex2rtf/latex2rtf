@@ -290,10 +290,17 @@ purpose: converts inputfile and writes result to outputfile
 				}
 				
 				/* must be in 'eqnarray' or 'align' environment */
-				diagnostics(5,"what am I doing here?");
-				endCurrentField();
-				fprintRTF("\\tab\n");
-                startField(FIELD_EQ);
+				if (EQ_field_active()) {
+					diagnostics(4,"ending/restarting field before alignment '&'");
+					endCurrentField();
+					fprintRTF("\\tab\n");
+                	startField(FIELD_EQ);
+                } else {
+					diagnostics(4,"tabbing to match '&'");
+					fprintRTF("\\tab\n");
+				}
+	           	g_equation_column++;
+               
                 break;
 
             case '~':

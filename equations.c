@@ -289,23 +289,31 @@ static void PrepareRtfEquation(int code, int EQ_Needed)
 
         case EQN_MATH:
             diagnostics(4, "PrepareRtfEquation ... \\begin{math}");
+            if (getTexMode() == MODE_VERTICAL)
+            	startParagraph("Normal", GENERIC_PARAGRAPH);
             setTexMode(MODE_MATH);
             break;
 
         case EQN_DOLLAR:
             diagnostics(4, "PrepareRtfEquation ... $");
+            if (getTexMode() == MODE_VERTICAL)
+            	startParagraph("Normal", GENERIC_PARAGRAPH);
             fprintRTF("{");
             setTexMode(MODE_MATH);
             break;
 
         case EQN_ENSUREMATH:
             diagnostics(4, "PrepareRtfEquation ... \\ensuremath{}");
+            if (getTexMode() == MODE_VERTICAL)
+            	startParagraph("Normal", GENERIC_PARAGRAPH);
             fprintRTF("{");
             setTexMode(MODE_MATH);
             break;
 
         case EQN_RND_OPEN:
             diagnostics(4, "PrepareRtfEquation ... \\(");
+            if (getTexMode() == MODE_VERTICAL)
+            	startParagraph("Normal", GENERIC_PARAGRAPH);
             fprintRTF("{");
             setTexMode(MODE_MATH);
             break;
@@ -681,9 +689,9 @@ static void WriteEquationAsRTF(int code, char **eq)
 
     PrepareRtfEquation(code, EQ_Needed);
     ConvertOverToFrac(eq);
-    fprintRTF("{");
+ /*   fprintRTF("{");*/
     ConvertString(*eq);
-    fprintRTF("}");
+/*    fprintRTF("}"); */
     FinishRtfEquation(code, EQ_Needed);
 }
 
@@ -1518,7 +1526,7 @@ void CmdArraySlashSlash(int height)
 {
 	char cThis = getNonBlank();
 	ungetTexChar(cThis);
-    diagnostics(5, "CmdArraySlashSlash height = %d, multiline=%d", height,g_multiline_equation_type);
+    diagnostics(4, "CmdArraySlashSlash height = %d, multiline=%d", height,g_multiline_equation_type);
 	fprintRTF("%c", g_field_separator);
 }
 
@@ -1527,8 +1535,15 @@ void CmdArraySlashSlash(int height)
  ***************************************************************************/
 void CmdEqnArraySlashSlash(int height)
 {
-    diagnostics(5, "CmdEqnArraySlashSlash height = %d, multiline=%d", height,g_multiline_equation_type);
-	endAllFields();  /* equation number is just simple rtf */
+    int restart_field=0;
+    
+    diagnostics(4, "CmdEqnArraySlashSlash height = %d, multiline=%d", height,g_multiline_equation_type);
+
+	if (EQ_field_active()) {
+		diagnostics(4,"ending field due to \\\\");
+		restart_field = 1;
+		endCurrentField();
+	}
 
 	if (g_show_equation_number && !g_suppress_equation_number) {
 		char number[20];
@@ -1569,14 +1584,14 @@ void CmdEqnArraySlashSlash(int height)
             g_processing_eqnarray = TRUE;
        		break;
         default :
-        	diagnostics(0, "something wrong with multiline equation1");
+        	diagnostics(0, "something wrong with multiline equation");
         	break;
         
 	}
 	
 	fprintRTF("\\tab\n");
 
-    if (g_current_eqn_needs_EQ) 
+    if (restart_field) 
     	startField(FIELD_EQ);
 
 	g_suppress_equation_number = FALSE;
@@ -1588,7 +1603,8 @@ void CmdEqnArraySlashSlash(int height)
  ***************************************************************************/
 void CmdSlashSlash(int height)
 {
-    diagnostics(5, "CmdSlashSlash height = %d", height);
+    int restart_field=0;
+    diagnostics(4, "CmdSlashSlash height = %d", height);
     
     if (g_processing_tabbing) {
 		diagnostics(3," I don't think this should happen anymore! ");
@@ -1598,11 +1614,21 @@ void CmdSlashSlash(int height)
     	return;
     }
 
+	if (EQ_field_active()) {
+		diagnostics(4,"ending field due to \\\\");
+		restart_field = 1;
+		endCurrentField();
+	}
+
 	if (height>0)
 		setVspace(getVspace()+height);
 
     /* we are ending a line in an environment that is unknown
        so just start a new line with the whatever was used last */
     startParagraph("last",0);
+    
+    if (restart_field) 
+    	startField(FIELD_EQ);
+
 }
 

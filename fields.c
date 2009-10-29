@@ -75,7 +75,8 @@ void startField(int type)
     
     switch (type) {
     	case FIELD_EQ:
-    		diagnostics(6, "EQ fields allowed = %d",g_fields_use_EQ);
+     		diagnostics(4,"starting EQ field");
+   			diagnostics(6, "EQ fields allowed = %d",g_fields_use_EQ);
     		if (!g_fields_use_EQ) return;
     		if (EQ_field_active())
     			diagnostics(1,"nested EQ fields ???");
@@ -84,22 +85,27 @@ void startField(int type)
     		break;
     		
     	case FIELD_REF:
+    		diagnostics(4,"starting REF field");
     		if (!g_fields_use_REF) return;
     		break;
     		
     	case FIELD_SYMBOL:
-    		if (!g_fields_use_SYMBOL) return;
+        	diagnostics(4,"starting SYMBOL field");
+			if (!g_fields_use_SYMBOL) return;
     		break;
     		
     	case FIELD_PAGE:
+        	diagnostics(4,"starting PAGE field");
     		if (!g_fields_use_PAGE) return;
     		break;
     		
     	case FIELD_PAGE_REF:
+        	diagnostics(4,"starting PAGE_REF field");
     		if (!g_fields_use_PAGE_REF) return;
     		break;
     		
     	case FIELD_COMMENT:
+        	diagnostics(4,"starting COMMENT field");
     		if (!g_fields_use_COMMENT) return;
         	fprintRTF("{\\field{\\*\\fldinst{ COMMENTS \" ");
     		break;
@@ -114,7 +120,7 @@ void startField(int type)
 
 void endCurrentField(void)
 {
-    diagnostics(6, "end Fields allowed=%d",g_fields_allowed);
+    diagnostics(4, "end Field");
     if (!g_fields_allowed) return;
     if (g_field_depth < 0) {
     	diagnostics(1, "oops, looks like fields are too shallow!");
