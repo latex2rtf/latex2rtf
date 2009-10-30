@@ -115,8 +115,9 @@ static void PrintTabular(TabularT *table)
 {
 	int i;
 	diagnostics(1, "tabular info %p, cols=%d, current col=%d", table, table->n, table->i);
+	diagnostics(1, "textwidth=%d", getLength("textwidth"));
 	for (i=0; i <= table->n; i++) {
-		diagnostics(1, "col %d, align=%c, chars=%d, vert=%d, width=%5d, cline=%d, before=%s, after=%s",
+		diagnostics(1, "col %3d, align=%3c, chars=%3d, vert=%3d, width=%5d, cline=%3d, before=%s, after=%s",
 		                i, table->align[i],table->chars[i],table->vert[i],table->width[i],
 		                   table->cline[i],table->before[i],table->after[i]);
 	}
@@ -254,7 +255,6 @@ static TabularT *NewTabularFromFormat(char *format)
     table->n = iCol;
     table->i = 0;
     
- /*   PrintTabular(table); */
     diagnostics(5, "Exiting NewTabularFromFormat");
     return table;
 }
@@ -296,13 +296,13 @@ static int TabularColumnPosition(TabularT *table, int n)
     int i, colWidth, oldWidth;
     
     colWidth = 0;
-    for (i=0; i<n; i++)
+    for (i=1; i<=n; i++)
     	colWidth += table->width[i];
 
-	oldWidth = getLength("textwidth") * (n + 1) / (table->n);
+	oldWidth = getLength("textwidth") * (n ) / (table->n );
 
-	diagnostics(5,"col=%d pos=%d even pos=%d",n,colWidth,oldWidth);
-    return oldWidth;
+	diagnostics(5,"col=%3d old=%5d new=%5d",n,oldWidth,colWidth);
+    return colWidth;
 }
 
 static TabularT *TabularPreamble(char *format)
@@ -638,8 +638,8 @@ static void TabularBeginRow(TabularT *table, char *this_row, char *next_row, int
             fprintRTF("\\clbrdrr\\brdrs");
         if (right == 2 || (n == 1 && rvert == 2))
             fprintRTF("\\clbrdrr\\brdrdb");
-        fprintRTF("\\cellx%d", TabularColumnPosition(table, column));
         column++;
+        fprintRTF("\\cellx%d", TabularColumnPosition(table, column));
 
         for (i = 2; i <= n; i++) {
             fprintRTF("\\clmrg");
@@ -655,8 +655,8 @@ static void TabularBeginRow(TabularT *table, char *this_row, char *next_row, int
                 fprintRTF("\\clbrdrr\\brdrs");
             if (i == n && rvert == 2)
                 fprintRTF("\\clbrdrr\\brdrdb");
-            fprintRTF("\\cellx%d", TabularColumnPosition(table, column));
             column++;
+            fprintRTF("\\cellx%d", TabularColumnPosition(table, column));
         }
 
         free(cell);
@@ -835,32 +835,45 @@ int TabularMeasureCellx(char *cell)
   ******************************************************************************/
 static void TabularSetWidths(TabularT *table)
 {
-	int total_chars;
-	int table_width;
+	double total_chars;
+	double twips_to_distribute;
+	double pre_allocated;
 	int i;
+	double twips_per_char;
+	int min_width = 100; /* in twips */
 	
 	/* total of all characters in all unsized columns*/
+	total_chars = 0;
 	for (i=1; i<=table->n; i++) {
 		if (table->width[i] == -1) 
-			total_chars=table->chars[i];
+			total_chars += table->chars[i];
 	}
 	
-	/* put 100 twips on each edge of table */
-    table_width = getLength("textwidth") - 200;
-    table->width[0] = 100;
-
-	/* we only care about space that has not been allocated already! */
+	/* nothing to do in this case */
+	if (total_chars == 0) return;
+	
+	/* total width already allocated */
+	pre_allocated = 0;
 	for (i=1; i<=table->n; i++) {
 		if (table->width[i] != -1) 
-			table_width -= table->width[i];
+			pre_allocated += table->width[i];
+		else
+			pre_allocated += min_width;
 	}
 	
-	/* distribute space proportional to spacing with minimum of 20 twips */
+	/* space left to distribute */
+    twips_to_distribute = getLength("textwidth") - pre_allocated;
+    if (twips_to_distribute < 0) 
+    	twips_to_distribute = 0;
+    
+		
+    twips_per_char = twips_to_distribute / total_chars;
+    
+    diagnostics(5,"used=%g, allocatable=%g, per_char=%g",pre_allocated,twips_to_distribute,twips_per_char);
+	/* distribute space proportionally over columns */
 	for (i=1; i<=table->n; i++) {
-		if (table->width[i] == -1) {
-			table->width[i] = table_width * table->chars[i] / total_chars;
-			if (table->width[i] < 20) table->width[i] = 20;
-		}
+		if (table->width[i] == -1) 
+			table->width[i] =  min_width + twips_per_char * table->chars[i];
 	}
 }
 
@@ -905,7 +918,7 @@ static void TabularMeasureRow(TabularT *table, char *this_row, char *next_row, i
         if (cell != NULL)
             free(cell);        
     }
-}
+ }
 
 void CmdTabular(int code)
 
@@ -1031,6 +1044,7 @@ void CmdTabular(int code)
 			}
 	
 			TabularSetWidths(tabular_layout);
+			if (0) PrintTabular(tabular_layout);
 			
 			row_start = table;
 			TabularGetRow(row_start, &this_row, &next_row_start, &this_height);

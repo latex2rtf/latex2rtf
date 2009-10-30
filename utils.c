@@ -479,6 +479,7 @@ int getStringDimension(char *s)
 		PopSource();
 	}
 	
+    diagnostics(5, "getStringDimension fore '%s' is %d twips", s, size);
 	return size;
 }
 
