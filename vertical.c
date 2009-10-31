@@ -166,7 +166,8 @@ This is not a particularly useful, since paragraph mode is a combination of
 vertical and horizontal modes. 
                          
 Why bother keeping track of modes?  Mostly so that paragraph indentation gets handled
-correctly, as well as vertical and horizontal space.
+correctly, as well as vertical and horizontal space.  The mode is also the primary
+way that the end of a paragraph is signalled.
  ******************************************************************************/
 void setTexMode(int mode)
 {
@@ -241,11 +242,11 @@ void startParagraph(const char *style, int indenting)
 	
 	/* special style "last" will just repeat previous */
 	if (strcmp(style,"last")==0) {
-		diagnostics(5,"using last style = '%s'",last_style);
+		diagnostics(4,"using last style = '%s'",last_style);
 		indenting = last_indent;
 		strcpy(the_style,last_style);
 	} else {
-		diagnostics(5,"using style = '%s'",style);
+		diagnostics(4,"using style = '%s'",style);
 		last_indent = indenting;
 		strcpy(last_style,style);
 		strcpy(the_style,style);

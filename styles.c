@@ -32,6 +32,7 @@ Authors:
 #include "utils.h"
 #include "parser.h"
 #include "styles.h"
+#include "vertical.h"
 
 static char *g_current_style = NULL;
 
@@ -72,7 +73,7 @@ void InsertBasicStyle(const char *rtf, bool include_header_info)
   purpose: uses data from style.cfg to try and insert RTF commands
            that correspond to the appropriate style sheet or character style
            for example
-           		ApplyStyle("section", FALSE);
+           		InsertBasicStyle("section", FALSE);
            		
         rtf="\rtfsequence,\rtfheader"
  ******************************************************************************/
@@ -81,7 +82,7 @@ void InsertBasicStyle(const char *rtf, bool include_header_info)
     int font_number;
 
     if (rtf == NULL) return;
-
+    
 /* skip over 0,0, */
     style = strchr((char *) rtf, ',') + 1;
     if (style == NULL) return;
@@ -143,7 +144,22 @@ void InsertStyle(const char *command)
 {
     const char *rtf;
 
-    diagnostics(5, "Inserting style '%s'", command);
+	if (strcmp(command,"Normal")==0) {
+    	if (getAlignment()==CENTERED) {
+    		InsertStyle("centerpar");
+    		return;
+    	}
+    	if (getAlignment()==RIGHT) {
+    		InsertStyle("rightpar");
+    		return;
+    	}
+    	if (getAlignment()==LEFT) {
+    		InsertStyle("leftpar");
+    		return;
+    	}
+    }
+
+    diagnostics(4, "InsertStyle(\"%s\")", command);
     rtf = SearchCfgRtf(command, STYLE_A);
     if (rtf == NULL) {
         diagnostics(WARNING, "Cannot find '%s' style using 'Normal' style", command);

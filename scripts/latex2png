@@ -24,7 +24,7 @@
 DVIPS="dvips -q -l 1 -E -R"
 LATEX="latex --interaction batchmode"
 CONVERT="convert"
-EPS2EPS="eps2eps"
+EPS2EPS="cp"
 GREP="grep"
 TEXINPSEP=":"
 VERSION="1.4"
