@@ -797,7 +797,7 @@ static unsigned char * getPngChunk(FILE *fp, char *s)
                w is the size in pixels
                xres is the number of pixels per meter
  ******************************************************************************/
-static void GetPngSize(char *s, uint32_t *w, uint32_t *h, uint32_t *xres, uint32_t *yres, bool *bad_res)
+static void GetPngSize(char *s, uint32_t *w, uint32_t *h, double *xres, double *yres, bool *bad_res)
 {
     FILE *fp;
     uint32_t *p;
@@ -808,8 +808,8 @@ static void GetPngSize(char *s, uint32_t *w, uint32_t *h, uint32_t *xres, uint32
     diagnostics(4, "GetPngSize of '%s'", s);
     *w = 0;
     *h = 0;
-    *xres = (uint32_t) POINTS_PER_METER;
-    *yres = (uint32_t) POINTS_PER_METER;
+    *xres = POINTS_PER_METER;
+    *yres = POINTS_PER_METER;
     *bad_res = 1;
     
     fp = fopen(s, "rb");
@@ -840,10 +840,12 @@ static void GetPngSize(char *s, uint32_t *w, uint32_t *h, uint32_t *xres, uint32
 	p++;
 	*h = (g_little_endian) ? LETONL(*p) : *p;
 	free(data);
-	
+		
+	diagnostics(4, "width = %ld, height = %ld, pixels", *w, *h);
 	data = getPngChunk(fp,"pHYs");
 	if (data == NULL) {
-        diagnostics(4, "Graphics file '%s': could not locate pHYs chunk!", s);
+        diagnostics(2, "Graphics file '%s': could not locate pHYs chunk!", s);
+        diagnostics(2, "defaulting to 72 pixels/inch for resolution");
         fclose(fp);
         return;
 	}
@@ -855,24 +857,24 @@ static void GetPngSize(char *s, uint32_t *w, uint32_t *h, uint32_t *xres, uint32
 	
 	free(data);
 
+	if (fabs(*xres-POINTS_PER_METER)<2) *xres = POINTS_PER_METER;
+	if (fabs(*yres-POINTS_PER_METER)<2) *yres = POINTS_PER_METER;
+
 	/* dots per inch, not per meter! */
 	if (*xres < POINTS_PER_METER) {
 		*bad_res = 1;
-		diagnostics(6, "bogus resolution in png image! ");
-		diagnostics(6, "xres = %ld, yres = %ld, pixels/meter", *xres, *yres);
-		diagnostics(6, "xres = %ld, yres = %ld, pixels/in", 
-		(uint32_t)((double)(*xres *72.0)/POINTS_PER_METER), 
-		(uint32_t)((double)(*yres * 72.0) /POINTS_PER_METER));
+		diagnostics(5, "bogus resolution in png image! ");
+		diagnostics(5, "xres = %g, yres = %g, pixels/meter", *xres, *yres);
+		diagnostics(5, "xres = %g, yres = %g, pixels/in", 
+		                *xres*72.0/POINTS_PER_METER, *yres*72.0/POINTS_PER_METER);
 		*xres *= POINTS_PER_METER/72.0;
 		*yres *= POINTS_PER_METER/72.0;
 	} else 
 		*bad_res = 0;
 	
-	
-    diagnostics(6, "xres = %ld, yres = %ld, pixels/meter", *xres, *yres);
-    diagnostics(6, "xres = %ld, yres = %ld, pixels/in", 
-    (uint32_t)((double)(*xres *72.0)/POINTS_PER_METER), 
-    (uint32_t)((double)(*yres * 72.0) /POINTS_PER_METER));
+	diagnostics(5, "xres = %g, yres = %g, pixels/meter", *xres, *yres);
+	diagnostics(5, "xres = %g, yres = %g, pixels/in", 
+					*xres*72.0/POINTS_PER_METER, *yres*72.0/POINTS_PER_METER);
     
     fclose(fp);
 }
@@ -904,7 +906,8 @@ void PutPngFile(char *s, double height_goal, double width_goal, double scale,
 {
     FILE *fp;
     char *png;
-    uint32_t width, height, w, h, b, xres, yres;
+    double xres,yres;
+    uint32_t width, height, w, h, b;
 	uint16_t sx, sy;
 	bool bad_res;
 	
@@ -912,7 +915,7 @@ void PutPngFile(char *s, double height_goal, double width_goal, double scale,
         png = strdup(s);
     else
         png = strdup_together(g_home_dir, s);
-    diagnostics(2, "PutPngFile '%s'", png);
+    diagnostics(5, "PutPngFile '%s', convert_scale=%g", png, convert_scale);
 
     GetPngSize(png, &width, &height, &xres, &yres, &bad_res);
     if (width == 0 || height == 0) return;
@@ -922,32 +925,39 @@ void PutPngFile(char *s, double height_goal, double width_goal, double scale,
     free(png);
     if (fp == NULL) return;
 
-	/* only modify when the PNG resolution is bad and convert_scale is non-zero */
-	if (bad_res && convert_scale != 0) 
-		scale *= convert_scale;
-		
+    /* size is in units that equal 0.01 mm  (10 microns)  */    
+	/*       100,000 (0.01mm)                 points      */
+	/* w =   ---------------- * points   / -----------    */
+	/*           1 meter                       meter      */
+
+    w = (uint32_t) (100000.0 * width  / xres);
+    h = (uint32_t) (100000.0 * height / yres);
+
 	/* twips calculation                                             */
-	/*                       points        meter       20 twips      */
-	/* width =  (pixels) * ----------- * ---------  * -----------    */
-	/*                       meter         pixels      1 point       */
-	width    *= POINTS_PER_METER / xres * 20.0;
-	height   *= POINTS_PER_METER / yres * 20.0;
+	/*                       points        pixels      20 twips      */
+	/* width =  (pixels) * ----------- / ---------  * -----------    */
+	/*                       meter          meter      1 point       */
+
+	width    = (width  * POINTS_PER_METER / xres * 20.0 + 0.5);
+	height   = (height * POINTS_PER_METER / yres * 20.0 + 0.5);
 	
-    /* size is in units that equal 1/100 of a millimeter  (10 microns). */    
-	/*       dwips       100,000 (units)     1 points        meter      */
-	/* w =  -------- * ------------------ * ---------  * -----------    */
-	/*         1            1 meter          20 dwips      1 point      */
-    w = (uint32_t) (100000.0 * width           ) / (20 * POINTS_PER_METER);
-    h = (uint32_t) (100000.0 * height          ) / (20 * POINTS_PER_METER);
-    b = (uint32_t) (100000.0 * baseline * scale) / (20 * POINTS_PER_METER); 
-    
 	AdjustScaling(height,width,height_goal,width_goal,scale,&sx,&sy);
+	
+	if (bad_res) {
+	    sx *= POINTS_PER_METER / xres;
+	    sy *= POINTS_PER_METER / yres;
+	    if (convert_scale != 0)
+			scale *= convert_scale;
+	}
+
+	b = (uint32_t) (100000.0 * baseline * scale / 20.0 / POINTS_PER_METER); 
 	
 	diagnostics(5, "scale      = %6.3f,            convert     = %6.3f", scale, convert_scale);
     diagnostics(5, "width_goal = %6ld twips,      height_goal = %6ld twips", (int)width_goal, (int)height_goal);
     diagnostics(5, "picw       = %6ld microns,    pich        = %6ld microns", w*10, h*10);
     diagnostics(5, "picwgoal   = %6ld twips,      pichgoal    = %6ld twips", width, height);
     diagnostics(5, "sx         = %6ld percent,    sy          = %6ld percent", sx, sy);
+    diagnostics(5, "xres       = %7.2f pix/meter, yres        = %7.2f pix/meter", xres, yres);
     
     /* Write the header for the png bitmap */
     fprintRTF("\n{");
@@ -1233,7 +1243,8 @@ static void PutPdfFile(char *s, double height0, double width0, double scale, dou
     diagnostics(WARNING, "Rendering PNG from '%s'", s);
 
     png = pdf_to_png(s);
-        	
+    convert_scale = g_dots_per_inch / 72.0;
+    
     if (png) {
         PutPngFile(png, height0, width0, scale, convert_scale, baseline, TRUE);
         my_unlink(png);
@@ -1453,7 +1464,8 @@ void PutLatexFile(char *latex, double height0, double width0, double scale, char
     int baseline, bmoffset;
     bool bad_res;
 	double convert_scale,resolution;
-    uint32_t width, height, rw, rh, xres, yres;
+	double xres,yres;
+    uint32_t width, height, rw, rh;
     uint32_t maxsize = (uint32_t) (32767.0 / 20.0);
 	
     diagnostics(3, "Rendering LaTeX construct (e.g. equation) as a bitmap...");
@@ -1723,63 +1735,54 @@ char *append_graphic_extension(char *s)
     char *t;
 
     if (has_extension(s, ".pict") ||
-      has_extension(s, ".png") ||
-      has_extension(s, ".gif") ||
-      has_extension(s, ".emf") ||
-      has_extension(s, ".wmf") ||
-      has_extension(s, ".eps") ||
-      has_extension(s, ".pdf") ||
-      has_extension(s, ".ps") ||
-      has_extension(s, ".tiff") || has_extension(s, ".tif") || has_extension(s, ".jpg") || has_extension(s, ".jpeg"))
+      	has_extension(s, ".png")  ||
+      	has_extension(s, ".gif")  ||
+      	has_extension(s, ".emf")  ||
+      	has_extension(s, ".wmf")  ||
+      	has_extension(s, ".eps")  ||
+      	has_extension(s, ".pdf")  ||
+      	has_extension(s, ".ps")   ||
+      	has_extension(s, ".tiff") || 
+      	has_extension(s, ".tif")  || 
+      	has_extension(s, ".jpg")  || 
+      	has_extension(s, ".jpeg"))
         return strdup(s);
 
     t = exists_with_extension(s, ".png");
-    if (t)
-        return t;
+    if (t) return t;
 
     t = exists_with_extension(s, ".jpg");
-    if (t)
-        return t;
+    if (t) return t;
 
     t = exists_with_extension(s, ".jpeg");
-    if (t)
-        return t;
+    if (t) return t;
 
     t = exists_with_extension(s, ".tif");
-    if (t)
-        return t;
+    if (t) return t;
 
     t = exists_with_extension(s, ".tiff");
-    if (t)
-        return t;
+    if (t) return t;
 
     t = exists_with_extension(s, ".gif");
-    if (t)
-        return t;
+    if (t) return t;
 
     t = exists_with_extension(s, ".eps");
-    if (t)
-        return t;
+    if (t) return t;
 
     t = exists_with_extension(s, ".pdf");
-    if (t)
-        return t;
+    if (t) return t;
 
     t = exists_with_extension(s, ".ps");
-    if (t)
-        return t;
+    if (t) return t;
 
     t = exists_with_extension(s, ".pict");
-    if (t)
-        return t;
+    if (t) return t;
 
     t = exists_with_extension(s, ".emf");
-    if (t)
-        return t;
+    if (t) return t;
 
     t = exists_with_extension(s, ".wmf");
-    if (t)
-        return t;
+    if (t) return t;
 
     /* failed to find any file */
     return strdup(s);
@@ -1969,10 +1972,10 @@ void CmdGraphics(int code)
 {
     char *options, *options2;
     char *filename=NULL, *fullpathname, *fullname;
-    double scale = 1.0;
+    double scale    = 1.0;
     double baseline = 0.0;
-    double height =0;
-    double width = 0;
+    double height   = 0.0;
+    double width    = 0.0;
 
     if (code == FIGURE_INCLUDEGRAPHICS) {
         options = getBracketParam();
