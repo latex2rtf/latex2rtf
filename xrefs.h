@@ -69,6 +69,7 @@
 #define CITE_APA_ORIG_JOUR     224
 #define CITE_APA_B_VOL_ED_TR_PGS 225
 #define CITE_APA_UNSKIP        226
+#define CITE_PRINT_ORDINAL     227
 
 #define CITE_T             16
 #define CITE_T_STAR        17

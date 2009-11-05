@@ -1035,6 +1035,7 @@ static CommandArray apaciteCommands[] = {
 	{"APACaddressPublisher", CmdApaCite, CITE_APA_ADD_PUB},
 	{"PrintBackRefs", CmdApaCite, CITE_PRINT_BACK_REFS}, 
 	{"PrintCardinal", CmdApaCite, CITE_PRINT_CARDINAL},
+	{"PrintOrdinal", CmdApaCite, CITE_PRINT_ORDINAL},
 	{"APACaddressPublisherEqAuth", CmdApaCite, CITE_APA_ADD_PUB_EQ_AUTHOR},
 	{"APACrefaetitle", CmdApaCite, CITE_APA_REF_A_E_TITLE},
 	{"APACrefbetitle", CmdApaCite, CITE_APA_REF_B_E_TITLE},

@@ -2238,6 +2238,7 @@ void CmdApaCite(int code)
 			DiscardBraceParam();			
 			break;
 
+		case CITE_PRINT_ORDINAL:  
 		case CITE_PRINT_CARDINAL:  
 			ConvertBraceParam("","");
 			break;
