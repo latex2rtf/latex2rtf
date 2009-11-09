@@ -1,7 +1,8 @@
 #define FOOTNOTE            1
 #define FOOTNOTE_TEXT       2
 #define FOOTNOTE_THANKS     3
-#define FOOTNOTE_ENDNOTE    8 /* must be able to be OR-ed with other FOOTNOTE_* flags */
+#define ENDNOTE             4
+#define ENDNOTE_TEXT        5
 
 #define LABEL_LABEL 		1
 #define LABEL_HYPERREF		2

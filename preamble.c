@@ -924,30 +924,32 @@ void CmdMakeTitle(int code)
     snprintf(date_begin, 10, "%s%2d", "\\fs", (24 * CurrentFontSize()) / 20);
 
     setAlignment(CENTERED);
-    fprintRTF("\n\\par\\pard\\qc {%s ", title_begin);
-    if (g_preambleTitle != NULL && strcmp(g_preambleTitle, "") != 0)
+    
+    if (g_preambleTitle != NULL && strcmp(g_preambleTitle, "") != 0) {
+    	startParagraph("title", GENERIC_PARAGRAPH);
         ConvertString(g_preambleTitle);
-    fprintRTF("}");
-
-    fprintRTF("\n\\par\\pard\\qc {%s ", author_begin);
-    if (g_preambleAuthor != NULL && strcmp(g_preambleAuthor, "") != 0)
+	}
+	
+    if (g_preambleAuthor != NULL && strcmp(g_preambleAuthor, "") != 0) {
+    	startParagraph("author", GENERIC_PARAGRAPH);
         ConvertString(g_preambleAuthor);
-    fprintRTF("}");
+	}
 
-    fprintRTF("\n\\par\\pard\\qc {%s ", date_begin);
-    if (g_preambleAffiliation != NULL && strcmp(g_preambleAffiliation, "") != 0)
+    if (g_preambleAffiliation != NULL && strcmp(g_preambleAffiliation, "") != 0) {
+    	startParagraph("author", GENERIC_PARAGRAPH);
         ConvertString(g_preambleAffiliation);
-    fprintRTF("}");
+	}
 
-    fprintRTF("\n\\par\\pard\\qc {%s ", date_begin);
-    if (g_preambleDate != NULL && strcmp(g_preambleDate, "") != 0)
+    startParagraph("author", GENERIC_PARAGRAPH);
+    if (g_preambleDate == NULL || strcmp(g_preambleDate, "") == 0) 
+    	fprintRTF("\\chdate ");
+    else
         ConvertString(g_preambleDate);
-    fprintRTF("}");
 
-    fprintRTF("\n\\par\\pard\\qc {%s ", date_begin);
-    if (g_preambleAck != NULL && strcmp(g_preambleAck, "") != 0)
+    if (g_preambleAck != NULL && strcmp(g_preambleAck, "") != 0) {
+    	startParagraph("author", GENERIC_PARAGRAPH);
         ConvertString(g_preambleAck);
-    fprintRTF("}");
+	}
 
     CmdEndParagraph(0);
     setAlignment(JUSTIFIED);

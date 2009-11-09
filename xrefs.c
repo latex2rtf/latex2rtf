@@ -374,7 +374,7 @@ void CmdTheEndNotes(int code)
     diagnostics(4, "Entering CmdTheEndNotes");
 
     CmdVspace(VSPACE_BIG_SKIP);
-    startParagraph("endnotes", SECTION_TITLE_PARAGRAPH);
+    startParagraph("bibliography", SECTION_TITLE_PARAGRAPH);
     fprintRTF("{\\sect ");
     InsertStyle("section");
     fprintRTF(" Notes");
@@ -389,48 +389,50 @@ void CmdTheEndNotes(int code)
  ******************************************************************************/
 void CmdFootNote(int code)
 {
-    char *number, *text, *end_note_extra = "";
+    char *number, *text;
     static int thankno = 1;
-    int text_ref_upsize, foot_ref_upsize;
-    int DefFont = DefaultFontFamily();
 
     diagnostics(4, "Entering ConvertFootNote");
     number = getBracketParam(); /* ignored by automatic footnumber * generation */
     text = getBraceParam();
 
-    if (number)
-        free(number);
-    text_ref_upsize = (int) (0.8 * CurrentFontSize());
-    foot_ref_upsize = (int) (0.8 * CurrentFontSize());
-
-    if (code & FOOTNOTE_ENDNOTE) {
-        code &= ~FOOTNOTE_ENDNOTE;
-        end_note_extra = "\\ftnalt";
-    }
     switch (code) {
         case FOOTNOTE_THANKS:
             thankno++;
-            fprintRTF("{\\up%d %d}\n", text_ref_upsize, thankno);
-            fprintRTF("{\\*\\footnote%s \\pard\\plain\\s246\\f%d", end_note_extra, DefFont);
-            fprintRTF("\\fs%d {\\up%d %d}", CurrentFontSize(), foot_ref_upsize, thankno);
+            fprintRTF("{\\super %d}\n", thankno);
+            fprintRTF("{\\*\\footnote\\pard\\plain\\chftn ");
+            InsertStyle("footnote text");
             break;
 
         case FOOTNOTE:
-            fprintRTF("{\\up%d\\chftn}\n", text_ref_upsize);
-            fprintRTF("{\\*\\footnote%s \\pard\\plain\\s246\\f%d", end_note_extra, DefFont);
-            fprintRTF("\\fs%d {\\up%d\\chftn}", CurrentFontSize(), foot_ref_upsize);
+            fprintRTF("{\\super\\chftn}\n");
+            fprintRTF("{\\*\\footnote\\pard\\plain\\super\\chftn ");
+            InsertStyle("footnote text");
             break;
 
         case FOOTNOTE_TEXT:
-            fprintRTF("{\\*\\footnote%s \\pard\\plain\\s246\\f%d", end_note_extra, DefFont);
-            fprintRTF("\\fs%d ", CurrentFontSize());
+            fprintRTF("{\\*\\footnote\\pard\\plain\\super\\chftn ");
+            InsertStyle("footnote text");
             break;
+
+        case ENDNOTE:
+            fprintRTF("{\\super\\chftn}\n");
+            fprintRTF("{\\*\\footnote\\ftnalt\\pard\\plain\\super\\chftn ");
+            InsertStyle("endnote text");
+            break;
+
+        case ENDNOTE_TEXT:
+            fprintRTF("{\\*\\footnote\\ftnalt\\pard\\plain\\super\\chftn ");
+            InsertStyle("endnote text");
+            break;
+
     }
 
     ConvertString(text);
     fprintRTF("}\n");
     diagnostics(4, "Exiting CmdFootNote");
     free(text);
+    if (number) free(number);
 }
 
 /******************************************************************************

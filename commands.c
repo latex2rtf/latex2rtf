@@ -64,7 +64,7 @@ static CommandArray commands[] = {
     {"end", CmdBeginEnd, CMD_END},
     {"today", CmdToday, 0},
 	{"footnote", CmdFootNote, FOOTNOTE},
-	{"endnote", CmdFootNote, FOOTNOTE | FOOTNOTE_ENDNOTE},
+	{"endnote", CmdFootNote, ENDNOTE},
 
 	{"rmfamily", CmdFontFamily, F_FAMILY_ROMAN  },
     {"rm", CmdFontFamily, F_FAMILY_ROMAN_1},
@@ -657,7 +657,7 @@ static CommandArray PreambleCommands[] = {
     {"oddsidemargin", CmdSetTexLength, SL_ODDSIDEMARGIN},
     {"evensidemargin", CmdSetTexLength, SL_EVENSIDEMARGIN},
     {"footnotetext", CmdFootNote, FOOTNOTE_TEXT},
-    {"endnotetext", CmdFootNote, FOOTNOTE_TEXT | FOOTNOTE_ENDNOTE},
+    {"endnotetext", CmdFootNote, ENDNOTE_TEXT},
     {"include", CmdInclude, 0},
     {"input", CmdInclude, 1},
     {"nobreakspace", CmdNonBreakSpace, 100},
