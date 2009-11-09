@@ -405,25 +405,29 @@ void CmdFootNote(int code)
             break;
 
         case FOOTNOTE:
-            fprintRTF("{\\super\\chftn}\n");
-            fprintRTF("{\\*\\footnote\\pard\\plain\\super\\chftn ");
+            fprintRTF("{\\cs62\\super\\chftn}\n");
+            fprintRTF("{\\*\\footnote\\pard ");
             InsertStyle("footnote text");
+            fprintRTF("{\\cs62\\super\\chftn} ");
             break;
 
         case FOOTNOTE_TEXT:
-            fprintRTF("{\\*\\footnote\\pard\\plain\\super\\chftn ");
+            fprintRTF("{\\*\\footnote\\pard ");
             InsertStyle("footnote text");
+            fprintRTF("{\\cs62\\super\\chftn} ");
             break;
 
         case ENDNOTE:
-            fprintRTF("{\\super\\chftn}\n");
-            fprintRTF("{\\*\\footnote\\ftnalt\\pard\\plain\\super\\chftn ");
+            fprintRTF("{\\cs63\\super\\chftn}\n");
+            fprintRTF("{\\*\\footnote\\ftnalt\\pard ");
             InsertStyle("endnote text");
+            fprintRTF("{\\cs63\\super\\chftn} ");
             break;
 
         case ENDNOTE_TEXT:
-            fprintRTF("{\\*\\footnote\\ftnalt\\pard\\plain\\super\\chftn ");
+            fprintRTF("{\\*\\footnote\\ftnalt\\pard ");
             InsertStyle("endnote text");
+            fprintRTF("{\\cs63\\super\\chftn} ");
             break;
 
     }
