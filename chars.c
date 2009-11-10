@@ -1377,11 +1377,11 @@ void CmdUnderdotChar(int code)
 					done = 1;
 					break;
 			case 'S':
-					putUnicodeChar(0x1E,0x61,'S');
+					putUnicodeChar(0x1E,0x62,'S');
 					done = 1;
 					break;
 			case 's':
-					putUnicodeChar(0x1E,0x62,'s');
+					putUnicodeChar(0x1E,0x63,'s');
 					done = 1;
 					break;
 			case 'V':
@@ -1441,11 +1441,11 @@ void CmdUnderdotChar(int code)
 					done = 1;
 					break;
 			case 'U':
-					putUnicodeChar(0x1E,0xE5,'U');
+					putUnicodeChar(0x1E,0xE4,'U');
 					done = 1;
 					break;
 			case 'u':
-					putUnicodeChar(0x1E,0xE6,'u');
+					putUnicodeChar(0x1E,0xE5,'u');
 					done = 1;
 					break;
 		}

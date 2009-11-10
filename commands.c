@@ -339,13 +339,16 @@ static CommandArray commands[] = {
     {"stackrel", CmdStackrel, 0},
     {"matrix", CmdMatrix, 0},
     {"overline",CmdOverLine,0},
-    {"leftrightarrows", CmdUnicodeChar, 8646},
-    {"leftleftarrows", CmdUnicodeChar, 8647},
+    {"rightleftarrows",  CmdUnicodeChar, 8644},
+    {"leftrightarrows",  CmdUnicodeChar, 8646},
+    {"leftleftarrows",   CmdUnicodeChar, 8647},
     {"rightrightarrows", CmdUnicodeChar, 8649},
-    {"rightleftarrows", CmdUnicodeChar, 8644},
-    {"longleftarrow", CmdUnicodeChar, 10229},
-    {"longrightarrow", CmdUnicodeChar, 10230},
-    {"longleftrightarrow", CmdUnicodeChar, 10231},
+/*  {"longleftarrow", CmdUnicodeChar, 10229}, */
+    {"longleftarrow", CmdArrows, LONG_LEFT},
+/*  {"longrightarrow", CmdUnicodeChar, 10230}, */
+    {"longrightarrow", CmdArrows, LONG_RIGHT},
+/*  {"longleftrightarrow", CmdUnicodeChar, 10231}, */
+    {"longleftrightarrow", CmdArrows, LONG_LEFTRIGHT},
     {"Longleftarrow", CmdUnicodeChar, 10232},
     {"Longrightarrow", CmdUnicodeChar, 10233},
     {"Longleftrightarrow", CmdUnicodeChar, 10234},
