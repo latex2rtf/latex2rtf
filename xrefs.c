@@ -390,7 +390,7 @@ void CmdTheEndNotes(int code)
 void CmdFootNote(int code)
 {
     char *number, *text;
-    static int thankno = 1;
+    static int thankno = 0; /*WH 2009-11-10: changed from 1 to 0*/
 
     diagnostics(4, "Entering ConvertFootNote");
     number = getBracketParam(); /* ignored by automatic footnumber * generation */
@@ -399,10 +399,11 @@ void CmdFootNote(int code)
     switch (code) {
         case FOOTNOTE_THANKS:
             thankno++;
-            fprintRTF("{\\super %d}\n", thankno);
-            fprintRTF("{\\*\\footnote\\pard\\plain\\chftn ");
+            fprintRTF("{\\cs62\\super %d}\n", thankno);
+            fprintRTF("{\\*\\footnote\\pard ");
             InsertStyle("footnote text");
-            break;
+            fprintRTF("{\\cs62\\super %d} ", thankno);
+           break;
 
         case FOOTNOTE:
             fprintRTF("{\\cs62\\super\\chftn}\n");
@@ -414,7 +415,7 @@ void CmdFootNote(int code)
         case FOOTNOTE_TEXT:
             fprintRTF("{\\*\\footnote\\pard ");
             InsertStyle("footnote text");
-            fprintRTF("{\\cs62\\super\\chftn} ");
+   /*         fprintRTF("{\\cs62\\super\\chftn} ");*/
             break;
 
         case ENDNOTE:
@@ -427,7 +428,7 @@ void CmdFootNote(int code)
         case ENDNOTE_TEXT:
             fprintRTF("{\\*\\footnote\\ftnalt\\pard ");
             InsertStyle("endnote text");
-            fprintRTF("{\\cs63\\super\\chftn} ");
+   /*         fprintRTF("{\\cs63\\super\\chftn} ");*/
             break;
 
     }
