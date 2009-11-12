@@ -974,12 +974,11 @@ void CmdTabular(int code)
     table = getTexUntil(end, FALSE);
 
 	if (g_tabular_display_bitmap) {
-		char pre[151];
-		
-		snprintf(pre,150, "%s{%s}",begin,cols);
+		char *pre = strdup_together4(begin,"{",cols,"}");
 		PrepareDisplayedBitmap("tabular");
 		WriteLatexAsBitmap(pre, table, end);
 		FinishDisplayedBitmap();
+		free(pre);
 	}
 	
 	if (g_tabular_display_rtf)
