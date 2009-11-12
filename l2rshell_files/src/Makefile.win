@@ -1,0 +1,33 @@
+# Project: l2rshell
+# Makefile created by Dev-C++ 4.9.9.2
+
+CPP  = g++.exe
+CC   = gcc.exe
+WINDRES = windres.exe
+RES  = L2RSHELL_private.res
+OBJ  = l2rshell.o $(RES)
+LINKOBJ  = l2rshell.o $(RES)
+LIBS =  -L"lib" -mwindows C:/Dev-Cpp/lib/libcomctl32.a  
+INCS =  -I"include" 
+CXXINCS =  -I"lib/gcc/mingw32/3.4.2/include"  -I"include/c++/3.4.2/backward"  -I"include/c++/3.4.2/mingw32"  -I"include/c++/3.4.2"  -I"include" 
+BIN  = l2rshell.exe
+CXXFLAGS = $(CXXINCS)  
+CFLAGS = $(INCS)   
+RM = rm -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before l2rshell.exe all-after
+
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o "l2rshell.exe" $(LIBS)
+
+l2rshell.o: l2rshell.cpp l2rshell.h dlg.h
+	$(CPP) -c l2rshell.cpp -o l2rshell.o $(CXXFLAGS)
+
+L2RSHELL_private.res: L2RSHELL_private.rc 
+	$(WINDRES) -i L2RSHELL_private.rc --input-format=rc -o L2RSHELL_private.res -O coff 
