@@ -223,7 +223,7 @@ LRESULT CALLBACK DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             // Load icons
             GetModuleFileName(NULL, str, MAX_PATH);
             getdir(str);
-            lstrcat(str, L"\\l2rshell files\\l2rshell.ico");
+            lstrcat(str, L"\\l2rshell_files\\l2rshell.ico");
             hIcon = LoadImage(NULL, str, IMAGE_ICON, 16, 16, LR_LOADFROMFILE);
             if(hIcon) SendMessage(hwnd, WM_SETICON, ICON_SMALL, (LPARAM)hIcon);
             hIcon = LoadImage(NULL, str, IMAGE_ICON, 32, 32, LR_LOADFROMFILE);
@@ -609,15 +609,15 @@ LRESULT CALLBACK DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                 break;
                 
                 case ID_HOMEPAGE_BUTTON:
-                    OpenFile(hwnd, GetLngString(hwnd, L"homepage_url", L"\\l2rshell files\\web\\LaTeX2RTF Homepage.url", str));
+                    OpenFile(hwnd, GetLngString(hwnd, L"homepage_url", L"\\l2rshell_files\\web\\LaTeX2RTF-Homepage.url", str));
                 break;
                 
                 case ID_CANHELP_BUTTON :
-                    OpenFile(hwnd, GetLngString(hwnd, L"canhelp", L"\\l2rshell files\\You can help.txt", str));
+                    OpenFile(hwnd, GetLngString(hwnd, L"canhelp", L"\\l2rshell_files\\You can help.txt", str));
                 break;
                 
                 case ID_GPL_BUTTON:
-                    OpenFile(hwnd, GetLngString(hwnd, L"gpl_url", L"\\l2rshell files\\web\\GPL2_en.url", str));
+                    OpenFile(hwnd, GetLngString(hwnd, L"gpl_url", L"\\l2rshell_files\\web\\GPL2_en.url", str));
                 break;
                 
                 case ID_EXIT:
@@ -1106,7 +1106,7 @@ void ResetCodepageCombo(HWND hwnd)
     
     GetModuleFileName(NULL, path_to_encodings, MAX_PATH);
     getdir(path_to_encodings);
-    lstrcat(path_to_encodings, L"\\l2rshell files\\encodings.ini");
+    lstrcat(path_to_encodings, L"\\l2rshell_files\\encodings.ini");
     
     SendMessage(GetDlgItem(hwnd, ID_CODEPAGE), WM_GETTEXT, 50, (LPARAM)curcombotext);
     SendMessage(GetDlgItem(hwnd, ID_CODEPAGE), CB_RESETCONTENT, 0, 0);
@@ -1139,7 +1139,7 @@ void ResetShellLangCombo(HWND hwnd)
     
     GetModuleFileName(NULL, str, MAX_PATH);
     getdir(str);
-    lstrcat(str, L"\\l2rshell files\\lang\\*.lng");
+    lstrcat(str, L"\\l2rshell_files\\lang\\*.lng");
     
     if((hdl=FindFirstFile(str, &findfiledata))!=INVALID_HANDLE_VALUE)
     {
@@ -1147,7 +1147,7 @@ void ResetShellLangCombo(HWND hwnd)
         {
             GetModuleFileName(NULL, curfile, MAX_PATH);
             getdir(curfile);
-            lstrcat(curfile, L"\\l2rshell files\\lang\\");
+            lstrcat(curfile, L"\\l2rshell_files\\lang\\");
             lstrcat(curfile, findfiledata.cFileName);
             GetPrivateProfileString(L"language", L"language", findfiledata.cFileName, str, 50, curfile);
             SendMessage(GetDlgItem(hwnd, ID_SHELLLANG), CB_ADDSTRING, 0, (LPARAM)str);
@@ -1340,7 +1340,7 @@ WCHAR* GetInitString(WCHAR* id, WCHAR* def, WCHAR* str)   //returned value is 's
     
     GetModuleFileName(NULL, inifile, MAX_PATH);
     getdir(inifile);
-    lstrcat(inifile, L"\\l2rshell files\\administrator.ini");
+    lstrcat(inifile, L"\\l2rshell_files\\administrator.ini");
     GetPrivateProfileString(L"administrator", id, str, str, MAX_PATH, inifile); 
     
     return str;    
@@ -1358,7 +1358,7 @@ int GetInitInt(WCHAR* id, int def)
     
     GetModuleFileName(NULL, inifile, MAX_PATH);
     getdir(inifile);
-    lstrcat(inifile, L"\\l2rshell files\\administrator.ini");
+    lstrcat(inifile, L"\\l2rshell_files\\administrator.ini");
     i=GetPrivateProfileInt(L"administrator", id, i, inifile);
     
     return i;
@@ -1372,7 +1372,7 @@ WCHAR* GetVersionString(WCHAR* str)   //returned value is 'str'
     
     GetModuleFileName(NULL, inifile, MAX_PATH);
     getdir(inifile);
-    lstrcat(inifile, L"\\l2rshell files\\version.ini");
+    lstrcat(inifile, L"\\l2rshell_files\\version.ini");
     GetPrivateProfileString(L"version", L"version", str, str, MAX_PATH, inifile);
     
     return str;
@@ -1410,7 +1410,7 @@ WCHAR* GetLngString(HWND hwnd, WCHAR* id, WCHAR* def, WCHAR* str)    //returned 
     
     GetModuleFileName(NULL, str, MAX_PATH);
     getdir(str);
-    lstrcat(str, L"\\l2rshell files\\lang\\*.lng");
+    lstrcat(str, L"\\l2rshell_files\\lang\\*.lng");
     
     if((hdl=FindFirstFile(str, &findfiledata))!=INVALID_HANDLE_VALUE)
     {
@@ -1418,7 +1418,7 @@ WCHAR* GetLngString(HWND hwnd, WCHAR* id, WCHAR* def, WCHAR* str)    //returned 
         {
             GetModuleFileName(NULL, curfile, MAX_PATH);
             getdir(curfile);
-            lstrcat(curfile, L"\\l2rshell files\\lang\\");
+            lstrcat(curfile, L"\\l2rshell_files\\lang\\");
             lstrcat(curfile, findfiledata.cFileName);
             GetPrivateProfileString(L"language", L"language", findfiledata.cFileName, str, 50, curfile);
             if(!lstrcmp(curcombotext, str))
