@@ -499,7 +499,7 @@ static void print_usage(void)
     fprintf(stdout, "Usage:  %s [options] input[.tex]\n\n", progname);
     fprintf(stdout, "Options:\n");
     fprintf(stdout, "  -a auxfile       use LaTeX auxfile rather than input.aux\n");
-    fprintf(stdout, "  -b bblfile       use BibTex bblfile rather than input.bbl)\n");
+    fprintf(stdout, "  -b bblfile       use BibTex bblfile rather than input.bbl\n");
     fprintf(stdout, "  -C codepage      charset used by the latex document (latin1, cp850, raw, etc.)\n");
     fprintf(stdout, "  -d level         debugging output (level is 0-6)\n");
     fprintf(stdout, "  -f#              field handling\n");

@@ -406,7 +406,7 @@ void CmdFootNote(int code)
             InsertStyle("footnote text");
             fprintRTF("{");
             InsertStyle("footnote reference");
-            fprintRTF("{ %d} ", thankno);
+            fprintRTF("%d} ", thankno);
            break;
 
         case FOOTNOTE:
