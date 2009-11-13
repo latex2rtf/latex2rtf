@@ -307,23 +307,35 @@ can find @acronym{HTML} and @acronym{PDF} versions of the manual there as well.
 @node Obtaining LaTeX2RTF, UNIX, General, Installation
 @section Obtaining @ltor{}
 
-@ltor{} is available for many Unix Platforms, for the Macintosh, and for MS-DOS, including
-all versions of MS Windows.
+@ltor{} is available for many Unix Platforms, for the Macintosh, and for MS-DOS, 
+including all versions of MS Windows.
 
 The latest version of @ltor{} is available at 
-@uref{http://sourceforge.net/projects/latex2rtf/,SourceForge} and --- with some delay --- on
-CTAN sites: e.g., @uref{http://www.dante.de} or @uref{http://www.ctan.org}.
+@uref{http://sourceforge.net/projects/latex2rtf/,SourceForge} 
+and --- with some delay --- on CTAN sites: 
+e.g., @uref{http://www.dante.de} or @uref{http://www.ctan.org}.
 
 The DOS package (1.8aa and up) will also run under all MS Windows versions. 
-It requires an i386 processor or better.
+It requires an i386 processor or better.@*
+It should only be used on older Microsoft systems
+(before Win95) because it has known issues when
+converting more than 26 equations to bitmaps.@*
+For Win9x, ME, NT, or newer, you should use the win or win-NO-GUI package.
 
-The win package (starting from @ltor{} 1.9.19) is identical 
-to the DOS package except that it is compiled with Cygwin and 
-only runs under Win32 (Win9x, ME, NT, 2000, XP, 2003, Vista).
+The win-NO-GUI package (starting from @ltor{} 1.9.19) is identical 
+to the DOS package except that it is compiled with Cygwin (up to 1.9.19) 
+or MinGW (1.9.20 and up), and only runs under Win32 
+(Win9x, ME, NT, 2000, XP, 2003, Vista).
 
-The win-gui package (starting from @ltor{} 1.9.15) is the DOS package
-(up to @ltor{} 1.9.17) or the win package (@ltor{} 1.9.19 and up)
+The win package (starting from @ltor{} 1.9.15) is the DOS package
+(up to @ltor{} 1.9.17) or the win-NO-GUI package (@ltor{} 1.9.18 and up)
 plus Win32 GUI program (l2rshell).@*
+Up to version 1.9.19 it does not run under 64bit systems. 
+From version 1.9.20 it also runs under 64bit systems.
+
+The win64 package (@ltor{} 1.9.19) is the win package
+but with 32bit versions of the shell utilities so that it also runs
+on 64bit systems.
 
 There are a few people working on @ltor{}, and some more make 
 contributions, coordinated by
