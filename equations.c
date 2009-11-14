@@ -735,7 +735,8 @@ void CmdEquation(int code)
     diagnostics(4, "inline=%d display_rtf   =%d", inline_equation, g_equation_display_rtf);
 
 	/* bitmap versions of equations */
-    if ((inline_equation && g_equation_inline_bitmap) || (!inline_equation && g_equation_display_bitmap)) {
+    if (( inline_equation && g_equation_inline_bitmap ) || 
+        (!inline_equation && g_equation_display_bitmap))   {
     	if (true_code == EQN_ALIGN || true_code == EQN_ARRAY) {
             char *s, *t;
 

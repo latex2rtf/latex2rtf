@@ -225,7 +225,7 @@ static char *strdup_tmp_path(char *s)
 	
  ******************************************************************************/
 
-static char *SysGraphicsConvert(int opt, int offset, int dpi, char *in, char *out)
+static char *SysGraphicsConvert(int opt, int offset, uint16_t dpi, char *in, char *out)
 
 {
     char cmd[512], *out_tmp;
@@ -901,28 +901,21 @@ value.  As you can see below, we never use encode_scale.
 
 On entry baseline should be in pixels.
  ******************************************************************************/
-void PutPngFile(char *s, double height_goal, double width_goal, double scale, 
-                         double convert_scale, double baseline, int full_path)
+void PutPngFile(char *png, double height_goal, double width_goal, double scale, double baseline)
 {
     FILE *fp;
-    char *png;
     double xres,yres;
     uint32_t width, height, w, h, b;
 	uint16_t sx, sy;
 	bool bad_res;
 	
-    if (full_path)
-        png = strdup(s);
-    else
-        png = strdup_together(g_home_dir, s);
-    diagnostics(5, "PutPngFile '%s', convert_scale=%g", png, convert_scale);
+    diagnostics(1, "PutPngFile '%s'", png);
 
     GetPngSize(png, &width, &height, &xres, &yres, &bad_res);
     if (width == 0 || height == 0) return;
 
 	/* make sure that we can open the file */
     fp = fopen(png, "rb");
-    free(png);
     if (fp == NULL) return;
 
     /* size is in units that equal 0.01 mm  (10 microns)  */    
@@ -946,26 +939,26 @@ void PutPngFile(char *s, double height_goal, double width_goal, double scale,
 	if (bad_res) {
 	    sx *= POINTS_PER_METER / xres;
 	    sy *= POINTS_PER_METER / yres;
-	    if (convert_scale != 0)
-			scale *= convert_scale;
 	}
 
 	b = (uint32_t) (100000.0 * baseline * scale / 20.0 / POINTS_PER_METER); 
 	
-	diagnostics(5, "scale      = %6.3f,            convert     = %6.3f", scale, convert_scale);
-    diagnostics(5, "width_goal = %6ld twips,      height_goal = %6ld twips", (int)width_goal, (int)height_goal);
-    diagnostics(5, "picw       = %6ld microns,    pich        = %6ld microns", w*10, h*10);
-    diagnostics(5, "picwgoal   = %6ld twips,      pichgoal    = %6ld twips", width, height);
-    diagnostics(5, "sx         = %6ld percent,    sy          = %6ld percent", sx, sy);
-    diagnostics(5, "xres       = %7.2f pix/meter, yres        = %7.2f pix/meter", xres, yres);
+	diagnostics(1, "scale      = %6.3f,           ", scale);
+    diagnostics(1, "width_goal = %6lu twips,      height_goal = %6lu twips", (int)width_goal, (int)height_goal);
+    diagnostics(1, "baseline   = %6lu twips", b);
+    diagnostics(1, "picw       = %6lu microns,    pich        = %6lu microns", w*10, h*10);
+    diagnostics(1, "picwgoal   = %6lu twips,      pichgoal    = %6lu twips", width, height);
+    diagnostics(1, "sx         = %6lu percent,    sy          = %6lu percent", sx, sy);
+    diagnostics(1, "xres       = %7.2f pix/meter, yres        = %7.2f pix/meter", xres, yres);
+    diagnostics(1, "xres       = %7.2f pix/meter, yres        = %7.2f pix/meter", xres, yres);
     
     /* Write the header for the png bitmap */
     fprintRTF("\n{");
-    if (b) fprintRTF("\\dn%ld", b); 
+    if (b) fprintRTF("\\dn%lu", b); 
     fprintRTF("\\pict");
-    if (sx != 100 && sy != 100) fprintRTF("\\picscalex%d\\picscaley%d", sx,sy);
-    fprintRTF("\\picw%ld\\pich%ld", w, h);
-    fprintRTF("\\picwgoal%ld\\pichgoal%ld", width, height);
+    if (sx != 100 && sy != 100) fprintRTF("\\picscalex%u\\picscaley%u", sx,sy);
+    fprintRTF("\\picw%lu\\pich%lu", w, h);
+    fprintRTF("\\picwgoal%lu\\pichgoal%lu", width, height);
     fprintRTF("\\pngblip\n");
 
 	/* Now actually write the PNG file out */
@@ -1246,7 +1239,7 @@ static void PutPdfFile(char *s, double height0, double width0, double scale, dou
     convert_scale = g_dots_per_inch / 72.0;
     
     if (png) {
-        PutPngFile(png, height0, width0, scale, convert_scale, baseline, TRUE);
+        PutPngFile(png, height0, width0, scale, baseline);
         my_unlink(png);
         free(png);
     }
@@ -1265,7 +1258,7 @@ static void PutEpsFile(char *s, double height0, double width0, double scale, dou
     if (1) {
         png = eps_to_png(s);
         if (png) {
-            PutPngFile(png, height0, width0, scale, convert_scale, baseline, TRUE);
+            PutPngFile(png, height0, width0, scale, baseline);
             my_unlink(png);
             free(png);
         }
@@ -1310,7 +1303,7 @@ static void PutTiffFile(char *s, double height0, double width0, double scale, do
 	out = SysGraphicsConvert(CONVERT_SIMPLE, 0, g_dots_per_inch, tiff, png);
 	
 	if (out != NULL) {
-    	PutPngFile(out, height0, width0, scale, convert_scale, baseline, TRUE);
+    	PutPngFile(out, height0, width0, scale, baseline);
 		my_unlink(out);
     	free(out);
     }
@@ -1339,7 +1332,7 @@ static void PutGifFile(char *s, double height0, double width0, double scale, dou
     out = SysGraphicsConvert(CONVERT_SIMPLE, 0, g_dots_per_inch, gif, png);
 
 	if (out != NULL) {
-    	PutPngFile(out, height0, width0, scale, convert_scale, baseline, TRUE);
+    	PutPngFile(out, height0, width0, scale, baseline);
    	 	my_unlink(out);
     	free(out);
     }
@@ -1381,7 +1374,7 @@ purpose: reads a .pbm file to determine the baseline for an equation
 		 the .pbm file should have dimensions of 1 x height
 		 returns the baseline height in pixels
  ****************************************************************************/
-int32_t GetBaseline(char *s, char *pre)
+uint32_t GetBaseline(char *s, char *pre)
 {
     FILE *fp;
     int thechar;
@@ -1457,51 +1450,67 @@ int32_t GetBaseline(char *s, char *pre)
 /******************************************************************************
  purpose   : Convert LaTeX to Bitmap and insert in RTF file
  ******************************************************************************/
-void PutLatexFile(char *latex, double height0, double width0, double scale, char *pre)
+void PutLatexFile(char *latex, double scale, char *pre)
 {
-    char *png=NULL;
-    char *pngpath = NULL;
-    int baseline, bmoffset;
+    char *png_name = NULL;
+    int  bmoffset;
     bool bad_res;
-	double convert_scale,resolution;
-	double xres,yres;
-    uint32_t width, height, rw, rh;
-    uint32_t maxsize = (uint32_t) (32767.0 / 20.0);
+	double height_goal, width_goal;
+	double baseline = 0;
+	double png_xres, png_yres;
+    uint32_t png_width = 0;
+    uint32_t png_height= 0;
+    uint16_t png_resolution=0;
+    double max_fig_size = 32767.0 / 20.0;  /* in twips */
 	
-    diagnostics(3, "Rendering LaTeX construct (e.g. equation) as a bitmap...");
+    diagnostics(4, "Rendering LaTeX as a bitmap...");
 
     bmoffset = g_dots_per_inch / 72 + 2;
-    png = strdup_together(latex, ".png");
 
     /* it is possible that the latex image is too wide or tall for Word
        we only know this after we have tried once.  If the image is too
        large then the resolution is made smaller and the PNG is remade */
     
-	resolution = g_dots_per_inch;
-	pngpath = SysGraphicsConvert(CONVERT_LATEX, bmoffset, (int) resolution, latex, "");
-	if (pngpath == NULL)  goto the_end;
-	GetPngSize(png, &width, &height, &xres, &yres, &bad_res);
-
-	if ((width > maxsize && height != 0) || (height > maxsize && width != 0)) {
-        free(pngpath);
-		rw = (uint32_t) ((resolution * maxsize) / width);
-		rh = (uint32_t) ((resolution * maxsize) / height);
-		resolution = rw < rh ? (int) rw : (int) rh;
-		pngpath = SysGraphicsConvert(CONVERT_LATEX, bmoffset, (int) resolution, latex, "");
-		if (pngpath == NULL) goto the_end;
-		GetPngSize(png, &width, &height,&xres,&yres,&bad_res);
+	png_resolution = (uint16_t) g_dots_per_inch;
+	
+	if (SysGraphicsConvert(CONVERT_LATEX, bmoffset, png_resolution, latex, "") == NULL) {
+		diagnostics(1, "PutLatexFile failed to convert '%s' to png");
+		return;
 	}
-	convert_scale = 72.0 / resolution;
-	baseline = GetBaseline(latex, pre);
-	diagnostics(4, "png size height=%d baseline=%d width=%d resolution=%d", height, baseline, width, (int) resolution);
-        
-    if (pngpath != NULL) {
-        PutPngFile(png, height0, width0, scale, convert_scale, (double) baseline, TRUE);
-        free(pngpath);
-    }
+	
+	/* Figures can only have so many bits ... figure out the width and height
+	   and if these are too large then reduce resolution and make a new bitmap */
+	png_name = strdup_together(latex, ".png");
+	GetPngSize(png_name, &png_width, &png_height, &png_xres, &png_yres, &bad_res);
 
-the_end:
-	free(png);
+	if ( png_width  > max_fig_size || png_height > max_fig_size) {
+		
+		if (png_height && png_height > png_width) 
+			png_resolution = (uint16_t)((double)g_dots_per_inch / (double)png_height * max_fig_size);
+		else
+			png_resolution = (uint16_t)((double)g_dots_per_inch / (double)png_width * max_fig_size);
+
+		if (SysGraphicsConvert(CONVERT_LATEX, bmoffset, png_resolution, latex, "") == NULL) {
+			free(png_name);
+			return;
+		}
+		
+		GetPngSize(png_name, &png_width, &png_height, &png_xres, &png_yres, &bad_res);
+	}
+	
+	/* we have a png file of the latex now ... insert it after figuring out offset and scaling */
+
+	baseline = GetBaseline(latex, pre);
+	
+	diagnostics(1, "PutLatexFile bitmap has (height=%d,width=%d) baseline=%g  resolution=%u", 
+					png_height, baseline, png_width, png_resolution);
+	
+	height_goal = (scale * png_height  * POINTS_PER_METER / png_yres * 20.0 + 0.5);
+	width_goal  = (scale * png_width  * POINTS_PER_METER / png_xres * 20.0 + 0.5);
+	
+	PutPngFile(png_name, height_goal, width_goal, scale*100, baseline);
+	
+	free(png_name);
 }
 
 static char *SaveEquationAsFile(const char *post_begin_document,
@@ -1654,14 +1663,11 @@ void WriteLatexAsBitmap(char *pre, char *eq, char *post)
                              || strstr(pre, "picture")
                              || strstr(pre, "tabular")
                              || strstr(pre, "tabbing")
-                             || strstr(pre, "int32_ttable")
                              || strstr(pre, "psgraph")
                              || strstr(pre, "pspicture")) 
-    {
-    	PutLatexFile(name, 0, 0, g_png_figure_scale, pre);
-    } else {
-    	PutLatexFile(name, 0, 0, g_png_equation_scale, pre);
-    }
+    	PutLatexFile(name, g_png_figure_scale, pre);
+    else
+    	PutLatexFile(name, g_png_equation_scale, pre);
 }
 
 char *upper_case_string(char *s)
@@ -2033,7 +2039,7 @@ void CmdGraphics(int code)
 			PutPictFile(fullpathname, height, width, scale, baseline, TRUE);
 	
 		else if (has_extension(fullpathname, ".png"))
-			PutPngFile(fullpathname, height, width, scale, 0.0, baseline, TRUE);
+			PutPngFile(fullpathname, height, width, scale, baseline);
 	
 		else if (has_extension(fullpathname, ".gif"))
 			PutGifFile(fullpathname, height, width, scale, baseline, TRUE);

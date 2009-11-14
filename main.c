@@ -118,8 +118,8 @@ bool g_tableofcontents = FALSE;
 bool g_tabular_display_rtf = TRUE;
 bool g_tabular_display_bitmap = FALSE;
 
-double g_png_equation_scale = 1.22;
-double g_png_figure_scale = 1.35;
+double g_png_equation_scale = 1.00;
+double g_png_figure_scale = 1.00;
 bool g_latex_figures = FALSE;
 bool g_endfloat_figures = FALSE;
 bool g_endfloat_tables = FALSE;

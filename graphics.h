@@ -7,7 +7,7 @@
 void PrepareDisplayedBitmap(char *the_type);
 void FinishDisplayedBitmap(void);
 void WriteLatexAsBitmap(char *pre, char *eq, char *post);
-void PutLatexFile(char *s, double height0, double width0, double scale, char *pre);
+void PutLatexFile(char *s, double scale, char *pre);
 void CmdGraphics(int code);
 void CmdPicture(int code);
 void CmdPsPicture(int code);
