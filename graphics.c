@@ -255,7 +255,7 @@ static char *SysGraphicsConvert(int opt, int offset, uint16_t dpi, char *in, cha
 	}
 
 	if (opt == CONVERT_CROP) {
-		char format_crop[]   = "convert -crop 0x0 -units PixelsPerInch -density %d '%s' '%s'";
+		char format_crop[]   = "convert -trim -units PixelsPerInch -density %d '%s' '%s'";
 		snprintf(cmd, N, format_crop, dpi, in, out_tmp);
 	}
 
@@ -794,20 +794,21 @@ static unsigned char * getPngChunk(FILE *fp, char *s)
 
 /******************************************************************************
      purpose : determine height and width of file
-               w is the size in pixels
+               w & h are the size in pixels
                xres is the number of pixels per meter
  ******************************************************************************/
-static void GetPngSize(char *s, uint32_t *w, uint32_t *h, double *xres, double *yres, bool *bad_res)
+static void GetPngSize(char *s, uint32_t *w_pixels, uint32_t *h_pixels, double *xres, double *yres, bool *bad_res)
 {
     FILE *fp;
     uint32_t *p;
+    uint32_t h_10micron, w_10micron;
     unsigned char buffer[16];
     char reftag[9] = "\211PNG\r\n\032\n";
     unsigned char *data = NULL;
 
     diagnostics(4, "GetPngSize of '%s'", s);
-    *w = 0;
-    *h = 0;
+    w_10micron = 0;
+    h_10micron = 0;
     *xres = POINTS_PER_METER;
     *yres = POINTS_PER_METER;
     *bad_res = 1;
@@ -836,12 +837,11 @@ static void GetPngSize(char *s, uint32_t *w, uint32_t *h, double *xres, double *
 	}
 
 	p = (uint32_t *) data;	
-	*w = (g_little_endian) ? LETONL(*p) : *p;
+	*w_pixels = (g_little_endian) ? LETONL(*p) : *p;
 	p++;
-	*h = (g_little_endian) ? LETONL(*p) : *p;
+	*h_pixels = (g_little_endian) ? LETONL(*p) : *p;
 	free(data);
 		
-	diagnostics(4, "width = %ld, height = %ld, pixels", *w, *h);
 	data = getPngChunk(fp,"pHYs");
 	if (data == NULL) {
         diagnostics(2, "Graphics file '%s': could not locate pHYs chunk!", s);
@@ -875,7 +875,7 @@ static void GetPngSize(char *s, uint32_t *w, uint32_t *h, double *xres, double *
 	diagnostics(5, "xres = %g, yres = %g, pixels/meter", *xres, *yres);
 	diagnostics(5, "xres = %g, yres = %g, pixels/in", 
 					*xres*72.0/POINTS_PER_METER, *yres*72.0/POINTS_PER_METER);
-    
+
     fclose(fp);
 }
 
@@ -889,7 +889,6 @@ static void GetPngSize(char *s, uint32_t *w, uint32_t *h, double *xres, double *
 \pngblip
 
 There are three scaling factors floating around
-	convert_scale = the scaling factor from converting the PNG ... 
 	encode_scale  = POINTS_PER_METER/xres (scaling factor inside the PNG)
 	scale         = the scaling factor given by \includegraphics
 
@@ -900,65 +899,64 @@ Consequently, when this happens, scale must be altered by the convert_scale
 value.  As you can see below, we never use encode_scale.
 
 On entry baseline should be in pixels.
- ******************************************************************************/
+
+\picwN      width in pixels 
+\pichN 	    height in pixels
+\picwgoalN 	Desired width in twips
+\pichgoalN 	Desired height in twips
+\picscalexN Horizontal scaling as a percentage (default=100)
+\picscaleyN Vertical scaling as a percentage
+
+******************************************************************************/
 void PutPngFile(char *png, double height_goal, double width_goal, double scale, double baseline)
 {
     FILE *fp;
     double xres,yres;
-    uint32_t width, height, w, h, b;
+    uint32_t w_pixels, h_pixels, b;
+    uint32_t w_twips, h_twips;
 	uint16_t sx, sy;
 	bool bad_res;
 	
-    diagnostics(1, "PutPngFile '%s'", png);
+    diagnostics(4, "PutPngFile '%s'", png);
 
-    GetPngSize(png, &width, &height, &xres, &yres, &bad_res);
-    if (width == 0 || height == 0) return;
+    GetPngSize(png, &w_pixels, &h_pixels, &xres, &yres, &bad_res);
+    if (w_pixels == 0 || h_pixels == 0) return;
 
 	/* make sure that we can open the file */
     fp = fopen(png, "rb");
     if (fp == NULL) return;
 
-    /* size is in units that equal 0.01 mm  (10 microns)  */    
-	/*       100,000 (0.01mm)                 points      */
-	/* w =   ---------------- * points   / -----------    */
-	/*           1 meter                       meter      */
+	/*                     pixels     points     20 twips   */
+	/* twips = (pixels) / -------- * -------- * ----------  */
+	/*                     meter       meter      1 point   */
 
-    w = (uint32_t) (100000.0 * width  / xres);
-    h = (uint32_t) (100000.0 * height / yres);
-
-	/* twips calculation                                             */
-	/*                       points        pixels      20 twips      */
-	/* width =  (pixels) * ----------- / ---------  * -----------    */
-	/*                       meter          meter      1 point       */
-
-	width    = (width  * POINTS_PER_METER / xres * 20.0 + 0.5);
-	height   = (height * POINTS_PER_METER / yres * 20.0 + 0.5);
+	w_twips = (w_pixels / xres * POINTS_PER_METER * 20.0 + 0.5);
+	h_twips = (h_pixels / yres * POINTS_PER_METER * 20.0 + 0.5);
+	b = (uint32_t) baseline;
 	
-	AdjustScaling(height,width,height_goal,width_goal,scale,&sx,&sy);
+	AdjustScaling(h_twips,w_twips,height_goal,width_goal,scale,&sx,&sy);
 	
 	if (bad_res) {
 	    sx *= POINTS_PER_METER / xres;
 	    sy *= POINTS_PER_METER / yres;
 	}
-
-	b = (uint32_t) (100000.0 * baseline * scale / 20.0 / POINTS_PER_METER); 
 	
-	diagnostics(1, "scale      = %6.3f,           ", scale);
-    diagnostics(1, "width_goal = %6lu twips,      height_goal = %6lu twips", (int)width_goal, (int)height_goal);
-    diagnostics(1, "baseline   = %6lu twips", b);
-    diagnostics(1, "picw       = %6lu microns,    pich        = %6lu microns", w*10, h*10);
-    diagnostics(1, "picwgoal   = %6lu twips,      pichgoal    = %6lu twips", width, height);
-    diagnostics(1, "sx         = %6lu percent,    sy          = %6lu percent", sx, sy);
-    diagnostics(1, "xres       = %7.2f pix/meter, yres        = %7.2f pix/meter", xres, yres);
-    diagnostics(1, "xres       = %7.2f pix/meter, yres        = %7.2f pix/meter", xres, yres);
+    diagnostics(4, "picw       = %8lu pixels,     pich        = %8lu pixels", w_pixels, h_pixels);
+    diagnostics(4, "picwgoal   = %8lu twips,      pichgoal    = %8lu twips", w_twips, h_twips);
+    diagnostics(4, "xres       = %8.2f pix/meter, yres        = %8.2f pix/meter", xres, yres);
+    diagnostics(4, "xres       = %8.2f pix/inch,   yres        = %8.2f pix/inch", xres*72.0/POINTS_PER_METER, yres*72.0/POINTS_PER_METER);
+	diagnostics(4, "scale      = %8.3f", scale);
+    diagnostics(4, "width_goal = %8d twips,      height_goal = %8d twips", (int)width_goal, (int)height_goal);
+    diagnostics(4, "baseline   = %8.3g twips", baseline);
+    diagnostics(4, "sx         = %8lu percent,    sy          = %8lu percent", sx, sy);
     
     /* Write the header for the png bitmap */
     fprintRTF("\n{");
     if (b) fprintRTF("\\dn%lu", b); 
     fprintRTF("\\pict");
     if (sx != 100 && sy != 100) fprintRTF("\\picscalex%u\\picscaley%u", sx,sy);
-    fprintRTF("\\picw%lu\\pich%lu", w, h);
-    fprintRTF("\\picwgoal%lu\\pichgoal%lu", width, height);
+    fprintRTF("\\picw%lu\\pich%lu", w_pixels, h_pixels);
+    fprintRTF("\\picwgoal%lu\\pichgoal%lu", w_twips, h_twips);
     fprintRTF("\\pngblip\n");
 
 	/* Now actually write the PNG file out */
@@ -1231,12 +1229,10 @@ static void PutWmfFile(char *s, double height0, double width0, double scale, dou
 static void PutPdfFile(char *s, double height0, double width0, double scale, double baseline, int full_path)
 {
     char *png;
-    double convert_scale = 72.0 / g_dots_per_inch;
     
     diagnostics(WARNING, "Rendering PNG from '%s'", s);
 
     png = pdf_to_png(s);
-    convert_scale = g_dots_per_inch / 72.0;
     
     if (png) {
         PutPngFile(png, height0, width0, scale, baseline);
@@ -1251,7 +1247,6 @@ static void PutPdfFile(char *s, double height0, double width0, double scale, dou
 static void PutEpsFile(char *s, double height0, double width0, double scale, double baseline, int full_path)
 {
     char *png, *emf, *pict;
-    double convert_scale = 72.0 / g_dots_per_inch;
 
     diagnostics(WARNING, "Rendering PNG from '%s'", s);
 
@@ -1289,7 +1284,6 @@ static void PutEpsFile(char *s, double height0, double width0, double scale, dou
 static void PutTiffFile(char *s, double height0, double width0, double scale, double baseline, int full_path)
 {
     char *tiff, *png, *out;
-    double convert_scale = 0.0;
 
     diagnostics(2, "PutTiffFile '%s'", s);
     png = strdup_new_extension(s, ".tiff", ".png");
@@ -1318,7 +1312,6 @@ static void PutTiffFile(char *s, double height0, double width0, double scale, do
 static void PutGifFile(char *s, double height0, double width0, double scale, double baseline, int full_path)
 {
     char *gif, *png, *out;
-	double convert_scale = 0.0;
 	
     diagnostics(2, "PutGifFile '%s'", s);
     png = strdup_new_extension(s, ".gif", ".png");
@@ -1439,7 +1432,12 @@ uint32_t GetBaseline(char *s, char *pre)
 
     baseline = (bottom + top) / 2;
 
-    diagnostics(4, "top=%ld bottom=%ld baseline=%ld", top, bottom, baseline);
+
+    diagnostics(4, "height=%ld top=%ld bottom=%ld baseline=%ld", height, top, bottom, baseline);
+
+	/* baseline is in pixels at 72 dots per inch but bitmap may be larger */
+	/* I add 2 at the end because it looks best at 72 DPD, 300 DPI, and 600 DPI*/
+	baseline = baseline * 72.0 / g_dots_per_inch + 2;
 
   Exit:
     free(pbm);
@@ -1474,7 +1472,7 @@ void PutLatexFile(char *latex, double scale, char *pre)
 	png_resolution = (uint16_t) g_dots_per_inch;
 	
 	if (SysGraphicsConvert(CONVERT_LATEX, bmoffset, png_resolution, latex, "") == NULL) {
-		diagnostics(1, "PutLatexFile failed to convert '%s' to png");
+		diagnostics(WARNING, "PutLatexFile failed to convert '%s' to png");
 		return;
 	}
 	
@@ -1483,7 +1481,7 @@ void PutLatexFile(char *latex, double scale, char *pre)
 	png_name = strdup_together(latex, ".png");
 	GetPngSize(png_name, &png_width, &png_height, &png_xres, &png_yres, &bad_res);
 
-	if ( png_width  > max_fig_size || png_height > max_fig_size) {
+	if (0 &&( png_width  > max_fig_size || png_height > max_fig_size)) {
 		
 		if (png_height && png_height > png_width) 
 			png_resolution = (uint16_t)((double)g_dots_per_inch / (double)png_height * max_fig_size);
@@ -1502,10 +1500,10 @@ void PutLatexFile(char *latex, double scale, char *pre)
 
 	baseline = GetBaseline(latex, pre);
 	
-	diagnostics(1, "PutLatexFile bitmap has (height=%d,width=%d) baseline=%g  resolution=%u", 
-					png_height, baseline, png_width, png_resolution);
+	diagnostics(4, "PutLatexFile bitmap has (height=%d,width=%d) baseline=%g  resolution=%u", 
+					png_height, png_width, baseline, png_resolution);
 	
-	height_goal = (scale * png_height  * POINTS_PER_METER / png_yres * 20.0 + 0.5);
+	height_goal = (scale * png_height * POINTS_PER_METER / png_yres * 20.0 + 0.5);
 	width_goal  = (scale * png_width  * POINTS_PER_METER / png_xres * 20.0 + 0.5);
 	
 	PutPngFile(png_name, height_goal, width_goal, scale*100, baseline);

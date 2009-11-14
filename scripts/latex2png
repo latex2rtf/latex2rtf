@@ -1,5 +1,5 @@
 #!/bin/bash
-# Part of latex2rtf by Scott Prahl (Nov 2002)
+# Part of latex2rtf by Scott Prahl (Nov 2009)
 #
 # This version uses latex and dvips
 #              with ps2ps (part of Ghostscript)
@@ -24,10 +24,9 @@
 DVIPS="dvips -q -l 1 -E -R"
 LATEX="latex --interaction batchmode"
 CONVERT="convert"
-EPS2EPS="cp"
 GREP="grep"
 TEXINPSEP=":"
-VERSION="1.4"
+VERSION="1.5"
 
 help()
 {
@@ -126,22 +125,16 @@ if [ $ext = "tex" ] ; then
         exit 1
     fi
     
-    $DVIPS -o $name.tmp.eps $name.dvi
+    $DVIPS -o $name.eps $name.dvi
     
-    if [ ! -e "$name.tmp.eps" ] ; then
-        echo "latex2png: error: dvips failed to translate $name.dvi to $name.tmp.eps"
-        exit 1
-    fi
-    
-    #helps convert work with eps figures
-    $EPS2EPS $name.tmp.eps $name.eps
     if [ ! -e "$name.eps" ] ; then
-        echo "latex2png: error: eps2eps (Ghostscript) failed to translate $name.tmp.eps to $name.eps"
+        echo "latex2png: error: dvips failed to translate $name.dvi to $name.eps"
         exit 1
     fi
+    
 fi
 
-$CONVERT $out -units PixelsPerInch -density ${opt_d}x${opt_d} $name.eps $name.png
+$CONVERT $out -units PixelsPerInch -density ${opt_d}x${opt_d} -trim +repage $name.eps $name.png
 
 if [ ! -e "$name.png" ] ; then
     echo "latex2png: error: convert (ImageMagick) failed to translate $name.eps to $name.png"
@@ -150,29 +143,23 @@ fi
 
 # -i is for images of equations that include an extra dot on the baseline
 #    this dot must be cropped out, and its height must be determined.
-#    The height is determined from $name.gray --- the first column of the image
-#    The dot is then cropped out in $name.tmp.png and finally extra white space
-#    in $name.tmp.png is removed to create the final image $name.png
+#    The height is determined from $name.pbm --- the first column of the image
+#    The dot is cropped out of $name-tmp.png and any extra white space
+#    is removed to create the final image $name.png
 # 
 if [ $inline -eq 1 ] ; then
-    rm -f $name.ppm
+#    rm -f $name.ppm
 
-    pngtopnm $name.png | pnmcrop > $name.ppm
+	mv $name.png $name-tmp.png
+	
+	# strip the initial dot and white space
+	$CONVERT -chop ${opt_o}x0 -trim +repage $name-tmp.png $name.png
 
-#    pngtopnm $name.png > $name.ppm
-
-# next line is needed because $name.pbm is read by latex2rtf
-    pnmcut -width 1 $name.ppm | ppmtopgm | pgmtopbm > $name.pbm
-
-    sz=$(($opt_d/10))  # pnmtopng size option needs resolution in pix per meter
-    sz=$(($sz*394))    # but bash only allows integer arithmetic
-# next line for older versions of netpbm (before 10.30 Oct.2005)
-    pnmcut -left $opt_o $name.ppm | pnmcrop -left | pnmtopng -phys $sz $sz 1 > $name.png 2> /dev/null
-# next line for newer versions of netpbm (10.30 Oct.2005 of newer)
-#    pnmcut -left $opt_o $name.ppm | pnmcrop -left | pnmtopng -size "$sz $sz 1" > $name.png 2> /dev/null
+	# extract first column of png and stick it in a bitmap
+	$CONVERT -gravity West -crop 1x0+0+0 +repage $name-tmp.png $name.pbm
 
     if [ $opt_k -eq 0 ] ; then
-        rm -f $name.ppm
+        rm -f $name-tmp.ppm
     fi
 fi
 
