@@ -284,7 +284,7 @@ static void WriteEquationAsComment(char *pre, char *eq, char *post)
 static void PrepareRtfEquation(int code, int EQ_Needed)
 {
 	g_current_eqn_needs_EQ = EQ_Needed;
-	
+
     switch (code) {
 
         case EQN_MATH:
@@ -695,11 +695,32 @@ static void WriteEquationAsRTF(int code, char **eq)
     FinishRtfEquation(code, EQ_Needed);
 }
 
-void CmdEquation(int code)
+
+/******************************************************************************
+ purpose   : search an equation and determine the first label that appears
+ ******************************************************************************/
+static void SetEquationLabel(char *eq)
+{
+	char *t;
+	
+	if (g_suppress_equation_number) return;
+	if (eq==NULL || *eq=='\0') return;
+		
+	t = strstr(eq,"\\label");
+	if (t) {
+	    t += strlen("\\label");
+		PushSource(NULL,t);
+		g_equation_label=getBraceParam();
+    	diagnostics(4, "Bitmap equation label = '%s'", g_equation_label);
+		PopSource();
+	}
+
+}
 
 /******************************************************************************
  purpose   : Handle everything associated with equations
  ******************************************************************************/
+void CmdEquation(int code)
 {
     char *pre=NULL, *eq=NULL, *post=NULL;
     int inline_equation, number, true_code;
@@ -753,6 +774,7 @@ void CmdEquation(int code)
                 else
                 	WriteLatexAsBitmap("\\begin{align*}", s, "\\end{align*}");
 
+            	SetEquationLabel(eq);
                 FinishRtfEquation(true_code, FALSE);
                 if (t) s = t + 2;
             } while (t);
@@ -761,7 +783,9 @@ void CmdEquation(int code)
             PrepareRtfEquation(true_code, FALSE);
             if (true_code == EQN_EQUATION && g_amsmath_package)
             	g_suppress_equation_number = EquationGetsNoNumber(eq);
+            
             WriteLatexAsBitmap(pre, eq, post);
+            SetEquationLabel(eq);
             FinishRtfEquation(true_code, FALSE);
         }
     }
