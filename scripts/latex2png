@@ -164,7 +164,7 @@ if [ $inline -eq 1 ] ; then
 fi
 
 if [ $opt_k -eq 0 ] ; then
-    rm -f $name.dvi $name.aux $name.log $name.tmp.eps
+    rm -f $name.dvi $name.aux $name.log $name-tmp.png
     if [ $ext = "tex" ] ; then
         rm -f $name.eps
     fi

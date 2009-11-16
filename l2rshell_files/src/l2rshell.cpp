@@ -326,11 +326,11 @@ LRESULT CALLBACK DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             // "Equation scale": edit box and up-down control
             CreateUpDownControl(WS_CHILD|WS_VISIBLE|UDS_ALIGNRIGHT,
             0,0,0,0,hwnd,ID_EQSCALE_UPDOWN,NULL,GetDlgItem(hwnd, ID_EQSCALE),1000,10,122);
-            SetDlgItemText(hwnd, ID_EQSCALE, GetInitString(L"eqscale", L"1.22", str));
+            SetDlgItemText(hwnd, ID_EQSCALE, GetInitString(L"eqscale", L"1.00", str));
             // "Figure scale": edit box and up-down control
             CreateUpDownControl(WS_CHILD|WS_VISIBLE|UDS_ALIGNRIGHT,
             0,0,0,0,hwnd,ID_FIGSCALE_UPDOWN,NULL,GetDlgItem(hwnd, ID_FIGSCALE),1000,10,135);
-            SetDlgItemText(hwnd, ID_FIGSCALE, GetInitString(L"figscale", L"1.35", str));
+            SetDlgItemText(hwnd, ID_FIGSCALE, GetInitString(L"figscale", L"1.00", str));
             
             // Initialize tabs
             TC_ITEM item;
@@ -711,14 +711,14 @@ void Run(HWND hwnd)
         }
         
         SendMessage(GetDlgItem(hwnd, ID_EQSCALE), WM_GETTEXT, 6, (LPARAM)str);
-        if(lstrcmp(str, L"1.22") && lstrcmp(str, L"1,22"))
+        if(lstrcmp(str, L"1.00") && lstrcmp(str, L"1,00"))
         {
             lstrcat(out_str, L" -se");
             lstrcat(out_str, str);
         }
         
         SendMessage(GetDlgItem(hwnd, ID_FIGSCALE), WM_GETTEXT, 6, (LPARAM)str);
-        if(lstrcmp(str, L"1.35") && lstrcmp(str, L"1,35"))
+        if(lstrcmp(str, L"1.00") && lstrcmp(str, L"1,00"))
         {
             lstrcat(out_str, L" -sf");
             lstrcat(out_str, str);
