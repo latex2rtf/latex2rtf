@@ -131,7 +131,8 @@ TEST=  \
 	test/bib_apacite2.bib        test/fig_subfig.tex     test/include4.tex      \
 	test/include5.tex            test/hyperref.tex       test/bib_super.bib     \
 	test/longstack.tex           test/table_array1.tex   test/table_array2.tex  \
-	test/bib_apacite3.tex        test/bib_apacite3.bib   test/color2.tex
+	test/bib_apacite3.tex        test/bib_apacite3.bib   test/color2.tex        \
+	test/fig_png.tex             test/fig_10x15.png      test/psfig.sty
 	
 OBJS=fonts.o direct.o encodings.o commands.o stack.o funct1.o tables.o \
 	chars.o ignore.o cfg.o main.o utils.o parser.o lengths.o counters.o \
