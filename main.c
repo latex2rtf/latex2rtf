@@ -531,7 +531,7 @@ static void print_usage(void)
     fprintf(stdout, "  -t#              table handling\n");
     fprintf(stdout, "       -t1          tabular and tabbing environments as RTF\n");
     fprintf(stdout, "       -t2          tabular and tabbing environments as bitmaps\n");
-    fprintf(stdout, "  -T /path/to/tmp  temporary directory\n");
+    fprintf(stdout, "  -T /path/to/tmp  temporary directory (not used in DOS/Win version)\n");
     fprintf(stdout, "  -v               version information\n");
     fprintf(stdout, "  -V               version information\n");
     fprintf(stdout, "  -W               include warnings in RTF\n");
