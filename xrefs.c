@@ -259,7 +259,7 @@ static char *ScanAux(char *token, char *reference, int code, char *aux_name)
 
 		s = strstr(AuxLine, "\\@input{");
 		if (s) {
-			char *t, *ret_val, *filename;
+			char *ret_val, *filename;
 			FILE *old_fAux = fAux;
 			
 			t = strchr(s, '}');
@@ -271,7 +271,10 @@ static char *ScanAux(char *token, char *reference, int code, char *aux_name)
 			free(filename);
 			fclose(fAux);
 			fAux = old_fAux;
-			if (ret_val != NULL) {return ret_val;}
+			if (ret_val != NULL) {
+				free(AuxLine);
+				return ret_val;
+			}
 		}
 
 		s = strstr(AuxLine, target);
@@ -279,8 +282,11 @@ static char *ScanAux(char *token, char *reference, int code, char *aux_name)
 			s += strlen(target);    /* move to \token{reference}{ */
 			
 			if (code == 2) {
+				char *ss;
 				diagnostics(4, "found <%s>", s);
-				return strdup_noendblanks(s);
+				ss = strdup_noendblanks(s);
+				free(AuxLine);
+				return ss;
 			}
 				
 			if (code == 1)
@@ -295,13 +301,16 @@ static char *ScanAux(char *token, char *reference, int code, char *aux_name)
 				if (*t == '}')
 					braces--;
 				if (*t == '\0') {
+					free(AuxLine);
 					return NULL;
 				}
 			}
 
 			*t = '\0';
 			diagnostics(4, "found <%s>", s + 1);
-			return strdup(s + 1);
+			t = strdup(s+1);
+			free(AuxLine);
+			return t;
 		}
 		free(AuxLine);
 		AuxLine = my_fgets(fAux);
@@ -1000,10 +1009,10 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first, i
 					fprintRTF(" ");
 					ConvertString(year);
 				} else {
-					char *s = strdup(year + 4);
+					char *ss = strdup(year + 4);
 					ConvertString(g_bibpunct_numbers_sep);
-					ConvertString(s);
-					free(s);
+					ConvertString(ss);
+					free(ss);
 				}
 			}
 			
@@ -1053,10 +1062,10 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first, i
 					fprintRTF(" ");
 					ConvertString(year);
 				} else {
-					char *s = strdup(year + 4);
+					char *ss = strdup(year + 4);
 					ConvertString(g_bibpunct_numbers_sep);
-					ConvertString(s);
-					free(s);
+					ConvertString(ss);
+					free(ss);
 				}
 			}
 			if (last && post && !isEmptyName(post)) {
@@ -1153,10 +1162,10 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first, i
                     fprintRTF(" ");
                     ConvertString(year);
                 } else {
-                    char *s = strdup(year + 4);
+                    char *ss = strdup(year + 4);
                     ConvertString(g_bibpunct_numbers_sep);
-                    ConvertString(s);
-                    free(s);
+                    ConvertString(ss);
+                    free(ss);
                 }
             }
 
@@ -1768,7 +1777,7 @@ void CmdHarvardCite(int code)
 
     g_current_cite_item = 0;
     while (key) {
-        char *s;
+        char *ss;
 
         g_current_cite_item++;
 
@@ -1780,16 +1789,16 @@ void CmdHarvardCite(int code)
 			continue;
 		}
 
-        s = ScanAux("harvardcite", key, 2, g_aux_name); /* look up bibliographic reference */
+        ss = ScanAux("harvardcite", key, 2, g_aux_name); /* look up bibliographic reference */
             
-		diagnostics(4, "harvard key=[%s] <%s>", key, s);
+		diagnostics(4, "harvard key=[%s] <%s>", key, ss);
 		
 		if (!first_key) {
 			ConvertString(g_bibpunct_cite_sep);
 			fprintRTF(" ");
 		}
 
-		if (s) {
+		if (ss) {
 			g_current_cite_seen = citation_used(key);
 			ConvertHarvard(s, code, pretext, NULL, first_key);
 		} else 
@@ -1798,8 +1807,8 @@ void CmdHarvardCite(int code)
         first_key = FALSE;
         key = next_keys;
         next_keys = popCommaName(key);
-        if (s)
-            free(s);
+        if (ss)
+            free(ss);
     }
 
     /* final text after citation */
@@ -2628,9 +2637,10 @@ void CmdAC(int code)
 {
 	char *shortAc, *key;
 	int i;
+	int n = (int) strlen("@hyperlink");
 	
 	/* skip '@hyperlink' */
-	for (i=0; i<strlen("@hyperlink"); i++) 
+	for (i=0; i<n; i++) 
 		getTexChar();
 		
 	key = getBraceParam();

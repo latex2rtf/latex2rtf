@@ -293,7 +293,8 @@ static int TabularColumnPosition(TabularT *table, int n)
  purpose:  return position of nth column 
  ******************************************************************************/
 {
-    int i, colWidth, oldWidth;
+    int i, oldWidth;
+	int colWidth;
     
     colWidth = 0;
     for (i=1; i<=n; i++)
@@ -302,7 +303,7 @@ static int TabularColumnPosition(TabularT *table, int n)
 	oldWidth = getLength("textwidth") * (n ) / (table->n );
 
 	diagnostics(5,"col=%3d old=%5d new=%5d",n,oldWidth,colWidth);
-    return colWidth;
+    return (int) colWidth;
 }
 
 static TabularT *TabularPreamble(char *format)
@@ -333,8 +334,8 @@ static void TabularGetRow(char *table, char **row, char **next_row, int *height)
 {
     char *s, *dimension, *dim_start;
     int slash = 0;
-    size_t row_chars = 0;
-    size_t dim_chars = 0;
+    int	row_chars = 0;
+    int dim_chars = 0;
     bool slashslash = FALSE;
 
     s = table;
@@ -773,7 +774,7 @@ static int TabularMeasureCell(char *cell)
         PopSource();
         xtext = strdup_noendblanks(text);
 
-        len = strlen(xtext);
+        len = (int) strlen(xtext);
         free(num);
         free(format);
         free(text);
@@ -782,51 +783,7 @@ static int TabularMeasureCell(char *cell)
 
     }
 
-    return strlen(cell);
-}
-
-static int TabularMeasureCellx(char *cell)
-
-/******************************************************************************
- purpose:  come up with a rough number for the number of characters in a cell
-           this is pretty ridiculous, but just counting characters is better
-           than nothing.
- ******************************************************************************/
-{
-    char *t;
-    char *s;
-
-    if (cell == NULL || *cell == '\0')
-        return 0;
-
-    s = strstr(cell, "multicolumn");
-
-    if (s) {
-        int i;
-
-        /* find beginning of text in \multicolumn{1}{c}{ text } */
-        for (i = 0; i < 3; i++) {   /* skip over multicolumn{1}{c}{ text } */
-            while (*s && *s != '{')
-                s++;
-            if (*s == '\0')
-                return 0;
-            s++;
-        }
-        while (*s && *s == ' ')
-            s++;                /* skip over spaces */
-
-        /* find last non-space character in text */
-        t = strrchr(s, '}');
-        if (!t)
-            return 0;
-        t--;
-        while (t >= s && *t == ' ')
-            t--;                /* skip over spaces */
-
-        return t - s + 1;
-    }
-
-    return strlen(cell);
+    return (int) strlen(cell);
 }
 
 /******************************************************************************
@@ -872,11 +829,11 @@ static void TabularSetWidths(TabularT *table)
 	/* distribute space proportionally over columns */
 	for (i=1; i<=table->n; i++) {
 		if (table->width[i] == -1) 
-			table->width[i] =  min_width + twips_per_char * table->chars[i];
+			table->width[i] = (int) (min_width + twips_per_char * table->chars[i]);
 	}
 }
 
-static void TabularMeasureRow(TabularT *table, char *this_row, char *next_row, int height, int first_row)
+static void TabularMeasureRow(TabularT *table, char *this_row, int height)
 
 /******************************************************************************
  purpose:  come up with relative widths for all cells in a row
@@ -884,8 +841,9 @@ static void TabularMeasureRow(TabularT *table, char *this_row, char *next_row, i
 {
     char *cell, *cell_start, *cell_end;
     char align;
-    int n, lvert, rvert, len, iCol;
-
+    int n, lvert, rvert, iCol;
+	int len;
+	
     table->i = 0;
     if (this_row == NULL || strlen(this_row) == 0)
         return;
@@ -1033,15 +991,13 @@ void CmdTabular(int code)
 	
 			/* scan entire table to get max number of chars in each column */
 			/* these are stored in tabular_layout->chars                   */
-			first_row = TRUE;
 			while (this_row) {
 				row_start = next_row_start;
 				TabularGetRow(row_start, &next_row, &next_row_start, &next_height);
-				TabularMeasureRow(tabular_layout, this_row, next_row, this_height, first_row);
+				TabularMeasureRow(tabular_layout, this_row, this_height);
 				free(this_row);
 				this_row = next_row;
 				this_height = next_height;
-				first_row = FALSE;
 			}
 	
 			TabularSetWidths(tabular_layout);
@@ -1067,6 +1023,8 @@ void CmdTabular(int code)
 				free(pos);
 			if (width)
 				free(width);
+			if (tabular_layout)
+				free(tabular_layout);
 		}
 	}
 
@@ -1524,6 +1482,7 @@ void CmdMultiCol(int code)
     }
 
     free(content);
+    free(format);
 }
 
 void CmdHline(int code)

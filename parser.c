@@ -45,7 +45,7 @@ typedef struct InputStackType {
     char *string_start;
     FILE *file;
     char *file_name;
-    long file_line;
+    int file_line;
 } InputStackType;
 
 #define PARSER_SOURCE_MAX 100
@@ -915,7 +915,7 @@ char *getLeftRightParam(void)
                 }
             }
             my_strlcat(text + i, command, 5000);
-            i += strlen(command);
+            i += (int) strlen(command);
             if (i > 4950)
                 diagnostics(ERROR, "Contents of \\left .. \\right too large.");
             if (strcmp(command, "\\left") == 0)
@@ -945,9 +945,9 @@ char *getTexUntil(char *target, int raw)
     char buffer[BUFFSIZE];
     int last_i = -1;
     int i = 0;                  /* size of string that has been read */
-    size_t j = 0;               /* number of found characters */
+    int j = 0;               /* number of found characters */
     bool end_of_file_reached = FALSE;
-    size_t len = strlen(target);
+    int len = (int) strlen(target);
 
     PushTrackLineNumber(FALSE);
 
@@ -1025,7 +1025,7 @@ char *getSpacedTexUntil(char *target, int raw)
 	buffer_pos = 0;
 	target_pos = 0;
 	start_pos  = 0;
-	target_len = strlen(target);
+	target_len = (int) strlen(target);
 	max_buffer_pos = -1;
 	
     do {

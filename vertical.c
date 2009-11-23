@@ -479,7 +479,7 @@ parameter: code: newpage or newcolumn-option
  ******************************************************************************/
 void CmdDoubleSpacing(int code)
 {
-	g_line_spacing = 480;
+	setLineSpacing(480);
 }
 
 void CmdAlign(int code)

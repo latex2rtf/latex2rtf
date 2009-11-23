@@ -79,7 +79,7 @@ int g_fcharset_number = 0;
 bool twoside = FALSE;
 int g_verbosity_level = WARNING;
 bool g_little_endian = FALSE;   /* set properly in main() */
-int g_dots_per_inch = 300;
+uint16_t g_dots_per_inch = 300;
 
 bool pagenumbering = TRUE;      /* by default use plain style */
 int headings = FALSE;
@@ -199,7 +199,8 @@ int main(int argc, char **argv)
                 setPackageInputenc(optarg);
                 break;
             case 'D':
-                sscanf(optarg, "%d", &g_dots_per_inch);
+                sscanf(optarg, "%d", &x);
+				g_dots_per_inch = (uint16_t) x;
                 if (g_dots_per_inch < 25 || g_dots_per_inch > 600)
                     diagnostics(WARNING, "Dots per inch must be between 25 and 600 dpi\n");
                 break;
@@ -385,7 +386,7 @@ int main(int argc, char **argv)
         CloseRtf(&fRtf);
         printf("\n");
 
-/*		debug_malloc() */
+		if (0) debug_malloc();
 
         return 0;
     } else {

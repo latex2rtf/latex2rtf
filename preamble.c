@@ -653,14 +653,14 @@ static void CmdUseOnepackage(char* package, char *options)
 	/* Set default values for geometry package */        
         g_preambleGeometry = TRUE;
         if(g_preambleTwoside==FALSE) {
-			g_geomMargr = (getLength("pagewidth") * 0.15);
+			g_geomMargr = (int) (getLength("pagewidth") * 0.15);
 			g_geomMargl = g_geomMargr;
 		} else {
-			g_geomMargr = (getLength("pagewidth") * 0.3 * 0.4);
-			g_geomMargl = (getLength("pagewidth") * 0.3 * 0.6);
+			g_geomMargr = (int) (getLength("pagewidth") * 0.3 * 0.4);
+			g_geomMargl = (int) (getLength("pagewidth") * 0.3 * 0.6);
 		}
-        g_geomMargt = (getLength("pageheight") * 0.3 * 0.4);
-        g_geomMargb = (getLength("pageheight") * 0.3 * 0.6);
+        g_geomMargt = (int) (getLength("pageheight") * 0.3 * 0.4);
+        g_geomMargb = (int) (getLength("pageheight") * 0.3 * 0.6);
 	
         if (options) {
 	    	ParseOptGeometry(options);
@@ -1150,7 +1150,7 @@ static void WriteFontHeader(void)
 
     fprintRTF("{\\fonttbl");
 
-    config_handle = CfgStartIterate(FONT_A);
+    config_handle = CfgStartIterate();
     while ((config_handle = CfgNextByInsertion(FONT_A, config_handle)) != NULL) {
         font_type = (char *) (*config_handle)->TexCommand;
         font_name = (char *) (*config_handle)->RtfCommand;
@@ -1198,7 +1198,7 @@ static void WriteStyleHeader(void)
 
     fprintRTF("{\\stylesheet\n");
 
-    style = CfgStartIterate(STYLE_A);
+    style = CfgStartIterate();
     while ((style = CfgNextByInsertion(STYLE_A, style)) != NULL) {
         rtf = (*style)->RtfCommand;
         diagnostics(5, "style <%s>=<%s>", (*style)->TexCommand, rtf);

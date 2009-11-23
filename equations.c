@@ -55,12 +55,12 @@ int g_current_eqn_needs_EQ = 0;
 
 int script_shift(void)
 {
-    return CurrentFontSize() / 3.0;
+    return (int) (CurrentFontSize() / 3.0);
 }
 
 int script_size(void)
 {
-    return CurrentFontSize() / 1.2;
+    return (int) (CurrentFontSize() / 1.2);
 }
 
 void CmdNonumber(int code)
@@ -1025,8 +1025,6 @@ parameter: type of operand
     cThis = getNonBlank();
 
     if (cThis == '\\') {        /* accept \nolimits and \limits */
-        char *command;
-
         ungetTexChar(cThis);
         command = getSimpleCommand();
         if (strcmp(command, "\\nolimits") == 0) {
@@ -1180,7 +1178,7 @@ static void SubSupWorker(bool big)
     diagnostics(4, "...superscript='%s'",upper_limit ? upper_limit : "");
 
     if (big)
-        vertical_shift = CurrentFontSize() / 1.4;
+        vertical_shift = (int) (CurrentFontSize() / 1.4);
     else
         vertical_shift = CurrentFontSize() / 4;
 
@@ -1491,7 +1489,7 @@ void CmdStackrel(int code)
     char *numer, *denom;
     int size;
 
-    size = CurrentFontSize() / 1.2;
+    size = (int) (CurrentFontSize() / 1.2);
     numer = getBraceParam();
     denom = getBraceParam();
     diagnostics(4, "CmdStackrel() ... \\stackrel{%s}{%s}", numer, denom);

@@ -364,66 +364,77 @@ char *FormatUnitNumber(char *name)
  ******************************************************************************/
 {
     char label[20];
+    char *s = NULL;
 
     if (g_document_type == FORMAT_APA) { /* no numbers in apa at all! */
     	return strdup("");
     }
     
     label[0] = '\0';
-    if (strcmp(name, "part") == 0) {
-        char *s = roman_item(getCounter(name), TRUE);
+    if (strcmp(name, "part") == 0) 
+        return roman_item(getCounter(name), TRUE);
 
-        snprintf(label, 20, "%s", s);
-        free(s);
-    }
-
-    else if (strcmp(name, "chapter") == 0) 
-    	
+    if (strcmp(name, "chapter") == 0) 
     	return FormatChapter();
 
-    else if (strcmp(name, "section") == 0) {
-        if (g_document_type == FORMAT_ARTICLE)
-            snprintf(label, 20, "%s", FormatSection());
-        else
-            snprintf(label, 20, "%s.%d", FormatChapter(), getCounter("section"));
+    if (strcmp(name, "section") == 0) {
+        
+        if (g_document_type == FORMAT_ARTICLE) {
+        	return FormatSection();
+        } else {
+        	s = FormatChapter();
+            snprintf(label, 20, "%s.%d", s, getCounter("section"));
+        }
     }
 
     else if (strcmp(name, "subsection") == 0) {
-        if (g_document_type == FORMAT_ARTICLE)
-            snprintf(label, 20, "%s.%d", FormatSection(), getCounter("subsection"));
-        else
-            snprintf(label, 20, "%s.%d.%d", FormatChapter(), getCounter("section"), getCounter("subsection"));
+        if (g_document_type == FORMAT_ARTICLE) {
+        	s = FormatSection();
+            snprintf(label, 20, "%s.%d", s, getCounter("subsection"));
+        } else {
+        	s = FormatChapter();
+            snprintf(label, 20, "%s.%d.%d", s, getCounter("section"), getCounter("subsection"));
+        }
     }
 
     else if (strcmp(name, "subsubsection") == 0) {
-        if (g_document_type == FORMAT_ARTICLE)
-            snprintf(label, 20, "%s.%d.%d", FormatSection(),
-              getCounter("subsection"), getCounter("subsubsection"));
-        else
-            snprintf(label, 20, "%s.%d.%d.%d", FormatChapter(), 
-             getCounter("section"), getCounter("subsection"), getCounter("subsubsection"));
+        if (g_document_type == FORMAT_ARTICLE) {
+        	s = FormatSection();
+            snprintf(label, 20, "%s.%d.%d", s, getCounter("subsection"), getCounter("subsubsection"));
+        } else {
+        	s = FormatChapter();
+            snprintf(label, 20, "%s.%d.%d.%d", s, getCounter("section"), getCounter("subsection"), 
+                                 getCounter("subsubsection"));
+        }
     }
 
     else if (strcmp(name, "paragraph") == 0) {
-        if (g_document_type == FORMAT_ARTICLE)
-            snprintf(label, 20, "%s.%d.%d.%d", FormatSection(),
+        if (g_document_type == FORMAT_ARTICLE) {
+        	s = FormatSection();
+            snprintf(label, 20, "%s.%d.%d.%d", s,
               getCounter("subsection"), getCounter("subsubsection"), getCounter("paragraph"));
-        else
-            snprintf(label, 20, "%s.%d.%d.%d.%d", FormatChapter(), 
+        } else {
+        	s = FormatChapter();
+            snprintf(label, 20, "%s.%d.%d.%d.%d", s, 
               getCounter("section"), getCounter("subsection"), getCounter("subsubsection"), getCounter("paragraph"));
+        }
     }
 
     else if (strcmp(name, "subparagraph") == 0) {
-        if (g_document_type == FORMAT_ARTICLE)
-            snprintf(label, 20, "%s.%d.%d.%d.%d",FormatSection(),
+        if (g_document_type == FORMAT_ARTICLE) {
+        	s = FormatSection();
+            snprintf(label, 20, "%s.%d.%d.%d.%d",s,
               getCounter("subsection"), getCounter("subsubsection"),
               getCounter("paragraph"), getCounter("subparagraph"));
-        else
-            snprintf(label, 20, "%s.%d.%d.%d.%d.%d", FormatChapter(),
+        } else {
+        	s = FormatChapter();
+            snprintf(label, 20, "%s.%d.%d.%d.%d.%d", s,
               getCounter("section"), getCounter("subsection"),
               getCounter("subsubsection"), getCounter("paragraph"), getCounter("subparagraph"));
+        }
     }
 
+	if (s) free(s);
     return strdup(label);
 }
 

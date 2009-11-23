@@ -24,8 +24,8 @@ Authors:
     2001-2003 Scott Prahl
 */
 
-int     odd(int n);
-int     even(int n);
+int     odd(long n);
+int     even(long n);
 double  my_rint(double nr);
 int     strstr_count(const char *s, char *t);
 char *  my_strndup(const char *s, size_t n);

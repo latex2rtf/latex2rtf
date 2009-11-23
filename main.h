@@ -46,6 +46,7 @@
 /*** error constants ***/
 #include <assert.h>
 #include <stdio.h>
+#include <stdint.h>
 
 /*** interpret comment lines that follow the '%' with this string ***/
 extern const char  * InterpretCommentString;
@@ -89,7 +90,7 @@ extern bool		g_processing_tabbing;
 extern bool		g_processing_tabular;
 extern bool		g_processing_eqnarray;
 extern int		g_processing_arrays;
-extern int		g_dots_per_inch;
+extern uint16_t	g_dots_per_inch;
 
 extern int		g_document_type;
 extern int		g_document_bibstyle;

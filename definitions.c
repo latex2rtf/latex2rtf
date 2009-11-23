@@ -125,19 +125,19 @@ static char *expandmacro(char *macro, char *opt_param, int params)
         args[0] = getBracketParam();
         if (!args[0])
             args[0] = strdup(opt_param);
-        buff_size += strlen(args[0]);
+        buff_size += (int) strlen(args[0]);
         i = 1;
     }
 
     for (; i < params; i++) {
         args[i] = getBraceRawParam();
-        buff_size += strlen(args[i]);
+        buff_size += (int) strlen(args[i]);
         diagnostics(5, "argument #%d <%s>", i + 1, args[i]);
     }
 
     dmacro = strdup(macro);
     macro_piece = dmacro;
-	buff_size += strlen(macro_piece);
+	buff_size += (int) strlen(macro_piece);
 
 	diagnostics(3, "buff_size in expandmacro = %d\n", buff_size);
 	if(buff_size > 0)

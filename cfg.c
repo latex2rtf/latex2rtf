@@ -47,7 +47,7 @@ Authors:
 typedef struct ConfigInfoT {
     char *filename;
     ConfigEntryT **config_info;
-    size_t config_info_size;
+    int config_info_size;
     bool remove_leading_backslash;
 } ConfigInfoT;
 
@@ -197,13 +197,13 @@ purpose: open config by trying multiple paths
     return NULL;
 }
 
-static size_t read_cfg(FILE * cfgfile, ConfigEntryT *** pointer_array, bool do_remove_backslash)
+static int read_cfg(FILE * cfgfile, ConfigEntryT *** pointer_array, bool do_remove_backslash)
 
 /****************************************************************************
  * purpose: Read config file and provide sorted lookup table
  ****************************************************************************/
 {
-    size_t bufindex = 0, bufsize = 0;
+    int bufindex = 0, bufsize = 0;
     char *line, *cmdend;
 
     if (*pointer_array == NULL) {
@@ -291,7 +291,7 @@ void ReadCfg(void)
  * globals: Direct-, Font- IgnoreArray[Size/Root]
  ****************************************************************************/
 {
-    size_t i;
+    int i;
     FILE *fp;
     char *fname;
 
@@ -317,7 +317,7 @@ ConfigEntryT **SearchCfgEntry(const char *theTexCommand, int WhichCfg)
 {
     ConfigEntryT compare_item;
     ConfigEntryT *compare_ptr, **p, **base;
-	size_t size;
+	int size;
 	
     compare_item.TexCommand = theTexCommand;
     compare_item.RtfCommand = "";
@@ -329,7 +329,7 @@ ConfigEntryT **SearchCfgEntry(const char *theTexCommand, int WhichCfg)
     
     if (theTexCommand == NULL) return NULL;
 
-    assert(WhichCfg >= 0 && (size_t) WhichCfg < CONFIG_SIZE);
+    assert(WhichCfg >= 0 &&  WhichCfg < CONFIG_SIZE);
     assert(configinfo[WhichCfg].config_info != NULL);
 
     diagnostics(5, "seeking '%s' in %d of size %d  ", theTexCommand, WhichCfg, size);
@@ -346,11 +346,11 @@ ConfigEntryT **SearchCfgEntryByID(const int id, int WhichCfg)
  * purpose:  Get the entry with the given id
  ****************************************************************************/
 {
-	size_t i, max;
+	int i, max;
 	ConfigEntryT ** entry;
 			
 	max = configinfo[WhichCfg].config_info_size;
-	if (id > max) return NULL;
+	if (id > (int) max) return NULL;
 
 	/* now iterate through all the entries looking for the right one */
 	entry = (ConfigEntryT **) configinfo[WhichCfg].config_info;
@@ -380,7 +380,7 @@ char *SearchCfgRtf(const char *theTexCommand, int WhichCfg)
         return (char *) (**p).RtfCommand;
 }
 
-ConfigEntryT **CfgStartIterate(int WhichCfg)
+ConfigEntryT **CfgStartIterate(void)
 
 /****************************************************************************
  * purpose:  Start iterating of configuration data
@@ -411,7 +411,7 @@ ConfigEntryT **CfgNextByInsertion(int WhichCfg, ConfigEntryT ** last)
  * purpose:  Get the next entry from specified configuration data
  ****************************************************************************/
 {
-	size_t next_id;
+	int next_id;
 	
 	if (last == NULL)
 		next_id = 0;
@@ -469,7 +469,7 @@ char *GetBabelName(char *name)
 
 
 static char *buffer = NULL;
-static size_t bufsize = 0;
+static int bufsize = 0;
 
 #define CR (char) 0x0d
 #define LF (char) 0x0a
@@ -480,7 +480,7 @@ static size_t bufsize = 0;
  */
 char *ReadUptoMatch(FILE * infile, const char *scanchars)
 {
-    size_t bufindex = 0;
+    int bufindex = 0;
     int c;
 
     if (feof(infile) != 0)

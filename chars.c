@@ -1944,11 +1944,9 @@ static void TeXlogo()
  purpose : prints the Tex logo in the RTF-File (D Taupin)
  ******************************************************************************/
 {
-    float DnSize;
     int dnsize;
 
-    DnSize = 0.3 * CurrentFontSize();
-    dnsize = (int) (DnSize + 0.45);
+    dnsize = (int) (0.3 * CurrentFontSize() + 0.45);
     fprintRTF("T{\\dn%d E}X", dnsize);
 }
 
@@ -1962,9 +1960,9 @@ static void LaTeXlogo()
     int upsize, Asize;
 
     if (CurrentFontSize() > 14)
-        FloatFsize = 0.8 * CurrentFontSize();
+        FloatFsize = (float) (0.8 * CurrentFontSize());
     else
-        FloatFsize = 0.9 * CurrentFontSize();
+        FloatFsize = (float) (0.9 * CurrentFontSize());
     Asize = (int) (FloatFsize + 0.45);
 
     upsize = (int) (0.25 * CurrentFontSize() + 0.45);
@@ -2135,7 +2133,7 @@ void CmdFrenchAbbrev(int code)
     FloatFsize = (float) CurrentFontSize();
 
     if (FloatFsize > 14)
-        FloatFsize *= 0.75;
+        FloatFsize = (float) (FloatFsize * 0.75);
 
     up = (int) (0.3 * FloatFsize + 0.45);
     size = (int) (FloatFsize + 0.45);

@@ -674,7 +674,7 @@ returns: success or not
                 CmdTabjump();
                 PushBrace();
             } else
-                CmdSpace(0.50); /* medium space */
+                CmdSpace((float)0.50); /* medium space */
             return;
 
         case '`':
@@ -769,7 +769,7 @@ returns: success or not
         case ';':
             if (mode == MODE_VERTICAL)
                 changeTexMode(MODE_HORIZONTAL);
-            CmdSpace(0.75);     /* \; produces a thick space */
+            CmdSpace((float)0.75);     /* \; produces a thick space */
             return;
         case '@':
             CmdIgnore(0);       /* \@ produces an "end of sentence" space */

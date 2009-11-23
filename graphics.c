@@ -360,9 +360,9 @@ static char *strdup_new_extension(const char *s, const char *old_ext, const char
 	
 	if (s==NULL || old_ext == NULL || new_ext == NULL) return NULL;
 	
-	s_len = strlen(s);
-	o_len = strlen(old_ext);
-	n_len = strlen(new_ext);
+	s_len = (int) strlen(s);
+	o_len = (int) strlen(old_ext);
+	n_len = (int) strlen(new_ext);
 	
 	/* make sure that old_ext exists */
     p= (char *) s;
@@ -409,7 +409,7 @@ static char *strdup_absolute_path(char *s)
 static char *eps_to_pict(char *s)
 {
     char *p, *pict, buffer[560];
-    int32_t ii, pict_bitmap_size, eps_size;
+    long ii, pict_bitmap_size, eps_size;
     int16_t handle_size;
     unsigned char byte;
     int16_t PostScriptBegin = 190;
@@ -926,8 +926,8 @@ static void PutPngFile(char *png, double height_goal, double width_goal, double 
 	/* twips = (pixels) / -------- * -------- * ----------  */
 	/*                     meter       meter      1 point   */
 
-	w_twips = (w_pixels / xres * POINTS_PER_METER * 20.0 + 0.5);
-	h_twips = (h_pixels / yres * POINTS_PER_METER * 20.0 + 0.5);
+	w_twips = (int)(w_pixels / xres * POINTS_PER_METER * 20.0 + 0.5);
+	h_twips = (int)(h_pixels / yres * POINTS_PER_METER * 20.0 + 0.5);
 	b = (uint32_t) baseline;
 	
 	AdjustScaling(h_twips,w_twips,height_goal,width_goal,scale,&sx,&sy);
@@ -1016,8 +1016,8 @@ static void PutJpegFile(char *s, double height0, double width0, double scale, do
 
     diagnostics(4, "width = %d, height = %d", width, height);
 
-    w = (uint32_t) (100000.0 * width) / (20 * POINTS_PER_METER);
-    h = (uint32_t) (100000.0 * height) / (20 * POINTS_PER_METER);
+    w = (uint32_t) (100000.0 * width / (20 * POINTS_PER_METER));
+    h = (uint32_t) (100000.0 * height / (20 * POINTS_PER_METER));
     fprintRTF("\n{\\pict\\jpegblip\\picw%ld\\pich%ld", w, h);
     fprintRTF("\\picwgoal%ld\\pichgoal%ld\n", width * 20, height * 20);
 
@@ -1443,6 +1443,7 @@ static double GetBaseline(const char *tex_file_stem, char *pre)
 void PutLatexFile(const char *tex_file_stem, double scale, char *pre)
 {
     char *png_file_name = NULL;
+    char *tmp_path;
     int  bmoffset;
     bool bad_res;
 	double height_goal, width_goal;
@@ -1463,14 +1464,15 @@ void PutLatexFile(const char *tex_file_stem, double scale, char *pre)
     
 	png_resolution = (uint16_t) g_dots_per_inch;
 	
-	if (SysGraphicsConvert(CONVERT_LATEX, bmoffset, png_resolution, tex_file_stem, "") == NULL) {
+	png_file_name = strdup_together(tex_file_stem, ".png");
+	tmp_path = SysGraphicsConvert(CONVERT_LATEX, bmoffset, png_resolution, tex_file_stem, png_file_name);
+	if ( tmp_path == NULL) {
 		diagnostics(WARNING, "PutLatexFile failed to convert '%s' to png");
 		return;
 	}
 	
 	/* Figures can only have so many bits ... figure out the width and height
 	   and if these are too large then reduce resolution and make a new bitmap */
-	png_file_name = strdup_together(tex_file_stem, ".png");
 	GetPngSize(png_file_name, &png_width, &png_height, &png_xres, &png_yres, &bad_res);
 
 	if (png_width  > max_fig_size || png_height > max_fig_size) {
@@ -1480,7 +1482,9 @@ void PutLatexFile(const char *tex_file_stem, double scale, char *pre)
 		else
 			png_resolution = (uint16_t)((double)g_dots_per_inch / (double)png_width * max_fig_size);
 
-		if (SysGraphicsConvert(CONVERT_LATEX, bmoffset, png_resolution, tex_file_stem, "") == NULL) {
+		free(tmp_path);
+		tmp_path = SysGraphicsConvert(CONVERT_LATEX, bmoffset, png_resolution, tex_file_stem, png_file_name);
+		if (tmp_path == NULL) {
 			free(png_file_name);
 			return;
 		}
@@ -1500,6 +1504,7 @@ void PutLatexFile(const char *tex_file_stem, double scale, char *pre)
 	
 	PutPngFile(png_file_name, height_goal, width_goal, scale*100, baseline);
 	
+	free(tmp_path);
 	free(png_file_name);
 }
 
@@ -1589,7 +1594,7 @@ static char * abbreviate(const char *s, int len)
 	if (s==NULL) return strdup("<NULL>");
 	
 	t = strdup(s);
-	n = strlen(t);
+	n = (int) strlen(t);
 	if (n > len) {	
 		half = (len-5)/2;
 		t[half+0] = ' ';

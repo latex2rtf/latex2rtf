@@ -1,5 +1,3 @@
-# $Id: Makefile,v 1.113 2005/01/30 02:14:14 prahl Exp $
-
 CC?=gcc
 TAR?=gnutar
 RM?=rm
