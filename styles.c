@@ -173,7 +173,7 @@ void InsertStyle(const char *command)
 }
 
 
-bool TryStyleConvert(char *command)
+static bool TryStyleConvert(char *command)
 
 /******************************************************************************
   purpose: uses data from style.cfg to try and convert some

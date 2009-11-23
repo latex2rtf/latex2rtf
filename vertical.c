@@ -132,12 +132,12 @@ int getVspace(void)
 /******************************************************************************
      line spacing accessor functions
  ******************************************************************************/
-void setLineSpacing(int spacing)
+static void setLineSpacing(int spacing)
 {
 	g_line_spacing = spacing;
 }
 
-int getLineSpacing(void)
+static int getLineSpacing(void)
 {
 	return g_line_spacing;
 }

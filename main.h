@@ -1,5 +1,3 @@
-/* $Id: main.h,v 1.69 2005/01/18 06:19:46 prahl Exp $ */
-
 #if defined(UNIX)
 #define ENVSEP ':'
 #define PATHSEP '/'

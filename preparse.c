@@ -25,7 +25,7 @@ Authors:
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-
+#include "preparse.h"
 #include "cfg.h"
 #include "main.h"
 #include "utils.h"

@@ -671,8 +671,8 @@ static CommandArray PreambleCommands[] = {
     {"theendnotes", CmdTheEndNotes, 0},
     {"euro", CmdEuro, 0},
     {"EUR", CmdEuro, 1},
-    {"celsius", CmdDegreeCelsius},
-    {"degreecelsius", CmdDegreeCelsius},
+    {"celsius", CmdDegreeCelsius, 0},
+    {"degreecelsius", CmdDegreeCelsius, 0},
     {"resizebox", CmdResizeBox, 0},
     {"resizebox*", CmdResizeBox, 1},    
     {"geometry",CmdGeometry,0},
@@ -1262,7 +1262,7 @@ globals: command-functions have side effects or recursive calls
     if (AddParam == ON) {
         snprintf(unknown_environment, 100, "\\%s%s%s", "end{", cCommand, "}");
         Ignore_Environment(cCommand);
-        diagnostics(WARNING, "Unknown environment \\begin{%s} ... \end{%s}", cCommand, cCommand);
+        diagnostics(WARNING, "Unknown environment \\begin{%s} ... \\end{%s}", cCommand, cCommand);
     }
 }
 
@@ -1471,7 +1471,7 @@ purpose: removes the environment-commands list added by last PushEnvironment;
 globals: changes Environment - array of active environments
 		 iEnvCount - counter of active environments
  ****************************************************************************/
-void PopEnvironment()
+void PopEnvironment(void)
 {
 	char *this_env, *last_env;
 

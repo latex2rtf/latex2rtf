@@ -30,11 +30,11 @@ Authors:
 #include <limits.h>
 #include <math.h>
 #include <stdint.h>
+#include "main.h"
 #ifdef UNIX
 #include <unistd.h>
 #endif
 #include "cfg.h"
-#include "main.h"
 #include "graphics.h"
 #include "parser.h"
 #include "utils.h"
@@ -908,7 +908,7 @@ On entry baseline should be in pixels.
 \picscaleyN Vertical scaling as a percentage
 
 ******************************************************************************/
-void PutPngFile(char *png, double height_goal, double width_goal, double scale, double baseline)
+static void PutPngFile(char *png, double height_goal, double width_goal, double scale, double baseline)
 {
     FILE *fp;
     double xres,yres;
@@ -1675,7 +1675,7 @@ void WriteLatexAsBitmap(char *pre, char *eq, char *post)
     
 }
 
-char *upper_case_string(char *s)
+static char *upper_case_string(char *s)
 {
     char *t, *x;
 
@@ -1697,7 +1697,7 @@ char *upper_case_string(char *s)
 /******************************************************************************
  purpose   : return s.ext or s.EXT if it exists otherwise return NULL
  ******************************************************************************/
-char *exists_with_extension(char *s, char *ext)
+static char *exists_with_extension(char *s, char *ext)
 {
     char *t, *x;
     FILE *fp;
@@ -1729,7 +1729,7 @@ char *exists_with_extension(char *s, char *ext)
 /******************************************************************************
  purpose   : return true if ext is at end of s (case insensitively)
  ******************************************************************************/
-int has_extension(char *s, char *ext)
+static int has_extension(char *s, char *ext)
 {
     char *t;
 
@@ -1741,7 +1741,7 @@ int has_extension(char *s, char *ext)
     return FALSE;
 }
 
-char *append_graphic_extension(char *s)
+static char *append_graphic_extension(char *s)
 {
     char *t;
 

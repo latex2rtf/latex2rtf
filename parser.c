@@ -705,7 +705,7 @@ void parseBrace(void)
     free(s);
 }
 
-void parseBracket(void)
+static void parseBracket(void)
 
 /****************************************************************************
   Description: Skip text to balancing close bracket

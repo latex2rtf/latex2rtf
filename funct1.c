@@ -1366,7 +1366,7 @@ typedef struct iftag {
 /* ifCommands maintains all the \newif CONDitions */
 static int iIfNameCount = 0;   /* number of if condition names */
 static IfName ifCommands[100] = {
-    {NULL, 0}
+    {NULL,0, 0}
 };
 
 /* ifEnvs/iIfDepth is used to handle nested conditions. */
@@ -1649,7 +1649,7 @@ void CmdSubFigure(int code)
     incrementCounter("subfigure");
 }
 
-void FixTildes(char *s)
+static void FixTildes(char *s)
 {
     char *p, *p3;
 

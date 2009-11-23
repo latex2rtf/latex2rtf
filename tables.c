@@ -512,7 +512,7 @@ static int TabularHline(char *row)
     return 2;
 }
 
-char *TabularCline(char *row, int columns)
+static char *TabularCline(char *row, int columns)
 
 /******************************************************************************
  purpose:  mark columns needing underline by \cline{ 1 - 2 }
@@ -666,7 +666,7 @@ static void TabularBeginRow(TabularT *table, char *this_row, char *next_row, int
     free(cline);
 }
 
-void TabularEndRow(void)
+static void TabularEndRow(void)
 
 /******************************************************************************
  purpose:  emit RTF to finish one row of a table
@@ -675,7 +675,7 @@ void TabularEndRow(void)
     fprintRTF("\\row}\n");
 }
 
-char TabularColumnAlignment(TabularT *table, int column)
+static char TabularColumnAlignment(TabularT *table, int column)
 
 /******************************************************************************
  purpose:  alignment for a column
@@ -748,7 +748,7 @@ static void TabularWriteRow(TabularT *table, char *this_row, char *next_row, int
     TabularEndRow();
 }
 
-int TabularMeasureCell(char *cell)
+static int TabularMeasureCell(char *cell)
 
 /******************************************************************************
  purpose:  come up with a rough number for the number of characters in a cell
@@ -786,7 +786,7 @@ int TabularMeasureCell(char *cell)
     return strlen(cell);
 }
 
-int TabularMeasureCellx(char *cell)
+static int TabularMeasureCellx(char *cell)
 
 /******************************************************************************
  purpose:  come up with a rough number for the number of characters in a cell

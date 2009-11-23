@@ -2605,7 +2605,7 @@ void CmdAcronymDef(int code)
 	CmdIgnoreParameter(21);
 }
 
-void CmdAcronym(int code)
+static void CmdAcronym(int code)
 {
 /*
 if (code & ON) {

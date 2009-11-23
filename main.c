@@ -385,9 +385,9 @@ int main(int argc, char **argv)
         CloseRtf(&fRtf);
         printf("\n");
 
-/*		debug malloc() 
+/*		debug malloc() */
   		printf("Done!");
-  		while (1) {} do nothing */
+  		while (1) {} /* do nothing */
 
         return 0;
     } else {

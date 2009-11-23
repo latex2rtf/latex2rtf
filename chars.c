@@ -39,13 +39,10 @@ This file is available from http://sourceforge.net/projects/latex2rtf/
 #include "vertical.h"
 #include "fields.h"
 
-void TeXlogo();
-void LaTeXlogo();
-
 /*****************************************************************************
  purpose: half-height or full-height character
  ******************************************************************************/
-int isShort(char c) 
+static int isShort(char c) 
 {
 
     switch (c) {
@@ -77,7 +74,7 @@ int isShort(char c)
 /*****************************************************************************
  purpose: guess if string is half-height or full-height 
  ******************************************************************************/
-int isShortStr(char *s)
+static int isShortStr(char *s)
 {
 	if (s == NULL) return 0;
 	
@@ -1629,7 +1626,7 @@ void CmdEuro(int code)
 	free(s);
 }
 
-int identifyBase(char c)
+static int identifyBase(char c)
 {
 	if (c == '\'')
 		return 8;
@@ -1941,7 +1938,7 @@ void CmdChar(int code)
     }
 }
 
-void TeXlogo()
+static void TeXlogo()
 
 /******************************************************************************
  purpose : prints the Tex logo in the RTF-File (D Taupin)
@@ -1955,7 +1952,7 @@ void TeXlogo()
     fprintRTF("T{\\dn%d E}X", dnsize);
 }
 
-void LaTeXlogo()
+static void LaTeXlogo()
 
 /******************************************************************************
  purpose : prints the LaTeX logo in the RTF-File (D Taupin)

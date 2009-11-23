@@ -44,9 +44,9 @@ This file is available from http://sourceforge.net/projects/latex2rtf/
 #include "vertical.h"
 #include "fields.h"
 
-static void TranslateCommand(); /* converts commands */
-
 static int ret = 0;
+
+static void TranslateCommand(void);
 
 void ConvertString(const char *string)
 
@@ -118,7 +118,7 @@ void ConvertAllttString(char *s)
     diagnostics(4, "Exiting Convert() from StringAllttConvert()");
 }
 
-void Convert()
+void Convert(void)
 
 /****************************************************************************
 purpose: converts inputfile and writes result to outputfile
@@ -544,7 +544,7 @@ purpose: converts inputfile and writes result to outputfile
     diagnostics(5, "Exiting Convert via exhaustion ret = %d", ret);
 }
 
-void TranslateCommand()
+static void TranslateCommand(void)
 
 /****************************************************************************
 purpose: The function is called on a backslash in input file and
