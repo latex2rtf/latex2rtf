@@ -1516,50 +1516,56 @@ static char *SaveEquationAsFile(const char *post_begin_document,
 {
     FILE *f;
     char name[15];
-    char *tmp_dir, *fullname, *texname, *eq;
+    char *tmp_dir, *full_name, *tex_name, *eq;
     static int file_number = 0;
 
     if (!pre || !eq_with_spaces || !post)
         return NULL;
 
-    eq = strdup_noendblanks(eq_with_spaces);
-
 /* create needed file names */
     file_number++;
     tmp_dir = getTmpPath();
     snprintf(name, 15, "l2r_%04d", file_number);
-    fullname = strdup_together(tmp_dir, name);
-    texname = strdup_together(fullname, ".tex");
-
-    diagnostics(3, "SaveEquationAsFile =%s", texname);
-
-    f = fopen(texname, "w");
-    while (eq && (*eq == '\n' || *eq == ' '))
-        eq++;                   /* skip whitespace */
-    if (f) {
-        fprintf(f, "%s", g_preamble);
-        fprintf(f, "\\thispagestyle{empty}\n");
-        fprintf(f, "\\begin{document}\n");
-        if (post_begin_document) fprintf(f, "%s\n", post_begin_document);
-        fprintf(f, "\\setcounter{equation}{%d}\n", getCounter("equation"));
-        if ((strcmp(pre, "$") == 0) || (strcmp(pre, "\\begin{math}") == 0) || (strcmp(pre, "\\(") == 0)) {
-            fprintf(f, "%%INLINE_DOT_ON_BASELINE\n");
-            fprintf(f, "%s\n.\\quad %s\n%s", pre, eq, post);
-        } else if (strstr(pre, "equation"))
-            fprintf(f, "$$%s$$", eq);
-        else
-            fprintf(f, "%s\n%s\n%s", pre, eq, post);
-        fprintf(f, "\n\\end{document}");
-        fclose(f);
-    } else {
-        free(fullname);
-        fullname = NULL;
-    }
-
-    free(eq);
+    full_name = strdup_together(tmp_dir, name);
     free(tmp_dir);
-    free(texname);
-    return (fullname);
+    
+    tex_name = strdup_together(full_name, ".tex");
+
+    diagnostics(3, "SaveEquationAsFile =%s", tex_name);
+
+    f = fopen(tex_name, "w");
+    free(tex_name);
+
+	/* cannot open the file for writing */
+    if (f==NULL) {
+    	diagnostics(WARNING, "Could not open '%s' to save equation",full_name);
+        free(full_name);
+        return NULL;
+    }
+    
+	eq = strdup_noendblanks(eq_with_spaces);
+	
+	fprintf(f, "%s", g_preamble);
+	fprintf(f, "\\thispagestyle{empty}\n");
+	fprintf(f, "\\begin{document}\n");
+	if (post_begin_document) 
+		fprintf(f, "%s\n", post_begin_document);
+		
+	fprintf(f, "\\setcounter{equation}{%d}\n", getCounter("equation"));
+	
+	if ((strcmp(pre, "$") == 0) || (strcmp(pre, "\\begin{math}") == 0) || (strcmp(pre, "\\(") == 0)) {
+		fprintf(f, "%%INLINE_DOT_ON_BASELINE\n");
+		fprintf(f, "%s\n.\\quad %s\n%s", pre, eq, post);
+	} else if (strstr(pre, "equation"))
+		fprintf(f, "$$%s$$", eq);
+	else
+		fprintf(f, "%s\n%s\n%s", pre, eq, post);
+
+	fprintf(f, "\n\\end{document}");
+	fclose(f);
+	free(eq);
+ 
+    return (full_name);
 }
 
 void PrepareDisplayedBitmap(char *the_type)
@@ -1657,15 +1663,20 @@ void WriteLatexAsBitmap(char *pre, char *eq, char *post)
     } else
         name = SaveEquationAsFile(NULL, pre, eq, post);
 
-    if (strstr(pre, "music") || strstr(pre, "figure") 
-                             || strstr(pre, "picture")
-                             || strstr(pre, "tabular")
-                             || strstr(pre, "tabbing")
-                             || strstr(pre, "psgraph")
-                             || strstr(pre, "pspicture")) 
-    	PutLatexFile(name, g_png_figure_scale, pre);
-    else
-    	PutLatexFile(name, g_png_equation_scale, pre);
+	if (name) {
+		if (strstr(pre, "music") || strstr(pre, "figure") 
+								 || strstr(pre, "picture")
+								 || strstr(pre, "tabular")
+								 || strstr(pre, "tabbing")
+								 || strstr(pre, "psgraph")
+								 || strstr(pre, "pspicture")) 
+			PutLatexFile(name, g_png_figure_scale, pre);
+		else
+			PutLatexFile(name, g_png_equation_scale, pre);
+			
+		free(name);
+    }	
+    
 }
 
 char *upper_case_string(char *s)
