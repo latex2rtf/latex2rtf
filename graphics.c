@@ -225,7 +225,7 @@ static char *strdup_tmp_path(char *s)
 	
  ******************************************************************************/
 
-static char *SysGraphicsConvert(int opt, int offset, uint16_t dpi, char *in, char *out)
+static char *SysGraphicsConvert(int opt, int offset, uint16_t dpi, const char *in, char *out)
 
 {
     char cmd[512], *out_tmp;
@@ -1367,33 +1367,36 @@ purpose: reads a .pbm file to determine the baseline for an equation
 		 the .pbm file should have dimensions of 1 x height
 		 returns the baseline height in pixels
  ****************************************************************************/
-uint32_t GetBaseline(char *s, char *pre)
+static double GetBaseline(const char *tex_file_stem, char *pre)
 {
     FILE *fp;
     int thechar;
-    char *pbm;
+    char *pbm_file_name;
     char magic[250];
-    int32_t baseline, width, height, items, top, bottom;
-
+    int width, height, items, top, bottom;
+	double baseline = 3.0;
+	
     /* baseline=0 if not an inline image */
     if ((strcmp(pre, "$") != 0) && (strcmp(pre, "\\begin{math}") != 0) && (strcmp(pre, "\\(") != 0))
         return 0;
 
-    pbm = strdup_together(s, ".pbm");
-    baseline = 4;
+    pbm_file_name = strdup_together(tex_file_stem, ".pbm");
 
-    diagnostics(4, "GetBaseline opening='%s'", pbm);
+    diagnostics(4, "GetBaseline opening='%s'", pbm_file_name);
 
-    fp = fopen(pbm, "rb");
-    if (fp == NULL) {
-        free(pbm);
+    fp = fopen(pbm_file_name, "rb");
+    free(pbm_file_name);
+    
+    if (fp == NULL) 
         return baseline;
+
+    items = fscanf(fp, "%c%c", &magic[0], &magic[1]);   /* ensure that file begins with "P4" */
+    if (items != 2 || magic[0]!='P' || magic[1]!='4') {
+    	diagnostics(WARNING,"Bad header in PBM file");
+    	fclose(fp);
+    	return baseline;
     }
-
-    items = fscanf(fp, "%2s", magic);   /* ensure that file begins with "P4" */
-    if ((items != 1) || (strcmp(magic, "P4") != 0))
-        goto Exit;
-
+    
     items = fscanf(fp, " %s", magic);
     while ((items == 1) && (magic[0] == '#')) { /* skip any comment lines in pbm file */
         if (!ReadLine(fp))
@@ -1401,19 +1404,17 @@ uint32_t GetBaseline(char *s, char *pre)
         items = fscanf(fp, "%s", magic);
     }
 
-    items = sscanf(magic, "%ld", (long *)&width);   /* make sure image width is 1 */
-    if ((items != 1) || (width != 1))
+    items = sscanf(magic, "%d", &width);   /* make sure image width is 1 */
+    if (items != 1 || width != 1)
         goto Exit;
-
-    items = fscanf(fp, " %ld", (long *)&height);    /* read height */
+	
+    items = fscanf(fp, " %d", &height);    /* read height */
     if (items != 1)
         goto Exit;
-
-    diagnostics(4, "width=%ld height=%ld", (long)width, (long)height);
-
+	
     if (!ReadLine(fp))
         goto Exit;              /* pixel map should start on next line */
-
+	
     for (top = height; top > 0; top--) {    /* seek first black pixel (0x00) */
         thechar = getc(fp);
         if (thechar == EOF)
@@ -1430,17 +1431,12 @@ uint32_t GetBaseline(char *s, char *pre)
             break;
     }
 
-    baseline = (bottom + top) / 2;
-
-
-    diagnostics(4, "height=%ld top=%ld bottom=%ld baseline=%ld", height, top, bottom, baseline);
-
 	/* baseline is in pixels at 72 dots per inch but bitmap may be larger */
 	/* I add 2 at the end because it looks best at 72 DPD, 300 DPI, and 600 DPI*/
-	baseline = baseline * 72.0 / g_dots_per_inch + 2;
+	baseline = (bottom + top) / 2.0 * 72.0 / g_dots_per_inch + 2;
 
+    diagnostics(4, "height=%d top=%d bottom=%d baseline=%g", height, top, bottom, baseline);
   Exit:
-    free(pbm);
     fclose(fp);
     return baseline;
 }
@@ -1448,9 +1444,9 @@ uint32_t GetBaseline(char *s, char *pre)
 /******************************************************************************
  purpose   : Convert LaTeX to Bitmap and insert in RTF file
  ******************************************************************************/
-void PutLatexFile(char *latex, double scale, char *pre)
+void PutLatexFile(const char *tex_file_stem, double scale, char *pre)
 {
-    char *png_name = NULL;
+    char *png_file_name = NULL;
     int  bmoffset;
     bool bad_res;
 	double height_goal, width_goal;
@@ -1471,34 +1467,34 @@ void PutLatexFile(char *latex, double scale, char *pre)
     
 	png_resolution = (uint16_t) g_dots_per_inch;
 	
-	if (SysGraphicsConvert(CONVERT_LATEX, bmoffset, png_resolution, latex, "") == NULL) {
+	if (SysGraphicsConvert(CONVERT_LATEX, bmoffset, png_resolution, tex_file_stem, "") == NULL) {
 		diagnostics(WARNING, "PutLatexFile failed to convert '%s' to png");
 		return;
 	}
 	
 	/* Figures can only have so many bits ... figure out the width and height
 	   and if these are too large then reduce resolution and make a new bitmap */
-	png_name = strdup_together(latex, ".png");
-	GetPngSize(png_name, &png_width, &png_height, &png_xres, &png_yres, &bad_res);
+	png_file_name = strdup_together(tex_file_stem, ".png");
+	GetPngSize(png_file_name, &png_width, &png_height, &png_xres, &png_yres, &bad_res);
 
-	if (0 &&( png_width  > max_fig_size || png_height > max_fig_size)) {
+	if (png_width  > max_fig_size || png_height > max_fig_size) {
 		
 		if (png_height && png_height > png_width) 
 			png_resolution = (uint16_t)((double)g_dots_per_inch / (double)png_height * max_fig_size);
 		else
 			png_resolution = (uint16_t)((double)g_dots_per_inch / (double)png_width * max_fig_size);
 
-		if (SysGraphicsConvert(CONVERT_LATEX, bmoffset, png_resolution, latex, "") == NULL) {
-			free(png_name);
+		if (SysGraphicsConvert(CONVERT_LATEX, bmoffset, png_resolution, tex_file_stem, "") == NULL) {
+			free(png_file_name);
 			return;
 		}
 		
-		GetPngSize(png_name, &png_width, &png_height, &png_xres, &png_yres, &bad_res);
+		GetPngSize(png_file_name, &png_width, &png_height, &png_xres, &png_yres, &bad_res);
 	}
 	
 	/* we have a png file of the latex now ... insert it after figuring out offset and scaling */
 
-	baseline = GetBaseline(latex, pre);
+	baseline = GetBaseline(tex_file_stem, pre);
 	
 	diagnostics(4, "PutLatexFile bitmap has (height=%d,width=%d) baseline=%g  resolution=%u", 
 					png_height, png_width, baseline, png_resolution);
@@ -1506,9 +1502,9 @@ void PutLatexFile(char *latex, double scale, char *pre)
 	height_goal = (scale * png_height * POINTS_PER_METER / png_yres * 20.0 + 0.5);
 	width_goal  = (scale * png_width  * POINTS_PER_METER / png_xres * 20.0 + 0.5);
 	
-	PutPngFile(png_name, height_goal, width_goal, scale*100, baseline);
+	PutPngFile(png_file_name, height_goal, width_goal, scale*100, baseline);
 	
-	free(png_name);
+	free(png_file_name);
 }
 
 static char *SaveEquationAsFile(const char *post_begin_document,
@@ -1516,7 +1512,7 @@ static char *SaveEquationAsFile(const char *post_begin_document,
 {
     FILE *f;
     char name[15];
-    char *tmp_dir, *full_name, *tex_name, *eq;
+    char *tmp_dir, *tex_file_stem, *tex_file_name, *eq;
     static int file_number = 0;
 
     if (!pre || !eq_with_spaces || !post)
@@ -1526,20 +1522,20 @@ static char *SaveEquationAsFile(const char *post_begin_document,
     file_number++;
     tmp_dir = getTmpPath();
     snprintf(name, 15, "l2r_%04d", file_number);
-    full_name = strdup_together(tmp_dir, name);
+    tex_file_stem = strdup_together(tmp_dir, name);
     free(tmp_dir);
     
-    tex_name = strdup_together(full_name, ".tex");
+    tex_file_name = strdup_together(tex_file_stem, ".tex");
 
-    diagnostics(3, "SaveEquationAsFile =%s", tex_name);
+    diagnostics(3, "SaveEquationAsFile = %s", tex_file_name);
 
-    f = fopen(tex_name, "w");
-    free(tex_name);
+    f = fopen(tex_file_name, "w");
+    free(tex_file_name);
 
 	/* cannot open the file for writing */
     if (f==NULL) {
-    	diagnostics(WARNING, "Could not open '%s' to save equation",full_name);
-        free(full_name);
+    	diagnostics(WARNING, "Could not open '%s' to save equation",tex_file_stem);
+        free(tex_file_stem);
         return NULL;
     }
     
@@ -1565,7 +1561,7 @@ static char *SaveEquationAsFile(const char *post_begin_document,
 	fclose(f);
 	free(eq);
  
-    return (full_name);
+    return (tex_file_stem);
 }
 
 void PrepareDisplayedBitmap(char *the_type)
