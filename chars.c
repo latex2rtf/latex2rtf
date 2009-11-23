@@ -1979,7 +1979,6 @@ void CmdLogo(int code)
  ******************************************************************************/
 {
     int font_num, dnsize;
-    float FloatFsize;
 
     changeTexMode(MODE_HORIZONTAL);
     fprintRTF("{\\plain ");
@@ -2005,11 +2004,6 @@ void CmdLogo(int code)
 
         case CMD_LATEXE:
             LaTeXlogo();
-            if (CurrentFontSize() > 14) {
-                FloatFsize = 0.75 * CurrentFontSize();
-            } else {
-                FloatFsize = (float) CurrentFontSize();
-            };
             dnsize = (int) (0.3 * CurrentFontSize() + 0.45);
             font_num = RtfFontNumber("Symbol");
             fprintRTF("2{\\dn%d\\f%d e}", dnsize, font_num);

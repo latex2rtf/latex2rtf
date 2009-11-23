@@ -113,7 +113,7 @@ void *open_cfg(const char *name, int quit_on_error)
 purpose: open config by trying multiple paths
  ****************************************************************************/
 {
-    char *env_path, *p, *p1, *pf;
+    char *env_path, *p, *p1;
     char *lib_path;
     FILE *fp;
 
@@ -146,7 +146,7 @@ purpose: open config by trying multiple paths
 /* try the environment variable ProgramFiles */
     p = getenv("PROGRAMFILES");
     if (p) {
-        pf = strdup_together(p, "/latex2rtf/cfg");
+        char *pf = strdup_together(p, "/latex2rtf/cfg");
         p = pf;
         while (p) {
             p1 = strchr(p, ENVSEP);
@@ -192,7 +192,6 @@ purpose: open config by trying multiple paths
         diagnostics(WARNING, "   (3) recompile latex2rtf with CFGDIR defined properly");
         diagnostics(WARNING, "Current RTFPATH: %s", getenv("RTFPATH"));
         diagnostics(WARNING, "Current  CFGDIR: %s", CFGDIR);
-        diagnostics(WARNING, "Also not found in : %s", pf);
         diagnostics(ERROR, " Giving up.  Please don't hate me.");
     }
     return NULL;
@@ -233,8 +232,10 @@ static size_t read_cfg(FILE * cfgfile, ConfigEntryT *** pointer_array, bool do_r
 
         /* Find period that terminates command */
         cmdend = strrchr(line, '.');
-        if (cmdend == NULL)
+        if (cmdend == NULL){
             diagnostics(ERROR, "Bad config file, missing final period\nBad line is \"%s\"", line);
+			exit(1);
+		}
 
         /* Replace period with NULL */
         *cmdend = '\0';
@@ -258,8 +259,10 @@ static size_t read_cfg(FILE * cfgfile, ConfigEntryT *** pointer_array, bool do_r
         /* find start of definition */
         line = strdup(line);
         cmdend = strchr(line, ',');
-        if (cmdend == NULL)
+        if (cmdend == NULL) {
             diagnostics(ERROR, "Bad config file, missing ',' between elements\nBad line is\"%s\"", line);
+			exit(1);
+		}
 
         /* terminate command */
         *cmdend = '\0';
@@ -485,8 +488,10 @@ char *ReadUptoMatch(FILE * infile, const char *scanchars)
 
     if (buffer == NULL) {
         buffer = malloc(BUFFER_INCREMENT * sizeof(char));
-        if (buffer == NULL)
+        if (buffer == NULL) {
             diagnostics(ERROR, "Cannot allocate memory for input buffer");
+			exit(1);
+		}
         bufsize = BUFFER_INCREMENT;
     }
 
@@ -505,8 +510,10 @@ char *ReadUptoMatch(FILE * infile, const char *scanchars)
         if (bufindex >= bufsize) {
             bufsize += BUFFER_INCREMENT;
             buffer = realloc(buffer, bufsize);
-            if (buffer == NULL)
+            if (buffer == NULL) {
                 diagnostics(ERROR, "Cannot allocate memory for input buffer");
+				exit(1);
+			}
         }
     }
     buffer[bufindex] = '\0';

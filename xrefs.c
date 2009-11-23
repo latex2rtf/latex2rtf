@@ -319,7 +319,7 @@ static char *ScanBbl(char *reference)
 {
     static FILE *f_bbl = NULL;
     char *buffer, *target;
-    char *s;
+    char *s=NULL;
 	char last_c;
 	int  i=1;
 	
@@ -344,7 +344,7 @@ static char *ScanBbl(char *reference)
 	}
 	
 	free(target);
-	if (!s) return NULL;
+	if (s == NULL) return NULL;
 	buffer = malloc(4096);
 	
 	/* scan bbl file until we encounter \n\n */
@@ -627,9 +627,9 @@ purpose: convert \index{classe!article@\textit{article}!section}
 ******************************************************************************/
 void CmdIndex(int code)
 {
-    char cThis, *text, *r, *s, *t;
+    char *text, *r, *s, *t;
 
-    cThis = getNonBlank();
+    getNonBlank();
     text = getDelimitedText('{', '}', TRUE);
     diagnostics(4, "CmdIndex \\index{%s}", text);
     fprintRTF("{\\xe{\\v ");
@@ -2431,7 +2431,7 @@ purpose: handles \listoffigures \listoftables
 ******************************************************************************/
 void CmdListOf(int code)
 {
-	char c;
+	char c = ' ';
 	
     diagnostics(4, "Entering CmdListOf");
 
@@ -2626,12 +2626,12 @@ if (code & ON) {
 
 void CmdAC(int code)
 {
-	char *shortAc, *key, c;
+	char *shortAc, *key;
 	int i;
 	
 	/* skip '@hyperlink' */
 	for (i=0; i<strlen("@hyperlink"); i++) 
-		c=getTexChar();
+		getTexChar();
 		
 	key = getBraceParam();
 	shortAc = getBraceParam();

@@ -394,9 +394,7 @@ int existsEnvironment(char *s)
 **************************************************************************/
 {
     int i = 0;
-    size_t n;
 
-    n = strlen(s);
     while (i < iNewEnvironmentCount && !strequal(s, NewEnvironments[i].name)) {
         diagnostics(6, "existsEnv seeking=<%s>, i=%d, current=<%s>", s, i, NewEnvironments[i].name);
         i++;

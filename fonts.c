@@ -735,7 +735,7 @@ int CurrentLatin2FontFamily(void)
     num = CurrentFontFamily();
 
 /* obtain name and type of current active font */
-    font_handle = CfgStartIterate(FONT_A);
+    CfgStartIterate(FONT_A);
 	font_handle = SearchCfgEntryByID(num, FONT_A);
     font_type = (**font_handle).TexCommand;
     diagnostics(6, "CurrentLatin2FontFamily current active font type =<%s>", font_type);

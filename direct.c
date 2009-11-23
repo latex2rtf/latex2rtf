@@ -87,7 +87,6 @@ bool TryDirectConvert(char *command)
     const char *buffpoint;
     const char *RtfCommand;
     char *TexCommand;
-    int font_number;
 
     TexCommand = strdup_together("\\", command);
     RtfCommand = SearchCfgRtf(TexCommand, DIRECT_A);
@@ -98,7 +97,7 @@ bool TryDirectConvert(char *command)
     diagnostics(4, "Directly converting %s to %s", TexCommand, RtfCommand);
     while (buffpoint[0] != '\0') {
         if (buffpoint[0] == '*') 
-            font_number = WriteFontName(&buffpoint);
+			WriteFontName(&buffpoint);
         else
             fprintRTF("%c", *buffpoint);
 

@@ -79,7 +79,6 @@ void InsertBasicStyle(const char *rtf, bool include_header_info)
  ******************************************************************************/
 {
     char *style, *style_end, *comma;
-    int font_number;
 
     if (rtf == NULL) return;
     
@@ -109,7 +108,7 @@ void InsertBasicStyle(const char *rtf, bool include_header_info)
         if (style == comma)
         	fprintRTF(" ");
         else if (*style == '*')
-            font_number = WriteFontName((const char **)&style);
+            WriteFontName((const char **)&style);
         else
             fprintRTF("%c", *style);
 
@@ -215,8 +214,10 @@ static bool TryStyleConvert(char *command)
     /* read and duplicate the RTF pieces into an array */
     for (i = 0; i < mandated + optional + 1; i++) {
         comma = strchr(rtf, ',');
-        if (comma == NULL)
+        if (comma == NULL) {
             diagnostics(ERROR, "Not enough commas in style command <%s>", RtfCommand);
+			exit(1);
+		}
 
         *comma = '\0';
         rtf_piece[i] = strdup(rtf);

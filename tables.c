@@ -592,13 +592,12 @@ static void TabularBeginRow(TabularT *table, char *this_row, char *next_row, int
 {
     int i, n, column, rvert, lvert;
     char align;
-    char *cell_start, *cell_end, *cell, *row;
+    char *cell_start, *cell_end, *cell;
     int top, left, bottom, right;   /* cell borders */
     char *cline;
 
     fprintRTF("{\\trowd");
 
-    row = this_row;
     cell_start = this_row;
     column = 0;
 
@@ -967,6 +966,9 @@ void CmdTabular(int code)
             begin = strdup("\\begin{longtable*}");
             width = getBraceParam();
             break;
+		default:
+			diagnostics(ERROR, "This can't happen --- bad code to CmdTabular");
+			exit(1);
     }
 
     pos = getBracketParam();

@@ -136,20 +136,18 @@ int getStackRecursionLevel(void)
   purpose: returns the recursion level for the current BraceLevel
  ******************************************************************************/
 {
-    int PopLevel, PopBrack, PPopLevel, PPopBrack, size;
+    int PopLevel, PopBrack, PPopLevel;
 
     PPopLevel = RecursionLevel;
-    PPopBrack = BraceLevel;
-    size = BasicPop(&PopLevel, &PopBrack);
-    while ((size = BasicPop(&PopLevel, &PopBrack)) >= 0) {
-        if (PopBrack < BraceLevel) {
+    BasicPop(&PopLevel, &PopBrack);
+    while (BasicPop(&PopLevel, &PopBrack) >= 0) {
+        if (PopBrack < BraceLevel) 
             break;
-        }
+        
         PPopLevel = PopLevel;
-        PPopBrack = PopBrack;
-    }                           /* while */
-    (void) BasicPush(PopLevel, PopBrack);   /* push back */
-    (void) BasicPush(PPopLevel, BraceLevel);
+    }                          
+    BasicPush(PopLevel, PopBrack);   /* push back */
+    BasicPush(PPopLevel, BraceLevel);
     return PPopLevel;
 }
 

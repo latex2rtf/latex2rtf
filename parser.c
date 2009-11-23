@@ -1017,14 +1017,11 @@ char *getSpacedTexUntil(char *target, int raw)
     char buffer[BUFFSIZE];
     char *s;
     int buffer_pos, target_pos, target_len, max_buffer_pos, start_pos;
-    bool end_of_file_reached = FALSE;
-	bool matched;
 	
     PushTrackLineNumber(FALSE);
 
     diagnostics(5, "getSpacedTexUntil target = <%s> raw_search = %d ", target, raw);
 
-	matched = FALSE;	
 	buffer_pos = 0;
 	target_pos = 0;
 	start_pos  = 0;
@@ -1040,7 +1037,6 @@ char *getSpacedTexUntil(char *target, int raw)
         } 
 
         if (buffer[buffer_pos] == '\0') {
-            end_of_file_reached = TRUE;
             diagnostics(ERROR, "end of file reached before '%s' was found",target);
         }
 
@@ -1114,17 +1110,17 @@ int getDimension(void)
 
 /* skip "to" */
     if (cThis == 't') {
-        cThis = getTexChar();
+        getTexChar();
         cThis = getTexChar();
     }
 
 /* skip "spread" */
     if (cThis == 's') {
-        cThis = getTexChar();
-        cThis = getTexChar();
-        cThis = getTexChar();
-        cThis = getTexChar();
-        cThis = getTexChar();
+        getTexChar();
+		getTexChar();
+        getTexChar();
+        getTexChar();
+        getTexChar();
         cThis = getTexChar();
     }
 
@@ -1166,9 +1162,9 @@ int getDimension(void)
 	
 /* skip "true" */
     if (buffer[0] == 't') {
-        cThis = getTexChar();
-        cThis = getTexChar();
-        cThis = getTexChar();
+        getTexChar();
+        getTexChar();
+        getTexChar();
         skipSpaces();
         buffer[0] = tolower((int) getTexChar());
     }

@@ -759,7 +759,6 @@ static unsigned char * getPngChunk(FILE *fp, char *s)
 	uint32_t size, crc;
 	char head[5];
 	unsigned char *data;
-	size_t n;
 	
 	head[4]='\0';
 	
@@ -769,7 +768,7 @@ static unsigned char * getPngChunk(FILE *fp, char *s)
 		int i;
 		if (data!=NULL) free(data);
 				
-		n=fread(&size, 4, 1, fp);
+		fread(&size, 4, 1, fp);
 		if (g_little_endian) size = LETONL(size);
 		
 		for (i=0; i<4; i++) {
@@ -783,8 +782,8 @@ static unsigned char * getPngChunk(FILE *fp, char *s)
 		data = malloc(size);
 		if (data == NULL) return NULL;
 		
-		n=fread(data, size, 1, fp);
-		n=fread(&crc, 4, 1, fp);
+		fread(data, size, 1, fp);
+		fread(&crc, 4, 1, fp);
 	
 		
 	} while (strcmp(s,head)!=0);
@@ -801,14 +800,11 @@ static void GetPngSize(char *s, uint32_t *w_pixels, uint32_t *h_pixels, double *
 {
     FILE *fp;
     uint32_t *p;
-    uint32_t h_10micron, w_10micron;
     unsigned char buffer[16];
     char reftag[9] = "\211PNG\r\n\032\n";
     unsigned char *data = NULL;
 
     diagnostics(4, "GetPngSize of '%s'", s);
-    w_10micron = 0;
-    h_10micron = 0;
     *xres = POINTS_PER_METER;
     *yres = POINTS_PER_METER;
     *bad_res = 1;
@@ -974,7 +970,7 @@ static void PutJpegFile(char *s, double height0, double width0, double scale, do
     FILE *fp;
     char *jpg;
     uint16_t buffer[2];
-    int m=0, c;
+    int m=0;
     uint16_t width, height;
     uint32_t w, h;
     uint16_t sx, sy;
@@ -987,7 +983,7 @@ static void PutJpegFile(char *s, double height0, double width0, double scale, do
     if (fp == NULL)
         return;
 
-    if ((c = fgetc(fp)) != 0xFF && (c = fgetc(fp)) != 0xD8) {
+    if (fgetc(fp) != 0xFF && fgetc(fp) != 0xD8) {
         fclose(fp);
         diagnostics(WARNING, "'%s' is not really a JPEG file --- skipping");
         return;
@@ -1833,7 +1829,7 @@ static void HandleGraphicsOptions(char *opt, char *opt2, double *h, double *w, d
 		llx=getStringDimension(key);
 		free(key);
 		
-		opt = keyvalue_pair(opt,&key,&value);
+		keyvalue_pair(opt,&key,&value);
 		if (!key) return;
 		lly=getStringDimension(key);
 		free(key);
@@ -1843,7 +1839,7 @@ static void HandleGraphicsOptions(char *opt, char *opt2, double *h, double *w, d
 		urx=getStringDimension(key);
 		free(key);
 		
-		opt2 = keyvalue_pair(opt2,&key,&value);
+		keyvalue_pair(opt2,&key,&value);
 		if (!key) return;
 		ury=getStringDimension(key);
 		free(key);
@@ -1858,12 +1854,12 @@ static void HandleGraphicsOptions(char *opt, char *opt2, double *h, double *w, d
 
 	if (g_graphics_package == GRAPHICS_GRAPHICS && opt) {
 
-		opt = keyvalue_pair(opt,&key,&value);
+		keyvalue_pair(opt,&key,&value);
 		if (!key) return;
 		*w=getStringDimension(key);
 		free(key);
 		
-		opt = keyvalue_pair(opt,&key,&value);
+		keyvalue_pair(opt,&key,&value);
 		if (!key) return;
 		*h=getStringDimension(key);
 		free(key);

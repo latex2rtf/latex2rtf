@@ -722,7 +722,7 @@ returns: success or not
             cThis = getTexChar();
             if (cThis=='^') {
             	/* usually \^^M ... just replace with a blank */
-            	cThis = getTexChar();
+            	getTexChar();
             	fprintRTF(" ");
             } else {
             	ungetTexChar(cThis);

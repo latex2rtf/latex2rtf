@@ -799,7 +799,7 @@ void CmdLength(int code)
         else
             ungetTexChar(cThis);
 
-        num = getDimension();   /* discard for now */
+        getDimension();   /* discard for now */
     }
 }
 
@@ -1148,7 +1148,7 @@ void CmdVerbatim(int code)
 	VERBATIM_2   for \begin{Verbatim} ... \end{Verbatim}
 ******************************************************************************/
 {
-    char *verbatim_text, *vptr, *endtag=NULL;
+    char *verbatim_text, *endtag=NULL;
 /*  int num;  */
     int true_code = code & ~ON;
 
@@ -1181,7 +1181,6 @@ void CmdVerbatim(int code)
 
         verbatim_text = getTexUntil(endtag, 1);
         UpdateLineNumber(verbatim_text);
-        vptr = verbatim_text;
 
         if (true_code == VERBATIM_3)
             /* alltt environment */

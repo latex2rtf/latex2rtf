@@ -385,9 +385,7 @@ int main(int argc, char **argv)
         CloseRtf(&fRtf);
         printf("\n");
 
-/*		debug malloc() */
-  		printf("Done!");
-  		while (1) {} /* do nothing */
+/*		debug_malloc() */
 
         return 0;
     } else {
@@ -567,7 +565,7 @@ purpose: Writes the message to stderr depending on debugging level
     
     char buffer[512], *buff_ptr;
     va_list apf;
-    int i, iEnvCount;
+    int i;
 
     buff_ptr = buffer;
 
@@ -575,7 +573,7 @@ purpose: Writes the message to stderr depending on debugging level
 
     if (level <= g_verbosity_level) {
 
-        iEnvCount = CurrentEnvironmentCount();
+        CurrentEnvironmentCount();
 
         if (!first) fprintf(stderr,"\n");
         
@@ -950,9 +948,8 @@ purpose: opens "g_home_dir/path"  and
 void debug_malloc(void)
 {
     char c;
-    int n;
 
     diagnostics(WARNING, "Malloc Debugging --- press return to continue");
     fflush(NULL);
-    n = fscanf(stdin, "%c", &c);
+    fscanf(stdin, "%c", &c);
 }

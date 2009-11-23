@@ -737,22 +737,22 @@ void ParseOptGeometry(char *options)
 
 void ExecGeomOptions (char *key, char *value1, char *value2)
 {
-    int dist1, dist2, dist3, dist4, ratio_sum, margin_sum;
+    int ratio_sum, margin_sum;
     char *value1b = NULL, *value2b = NULL;
-
+	int dist1 = 0;
+	int dist2 = 0;
+	
     if (strstr(key, "ratio")) {
-	if (strchr(value1, ':')) { /* each value is a ratio */
-	    value1 = strtok(value1, ": ");
-	    value1b = strtok(NULL, ": ");
-	    value2 = strtok(value2, ": ");
-	    value2b = strtok(NULL, ": ");
-	} else { /* each value is part of a single ratio */
-	    dist1 = atoi(value1);
-	    dist2 = atoi(value2);
-	    dist3 = dist1;
-	    dist4 = dist2;
-	    diagnostics(3, "one ratio parameter, %d:%d", dist1, dist2);
-	}
+		if (strchr(value1, ':')) { /* each value is a ratio */
+			value1 = strtok(value1, ": ");
+			value1b = strtok(NULL, ": ");
+			value2 = strtok(value2, ": ");
+			value2b = strtok(NULL, ": ");
+		} else { /* each value is part of a single ratio */
+			dist1 = atoi(value1);
+			dist2 = atoi(value2);
+			diagnostics(3, "one ratio parameter, %d:%d", dist1, dist2);
+		}
     } else if (strstr(key, "centering") == NULL) {
 		dist1=getStringDimension(value1);
 		dist2=getStringDimension(value2);

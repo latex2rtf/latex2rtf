@@ -261,6 +261,11 @@ void startParagraph(const char *style, int indenting)
 	if (g_par_brace == 1)
 		CmdEndParagraph(0);
 
+	width = getLength("textwidth");
+	a = (int) (0.45 * width);
+	b = (int) (0.50 * width);
+	c = (int) (0.55 * width);
+
 	switch(indenting) {
 	
 		case SECTION_TITLE_PARAGRAPH:		/* titles are never indented */
@@ -279,10 +284,6 @@ void startParagraph(const char *style, int indenting)
 		case EQUATION_PARAGRAPH:
 			diagnostics(5, "EQUATION_PARAGRAPH");
 			parindent = 0;
-			width = getLength("textwidth");
-    		a = (int) (0.45 * width);
-    		b = (int) (0.50 * width);
-    		c = (int) (0.55 * width);
     		break;
 			
 		default:      						/* Worry about not indenting */

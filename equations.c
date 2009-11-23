@@ -409,10 +409,7 @@ static void PrepareRtfEquation(int code, int EQ_Needed)
 static char *CreateEquationLabel(void)
 {
 	char *number = malloc(30);
-	int n;
-	
-	n = getCounter("equation");
-	
+		
 	if (g_document_type == FORMAT_REPORT ||
 	    g_document_type == FORMAT_BOOK )
 		snprintf(number, 29, "%d.%d", getCounter("chapter"), getCounter("equation"));
