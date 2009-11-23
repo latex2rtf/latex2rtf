@@ -1024,7 +1024,7 @@ void CmdTabular(int code)
 			if (width)
 				free(width);
 			if (tabular_layout)
-				free(tabular_layout);
+				FreeTabular(tabular_layout);
 		}
 	}
 
