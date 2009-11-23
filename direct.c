@@ -90,9 +90,11 @@ bool TryDirectConvert(char *command)
 
     TexCommand = strdup_together("\\", command);
     RtfCommand = SearchCfgRtf(TexCommand, DIRECT_A);
-    if (RtfCommand == NULL)
+    if (RtfCommand == NULL) {
+    	free(TexCommand);
         return FALSE;
-
+	}
+	
     buffpoint = RtfCommand;
     diagnostics(4, "Directly converting %s to %s", TexCommand, RtfCommand);
     while (buffpoint[0] != '\0') {
