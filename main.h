@@ -75,9 +75,8 @@ extern int		RecursionLevel;
 
 /* table  & tabbing variables */
 extern long		pos_begin_kill;
-extern int		tabcounter;
+extern int		g_tab_counter;
 extern int		g_equation_column;
-extern int		tabcounter;
 
 extern bool		twocolumn;
 extern bool		titlepage;

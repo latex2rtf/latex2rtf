@@ -237,7 +237,7 @@ purpose: converts inputfile and writes result to outputfile
                 break;
 
             case '\n':
-                tabcounter = 0;
+                g_tab_counter = 0;
 
                 if (getTexMode() == MODE_MATH || getTexMode() == MODE_DISPLAYMATH) {
 
@@ -537,7 +537,7 @@ purpose: converts inputfile and writes result to outputfile
                 break;
         }
 
-        tabcounter++;
+        g_tab_counter++;
         cLast = cThis;
     }
     RecursionLevel--;

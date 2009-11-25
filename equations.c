@@ -1630,7 +1630,7 @@ void CmdSlashSlash(int height)
 		diagnostics(3," I don't think this should happen anymore! ");
         PopBrace();
         PushBrace();
-    	tabcounter = 0;
+    	g_tab_counter = 0;
     	return;
     }
 

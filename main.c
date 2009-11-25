@@ -117,6 +117,10 @@ bool g_tableofcontents = FALSE;
 
 bool g_tabular_display_rtf = TRUE;
 bool g_tabular_display_bitmap = FALSE;
+int g_tab_counter = 0;
+bool g_processing_table = FALSE;
+bool g_processing_tabbing = FALSE;
+bool g_processing_tabular = FALSE;
 
 double g_png_equation_scale = 1.00;
 double g_png_figure_scale = 1.00;

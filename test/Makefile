@@ -71,6 +71,7 @@ char:
 	$(MAKE) char_tests
 
 table:
+	mkdir -p tmp
 	$(MAKE) table_tests
 
 extra:
@@ -303,6 +304,15 @@ hyperref.rtf: hyperref.tex
 	$(LATEX) hyperref $(LATEX_LOG)
 	$(LATEX2RTF) $(OPTIONS) hyperref
 
+tabular.rtf: tabular.tex
+	$(LATEX2RTF) $(OPTIONS) -t3 tabular
+
+tabbing.rtf: tabbing.tex
+	$(LATEX2RTF) $(OPTIONS) -t3 tabbing
+
+table_array1.rtf: table_array1.tex
+	$(LATEX2RTF) $(OPTIONS) -t3 table_array1
+	
 check:
 	./bracecheck
 	
