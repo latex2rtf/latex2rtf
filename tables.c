@@ -356,7 +356,7 @@ static void TabularGetRow(char *table, char **row, char **next_row, int *height)
     *row = (char *) malloc((row_chars + 1) * sizeof(char));
     strncpy(*row, table, row_chars);
     (*row)[row_chars] = '\0';
-	diagnostics(1, "TabularGetRow '%50s'", *row);
+
     show_string(5, *row, "row");
     if (!slashslash)
         return;
@@ -404,7 +404,7 @@ static void TabularGetRow(char *table, char **row, char **next_row, int *height)
 
     if (*s == '\0')
         return;
-	diagnostics(1, "TabularGetRow %50s", s);
+	diagnostics(5, "TabularGetRow %70s", s);
 
     *next_row = s;
 }

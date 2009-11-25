@@ -1731,7 +1731,8 @@ static int UsingTypewriter(void)
  ******************************************************************************/
 void CmdChar(int code)
 {
-
+	char c;
+	
     switch (code) {
         case 0:
         	CmdSymbolChar((int) 'G');			/* Gamma */
@@ -1936,6 +1937,9 @@ void CmdChar(int code)
             putRtfCharEscaped((char) code);
             break;
     }
+
+    c = getNonBlank();
+    ungetTexChar(c);    
 }
 
 static void TeXlogo()

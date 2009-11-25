@@ -390,7 +390,7 @@ int main(int argc, char **argv)
         CloseRtf(&fRtf);
         printf("\n");
 
-		if (0) debug_malloc();
+	if (0) debug_malloc();
 
         return 0;
     } else {
