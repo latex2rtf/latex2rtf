@@ -356,7 +356,7 @@ static void TabularGetRow(char *table, char **row, char **next_row, int *height)
     *row = (char *) malloc((row_chars + 1) * sizeof(char));
     strncpy(*row, table, row_chars);
     (*row)[row_chars] = '\0';
-
+	diagnostics(1, "TabularGetRow '%50s'", *row);
     show_string(5, *row, "row");
     if (!slashslash)
         return;
@@ -404,6 +404,8 @@ static void TabularGetRow(char *table, char **row, char **next_row, int *height)
 
     if (*s == '\0')
         return;
+	diagnostics(1, "TabularGetRow %50s", s);
+
     *next_row = s;
 }
 
@@ -750,17 +752,10 @@ static void TabularWriteRow(TabularT *table, const char *this_row, char *next_ro
             free(cell);
     }
 
-    if (0 && table->i < table->n) {
-        align = TabularColumnAlignment(table, table->i);
-        diagnostics(5, "TabularWriteRow align=%c n=%d i=%d cell='%s'", align, n, table->i, "");
-        BeginCellRtf(align);
-        EndCellRtf();
-    }
-
     TabularEndRow();
 }
 
-static int TabularMeasureCell(char *cell)
+static int TabularMeasureCell(const char *cell)
 
 /******************************************************************************
  purpose:  come up with a rough number for the number of characters in a cell
@@ -845,7 +840,7 @@ static void TabularSetWidths(TabularT *table)
 	}
 }
 
-static void TabularMeasureRow(TabularT *table, char *this_row, int height)
+static void TabularMeasureRow(TabularT *table, const char *this_row, int height)
 
 /******************************************************************************
  purpose:  come up with relative widths for all cells in a row
@@ -862,7 +857,7 @@ static void TabularMeasureRow(TabularT *table, char *this_row, int height)
 
     diagnostics(5, "TabularMeasureRow height=%d twpi, row <%s>", height, this_row);
 
-    cell_start = this_row;
+    cell_start = (char *) this_row;
     iCol = 0;
     
     while (cell_start) {
