@@ -95,7 +95,7 @@ bool g_suppress_equation_number = FALSE;
 bool g_aux_file_missing = FALSE;    /* assume that it exists */
 bool g_bbl_file_missing = FALSE;    /* assume that it exists */
 
-bool g_document_type = FORMAT_ARTICLE;
+int g_document_type = FORMAT_ARTICLE;
 int g_document_bibstyle = BIBSTYLE_STANDARD;
 
 int g_safety_braces = 0;
