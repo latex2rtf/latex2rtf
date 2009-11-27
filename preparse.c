@@ -42,7 +42,7 @@ static void increase_buffer_size(void)
 {
     char *new_section_buffer;
 
-    new_section_buffer = malloc(2 * section_buffer_size + 1);
+    new_section_buffer = (char *) malloc(2 * section_buffer_size + 1);
     if (new_section_buffer == NULL)
         diagnostics(ERROR, "Could not allocate enough memory to process file. Sorry.");
     memmove(new_section_buffer, section_buffer, section_buffer_size);
@@ -72,7 +72,7 @@ static void show_buffer(char *s)
 static void add_chr_to_buffer(char c)
 {
     if (section_buffer == NULL) {
-        section_buffer = malloc(section_buffer_size + 1);
+        section_buffer = (char *) malloc(section_buffer_size + 1);
         if (section_buffer == NULL)
             diagnostics(ERROR, "Could not allocate enough memory to process file. Sorry.");
     }

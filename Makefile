@@ -317,16 +317,16 @@ convert.o: convert.c main.h convert.h commands.h chars.h funct1.h fonts.h \
   utils.h parser.h lengths.h counters.h preamble.h vertical.h fields.h
 xrefs.o: xrefs.c main.h utils.h convert.h funct1.h commands.h cfg.h \
   xrefs.h parser.h preamble.h lengths.h fonts.h styles.h definitions.h \
-  equations.h vertical.h fields.h
+  equations.h vertical.h fields.h counters.h
 definitions.o: definitions.c main.h convert.h definitions.h parser.h \
   funct1.h utils.h cfg.h counters.h
-graphics.o: graphics.c cfg.h main.h graphics.h parser.h utils.h \
+graphics.o: graphics.c main.h cfg.h graphics.h parser.h utils.h \
   commands.h convert.h funct1.h preamble.h counters.h vertical.h
 mygetopt.o: mygetopt.c main.h mygetopt.h
 styles.o: styles.c main.h direct.h fonts.h cfg.h utils.h parser.h \
-  styles.h
-preparse.o: preparse.c cfg.h main.h utils.h definitions.h parser.h \
-  funct1.h
+  styles.h vertical.h
+preparse.o: preparse.c preparse.h cfg.h main.h utils.h definitions.h \
+  parser.h funct1.h
 vertical.o: vertical.c main.h funct1.h cfg.h utils.h parser.h lengths.h \
   vertical.h convert.h commands.h styles.h fonts.h stack.h xrefs.h \
   counters.h fields.h

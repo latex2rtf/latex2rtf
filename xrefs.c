@@ -354,7 +354,7 @@ static char *ScanBbl(char *reference)
 	
 	free(target);
 	if (s == NULL) return NULL;
-	buffer = malloc(4096);
+	buffer = (char *) malloc(4096);
 	
 	/* scan bbl file until we encounter \n\n */
 	last_c = '\0';

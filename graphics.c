@@ -373,7 +373,7 @@ static char *strdup_new_extension(const char *s, const char *old_ext, const char
     if (p == NULL) return NULL;
 
 	siz = s_len - o_len + n_len;	
-	new_name = malloc(siz);
+	new_name = (char *) malloc(siz);
 	my_strlcpy(new_name, s, s_len - o_len);
 	my_strlcat(new_name, new_ext, siz);
 
@@ -779,7 +779,7 @@ static unsigned char * getPngChunk(FILE *fp, char *s)
 		if (strcmp(head,"IEND") == 0) return NULL;
 		
 		diagnostics(6,"found chunk '%s' size %ld bytes",head,(unsigned long) size);
-		data = malloc(size);
+		data = (unsigned char *) malloc(size);
 		if (data == NULL) return NULL;
 		
 		fread(data, size, 1, fp);

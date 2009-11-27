@@ -113,7 +113,7 @@ char *strdup_together(const char *s, const char *t)
         return strdup(s);
 
     siz = strlen(s) + strlen(t) + 1;
-    both = malloc(siz);
+    both = (char *) malloc(siz);
     if (both == NULL)
         diagnostics(ERROR, "Could not allocate memory for both strings.");
 
@@ -156,7 +156,7 @@ char *strdup_nocomments(const char *s)
     if (s == NULL)
         return NULL;
 
-    dup = malloc(strlen(s) + 1);
+    dup = (char *) malloc(strlen(s) + 1);
     p = dup;
 
     while (*s) {
@@ -188,7 +188,7 @@ char *strdup_noblanks(const char *s)
         return NULL;
     while (*s == ' ' || *s == '\n')
         s++;                    /* skip to non blank */
-    dup = malloc(strlen(s) + 1);
+    dup = (char *) malloc(strlen(s) + 1);
     p = dup;
     while (*s) {
         *p = *s;
@@ -229,7 +229,7 @@ char *strdup_printable(const char *s)
     
     if (s == NULL) return NULL;
 
-    dup = malloc(2*strlen(s));
+    dup = (char *) malloc(2*strlen(s));
 
     i=0;
     while (*s) {

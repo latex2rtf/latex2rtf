@@ -85,7 +85,7 @@ static char *SlurpDollarEquation(void)
     int i;
     char *s, *t, *u;
 
-    s = malloc(1024 * sizeof(char));
+    s = (char *) malloc(1024 * sizeof(char));
     t = s;
 
     for (i = 0; i < 1024; i++) {
@@ -408,7 +408,7 @@ static void PrepareRtfEquation(int code, int EQ_Needed)
 
 static char *CreateEquationLabel(void)
 {
-	char *number = malloc(30);
+	char *number = (char *) malloc(30);
 		
 	if (g_document_type == FORMAT_REPORT ||
 	    g_document_type == FORMAT_BOOK )
@@ -1305,7 +1305,7 @@ static void getDelimOrCommand(char *delim, char **s)
 /* handle special cases \{ \} and \| */
     if (strlen(*s) == 1) {
         free(*s);
-        *s = malloc(3 * sizeof(char));
+        *s = (char *) malloc(3 * sizeof(char));
         (*s)[0] = '\\';
         (*s)[1] = getTexChar();
         (*s)[2] = '\0';

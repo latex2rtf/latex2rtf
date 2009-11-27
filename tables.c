@@ -387,7 +387,7 @@ static void TabularGetRow(char *table, char **row, char **next_row, int *height)
         return;
 
 /* figure out the row height */
-    dimension = malloc((dim_chars + 2) * sizeof(char));
+    dimension = (char *) malloc((dim_chars + 2) * sizeof(char));
     strncpy(dimension, dim_start, dim_chars);
     dimension[dim_chars] = '\n';    /* make sure entire string is not parsed */
     dimension[dim_chars + 1] = '\0';
