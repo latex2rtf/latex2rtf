@@ -207,7 +207,7 @@ static int read_cfg(FILE * cfgfile, ConfigEntryT *** pointer_array, bool do_remo
     char *line, *cmdend;
 
     if (*pointer_array == NULL) {
-        *pointer_array = (ConfigEntryT **) malloc(BUFFER_INCREMENT * sizeof(char *));
+        *pointer_array = (struct ConfigEntryT **) malloc(BUFFER_INCREMENT * sizeof(char *));
         bufsize = BUFFER_INCREMENT;
         if (*pointer_array == NULL)
             diagnostics(ERROR, "Cannot allocate memory for pointer list");
@@ -251,7 +251,7 @@ static int read_cfg(FILE * cfgfile, ConfigEntryT *** pointer_array, bool do_remo
         /* resize buffer if needed */
         if (bufindex >= bufsize) {
             bufsize += BUFFER_INCREMENT;
-            *pointer_array = realloc(*pointer_array, bufsize * sizeof(char *));
+            *pointer_array = (struct ConfigEntryT **) realloc(*pointer_array, bufsize * sizeof(char *));
             if (*pointer_array == NULL)
                 diagnostics(ERROR, "Cannot allocate memory for pointer list");
         }
@@ -267,7 +267,7 @@ static int read_cfg(FILE * cfgfile, ConfigEntryT *** pointer_array, bool do_remo
         /* terminate command */
         *cmdend = '\0';
 
-        (*pointer_array)[bufindex] = (ConfigEntryT *) malloc(sizeof(ConfigEntryT));
+        (*pointer_array)[bufindex] = (struct ConfigEntryT *) malloc(sizeof(ConfigEntryT));
 
         if ((*pointer_array)[bufindex] == NULL)
             diagnostics(ERROR, "Cannot allocate memory for config entry");
@@ -509,7 +509,7 @@ char *ReadUptoMatch(FILE * infile, const char *scanchars)
         buffer[bufindex++] = (char) c;
         if (bufindex >= bufsize) {
             bufsize += BUFFER_INCREMENT;
-            buffer = realloc(buffer, bufsize);
+            buffer = (char *) realloc(buffer, bufsize);
             if (buffer == NULL) {
                 diagnostics(ERROR, "Cannot allocate memory for input buffer");
 				exit(1);
