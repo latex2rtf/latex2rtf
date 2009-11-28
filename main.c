@@ -24,6 +24,11 @@ Authors:
 	1998-2000 Georg Lehner
 	2001-2007 Scott Prahl
 */
+#if defined(NOSTDERR)
+#define ERROUT stdout
+#else
+#define ERROUT stderr
+#endif 
 
 #include <stdio.h>
 #include <ctype.h>
@@ -580,12 +585,12 @@ purpose: Writes the message to stderr depending on debugging level
 
         CurrentEnvironmentCount();
 
-        if (!first) fprintf(stderr,"\n");
+        if (!first) fprintf(ERROUT,"\n");
         
-        fprintf(stderr, "%s:%-3d ",CurrentFileName(),CurrentLineNumber());
+        fprintf(ERROUT, "%s:%-3d ",CurrentFileName(),CurrentLineNumber());
         switch (level) {
             case 0:
-                fprintf(stderr, "Error! ");
+                fprintf(ERROUT, "Error! ");
                 break;
             case 1:
                 if (g_RTF_warnings) {
@@ -600,30 +605,30 @@ purpose: Writes the message to stderr depending on debugging level
                 break;
             case 5:
             case 6:
-                fprintf(stderr, " rec=%d ", RecursionLevel);
+                fprintf(ERROUT, " rec=%d ", RecursionLevel);
                 /*fall through */
             case 2:
             case 3:
             case 4:
                 for (i = 0; i < BraceLevel; i++)
-                    fprintf(stderr, "{");
+                    fprintf(ERROUT, "{");
                 for (i = 8; i > BraceLevel; i--)
-                    fprintf(stderr, " ");
+                    fprintf(ERROUT, " ");
 
                 for (i = 0; i < RecursionLevel; i++)
-                    fprintf(stderr, "  ");
+                    fprintf(ERROUT, "  ");
                 break;
             default:
                 break;
         }
-        vfprintf(stderr, format, apf);
+        vfprintf(ERROUT, format, apf);
     	first = FALSE;
     }
     va_end(apf);
 
     if (level == 0) {
-        fprintf(stderr, "\n");
-        fflush(stderr);
+        fprintf(ERROUT, "\n");
+        fflush(ERROUT);
         if (fRtf) 
             fflush(fRtf);
             
@@ -715,7 +720,7 @@ purpose: reads the LaTeX preamble (to \begin{document} ) for the file
 	   directly to stderr instead.
 	*/
 	rtf_file = fRtf;
-	fRtf = stderr;
+	fRtf = ERROUT;
 	
     g_preamble = getSpacedTexUntil(t, 1);
 
@@ -785,7 +790,7 @@ globals: g_tex_name;
     }
     *f = NULL;
     diagnostics(4, "Closed RTF file");
-    fprintf(stderr,"\n");
+    fprintf(ERROUT,"\n");
 }
 
 void putRtfCharEscaped(char cThis)

@@ -23,6 +23,11 @@
  * Authors: 1995-1997 Ralf Schlatterbeck 1998-2000 Georg Lehner 2001-2002 Scott
  * Prahl
  */
+#if defined(NOSTDERR)
+#define ERROUT stdout
+#else
+#define ERROUT stderr
+#endif 
 
 #include <math.h>
 #include <stdlib.h>
@@ -498,18 +503,18 @@ void show_string(int level, const char *s, const char *label)
 	}
 		
 	len = strlen(s);
-	fprintf(stderr, "\n%s: ", label);
+	fprintf(ERROUT, "\n%s: ", label);
 
 	for (i=0; i<len; i++) {
 	
 		if (i==width)
-			fprintf(stderr, "\n%-*d: ", (int) strlen(label), (int) strlen(s));
+			fprintf(ERROUT, "\n%-*d: ", (int) strlen(label), (int) strlen(s));
 		else if (i>1 && i % width == 0) 
-			fprintf(stderr, "\n%s: ",label);
+			fprintf(ERROUT, "\n%s: ",label);
 		c = s[i];
 		if (c == '\n') c = '=';
 		if (c == '\0') c = '*';
-		fprintf(stderr,"%c",c);
+		fprintf(ERROUT,"%c",c);
 	}
 }
 

@@ -19,9 +19,9 @@
  * Written by V.Menkov, IU, 1995
  */
 
-#include "main.h"
 #include <stdlib.h>
 #include <string.h>
+#include "main.h"
 #include "mygetopt.h"
 
 char *optarg = 0;
