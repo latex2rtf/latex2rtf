@@ -148,7 +148,7 @@ void CmdMinipage(int code);
 #define ABSTRACT_PRELUDE_BEGIN      3
 #define ABSTRACT_PRELUDE_END        4
 
-extern bool  g_processing_list_environment;
+extern int  g_processing_list_environment;
 
 void CmdIgnoreEnviron(int code);
 void CmdFigure(int code);
@@ -183,7 +183,7 @@ void CmdIflatextortf(int code);
 void CmdNewif(int code);
 void CmdElse(int code);
 void CmdFi(int code);
-bool TryConditionSet(char *command);
+int TryConditionSet(char *command);
 void CmdAppendix(int code);
 void CmdAcronymItem(int code);
 

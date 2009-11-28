@@ -34,7 +34,7 @@ char	*getTexUntil(char * target, int raw);
 char    *getSpacedTexUntil(char *target, int raw);
 int 	getDimension(void);
 void	parseBrace(void);
-char	*getDelimitedText(char left, char right, bool raw);
+char	*getDelimitedText(char left, char right, int raw);
 
 int 	CurrentLineNumber(void);
 void	PushTrackLineNumber(int flag);

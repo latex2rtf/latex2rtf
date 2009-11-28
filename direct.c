@@ -78,7 +78,7 @@ int WriteFontName(const char **buffpoint)
     return fnumber;
 }
 
-bool TryDirectConvert(char *command)
+int TryDirectConvert(char *command)
 /******************************************************************************
   purpose: uses data from direct.cfg to try and immediately convert some
            LaTeX commands into RTF commands.  

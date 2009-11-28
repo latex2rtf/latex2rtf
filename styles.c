@@ -67,7 +67,7 @@ void InsertCurrentStyle(void)
 		InsertStyle(g_current_style);
 }
 
-void InsertBasicStyle(const char *rtf, bool include_header_info)
+void InsertBasicStyle(const char *rtf, int include_header_info)
 
 /******************************************************************************
   purpose: uses data from style.cfg to try and insert RTF commands

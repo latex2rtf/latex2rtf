@@ -29,6 +29,6 @@
 
 void PushEnvironment(int code);
 void PopEnvironment(void);
-bool CallCommandFunc(char *cCommand);
+int CallCommandFunc(char *cCommand);
 void CallParamFunc(char *cCommand, int AddParam);
 int  CurrentEnvironmentCount(void);

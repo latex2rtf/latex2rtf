@@ -88,10 +88,10 @@ static char *g_bibpunct_cite_sep = NULL;
 static char *g_bibpunct_author_date_sep = NULL;
 static char *g_bibpunct_numbers_sep = NULL;
 static char *g_bibpunct_postnote_sep = NULL;
-static bool g_bibpunct_cite_sep_touched = FALSE;
-static bool g_bibpunct_style_paren_touched = FALSE;
+static int g_bibpunct_cite_sep_touched = FALSE;
+static int g_bibpunct_style_paren_touched = FALSE;
 static int   g_bibpunct_style = BIB_STYLE_ALPHA;
-static bool g_in_bibliography = FALSE;
+static int g_in_bibliography = FALSE;
 
 void InitializeBibliography(void)
 {

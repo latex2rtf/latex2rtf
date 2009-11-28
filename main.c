@@ -67,75 +67,75 @@ char *g_bbl_name = NULL;
 char *g_home_dir = NULL;
 
 char *progname;                 /* name of the executable file */
-bool SpanishMode = FALSE;       /* support spanishstyle */
-bool GermanMode = FALSE;        /* support germanstyle */
-bool FrenchMode = FALSE;        /* support frenchstyle */
-bool RussianMode = FALSE;       /* support russianstyle */
-bool CzechMode = FALSE;         /* support czech */
+int SpanishMode = FALSE;       /* support spanishstyle */
+int GermanMode = FALSE;        /* support germanstyle */
+int FrenchMode = FALSE;        /* support frenchstyle */
+int RussianMode = FALSE;       /* support russianstyle */
+int CzechMode = FALSE;         /* support czech */
 
 char g_charset_encoding_name[20] = "cp1252";
 int g_fcharset_number = 0;
 
-bool twoside = FALSE;
+int twoside = FALSE;
 int g_verbosity_level = WARNING;
-bool g_little_endian = FALSE;   /* set properly in main() */
+int g_little_endian = FALSE;   /* set properly in main() */
 uint16_t g_dots_per_inch = 300;
 
-bool pagenumbering = TRUE;      /* by default use plain style */
+int pagenumbering = TRUE;      /* by default use plain style */
 int headings = FALSE;
 
-bool g_processing_preamble = TRUE;  /* flag set until \begin{document} */
-bool g_processing_figure = FALSE;   /* flag, set for figures and not tables */
-bool g_processing_eqnarray = FALSE; /* flag set when in an eqnarry */
+int g_processing_preamble = TRUE;  /* flag set until \begin{document} */
+int g_processing_figure = FALSE;   /* flag, set for figures and not tables */
+int g_processing_eqnarray = FALSE; /* flag set when in an eqnarry */
 int g_processing_arrays = 0;
 
-bool g_show_equation_number = FALSE;
+int g_show_equation_number = FALSE;
 int g_enumerate_depth = 0;
-bool g_suppress_equation_number = FALSE;
-bool g_aux_file_missing = FALSE;    /* assume that it exists */
-bool g_bbl_file_missing = FALSE;    /* assume that it exists */
+int g_suppress_equation_number = FALSE;
+int g_aux_file_missing = FALSE;    /* assume that it exists */
+int g_bbl_file_missing = FALSE;    /* assume that it exists */
 
 int g_document_type = FORMAT_ARTICLE;
 int g_document_bibstyle = BIBSTYLE_STANDARD;
 
 int g_safety_braces = 0;
-bool g_processing_equation = FALSE;
-bool g_RTF_warnings = FALSE;
+int g_processing_equation = FALSE;
+int g_RTF_warnings = FALSE;
 char *g_config_path = NULL;
 char *g_script_dir = NULL;
 char *g_tmp_dir = NULL;
 char *g_preamble = NULL;
-bool g_escape_parens = FALSE;
+int g_escape_parens = FALSE;
 
-bool g_equation_display_rtf = TRUE;
-bool g_equation_inline_rtf = TRUE;
-bool g_equation_inline_bitmap = FALSE;
-bool g_equation_display_bitmap = FALSE;
-bool g_equation_comment = FALSE;
-bool g_equation_raw_latex = FALSE;
-bool g_tableofcontents = FALSE;
+int g_equation_display_rtf = TRUE;
+int g_equation_inline_rtf = TRUE;
+int g_equation_inline_bitmap = FALSE;
+int g_equation_display_bitmap = FALSE;
+int g_equation_comment = FALSE;
+int g_equation_raw_latex = FALSE;
+int g_tableofcontents = FALSE;
 
-bool g_tabular_display_rtf = TRUE;
-bool g_tabular_display_bitmap = FALSE;
+int g_tabular_display_rtf = TRUE;
+int g_tabular_display_bitmap = FALSE;
 int g_tab_counter = 0;
-bool g_processing_table = FALSE;
-bool g_processing_tabbing = FALSE;
-bool g_processing_tabular = FALSE;
+int g_processing_table = FALSE;
+int g_processing_tabbing = FALSE;
+int g_processing_tabular = FALSE;
 
 double g_png_equation_scale = 1.00;
 double g_png_figure_scale = 1.00;
-bool g_latex_figures = FALSE;
-bool g_endfloat_figures = FALSE;
-bool g_endfloat_tables = FALSE;
-bool g_endfloat_markers = TRUE;
+int g_latex_figures = FALSE;
+int g_endfloat_figures = FALSE;
+int g_endfloat_tables = FALSE;
+int g_endfloat_markers = TRUE;
 int  g_graphics_package = GRAPHICS_NONE;
 
 int indent = 0;
 char alignment = JUSTIFIED;     /* default for justified: */
 
 int RecursionLevel = 0;
-bool twocolumn = FALSE;
-bool titlepage = FALSE;
+int twocolumn = FALSE;
+int titlepage = FALSE;
 
 static void OpenRtfFile(char *filename, FILE ** f);
 static void CloseRtf(FILE ** f);

@@ -1,2 +1,2 @@
-bool TryVariableIgnore(const char *command);
+int TryVariableIgnore(const char *command);
 void Ignore_Environment(char *endstring);

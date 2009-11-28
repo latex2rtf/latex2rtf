@@ -1146,7 +1146,7 @@ parameter: type of operand
         free(upper_limit);
 }
 
-static void SubSupWorker(bool big)
+static void SubSupWorker(int big)
 
 /******************************************************************************
  purpose   : Stack a superscript and a subscript together  

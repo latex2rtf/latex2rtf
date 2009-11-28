@@ -55,16 +55,16 @@ Authors:
 #define ALPHA_NUMBERING  1
 #define ROMAN_NUMBERING  2
 
-extern bool twocolumn;          /* true if twocolumn-mode is enabled */
+extern int twocolumn;          /* true if twocolumn-mode is enabled */
 
 void CmdPagestyle( /* @unused@ */ int code);
 void CmdHeader(int code);
-char *roman_item(int n, bool upper);
+char *roman_item(int n, int upper);
 
 static int g_chapter_numbering = ARABIC_NUMBERING;
-static bool g_appendix;
+static int g_appendix;
 
-bool g_processing_list_environment = FALSE;
+int g_processing_list_environment = FALSE;
 
 void CmdNewDef(int code)
 
@@ -1451,7 +1451,7 @@ void CmdFi( /* @unused@ */ int code)
 	}
 }
 
-bool TryConditionSet(char *command)
+int TryConditionSet(char *command)
 {
     int i;
     if(strncmp(command, "if", 2) == 0)
@@ -1902,7 +1902,7 @@ void CmdVerbosityLevel(int code)
 
 /* convert integer to roman number --- only works up correctly up to 39 */
 
-char *roman_item(int n, bool upper)
+char *roman_item(int n, int upper)
 {
     char s[50];
     int i = 0;

@@ -796,7 +796,7 @@ static unsigned char * getPngChunk(FILE *fp, char *s)
                w & h are the size in pixels
                xres is the number of pixels per meter
  ******************************************************************************/
-static void GetPngSize(char *s, uint32_t *w_pixels, uint32_t *h_pixels, double *xres, double *yres, bool *bad_res)
+static void GetPngSize(char *s, uint32_t *w_pixels, uint32_t *h_pixels, double *xres, double *yres, int *bad_res)
 {
     FILE *fp;
     uint32_t *p;
@@ -911,7 +911,7 @@ static void PutPngFile(char *png, double height_goal, double width_goal, double 
     uint32_t w_pixels, h_pixels, b;
     uint32_t w_twips, h_twips;
 	uint16_t sx, sy;
-	bool bad_res;
+	int bad_res;
 	
     diagnostics(4, "PutPngFile '%s'", png);
 
@@ -1445,7 +1445,7 @@ void PutLatexFile(const char *tex_file_stem, double scale, char *pre)
     char *png_file_name = NULL;
     char *tmp_path;
     int  bmoffset;
-    bool bad_res;
+    int bad_res;
 	double height_goal, width_goal;
 	double baseline = 0;
 	double png_xres, png_yres;

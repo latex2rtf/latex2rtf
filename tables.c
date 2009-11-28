@@ -56,8 +56,8 @@ typedef struct TabularT {
 int g_tabbing_left_position = 0;
 int g_tabbing_current_position = 0;
 int *g_tabbing_locations  = NULL;
-bool tabbing_return       = FALSE;
-bool tabbing_on_itself    = FALSE;
+int tabbing_return       = FALSE;
+int tabbing_on_itself    = FALSE;
 long pos_begin_kill;
 
 static TabularT* NewTabular(int size)
@@ -332,7 +332,7 @@ static void TabularGetRow(char *table, char **row, char **next_row, int *height)
     int slash = 0;
     int	row_chars = 0;
     int dim_chars = 0;
-    bool slashslash = FALSE;
+    int slashslash = FALSE;
 
     s = table;
     *row = NULL;
@@ -1206,7 +1206,7 @@ static void TabbingGetRow(char *table, char **row, char **next_row)
 {
     char *s, *arow;
     size_t row_chars = 0;
-    bool slash;
+    int slash;
 
     s = table;
     *row = NULL;

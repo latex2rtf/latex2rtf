@@ -47,11 +47,11 @@ Authors:
 
 extern char *Version;  /*storage and definition in version.h */
 
-static bool g_preambleTwoside = FALSE;
-static bool g_preambleTwocolumn = FALSE;
-static bool g_preambleTitlepage = FALSE;
-static bool g_preambleLandscape = FALSE;
-static bool g_preambleGeometry = FALSE;
+static int g_preambleTwoside = FALSE;
+static int g_preambleTwocolumn = FALSE;
+static int g_preambleTitlepage = FALSE;
+static int g_preambleLandscape = FALSE;
+static int g_preambleGeometry = FALSE;
 
 static int g_geomMargl = 0;
 static int g_geomMargr = 0;

@@ -650,7 +650,7 @@ int getSameChar(char c)
     return count;
 }
 
-char *getDelimitedText(char left, char right, bool raw)
+char *getDelimitedText(char left, char right, int raw)
 
 /******************************************************************************
   purpose: general scanning routine that allocates and returns a string
@@ -946,7 +946,7 @@ char *getTexUntil(char *target, int raw)
     int last_i = -1;
     int i = 0;                  /* size of string that has been read */
     int j = 0;               /* number of found characters */
-    bool end_of_file_reached = FALSE;
+    int end_of_file_reached = FALSE;
     int len = (int) strlen(target);
 
     PushTrackLineNumber(FALSE);

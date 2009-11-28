@@ -43,7 +43,7 @@ Authors:
 static void IgnoreVar(void);
 static void IgnoreCmd(void);
 
-bool TryVariableIgnore(const char *command)
+int TryVariableIgnore(const char *command)
 
 /****************************************************************************
 purpose : ignores variable-formats shown in file "ignore.cfg"

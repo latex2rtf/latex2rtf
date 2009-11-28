@@ -785,7 +785,7 @@ returns: success or not
     /* Commands consist of letters and can have an optional * at the end */
     for (i = 0; i < MAXCOMMANDLEN-1; i++) {
         if (!isalpha((int) cThis) && (cThis != '*')) {
-            bool found_nl = FALSE;
+            int found_nl = FALSE;
 
             if (cThis == '%') { /* put the % back and get the next char */
                 ungetTexChar('%');

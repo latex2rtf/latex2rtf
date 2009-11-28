@@ -48,7 +48,7 @@ typedef struct ConfigInfoT {
     char *filename;
     ConfigEntryT **config_info;
     int config_info_size;
-    bool remove_leading_backslash;
+    int remove_leading_backslash;
 } ConfigInfoT;
 
 static ConfigInfoT configinfo[] = {
@@ -197,7 +197,7 @@ purpose: open config by trying multiple paths
     return NULL;
 }
 
-static int read_cfg(FILE * cfgfile, ConfigEntryT *** pointer_array, bool do_remove_backslash)
+static int read_cfg(FILE * cfgfile, ConfigEntryT *** pointer_array, int do_remove_backslash)
 
 /****************************************************************************
  * purpose: Read config file and provide sorted lookup table

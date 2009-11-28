@@ -51,8 +51,6 @@
 /*** interpret comment lines that follow the '%' with this string ***/
 extern const char  * InterpretCommentString;
 
-typedef int		bool;
-
 void			diagnostics(int level, char *format,...);
 
 extern			char *g_aux_name;
@@ -63,11 +61,11 @@ extern			char *g_bbl_name;
 extern			char *g_home_dir;
 extern			char *progname;			/* name of the executable file */
 
-extern bool		GermanMode;
-extern bool		FrenchMode;
-extern bool		RussianMode;
-extern bool		CzechMode;
-extern bool		pagenumbering;
+extern int		GermanMode;
+extern int		FrenchMode;
+extern int		RussianMode;
+extern int		CzechMode;
+extern int		pagenumbering;
 extern int		headings;
 
 extern int		g_verbosity_level;
@@ -78,16 +76,16 @@ extern long		pos_begin_kill;
 extern int		g_tab_counter;
 extern int		g_equation_column;
 
-extern bool		twocolumn;
-extern bool		titlepage;
+extern int		twocolumn;
+extern int		titlepage;
 
-extern bool		g_processing_equation;
-extern bool		g_processing_preamble;
-extern bool		g_processing_figure;
-extern bool		g_processing_table;
-extern bool		g_processing_tabbing;
-extern bool		g_processing_tabular;
-extern bool		g_processing_eqnarray;
+extern int		g_processing_equation;
+extern int		g_processing_preamble;
+extern int		g_processing_figure;
+extern int		g_processing_table;
+extern int		g_processing_tabbing;
+extern int		g_processing_tabular;
+extern int		g_processing_eqnarray;
 extern int		g_processing_arrays;
 extern uint16_t	g_dots_per_inch;
 
@@ -95,12 +93,12 @@ extern int		g_document_type;
 extern int		g_document_bibstyle;
 
 extern int		g_equation_number;
-extern bool		g_escape_parens;
-extern bool		g_show_equation_number;
+extern int		g_escape_parens;
+extern int		g_show_equation_number;
 extern int		g_enumerate_depth;
-extern bool		g_suppress_equation_number;
-extern bool		g_aux_file_missing;
-extern bool		g_bbl_file_missing;
+extern int		g_suppress_equation_number;
+extern int		g_aux_file_missing;
+extern int		g_bbl_file_missing;
 extern char		g_charset_encoding_name[20];
 extern int		g_fcharset_number;
 extern int      g_graphics_package;
@@ -117,23 +115,23 @@ extern char		*g_preamble;
 
 extern double	g_png_equation_scale; 
 extern double	g_png_figure_scale;
-extern bool		g_latex_figures;
-extern bool		g_endfloat_figures;
-extern bool		g_endfloat_tables;
-extern bool		g_endfloat_markers;
+extern int		g_latex_figures;
+extern int		g_endfloat_figures;
+extern int		g_endfloat_tables;
+extern int		g_endfloat_markers;
 
-extern bool		g_equation_inline_rtf;
-extern bool		g_equation_display_rtf;
-extern bool		g_equation_inline_bitmap;
-extern bool		g_equation_display_bitmap;
-extern bool		g_equation_comment;
-extern bool     g_equation_raw_latex;
+extern int		g_equation_inline_rtf;
+extern int		g_equation_display_rtf;
+extern int		g_equation_inline_bitmap;
+extern int		g_equation_display_bitmap;
+extern int		g_equation_comment;
+extern int     g_equation_raw_latex;
 
-extern bool 	g_tabular_display_rtf;
-extern bool 	g_tabular_display_bitmap;
+extern int 	g_tabular_display_rtf;
+extern int 	g_tabular_display_bitmap;
 
-extern bool		g_little_endian;
-extern bool		g_tableofcontents;
+extern int		g_little_endian;
+extern int		g_tableofcontents;
 
 void fprintRTF(char *format, ...);
 void putRtfCharEscaped(char cThis);

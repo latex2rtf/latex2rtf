@@ -1184,7 +1184,7 @@ static CommandArray ignoreCommands[] = {
     {"", NULL, 0}
 };
 
-bool CallCommandFunc(char *cCommand)
+int CallCommandFunc(char *cCommand)
 
 /****************************************************************************
 purpose: Tries to call the command-function for the commandname

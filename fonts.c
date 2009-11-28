@@ -564,7 +564,7 @@ void CmdTextNormal(int code)
       RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape, RtfFontInfo[FontInfoDepth].series);
 }
 
-static bool strstart(const unsigned char *text, const char *str)
+static int strstart(const unsigned char *text, const char *str)
 
 /* returns true if text begins with str */
 {
@@ -579,7 +579,7 @@ static bool strstart(const unsigned char *text, const char *str)
         return TRUE;
 }
 
-static bool strstartnum(const unsigned char *text, const char *str, int *num)
+static int strstartnum(const unsigned char *text, const char *str, int *num)
 
 /* returns true if text begins with str and followed by an integer*/
 {

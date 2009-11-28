@@ -34,7 +34,7 @@ Authors:
 #include "convert.h"
 #include "vertical.h"
 
-static bool g_letterOpened = FALSE; /* true after \opening */
+static int g_letterOpened = FALSE; /* true after \opening */
 
 static char *g_letterToAddress = NULL;
 static char *g_letterReturnAddress = NULL;
