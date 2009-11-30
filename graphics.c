@@ -1433,9 +1433,6 @@ static double GetBaseline(const char *tex_file_stem, char *pre)
     }
 
 	/* baseline is in pixels at 72 dots per inch but bitmap may be larger */
-	/* I add 0.49 to help round-off.  This number gets doubled and then truncated */
-	/* to an integral value.  This ensures that a zero offset remains a zero offset */
-	/* since (int) (2*0.49) = 0 */
 	baseline = bottom * 72.0 / g_dots_per_inch;
 
     diagnostics(4, "height=%d top=%d bottom=%d baseline=%g", height, top, bottom, baseline);
