@@ -270,7 +270,7 @@ static char *SysGraphicsConvert(int opt, int offset, uint16_t dpi, const char *i
 				snprintf(cmd, N, format_unix, "", dpi, offset, in);
 			
 		} else {
-			char format_unix[] = "%slatex2png -d %d -o %d -H '%s' '%s'";
+			char format_unix[] = "%slatex2png -k -d %d -o %d -H '%s' '%s'";
 			if (g_script_dir)
 				snprintf(cmd, N, format_unix, g_script_dir, dpi, offset, g_home_dir, in);
 			else
@@ -928,7 +928,9 @@ static void PutPngFile(char *png, double height_goal, double width_goal, double 
 
 	w_twips = (int)(w_pixels / xres * POINTS_PER_METER * 20.0 + 0.5);
 	h_twips = (int)(h_pixels / yres * POINTS_PER_METER * 20.0 + 0.5);
-	b = (uint32_t) baseline;
+	
+	/* because \dn command requires half-points! */
+	b = (uint32_t) baseline * 2;
 	
 	AdjustScaling(h_twips,w_twips,height_goal,width_goal,scale,&sx,&sy);
 	
@@ -948,7 +950,10 @@ static void PutPngFile(char *png, double height_goal, double width_goal, double 
     
     /* Write the header for the png bitmap */
     fprintRTF("\n{");
-    if (b) fprintRTF("\\dn%lu", b); 
+    
+    /* for non-zero baseline shifts, add an extra half-pixel because it looks better */
+    if (b) fprintRTF("\\dn%lu", b+1); 
+    
     fprintRTF("\\pict");
     if (sx != 100 && sy != 100) fprintRTF("\\picscalex%u\\picscaley%u", sx,sy);
     fprintRTF("\\picw%lu\\pich%lu", w_pixels, h_pixels);
@@ -1428,8 +1433,10 @@ static double GetBaseline(const char *tex_file_stem, char *pre)
     }
 
 	/* baseline is in pixels at 72 dots per inch but bitmap may be larger */
-	/* I add 2 at the end because it looks best at 72 DPD, 300 DPI, and 600 DPI*/
-	baseline = (bottom + top) / 2.0 * 72.0 / g_dots_per_inch + 2;
+	/* I add 0.49 to help round-off.  This number gets doubled and then truncated */
+	/* to an integral value.  This ensures that a zero offset remains a zero offset */
+	/* since (int) (2*0.49) = 0 */
+	baseline = bottom * 72.0 / g_dots_per_inch;
 
     diagnostics(4, "height=%d top=%d bottom=%d baseline=%g", height, top, bottom, baseline);
   Exit:
