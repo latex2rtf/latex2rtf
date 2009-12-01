@@ -1460,7 +1460,7 @@ void PutLatexFile(const char *tex_file_stem, double scale, char *pre)
 	
     diagnostics(4, "Rendering LaTeX as a bitmap...");
 
-    bmoffset = g_dots_per_inch / 72 + 2;
+    bmoffset = g_dots_per_inch / 72 + 1;
 
     /* it is possible that the latex image is too wide or tall for Word
        we only know this after we have tried once.  If the image is too

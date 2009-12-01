@@ -2,7 +2,6 @@
 # Part of latex2rtf by Scott Prahl (Nov 2009)
 #
 # This version uses latex and dvips
-#              with ps2ps (part of Ghostscript)
 #              with convert (Part of ImageMagick)
 #
 # This script file will convert a latex file into a PNG image.
@@ -26,7 +25,7 @@ LATEX="latex --interaction batchmode"
 CONVERT="convert"
 GREP="grep"
 TEXINPSEP=":"
-VERSION="1.6"
+VERSION="1.7"
 
 help()
 {
@@ -62,8 +61,8 @@ echo "latex2png $VERSION"
 exit 0
 }
 
-opt_d=144       # default to 144 dpi
-opt_o=4		# default for 144 dpi
+opt_d=300       # default to 300 dpi
+opt_o=5		    # default for 300 dpi
 opt_k=0         # default to killing intermediate files
 home_dir="."    # default to current directory
 ext="tex"       # default to latex input
@@ -148,17 +147,22 @@ fi
 #    is removed to create the final image $name.png
 # 
 if [ $inline -eq 1 ] ; then
-#    rm -f $name.ppm
 
 	mv $name.png $name-tmp.png
 	
+	# remove fewer pixels from the left side on small images
+	width=`identify -format "%[fx:w-2]" $name-tmp.png`
+	if [ ${width} -gt ${opt_o} ] ; then
+		width=${opt_o}
+	fi
+	
 	# strip the initial dot and white space on the left
-	# because we must keep the white space on the bottom we need to add border on the east
+	# we must keep the white space on the bottom so we add border on the east
 	# so that the bottom does not get trimmed away
-	$CONVERT $name-tmp.png -chop ${opt_o}x0 -gravity East -background black -splice 1x0 -trim +repage $name.png
+	$CONVERT $name-tmp.png -chop ${width}x0 -gravity East -background black -splice 1x0 -trim +repage $name.png
 
 	# extract first column of png and stick it in a bitmap
-	$CONVERT $name-tmp.png -gravity West -crop 1x0+0+0 +repage $name.pbm
+	$CONVERT $name-tmp.png -crop 1x0 +repage $name.pbm
 
     if [ $opt_k -eq 0 ] ; then
         rm -f $name-tmp.ppm
