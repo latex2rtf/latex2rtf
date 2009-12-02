@@ -771,7 +771,7 @@ void CmdEquation(int code)
                 else
                 	WriteLatexAsBitmap("\\begin{align*}", s, "\\end{align*}");
 
-            	SetEquationLabel(eq);
+            	SetEquationLabel(s);
                 FinishRtfEquation(true_code, FALSE);
                 if (t) s = t + 2;
             } while (t);
