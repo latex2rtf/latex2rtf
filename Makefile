@@ -37,7 +37,6 @@ CFG_INSTALL=$(PREFIX)/share/latex2rtf/cfg
 CFLAGS:=$(CFLAGS) -g -Wall -fsigned-char
 
 LIBS= -lm
-#LIBS=-lMallocDebug -force_flat_namespace
 
 VERSION:="`scripts/version`"
 

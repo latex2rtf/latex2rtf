@@ -875,23 +875,30 @@ purpose: return the directory to store temporary files
 
 #else
 
-    char *t, *u;
+    size_t n;
+	char *t = NULL;
+	char *u = NULL;
     char pathsep_str[2] = { PATHSEP, 0 };   /* for os2 or w32 "unix" compiler */
-
-    /* first use any temporary directory specified as an option */
-    if (g_tmp_dir)
+	
+   /* first use any temporary directory specified as an option */
+    if (g_tmp_dir) {
         t = strdup(g_tmp_dir);
 
     /* next try the environment variable TMPDIR */
-    else if ((u = getenv("TMPDIR")) != NULL)
-        t = strdup(u);
-
+    } else {
+		u = getenv("TMPDIR");
+		if (u != NULL)
+			t = strdup(u);
+	}
     /* finally just return "/tmp/" */
-    else
+    if (t==NULL)
         t = strdup("/tmp/");
 
     /* append a final '/' if missing */
-    if (*(t + strlen(t) - 1) != PATHSEP) {
+	
+	n=strlen(t)-1;
+	
+    if (n > 1 && *(t + n) != PATHSEP) {
         u = strdup_together(t, pathsep_str);
         free(t);
         return u;
@@ -916,8 +923,6 @@ purpose: duplicate string --- exists to ease porting
     if (s == NULL)
         diagnostics(ERROR, "Cannot allocate memory to duplicate string");
     my_strlcpy(s, str, strsize);
-
-/*	diagnostics(5,"ptr %x",(unsigned long)s);*/
     return s;
 }
 

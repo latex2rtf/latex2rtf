@@ -121,12 +121,12 @@ static void PrintTabular(TabularT *table)
 
 /******************************************************************************
  purpose: Just count the number of columns ...
-          very similar to the switch structure in InterpretTabularFormat
+ very similar to the switch structure in InterpretTabularFormat
  ******************************************************************************/
-static int countTabularColumns(char *format)
+static int countTabularColumns(const char *format)
 {
 	char *t;
-	char *s=format;	
+	char *s= (char *) format;	
     int iCol = 0;
     
     while (*s) {
@@ -142,20 +142,20 @@ static int countTabularColumns(char *format)
             case 'p':
                 iCol++;
             	t=getStringBraceParam(&s);
-            	free(t);
+            	if (t) free(t);
                 break;
             case '*':
             	t=getStringBraceParam(&s);
-            	free(t);
+            	if (t) free(t);
             	t=getStringBraceParam(&s);
-            	free(t);
+            	if (t) free(t);
                 break;
             case '<':
             case '>':
             case '@':
             case '!':
             	t=getStringBraceParam(&s);
-            	free(t);
+            	if (t) free(t);
                 break;
             default:
         		s++;
@@ -169,7 +169,7 @@ static int countTabularColumns(char *format)
  purpose: convert the crazy tabular format string to something useable
           and return a point to that structure.
  ******************************************************************************/
-static TabularT *NewTabularFromFormat(char *format)
+static TabularT *NewTabularFromFormat(const char *format)
 {
     int iCol;
     char *t, *old, *s;
@@ -181,7 +181,7 @@ static TabularT *NewTabularFromFormat(char *format)
 	table = NewTabular(countTabularColumns(format));
 	
     iCol = 0;  
-	s = format;
+	s = (char *) format;
     while (*s) {
 
         switch (*s) {
@@ -199,16 +199,18 @@ static TabularT *NewTabularFromFormat(char *format)
                 iCol++;
                 table->align[iCol] = 'l';
             	t=getStringBraceParam(&s);
-            	table->width[iCol] = getStringDimension(t);
-            	free(t);
-                diagnostics(6,"p item, width=%d, residual='%s'",table->width[iCol], s);
+            	if (t) {
+					table->width[iCol] = getStringDimension(t);
+					free(t);
+					diagnostics(6,"p item, width=%d, residual='%s'",table->width[iCol], s);
+				}
                 break;
             case '*':
                 diagnostics(WARNING, " '*{num}{cols}' not supported.");
             	t=getStringBraceParam(&s);
-            	free(t);
+            	if (t) free(t);
             	t=getStringBraceParam(&s);
-            	free(t);
+            	if (t) free(t);
                 break;
             case '<':
             	t=getStringBraceParam(&s);
@@ -254,7 +256,6 @@ static TabularT *NewTabularFromFormat(char *format)
     diagnostics(5, "Exiting NewTabularFromFormat");
     return table;
 }
-
 
 void CmdTabjump(void)
 {
@@ -302,7 +303,7 @@ static int TabularColumnPosition(TabularT *table, int n)
     return (int) colWidth;
 }
 
-static TabularT *TabularPreamble(char *format)
+static TabularT *TabularPreamble(const char *format)
 
 /******************************************************************************
  purpose:  analyze the format and create and fill a TabularT structure 
@@ -319,7 +320,7 @@ static TabularT *TabularPreamble(char *format)
     return tabular;
  }
 
-static void TabularGetRow(char *table, char **row, char **next_row, int *height)
+static void TabularGetRow(const char *tabular_text, char **row, char **next_row, int *height)
 
 /******************************************************************************
  purpose:  scan and duplicate the next row from a tabular environment and any height changes
@@ -329,12 +330,12 @@ static void TabularGetRow(char *table, char **row, char **next_row, int *height)
  ******************************************************************************/
 {
     char *s, *dimension, *dim_start;
-    int slash = 0;
+    int slash = FALSE;
     int	row_chars = 0;
     int dim_chars = 0;
-    int slashslash = FALSE;
 
-    s = table;
+	diagnostics(5, "TabularGetFirstRow contents=%s", tabular_text);
+    s = (char *) tabular_text;
     *row = NULL;
     *next_row = NULL;
     *height = 0;
@@ -342,59 +343,58 @@ static void TabularGetRow(char *table, char **row, char **next_row, int *height)
     if (!s)
         return;
 
-    while (!(*s == '\0') && !(*s == '\\' && slash)) {
-        slash = (*s == '\\') ? 1 : 0;
+    while ( (*s != '\0') && (*s != '\\' || !slash)) {
+        slash = (*s == '\\') ? TRUE : FALSE;
         row_chars++;
         s++;
     }
 
-    if (*s == '\\' && slash) {
+	/* don't include final \\ in copied text */
+    if (*s == '\\' && slash) 
         row_chars--;
-        slashslash = TRUE;
-    }
 
+	/* save row as a new string */
     *row = (char *) malloc((row_chars + 1) * sizeof(char));
-    strncpy(*row, table, row_chars);
+    strncpy(*row, tabular_text, row_chars);
     (*row)[row_chars] = '\0';
 
-    show_string(5, *row, "row");
-    if (!slashslash)
+    diagnostics(5, "TabularGetFirstRow row = %s", *row);
+	
+	/* all done, leave *next_row = NULL */
+	if (*s == '\0') 
         return;
 
-/* move after \\ */
+	/* move after \\ */
     s++;
 
-/* skip blanks */
+	/* skip blanks */
     while (*s != '\0' && (*s == ' ' || *s == '\n'))
         s++;
 
-    if (*s == '\0')
+    /* last row because nothing after \\ so leave *next_row = NULL */
+	if (*s == '\0') 
         return;
 
-    if (*s != '[') {
+    /* no height specification so this is the start of the next row */	
+    if (*s != '[') {  
         *next_row = s;
         return;
     }
 
-/* read line space dimension */
+	/* read dimension between [ ] */
     s++;
     dim_start = s;
     while (*s != '\0' && *s != ']') {
         s++;
         dim_chars++;
     }
-    if (*s == '\0')
-        return;
-
-/* figure out the row height */
+	
+	/* figure out the row height */
     dimension = (char *) malloc((dim_chars + 2) * sizeof(char));
     strncpy(dimension, dim_start, dim_chars);
     dimension[dim_chars] = '\n';    /* make sure entire string is not parsed */
     dimension[dim_chars + 1] = '\0';
-
     *height = getStringDimension(dimension);
-
-    diagnostics(5, "height =<%s>=%d twpi", dimension, height);
     free(dimension);
 
     /* skip blanks */
@@ -402,14 +402,14 @@ static void TabularGetRow(char *table, char **row, char **next_row, int *height)
     while (*s != '\0' && (*s == ' ' || *s == '\n'))
         s++;
 
+	/* last line ends with \\[dimension], so no next_row remains NULL */
     if (*s == '\0')
         return;
-	diagnostics(5, "TabularGetRow %70s", s);
-
+	
     *next_row = s;
 }
 
-static char *TabularNextAmpersand(char *t)
+static char *NextAmpersand(const char *t)
 
 /******************************************************************************
  purpose:  find the next ampersand while avoiding \&
@@ -418,8 +418,10 @@ static char *TabularNextAmpersand(char *t)
     char *s;
     int escaped = 0;
 
-    s = t;
+    s = (char *) t;
 
+	diagnostics(5, "TabularNextAmpersand seeking '&' in '%s'",s);
+	
     while (s && *s != '\0' && (*s != '&' || (*s == '&' && escaped))) {
         escaped = (*s == '\\') ? 1 : 0;
         s++;
@@ -427,28 +429,36 @@ static char *TabularNextAmpersand(char *t)
     return s;
 }
 
-static char *TabularNextCell(char *cell_start, char **cell_end)
+static void TabularGetCell(const char *cell_start, char **cell, char **next_cell)
 
 /******************************************************************************
  purpose:  scan and duplicate contents of the next cell
+           cell_start should point to the beginning of the cell
+           on exit  next_cell points just after the ampersand
+                    cell is a newly allocated string that contains the cell
  ******************************************************************************/
 {
-    char *end, *dup, *dup2;
+    char *cell_end, *dup;
 
-    end = TabularNextAmpersand(cell_start);
+	*cell = NULL;
+	*next_cell = NULL;
+	if (cell_start == NULL) 
+		return;
+	
+	diagnostics(5,"TabularGetCell %p start='%s'", cell_start, cell_start);
+	
+    cell_end = NextAmpersand(cell_start);
 
-    if (*end == '&') {
-        dup = my_strndup(cell_start, (size_t) (end - cell_start));
-        *cell_end = end + 1;
-    } else {
-        dup = strdup(cell_start);
-        *cell_end = NULL;
+	/* last cell in a row ... just duplicate what remains */
+    if (*cell_end != '&') {
+        *cell = strdup_noendblanks(cell_start);
+        return;
     }
 
-    dup2 = strdup_noendblanks(dup);
+    *next_cell = cell_end + 1;
+    dup = my_strndup(cell_start, (size_t) (cell_end - cell_start));
+    *cell = strdup_noendblanks(dup);
     free(dup);
-
-    return dup2;
 }
 
 static void TabularMultiParameters(const char *cell, int *col_span, char *align, int *lvert, int *rvert)
@@ -522,9 +532,7 @@ static char *TabularCline(const char *row, int columns)
     int i, n, m;
     char *cline = NULL;
 
-    cline = (char *) malloc((columns + 2) * sizeof(char));
-    for (i = 0; i <= columns + 1; i++)
-        cline[i] = '\0';
+    cline = (char *) calloc((columns + 2) , sizeof(char));
 
     if (row == NULL)
         return cline;
@@ -613,7 +621,7 @@ static void TabularBeginRow(TabularT *table, const char *this_row, const char *n
         if (first_row)
             top = TabularHline(this_row);
 
-        cell = TabularNextCell(cell_start, &cell_end);
+        TabularGetCell(cell_start, &cell, &cell_end);
         TabularMultiParameters(cell, &span, &align, &multi_left_border, &multi_right_border);
                 
         if (span > 1)
@@ -673,7 +681,6 @@ static void TabularBeginRow(TabularT *table, const char *this_row, const char *n
 
         free(cell);
         cell_start = cell_end;
-        left_border= right_border;
     }
     fprintRTF("\n");
     free(cline);
@@ -697,13 +704,12 @@ static char TabularColumnAlignment(TabularT *table, int column)
     return table->align[column+1];
 }
 
-static void TabularWriteRow(TabularT *table, const char *this_row, char *next_row, int height, int first_row)
+static void TabularWriteRow(TabularT *table, const char *this_row, const char *next_row, int height, int first_row)
 {
     char *cell, *cell_start, *cell_end;
     char align;
     int n, lvert, rvert;
 
-    table->i = 0;
     if (this_row == NULL || strlen(this_row) == 0)
         return;
 
@@ -726,9 +732,10 @@ static void TabularWriteRow(TabularT *table, const char *this_row, char *next_ro
 
     TabularBeginRow(table, this_row, next_row, first_row);
     cell_start = (char *) this_row;
+    table->i = 0;
     while (cell_start) {
 
-        cell = TabularNextCell(cell_start, &cell_end);
+        TabularGetCell(cell_start, &cell, &cell_end);
 
         /* establish cell alignment */
         TabularMultiParameters(cell, &n, &align, &lvert, &rvert);
@@ -739,17 +746,15 @@ static void TabularWriteRow(TabularT *table, const char *this_row, char *next_ro
 
         BeginCellRtf(align);
         if (cell != NULL) {
-            diagnostics(5, "TabularWriteRow align=%c n=%d i=%d cell='%s'", align, n, table->i, cell);
-            fprintRTF("{");
+			fprintRTF("{");
             ConvertString(cell);
             fprintRTF("}");
-        }
+       }
         EndCellRtf();
 
         table->i += n;
         cell_start = cell_end;
-        if (cell != NULL)
-            free(cell);
+        free(cell);
     }
 
     TabularEndRow();
@@ -862,25 +867,22 @@ static void TabularMeasureRow(TabularT *table, const char *this_row, int height)
     
     while (cell_start) {
 
-        cell = TabularNextCell(cell_start, &cell_end);
+        TabularGetCell(cell_start, &cell, &cell_end);
 		iCol++;
-		len = 0;
 		
-		if (cell != NULL) {
-			TabularMultiParameters(cell, &n, &align, &lvert, &rvert);
-			if (n <= 1) { /* only use  */			
-				len = TabularMeasureCell(cell);
-				/* diagnostics(5, "col=%d n=%d len=%d cell=<%s>", iCol, n, len, cell); */
-			} else {
-				iCol += n-1;
-			}
-		} 
+		TabularMultiParameters(cell, &n, &align, &lvert, &rvert);
+		if (n <= 1)	
+			len = TabularMeasureCell(cell);
+		else {
+			len = 0;
+			iCol += n-1;
+		}
 		
-        if (table->chars[iCol] < len) table->chars[iCol] = len;
+        if (table->chars[iCol] < len) 
+        	table->chars[iCol] = len;
         
         cell_start = cell_end;
-        if (cell != NULL)
-            free(cell);        
+        free(cell);        
     }
  }
 
@@ -892,8 +894,8 @@ void CmdTabular(int code)
             \begin{array}[pos]{cols}            ... \end{array}
  ******************************************************************************/
 {
-    int true_code, this_height, next_height, first_row, begins, ends;
-    char *end=NULL, *begin=NULL, *this_row, *next_row, *next_row_start, *row_start;
+    int true_code, this_height, first_row, begins, ends;
+    char *end=NULL, *begin=NULL, *this_row, *next_row_start;
     char *table = NULL;
     char *cols = NULL;
     char *pos = NULL;
@@ -989,38 +991,34 @@ void CmdTabular(int code)
 	
 		} else {
 	
-			diagnostics(5, "Entering CmdTabular() options [%s], format {%s}", (pos) ? pos : "", cols);
+			diagnostics(4, "Entering CmdTabular() options [%s], format {%s}", (pos) ? pos : "", cols);
 			tabular_layout = TabularPreamble(cols);
-			diagnostics(5, "table_table_table_table_table\n%stable_table_table_table_table", table);
-	
-			row_start = table;
-			TabularGetRow(row_start, &this_row, &next_row_start, &this_height);
 			if (0) PrintTabular(tabular_layout);
+			diagnostics(5, "*********** TABULAR TABULAR TABULAR *************");
+			diagnostics(5, "%s",table);
+			diagnostics(5, "*********** TABULAR TABULAR TABULAR *************");
 	
 			/* scan entire table to get max number of chars in each column */
 			/* these are stored in tabular_layout->chars                   */
+			
+			TabularGetRow(table, &this_row, &next_row_start, &this_height);
 			while (this_row) {
-				row_start = next_row_start;
-				TabularGetRow(row_start, &next_row, &next_row_start, &next_height);
 				TabularMeasureRow(tabular_layout, this_row, this_height);
 				free(this_row);
-				this_row = next_row;
-				this_height = next_height;
+				TabularGetRow(next_row_start, &this_row, &next_row_start, &this_height);
 			}
 	
 			TabularSetWidths(tabular_layout);
 			if (0) PrintTabular(tabular_layout);
 			
-			row_start = table;
-			TabularGetRow(row_start, &this_row, &next_row_start, &this_height);
+			TabularGetRow(table, &this_row, &next_row_start, &this_height);
 			first_row = TRUE;
 			while (this_row) {
-				row_start = next_row_start;
-				TabularGetRow(row_start, &next_row, &next_row_start, &next_height);
+				char *next_row;
+				TabularGetRow(next_row_start, &next_row, &next_row_start, &this_height);
 				TabularWriteRow(tabular_layout, this_row, next_row, this_height, first_row);
 				free(this_row);
 				this_row = next_row;
-				this_height = next_height;
 				first_row = FALSE;
 			}
 	

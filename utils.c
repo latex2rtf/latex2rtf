@@ -86,7 +86,8 @@ int strstr_count(const char *s, char *t)
 }
 
 /******************************************************************************
- purpose:  returns a new string with n characters from s (with '\0' at the end)
+ purpose:  returns a new string having n characters from src terminated with
+           '\0' at the end.  (so the length is n+1)
 ******************************************************************************/
 char *my_strndup(const char *src, size_t n)
 {
@@ -117,14 +118,17 @@ char *strdup_together(const char *s, const char *t)
     if (t == NULL)
         return strdup(s);
 
+	if (0) diagnostics(1, "'%s' + '%s'", s, t);
     siz = strlen(s) + strlen(t) + 1;
     both = (char *) malloc(siz);
+
     if (both == NULL)
         diagnostics(ERROR, "Could not allocate memory for both strings.");
 
     my_strlcpy(both, s, siz);
     my_strlcat(both, t, siz);
-    return both;
+
+	return both;
 }
 
 /******************************************************************************

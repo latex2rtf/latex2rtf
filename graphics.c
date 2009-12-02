@@ -164,13 +164,13 @@ static void my_unlink(char *filename)
 /******************************************************************************
      purpose : create a tmp file name using only the end of the filename
  ******************************************************************************/
-static char *strdup_tmp_path(char *s)
+static char *strdup_tmp_path(const char *s)
 {
     char *tmp, *p, *fullname, c;
 
     if (s == NULL)
         return NULL;
-
+	
     tmp = getTmpPath();
 
     c = PATHSEP;
@@ -182,7 +182,8 @@ static char *strdup_tmp_path(char *s)
         fullname = strdup_together(tmp, p + 1);
 
     free(tmp);
-    return fullname;
+
+	return fullname;
 }
 
 /******************************************************************************
@@ -225,7 +226,7 @@ static char *strdup_tmp_path(char *s)
 	
  ******************************************************************************/
 
-static char *SysGraphicsConvert(int opt, int offset, uint16_t dpi, const char *in, char *out)
+static char *SysGraphicsConvert(int opt, int offset, uint16_t dpi, const char *in, const char *out)
 
 {
     char cmd[512], *out_tmp;
@@ -234,7 +235,7 @@ static char *SysGraphicsConvert(int opt, int offset, uint16_t dpi, const char *i
     int N = 512;	
 	
     out_tmp = strdup_tmp_path(out);
-   
+
 #ifdef UNIX
 
 	if (strchr(in, (int) '\'')) {
@@ -255,7 +256,7 @@ static char *SysGraphicsConvert(int opt, int offset, uint16_t dpi, const char *i
 	}
 
 	if (opt == CONVERT_CROP) {
-		char format_crop[]   = "convert -trim -units PixelsPerInch -density %d '%s' '%s'";
+		char format_crop[]   = "convert -trim +repage -units PixelsPerInch -density %d '%s' '%s'";
 		snprintf(cmd, N, format_crop, dpi, in, out_tmp);
 	}
 
@@ -268,7 +269,6 @@ static char *SysGraphicsConvert(int opt, int offset, uint16_t dpi, const char *i
 				snprintf(cmd, N, format_unix, g_script_dir, dpi, offset, in);
 			else
 				snprintf(cmd, N, format_unix, "", dpi, offset, in);
-			
 		} else {
 			char format_unix[] = "%slatex2png -k -d %d -o %d -H '%s' '%s'";
 			if (g_script_dir)
@@ -1368,7 +1368,7 @@ purpose: reads a .pbm file to determine the baseline for an equation
 		 the .pbm file should have dimensions of 1 x height
 		 returns the baseline height in pixels
  ****************************************************************************/
-static double GetBaseline(const char *tex_file_stem, char *pre)
+static double GetBaseline(const char *tex_file_stem, const char *pre)
 {
     FILE *fp;
     int thechar;
@@ -1444,7 +1444,7 @@ static double GetBaseline(const char *tex_file_stem, char *pre)
 /******************************************************************************
  purpose   : Convert LaTeX to Bitmap and insert in RTF file
  ******************************************************************************/
-void PutLatexFile(const char *tex_file_stem, double scale, char *pre)
+void PutLatexFile(const char *tex_file_stem, double scale, const char *pre)
 {
     char *png_file_name = NULL;
     char *tmp_path;
@@ -1460,7 +1460,8 @@ void PutLatexFile(const char *tex_file_stem, double scale, char *pre)
 	
     diagnostics(4, "Rendering LaTeX as a bitmap...");
 
-    bmoffset = g_dots_per_inch / 72 + 1;
+	/* arrived at by trial and error ... works for sizes from 72 to 1200 dpi */
+    bmoffset = g_dots_per_inch / 60 + 1;
 
     /* it is possible that the latex image is too wide or tall for Word
        we only know this after we have tried once.  If the image is too
@@ -1472,6 +1473,7 @@ void PutLatexFile(const char *tex_file_stem, double scale, char *pre)
 	tmp_path = SysGraphicsConvert(CONVERT_LATEX, bmoffset, png_resolution, tex_file_stem, png_file_name);
 	if ( tmp_path == NULL) {
 		diagnostics(WARNING, "PutLatexFile failed to convert '%s' to png");
+		free(png_file_name);
 		return;
 	}
 	
@@ -1529,10 +1531,10 @@ static char *SaveEquationAsFile(const char *post_begin_document,
     snprintf(name, 15, "l2r_%04d", file_number);
     tex_file_stem = strdup_together(tmp_dir, name);
     free(tmp_dir);
-    
+
     tex_file_name = strdup_together(tex_file_stem, ".tex");
 
-    diagnostics(3, "SaveEquationAsFile = %s", tex_file_name);
+    diagnostics(4, "SaveEquationAsFile = %s", tex_file_name);
 
     f = fopen(tex_file_name, "w");
     free(tex_file_name);
@@ -1565,7 +1567,7 @@ static char *SaveEquationAsFile(const char *post_begin_document,
 	fprintf(f, "\n\\end{document}");
 	fclose(f);
 	free(eq);
- 
+
     return (tex_file_stem);
 }
 

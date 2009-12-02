@@ -785,7 +785,7 @@ void CmdEquation(int code)
             SetEquationLabel(eq);
             FinishRtfEquation(true_code, FALSE);
         }
-    }
+   }
 
     if ((inline_equation && g_equation_inline_rtf) || (!inline_equation && g_equation_display_rtf)) {
         setCounter("equation", number);
