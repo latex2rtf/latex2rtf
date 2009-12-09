@@ -38,16 +38,7 @@ CFLAGS:=$(CFLAGS) -g -Wall -fsigned-char
 
 LIBS= -lm
 
-VERSION:="`scripts/version`"
-
-# Locations for MacOS X packaging
-PWD := $(shell pwd)
-PKG_DIR := "$(PWD)/macosx/pkgdir"
-PKG_CONTENTS="$(PKG_DIR)/Package_contents"
-PKG_RESOURCES="$(PKG_DIR)/Install_resources"
-PKG_NAME:="$(PWD)/macosx/dmg/latex2rtf-$(VERSION)/latex2rtf.pkg"
-PKG_MAKER=/Developer/Applications/PackageMaker.app/Contents/MacOS/PackageMaker
-DMG_DIR := "$(PWD)/macosx/dmg/latex2rtf-$(VERSION)"
+L2R_VERSION:="latex2rtf-`grep 'Version' version.h | sed 's/[^"]*"\([^" ]*\).*/\1/'`"
 
 SRCS=commands.c chars.c direct.c encodings.c fonts.c funct1.c tables.c ignore.c \
 	main.c stack.c cfg.c utils.c parser.c lengths.c counters.c letterformat.c \
@@ -77,7 +68,7 @@ DOCS= doc/latex2rtf.1   doc/latex2png.1    doc/latex2rtf.texi doc/latex2rtf.pdf 
 README= README README.DOS README.Mac README.OS2 README.Solaris README.VMS README.OSX \
         Copyright ChangeLog
 
-SCRIPTS= scripts/version scripts/latex2png scripts/latex2png_1 scripts/latex2png_2 \
+SCRIPTS= scripts/latex2png scripts/latex2png_1 scripts/latex2png_2 \
 	scripts/pdf2pnga scripts/README \
 	scripts/Makefile scripts/test1.tex scripts/test2.tex scripts/test3.tex \
 	scripts/test3a.tex scripts/test4.tex scripts/test1fig.eps
@@ -123,13 +114,14 @@ TEST=  \
 	test/enc_cp1251.tex          test/fig_testb.pdf      test/tabular.tex       \
 	test/enc_cp1252.tex          test/fig_testb.ps       test/theorem.tex       \
 	test/enc_cp437.tex           test/fig_testc.pdf      test/ttgfsr7.tex       \
-	test/enc_cp850.tex           test/fig_testc.ps       test/unicode.tex       \
+	test/enc_cp850.tex           test/fig_testc.ps       test/ucsymbols.tex       \
 	test/bib_apa.tex             test/bib_apa.bib        test/bib_apacite2.tex  \
 	test/bib_apacite2.bib        test/fig_subfig.tex     test/include4.tex      \
 	test/include5.tex            test/hyperref.tex       test/bib_super.bib     \
 	test/longstack.tex           test/table_array1.tex   test/table_array2.tex  \
 	test/bib_apacite3.tex        test/bib_apacite3.bib   test/color2.tex        \
-	test/fig_png.tex             test/fig_10x15.png      test/psfig.sty
+	test/fig_png.tex             test/fig_10x15.png      test/psfig.sty \
+	test/cyrillic.tex            test/greek.tex
 	
 OBJS=fonts.o direct.o encodings.o commands.o stack.o funct1.o tables.o \
 	chars.o ignore.o cfg.o main.o utils.o parser.o lengths.o counters.o \
@@ -170,23 +162,22 @@ depend: $(SRCS)
 
 dist: checkdir releasedate latex2rtf doc $(SRCS) $(HDRS) $(CFGS) $(README) Makefile vms_make.com $(SCRIPTS) $(DOCS) $(TEST)
 	$(MAKE) releasedate
-	$(MKDIR) latex2rtf-$(VERSION)
-	$(MKDIR) latex2rtf-$(VERSION)/cfg
-	$(MKDIR) latex2rtf-$(VERSION)/doc
-	$(MKDIR) latex2rtf-$(VERSION)/test
-	$(MKDIR) latex2rtf-$(VERSION)/scripts
-	ln $(SRCS)         latex2rtf-$(VERSION)
-	ln $(HDRS)         latex2rtf-$(VERSION)
-	ln $(README)       latex2rtf-$(VERSION)
-	ln Makefile        latex2rtf-$(VERSION)
-	ln vms_make.com    latex2rtf-$(VERSION)
-	ln $(CFGS)         latex2rtf-$(VERSION)/cfg
-	ln $(DOCS)         latex2rtf-$(VERSION)/doc
-	ln $(SCRIPTS)      latex2rtf-$(VERSION)/scripts
-	ln $(TEST)         latex2rtf-$(VERSION)/test
-	$(TAR) cvf - latex2rtf-$(VERSION) | \
-	    gzip > latex2rtf-$(VERSION).tar.gz
-	$(RM) -rf latex2rtf-$(VERSION)
+	$(MKDIR) $(L2R_VERSION)
+	$(MKDIR) $(L2R_VERSION)/cfg
+	$(MKDIR) $(L2R_VERSION)/doc
+	$(MKDIR) $(L2R_VERSION)/test
+	$(MKDIR) $(L2R_VERSION)/scripts
+	ln $(SRCS)         $(L2R_VERSION)
+	ln $(HDRS)         $(L2R_VERSION)
+	ln $(README)       $(L2R_VERSION)
+	ln Makefile        $(L2R_VERSION)
+	ln vms_make.com    $(L2R_VERSION)
+	ln $(CFGS)         $(L2R_VERSION)/cfg
+	ln $(DOCS)         $(L2R_VERSION)/doc
+	ln $(SCRIPTS)      $(L2R_VERSION)/scripts
+	ln $(TEST)         $(L2R_VERSION)/test
+	$(TAR) cvfz $(L2R_VERSION).tar.gz $(L2R_VERSION)
+	rm -rf $(L2R_VERSION)
 
 uptodate:
 	perl -pi.bak -e '$$date=scalar localtime; s/\(.*/($$date)";/' version.h
@@ -233,42 +224,12 @@ install-info: doc/latex2rtf.info
 	install-info --info-dir=$(INFO_INSTALL) doc/latex2rtf.info
 
 realclean: checkdir clean
-	$(RM) -f makefile.depend latex2rtf-$(VERSION).tar.gz
+	$(RM) -f makefile.depend $(L2R_VERSION).tar.gz
 	cd doc && $(MAKE) clean
 	cd test && $(MAKE) clean
 
 splint: 
 	splint -weak $(SRCS) $(HDRS)
-
-pkg:
-	$(MKDIR) $(PKG_CONTENTS)/$(BIN_INSTALL)
-	$(MKDIR) $(PKG_CONTENTS)/$(MAN_INSTALL)
-	$(MKDIR) $(PKG_CONTENTS)/$(CFG_INSTALL)
-	$(MKDIR) $(PKG_CONTENTS)/$(SUPPORT_INSTALL)
-	$(MKDIR) $(PKG_RESOURCES)
-	$(MKDIR) $(DMG_DIR)
-
-	cp $(BINARY_NAME)     $(PKG_CONTENTS)/$(BIN_INSTALL)
-	cp scripts/latex2png  $(PKG_CONTENTS)/$(BIN_INSTALL)
-	cp doc/latex2rtf.1    $(PKG_CONTENTS)/$(MAN_INSTALL)
-	cp doc/latex2png.1    $(PKG_CONTENTS)/$(MAN_INSTALL)
-	cp $(CFGS)            $(PKG_CONTENTS)/$(CFG_INSTALL)
-	cp doc/latex2rtf.html $(PKG_CONTENTS)/$(SUPPORT_INSTALL)
-	cp doc/latex2rtf.pdf  $(PKG_CONTENTS)/$(SUPPORT_INSTALL)
-	cp doc/latex2rtf.txt  $(PKG_CONTENTS)/$(SUPPORT_INSTALL)
-
-	cp macosx/License.rtf $(PKG_RESOURCES)
-	cp macosx/ReadMe.html $(PKG_RESOURCES)
-	cp macosx/Welcome.html $(PKG_RESOURCES)
-	
-	-$(PKG_MAKER) -build -p $(PKG_NAME) -r $(PKG_RESOURCES) -f $(PKG_CONTENTS)
-	mkdmg $(DMG_DIR)
-	
-	$(RM) -rf $(PKG_DIR)
-	
-	mkdmg 
-	
-	
 	
 .PHONY: all check checkdir clean depend dist doc install install_info realclean latex2rtf uptodate releasedate splint fullcheck
 
