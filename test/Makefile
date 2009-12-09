@@ -42,7 +42,7 @@ BABEL_TESTS=babel_german.rtf babel_russian.rtf babel_czech.rtf babel_french.rtf 
 EQN_TESTS=  eqns.rtf	eqns2.rtf eqns-koi8.rtf ttgfsr7.rtf spago1.rtf misc2.rtf\
             frac.rtf	subsup.rtf	theorem.rtf eqnnumber.rtf eqnnumber2.rtf
 
-CHAR_TESTS= accentchars.rtf oddchars.rtf unicode.rtf overstrike.rtf
+CHAR_TESTS= accentchars.rtf oddchars.rtf overstrike.rtf ucsymbols.rtf greek.rtf cyrillic.rtf
 
 TABLE_TESTS= tabbing.rtf tabular.rtf table_array1.rtf table_array2.rtf
 
