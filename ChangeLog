@@ -1,264 +1,352 @@
-r752 support \symbol{\'23} and \symbol{\"13}.  Improve \char'23 so that
-     it changes if\tt is active
+r840 SP: Fixes for alignment of displayed equations when the equations are converted to bitmaps.
+         Vertical spacing can be poor, but now the equation numbers are in the right places.  Numbering of
+         bitmap equations is much better (especially when the equations should not be numbered).
 
-r753 support \char92 and \char`b and \symbol{92}
+r841 SP: Tagging release version of 1.9.19
 
-r754 rip out support for %latex2rtf: as a way of controlling parser. 
-     Replace uses in examples with \iflatex2rtf ... \else ... \fi.  Fix
-     mistake in getSimpleCommand() that did not allow '\!' to be
-     returned. Eliminate weird bug when a command follows an integral
-     sign ... $\int \cos$. Improve debugging output at -d2 level.
+r842 SP: Modify version number.  First check-in for 1.9.20
 
-r755 Do not try to ignore packages or package options.
+r843 WH: documentation: updated Win32 section.
 
-r756 Fixes for the regressions in overstrike.tex
+r844 SP: Fix for bug when converting large latex images to bitmaps.
 
-r757 WH: commented out unneeded 'show_buffer' function in preparse.c
+r845 SP: Eliminate the unnecessary loop in PutLatexFile()
 
-r758 add \urlstyle{} ignore.cfg.  Cleaned up TryIgnoreVariable().  Made
-     arguments to strdup_together be constant strings.  More of this
-     should be done.
+r846 SP: Have tables be converted using the figure_scale and not the equation_scale.
 
-r759 silence \renewcommand{}{} warning.
+r847 SP: Trivial revisions to WriteLatexAsBitmap() for clarity.
 
-r760 no functional change ... just different code comment
+r850 SP: add my_strlcat() and my_strlcpy() to utils.h for later use.
 
-r762 Improve documentation for \iflatextortf and provide work-around for
-     %latex2rtf:
+r851 SP: update Makefile with hints from the Gentoo porter Alexis Ballier..
+         Move the -lm to LIBS and replace LINK_FLAGS by LDFLAGS
+         for linker flags which is set in the environment. The -lm needs to be
+         in LIBS otherwise it'll fail with --as-needed as linker flag.
+         The other part is just to allow taking CFLAGS from the environment so
+         that people are free to use the optimisations they want.
+         Regenerate the build file dependencies
 
-r763 Fix for backslash-linefeed problem in .aux files.  Pretty obscure.
+r852 SP: eliminate strcat() in favor of strlcat()
 
-r764 Suppress multiple warnings for missing \bibcite{} entries.  Change
-     Makefile in test directory to sup press all the output from latex.
+r853 SP: Replace many uses of strcpy() with my_strlcpy()
 
-r765 WH: modified cfg.c so that latex2rtf also tries to find the cfg dir
-     in C:\%ProgramFiles%\latex2rtf\cfg (default if installed by windows
-     installer)
+r854 SP: Modifications from the NetBSD patch
 
-r766 Fix typo in diagnotic message for \ensureeqn.  Fix Makefile for
-     bib_super.tex. Revise my_fgetc() in the hopes of making it more
-     portable.  Update ScanBbl() so that it uses the new routine.
+r855 WH: first try to get styles working correctly:
+         preamble.c, write out normal style:
+         use "DefaultFontSize()" instead of "CurrentFontSize()" -- works.
+         vertical.c, write out normal paragraph:
+         include \fs with CurrentFontSize() -- works, but still writes out wrong size
 
-r767 Fix regressions in bib_natbib1.tex and bib_natbib2.tex.  Don't know
-     where this code went, but the use of plain old \cite{} in the
-     natbib style was broken.
+r856 SP: Replace '\page{}' with '\page\par ' so that the style for the pagebreak will be correct.
+         Add head_report.tex to the default testing list.
 
-r768 Add tests for \documentclass{apa}
+r857 SP: First attempt at turning the style machinery on.  Pretty much everything is broken now, but
+         a lot of the problems can probably be fixed by expanding the definitions in style.cfg.
 
-r769 Make section headers bold for \documentclass{apa}
+r858 WH: Defined more styles in style.cfg.
+         Significant changes in vertical.c:
+         "startParagraph()" now also issues a \plain to reset character formatting, and
+         removed CurrentFontSize() because this is already written in "InsertStyle()".
+         Minor changes in preamble.c and xrefs.c:
+         removed "InsertStyle()" because already called from "startParagraph()"
+         Remaining problem:
+         "InsertStyle()" still inserts wrong font name when style contains *Typewriter*
 
-r770 Fix the bug from the preamble of bib_apa.  Add 'const' to more
-     functions. Eliminate all unneeded fprintf(stderr,...).  Rename a
-     bunch of diagnostic(1,...) instances to diagnostic(WARNING, ...).
+r859 SP: Improve the rtf header so that the \fonttbl{} and {\stylesheet ...} appear as in style.cfg.
+         This has been annoying for a very long time.
 
-r771 Adding two more test files
+r860 SP: Add *CurrentFontSize* and *DefaultFontSize* as possible entries in styles.cfg.  This allows
+         us to avoid hard-coding the font size in the style.cfg file.
 
-r772 WH: Modified main.c so that -P option now works also under
-     DOS/Windows. Updated documentation of -P option and -M option.
-     Fixed bug in latex2png script.
+r861 SP: Lot of debugging stuff to figure out why TexFontNumber() fails to work properly.
 
-r773 WH: Updated documentation of -P option and -M option (again).
+r862 SP: alter the 'make test' behavior
 
-r774 added diagnostic() line to my_fgets() to help sort out the problems
-     on Windows.
+r863 SP: Fix error in font number lookup.
 
-r775 WH: xrefs.c: Open aux file in binary mode. Removed extra
-     diagnostic() line.
+r864 WH: Modified styles in style.cfg so that "toc n" is set in default size.
+         Removed extra code from CmdVerbatim() so that verbatim paragraphs get the associated style.
 
-r776 Use fprintf() in show_string() to produce better diagnostics
+r865 SP: add SearchCfgEntryByID() and fix regression in handling of cyrillic and latin2 encodings.
 
-r777 Fix for bibentry_apalike.tex
+r866 SP: remove extraneous diagnostic information.  Eliminate compiler warning.
 
-r778 Make sure all fopen() calls use the mode "rb"
+r867 SP: improve styles for the abstract environment
 
-r779 Starting the process of rationalizing the debug levels
+r868 WH: Added styles for "tabular" and "quote"
 
-r780 remove a few instances of strcat
+r869 SP: Basic functions to manipulate and query the current style.
 
-r781 More clean-up of debugging information.  -d2 now shows nothing but
-     file manipulations.  Small tweaks to makefile in the test directory
-     to create temporary files in a folder within the current directory.
+r870 SP: Fix for '\begin  {   environ}'  Note this fails when spaces come at the end
 
-r782 More diagnostics clean-up.  It is now possible to get relatively
-     noise-free output using -d2.  This diagnostic level shows file
-     handling and each section as it is handled.  The plan is to make
-     -d3 echo system commands and each section as it is preparsed.  -d4
-     will track each \command as it is used.
+r871 SP: support \linewidth (will not work properly in two-column mode)
 
-r783 More rationalization for debugging levels.  One day -d5 will be
-     stuff that happens within CmdName() functions and -d6 will show
-     nearly everything but character processing, and -d7 will show each
-     character as it gets read and processed.
+r872 SP: Properly close PNG files when reading the header fails.  This resolves the "too many opne
+         files problem when converting long documents with equations using -M12.
 
-r784 Fix for fig_endfloat conversion.  It mostly works.  A few more
-     diagnostic() tweaks.
+r873 SP: Minimize debugging info when using -M12
 
-r785 More diagnostics() tweaks.
+r874 SP: Another trivial formatting tweak to 'Rendering' message
 
-r786 support \overrightarrow
+r875 WH: in dutch.cfg, changed "y to ij (alternatively textijlig)
+         following discussion on comp.text.tex at Jan. 21-22, 2008.
+         Added definitions for \textijlig to direct.cfg.
 
-r787 preliminary support for subfigure package
+r876 SP: Fix double period in et al.. when apacite is used.  Add placeholders for apa_section and
+         friends.
 
-r788 test file for \subfigure[caption]{figure} command
+r877 SP: fix some issues with the apa.cls
 
-r789 Add proper paragraph ending to subfigure pieces.  Fix numbering of
-     subfigures.  Add tests.
+r878 WH: added support for Euro sign in latin9 encoding (needed by LyX)
+         and added the Euro sign to test files enc_cp1250.tex and enc_latin9.tex
 
-r790 Initial code to support the pstricks-add package.  Three commands
-     are recognized \psset{}, \begin{psgraph}, and \begin{pspicture}. 
-     One broken test file (at least I cannot latex it successfully) is
-     also included.
+r879 WH: fixed: normal text paragraph following heading was formatted in heading style
+         although the paragraph correctly had the normal style assigned.
+         Fixing this required some braces {} to be added to the rtf output.
 
-r791 Emit information as latex2rtf is doing slow stuff (converting
-     latex->PNG or pdf->PNG).  Eliminate first linefeed and emit a final
-     linefeed when done.  This helps to group the output with the
-     previous command.
+r880 SP: add comment
 
-r792 Clean up a few preamble problems in the test documents.
+r881 SP: Changes to make sure that paragraphs get handled in a uniform manner.
+         Add new styles for equations.  Begin to separate out the use of \field
+         in RTF output.  All files in the test directory are converted to rtf,
+         but the output is still wrong.  More work is needed, but at least now
+         all the files are converted with balanced braces.
 
-r793 revert to placing the DOCUMENT_MODE environment before PREAMBLE
-     because there was no real reason to change and this might introduce
-     new subtle bugs.
+r882 SP: add missing files
 
-r794 add support for \href{url}{text}, \url{url}, \nolinkurl{url}.
+r883 SP: make the emitted RTF for tables more readable
 
-r795 start of a test file for hyperref features
+r884 SP: clean up RTF output for newpages.
 
-r796 refactoring the hyperlink code
+r885 SP: Eliminate weird spacing for french quotes <<
 
-r797 more \url{ref} clean-up.  add putRtfStrEscaped() function.
+r886 SP: Fix bug in handling of subscripts and superscripts when fields are not used.
 
-r798 eliminate some compiler warnings
+r887 SP: Add document for developers so that there is some explanation about how
+         the code works
 
-r799 Minor change to getRawTexChar() to handle EOF condition better. 
-     Small change to CmdInclude() to properly terminate with long file
-     names.
+r888 SP: add a couple of .bst files to make bibliography testing easier
 
-r800 Make is so that long file names fail properly when \input is used. 
-     Extend the possible file name length to 99.
+r889 SP: Modify all the \tab so that the have a cr afterwards
+         Improve the approximation for the the size of a rule
+         add rule.tex as another test file
 
-r801 Fix bug in ScanAux() so that it handles \@input{file} properly. 
-     Enhance test/include.tex so that it can be properly processed by
-     latex.  Add pagebreak before every instance of \include{file} as
-     should be done.  Fix minor bug in subsubsection numbering when
-     section but not subsection is used.
+r890 WH: latex2png updated to circumvent Ghostscript bug
+         (which is activated by change to recent version of ImageMagick)
 
-r802 preliminary code to support \newpsstyle{}{} ... unclear if it works
-     yet.
+r891 SP: add some basic functionality for wrapfigure environment
 
-r803 remove debugging commands since \newpsstyle{}{} seems to work.  Add
-     more packages with 'limited' support.  Have a number of test files
-     run latex first to generate .aux files.  Improve diagnostics for
-     writelatexasbitmap().
+r892 SP: trivial tweaks to code
 
-r804 silently ignore \nobreak, \expandafter, \long.  Change warnings
-     from 'ignored' to 'unknown'.  More general cleanup.
+r893 SP: fix bash location and linefeeds in this script
 
-r805 WH: fixed a bug in main.c. Updated documentation.
+r894 WH: added "dirinfo" entry to latex2rtf.texi (patch ID 2461905)
 
-r806 WH: fixed my bugfix in main.c (should have tested it before
-     uploading!)
+r895 SP: get basic character support working again.  These changes get
+         accentchars.tex, oddchars.tex unicode.tex and overstrike.tex
+         working again ... at least with Microsoft Word 2004 on a Mac.
 
-r807 Minor clean-up of -se# and -sf# scaling options.  We don't properly
-     support long option names, currently '-se #' is an error.
+r896 SP: Fix crash in tabular with some types of files
+         add infrastructure to improve setting column widths
+right now the widths are just evenly distributed
 
-r808 support for \urlstyle{}
+r897 WH: added a closing brace to running header and footer
 
-r809 support \UrlFont{}
+r898 SP: fix png parsing so that it works with 64 bit binaries
+         initialize variables to avoid warnings
+         define HAS_STRDUP on unix machines
 
-r810 support for \nameref{}
+         ***make check FAILS with this checkin *****
 
-r811 add missing .bib file to tarball.  Update changelog.
+r899 SP: fix problems with header and footer
+         basic tests pass once again
 
-r812 Improve \nolinkurl{} so that it typesets correctly and works with
-     '%' in the url. Fix long-standing issue with user-defined
-     environments and scope.  Modify unknown command message...again.
+r900 SP: fix bug when using -o option
 
-r813 Put \- hyphenation command back in. Originally removed before I
-     realised the problem was with OOwriter, not with rtf generally. It
-     appears to work fine with MSWord.
+r901 SP: do not append .tex to .ltx files when \include is used
 
-r814 Increased the stack from 2000 to 10000. This was motivated by the
-     failure of longstack.tex to parse properly. The increased stack size
-     fixes this for now, but I suspect there is a problem with the stack
-     not getting emptied.
+r902 SP: Fix short author in apacite by ben arthur
+         add test files for table parsing to test suite
 
-r815 Evidently url.sty and hyperref.sty work differently.  Implement
-     accordingly.  Revert linux.tex to use the url.sty package and let
-     hyperref.tex test the hyperref package.
+r903 SP: add a few more files to the distribution
 
-r816 WH: Updated documentation reflecting successful testing under
-     Vista.
+r904 SP: add test files for comma and square options for natbib package
 
-r817 Attempting to revert r816
+r905 SP: add support for natbib \natexlab{}
 
-r818 Add Wilfried's changes from r816
+r906 SP: better color support.
+         add \color command
+         add bunch of predefined colors ... still missing some of the dvips 68
 
-r819 WH: documentation: Tables section (-t2 option) and editorial
-     changes. main.c: added handling of option -V (uppercase)
+r907 SP: work to provide support for acronym package
 
-r820 add test/longstack.tex to tarball and to the test suite
+r908 SP: fix my recent fix for -o option
+         more fixes for the acronym package
 
-r821 Fix for missing paragraph break for a \url{} that starts a new
-     paragraph.
+r909 SP: test files for acronym package
 
-r822 Change how \, is translated.  Make it a small non-breaking space
-     instead of a just a small space.
+r910 SP: basic implementation of /newif by by Yoshihiro Ota.
+         1. a \newif command registers a new condition name.
+         2. The registered names are tested with TryConditionSet() function.
+         3. \else and \if commands are added to handle conditions.
+         4. Nested conditions are also supported.
 
-r823 CmdNoBreak() was so good it turned out that it was already in the
-     codebase as CmdNonBreak().  Eliminated duplicate routine.  Added
-     support for \thinspace
+r911 SP: fix various bugs in fields and \\
+         misc1.tex nearly works again
 
-r824 Use \charscalex instad of \fs to change the size of a non-breaking
-     space.
+r912 SP: more fixes for misc1.
 
-r825 Update ChangeLog and version.h for release.
+r913 SP: remove strnstr() for cygwin portability
+         fix arguments in AdjustScaling to match integer types
 
-r826 Fix for regression in formatting section numbers
+r914 SP: fix glitches in handling of arrays of equations.
+         fix problem with inline equation all by itself
 
-r827 Last fix only improved formatting of section numbers.  This one
-     removes the extra paragraph start and eliminates a long-standing
-     hack in SetTexMode().
+r915 SP: Turn on code to pseudo-adjust widths of columns
 
-r828 Eliminate long-standing bug with spurious spaces before a
-     paragraph.  This is still not quite right, but it mostly gets
-     paragraph indentation correct.  Currently, paragraph indentation is
-     inhibited after an environment closes...which of course is wrong.
+r916 SP: reintroduce support for right, left, center alignment via
+         styles rightpar, leftpar and centerpar
 
-r829 refactor all the vertical mode routines into a single file.  No
-     functional changes
+r917 SP: yet more adjustments to figure scaling.
 
-r830 Add the new files
+r918 WH: added "psfig.sty" to test folder
 
-r831 update the Makefile and reduce number of header files used by
-     vertical.c
+r919 WH: modified bib_apacite2.tex to work around babel bug on MiKTeX2.8
 
-r832 remove a couple of global variables
+r920 WH: more styles added to style.cfg
 
-r833 eliminate global paragraph alignment variable
+r921 WH: apacite.bst removed from /test
 
-r834 rename CmdStartParagraph to startParagraph() because it is not used
-     like the other CmdFunctions()
+r922 SP: Add \PrintOrdinal to apacite list of commands
 
-r835 Change accessors for the TeX mode.  These now follow the format of
-     the other functions in vertical.c
+r923 SP: change some arrows to use unicode
 
-r836 rename ANY_INDENT to GENERIC_PARAGRAPH and other for clarity.  Fix
-     the indent bug for paragraphs following a verbatim environment. 
-     Make 'references' bold in APA style.
-     
-r837 Hopefully final update before 1.9.19 release.  Add linefeed to
-     vertical.h at end.  Touch version.h so that it is current.
+r924 WH: more additions to style.cfg
 
-r838 WH: documentation: updated Win32 section. Added apanat1b.bst and
-     apanat1b.sty to 'test' folder.
+r925 SP: fix styles for endnotes and footnotes
+         fix styles for Title and author
+         insert today's date when \maketitle is used and no date is present
 
-r839 Handle \vskip3mm and \vspace{3mm} correctly.  Oddly, in horizontal
-     mode, \vspace{3mm} seems to have no effect.
+r926 WH: added footnote and endnote character styles to style.cfg
+         changed insertion of styles for footnotes and endnotes in xrefs.c
 
-r840 Fixes for alignment of displayed equations when the equations are
-     converted to bitmaps.  Vertical spacing can be poor, but now the
-     equation numbers are in the right places.  Numbering of bitmap
-     equations is much better (especially when the equations should not
-     be numbered).
+r927 SP: fixes for \d{s} \d{S} \d{u} \d{U}
+revert some unicode arrow symbols to previous versions
 
+r928 WH: in style.cfg, changed style name Heading back to heading because Word2003 needs lowercase
+         to correctly generate the table of contents
+         in overstrike.tex, added tests for whole alphabet with dots above and below
+         in xrefs.c, changed handling of FOOTNOTE_THANKS
+         added test for thanks to report.tex
+         in xrefs.c, removed output of footnote number from FOOTNOTE_TEXT and ENDNOTE_TEXT
+
+r929 WH: in style.cfg, separated the part to be inserted into the text AND the
+         stylesheet from the part to be inserted into the stylesheet only.
+         in xrefs.c, replaced hard-coded character style numbers with calls to InsertStyle
+
+r930 WH: in style.cfg, removed a comma from Quote style and
+
+         changed header and footer style name to lowercase which is required by Word
+r931 WH: added source code for Windows gui shell to svn
+
+r932 WH: fixed pathes and German dialogues in Windows gui shell
+
+r933 WH: in xrefs.c, removed an incorrect brace (line 409)
+         in main.c, removed a parenthesis from the "help" messages (cosmetic)
+         in l2rshell_files/changelog.txt, added reference to dev-cpp compiler
+
+r934 SP: Fix bug when converting a table to a bitmap when the header is long
+
+r935 WH: in graphics.c, fixed a typo in line 17
+         in doc/latex2rtf.texi, changed the descriptions in installation / obtaining LaTeX2rtf
+         to reflect renaming of win / win-NO-GUI packages at sourceforge
+r936 SP: work in progress to fix scaling issues
+         does not work properly yet
+
+r937 WH: modified latex2png script to make pnmtopng insert resolution
+         information into the png file
+
+r938 SP: fix inline bitmap equations to be at same resolution as displayed bitmaps
+         fix scaling of bitmap equations.
+
+r939 SP: add a simple set of png tests to ensure that png
+         figures are converted properly
+
+r940 WH: in latex2png, added $name-tmp.png to cleanup and removed $name.tmp.eps
+         in l2rshell source, changed default figure and eqn scales to 1.00
+
+r941 SP: add bookmark next to bitmap equations that have a \label{}
+
+r942 WH: in main.c, printout for "-h", added "not used in DOS/Win version" to -T option
+
+r943 SP: fix small memory leak, rearrange code
+
+r944 SP: minor reformatting and renaming of variables to make things
+         a bit more coherent
+
+r945 SP: make static functions static
+         end files with line
+         fix some initializers
+
+r946 SP: removing more unused variables
+         ensure that variables get properly initialized
+
+r947 SP: Fix a few leaks
+         Add explicit casts in a few places
+         Eliminate unused code
+
+r948 SP: fix leak in tabular handling
+
+r949 SP: fix leak in TryDirectCommand()
+
+r950 SP: fix for short tabular rows
+         fix vertical rules in tabular environments
+         modify test 'make tables' to always insert a latex image
+         so it is trivial to compare rtf with latex result
+         move some globals and rename a few others
+
+r951 SP: some debugging commands
+
+r952 SP: fix bug with \char'xxx that left extra blanks
+         remove debugging cruft since I cannot reproduce the problem on a different computer
+
+r953 SP: explicitly give prototypes for all malloc() calls
+         this evidently fixes problems under Vista
+
+r954 WH: changes to make code C++ compatible
+         solving crash when converting with -M12 under Windows
+
+r955 WH: fixed incompatible declaration of g_document_type in main.h and main.c
+         solving crash when converting with -M12 under Windows
+
+r956 SP: convert all bool declarations to int to avoid future problems
+
+r957 WH: mygetopt.c: changed sequence of includes to avoid error in c++ compilation
+         main.c, utils.c: option to use stdout instead of stderr (better performance under DOS/Win)
+
+r958 SP: Fix inline image offset for equations.  This is a two part fix.
+         The first fix was to the latex2png script to not remove space from the bottom
+         The second fix was to realize that \dn requires half-points and not points
+
+r959 SP: fix broken revision to latex2png which used a binary file
+         remove spurious comment from graphics.c
+
+r960 SP: improve latex2png so that it works with small images when
+         the -i flag is used
+
+r961 SP: minor cleanup of tabular work trying to track down weird
+         memory error.  Change default clipping for inline equations
+         to work when equations are rendered at 600 or 1200 DPI
+
+r962 SP: fix for missing equation numbers in eqnarry environment
+         when equations are rendered as bitmaps
+
+r963 WH: split test/unicode.tex into 3 files to make LaTeX successfully compile at least two of them
+
+         and accordingly adapted test/Makefile
+
+r964 WH: set version number to 2.0.0
+
+r965 SP: Tweak versioning, add files to distribution, remove unicode.tex
+         eliminate perl script to manipulate version number
