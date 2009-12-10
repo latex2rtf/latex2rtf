@@ -5,23 +5,12 @@ Fit & Finish:
 
 Potential Features:
 
-	add estimates for column sizes to tables
-	
 	Expand -f support to array
 	Expand -f support to weird characters
 	
 	New diagnostic level to replace Warning for expected stuff
 
-	Add support for \usepackage{fullpage}
-	Add support for \usepackage{doublespace}
-	Add support for \usepackage{endnote}
-	
-	Add autonumbering of equations using fields
-	
-	add style support for quote environment
-	add style support for enumerate environment
     add style support for superscript natbib entries
 
 	support \hsize
-	add support for \vspace
 	add support for \hspace
