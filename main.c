@@ -967,4 +967,5 @@ void debug_malloc(void)
     diagnostics(WARNING, "Malloc Debugging --- press return to continue");
     fflush(NULL);
     fscanf(stdin, "%c", &c);
+    c++;
 }

@@ -932,7 +932,7 @@ void CmdItem(int code)
  ******************************************************************************/
 {
     char *itemlabel, thechar;
-    static int item_number[4];
+    static int item_number[5];
     int vspace;
 
     if (code == RESET_ITEM_COUNTER) {
@@ -2112,29 +2112,9 @@ void CmdIflatextortf(int code)
 	free(entire_if);
 }
 
-void CmdTextColor(int code)
-
-/******************************************************************************
-  purpose: support for \color{thecolor}  and \textcolor{color}{words to be in color}
-  horrible implementation ... but who uses color anyhow??
-******************************************************************************/
+static int NumForColor(char * color)
 {
-    char *color, *text, *color1, *text1;
-    int n;
-
-    diagnostics(4, "Entering CmdTextColor");
-    color1 = getBraceParam();
-    color = strdup_noendblanks(color1);
-    free(color1);
-    
-    if (code) {  /* non-zero code indicates \textcolor */
-    	text1 = getBraceParam();
-    	text = strdup_noendblanks(text1);
-    	free(text1);
-    	fprintRTF("{");
-    }
-
-    n = -1;
+    int n = -1;
     if (strcmp(color, "black") == 0)
         n = 1;
     else if (strcmp(color, "blue") == 0)
@@ -2393,14 +2373,37 @@ void CmdTextColor(int code)
 		n = 135;
 	else if (strcmp(color, "YellowOrange") == 0)
 		n = 136;
-    if (n > 0) 
-        fprintRTF("\\cf%d ", n);
-   
-    if (code) {
+	return n;
+}
+
+void CmdTextColor(int code)
+
+/******************************************************************************
+  purpose: support for \color{thecolor}  and \textcolor{color}{words to be in color}
+  horrible implementation ... but who uses color anyhow??
+******************************************************************************/
+{
+    char *color, *text, *color1, *text1;
+    int n;
+
+    diagnostics(4, "Entering CmdTextColor");
+    color1 = getBraceParam();
+    color = strdup_noendblanks(color1);
+    n = NumForColor(color);
+    free(color1);
+    free(color);
+    
+    if (code) {  /* non-zero code indicates \textcolor */
+    	text1 = getBraceParam();
+    	text = strdup_noendblanks(text1);
+    	fprintRTF("{");
+		if (n > 0) fprintRTF("\\cf%d ", n);
 		ConvertString(text);
         fprintRTF("}");
     	free(text);
+    	free(text1);
+    } else {
+	    if (n > 0) fprintRTF("\\cf%d ", n); 
 	}
     
-    free(color);
 }

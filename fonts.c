@@ -190,13 +190,6 @@ void CmdFontFamily(int code)
         return;
 
     switch (true_code) {
-        case F_FAMILY_ROMAN:
-        case F_FAMILY_ROMAN_1:
-        case F_FAMILY_ROMAN_2:
-        case F_FAMILY_ROMAN_3:
-        case F_FAMILY_ROMAN_4:
-            num = TexFontNumber("Roman");
-            break;
 
         case F_FAMILY_SANSSERIF:
         case F_FAMILY_SANSSERIF_1:
@@ -219,6 +212,15 @@ void CmdFontFamily(int code)
         case F_FAMILY_CALLIGRAPHIC_2:
         case F_FAMILY_CALLIGRAPHIC_3:
             num = TexFontNumber("Calligraphic");
+            break;
+        
+        case F_FAMILY_ROMAN:
+        case F_FAMILY_ROMAN_1:
+        case F_FAMILY_ROMAN_2:
+        case F_FAMILY_ROMAN_3:
+        case F_FAMILY_ROMAN_4:
+        default:
+            num = TexFontNumber("Roman");
             break;
     }
 

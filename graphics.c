@@ -740,53 +740,53 @@ static void PutPictFile(char *s, double height0, double width0, double scale, do
 /*
 typedef struct _PngChunk
 {
-    DWORD DataLength;   Size of Data field in bytes
-    DWORD Type;         Code identifying the type of chunk
+    uint32_t DataLength;   Size of Data field in bytes
+    uint32_t Type;         Code identifying the type of chunk
     BYTE  Data[];       The actual data stored by the chunk
-    DWORD Crc;          CRC-32 value of the Type and Data fields
+    uint32_t Crc;          CRC-32 value of the Type and Data fields
 } PNGCHUNK;
 
 typedef struct _pHYsChunkEntry
 {
-   DWORD PixelsPerUnitX;    Pixels per unit, X axis 
-   DWORD PixelsPerUnitY;    Pixels per unit, Y axis 
+   uint32_t PixelsPerUnitX;    Pixels per unit, X axis 
+   uint32_t PixelsPerUnitY;    Pixels per unit, Y axis 
    BYTE  UnitSpecifier;     0 = unknown, 1 = meter 
 } PHYSCHUNKENTRY;
 */
 
 static unsigned char * getPngChunk(FILE *fp, char *s)
 {
-	uint32_t size, crc;
-	char head[5];
+	uint32_t crc, DataLength;
+	char Type[5];
 	unsigned char *data;
 	
-	head[4]='\0';
+	Type[4]='\0';
 	
 	diagnostics(6, "getPngChunk ... seeking '%s'",s);
 	data = NULL;
 	do {
-		int i;
-		if (data!=NULL) free(data);
-				
-		fread(&size, 4, 1, fp);
-		if (g_little_endian) size = LETONL(size);
+		if (data!=NULL) 
+			free(data);
 		
-		for (i=0; i<4; i++) {
-			head[i] = (char) fgetc(fp);
-			if (feof(fp)) return NULL;
-		}
-
-		if (strcmp(head,"IEND") == 0) return NULL;
+		/* read chuck size */
+		fread(&DataLength, 4, 1, fp);
+		if (g_little_endian) 
+			DataLength = LETONL(DataLength);
 		
-		diagnostics(6,"found chunk '%s' size %ld bytes",head,(unsigned long) size);
-		data = (unsigned char *) malloc(size);
+		/* read chunk type */
+		fread(Type, 1, 4, fp);
+		if (strcmp(Type,"IEND") == 0) 
+			return NULL;
+		
+		diagnostics(6,"found chunk '%s' size %u bytes",Type, DataLength);
+		data = (unsigned char *) malloc(DataLength);
 		if (data == NULL) return NULL;
 		
-		fread(data, size, 1, fp);
+		fread(data, DataLength, 1, fp);
 		fread(&crc, 4, 1, fp);
-	
+		crc++; /* ignored, but touch to eliminate warning */
 		
-	} while (strcmp(s,head)!=0);
+	} while (strcmp(s,Type) != 0);
 	
 	return data;	
 }
