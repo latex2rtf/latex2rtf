@@ -1504,3 +1504,213 @@ void CmdHline(int code)
         skipSpaces();
     }
 }
+
+static void ExtractTemplateAndLines(const char *s, char **thetemplate, char ***thelines, int *nl)
+{
+	char *p, *ss, *template;
+	char ** lines;
+	int nlines,i;
+	
+	/* count number of \cr */	
+	ss=(char *)s;
+	nlines = 0;
+	while ( (p=strstr(ss,"\\cr")) ) {
+		nlines++;
+		ss = p + 3;
+	}
+	nlines--; /* since template does not count */
+
+	lines = (char **) malloc(nlines * sizeof(char *));
+	
+	/* extract template */
+	p = strstr(s,"\\cr");
+	if (p) {
+		size_t n = p-s+1;
+		template = (char *) malloc(n*sizeof(char));
+		strlcpy(template,s,n);
+		diagnostics(1,"template = '%s'",template);
+	}
+	
+	/* now copy each line into a separate array entry */
+	ss = p + 3;
+	while (isspace(*ss)) ss++;
+	
+	for (i=0; i<nlines; i++) {
+		p = strstr(ss,"\\cr");
+		if (p) {
+			size_t n = p-ss+1;
+			lines[i] = (char *) malloc(n*sizeof(char));
+			strlcpy(lines[i],ss,n);
+			diagnostics(1,"line[%2d] = '%s'",i,lines[i]);
+		}
+		ss = p+3;
+		while (isspace(*ss)) ss++;
+	}
+	*nl = nlines;
+	*thelines = lines;
+	*thetemplate = template;
+}
+
+static int CountColumnsInHAlign(char **lines, int n)
+{
+	int i, max_col =0;
+	
+	for (i=0; i<n; i++) {
+		int col = 1;
+		char *s = lines[i];
+		while ( (s=NextAmpersand(s)) && *s != '\0') {
+			col++;
+			s++;
+		}
+		diagnostics(1,"line[%d] has %d columns",i,col);
+		if (col>max_col) max_col = col;
+	}
+	return max_col;
+	
+}
+
+/*   extract the template for the nth column     
+	 tricky because && indicates that the template 
+	 should be repeated.  Thus                     
+		  t1 & t2 & t3 && t4 & t5                  
+	 should be interpreted as                      
+		  t1 & t2 & t3 & t4 & t5 & t4 & t5         
+	 or
+		  & t1 & t2
+	 should be 
+		  t1 & t2 & t1 & t2 & ...
+	
+	in the first case nrepeat=4 and ncol = 5
+		  second case nrepeat=1 and ncol = 2
+ */
+static void CountColumnsInTemplate(char *template, int *ncol, int *nrepeat)
+{
+	char *s;
+	int col=1;
+
+	*nrepeat = 999;
+	
+	s = (char *) template;
+	
+	/* make sure first character is not a '&' */
+	while (isspace(*s)) s++;
+	if (*s=='&') {*s=' '; *nrepeat = 1; s++;}
+	
+	while ( (s=NextAmpersand(s)) && *s != '\0') {
+		s++;
+		col++;
+		if (*s=='&') {*s=' '; *nrepeat = col; s++;}
+	}
+	*ncol = col;
+	
+	diagnostics(5,"ncolumns = %d, nrepeat = %d", *ncol, *nrepeat);
+}
+
+/* extract the appropriate template for the nth column */
+static char * GetCellTemplateN(const char *template, int n, int tcols, int trepeat)
+{
+	char *s, *next, *cell;
+	int i;
+	
+	/* figure out which column we actually need to extract */
+	if (n > trepeat) {
+		if (tcols == trepeat)
+			n = trepeat;
+		else
+			n = trepeat + (n - trepeat) % (tcols - trepeat + 1);
+	}
+	
+	s = (char *) template;
+	for (i=1; i<=n; i++) {
+		TabularGetCell(s, &cell, &next);
+		if (i<n) {
+			free(cell);
+			s = next;
+		}		
+	}
+	return cell;
+}
+
+/* extract the appropriate cell for the nth column */
+static char * GetCellN(const char *line, int n)
+{
+	char *s, *next, *cell;
+	int i;
+	
+	s = (char *) line;
+	for (i=1; i<=n; i++) {
+		TabularGetCell(s, &cell, &next);
+		if (i==n) return cell;
+		free(cell);
+		s = next;
+	}
+	return NULL;
+}
+
+/* replace all the #'s in the template with the contents of cell */
+static char * ExpandCellWithTemplate(const char *template, const char *cell)
+{
+	char buffer[500];
+	char *s, *t, *b, *text;
+	
+	t = (char *) template;
+	b = buffer;
+	
+	/* do nothing if \omit is present */
+	if ( (s=strstr(cell,"\\omit")) != 0) {
+		text = strdup(s+5);
+		return text;
+	}
+	
+	while (*t != '\0') {
+		if (*t != '#') {
+			*b = *t;
+			b++;
+		} else {
+			s = (char *) cell;
+			while (*s) {*b = *s; b++; s++;}
+		}
+		t++;
+	}
+	*b='\0';
+	text = strdup(buffer);
+	return text;
+}
+
+void CmdHAlign(int code)
+{
+	char *s, *t, *template, *cell, *cell_template, *cell_text;
+	char **lines;
+	int nlines, ncols,tcols,trepeat,i,line;
+	
+	s = getBraceParam();
+	ExtractTemplateAndLines(s,&template, &lines, &nlines);
+	ncols = CountColumnsInHAlign(lines,nlines);
+	CountColumnsInTemplate(template,&tcols,&trepeat);
+
+	for (line=0; line<nlines; line++) {
+		s = lines[line];
+		t = template;
+		
+		/* emit RTF row start */
+		for (i=1; i<=ncols; i++) {
+			cell = GetCellN(s, i);
+			cell_template = GetCellTemplateN(template, i, tcols, trepeat);
+			cell_text = ExpandCellWithTemplate(cell_template,cell);
+			diagnostics(1,"line=%d, col=%d, cell is '%s'",line+1,i,cell_text);
+
+			free(cell);
+			free(cell_template);
+			free(cell_text);
+		}
+
+		/* emit RTF row end */
+	}
+/*
+	GuessAlignments(template,align); 
+	
+	for(i=0; i<lines; i++) {
+		full_line = ConvertLineUsingTemplate(template,line[i]);
+*/		
+	free(s);
+}

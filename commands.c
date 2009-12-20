@@ -415,6 +415,8 @@ static CommandArray commands[] = {
     {"pagenumbering", CmdIgnoreParameter, No_Opt_One_NormParam},
     {"markboth", CmdIgnoreParameter, No_Opt_Two_NormParam},
     {"markright", CmdIgnoreParameter, No_Opt_One_NormParam},
+
+    {"halign", CmdHAlign, 0},
     
 	{"acrodef",    CmdAcronymDef,   0},
 	{"acresetall", CmdAcronymReset, 0},

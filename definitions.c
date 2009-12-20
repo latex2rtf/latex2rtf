@@ -107,6 +107,8 @@ int i=0;
 }
 */
 
+#define POUND_POUND 9997
+
 static char *expandmacro(char *macro, char *opt_param, int params)
 
 /**************************************************************************
@@ -118,6 +120,11 @@ static char *expandmacro(char *macro, char *opt_param, int params)
     char *args[9], *dmacro, *macro_piece, *next_piece, *expanded, *buffer=NULL, *cs;
     int buff_size = 512;   /* extra slop for macro expansion */
 
+	diagnostics(5, "expandmacro...");
+	diagnostics(4, "expandmacro: contents '%s'", macro);
+	diagnostics(5, "expandmacro: optional '%s'", opt_param, params);
+	diagnostics(5, "expandmacro: num args  %d", params);
+	
     if (params <= 0)
         return strdup(macro);
 
@@ -132,69 +139,86 @@ static char *expandmacro(char *macro, char *opt_param, int params)
     for (; i < params; i++) {
         args[i] = getBraceRawParam();
         buff_size += (int) strlen(args[i]);
-        diagnostics(5, "argument #%d <%s>", i + 1, args[i]);
+        diagnostics(5, "Macro arg #%d is '%s'", i + 1, args[i]);
     }
 
     dmacro = strdup(macro);
     macro_piece = dmacro;
 	buff_size += (int) strlen(macro_piece);
 
-	diagnostics(3, "buff_size in expandmacro = %d\n", buff_size);
+	diagnostics(5, "expandmacro: buff_size = %d\n", buff_size);
 	if(buff_size > 0)
 		buffer = (char*) calloc(sizeof(char) * buff_size, sizeof(char));
  	
 	expanded = buffer;
 
-    /* convert "\csname" to "\" */
+    /* convert "\csname " to "\" */
+    while ((cs = strstr(dmacro, "\\csname ")) != NULL)
+        strcpy(cs + 1, cs + 8);
     while ((cs = strstr(dmacro, "\\csname")) != NULL)
         strcpy(cs + 1, cs + 7);
 
     /* remove "\endcsname" */
+    while ((cs = strstr(dmacro, "\\endcsname ")) != NULL)
+        strcpy(cs, cs + 11);
     while ((cs = strstr(dmacro, "\\endcsname")) != NULL)
         strcpy(cs, cs + 10);
+
+	diagnostics(5, "expandmacro: after removing cs crap '%s'", macro_piece);
 
     /* do not use strtok because it may be used elsewhere */
     while (macro_piece && *macro_piece) {
 
+        param = -1;
+
         next_piece = strchr(macro_piece, '#');
         if (next_piece) {
-            *next_piece = '\0';
+            *next_piece = '\0';        /* later we;ll copy macro up to this point */
             next_piece++;
+            
+            /* the only characters that should follow # are '1'-'9' and '#' */
+            
             if (*next_piece == '#')
-                param = 101;    /* just a flag for below */
+                param = POUND_POUND;    /* just a flag for below */
             else
                 param = *next_piece - '1';
+            
             next_piece++;
-        } else
-            param = -1;
+        }
 
-        diagnostics(3, "expandmacro piece =<%s>", macro_piece);
+        diagnostics(5, "expandmacro: next section of macro before '#' is '%s'", macro_piece);
+       
+        /* copy unchanged part of macro into expanded */
         strcpy(expanded, macro_piece);
         expanded += strlen(macro_piece);
+                
         if (param > -1) {
-            if (param == 101) {
-                diagnostics(3, "expandmacro ## = #");
-                if (expanded+1<buffer+buff_size) {
-                	strcpy(expanded, "#");
+            if (param == POUND_POUND) {
+                diagnostics(5, "expandmacro: found ##, appending # to expanded macro");
+                if (expanded+1 < buffer+buff_size) {
+                    *expanded='#';
                 	expanded++;
                 } else 
                     diagnostics(WARNING, "insufficient buffer to expand macro <%s>", macro);
 
             } else if (param < params) {
-                diagnostics(3, "expandmacro arg =<%s>", args[param]);
+                diagnostics(5, "expandmacro: found #%d appending '%s'", param+1, args[param]);
                 if (expanded+strlen(args[param])+1 <buffer+buff_size) {
+                    
+                    /* begin with a space if the last character was a character */
                     char c = *(expanded-1);
                     if (isalpha(c)) {
                     	*expanded=' ';
                         expanded++;
                     }
+                    
                     strcpy(expanded, args[param]);
                     expanded += strlen(args[param]);
                 } else 
-                    diagnostics(WARNING, "insufficient buffer to expand macro <%s>", macro);
+                    diagnostics(WARNING, "expandmacro: insufficient buffer to expand macro <%s>", macro);
 
             } else
-                diagnostics(WARNING, "confusing definition in macro=<%s>", macro);
+                diagnostics(WARNING, "expandmacro: confusing definition in macro=<%s>", macro);
         }
 
         macro_piece = next_piece;
@@ -213,7 +237,7 @@ static char *expandmacro(char *macro, char *opt_param, int params)
     if (buffer)
     	free(buffer);
 
-    diagnostics(3, "expandmacro expanded=<%s>", expanded);
+    diagnostics(4, "expandmacro: result is '%s'", expanded);
     
     return expanded;
 }
@@ -377,11 +401,11 @@ char *expandDefinition(int thedef)
     if (thedef < 0 || thedef >= iDefinitionCount)
         return NULL;
 
-    diagnostics(3, "expandDefinition name     =<%s>", Definitions[thedef].name);
-    diagnostics(3, "expandDefinition opt_param=<%s>",
+    diagnostics(4, "expandDefinition name     =<%s>", Definitions[thedef].name);
+    diagnostics(5, "expandDefinition opt_param=<%s>",
       (Definitions[thedef].opt_param) ? Definitions[thedef].opt_param : "");
-    diagnostics(3, "expandDefinition def      =<%s>", Definitions[thedef].def);
-    diagnostics(3, "expandDefinition params   =<%d>", Definitions[thedef].params);
+    diagnostics(5, "expandDefinition def      =<%s>", Definitions[thedef].def);
+    diagnostics(5, "expandDefinition params   =<%d>", Definitions[thedef].params);
 
     return expandmacro(Definitions[thedef].def, Definitions[thedef].opt_param, Definitions[thedef].params);
 }

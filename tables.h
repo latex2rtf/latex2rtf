@@ -16,3 +16,4 @@ void            CmdTabbing(int code);
 void            CmdTable(int code);
 void            CmdMultiCol(int code);
 void 			CmdHline(int code);
+void 			CmdHAlign(int code);

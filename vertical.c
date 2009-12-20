@@ -497,6 +497,7 @@ void CmdAlign(int code)
 
     if (code == PAR_VCENTER) {
         s = getBraceParam();
+        ConvertString(s);
         free(s);
         return;
     }
