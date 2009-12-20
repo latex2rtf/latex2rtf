@@ -146,8 +146,8 @@ purpose: converts inputfile and writes result to outputfile
 
 		/* preliminary support for utf8 sequences.  Thanks to CSH */
         if ((cThis & 0x8000) && (strcmp(g_charset_encoding_name, "utf8") == 0)) {
-        	unsigned char byte;
-        	unsigned int len, value, i;
+        	uint8_t byte;
+        	uint16_t len, value, i;
 
         	/* Get the number of bytes in the sequence        */
         	/* Must use an unsigned character for comparisons */
@@ -173,13 +173,15 @@ purpose: converts inputfile and writes result to outputfile
         		value = (value << 6) + byte;
         	}
         	
-        	diagnostics(4,"(flag = 0x%X) char value = 0X%04X or %ud (%d bytes)", (unsigned char) cThis, value, value, len);
+        	diagnostics(4,"(flag = 0x%X) char value = 0X%04X or %u (%u bytes)", (unsigned char) cThis, value, value, len);
 
         	/* values above 0x8000 must be negative! */
 			if (value < 0x8000)
 				fprintRTF("\\u%d?", value);
 			else
-				fprintRTF("\\u%d?", (int)((double)value-0x10000));
+				fprintRTF("\\u%d?", (uint16_t)(value-0x10000));
+				
+				
         }        	        	
 		else
 

@@ -203,8 +203,9 @@ static void putUnicodeChar(unsigned char b1, unsigned char b2, char default_char
 void CmdUnicodeChar(int code)
 {
 	unsigned char a,b;
-	a = code >> 8;
-	b = code - a *256;
+	uint16_t thechar = code;
+	a = thechar >> 8;
+	b = thechar - a * 256;
     putUnicodeChar(a,b,'?');
 }
 

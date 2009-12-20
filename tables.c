@@ -1610,7 +1610,8 @@ static void CountColumnsInTemplate(char *template, int *ncol, int *nrepeat)
 static char * GetCellTemplateN(const char *template, int n, int tcols, int trepeat)
 {
 	char *s, *next, *cell;
-	int i;
+	
+	if (n<1) return NULL;
 	
 	/* figure out which column we actually need to extract */
 	if (n > trepeat) {
@@ -1621,13 +1622,15 @@ static char * GetCellTemplateN(const char *template, int n, int tcols, int trepe
 	}
 	
 	s = (char *) template;
-	for (i=1; i<=n; i++) {
+	TabularGetCell(s, &cell, &next);
+	n--;
+	while (n) {
+		free(cell);
+		s = next;	
 		TabularGetCell(s, &cell, &next);
-		if (i<n) {
-			free(cell);
-			s = next;
-		}		
+		n--;
 	}
+	
 	return cell;
 }
 
@@ -1679,7 +1682,7 @@ static char * ExpandCellWithTemplate(const char *template, const char *cell)
 
 void CmdHAlign(int code)
 {
-	char *s, *t, *template, *cell, *cell_template, *cell_text;
+	char *s, *template, *cell, *cell_template, *cell_text;
 	char **lines;
 	int nlines, ncols,tcols,trepeat,i,line;
 	
@@ -1690,7 +1693,6 @@ void CmdHAlign(int code)
 
 	for (line=0; line<nlines; line++) {
 		s = lines[line];
-		t = template;
 		
 		/* emit RTF row start */
 		for (i=1; i<=ncols; i++) {
