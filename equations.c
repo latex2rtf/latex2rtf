@@ -907,56 +907,71 @@ void CmdArrows(int code)
 {
     int size = (int) (CurrentFontSize() / 4.5);
 
-    fprintRTF(" \\\\o ({\\up%d ", size);
 
     switch (code) {
         case LEFT_RIGHT:
+    		fprintRTF(" \\\\o ({\\up%d ", size);
             ConvertString("\\leftarrow");
             fprintRTF("}%c{\\dn%d ", g_field_separator, size);
             ConvertString("\\rightarrow");
+    		fprintRTF("}) ");
             break;
 
         case RIGHT_LEFT:
+    		fprintRTF(" \\\\o ({\\up%d ", size);
             ConvertString("\\rightarrow");
             fprintRTF("}%c{\\dn%d ", g_field_separator, size);
             ConvertString("\\leftarrow");
+    		fprintRTF("}) ");
+            break;
+
+        case RIGHT_LEFT_HARPOONS:
+    		fprintRTF(" \\\\o ({\\up%d ", size);
+            ConvertString("\\leftharpoonup");
+            fprintRTF("}%c{\\dn%d ", g_field_separator, size);
+            ConvertString("\\rightharpoondown");
+    		fprintRTF("}) ");
             break;
 
         case RIGHT_RIGHT:
+    		fprintRTF(" \\\\o ({\\up%d ", size);
             ConvertString("\\rightarrow");
             fprintRTF("}%c{\\dn%d ", g_field_separator, size);
             ConvertString("\\rightarrow");
+    		fprintRTF("}) ");
             break;
 
         case LEFT_LEFT:
+    		fprintRTF(" \\\\o ({\\up%d ", size);
             ConvertString("\\leftarrow");
             fprintRTF("}%c{\\dn%d ", g_field_separator, size);
             ConvertString("\\leftarrow");
+    		fprintRTF("}) ");
             break;
 
         case LONG_LEFTRIGHT:
             ConvertString("\\longleftarrow");
-            fprintRTF("}%c{\\dn%d ", g_field_separator, size);
             ConvertString("\\longrightarrow");
             break;
 
         case LONG_RIGHTLEFT:
+    		fprintRTF(" \\\\o ({\\up%d ", size);
             ConvertString("\\longrightarrow");
             fprintRTF("}%c{\\dn%d ", g_field_separator, size);
             ConvertString("\\longleftarrow");
+    		fprintRTF("}) ");
             break;
 
         case LONG_LEFT:
             ConvertString("\\leftarrow");
-        	CmdSymbolChar(0xbe);  /* extension character */
+            CmdUnicodeChar(9135);
             break;
 
         case LONG_RIGHT:
-        	CmdSymbolChar(0xbe);  /* extension character */
+            CmdUnicodeChar(9135);
             ConvertString("\\rightarrow");
             break;
     }
-    fprintRTF("}) ");
 }
 
 void CmdLim(int code)

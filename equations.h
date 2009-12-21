@@ -23,6 +23,7 @@
 #define RIGHT_RIGHT 6
 #define LONG_LEFT 7
 #define LONG_RIGHT 8
+#define RIGHT_LEFT_HARPOONS 9
 
 void CmdEquation(int code);
 void CmdFraction(int code);
