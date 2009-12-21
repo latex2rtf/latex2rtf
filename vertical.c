@@ -496,12 +496,23 @@ void CmdAlign(int code)
     static char old_alignment_before_centerline = JUSTIFIED;
 
     if (code == PAR_VCENTER) {
-        s = getBraceParam();
+    	int restart_field=0;
+    	
+		if (EQ_field_active()) {
+			diagnostics(4,"ending field due to \\vcenter");
+			restart_field = 1;
+			endCurrentField();
+		}
+		
+        s = getBraceParam();     
         ConvertString(s);
         free(s);
+
+		if (restart_field) 
+			startField(FIELD_EQ);
         return;
     }
-
+    
     CmdEndParagraph(0);
     switch (code) {
         case (PAR_CENTERLINE):
