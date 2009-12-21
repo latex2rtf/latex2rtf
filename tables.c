@@ -313,7 +313,7 @@ static TabularT *TabularPreamble(const char *format)
 
     if (getTexMode() != MODE_HORIZONTAL) {
         CmdIndent(INDENT_NONE);
-        startParagraph("tabular", FIRST_PARAGRAPH);
+        startParagraph("last", FIRST_PARAGRAPH);
     }
 
     fprintRTF("\\par\n");
@@ -1114,7 +1114,7 @@ static char *TabbingNextCell(char *cell_start, char **cell_end)
  purpose:  scan and duplicate contents of the next cell
  ******************************************************************************/
 {
-    char *end, *dup, *dup2, *next_cell, *p;
+    char *end=NULL, *dup, *dup2, *next_cell=NULL, *p;
 
     TabbingNextCellEnd(cell_start, &end, &next_cell);
 
@@ -1507,7 +1507,7 @@ void CmdHline(int code)
 
 static void HA_ExtractTemplateAndLines(const char *s, char **thetemplate, char ***thelines, int *nl)
 {
-	char *p, *ss, *template;
+	char *p, *ss, *template=NULL;
 	char ** lines;
 	int nlines,i;
 	

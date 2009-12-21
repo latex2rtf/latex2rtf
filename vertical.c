@@ -239,6 +239,8 @@ void startParagraph(const char *style, int indenting)
 	static char last_style[50], the_style[50];
 	static int last_indent;
 	static int status = 0;
+	int fontfamily = CurrentFontFamily();
+	int fontsize = CurrentFontSize();
 	
 	/* special style "last" will just repeat previous */
 	if (strcmp(style,"last")==0) {
@@ -350,8 +352,11 @@ void startParagraph(const char *style, int indenting)
     if (g_right_margin_indent != 0)
         fprintRTF("\\ri%d", g_right_margin_indent);
 
-    fprintRTF("\\fi%d ", parindent);
-
+	if (strstr(style,"last")==0) 
+    	fprintRTF("\\fi%d\\f%d\\fs%d ", parindent,fontfamily,fontsize);
+	else
+    	fprintRTF("\\fi%d ", parindent);
+	
     setTexMode(MODE_HORIZONTAL); 
 
     if (!g_processing_list_environment) {
