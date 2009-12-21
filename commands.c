@@ -393,6 +393,9 @@ static CommandArray commands[] = {
     {"notag", CmdNonumber, EQN_NO_NUMBER},
     {"char", CmdSymbol, 0},
     {"symbol", CmdSymbol, 1},
+    {"rlap", CmdLap, 0},
+    {"llap", CmdLap, 1},
+    {"not", CmdNot, 0},
 
     {"url",               CmdHtml, LABEL_URL},
     {"urlstyle",          CmdHtml, LABEL_URLSTYLE},
@@ -644,6 +647,7 @@ static CommandArray PreambleCommands[] = {
     {"markboth", CmdIgnoreParameter, No_Opt_Two_NormParam},
     {"markright", CmdIgnoreParameter, No_Opt_One_NormParam},
     {"makeindex", CmdIgnoreParameter, 0},
+    {"hfil", CmdIgnoreParameter, 0},
     {"makeglossary", CmdIgnoreParameter, 0},
     {"listoffiles", CmdIgnoreParameter, 0},
     {"nofiles", CmdIgnoreParameter, 0},

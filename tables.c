@@ -1645,7 +1645,11 @@ static char * HA_GetCellN(const char *line, int n)
 	s = (char *) line;
 	for (i=1; i<=n; i++) {
 		TabularGetCell(s, &cell, &next);
-		if (i==n) return cell;
+		if (i==n) {
+			char *x = strdup_noendblanks(cell);
+			free(cell);
+			return x;
+		}
 		free(cell);
 		s = next;
 	}

@@ -2244,3 +2244,75 @@ void CmdDegreeCelsius(int code)
   fprintRTF("\\'b0C");
 }
 
+void CmdNot(int code)
+{
+	char c, *s;
+	c = getTexChar();
+	
+	switch (c) {
+	
+		case '=':
+			CmdUnicodeChar(8800);
+			break;
+			
+		case '<':
+			CmdUnicodeChar(8814);
+			break;
+		
+		case '>':
+			CmdUnicodeChar(8815);
+			break;
+			
+		case '\\':
+			ungetTexChar(c);
+			s = getSimpleCommand();
+			
+			if (strcmp(s,"\\leq")==0) 
+				CmdUnicodeChar(8816);
+			else if (strcmp(s,"\\geq")==0) 
+				CmdUnicodeChar(8817);
+			else if (strcmp(s,"\\equiv")==0) 
+				CmdUnicodeChar(8802);
+			else if (strcmp(s,"\\prec")==0) 
+				CmdUnicodeChar(8832);
+			else if (strcmp(s,"\\succ")==0) 
+				CmdUnicodeChar(8833);
+			else if (strcmp(s,"\\sim")==0) 
+				CmdUnicodeChar(8769);
+			else if (strcmp(s,"\\preceq")==0) 
+				CmdUnicodeChar(8928);
+			else if (strcmp(s,"\\succeq")==0) 
+				CmdUnicodeChar(8929);
+			else if (strcmp(s,"\\simeq")==0) 
+				CmdUnicodeChar(8772);
+			else if (strcmp(s,"\\subset")==0) 
+				CmdUnicodeChar(8836);
+			else if (strcmp(s,"\\supset")==0) 
+				CmdUnicodeChar(8837);
+			else if (strcmp(s,"\\approx")==0) 
+				CmdUnicodeChar(8777);
+			else if (strcmp(s,"\\subseteq")==0) 
+				CmdUnicodeChar(8840);
+			else if (strcmp(s,"\\supseteq")==0) 
+				CmdUnicodeChar(8841);
+			else if (strcmp(s,"\\cong")==0) 
+				CmdUnicodeChar(8775);
+			else if (strcmp(s,"\\sqsubseteq")==0) 
+				CmdUnicodeChar(8930);
+			else if (strcmp(s,"\\sqsupseteq")==0) 
+				CmdUnicodeChar(8931);
+			else if (strcmp(s,"\\asymp")==0) 
+				CmdUnicodeChar(8813);
+			else {
+				fprintRTF("/");
+				ConvertString(s);
+			}
+			if (s) free(s);
+			break;
+		default:
+			fprintRTF("/");
+			ungetTexChar(c);
+			break;
+	}
+}
+

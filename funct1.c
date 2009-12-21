@@ -2376,12 +2376,12 @@ static int NumForColor(char * color)
 	return n;
 }
 
-void CmdTextColor(int code)
-
 /******************************************************************************
   purpose: support for \color{thecolor}  and \textcolor{color}{words to be in color}
   horrible implementation ... but who uses color anyhow??
 ******************************************************************************/
+
+void CmdTextColor(int code)
 {
     char *color, *text, *color1, *text1;
     int n;
@@ -2406,4 +2406,14 @@ void CmdTextColor(int code)
 	    if (n > 0) fprintRTF("\\cf%d ", n); 
 	}
     
+}
+
+/******************************************************************************
+  purpose: parse \rlap{text} or \llap{text} , but ignore spacing changes
+******************************************************************************/
+void CmdLap(int code)
+{
+	char *s = getBraceParam();
+	ConvertString(s);
+	free(s);
 }

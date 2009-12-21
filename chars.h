@@ -42,6 +42,7 @@ void CmdDegreeCelsius(int code);
 void CmdMTExtraChar(int code);
 void CmdPolishL(int code);
 void CmdLdots(int code);
+void CmdNot(int code);
 
 #define IERF 1
 #define IEREF 2
