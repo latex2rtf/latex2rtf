@@ -1081,7 +1081,7 @@ void CmdBox(int code)
   purpose: converts the LaTeX \box-commands into  an similar Rtf-style
  ******************************************************************************/
 {
-    char BoxName[5][10] = { "hbox", "vbox", "mbox", "fbox", "parbox" };
+    char BoxName[7][10] = { "hbox", "vbox", "mbox", "fbox", "parbox", "makebox", "framebox" };
     int mode = getTexMode();
 
     diagnostics(4, "Entering CmdBox() [%s]", BoxName[code - 1]);
@@ -1099,6 +1099,17 @@ void CmdBox(int code)
         if (position)
             free(position);
         free(width);
+    }
+
+    if (code == BOX_MAKEBOX || code == BOX_FRAMEBOX) {
+        char *position, *width;
+
+        position = getBracketParam();
+        width = getBracketParam();
+        if (position)
+            free(position);
+        if (width) 
+        	free(width);
     }
 
     diagnostics(4, "Entering Convert() from CmdBox");

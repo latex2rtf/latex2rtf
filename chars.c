@@ -1673,8 +1673,11 @@ void CmdSymbol(int code)
 		c = getNonSpace();
 		base = identifyBase(c);
 		
-		if (base == 0)
+		if (base == 0) {
+			diagnostics(1,"malformed \\char construction");
+			fprintRTF("%c",c);
 			return;
+		}
 			
 		if (base == -1) {
 			c = getTexChar();   /* \char`b case */
@@ -1682,7 +1685,8 @@ void CmdSymbol(int code)
 			return;
 		}
 		
-		ungetTexChar(c);
+		if (base == 10) 
+			ungetTexChar(c);
 		
 		/* read sequence of digits */
 		for (i=0; i<4; i++) {

@@ -219,6 +219,8 @@ static CommandArray commands[] = {
     {"vbox", CmdBox, BOX_VBOX},
     {"fbox", CmdBox, BOX_FBOX},
     {"parbox", CmdBox, BOX_PARBOX},
+    {"makebox", CmdBox, BOX_MAKEBOX},
+    {"framebox", CmdBox, BOX_FRAMEBOX},
     {"frenchspacing", CmdIgnore, 0},
     {"nonfrenchspacing", CmdIgnore, 0},
     {"include", CmdIgnoreParameter, No_Opt_One_NormParam},  /* should not happen */
@@ -257,7 +259,6 @@ static CommandArray commands[] = {
     {"usebox", CmdIgnoreParameter, No_Opt_One_NormParam},
     {"subfigure", CmdSubFigure, 0},
 
-/*	{"fbox", CmdIgnoreParameter, No_Opt_One_NormParam}, */
     {"quad", CmdQuad, 1},
     {"qquad", CmdQuad, 2},
     {"textsuperscript", CmdSuperscript, 1},
@@ -295,8 +296,6 @@ static CommandArray commands[] = {
     {"newcount", CmdIgnoreDef, 0},
     {"output", CmdIgnoreDef, 0},
     {"value", CmdCounter, COUNTER_VALUE},
-    {"makebox", CmdIgnoreParameter, Two_Opt_One_NormParam},
-    {"framebox", CmdIgnoreParameter, Two_Opt_One_NormParam},
     {"sbox", CmdIgnoreParameter, No_Opt_Two_NormParam},
     {"savebox", CmdIgnoreParameter, Two_Opt_Two_NormParam},
     {"rule", CmdRule,0},
@@ -356,6 +355,11 @@ static CommandArray commands[] = {
     {"iff", CmdUnicodeChar, 10234},
     {"psset", CmdPsset, 0},
     {"newpsstyle", CmdNewPsStyle, 0},
+
+/*
+    {"ddots",             CmdMTExtraChar, MTEXTRA_DDOTS},
+    {"cdots",             CmdMTExtraChar, MTEXTRA_CDOTS},
+    {"vdots",             CmdMTExtraChar, MTEXTRA_VDOTS},
     {"bigodot",   CmdUnicodeChar, 10752},
     {"bigoplus",  CmdUnicodeChar, 10753},
     {"bigotimes", CmdUnicodeChar, 10754},
@@ -367,18 +371,15 @@ static CommandArray commands[] = {
     {"bigcap",    CmdUnicodeChar, 8899},
 
     {"mho",               CmdMTExtraChar, MTEXTRA_MHO},
-    {"ddots",             CmdMTExtraChar, MTEXTRA_DDOTS},
-    {"mapsto",            CmdMTExtraChar, MTEXTRA_MAPSTO},
+    {"Updownarrow",       CmdMTExtraChar, MTEXTRA_DOUBLEUPDOWNARROW},
     {"updownarrow",       CmdMTExtraChar, MTEXTRA_UPDOWNARROW},
     {"nwarrow",           CmdMTExtraChar, MTEXTRA_NWARROW},
     {"nearrow",           CmdMTExtraChar, MTEXTRA_NEARROW},
     {"searrow",           CmdMTExtraChar, MTEXTRA_SEARROW},
     {"swarrow",           CmdMTExtraChar, MTEXTRA_SWARROW},
-
+    {"mapsto",            CmdMTExtraChar, MTEXTRA_MAPSTO},
     {"triangleleft",      CmdMTExtraChar, MTEXTRA_TRIANGLELEFT},
     {"triangleright",     CmdMTExtraChar, MTEXTRA_TRIANGLERIGHT},
-    {"cdots",             CmdMTExtraChar, MTEXTRA_CDOTS},
-    {"vdots",             CmdMTExtraChar, MTEXTRA_VDOTS},
     {"hbar",              CmdMTExtraChar, MTEXTRA_HBAR},
     {"hslash",            CmdMTExtraChar, MTEXTRA_HBAR},
     {"ell",               CmdMTExtraChar, MTEXTRA_ELL},
@@ -387,14 +388,13 @@ static CommandArray commands[] = {
     {"prec",              CmdMTExtraChar, MTEXTRA_PREC},
     {"amalg",             CmdMTExtraChar, MTEXTRA_COPROD},
     {"coprod",            CmdMTExtraChar, MTEXTRA_COPROD},
- 
     {"simeq",             CmdMTExtraChar, MTEXTRA_SIMEQ},
+    {"doteq",             CmdMTExtraChar, MTEXTRA_DOTEQ},
+    */
     {"ll",                CmdUnicodeChar, 8810},
     {"gg",                CmdUnicodeChar, 8811},
-    {"doteq",             CmdMTExtraChar, MTEXTRA_DOTEQ},
     {"because",           CmdMTExtraChar, MTEXTRA_BECAUSE},
     {"measuredangle",     CmdMTExtraChar, MTEXTRA_MEASUREDANGLE},
-    {"Updownarrow",       CmdMTExtraChar, MTEXTRA_DOUBLEUPDOWNARROW},
     {"rightleftarrows",   CmdMTExtraChar, MTEXTRA_RIGHTLEFTARROWS},
 
     {"nonumber", CmdNonumber, EQN_NO_NUMBER},

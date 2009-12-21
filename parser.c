@@ -733,7 +733,7 @@ void CmdIgnoreParameter(int code)
     int regParmCount = code % 10;
     char cThis;
 
-    diagnostics(5, "CmdIgnoreParameter [%d] {%d}", optParmCount, regParmCount);
+    diagnostics(4, "CmdIgnoreParameter [%d] {%d}", optParmCount, regParmCount);
 
     while (regParmCount) {
         cThis = getNonBlank();

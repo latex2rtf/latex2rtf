@@ -37,6 +37,8 @@ This file is available from http://sourceforge.net/projects/latex2rtf/
 #define BOX_MBOX 	   3
 #define BOX_FBOX       4
 #define BOX_PARBOX     5
+#define BOX_MAKEBOX    6
+#define BOX_FRAMEBOX   7
 
 #define VERBATIM_1   1
 #define VERBATIM_2   2
