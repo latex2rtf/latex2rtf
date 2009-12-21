@@ -1527,7 +1527,7 @@ static void HA_ExtractTemplateAndLines(const char *s, char **thetemplate, char *
 	if (p) {
 		size_t n = p-s+1;
 		template = (char *) malloc(n*sizeof(char));
-		strlcpy(template,s,n);
+		my_strlcpy(template,s,n);
 		diagnostics(4,"template = '%s'",template);
 	}
 	
@@ -1540,7 +1540,7 @@ static void HA_ExtractTemplateAndLines(const char *s, char **thetemplate, char *
 		if (p) {
 			size_t n = p-ss+1;
 			lines[i] = (char *) malloc(n*sizeof(char));
-			strlcpy(lines[i],ss,n);
+			my_strlcpy(lines[i],ss,n);
 			diagnostics(4,"line[%2d] = '%s'",i,lines[i]);
 		}
 		ss = p+3;

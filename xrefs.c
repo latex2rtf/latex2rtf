@@ -2597,6 +2597,7 @@ void CmdAcronymAc(int code)
 	free(key);
 }
 
+
 void CmdAcronymUsed(int code)
 {
 	char *key = getBraceParam();
@@ -2614,9 +2615,9 @@ void CmdAcronymDef(int code)
 	CmdIgnoreParameter(21);
 }
 
+/*
 static void CmdAcronym(int code)
 {
-/*
 if (code & ON) {
 		PushEnvironment(ACRONYM_MODE);
 		CmdVspace(VSPACE_BIG_SKIP);
@@ -2630,9 +2631,9 @@ if (code & ON) {
 	} else 
 		PopEnvironment();
 		
-		*/
+		
 }
-
+*/
 void CmdAC(int code)
 {
 	char *shortAc, *key;
