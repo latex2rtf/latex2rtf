@@ -1682,6 +1682,8 @@ void CmdSymbol(int code)
 			return;
 		}
 		
+		ungetTexChar(c);
+		
 		/* read sequence of digits */
 		for (i=0; i<4; i++) {
 			num[i] = getTexChar();

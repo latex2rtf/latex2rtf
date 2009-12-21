@@ -266,7 +266,7 @@ void CmdTabset(void)
 {
 }
 
-static void BeginCellRtf(char align)
+static void BeginCellRTF(char align)
 
 /******************************************************************************
  purpose:  emit RTF code to start each cell
@@ -275,7 +275,7 @@ static void BeginCellRtf(char align)
     fprintRTF("{\\pard\\intbl\\q%c ", align);
 }
 
-static void EndCellRtf(void)
+static void EndCellRTF(void)
 
 /******************************************************************************
  purpose:  emit RTF code to end each cell
@@ -744,13 +744,13 @@ static void TabularWriteRow(TabularT *table, const char *this_row, const char *n
             n = 1;
         }
 
-        BeginCellRtf(align);
+        BeginCellRTF(align);
         if (cell != NULL) {
 			fprintRTF("{");
             ConvertString(cell);
             fprintRTF("}");
-       }
-        EndCellRtf();
+        }
+        EndCellRTF();
 
         table->i += n;
         cell_start = cell_end;
@@ -1158,8 +1158,8 @@ static void TabbingBeginRow(int n, int n_total, char *align)
 
     fprintRTF("\n");
     for (i = 0; i < g_tabbing_left_position; i++) {
-        BeginCellRtf(align[i]);
-        EndCellRtf();
+        BeginCellRTF(align[i]);
+        EndCellRTF();
     }
 
 }
@@ -1183,14 +1183,14 @@ static void TabbingWriteRow(char *this_row, int n, int n_total, char *align)
     end = this_row + strlen(this_row);
 
     for (i = g_tabbing_left_position; i < n; i++) {
-        BeginCellRtf(align[i]);
+        BeginCellRTF(align[i]);
         cell = TabbingNextCell(start, &end);
         if (cell) {
             diagnostics(5, "cell=<%s>", cell);
             ConvertString(cell);
             free(cell);
         }
-        EndCellRtf();
+        EndCellRTF();
         start = end;
     }
     fprintRTF("\\row}\n");
@@ -1505,7 +1505,7 @@ void CmdHline(int code)
     }
 }
 
-static void ExtractTemplateAndLines(const char *s, char **thetemplate, char ***thelines, int *nl)
+static void HA_ExtractTemplateAndLines(const char *s, char **thetemplate, char ***thelines, int *nl)
 {
 	char *p, *ss, *template;
 	char ** lines;
@@ -1528,7 +1528,7 @@ static void ExtractTemplateAndLines(const char *s, char **thetemplate, char ***t
 		size_t n = p-s+1;
 		template = (char *) malloc(n*sizeof(char));
 		strlcpy(template,s,n);
-		diagnostics(1,"template = '%s'",template);
+		diagnostics(4,"template = '%s'",template);
 	}
 	
 	/* now copy each line into a separate array entry */
@@ -1541,7 +1541,7 @@ static void ExtractTemplateAndLines(const char *s, char **thetemplate, char ***t
 			size_t n = p-ss+1;
 			lines[i] = (char *) malloc(n*sizeof(char));
 			strlcpy(lines[i],ss,n);
-			diagnostics(1,"line[%2d] = '%s'",i,lines[i]);
+			diagnostics(4,"line[%2d] = '%s'",i,lines[i]);
 		}
 		ss = p+3;
 		while (isspace(*ss)) ss++;
@@ -1551,7 +1551,7 @@ static void ExtractTemplateAndLines(const char *s, char **thetemplate, char ***t
 	*thetemplate = template;
 }
 
-static int CountColumnsInHAlign(char **lines, int n)
+static int HA_CountColumnsInHAlign(char **lines, int n)
 {
 	int i, max_col =0;
 	
@@ -1562,7 +1562,7 @@ static int CountColumnsInHAlign(char **lines, int n)
 			col++;
 			s++;
 		}
-		diagnostics(1,"line[%d] has %d columns",i,col);
+		diagnostics(5,"line[%d] has %d columns",i,col);
 		if (col>max_col) max_col = col;
 	}
 	return max_col;
@@ -1583,7 +1583,7 @@ static int CountColumnsInHAlign(char **lines, int n)
 	in the first case nrepeat=4 and ncol = 5
 		  second case nrepeat=1 and ncol = 2
  */
-static void CountColumnsInTemplate(char *template, int *ncol, int *nrepeat)
+static void HA_CountColumnsInTemplate(char *template, int *ncol, int *nrepeat)
 {
 	char *s;
 	int col=1;
@@ -1607,9 +1607,9 @@ static void CountColumnsInTemplate(char *template, int *ncol, int *nrepeat)
 }
 
 /* extract the appropriate template for the nth column */
-static char * GetCellTemplateN(const char *template, int n, int tcols, int trepeat)
+static char * HA_GetCellTemplateN(const char *template, int n, int tcols, int trepeat)
 {
-	char *s, *next, *cell;
+	char *s, *next, *cell, *clean_cell;
 	
 	if (n<1) return NULL;
 	
@@ -1631,11 +1631,13 @@ static char * GetCellTemplateN(const char *template, int n, int tcols, int trepe
 		n--;
 	}
 	
-	return cell;
+	clean_cell = strdup_noendblanks(cell);
+	free(cell);
+	return clean_cell;
 }
 
 /* extract the appropriate cell for the nth column */
-static char * GetCellN(const char *line, int n)
+static char * HA_GetCellN(const char *line, int n)
 {
 	char *s, *next, *cell;
 	int i;
@@ -1651,7 +1653,7 @@ static char * GetCellN(const char *line, int n)
 }
 
 /* replace all the #'s in the template with the contents of cell */
-static char * ExpandCellWithTemplate(const char *template, const char *cell)
+static char * HA_ExpandCellWithTemplate(const char *template, const char *cell)
 {
 	char buffer[500];
 	char *s, *t, *b, *text;
@@ -1680,39 +1682,93 @@ static char * ExpandCellWithTemplate(const char *template, const char *cell)
 	return text;
 }
 
+/* make guesses about alignment of columns based on presence of \hfil */
+static char * HA_AlignFromTemplate(const char *template, int ncols, int tcols, int trepeat)
+{
+	char *s, *cell, *align;
+	int i;
+	
+	align = (char *) malloc( (ncols+2)*sizeof(char));
+	align[0] = '*';
+	align[ncols+1] = '\0';
+	
+	for (i=1; i<=ncols; i++) {
+		cell = HA_GetCellTemplateN(template, i, tcols, trepeat);
+		align[i] = 'l';
+		s = cell;
+		while (isspace(*s)) s++;
+		if (strncmp(s,"\\hfil",5) == 0 ) {
+			if (strstr(s+5, "\\hfil") != NULL)
+				align[i] = 'c';
+			else
+				align[i] = 'r';
+		}
+		free(cell);
+	}
+	return align;
+}
+
+static void HA_CleanTemplate(char *template)
+{
+	char *s=template;
+	while ( (s=strstr(s,"\\hfill")) ) {*s++=' ';*s++=' ';*s++=' ';*s++=' ';*s++=' ';*s++=' ';}
+	s=template;
+	while ( (s=strstr(s,"\\hfil")) ) {*s++=' ';*s++=' ';*s++=' ';*s++=' ';*s++=' ';}
+	s=template;
+	while ( (s=strstr(s,"\\qquad")) ) {*s++=' ';*s++=' ';*s++=' ';*s++=' ';*s++=' ';*s++=' ';}
+	s=template;
+	while ( (s=strstr(s,"\\quad")) ) {*s++=' ';*s++=' ';*s++=' ';*s++=' ';*s++=' ';}
+	diagnostics(5,"template='%s'",template);
+}
+
 void CmdHAlign(int code)
 {
-	char *s, *template, *cell, *cell_template, *cell_text;
+	char *contents, *template, *align;
 	char **lines;
 	int nlines, ncols,tcols,trepeat,i,line;
 	
-	s = getBraceParam();
-	ExtractTemplateAndLines(s,&template, &lines, &nlines);
-	ncols = CountColumnsInHAlign(lines,nlines);
-	CountColumnsInTemplate(template,&tcols,&trepeat);
-
+	contents = getBraceParam();
+	HA_ExtractTemplateAndLines(contents, &template, &lines, &nlines);
+	free(contents);
+	
+	ncols = HA_CountColumnsInHAlign(lines,nlines);
+	HA_CountColumnsInTemplate(template,&tcols,&trepeat);
+	align = HA_AlignFromTemplate(template, ncols,tcols,trepeat);
+	HA_CleanTemplate(template);
+	
 	for (line=0; line<nlines; line++) {
-		s = lines[line];
+		char *s = lines[line];
 		
 		/* emit RTF row start */
-		for (i=1; i<=ncols; i++) {
-			cell = GetCellN(s, i);
-			cell_template = GetCellTemplateN(template, i, tcols, trepeat);
-			cell_text = ExpandCellWithTemplate(cell_template,cell);
-			diagnostics(1,"line=%d, col=%d, cell is '%s'",line+1,i,cell_text);
+		fprintRTF("{\\trowd");
+    	for (i = 1; i <= ncols; i++)
+        	fprintRTF("\\cellx%d", getLength("textwidth") * (i) / (ncols));
+    	fprintRTF("\n");
 
+		for (i=1; i<=ncols; i++) {
+			char *cell, *cell_template, *cell_text;
+			
+			cell = HA_GetCellN(s, i);
+			cell_template = HA_GetCellTemplateN(template, i, tcols, trepeat);
+			cell_text = HA_ExpandCellWithTemplate(cell_template,cell);
+			diagnostics(5,"line=%d, col=%d, align=%c, cell is '%s'",line+1,i,align[i],cell_text);
 			free(cell);
 			free(cell_template);
+
+			/* insert contents of cell */
+			BeginCellRTF(align[i]);
+            ConvertString(cell_text);
+			EndCellRTF();
+
 			free(cell_text);
 		}
 
 		/* emit RTF row end */
+    	fprintRTF("\\row}\n");
+		free(lines[line]);
 	}
-/*
-	GuessAlignments(template,align); 
-	
-	for(i=0; i<lines; i++) {
-		full_line = ConvertLineUsingTemplate(template,line[i]);
-*/		
-	free(s);
+
+	free(align);
+	free(lines);
+	free(template);
 }
