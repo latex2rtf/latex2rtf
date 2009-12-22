@@ -818,8 +818,8 @@ void MonitorFontChanges(const unsigned char *text)
 {
     int n;
 
-    diagnostics(4, "\nMonitorFont %10s\n", text);
-    diagnostics(4, "MonitorFont before depth=%d, family=%d, size=%d, shape=%d, series=%d",
+    diagnostics(5, "\nMonitorFont %10s\n", text);
+    diagnostics(5, "MonitorFont before depth=%d, family=%d, size=%d, shape=%d, series=%d",
       FontInfoDepth, RtfFontInfo[FontInfoDepth].family,
       RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape, RtfFontInfo[FontInfoDepth].series);
 
@@ -863,7 +863,7 @@ void MonitorFontChanges(const unsigned char *text)
         RtfFontInfo[FontInfoDepth].series = RtfFontInfo[0].series;
     }
 
-    diagnostics(4, "MonitorFont after depth=%d, family=%d, size=%d, shape=%d, series=%d",
+    diagnostics(5, "MonitorFont after depth=%d, family=%d, size=%d, shape=%d, series=%d",
       FontInfoDepth, RtfFontInfo[FontInfoDepth].family,
       RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape, RtfFontInfo[FontInfoDepth].series);
 
