@@ -1886,11 +1886,11 @@ void CmdHtml(int code)
 	
 			while ((s = strstr(text, "\\~{}")) != NULL) {
 				*s = '~';
-				strcpy(s + 1, s + 4);
+				my_strcpy(s + 1, s + 4);
 			}
 			while ((s = strstr(url, "\\~{}")) != NULL) {
 				*s = '~';
-				strcpy(s + 1, s + 4);
+				my_strcpy(s + 1, s + 4);
 			}
 			InsertRtfHyperlink(text, url, NULL, NULL);
 			break;

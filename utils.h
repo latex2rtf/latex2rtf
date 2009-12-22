@@ -28,6 +28,8 @@ int     odd(long n);
 int     even(long n);
 double  my_rint(double nr);
 int     strstr_count(const char *s, char *t);
+
+char *  my_strcpy(char *dest, const char *src);
 char *  my_strndup(const char *s, size_t n);
 char *  strdup_together(const char *s, const char *t);
 char *  strdup_together3(const char *s, const char *t, const char *u);

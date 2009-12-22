@@ -651,7 +651,7 @@ static void ConvertOverToFrac(char **equation)
                 t++;
             }
             /* add } if missing */
-            strcpy(t, last);    /* everything after {A\over B} */
+            my_strcpy(t, last);    /* everything after {A\over B} */
             free(eq);
             eq = s;
             p = eq;

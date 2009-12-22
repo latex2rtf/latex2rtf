@@ -63,6 +63,19 @@ double my_rint(double nr)
 }
 
 /******************************************************************************
+ purpose: this works with overlapping pointers ... the C standard says that
+   strcpy can do anything it likes for this case (which it happens to
+   do under Fedora 
+******************************************************************************/
+char *my_strcpy(char *dest, const char *src)
+{
+   char *save = dest;
+   while ( (*dest++ = *src++) );
+   return save;
+} 
+
+
+/******************************************************************************
  purpose:  count the number of occurences of the string t in the string s
 ******************************************************************************/
 int strstr_count(const char *s, char *t)

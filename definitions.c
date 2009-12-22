@@ -121,8 +121,8 @@ static char *expandmacro(char *macro, char *opt_param, int params)
     int buff_size = 512;   /* extra slop for macro expansion */
 
 	diagnostics(5, "expandmacro...");
-	diagnostics(4, "expandmacro: contents '%s'", macro);
-	diagnostics(5, "expandmacro: optional '%s'", opt_param, params);
+	diagnostics(5, "expandmacro: contents '%s'", macro);
+	diagnostics(5, "expandmacro: optional '%s'", opt_param);
 	diagnostics(5, "expandmacro: num args  %d", params);
 	
     if (params <= 0)
@@ -138,8 +138,8 @@ static char *expandmacro(char *macro, char *opt_param, int params)
 
     for (; i < params; i++) {
         args[i] = getBraceRawParam();
-        buff_size += (int) strlen(args[i]);
-        diagnostics(5, "Macro arg #%d is '%s'", i + 1, args[i]);
+        buff_size += strlen(args[i]);
+        diagnostics(5, "Macro #%d --> '%s'", i + 1, args[i]);
     }
 
     dmacro = strdup(macro);
@@ -152,17 +152,17 @@ static char *expandmacro(char *macro, char *opt_param, int params)
  	
 	expanded = buffer;
 
-    /* convert "\csname " to "\" */
+    /* convert "\csname " but leave inital backslash */
     while ((cs = strstr(dmacro, "\\csname ")) != NULL)
-        strcpy(cs + 1, cs + 8);
+        my_strcpy(cs+1, cs + strlen("\\csname "));
     while ((cs = strstr(dmacro, "\\csname")) != NULL)
-        strcpy(cs + 1, cs + 7);
+        my_strcpy(cs+1, cs + strlen("\\csname"));
 
     /* remove "\endcsname" */
     while ((cs = strstr(dmacro, "\\endcsname ")) != NULL)
-        strcpy(cs, cs + 11);
+        my_strcpy(cs, cs + strlen("\\endcsname "));
     while ((cs = strstr(dmacro, "\\endcsname")) != NULL)
-        strcpy(cs, cs + 10);
+        my_strcpy(cs, cs + strlen("\\endcsname"));
 
 	diagnostics(5, "expandmacro: after removing cs crap '%s'", macro_piece);
 
@@ -173,7 +173,7 @@ static char *expandmacro(char *macro, char *opt_param, int params)
 
         next_piece = strchr(macro_piece, '#');
         if (next_piece) {
-            *next_piece = '\0';        /* later we;ll copy macro up to this point */
+            *next_piece = '\0';        /* later we'll copy macro up to this point */
             next_piece++;
             
             /* the only characters that should follow # are '1'-'9' and '#' */
@@ -191,6 +191,8 @@ static char *expandmacro(char *macro, char *opt_param, int params)
         /* copy unchanged part of macro into expanded */
         strcpy(expanded, macro_piece);
         expanded += strlen(macro_piece);
+
+        diagnostics(5, "expandmacro: before appending next piece '%s'", buffer);
                 
         if (param > -1) {
             if (param == POUND_POUND) {
