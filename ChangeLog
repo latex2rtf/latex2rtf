@@ -149,7 +149,7 @@ r895 SP: get basic character support working again.  These changes get
 
 r896 SP: Fix crash in tabular with some types of files
          add infrastructure to improve setting column widths
-right now the widths are just evenly distributed
+         right now the widths are just evenly distributed
 
 r897 WH: added a closing brace to running header and footer
 
@@ -232,7 +232,7 @@ r926 WH: added footnote and endnote character styles to style.cfg
          changed insertion of styles for footnotes and endnotes in xrefs.c
 
 r927 SP: fixes for \d{s} \d{S} \d{u} \d{U}
-revert some unicode arrow symbols to previous versions
+         revert some unicode arrow symbols to previous versions
 
 r928 WH: in style.cfg, changed style name Heading back to heading because Word2003 needs lowercase
          to correctly generate the table of contents
@@ -246,8 +246,8 @@ r929 WH: in style.cfg, separated the part to be inserted into the text AND the
          in xrefs.c, replaced hard-coded character style numbers with calls to InsertStyle
 
 r930 WH: in style.cfg, removed a comma from Quote style and
-
          changed header and footer style name to lowercase which is required by Word
+
 r931 WH: added source code for Windows gui shell to svn
 
 r932 WH: fixed pathes and German dialogues in Windows gui shell
@@ -343,7 +343,6 @@ r962 SP: fix for missing equation numbers in eqnarry environment
          when equations are rendered as bitmaps
 
 r963 WH: split test/unicode.tex into 3 files to make LaTeX successfully compile at least two of them
-
          and accordingly adapted test/Makefile
 
 r964 WH: set version number to 2.0.0

@@ -26,7 +26,7 @@ clean: clean-custom
 $(BIN): $(OBJ)
 	$(CPP) $(LINKOBJ) -o "l2rshell.exe" $(LIBS)
 
-l2rshell.o: l2rshell.cpp
+l2rshell.o: l2rshell.cpp l2rshell.h dlg.h
 	$(CPP) -c l2rshell.cpp -o l2rshell.o $(CXXFLAGS)
 
 L2RSHELL_private.res: L2RSHELL_private.rc 

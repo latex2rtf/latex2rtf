@@ -58,9 +58,9 @@ LaTeX2RTF
 @subtitle 
 A converter from @latex{} to RTF
 
-Edition 0.7.4
+Edition 0.7.5
 
-for program version 1.9.19
+for program version 2.1.0
 
 @author Georg Lehner,
 updated by Wilfried Hennings and Scott Prahl,
@@ -68,7 +68,7 @@ with contributions by Mikhail Polianski
 
 @page
 @vskip 0pt plus 1 filll
-Copyright @copyright{} 1998-2007 Georg Lehner, Wilfried Hennings, Scott Prahl
+Copyright @copyright{} 1998-2009 Georg Lehner, Wilfried Hennings, Scott Prahl
 
 Permission is granted to make and distribute verbatim copies of this
 manual provided the copyright notice and this permission notice are
@@ -200,7 +200,7 @@ Citation Commands
 @ifnottex
 
 Copyright 1998-2002 Georg Lehner,@* 
-updates Copyright 1999-2007 by Wilfried Hennings and Scott Prahl,@* 
+updates Copyright 1999-2009 by Wilfried Hennings and Scott Prahl,@* 
 with contributions by Mikhail Polianski.
 
 Permission is granted to make and distribute verbatim copies of this
@@ -300,9 +300,11 @@ For more details on RTF the specification consult the links at @uref{http://late
 @node General, Obtaining LaTeX2RTF, Installation, Installation
 @section General
 
-The documentation of the program is found in the @file{doc/} directory in the
-file @file{latex2rtf.texi} in the GNU TeXInfo format.  For your convenience, you
-can find @acronym{HTML} and @acronym{PDF} versions of the manual there as well.
+The documentation of the program is found in the @file{doc/} directory 
+in the file @file{latex2rtf.texi} in the GNU TeXInfo format.  
+For your convenience, you can find @acronym{HTML} and @acronym{PDF} 
+versions of the manual there as well.@*
+Note: In this manual, the terms "directory" and "folder" are used interchangeably.
 
 @node Obtaining LaTeX2RTF, UNIX, General, Installation
 @section Obtaining @ltor{}
@@ -315,23 +317,22 @@ The latest version of @ltor{} is available at
 and --- with some delay --- on CTAN sites: 
 e.g., @uref{http://www.dante.de} or @uref{http://www.ctan.org}.
 
-The DOS package (1.8aa and up) will also run under all MS Windows versions. 
+The DOS package (1.8aa and up) will also run under all MS Windows versions
+except 64bit systems. 
 It requires an i386 processor or better.@*
-It should only be used on older Microsoft systems
-(before Win95) because it has known issues when
-converting more than 26 equations to bitmaps.@*
+It should only be used on older Microsoft systems.@*
 For Win9x, ME, NT, or newer, you should use the win or win-NO-GUI package.
 
 The win-NO-GUI package (starting from @ltor{} 1.9.19) is identical 
 to the DOS package except that it is compiled with Cygwin (up to 1.9.19) 
-or MinGW (1.9.20 and up), and only runs under Win32 
-(Win9x, ME, NT, 2000, XP, 2003, Vista).
+or MinGW (2.0.0 and up), and only runs under Win32 
+(Win9x, ME, NT, 2000, XP, 2003, Vista) but (2.0.0 and up) also on 64bit systems.
 
 The win package (starting from @ltor{} 1.9.15) is the DOS package
 (up to @ltor{} 1.9.17) or the win-NO-GUI package (@ltor{} 1.9.18 and up)
 plus Win32 GUI program (l2rshell).@*
 Up to version 1.9.19 it does not run under 64bit systems. 
-From version 1.9.20 it also runs under 64bit systems.
+From version 2.0.0 it also runs under 64bit systems.
 
 The win64 package (@ltor{} 1.9.19) is the win package
 but with 32bit versions of the shell utilities so that it also runs
@@ -417,20 +418,13 @@ The @acronym{UNIX} and Mac packages do not contain an executable for DOS
 or Windows. You may compile it yourself (with djgpp or MinGW)
 or get the DOS package as file @file{latex2rtf-x.x.x_dos.zip}
 (where x.x.x is the version number)
-or the Windows package as file @file{latex2rtf-x.x.x_win.zip}
+or the Windows package as file @file{latex2rtf-x.x.x_win-NO-GUI.zip}
 from @uref{http://sourceforge.net/projects/latex2rtf/,SourceForge}@*
 
 The DOS distribution contains a precompiled executable 
 which should run under plain DOS and also in the command prompt 
-(or ``console'') of any MS Windows system including Vista.@*
-@strong{Limitations of the DOS version:}
-The DOS version has a bug which causes conversion of equations 
-to bitmaps to fail for the remaining equations after successfully 
-converting the first 26 of them.
-
-So @strong{if you run a Win32 system} (i.e. Win 9x, ME, NT, 2000, XP, 
-2003, Vista) @strong{it is highly recommended to use the
-Windows package}.
+(or ``console'') of any MS Windows system including Vista
+but not on 64bit systems.@*
 
 To install the DOS or Windows package of @ltor{}, extract all files 
 from the zip archive, preserving the folder structure 
@@ -438,10 +432,11 @@ from the zip archive, preserving the folder structure
 preferably to @file{C:\l2r}, or under Windows, to your "Program Files" 
 folder (which ever it is named in your system)
 because then it will find its cfg files by default.@*
-If you extracted them to another folder (e.g. @file{C:\my files\l2r}),
+If you extracted them to another folder (e.g. @file{C:\my_files\l2r}),
 either edit the file @file{L2RPREP.BAT} 
 and change the folder @file{C:\l2r} to where you put them, or specify the 
-path to the cfg folder in the command line.
+path to the cfg folder in the command line.@*
+Avoid blanks in folder and file names!
 
 Make sure that the folder containing the file @file{L2RPREP.BAT}  
 is in your search path, or put this file into a folder 
@@ -458,7 +453,7 @@ for plain DOS.
 @section Win32 systems
 
 To install @ltor{} on a Win32 system (WinNT, Win2000, WinXP, 
-WinVista), download the win-gui package,
+WinVista), download the win package,
 execute the @file{latex2rtf-x.x.x_win.exe} 
 (where x.x.x is the version number) and follow the instructions.
 
@@ -476,6 +471,13 @@ you must have LaTeX, ImageMagick and Ghostscript installed. These programs are
 freely available for download at @uref{http://www.miktex.org/}, 
 @uref{http://www.imagemagick.org} and @uref{http://www.ghostscript.com}
 
+The following versions were available at the time of writing 
+and used together with @ltor{} version 2.0.0 and 2.1.0: @*
+- MikTeX 2.8 @*
+- Ghostscript 8.70 @*
+- ImageMagick-6.5.7-3-Q8-windows-dll.exe
+
+
 If MikTeX, ImageMagick and Ghostscript are installed, the paths to their 
 executables are detected automatically. If for any reason this doesn't 
 happen, these paths can be specified manually in the ``Environment'' 
@@ -491,6 +493,12 @@ default path like follows:
 
 To add a folder -- e.g. C:\Program Files\latex2rtf -- to the search path:
 @itemize
+@item Note that the folder name "Program Files" contains a blank.
+This would lead to some problems as some parts of the latex2rtf program 
+package interpret the blank as a parameter delimiter.
+Therefore in the following example the folder name "Program Files" is
+replaced by its DOS equivalent "PROGRA~1" which has the additional
+effect that this is similar for several if not all European languages.@*
 @item
 Win95, Win98, WinME
 @itemize
@@ -498,10 +506,10 @@ Win95, Win98, WinME
 Open the file @file{C:\Autoexec.bat} either with Edit (DOS) or 
 with Notepad (Windows).
 @item
-At the end of that file, add the line @*
+At the end of that file, add the line
 @file{PATH=C:\PROGRA~1\latex2rtf;%PATH%} 
 @item
-Save the file to its original location. Shutdown and reboot the PC.
+Save the file to its original location. Shutdown and reboot the PC.@*
 @end itemize
 @item
 WinNT, Win2000, WinXP
@@ -522,7 +530,7 @@ Click "OK"
 @end itemize
 
 Either the folders where TeX, ImageMagick and Ghostscript are installed
-must be in your search path, or you must edit the file @file{L2RPREP.BAT}, 
+must also be in your search path, or you must edit the file @file{L2RPREP.BAT}, 
 ensure that the pathes in this file point to the folders where 
 TeX, ImageMagick and Ghostscript are installed on your machine,
 and call @file{L2RPREP} before calling @file{latex2rt}. @*
@@ -530,23 +538,13 @@ Or you edit @file{L2R.BAT} and call @file{L2R} instead of
 calling @file{LATEX2RT.EXE}.
 
 When equations are to be converted to bitmaps, for each equation
-@ltor{} first writes a temporary .tex file to disk which consists of only 
-the equation to be converted. It then sends the call for 
-@file{"bash latex2png l2r_nnnn.tex"} to the operating system. @*
+@ltor{} first writes a temporary l2r_nnnn.tex file to disk which consists 
+of only the equation to be converted. It then sends the call 
+for @file{"bash latex2png l2r_nnnn.tex"} to the operating system. @*
 In previous versions of latex2rtf, some users got the message 
 ``Out of environment space'' (can occur only under Windows 95, Windows 98 
 or Windows ME); this should be solved now 
 by using bash.exe instead of command.com. 
-
-Some notes on Windows Vista compatibility:@*
-I only tested @ltor{} under Vista with the following system settings:@*
-- User Account Control OFF@*
-- Install and run all programs with admin rights.@*
-With these settings, the Windows installer of @ltor{} and the 
-following helper software versions were successfully installed and used:@*
-- MikTeX 2.6@*
-- Ghostscript 8.60 @*
-- ImageMagick-6.3.6-10-Q8-windows-dll.exe
 
 
 @node Macintosh, Problems Compiling, Win32 systems, Installation
@@ -622,11 +620,11 @@ files ending in @file{.cfg}). If no file is found during the search in the searc
 if the environment variable is not set, the compiled-in default for the configuration-file
 directory is used. If the files are not found at all the program aborts.
 
-In the MS-DOS version the search path is separated by `;' in the Unix version by `:'. For
+In the DOS and Windows versions the search path is separated by `;' in the Unix version by `:'. For
 the paths themselves apply `\' and `/'. A separator may appear at the beginning or ending
 of RTFPATH.
 
-Make sure that the configuration files are in the correct directory. @ltor{} will need at
+Make sure that the configuration files are in the correct directory (or folder). @ltor{} will need at
 least @file{fonts.cfg}, @file{direct.cfg}, @file{ignore.cfg}, @file{english.cfg}. You may
 have to change one ore more of them to suit your needs (@pxref{Configuration}).
 
@@ -808,20 +806,21 @@ Examples:@*
 Note that without specifying the -P option, @ltor{} tries to find its cfg files 
 in the following locations:@*
 1. the folder specified by the environment variable @code{RTFPATH}, if this variable exists;@*
-2. the folder @code{C:/%PROGRAMFILES%/latex2rtf/cfg}, if the variable 
+2. The folder @code{%PROGRAMFILES%\latex2rtf\cfg}, if the variable 
 @code{PROGRAMFILES} exists -- this is the folder in which @ltor{} is installed 
 by the Windows GUI installer with default settings;@*
 3. the folder specified at compilation time by the variable
-@code{CFGDIR}. This is set in the Makefile. The DOS and Windows versions are compiled
-with @code{CFGDIR=C:/l2r}.
+@code{CFGDIR}. This is set in the Makefile. The DOS version is compiled
+with @code{CFGDIR=C:/l2r}, the Windows version with 
+@code{CFGDIR=C:/PROGRA~1/latex2rtf}.
 
 @item -se#
 selects the scale for equation conversion, where # is the scale factor 
-(default 1.22).
+(default 1.00).
 
 @item -sf#
 selects the scale for figure conversion, where # is the scale factor
-(default 1.35).
+(default 1.00).
 
 @item -t# 
 where # selects the type of table conversion.  Use
@@ -854,8 +853,10 @@ is useful for files that are not cleanly converted by @ltor{}.
 @end table
 
 With no arguments other than switches starting with a ``-'', 
-@ltor{} acts as a filter, i.e., it reads from @code{stdin} and writes to @code{stdout}.
-In addition, diagnostic messages are sent to @code{stderr}. If these standard
+@ltor{} acts as a filter, i.e., it reads from @code{stdin} and writes 
+to @code{stdout}.
+In addition, diagnostic messages are sent to @code{stderr} or 
+(DOS and Windows versions) also to @code{stdout}. If these standard
 channels are not redirected using @code{<} and @code{>}, then the
 input is read from the command line, and both output and error
 messages are printed on the screen.
@@ -968,7 +969,7 @@ You can select any of the above languages using the @option{-l} option.  This
 is not needed if your @latex{} file contains @code{\usepackage[language]@{babel@}}.
 
 Encountering the @option{german} package or documentstyle option (by H. Partl of the
-Viena University) makes @ltor{} behave like that: German Quotes, German
+Vienna University) makes @ltor{} behave like that: German Quotes, German
 Umlauts by @code{"a}, etc@enddots{}  This support is programmed directly 
 into @ltor{} and supporting similar features for other languages will require 
 patching the source code.
@@ -1110,8 +1111,8 @@ MathType will convert the code into an equation. Wilfried tried to automate this
 in a Word macro, but this fails because the macro does not wait until MathType is
 started and ready to receive the pasted code. Maybe the MathType authors will 
 give us a hint or provide such a macro.@*
-MathType can be downloaded from @uref{http://www.dessci.com/en/} (30 day test
-version).
+MathType can be downloaded from @uref{http://www.dessci.com/en/products/mathtype/} 
+(30 day test version).
 
 @node Math and Special Symbols, Tables, Equations, Features
 @section Math and Special Symbols
@@ -1120,16 +1121,8 @@ version).
 
 The way that symbols are converted in the RTF is based on the following
 observations.  If the symbol is found in the latin 1 character set, then
-the current font is used.  The font ``Symbol'' is widely available, and therefore it is used 
-for as many translations as possible.  The font ``MT Extra'' is less common,
-but is free (as in beer from Design Science, see below) and characters from this font 
-are used when possible.  Note that early versions of ``MT Extra'', including
-the one which is installed if you choose to install the Equation Editor coming
-with MS Word and MS Office, are missing some characters;  
-the most recent version of this font (from Design Science) should be installed
-for best results.  Finally, if the symbol is not found in any of
-the previous fonts, then @ltor{} will use the unicode sequence for 
-that symbol.
+the current font is used, else the unicode code is inserted in the rtf code.
+(This is work in progress in the upcoming version 2.1.0)
 
 The means that on the system where the @file{.rtf} file is opened, a unicode
 font should be available or these glyphs will not be displayed correctly. On
@@ -1137,6 +1130,8 @@ Windows machines the unicode font is ``Lucida Sans Unicode'', on MacOS X the
 font is ``Lucida Grande''.  Even when these fonts are installed, support for
 these unicode sequences seems to be hit-or-miss in various versions of Word since
 many of these symbols are not (yet) contained in the standard unicode fonts.
+We are planning to switch to the STIXFonts 
+@uref{http://www.mozilla.org/projects/mathml/fonts/} which contain all needed characters.
 
 Many mathematical and special symbols are directly supported by @ltor{}.
 Less common symbols (not found in the fonts ``Symbol'' or ``MT Extra'')
@@ -1147,7 +1142,7 @@ are explicitly taken from ``Lucida Sans Unicode'', which contains more of the
 symbols than the standard font Times / Times New Roman but which is only
 available on PCs with MS Windows.
 To use ``Lucida Sans Unicode'', rename @file{direct.cfg} 
-(to e.g., @file{direct_mt.cfg}) and rename @file{direct_ucs.cfg} to @file{direct.cfg}.
+(to e.g., @file{direct_tm.cfg}) and rename @file{direct_ucs.cfg} to @file{direct.cfg}.
 
 Required fonts are:
 
@@ -1184,20 +1179,21 @@ into the RTF file. This feature was added in version 1.9.19.
 @section Graphics
 @cindex graphics
 
-There is now rudimentary support for @code{\includegraphics}.  Three file types
-will be inserted into the RTF file without needing conversion: @file{.pict}, @file{.jpeg}, and
-@file{.png} files.  EPS and PDF files are converted to PNG using @code{convert} from the ImageMagick 
-package.  Some options are even handled properly.
+There is now rudimentary support for @code{\includegraphics}.  
+Three file types will be inserted into the RTF file without needing 
+conversion: @file{.pict}, @file{.jpeg}, and @file{.png} files.  
+EPS and PDF files are converted to PNG using @code{convert} from the 
+ImageMagick package.  Some options are even handled properly.
 
 @node Pagestyles, Hyperlatex, Graphics, Features
 @section Pagestyles
 @cindex pagestyles
 
-If there is no @code{\pagestyle} command, the RTF output is generated as with plain
-pagestyle, i.e. each page has its page number centered at the bottom.
+If there is no @code{\pagestyle} command, the RTF output is generated as with 
+plain pagestyle, i.e. each page has its page number centered at the bottom.
 
-You must turn this off with the \pagestyle@{empty@} command in the @latex{} file if
-you don't want pagenumbers.
+You must turn this off with the \pagestyle@{empty@} command in 
+the @latex{} file if you don't want pagenumbers.
 The headings and myheadings styles are silently ignored by now.
 The twosided option to the \documentstyle or \documentclass produces the
 corresponding RTF tokens.
@@ -1532,8 +1528,7 @@ For subscription to these lists visit the page:
 or
 @uref{http://lists.sourceforge.net/lists/listinfo/latex2rtf-developers, developers list}
 
-As of November 2007, version 1.9.19 of @ltor{} is available. 
-One day there shall be a jump to Version 2.0, but this is not history but future ...
+As of December 2007, version 2.0.0 of @ltor{} is available. 
 
 The contents of this manual were composed by copying shamelessly what was
 available in the original sources and documentation.
