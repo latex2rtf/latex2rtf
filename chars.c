@@ -44,7 +44,6 @@ This file is available from http://sourceforge.net/projects/latex2rtf/
  ******************************************************************************/
 static int isShort(char c) 
 {
-
     switch (c) {
         case 'a':
         case 'c':
@@ -81,42 +80,6 @@ static int isShortStr(char *s)
 	if (s[0] == '\\' && strlen(s) >1 ) return isShort(s[1]);
 	
 	return isShort(s[0]);
-}
-
-/******************************************************************************
- * purpose : tries to do the right thing when MT Extra font is used
- *******************************************************************************/
-void CmdMTExtraChar(int code)
-{
-    if (processing_fields() == 0) {
-    	int num = RtfFontNumber("MT Extra");
-    	fprintRTF("{\\f%d\\'%.2X}",num,code);
-
-    } else {
-    
-		fprintRTF("{\\field{\\*\\fldinst SYMBOL %u ", (unsigned int) code);
-		fprintRTF("\\\\f \"MT Extra\"}{\\fldrslt }}");
-	}
-}
-
-/******************************************************************************
- * purpose : tries to do the right thing when the Symbol font is used
-   every character from the symbol font must be accompanied by the unicode
-   value from Microsoft's Private User Area when used in a field 
- *******************************************************************************/
-void CmdSymbolChar(int code)
-{
-    int num = RtfFontNumber("Symbol");
-    if (processing_fields() == 0) {
-    	fprintRTF("{\\f%d\\'%.2X}",num,code);
-
-    } else {
-    
-/*		fprintRTF("{\\field{\\*\\fldinst SYMBOL %u ", (unsigned int) code);
-		fprintRTF("\\\\f \"Symbol\"}{\\fldrslt }}");
-*/
-    	fprintRTF("{\\f%d\\u%d\\'%.2X}",num,code-4096,code);
-	}
 }
 
 /*****************************************************************************
@@ -176,20 +139,17 @@ static void putOverstrikeChar(const char *font, char *s,
 	if (processing_fields()==0) fprintRTF("}{\\fldrslt }}");
 }
 
-/* output STIX Encoding */
-void CmdSTIXChar(int code)
-{
-    int num = RtfFontNumber("STIXGeneral");
-    fprintRTF("{\\f%d\\u%d%c}",num, code,'?');
-}
-
-
 /*****************************************************************************
  purpose: emit a unicode character.  values above 2^15 are negative
           the default_char should be a simple ascii 0-127 character
  ******************************************************************************/
 static void putUnicodeChar(unsigned char b1, unsigned char b2, char default_char)
 {
+	/*
+	if (b1 == 0)
+		fprintRTF("%c", b2);
+	else 
+	*/
 	if (b1<128)
 		fprintRTF("\\u%d%c",b1*256+b2,default_char);
 	else
@@ -1608,8 +1568,6 @@ void CmdLdots( /* @unused@ */ int code)
     if (getTexMode() != MODE_MATH && getTexMode() != MODE_DISPLAYMATH)
         changeTexMode(MODE_HORIZONTAL);
 
-
-/*    should this just be CmdSymbolChar(0x85);   ????????? */
     if (!processing_fields()) 
     	fprintRTF("\\u8230\\'85",num);
     else
@@ -1722,231 +1680,6 @@ void CmdSymbol(int code)
 		free(t);
 	}
 	
-}
-
-static int UsingTypewriter(void)
-{
-	if (CurrentFontFamily() ==TexFontNumber("Typewriter"))
-		return TRUE;
-	else
-		return FALSE;
-}
-
-/******************************************************************************
- purpose: emits a character based on the TeX encoding
-          code is assumed to be in base 10
- ******************************************************************************/
-void CmdChar(int code)
-{
-	char c;
-	
-    switch (code) {
-        case 0:
-        	CmdSymbolChar((int) 'G');			/* Gamma */
-            break;
-
-        case 1:
-        	CmdSymbolChar((int) 'D');		    /* Delta */
-            break;
-
-        case 2:
-        	CmdSymbolChar((int) 'Q');		    /* Theta */
-            break;
-
-        case 3:
-        	CmdSymbolChar((int) 'L');		    /* Lambda */
-            break;
-
-        case 4:
-        	CmdSymbolChar((int) 'X');		    /* Xi */
-            break;
-
-        case 5:
-        	CmdSymbolChar((int) 'P');		    /* Pi */
-            break;
-
-        case 6:
-        	CmdSymbolChar((int) 'S');		    /* Sigma */
-            break;
-
-        case 7:
-        	CmdSymbolChar((int) 'U');		    /* Upsilon */
-            break;
-
-        case 8:
-        	CmdSymbolChar((int) 'F');		    /* Phi */
-            break;
-
-        case 9:
-        	CmdSymbolChar((int) 'Y');		    /* Psi */
-            break;
-
-        case 10:
-        	CmdSymbolChar((int) 'W');		    /* Omega */
-            break;
-
-        case 11:
-        	if (UsingTypewriter())
-        		CmdSymbolChar(0xAD);    /* up arrow */
-        	else
-            	fprintRTF("ff");
-            break;
-
-        case 12:
-        	if (UsingTypewriter())
-        		CmdSymbolChar(0xAF);    /* down arrow */
-        	else
-            	fprintRTF("fi");
-            break;
-
-        case 13:
-        	if (UsingTypewriter())
-        		fprintRTF("'");
-        	else
-            	fprintRTF("fl");
-            break;
-
-        case 14:
-        	if (UsingTypewriter())
-        		fprintRTF("\\'a1 ");   /* inverted exclamation */
-        	else
-            	fprintRTF("ffl");
-            break;
-
-        case 15:
-        	if (UsingTypewriter())
-				fprintRTF("\\'bf ");    /* inverted / open question mark */
-			else
-	            fprintRTF("ffi");
-            break;
-
-        case 16:
-            fprintRTF("i");     /* Dotless i */
-            break;
-
-        case 17:
-            fprintRTF("j");     /* Dotless j */
-            break;
-
-        case 18:
-            fprintRTF("`");
-            break;
-
-        case 19:
-            fprintRTF("'");
-            break;
-
-        case 20:
-            fprintRTF("v");
-            break;
-
-        case 21:
-            fprintRTF("u");
-            break;
-
-        case 22:
-            fprintRTF("-");     /* overbar */
-            break;
-
-        case 23:
-        	CmdSymbolChar(0xb0);		    /* degree */
-            break;
-
-        case 24:
-            fprintRTF("\\'b8"); /* cedilla */
-            break;
-
-        case 25:
-            fprintRTF("\\'df"); /* § */
-            break;
-
-        case 26:
-            fprintRTF("\\'e6"); /* ae */
-            break;
-
-        case 27:
-            fprintRTF("\\'8c"); /* oe */
-            break;
-
-        case 28:
-            fprintRTF("\\'f8"); /* oslash */
-            break;
-
-        case 29:
-            fprintRTF("\\'c6");  /*AE*/ 
-            break;
-
-        case 30:
-            fprintRTF("\\'8c");   /*OE*/ 
-            break;
-
-        case 31:
-            fprintRTF("\\'d8"); /* capital O with stroke */
-            break;
-
-        case 32:
-        	if (UsingTypewriter())
-        		fprintRTF("_");     /* should be u shaped */
-        	else
-            	fprintRTF(" "); 
-            break;
-
-        case 60:
-        	if (UsingTypewriter())
-            	fprintRTF("<");   
-        	else
-        		fprintRTF("\\'a1 ");   /* inverted exclamation */
-            break;
-
-        case 62:
-        	if (UsingTypewriter())
-            	fprintRTF(">");   
-        	else
-        		fprintRTF("\\'bf ");   /* inverted question */
-            break;
-
-        case 92:
-        	if (UsingTypewriter())
-        		fprintRTF("\\\\");   /* backslash */
-        	else
-            	fprintRTF("\\ldblquote ");   
-            break;
-
-        case 95:
-        	if (UsingTypewriter())
-        		fprintRTF("_");   /* underscore */
-        	else
-            	fprintRTF(".");   /* should be elevated dot */
-            break;
-
-        case 123:
-        	if (UsingTypewriter())
-            	fprintRTF("\\{");   /* open brace differs with font */
-        	else
-            	fprintRTF(".");   /* should be elevated dot */
-            break;
-
-        case 124:
-        	if (UsingTypewriter())
-            	fprintRTF("|");   /* open brace differs with font */
-        	else
-				fprintRTF("\\emdash ");
-            break;
-
-        case 125:
-        	if (UsingTypewriter())
-            	fprintRTF("\\}");   /* close brace differs with font */
-        	else
-				fprintRTF("\\emdash ");
-            break;
-
-        default:
-            putRtfCharEscaped((char) code);
-            break;
-    }
-
-    c = getNonBlank();
-    ungetTexChar(c);    
 }
 
 static void TeXlogo()

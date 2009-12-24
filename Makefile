@@ -88,7 +88,7 @@ TEST=  \
 	test/bib_apacite_dblsp.tex   test/enc_latin5.tex     test/german.tex        \
 	test/bib_apalike.tex         test/enc_latin9.tex     test/head_article.tex  \
 	test/bib_apalike2.tex        test/enc_maccyr.tex     test/head_book.tex     \
-	test/bib_apanat.tex          test/enc_macukr.tex     test/head_report.tex   \
+	test/bib_apanat.tex          test/head_report.tex   \
 	test/bib_authordate.tex      test/enc_next.tex       test/hndout.sty        \
 	test/bib_harvard.bib         test/enc_utf8x.tex      test/ifclause.tex      \
 	test/bib_harvard.tex         test/endnote.tex        test/include.tex       \

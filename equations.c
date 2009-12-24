@@ -850,7 +850,7 @@ void CmdRoot(int code)
             ConvertString(power);
             fprintRTF("}");
         }
-        CmdSymbolChar(0xd6);
+        ConvertString("\\surd");
         fprintRTF("(");
         ConvertString(root);
         fprintRTF(")");
@@ -1117,22 +1117,22 @@ parameter: type of operand
 
         switch (code) {
             case 0:
-                CmdSymbolChar(0xf2);
+                CmdUnicodeChar(8747); /* integral */
                 break;
             case 1:
-                CmdSymbolChar(0xe5);
+                CmdUnicodeChar(8721); /* sum */
                 break;
             case 2:
-                CmdSymbolChar(0xd5);
+                CmdUnicodeChar(8719); /* product */
                 break;
             case 3:  /* \iint  */
-                CmdSymbolChar(0xf2);
-                CmdSymbolChar(0xf2);
+                CmdUnicodeChar(8747); /* integral */
+                CmdUnicodeChar(8747); /* integral */
                 break;
             case 4:  /* \iiint  */
-                CmdSymbolChar(0xf2);
-                CmdSymbolChar(0xf2);
-                CmdSymbolChar(0xf2);
+                CmdUnicodeChar(8747); /* integral */
+                CmdUnicodeChar(8747); /* integral */
+                CmdUnicodeChar(8747); /* integral */
                 break;
                 
             default:

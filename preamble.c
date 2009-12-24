@@ -130,6 +130,7 @@ void setPackageInputenc(char *option)
       strcmp(option, "latin4") == 0 ||
       strcmp(option, "latin5") == 0 ||
       strcmp(option, "latin9") == 0 ||
+      strcmp(option, "latin10") == 0 ||
       strcmp(option, "next") == 0 ||
       strcmp(option, "cp437") == 0 ||
       strcmp(option, "cp437de") == 0 ||
@@ -152,7 +153,6 @@ void setPackageInputenc(char *option)
       strcmp(option, "1251") == 0 ||
       strcmp(option, "1252") == 0 ||
       strcmp(option, "maccyr") == 0 ||
-      strcmp(option, "macukr") == 0 || 
       strcmp(option, "koi8-r") == 0 || 
       strcmp(option, "koi8-u") == 0) {
 

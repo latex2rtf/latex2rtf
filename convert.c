@@ -319,7 +319,7 @@ purpose: converts inputfile and writes result to outputfile
 
             case '-':
                 if (getTexMode() == MODE_MATH || getTexMode() == MODE_DISPLAYMATH)
-                	CmdSymbolChar(0x2d);
+                	CmdUnicodeChar(8722); /* MINUS SIGN */
                 else {
                     changeTexMode(MODE_HORIZONTAL);
 
