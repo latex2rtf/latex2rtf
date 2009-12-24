@@ -18,7 +18,6 @@ LaTeX Command             & Decimal & Hex     & actual symbol\\
 \verb#$\imath$#           & 305     & 0x131   & $\imath$\\
 \verb#\OE#                & 338     & 0x152   & \OE\\
 \verb#\oe#                & 339     & 0x153   & \oe\\
-\verb#\digamma#           & 989     & 0x3C9   & \digamma\\
 \verb#\textemdash#        & 8212    & 8212    & \textemdash\\
 \verb#\textquoteleft#     & 8216    & 8216    & \textquoteleft\\
 \verb#\textquoteright#    & 8217    & 8217    & \textquoteright\\
@@ -209,7 +208,7 @@ LaTeX Command             & Decimal & Hex     & actual symbol\\
  \verb#$\eqcirc$#      & 8790    & $\eqcirc$      & $A_2\quad \eqcirc$\\
  \verb#$\circeq$#      & 8791    & $\circeq$      & $A_2\quad \circeq$\\
  \verb#$\wedgeq$#      & 8793    & $\wedgeq$      & $A_2\quad \wedgeq$\\
- \verb#$\triangleeq$#  & 8796    & $\triangleeq$  & $A_2\quad \triangleeq$\\
+ \verb#$\triangleq$#   & 8796    & $\triangleq$   & $A_2\quad \triangleq$\\
  \verb#$\questeq$#     & 8799    & $\questeq$     & $A_2\quad \questeq$\\
  \verb#$\neq$#         & 8800    & $\neq$         & $A_2\quad \neq$\\
  \verb#$\ne$#          & 8800    & $\ne$          & $A_2\quad \ne$\\
@@ -240,7 +239,7 @@ LaTeX Command             & Decimal & Hex     & actual symbol\\
  \verb#$\gtrless$#     & 8823    & $\gtrless$     & $A_2\quad \gtrless$\\
  \verb#$\prec$#        &         & $\prec$        & $A_2\quad \prec$\\
  \verb#$\succ$#        &         & $\succ$        & $A_2\quad \succ$\\
- \verb#$\precurlyeq$#  & 8828    & $\precurlyeq$  & $A_2\quad \precurlyeq$\\
+ \verb#$\preccurlyeq$# & 8828    & $\preccurlyeq$ & $A_2\quad \preccurlyeq$\\
  \verb#$\succcurlyeq$# & 8829    & $\succcurlyeq$ & $A_2\quad \succcurlyeq$\\
  \verb#$\precsim$#     & 8830    & $\precsim$     & $A_2\quad \precsim$\\
  \verb#$\succsim$#     & 8831    & $\succsim$     & $A_2\quad \succsim$\\
@@ -413,7 +412,6 @@ LaTeX Command             & Decimal & Hex     & actual symbol\\
  \verb#$\natural$#            & 9838    & $\natural$            & $A_2\quad \natural$\\
  \verb#$\sharp$#              & 9839    & $\sharp$              & $A_2\quad \sharp$\\
  \verb#$\surd$#               & 10003   & $\surd$               & $A_2\quad \surd$\\
- \verb#$\maltese$#            & 10016   & $\maltese$            & $A_2\quad \maltese$\\
  \verb#$\lozenge$#            & 10023   & $\lozenge$            & $A_2\quad \lozenge$\\
  \verb#$\Diamond$#            & 10023   & $\Diamond$            & $A_2\quad \Diamond$\\
  \verb#$\Longleftarrow$#      & 10232   & $\Longleftarrow$      & $A_2\quad \Longleftarrow$\\
@@ -428,4 +426,24 @@ LaTeX Command             & Decimal & Hex     & actual symbol\\
 \end{center}
 \caption{Testing Unicode, the $A_2$ is only present to force fields to get used}
 \end{table}
+
+\begin{table}
+\begin{center}
+\begin{tabular}{llll}
+ command                   & unicode & symbol          & in a field\\
+ \verb#$\maltese$#         & 10016   & $\maltese$      & $A_2\quad \maltese$\\
+ \verb#\digamma#           & 989     & \digamma        & $A_2\quad \digamma$\\
+ \verb#$\varepsilon$#      &949      & $\varepsilon$   & $A_2\quad \varepsilon$\\
+ \verb#$\varkappa$#        &1008     & $\varkappa$     & $A_2\quad \varkappa$\\
+ \verb#$\varsigma$#        &962      & $\varsigma$     & $A_2\quad \varsigma$\\
+ \verb#$\vartheta$#        &977      & $\vartheta$     & $A_2\quad \vartheta$\\
+ \verb#$\varrho$#          &1009     & $\varrho$       & $A_2\quad \varrho$\\
+ \verb#$\varphi$#          &981      & $\varphi$       & $A_2\quad \varphi$\\
+ \verb#$\varpi$#           &982      & $\varpi$        & $A_2\quad \varpi$\\
+\end{tabular}
+\end{center}
+\caption{Unicode characters not found by Snow Leopard.  These require that the STIXGeneral
+font be installed to show up correctly.}
+\end{table}
 \end{document}
+
