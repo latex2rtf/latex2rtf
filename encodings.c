@@ -125,6 +125,8 @@ void WriteEightBitChar(unsigned char cThis, FILE *f)
 		CmdUnicodeChar(koi8uUnicode[eightbit_index]);
     else if (strcmp(g_charset_encoding_name, "decmulti") == 0)
 		CmdUnicodeChar(decmultiUnicode[eightbit_index]);
+    else if (strcmp(g_charset_encoding_name, "macce") == 0)
+		CmdUnicodeChar(appleCEUnicode[eightbit_index]);
     else if (strcmp(g_charset_encoding_name, "maccyr") == 0)
 		CmdUnicodeChar(appleCyrrilicUnicode[eightbit_index]);
 }

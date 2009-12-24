@@ -153,6 +153,7 @@ void setPackageInputenc(char *option)
       strcmp(option, "1251") == 0 ||
       strcmp(option, "1252") == 0 ||
       strcmp(option, "maccyr") == 0 ||
+      strcmp(option, "macce") == 0 ||
       strcmp(option, "koi8-r") == 0 || 
       strcmp(option, "koi8-u") == 0) {
 
