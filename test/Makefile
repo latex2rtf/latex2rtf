@@ -34,10 +34,10 @@ ENC_TESTS= 	enc_applemac.rtf enc_cp437.rtf  enc_cp865.rtf    enc_latin2.rtf enc_
 			enc_cp1250.rtf   enc_cp850.rtf  enc_decmulti.rtf enc_latin3.rtf enc_latin9.rtf\
 			enc_cp1252.rtf   enc_cp852.rtf  enc_latin1.rtf   enc_latin4.rtf enc_next.rtf\
 			enc_cp1251.rtf   enc_cp855.rtf  enc_cp866.rtf    enc_koi8-r.rtf enc_koi8-u.rtf \
-			enc_maccyr.rtf   eqns-koi8.rtf 	 enc_utf8x.rtf
+			enc_maccyr.rtf   eqns-koi8.rtf 	enc_utf8x.rtf
 
 BABEL_TESTS=babel_german.rtf babel_russian.rtf babel_czech.rtf babel_french.rtf \
-	        babel_spanish.rtf babel_frenchb.rtf bib_simple.rtf
+	        babel_spanish.rtf babel_frenchb.rtf
 	        
 EQN_TESTS=  eqns.rtf	eqns2.rtf eqns-koi8.rtf ttgfsr7.rtf spago1.rtf misc2.rtf\
             frac.rtf	subsup.rtf	theorem.rtf eqnnumber.rtf eqnnumber2.rtf
@@ -80,6 +80,7 @@ extra:
 all:
 	mkdir -p tmp
 	$(MAKE) basic_tests
+	$(MAKE) babel_tests
 	$(MAKE) bib_tests
 	$(MAKE) eqn_tests
 	$(MAKE) fig_tests
@@ -110,6 +111,36 @@ extra_tests: $(EXTRA_TESTS)
 
 %.rtf:	%.tex
 	$(LATEX2RTF) $(OPTIONS) $<
+
+babel_czech.rtf: babel_czech.tex
+	$(LATEX) babel_czech $(LATEX_LOG)
+	$(LATEX) babel_czech $(LATEX_LOG)
+	$(LATEX2RTF) $(OPTIONS) babel_czech
+
+babel_french.rtf: babel_french.tex
+	$(LATEX) babel_french $(LATEX_LOG)
+	$(LATEX) babel_french $(LATEX_LOG)
+	$(LATEX2RTF) $(OPTIONS) babel_french
+
+babel_frenchb.rtf: babel_frenchb.tex
+	$(LATEX) babel_frenchb $(LATEX_LOG)
+	$(LATEX) babel_frenchb $(LATEX_LOG)
+	$(LATEX2RTF) $(OPTIONS) babel_frenchb
+
+babel_german.rtf: babel_german.tex
+	$(LATEX) babel_german $(LATEX_LOG)
+	$(LATEX) babel_german $(LATEX_LOG)
+	$(LATEX2RTF) $(OPTIONS) babel_german
+
+babel_russian.rtf: babel_russian.tex
+	$(LATEX) babel_russian > babel_russian.log
+	$(LATEX) babel_russian > babel_russian.log
+	$(LATEX2RTF) $(OPTIONS) babel_russian
+
+babel_spanish.rtf: babel_spanish.tex
+	$(LATEX) babel_spanish $(LATEX_LOG)
+	$(LATEX) babel_spanish $(LATEX_LOG)
+	$(LATEX2RTF) $(OPTIONS) babel_spanish
 
 bib_simple.rtf: bib_simple.tex bib_simple.bib
 	$(LATEX) bib_simple $(LATEX_LOG)
@@ -224,16 +255,6 @@ misc4.rtf: misc4.tex
 	$(LATEX) misc4 $(LATEX_LOG)
 	$(LATEX) misc4 $(LATEX_LOG)
 	$(LATEX2RTF) $(OPTIONS) misc4
-
-german.rtf: german.tex
-	$(LATEX) german $(LATEX_LOG)
-	$(LATEX) german $(LATEX_LOG)
-	$(LATEX2RTF) $(OPTIONS) german
-
-russian.rtf: russian.tex
-	$(LATEX) russian > russian.log
-	$(LATEX) russian > russian.log
-	$(LATEX2RTF) $(OPTIONS) russian
 
 ttgfsr7.rtf: ttgfsr7.tex
 	$(LATEX) ttgfsr7 $(LATEX_LOG)

@@ -118,11 +118,9 @@ void setPackageBabel(char *option)
 void setPackageInputenc(char *option)
 {
     g_preambleEncoding = strdup_noblanks(option);
+    g_fcharset_number = 0;  /* ANSI in RTF Specification */
 
-    if (strcmp(option, "ansinew") == 0)
-        my_strlcpy(g_charset_encoding_name, "cp1252", 20);
-
-    else if (strcmp(option, "applemac") == 0 ||
+    if (strcmp(option, "applemac") == 0 ||
       strcmp(option, "decmulti") == 0 ||
       strcmp(option, "latin1") == 0 ||
       strcmp(option, "latin2") == 0 ||
@@ -132,35 +130,54 @@ void setPackageInputenc(char *option)
       strcmp(option, "latin9") == 0 ||
       strcmp(option, "latin10") == 0 ||
       strcmp(option, "next") == 0 ||
-      strcmp(option, "cp437") == 0 ||
-      strcmp(option, "cp437de") == 0 ||
-      strcmp(option, "cp850") == 0 ||
-      strcmp(option, "cp852") == 0 ||
-      strcmp(option, "cp855") == 0 ||
-      strcmp(option, "cp865") == 0 ||
-      strcmp(option, "cp866") == 0 ||
-      strcmp(option, "cp1250") == 0 ||
-      strcmp(option, "cp1251") == 0 ||
-      strcmp(option, "cp1252") == 0 ||
-      strcmp(option, "437") == 0 ||
-      strcmp(option, "437de") == 0 ||
-      strcmp(option, "850") == 0 ||
-      strcmp(option, "852") == 0 ||
-      strcmp(option, "855") == 0 ||
-      strcmp(option, "865") == 0 ||
-      strcmp(option, "866") == 0 ||
-      strcmp(option, "1250") == 0 ||
-      strcmp(option, "1251") == 0 ||
-      strcmp(option, "1252") == 0 ||
       strcmp(option, "maccyr") == 0 ||
       strcmp(option, "macce") == 0 ||
+      strcmp(option, "ot2enc") == 0 ||
       strcmp(option, "koi8-r") == 0 || 
       strcmp(option, "koi8-u") == 0) {
 
         my_strlcpy(g_charset_encoding_name, option, 20);
-        g_fcharset_number = 0;  /* ANSI in RTF Specification */
 
-    } else if (strcmp(option, "raw") == 0) {
+    } else if ( (strcmp(option, "cp437")   == 0) ||
+                (strcmp(option, "cp437de") == 0) ||
+    		    (strcmp(option, "437de")   == 0) ||
+    		    (strcmp(option, "437")     == 0) ) {
+        my_strlcpy(g_charset_encoding_name, "437", 20);
+
+    } else if ( (strcmp(option, "ansinew") == 0) ||
+                (strcmp(option, "cp1252")  == 0) ||
+                (strcmp(option, "1252")    == 0)  ) {
+        my_strlcpy(g_charset_encoding_name, "1252", 20);
+
+    } else if ( (strcmp(option, "cp850") == 0) ||
+                (strcmp(option, "850")   == 0)  ) {
+        my_strlcpy(g_charset_encoding_name, "850", 20);
+
+    } else if ( (strcmp(option, "cp852") == 0) ||
+                (strcmp(option, "852")   == 0)  ) {
+        my_strlcpy(g_charset_encoding_name, "852", 20);
+
+    } else if ( (strcmp(option, "cp855") == 0) ||
+                (strcmp(option, "855")   == 0)  ) {
+        my_strlcpy(g_charset_encoding_name, "855", 20);
+
+    } else if ( (strcmp(option, "cp865") == 0) ||
+                (strcmp(option, "865")   == 0)  ) {
+        my_strlcpy(g_charset_encoding_name, "865", 20);
+
+    } else if ( (strcmp(option, "cp866") == 0) ||
+                (strcmp(option, "866")   == 0)  ) {
+        my_strlcpy(g_charset_encoding_name, "866", 20);
+
+    } else if ( (strcmp(option, "cp1250") == 0) ||
+                (strcmp(option, "1250")   == 0)  ) {
+        my_strlcpy(g_charset_encoding_name, "1250", 20);
+
+    } else if ( (strcmp(option, "cp1251") == 0) ||
+                (strcmp(option, "1251")   == 0)  ) {
+        my_strlcpy(g_charset_encoding_name, "1251", 20);
+
+    }    else if (strcmp(option, "raw") == 0) {
         my_strlcpy(g_charset_encoding_name, "raw", 20);
         g_fcharset_number = 255;    /* OEM in RTF Specification */
 
@@ -185,11 +202,6 @@ void setPackageInputenc(char *option)
         my_strlcpy(g_charset_encoding_name, "raw", 20);
         
     } else if (strcmp(option, "utf8") == 0) {
-        diagnostics(WARNING, "Input Encoding utf8 - experimental support");
-        my_strlcpy(g_charset_encoding_name, "utf8", 20);
-
-    } else if (strcmp(option, "utf8x") == 0) {
-        diagnostics(WARNING, "Input Encoding utf8x - experimental support");
         my_strlcpy(g_charset_encoding_name, "utf8", 20);
 
     } else
