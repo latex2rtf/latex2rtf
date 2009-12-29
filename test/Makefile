@@ -133,8 +133,8 @@ babel_german.rtf: babel_german.tex
 	$(LATEX2RTF) $(OPTIONS) babel_german
 
 babel_russian.rtf: babel_russian.tex
-	$(LATEX) babel_russian > babel_russian.log
-	$(LATEX) babel_russian > babel_russian.log
+	$(LATEX) babel_russian $(LATEX_LOG)
+	$(LATEX) babel_russian $(LATEX_LOG)
 	$(LATEX2RTF) $(OPTIONS) babel_russian
 
 babel_spanish.rtf: babel_spanish.tex
