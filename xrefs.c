@@ -1800,7 +1800,7 @@ void CmdHarvardCite(int code)
 
 		if (ss) {
 			g_current_cite_seen = citation_used(key);
-			ConvertHarvard(s, code, pretext, NULL, first_key);
+			ConvertHarvard(ss, code, pretext, NULL, first_key);
 		} else 
 			ConvertString(key);
         
