@@ -6,7 +6,7 @@ BIBTEX= bibtex
 LATEX2RTF= ../latex2rtf
 OPTIONS  = -Z3 -P ../cfg/:../scripts/ -T tmp/
 
-LATEX_LOG = >latex.log
+LATEX_LOG = | tee latex.log
 #LATEX_LOG = 
 
 RTF=	align.rtf	 array.rtf 		box.rtf 			ch.rtf	             \
@@ -47,7 +47,7 @@ CHAR_TESTS= accentchars.rtf oddchars.rtf overstrike.rtf ucsymbols.rtf greek.rtf 
 
 TABLE_TESTS= tabbing.rtf tabular.rtf table_array1.rtf table_array2.rtf
 
-EXTRA_TESTS= excalibur.rtf
+EXTRA_TESTS= excalibur.rtf acronym.rtf
 
 basic:
 	$(MAKE) basic_tests
@@ -112,6 +112,13 @@ extra_tests: $(EXTRA_TESTS)
 
 %.rtf:	%.tex
 	$(LATEX2RTF) $(OPTIONS) $<
+
+acronym.rtf:acronym.tex acronym.bib
+	$(LATEX) $@
+	$(BIBTEX) $@
+	$(LATEX) $@
+	$(LATEX) $@
+	$(LATEX2RTF) $(OPTIONS) $@
 
 babel_czech.rtf: babel_czech.tex
 	$(LATEX) babel_czech $(LATEX_LOG)

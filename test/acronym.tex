@@ -1,0 +1,118 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+
+\setlength{\oddsidemargin}{0pt}
+\setlength{\evensidemargin}{0pt}
+\setlength{\textwidth}{6in}
+\setlength{\parindent}{0pt}
+
+%% tested packages
+%% \usepackage{acronym}
+\usepackage[printonlyused,withpage]{acronym}
+\usepackage{srcltx}
+\usepackage{cite}
+%% \usepackage{harvard}
+%% backport in progress
+%% \usepackage{graphics}
+%% \graphicspath{{./graphs}{./dibujos}}
+%% end tested packages
+\title{acronym and srcltx support for LaTEX2rtf}
+\author{Pedro A. Aranda Guti\'errez}
+\begin{document}
+\maketitle
+\acused{bgp}
+\section{Test section}
+This is a test file for the acronyms. Remember we have just set:
+\begin{verbatim}
+\acused{bgp}
+\end{verbatim}
+But I will leave \ac{undef} undefined!
+
+\subsection{Test text}
+\label{sec:test}
+
+Each time a \ac{bgp} advertisement traverses an \ac{as}, the \ac{aspath}
+attribute is modified. Additionally, many \acp{as} introduce additional
+changes in the \ac{aspath} for traffic engineering purposes.
+
+Forget about using \acfi{RIP} in an interdomain environment. This
+should have expanded the \texttt{RIP} acronym, without marking it as
+used. The next time it is used, it will appear completely expanded.
+
+But it is not only communications which have strange acronyms. Look at
+politics: You have one \ac{MP} and there is no problem. Even when you
+don't want to waste too much time, you are on the safe side: \acp{MP}.
+But when you bother about all them, you get in trouble with \aclp{MP}.
+
+\section{Acronym definition macros}
+
+Using following acronym macros
+
+\begin{verbatim}
+\usepackage[printonlyused,withpage]{acronym}
+
+\begin{acronym} [IS-IS]
+\acrodef{aspath}[AS\_PATH]{Autonomous System Path}
+\acrodef{as}[AS]{Autonomous System}
+\acrodefplural{as}[ASes]{Autonomous Systems}
+\acrodef{MP}{Member of Parliament}
+\acrodefplural{MP}{Members of Parliament}
+\acro{bgp}[BGP-4]{Border Gateway Protocol}
+\acro{isis}[IS-IS]{IS-IS Protocol}
+\acro{RIP}{RIPv2 Routing Protocol}
+\acro{NA}[NA]{Number of Avogadro \acroextra{ (See Section~\ref{sec:test})}}
+\end{acronym}
+\end{verbatim}
+
+Only \textbf{\ac{bgp}} and \textbf{\ac{RIP}} should appear as an
+acronym in the acronym section. This line should have the acronym
+\ac{RIP} expanded. 
+\begin{verbatim}
+\acfi{RIP}
+\end{verbatim}
+doesn't mark the acronym as used! (see generated acronym.dvi)
+
+\section{Shortcuts}
+\label{sec:shortcut}
+
+Language options can be included in the document class:
+\begin{verbatim}
+\documentclass[a4paper,11pt,spanish]{article}
+\end{verbatim}
+to print the correct Acronym section header. 
+
+Needs \texttt{ACRONAME} to be correctly configured in the latex2rtf
+language specific configuration file. The main and only difference with
+the original package is that the \textbf{Acronyms} section header will
+always be generated.
+
+The text for the \ac{NA}, which is defined as
+\begin{verbatim}
+\acro{NA}[NA]{Number of Avogadro \acroextra{ (See Section~\ref{sec:test})}}
+\end{verbatim}
+where \texttt{ref\{sec:test\}} refers to Section~\ref{sec:test} in
+Page~\pageref{sec:test}.
+
+It is also necessary to scan the .aux file for other things, like
+citations.. Let's see if I have gotten it right and I can cite the
+multivendor interworking book \cite{Goralski-cisco-juniper} or the
+Defcon paper \cite{defcon16-bgp}
+
+\section*{Acronyms}
+\begin{acronym}[BGP-4]
+\acrodef{aspath}[AS\_PATH]{Autonomous System Path}
+\acrodef{as}[AS]{Autonomous System}
+\acrodefplural{as}[ASes]{Autonomous Systems}
+\acrodef{MP}{Member of Parliament}
+\acrodefplural{MP}{Members of Parliament}
+\acro{bgp}[BGP-4]{Border Gateway Protocol}
+\acro{isis}[IS-IS]{IS-IS Protocol}
+\acro{RIP}{RIPv2 Routing Protocol}
+\acro{NA}[NA]{Number of Avogadro \acroextra{ (See Section~\ref{sec:test})}}
+\end{acronym}
+
+\bibliographystyle{abbrv}
+\bibliography{acronym}
+
+\end{document}
