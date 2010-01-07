@@ -52,7 +52,7 @@ Authors:
 #include "graphics.h"
 #include "vertical.h"
 
-#include "aux.h"
+#include "auxfile.h"
 #include "acronym.h"
 #include "biblio.h"
 #include "labels.h"
