@@ -86,8 +86,8 @@ labelElem *getLabel(char *name)
     return result;
 }
 
-// from \newlabel{sec:test}{{1.1}{1}}
-// returns the section 1.1
+/*  from \newlabel{sec:test}{{1.1}{1}} */
+/*  returns the section 1.1 */
 
 char *getLabelSection(char *name)
 {
@@ -103,8 +103,8 @@ char *getLabelSection(char *name)
     return result;
 }
 
-// from \newlabel{sec:test}{{1.1}{1}}
-// returns the page  1
+/*  from \newlabel{sec:test}{{1.1}{1}} */
+/*  returns the page  1 */
 
 char *getLabelPage(char *name)
 {
@@ -123,7 +123,7 @@ char *getLabelPage(char *name)
     return result;
 }
 
-// \newlabel{sec:test}{{1.1}{1}}
+/*  \newlabel{sec:test}{{1.1}{1}} */
 
 void CmdNewLabel(int code)
 {

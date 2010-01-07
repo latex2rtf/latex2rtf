@@ -124,7 +124,7 @@ static void LoadAuxliaryFile(char *fname,char **macros)
 
 char *acronymAux[] = {
     "\\newlabel",
-    //    "\\undonewlabel",
+    /*     "\\undonewlabel", */
     "\\bibcite",
     "\\harvardcite",
     "\\newacro",

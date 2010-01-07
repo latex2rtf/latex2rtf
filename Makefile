@@ -43,8 +43,8 @@ L2R_VERSION:="latex2rtf-`grep 'Version' version.h | sed 's/[^"]*"\([^" ]*\).*/\1
 SRCS=commands.c chars.c direct.c encodings.c fonts.c funct1.c tables.c ignore.c \
 	main.c stack.c cfg.c utils.c parser.c lengths.c counters.c letterformat.c \
 	preamble.c equations.c convert.c xrefs.c definitions.c graphics.c \
-	mygetopt.c styles.c preparse.c vertical.c fields.c labels.c biblio.c acronym.c \
-	aux.c
+	mygetopt.c styles.c preparse.c vertical.c fields.c \
+	labels.c biblio.c acronym.c aux.c
 
 HDRS=commands.h chars.h direct.h encodings.h fonts.h funct1.h tables.h ignore.h \
     main.h stack.h cfg.h utils.h parser.h lengths.h counters.h letterformat.h \
@@ -129,8 +129,8 @@ TEST=  \
 OBJS=fonts.o direct.o encodings.o commands.o stack.o funct1.o tables.o \
 	chars.o ignore.o cfg.o main.o utils.o parser.o lengths.o counters.o \
 	preamble.o letterformat.o equations.o convert.o xrefs.o definitions.o graphics.o \
-	mygetopt.o styles.o preparse.o vertical.o fields.o labels.o biblio.o acronym.o \
-	aux.o
+	mygetopt.o styles.o preparse.o vertical.o fields.o 
+#	labels.o biblio.o acronym.o aux.o
 
 all : checkdir latex2rtf
 

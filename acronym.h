@@ -18,7 +18,6 @@ enum {
     ACRONYM_ACFI,
 
     ACRONYM_IGNORE = 0x0ff,
-
     ACRONYM_PLURAL = 0x100,
     ACRONYM_STAR   = 0x200,
     ACRONYM_USED   = 0x400

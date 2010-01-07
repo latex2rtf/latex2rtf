@@ -84,7 +84,7 @@ Authors:
 void UsePackageAcronym(char *options)
 {
     diagnostics(WARNING,"acronym package support: almost v1.35");
-    // we need an .aux file to get the acronyms from
+    /*  we need an .aux file to get the acronyms from */
     LoadAuxFile();
 
     if (options != NULL) {
@@ -112,7 +112,7 @@ static int inAcroEnvironment = FALSE;
 
 void CmdBeginAcronym(int code)
 {
-    // diagnostics(5,"CmdBeginAcronym(0x%04x) ON = 0x%04x",code,ON);
+    /*  diagnostics(5,"CmdBeginAcronym(0x%04x) ON = 0x%04x",code,ON); */
     
     if (ON == (code & ON)) {
 	char *longest = getBracketParam();
@@ -162,7 +162,7 @@ acroEntry *searchEntry(char *acDef)
 		return &acroTable[i];
 	    }
 	}
-	//	diagnostics(WARNING,"Undefined acronym '%s'",acDef);
+	/* 	diagnostics(WARNING,"Undefined acronym '%s'",acDef); */
     }
     return NULL;
 }
@@ -291,7 +291,7 @@ void CmdAcrodef(int code)
     acShort = getBracketParam();
     acLong  = getBraceParam();
 
-    // diagnostics(5,"void CmdAcrodef(%d)",code);
+    /*  diagnostics(5,"void CmdAcrodef(%d)",code); */
     
     if (code == ACRONYM_NEWACRO) {
 	acroEntry *thisEntry = createEntry(acDef);
@@ -326,11 +326,11 @@ void CmdAcrodef(int code)
 	if (NULL != thisEntry) {
     
 	    int doPrint =
-		// (inAcroEnvironment == TRUE) && 
+		/*  (inAcroEnvironment == TRUE) &&  */
 		((thisEntry->used == TRUE) ||
 		 (acroPrintOnlyUsed == FALSE));
  
-	    // diagnostics(5,"\\acro('%s','%s')",(NULL != acShort) ? acShort:acDef,acLong);
+	    /*  diagnostics(5,"\\acro('%s','%s')",(NULL != acShort) ? acShort:acDef,acLong); */
  
 	    if (doPrint) {
 		int vspace = getLength("itemsep") + getLength("parsep");
@@ -364,8 +364,8 @@ void CmdAcrodef(int code)
     }
 }
 
-// ignore the first, push the second
-// \AC@hyperlink{isis}{IS-IS}
+/*  ignore the first, push the second */
+/*  \AC@hyperlink{isis}{IS-IS} */
    
 void CmdAC(int code)
 {
@@ -454,8 +454,8 @@ void CmdAc(int code)
     }
 } 
 
-// \acused{ac}
-// mark an acronym as used
+/*  \acused{ac} */
+/*  mark an acronym as used */
 
 void CmdAcUsed(int code)
 {
@@ -467,10 +467,10 @@ void CmdAcUsed(int code)
     }
 }
 
-// \acresetall
-//    resets all acronyms to not used.
-//    Useful after the abstract to redefine
-//    all acronyms in the introduction. 
+/*  \acresetall */
+/*     resets all acronyms to not used. */
+/*     Useful after the abstract to redefine */
+/*     all acronyms in the introduction.  */
 
 void CmdAcResetAll(int code)
 {
@@ -479,8 +479,8 @@ void CmdAcResetAll(int code)
 	acroTable[i].used = FALSE;
 }
 
-// \acroextra
-//   push the contents for further conversion
+/*  \acroextra */
+/*    push the contents for further conversion */
 
 void CmdAcroExtra(int code)
 {

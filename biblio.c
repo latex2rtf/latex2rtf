@@ -147,7 +147,7 @@ biblioElem *newNatBibCite(char *cite,char *full,char* abbr,char *year,char *n)
  * Interface to the AUX file parser
  */
 
-// \bibcite{rfc2328}{18}
+/*  \bibcite{rfc2328}{18} */
 
 void CmdBibCite(int code)
 {
@@ -161,7 +161,7 @@ void CmdBibCite(int code)
     }
 }
 
-// \harvardcite{latex}{Lamport}{Lamport}{1986}
+/*  \harvardcite{latex}{Lamport}{Lamport}{1986} */
 
 void CmdAuxHarvardCite(int code)
 {

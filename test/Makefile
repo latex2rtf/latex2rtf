@@ -114,11 +114,11 @@ extra_tests: $(EXTRA_TESTS)
 	$(LATEX2RTF) $(OPTIONS) $<
 
 acronym.rtf:acronym.tex acronym.bib
-	$(LATEX) $@
-	$(BIBTEX) $@
-	$(LATEX) $@
-	$(LATEX) $@
-	$(LATEX2RTF) $(OPTIONS) $@
+	$(LATEX) acronym $(LATEX_LOG)
+	$(BIBTEX) acronym $(LATEX_LOG)
+	$(LATEX) acronym $(LATEX_LOG)
+	$(LATEX) acronym $(LATEX_LOG)
+	$(LATEX2RTF) $(OPTIONS) acronym
 
 babel_czech.rtf: babel_czech.tex
 	$(LATEX) babel_czech $(LATEX_LOG)
