@@ -6,9 +6,12 @@
  * 070798 adapted Frank Barnes contribution to r2l coding conventions SAP
  */
 
+#ifndef _PARSER_H_INCLUDED
+#define _PARSER_H_INCLUDED 1
+
 char	*CurrentFileName(void);
-int		PushSource(const char * filename, const char * string);
-int		StillSource(void);
+int	PushSource(const char * filename, const char * string);
+int	StillSource(void);
 void	PopSource(void);
 
 char	getRawTexChar(void);
@@ -44,3 +47,16 @@ void	EndSource(void);
 int 	CurrentFileDescriptor(void);
 int 	getParserDepth(void);
 int 	getSlashSlashParam(void);
+
+static void inline ignoreBraceParam() {
+    char *p = getBraceParam();
+    if (NULL != p)
+	free(p);
+}
+
+static void inline ignoreBracketParam() {
+    char *p = getBracketParam();
+    if (NULL != p)
+	free(p);
+}
+#endif
