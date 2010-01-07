@@ -44,49 +44,49 @@ static void FilterAuxFile(char *macros[],FILE *auxFile) {
     FILE *fStack[16];
     
     if (auxFile == NULL)
-	return;
+        return;
 
     tosFStack         = 0;
     fStack[tosFStack] = auxFile;
     
     while (tosFStack != -1) {
-	while (fgets(linebuffer,511,fStack[tosFStack]) != NULL) {
-	    char *lfcr = strchr(linebuffer,'\n');
-	    if (lfcr != NULL) *lfcr = 0;
-	    lfcr = strchr(linebuffer,'\r');
-	    if (lfcr != NULL) *lfcr = 0;
-	    if (strlen(linebuffer) == 0)
-		continue;
-	    if (strstarts(linebuffer,"\\@input{")) {
-		char *fname = strchr(linebuffer,'{'); 
-		char *p     = strchr(fname,'}');
-		fname++;
-		*p = '\0';
-		if (tosFStack >= 15) {
-		    diagnostics(WARNING,"AUX File stack overflow for <%s>",fname);
-		} else {
-		    if (NULL == (fStack[++tosFStack] = fopen(fname,"r"))) {
-			diagnostics(WARNING,"File not found: %s",fname);
-			tosFStack--;
-		    }
-		}
-		continue;
-	    }
-	    for (candidate = macros; *candidate != NULL; candidate++) {
-		if (strstarts(linebuffer,*candidate)) {
-		    char c1 = linebuffer[strlen(*candidate)];
-		    if (c1 != 0) {
-			char c2 = linebuffer[strlen(*candidate)+1];
-			if (c1 == '{' || (c1 == ' ' && c2 == '{'))
-			    ConvertString(linebuffer);
-		    }
-		}
-	    }
-	}
-	if (tosFStack > 0) {
-	    fclose(fStack[tosFStack]);
-	}
-	tosFStack --;
+        while (fgets(linebuffer,511,fStack[tosFStack]) != NULL) {
+            char *lfcr = strchr(linebuffer,'\n');
+            if (lfcr != NULL) *lfcr = 0;
+            lfcr = strchr(linebuffer,'\r');
+            if (lfcr != NULL) *lfcr = 0;
+            if (strlen(linebuffer) == 0)
+                continue;
+            if (strstarts(linebuffer,"\\@input{")) {
+                char *fname = strchr(linebuffer,'{'); 
+                char *p     = strchr(fname,'}');
+                fname++;
+                *p = '\0';
+                if (tosFStack >= 15) {
+                    diagnostics(WARNING,"AUX File stack overflow for <%s>",fname);
+                } else {
+                    if (NULL == (fStack[++tosFStack] = fopen(fname,"r"))) {
+                        diagnostics(WARNING,"File not found: %s",fname);
+                        tosFStack--;
+                    }
+                }
+                continue;
+            }
+            for (candidate = macros; *candidate != NULL; candidate++) {
+                if (strstarts(linebuffer,*candidate)) {
+                    char c1 = linebuffer[strlen(*candidate)];
+                    if (c1 != 0) {
+                        char c2 = linebuffer[strlen(*candidate)+1];
+                        if (c1 == '{' || (c1 == ' ' && c2 == '{'))
+                            ConvertString(linebuffer);
+                    }
+                }
+            }
+        }
+        if (tosFStack > 0) {
+            fclose(fStack[tosFStack]);
+        }
+        tosFStack --;
     }
 }
 
@@ -99,24 +99,24 @@ static void LoadAuxliaryFile(char *fname,char **macros)
     char **newTable;
     
     for (elems = 0; elems < loadedFiles; elems++) {
-	if (streq(loadedAuxFiles[elems],fname)) {
-	    return;		/* already loaded */
-	}
+        if (streq(loadedAuxFiles[elems],fname)) {
+            return;             /* already loaded */
+        }
     }
     newTable = (char **)realloc(loadedAuxFiles,
-				sizeof(char *) * (loadedFiles+1));
+                                sizeof(char *) * (loadedFiles+1));
     if (NULL != newTable) {
-	FILE *auxFile =           my_fopen(fname,"rb");
-	loadedAuxFiles =          newTable;
-	newTable[loadedFiles++] = fname;
-	if (NULL == auxFile) {
-	    diagnostics(WARNING, "%s not found.  Run LaTeX to create it.",fname);
-	} else {
-	    FilterAuxFile(macros,auxFile);
-	    diagnostics(WARNING,"(%s)",fname);
-	}
+        FILE *auxFile =           my_fopen(fname,"rb");
+        loadedAuxFiles =          newTable;
+        newTable[loadedFiles++] = fname;
+        if (NULL == auxFile) {
+            diagnostics(WARNING, "%s not found.  Run LaTeX to create it.",fname);
+        } else {
+            FilterAuxFile(macros,auxFile);
+            diagnostics(WARNING,"(%s)",fname);
+        }
     } else {
-	diagnostics(ERROR,"Memory overflow when opening '%s'",fname);
+        diagnostics(ERROR,"Memory overflow when opening '%s'",fname);
     }
 }
 

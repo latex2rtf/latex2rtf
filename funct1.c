@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 This file is available from http://sourceforge.net/projects/latex2rtf/
  
 Authors:
-	1995      Fernando Dorner, Andreas Granzer, Freidrich Polzer, Gerhard Trisko
+    1995      Fernando Dorner, Andreas Granzer, Freidrich Polzer, Gerhard Trisko
     1995-1997 Ralf Schlatterbeck
     1998-2000 Georg Lehner
     2001-2002 Scott Prahl
@@ -211,10 +211,10 @@ void CmdBeginEnd(int code)
 
 /***************************************************************************
  purpose: reads the parameter after the \begin or \end-command; ( see also getBraceParam )
-	      after reading the parameter the CallParamFunc-function calls the
-	      handling-routine for that special environment
+          after reading the parameter the CallParamFunc-function calls the
+          handling-routine for that special environment
  parameter: code: CMD_BEGIN: start of environment
-		          CMD_END:   end of environment
+                  CMD_END:   end of environment
  ***************************************************************************/
 {
     int i;
@@ -241,7 +241,7 @@ void CmdBeginEnd(int code)
 /* user defined environments */
     i = existsEnvironment(s);
     if (i > -1) {
-    	diagnostics(WARNING, "starting user-defined environment '%s'", s);
+        diagnostics(WARNING, "starting user-defined environment '%s'", s);
         str = expandEnvironment(i, code);
         ConvertString(str);
         free(str);
@@ -293,7 +293,7 @@ void CmdToday(int code)
  ******************************************************************************/
 {
     if (getTexMode() == MODE_VERTICAL)
-    	changeTexMode(MODE_HORIZONTAL);
+        changeTexMode(MODE_HORIZONTAL);
     fprintRTF("\\chdate ");
 }
 
@@ -329,16 +329,16 @@ static char *FormatNumber(int formatting, int n)
     char label[20];
     switch (formatting) {
     
-		case ALPHA_NUMBERING:
-			snprintf(label, 20, "%c", (char) (n + (int) 'A' - 1) );
-			break;
-	
-		case ARABIC_NUMBERING:
-			snprintf(label, 20, "%d", n);
-			break;
-			
-		case ROMAN_NUMBERING:
-			return roman_item(n, TRUE);
+        case ALPHA_NUMBERING:
+            snprintf(label, 20, "%c", (char) (n + (int) 'A' - 1) );
+            break;
+    
+        case ARABIC_NUMBERING:
+            snprintf(label, 20, "%d", n);
+            break;
+            
+        case ROMAN_NUMBERING:
+            return roman_item(n, TRUE);
     }
     
     return strdup(label);
@@ -347,9 +347,9 @@ static char *FormatNumber(int formatting, int n)
 static char *FormatSection(void) 
 {
     if (g_appendix)
-    	return FormatNumber(ALPHA_NUMBERING, getCounter("section"));
+        return FormatNumber(ALPHA_NUMBERING, getCounter("section"));
     else
-    	return FormatNumber(ARABIC_NUMBERING, getCounter("section"));
+        return FormatNumber(ARABIC_NUMBERING, getCounter("section"));
 }
 
 static char *FormatChapter(void) 
@@ -367,7 +367,7 @@ char *FormatUnitNumber(char *name)
     char *s = NULL;
 
     if (g_document_type == FORMAT_APA) { /* no numbers in apa at all! */
-    	return strdup("");
+        return strdup("");
     }
     
     label[0] = '\0';
@@ -375,34 +375,34 @@ char *FormatUnitNumber(char *name)
         return roman_item(getCounter(name), TRUE);
 
     if (strcmp(name, "chapter") == 0) 
-    	return FormatChapter();
+        return FormatChapter();
 
     if (strcmp(name, "section") == 0) {
         
         if (g_document_type == FORMAT_ARTICLE) {
-        	return FormatSection();
+            return FormatSection();
         } else {
-        	s = FormatChapter();
+            s = FormatChapter();
             snprintf(label, 20, "%s.%d", s, getCounter("section"));
         }
     }
 
     else if (strcmp(name, "subsection") == 0) {
         if (g_document_type == FORMAT_ARTICLE) {
-        	s = FormatSection();
+            s = FormatSection();
             snprintf(label, 20, "%s.%d", s, getCounter("subsection"));
         } else {
-        	s = FormatChapter();
+            s = FormatChapter();
             snprintf(label, 20, "%s.%d.%d", s, getCounter("section"), getCounter("subsection"));
         }
     }
 
     else if (strcmp(name, "subsubsection") == 0) {
         if (g_document_type == FORMAT_ARTICLE) {
-        	s = FormatSection();
+            s = FormatSection();
             snprintf(label, 20, "%s.%d.%d", s, getCounter("subsection"), getCounter("subsubsection"));
         } else {
-        	s = FormatChapter();
+            s = FormatChapter();
             snprintf(label, 20, "%s.%d.%d.%d", s, getCounter("section"), getCounter("subsection"), 
                                  getCounter("subsubsection"));
         }
@@ -410,11 +410,11 @@ char *FormatUnitNumber(char *name)
 
     else if (strcmp(name, "paragraph") == 0) {
         if (g_document_type == FORMAT_ARTICLE) {
-        	s = FormatSection();
+            s = FormatSection();
             snprintf(label, 20, "%s.%d.%d.%d", s,
               getCounter("subsection"), getCounter("subsubsection"), getCounter("paragraph"));
         } else {
-        	s = FormatChapter();
+            s = FormatChapter();
             snprintf(label, 20, "%s.%d.%d.%d.%d", s, 
               getCounter("section"), getCounter("subsection"), getCounter("subsubsection"), getCounter("paragraph"));
         }
@@ -422,19 +422,19 @@ char *FormatUnitNumber(char *name)
 
     else if (strcmp(name, "subparagraph") == 0) {
         if (g_document_type == FORMAT_ARTICLE) {
-        	s = FormatSection();
+            s = FormatSection();
             snprintf(label, 20, "%s.%d.%d.%d.%d",s,
               getCounter("subsection"), getCounter("subsubsection"),
               getCounter("paragraph"), getCounter("subparagraph"));
         } else {
-        	s = FormatChapter();
+            s = FormatChapter();
             snprintf(label, 20, "%s.%d.%d.%d.%d.%d", s,
               getCounter("section"), getCounter("subsection"),
               getCounter("subsubsection"), getCounter("paragraph"), getCounter("subparagraph"));
         }
     }
 
-	if (s) free(s);
+    if (s) free(s);
     return strdup(label);
 }
 
@@ -444,9 +444,9 @@ void CmdAppendix(int code)
   purpose: handles \appendix
  ******************************************************************************/
 {
-	g_chapter_numbering = ALPHA_NUMBERING;
-	g_appendix=0;
-	setCounter("chapter",0);
+    g_chapter_numbering = ALPHA_NUMBERING;
+    g_appendix=0;
+    setCounter("chapter",0);
 }
 
 void CmdSection(int code)
@@ -499,9 +499,9 @@ parameter: code: type of section-recursion-level
             if (code == SECT_CHAPTER && getCounter("secnumdepth") >= -1) {
                 incrementCounter("chapter");
                 setCounter("section", 0);
-        		setCounter("figure",0);
-       			setCounter("table",0);
-       			setCounter("equation",0);
+                setCounter("figure",0);
+                setCounter("table",0);
+                setCounter("equation",0);
                 resetTheoremCounter("chapter");
                 unit_label = FormatUnitNumber("chapter");
                 fprintRTF(" ");
@@ -521,19 +521,19 @@ parameter: code: type of section-recursion-level
         case SECT_NORM_STAR:
             CmdVspace(VSPACE_BIG_SKIP);
             if (g_document_type == FORMAT_APA) {
-            	startParagraph("apa_section", SECTION_TITLE_PARAGRAPH);
-			} else {        	
-            	startParagraph("section", SECTION_TITLE_PARAGRAPH);
+                startParagraph("apa_section", SECTION_TITLE_PARAGRAPH);
+            } else {            
+                startParagraph("section", SECTION_TITLE_PARAGRAPH);
             
-				if (code == SECT_NORM && getCounter("secnumdepth") >= 0) {
-					incrementCounter("section");
-					setCounter("subsection", 0);
-					resetTheoremCounter("section");
-					unit_label = FormatUnitNumber("section");
-					InsertBookmark(g_section_label, unit_label);
-					fprintRTF("  ");
-					free(unit_label);
-				}
+                if (code == SECT_NORM && getCounter("secnumdepth") >= 0) {
+                    incrementCounter("section");
+                    setCounter("subsection", 0);
+                    resetTheoremCounter("section");
+                    unit_label = FormatUnitNumber("section");
+                    InsertBookmark(g_section_label, unit_label);
+                    fprintRTF("  ");
+                    free(unit_label);
+                }
             }
             ConvertString(heading);
             CmdEndParagraph(0);
@@ -544,49 +544,49 @@ parameter: code: type of section-recursion-level
         case SECT_SUB_STAR:
             CmdVspace(VSPACE_MEDIUM_SKIP);
             if (g_document_type == FORMAT_APA) {
-				startParagraph("apa_subsection", SECTION_TITLE_PARAGRAPH);
-			} else {        	
-				startParagraph("subsection", SECTION_TITLE_PARAGRAPH);
-				if (code == SECT_SUB && getCounter("secnumdepth") >= 1) {
-					incrementCounter("subsection");
-					setCounter("subsubsection", 0);
-					resetTheoremCounter("subsection");
-					unit_label = FormatUnitNumber("subsection");
-					InsertBookmark(g_section_label, unit_label);
-					fprintRTF("  ");
-					free(unit_label);
-				}
+                startParagraph("apa_subsection", SECTION_TITLE_PARAGRAPH);
+            } else {            
+                startParagraph("subsection", SECTION_TITLE_PARAGRAPH);
+                if (code == SECT_SUB && getCounter("secnumdepth") >= 1) {
+                    incrementCounter("subsection");
+                    setCounter("subsubsection", 0);
+                    resetTheoremCounter("subsection");
+                    unit_label = FormatUnitNumber("subsection");
+                    InsertBookmark(g_section_label, unit_label);
+                    fprintRTF("  ");
+                    free(unit_label);
+                }
             }
-			ConvertString(heading);
-			CmdEndParagraph(0);
-			CmdVspace(VSPACE_SMALL_SKIP);
+            ConvertString(heading);
+            CmdEndParagraph(0);
+            CmdVspace(VSPACE_SMALL_SKIP);
             break;
 
         case SECT_SUBSUB:
         case SECT_SUBSUB_STAR:
             CmdVspace(VSPACE_MEDIUM_SKIP);
             if (g_document_type == FORMAT_APA) {
-				startParagraph("apa_subsubsection", GENERIC_PARAGRAPH);
-				fprintRTF("{\\i ");
-				ConvertString(heading);
-				fprintRTF(".} ");
-			} else {        	
-				startParagraph("subsubsection", SECTION_TITLE_PARAGRAPH);
-				
-				if (code == SECT_SUBSUB && (getCounter("secnumdepth") > 2 ||
-					(g_document_type == FORMAT_ARTICLE && getCounter("secnumdepth") == 2))) {
-					incrementCounter("subsubsection");
-					setCounter("paragraph", 0);
-					setCounter("subparagraph", 0);
-					resetTheoremCounter("subsubsection");
-					unit_label = FormatUnitNumber("subsubsection");
-					InsertBookmark(g_section_label, unit_label);
-					fprintRTF("  ");
-					free(unit_label);
-				}
-            	ConvertString(heading);
-            	CmdEndParagraph(0);
-            	CmdVspace(VSPACE_SMALL_SKIP);
+                startParagraph("apa_subsubsection", GENERIC_PARAGRAPH);
+                fprintRTF("{\\i ");
+                ConvertString(heading);
+                fprintRTF(".} ");
+            } else {            
+                startParagraph("subsubsection", SECTION_TITLE_PARAGRAPH);
+                
+                if (code == SECT_SUBSUB && (getCounter("secnumdepth") > 2 ||
+                    (g_document_type == FORMAT_ARTICLE && getCounter("secnumdepth") == 2))) {
+                    incrementCounter("subsubsection");
+                    setCounter("paragraph", 0);
+                    setCounter("subparagraph", 0);
+                    resetTheoremCounter("subsubsection");
+                    unit_label = FormatUnitNumber("subsubsection");
+                    InsertBookmark(g_section_label, unit_label);
+                    fprintRTF("  ");
+                    free(unit_label);
+                }
+                ConvertString(heading);
+                CmdEndParagraph(0);
+                CmdVspace(VSPACE_SMALL_SKIP);
             }
             break;
 
@@ -659,8 +659,8 @@ void CmdCaption(int code)
     } else {
         diagnostics(4, "entering \\caption{}");
         show_string(4, thecaption, "caption");
-	}
-	
+    }
+    
     if (getTexMode() != MODE_VERTICAL)
         CmdEndParagraph(0);
     vspace = getLength("abovecaptionskip");
@@ -671,7 +671,7 @@ void CmdCaption(int code)
     if (g_processing_figure) {
         incrementCounter("figure");
         ConvertBabelName("FIGURENAME");
-	    fprintRTF(" ");
+        fprintRTF(" ");
         n = getCounter("figure");
         c = 'f';
     } else {
@@ -697,11 +697,11 @@ void CmdCaption(int code)
     else
         fprintRTF("%s", number);
 
-	fprintRTF(": ");
+    fprintRTF(": ");
     ConvertString(thecaption);
     fprintRTF("}");
 
-	InsertContentMark(c, number, "  ", thecaption);
+    InsertContentMark(c, number, "  ", thecaption);
 
     free(thecaption);
 
@@ -833,7 +833,7 @@ void CmdQuote(int code)
             CmdVspace(VSPACE_SMALL_SKIP);
             setLeftMarginIndent(getLeftMarginIndent()+512);
             setRightMarginIndent(getRightMarginIndent()+512);
-			startParagraph("quote", INDENT_USUAL);			
+            startParagraph("quote", INDENT_USUAL);          
         }
         else {
             PushEnvironment(QUOTATION_MODE);
@@ -842,11 +842,11 @@ void CmdQuote(int code)
             setLeftMarginIndent(getLeftMarginIndent()+512);
             setRightMarginIndent(getRightMarginIndent()+512);
             setLength("parindent", 0);
-			startParagraph("quote", INDENT_USUAL);			
-		}
-	}
-	else {
-		PopEnvironment();
+            startParagraph("quote", INDENT_USUAL);          
+        }
+    }
+    else {
+        PopEnvironment();
         diagnostics(4, "Exiting \\end{quote} or \\end{quotation}");
         CmdIndent(INDENT_INHIBIT);
         CmdVspace(VSPACE_SMALL_SKIP);
@@ -865,13 +865,13 @@ void CmdList(int code)
 
     vspace = getLength("topsep") + getLength("parskip");
 
-	if (code != (INPARAENUM_MODE | ON) && code != (INPARAENUM_MODE | OFF) ) {
-		if (getTexMode() == MODE_VERTICAL)
-			vspace += getLength("partopsep");
-		else
-			CmdEndParagraph(0);
-	}
-	
+    if (code != (INPARAENUM_MODE | ON) && code != (INPARAENUM_MODE | OFF) ) {
+        if (getTexMode() == MODE_VERTICAL)
+            vspace += getLength("partopsep");
+        else
+            CmdEndParagraph(0);
+    }
+    
     switch (code) {
         case (ITEMIZE_MODE | ON):
             setVspace(vspace);
@@ -936,8 +936,8 @@ void CmdItem(int code)
     int vspace;
 
     if (code == RESET_ITEM_COUNTER) {
-    	if (g_enumerate_depth < 4)
-        	item_number[g_enumerate_depth] = 1;
+        if (g_enumerate_depth < 4)
+            item_number[g_enumerate_depth] = 1;
         return;
     }
 
@@ -951,14 +951,14 @@ void CmdItem(int code)
 
     g_processing_list_environment = TRUE;
 
-	/* suppress vertical space for inparaenum */
-	if (code != INPARAENUM_MODE) {
-    	CmdEndParagraph(0);
-    	vspace = getLength("itemsep") + getLength("parsep");
-    	setVspace(vspace);
+    /* suppress vertical space for inparaenum */
+    if (code != INPARAENUM_MODE) {
+        CmdEndParagraph(0);
+        vspace = getLength("itemsep") + getLength("parsep");
+        setVspace(vspace);
 
-    	CmdIndent(INDENT_USUAL);
-    	startParagraph("item", FIRST_PARAGRAPH);
+        CmdIndent(INDENT_USUAL);
+        startParagraph("item", FIRST_PARAGRAPH);
     }
 
     itemlabel = getBracketParam();
@@ -987,32 +987,32 @@ void CmdItem(int code)
         case INPARAENUM_MODE:
         case ENUMERATE_MODE:
             if (itemlabel) 
-            	break;
-			switch (g_enumerate_depth) {
-				case 1:
-					fprintRTF("%d.", item_number[g_enumerate_depth]);
-					break;
+                break;
+            switch (g_enumerate_depth) {
+                case 1:
+                    fprintRTF("%d.", item_number[g_enumerate_depth]);
+                    break;
 
-				case 2:
-					fprintRTF("(%c)", 'a' + item_number[g_enumerate_depth] - 1);
-					break;
+                case 2:
+                    fprintRTF("(%c)", 'a' + item_number[g_enumerate_depth] - 1);
+                    break;
 
-				case 3:
-					fprintRTF("%s.", roman_item(item_number[g_enumerate_depth], FALSE));
-					break;
+                case 3:
+                    fprintRTF("%s.", roman_item(item_number[g_enumerate_depth], FALSE));
+                    break;
 
-				case 4:
-					fprintRTF("%c.", 'A' + item_number[g_enumerate_depth] - 1);
-					break;
-				
-				default:
-					break;
-			}
-			if (code != INPARAENUM_MODE)
-				fprintRTF("\\tab\n");
-			else
-				fprintRTF(" ");
-			
+                case 4:
+                    fprintRTF("%c.", 'A' + item_number[g_enumerate_depth] - 1);
+                    break;
+                
+                default:
+                    break;
+            }
+            if (code != INPARAENUM_MODE)
+                fprintRTF("\\tab\n");
+            else
+                fprintRTF(" ");
+            
             item_number[g_enumerate_depth]++;
             break;
 
@@ -1027,7 +1027,7 @@ void CmdItem(int code)
     ungetTexChar(thechar);
     
     if (code != INPARAENUM_MODE)
-    	CmdIndent(INDENT_NONE);
+        CmdIndent(INDENT_NONE);
 }
 
 void CmdAcronymItem(int code)
@@ -1045,19 +1045,19 @@ void CmdAcronymItem(int code)
     alt = getBracketParam();
     def = getBraceParam();
     if (alt) {
-    	free(key);
-    	key=alt;
+        free(key);
+        key=alt;
     }
     
-	CmdEndParagraph(0);
-	vspace = getLength("itemsep") + getLength("parsep");
-	setVspace(vspace);
+    CmdEndParagraph(0);
+    vspace = getLength("itemsep") + getLength("parsep");
+    setVspace(vspace);
 
-	CmdIndent(INDENT_USUAL);
-	startParagraph("item", FIRST_PARAGRAPH);
-	fprintRTF("{\\b ");
+    CmdIndent(INDENT_USUAL);
+    startParagraph("item", FIRST_PARAGRAPH);
+    fprintRTF("{\\b ");
     ConvertString(key);
-	fprintRTF("}\\tab\n");
+    fprintRTF("}\\tab\n");
     ConvertString(def);
     free(key);
     free(def);
@@ -1065,14 +1065,14 @@ void CmdAcronymItem(int code)
 
 void CmdResizeBox(int code)
 {
-	char *size, *options, *content;
-	size = getBraceParam();
-	options = getBraceParam();
-	content = getBraceParam();
-	free(size);
-	free(options);
-	ConvertString(content);
-	free(content);
+    char *size, *options, *content;
+    size = getBraceParam();
+    options = getBraceParam();
+    content = getBraceParam();
+    free(size);
+    free(options);
+    ConvertString(content);
+    free(content);
 }
 
 void CmdBox(int code)
@@ -1109,7 +1109,7 @@ void CmdBox(int code)
         if (position)
             free(position);
         if (width) 
-        	free(width);
+            free(width);
     }
 
     diagnostics(4, "Entering Convert() from CmdBox");
@@ -1139,9 +1139,9 @@ void CmdVerb(int code)
     char cThis;
     char markingchar='#';
     int num;
-	
+    
     if (getTexMode() == MODE_VERTICAL)
-    	changeTexMode(MODE_HORIZONTAL);
+        changeTexMode(MODE_HORIZONTAL);
     num = TexFontNumber("Typewriter");
     fprintRTF("{\\b0\\i0\\scaps0\\f%d ", num);
 
@@ -1165,9 +1165,9 @@ void CmdVerb(int code)
 void CmdVerbatim(int code)
 
 /******************************************************************************
-	convert characters 1:1 until \end{verbatim} or \end{Verbatim} is reached
-	VERBATIM_1	 for \begin{verbatim} ... \end{verbatim}
-	VERBATIM_2   for \begin{Verbatim} ... \end{Verbatim}
+    convert characters 1:1 until \end{verbatim} or \end{Verbatim} is reached
+    VERBATIM_1   for \begin{verbatim} ... \end{verbatim}
+    VERBATIM_2   for \begin{Verbatim} ... \end{Verbatim}
 ******************************************************************************/
 {
     char *verbatim_text, *endtag=NULL;
@@ -1223,10 +1223,10 @@ void CmdVerbatim(int code)
         diagnostics(4, "Exiting CmdVerbatim");
 
         if (true_code != VERBATIM_4) {
-        	PopEnvironment();
+            PopEnvironment();
             CmdEndParagraph(0);
-        	CmdVspace(VSPACE_SMALL_SKIP);
-        	skipWhiteSpace();
+            CmdVspace(VSPACE_SMALL_SKIP);
+            skipWhiteSpace();
         }
             
         
@@ -1262,7 +1262,7 @@ void CmdIgnoreDef( /* @unused@ */ int code)
 
 /*****************************************************************************
  purpose: newenvironments or newcommands which are defined by the user aren't
-	      converted into Rtf and so they must be ignored
+          converted into Rtf and so they must be ignored
  ******************************************************************************/
 {
     char cThis;
@@ -1278,7 +1278,7 @@ void TranslateGerman(void)
 
 /***************************************************************************
 purpose: called on active german-mode and " character in input file to
-	 handle " as an active (meta-)character.
+     handle " as an active (meta-)character.
  ***************************************************************************/
 {
     char cThis;
@@ -1353,7 +1353,7 @@ void CmdIgnoreLet(int code)
 
 /******************************************************************************
      purpose : ignore \let 
-	   Format: \let\XXXXX = \YYYYYY or \let\XXXXX\YYYYYY
+       Format: \let\XXXXX = \YYYYYY or \let\XXXXX\YYYYYY
  ******************************************************************************/
 {
     char t[100];
@@ -1361,21 +1361,21 @@ void CmdIgnoreLet(int code)
     int i;
     char *s;
 
-	s = getSimpleCommand();
-	
-	cThis = getNonBlank();
-	if (cThis == '=') 
-		cThis = getNonBlank();
-	
-	t[0] = cThis;
-	for (i=1; i<100; i++) {
-		t[i] = getTexChar();
-		if (t[i]==' ' || t[i]=='\n') break;
-	}
-	t[i]='\0';
-	
-	newDefinition(s+1,NULL,t,0);
-	free(s);	
+    s = getSimpleCommand();
+    
+    cThis = getNonBlank();
+    if (cThis == '=') 
+        cThis = getNonBlank();
+    
+    t[0] = cThis;
+    for (i=1; i<100; i++) {
+        t[i] = getTexChar();
+        if (t[i]==' ' || t[i]=='\n') break;
+    }
+    t[i]='\0';
+    
+    newDefinition(s+1,NULL,t,0);
+    free(s);    
 }
 
 typedef struct iftag {
@@ -1398,68 +1398,68 @@ void CmdNewif( /* @unused@ */ int code)
 
 /******************************************************************************
      purpose : initiate handing of \newif\ifsomething
-	: \newif\ifSOMETHING
-	:   => create a new ENTRY with SOMETHING with false
-	: \SOMETHINGfalse
-	:   => set SOMETHING to false
-	: \SOMETHINGtrue
-	:   => set SOMETHING to true
-	: \ifSOMETHING
-	:   => if SOMETHING is true, process it.
-	: \else
-	:   => if SOMETHING is NOT true, process it.
-	: \fi
+    : \newif\ifSOMETHING
+    :   => create a new ENTRY with SOMETHING with false
+    : \SOMETHINGfalse
+    :   => set SOMETHING to false
+    : \SOMETHINGtrue
+    :   => set SOMETHING to true
+    : \ifSOMETHING
+    :   => if SOMETHING is true, process it.
+    : \else
+    :   => if SOMETHING is NOT true, process it.
+    : \fi
  ******************************************************************************/
 {
     char *s;
-	s = getSimpleCommand();
-	diagnostics(4,"discarding %s",s);
-	if(strncmp(s, "\\if", 3) == 0)
-	{
-		int i;
-		for(i = 0; i < iIfNameCount; i++)
-		{
-			if(strcmp(ifCommands[i].if_name, &s[3]) == 0)
-				break;
-		}
-		if(i < iIfNameCount)
-	    		diagnostics(WARNING, "Duplicated \\newif command '%s'", s); 
-		else
-		{
-			ifCommands[iIfNameCount].if_name = strdup(&s[3]);
-			ifCommands[iIfNameCount].is_true = FALSE;
-			ifCommands[iIfNameCount].did_push_env = FALSE;
-			iIfNameCount++;
-		}
-	}
-	else
-	    diagnostics(WARNING, "Mystery \\newif command '%s'", s); 
-	if (s) free(s);
+    s = getSimpleCommand();
+    diagnostics(4,"discarding %s",s);
+    if(strncmp(s, "\\if", 3) == 0)
+    {
+        int i;
+        for(i = 0; i < iIfNameCount; i++)
+        {
+            if(strcmp(ifCommands[i].if_name, &s[3]) == 0)
+                break;
+        }
+        if(i < iIfNameCount)
+                diagnostics(WARNING, "Duplicated \\newif command '%s'", s); 
+        else
+        {
+            ifCommands[iIfNameCount].if_name = strdup(&s[3]);
+            ifCommands[iIfNameCount].is_true = FALSE;
+            ifCommands[iIfNameCount].did_push_env = FALSE;
+            iIfNameCount++;
+        }
+    }
+    else
+        diagnostics(WARNING, "Mystery \\newif command '%s'", s); 
+    if (s) free(s);
 }
 
 void CmdElse( /* @unused@ */ int code)
 {
     iIfDepth--;
-	if(ifEnvs[iIfDepth].did_push_env) /* if-closure is true, so else is false */
-	{
-		fprintRTF("\" }");
-		ifEnvs[iIfDepth].did_push_env = FALSE;
-	}
-	else /* if-closure is false, so else is true */
-	{
-		ifEnvs[iIfDepth].did_push_env = TRUE;
-		fprintRTF("{\\v \"");
-	}
+    if(ifEnvs[iIfDepth].did_push_env) /* if-closure is true, so else is false */
+    {
+        fprintRTF("\" }");
+        ifEnvs[iIfDepth].did_push_env = FALSE;
+    }
+    else /* if-closure is false, so else is true */
+    {
+        ifEnvs[iIfDepth].did_push_env = TRUE;
+        fprintRTF("{\\v \"");
+    }
     iIfDepth++;
 }
 
 void CmdFi( /* @unused@ */ int code)
 {
     iIfDepth--;
-	if(ifEnvs[iIfDepth].did_push_env)
-	{
-		fprintRTF("\" }");
-	}
+    if(ifEnvs[iIfDepth].did_push_env)
+    {
+        fprintRTF("\" }");
+    }
 }
 
 int TryConditionSet(char *command)
@@ -1469,41 +1469,41 @@ int TryConditionSet(char *command)
     {
         for(i = 0; i < iIfNameCount; i++)
         {
-        	if(strcmp(&command[2], ifCommands[i].if_name) == 0)
-		{
-				ifEnvs[iIfDepth] = ifCommands[i];
-				if(ifCommands[i].is_true)
-				{
-					/* no-op */;
-				}
-				else
-				{
-					ifEnvs[iIfDepth].did_push_env = TRUE;
-					fprintRTF("{\\v \"");
-				}
-				iIfDepth++;
-			return TRUE;
-		}
-	}
+            if(strcmp(&command[2], ifCommands[i].if_name) == 0)
+        {
+                ifEnvs[iIfDepth] = ifCommands[i];
+                if(ifCommands[i].is_true)
+                {
+                    /* no-op */;
+                }
+                else
+                {
+                    ifEnvs[iIfDepth].did_push_env = TRUE;
+                    fprintRTF("{\\v \"");
+                }
+                iIfDepth++;
+            return TRUE;
+        }
+    }
     }
     for(i = 0; i < iIfNameCount; i++)
     {
         char *s = ifCommands[i].if_name;
         char *t = strdup_together(s, "true");
         char *f = strdup_together(s, "false");
-	if(strcmp(command, t) == 0)
-	{
-	    ifCommands[i].is_true = TRUE;
-	    free(t); free(f);
-	    return TRUE;
-	}
-	else if(strcmp(command, f) == 0)
-	{
-	    ifCommands[iIfNameCount].is_true = FALSE;
-	    free(t); free(f);
-	    return TRUE;
-	}
-	free(t); free(f);
+    if(strcmp(command, t) == 0)
+    {
+        ifCommands[i].is_true = TRUE;
+        free(t); free(f);
+        return TRUE;
+    }
+    else if(strcmp(command, f) == 0)
+    {
+        ifCommands[iIfNameCount].is_true = FALSE;
+        free(t); free(f);
+        return TRUE;
+    }
+    free(t); free(f);
     }
     return FALSE;
 }
@@ -1531,7 +1531,7 @@ void CmdSpace(float kk)
     int size = CurrentFontSize() * kk;
 
     if (getTexMode() == MODE_VERTICAL)
-    	changeTexMode(MODE_HORIZONTAL);
+        changeTexMode(MODE_HORIZONTAL);
     fprintRTF("{\\fs%d  }", size);
 }
 
@@ -1542,75 +1542,75 @@ void CmdKern(int code)
 {
 int size = getDimension()*2;  /* size is in quarter-points */
 
-	fprintRTF("\\expnd%d\\expndtw%d ",size,size);
+    fprintRTF("\\expnd%d\\expndtw%d ",size,size);
 }
 
 void CmdFigure(int code)
 
 /******************************************************************************
   purpose: Process \begin{figure} ... \end{figure} environment
-  		   This is only complicated because we need to know what to
-  		   label the caption before the caption is processed.  So 
-  		   we just slurp the figure environment, extract the tag, and
-  		   then process the environment as usual.
+           This is only complicated because we need to know what to
+           label the caption before the caption is processed.  So 
+           we just slurp the figure environment, extract the tag, and
+           then process the environment as usual.
  ******************************************************************************/
 {
     char *figure_contents, *lines, *position, *width;
     char endfigure[50];
-	static char     oldalignment;
-	int real_code = code & ~ON;
-	
-	switch (real_code) {
-		case FIGURE:
-			strcpy(endfigure, "\\end{figure}");
-			break;
-			
-		case FIGURE_1:
-			strcpy(endfigure, "\\end{figure*}");
-			break;
-	
-		case WRAP_FIGURE:
-			strcpy(endfigure, "\\end{wrapfigure}");
-			break;
-	}
-	
+    static char     oldalignment;
+    int real_code = code & ~ON;
+    
+    switch (real_code) {
+        case FIGURE:
+            strcpy(endfigure, "\\end{figure}");
+            break;
+            
+        case FIGURE_1:
+            strcpy(endfigure, "\\end{figure*}");
+            break;
+    
+        case WRAP_FIGURE:
+            strcpy(endfigure, "\\end{wrapfigure}");
+            break;
+    }
+    
     if (code & ON) {
         setCounter("subfigure", 0);
-		CmdEndParagraph(0);
-		oldalignment = getAlignment();
-		setAlignment(JUSTIFIED);
+        CmdEndParagraph(0);
+        oldalignment = getAlignment();
+        setAlignment(JUSTIFIED);
 
-		CmdVspace(VSPACE_BIG_SKIP);
+        CmdVspace(VSPACE_BIG_SKIP);
         
         if (real_code == WRAP_FIGURE) {
-        	lines    = getBracketParam();
-        	position = getBraceParam();
-        	width    = getBraceParam();
-        	if (lines)    free(lines);
-        	if (position) free(position);
-        	if (width)    free(width);
+            lines    = getBracketParam();
+            position = getBraceParam();
+            width    = getBraceParam();
+            if (lines)    free(lines);
+            if (position) free(position);
+            if (width)    free(width);
         } else {
-			char * loc = getBracketParam();
-			diagnostics(4, "entering CmdFigure [%s]", (loc) ? loc : "");
-        	if (loc) free(loc);
+            char * loc = getBracketParam();
+            diagnostics(4, "entering CmdFigure [%s]", (loc) ? loc : "");
+            if (loc) free(loc);
         }
         
         g_processing_figure = TRUE;
         figure_contents = getTexUntil(endfigure, TRUE);
         g_figure_label = ExtractLabelTag(figure_contents);
         if (g_endfloat_figures) {
-			if (g_endfloat_markers) {
-				setAlignment(CENTERED);
-				startParagraph("endfloat", GENERIC_PARAGRAPH);
-				incrementCounter("endfloatfigure");  /* two separate counters */
-				fprintRTF("[");                      /* one for figures and one for */
-				ConvertBabelName("FIGURENAME");      /* endfloat figures */
-				fprintRTF(" ");
-				if (g_document_type != FORMAT_ARTICLE)
-					fprintRTF("%d.", getCounter("chapter"));
-				fprintRTF("%d about here]", getCounter("endfloatfigure"));
-			}
-		} else if (g_latex_figures) {
+            if (g_endfloat_markers) {
+                setAlignment(CENTERED);
+                startParagraph("endfloat", GENERIC_PARAGRAPH);
+                incrementCounter("endfloatfigure");  /* two separate counters */
+                fprintRTF("[");                      /* one for figures and one for */
+                ConvertBabelName("FIGURENAME");      /* endfloat figures */
+                fprintRTF(" ");
+                if (g_document_type != FORMAT_ARTICLE)
+                    fprintRTF("%d.", getCounter("chapter"));
+                fprintRTF("%d about here]", getCounter("endfloatfigure"));
+            }
+        } else if (g_latex_figures) {
             char *caption, *label;
 
             caption = ExtractAndRemoveTag("\\caption", figure_contents);
@@ -1625,7 +1625,7 @@ void CmdFigure(int code)
             if (caption)
                 free(caption);
         } else {
-			startParagraph("figure", GENERIC_PARAGRAPH);
+            startParagraph("figure", GENERIC_PARAGRAPH);
             ConvertString(figure_contents);
         }
         free(figure_contents);
@@ -1635,38 +1635,38 @@ void CmdFigure(int code)
             free(g_figure_label);
         g_processing_figure = FALSE;
         diagnostics(4, "exiting CmdFigure");
-		setAlignment(oldalignment);
-		CmdEndParagraph(0);
-		CmdVspace(VSPACE_BIG_SKIP);
+        setAlignment(oldalignment);
+        CmdEndParagraph(0);
+        CmdVspace(VSPACE_BIG_SKIP);
     }
 }
 
 void CmdSubFigure(int code)
 {
-	char *caption, *contents;
-	
-	diagnostics(4,"CmdSubFigure");
-	
-	caption = getBracketParam();
-	contents = getBraceParam();
-	
+    char *caption, *contents;
+    
+    diagnostics(4,"CmdSubFigure");
+    
+    caption = getBracketParam();
+    contents = getBraceParam();
+    
     startParagraph("subfigure", FIRST_PARAGRAPH);
     
     /* insert the figure */
-	ConvertString(contents);
+    ConvertString(contents);
     free(contents);
     CmdEndParagraph(0);
 
-	/* now the caption */
-	if (caption) {
-    	int n;
-    	startParagraph("subfigure", FIRST_PARAGRAPH);
+    /* now the caption */
+    if (caption) {
+        int n;
+        startParagraph("subfigure", FIRST_PARAGRAPH);
         n = getCounter("subfigure");
-	    fprintRTF("(%c) ", (char) (n + (int) 'a'));
-		ConvertString(caption);
-    	CmdEndParagraph(0);
-		free(caption);
-	}		
+        fprintRTF("(%c) ", (char) (n + (int) 'a'));
+        ConvertString(caption);
+        CmdEndParagraph(0);
+        free(caption);
+    }       
     incrementCounter("subfigure");
 }
 
@@ -1771,16 +1771,16 @@ parameter: code: on/off-option
 void CmdAbstract(int code)
 {
     static char oldalignment;
-	    	    
+                
     if (code == ABSTRACT_PRELUDE_BEGIN || 
         code == ABSTRACT_SIMPLE        || 
         code == (ABSTRACT_BEGIN_END | ON) ) {
-	    CmdEndParagraph(0);
+        CmdEndParagraph(0);
         oldalignment = getAlignment();
         if (g_document_type == FORMAT_REPORT || titlepage)
             CmdNewPage(NewPage);
 
-        startParagraph("abstract_title", GENERIC_PARAGRAPH);		
+        startParagraph("abstract_title", GENERIC_PARAGRAPH);        
         ConvertBabelName("ABSTRACTNAME");
 
         setLeftMarginIndent(getLeftMarginIndent() + 1024);
@@ -1789,20 +1789,20 @@ void CmdAbstract(int code)
         CmdEndParagraph(0);
 
         CmdIndent(INDENT_USUAL);
-        startParagraph("Normal", GENERIC_PARAGRAPH);		
+        startParagraph("Normal", GENERIC_PARAGRAPH);        
     } 
     
     if (code == ABSTRACT_SIMPLE) {
-    	char *s = getBraceParam();
-    	ConvertString(s);
-    	free(s);
+        char *s = getBraceParam();
+        ConvertString(s);
+        free(s);
     }
     
     if (code == ABSTRACT_PRELUDE_END || 
         code == ABSTRACT_BEGIN_END   || 
         code == (ABSTRACT_BEGIN_END | OFF) ) {
         CmdIndent(INDENT_USUAL);
-    	CmdEndParagraph(0);
+        CmdEndParagraph(0);
         setLeftMarginIndent(getLeftMarginIndent() - 1024);
         setRightMarginIndent(getRightMarginIndent() - 1024);
         setAlignment(oldalignment);
@@ -1813,25 +1813,25 @@ void CmdAbstract(int code)
 void
 CmdAcknowledgments(int code)
 {
-	static char     oldalignment;
+    static char     oldalignment;
 
-	CmdEndParagraph(0);
-	
-	if (code == ON) {
-		
-		CmdVspace(VSPACE_BIG_SKIP);
-		startParagraph("acknowledgments", GENERIC_PARAGRAPH);
-		fprintRTF("\n{\\b ");
-		fprintRTF("Acknowledgments"); /* should be in cfg file, but it is not */
-		fprintRTF("}\n");
-		CmdEndParagraph(0);
-		oldalignment = getAlignment();
-		setAlignment(JUSTIFIED);
+    CmdEndParagraph(0);
+    
+    if (code == ON) {
+        
+        CmdVspace(VSPACE_BIG_SKIP);
+        startParagraph("acknowledgments", GENERIC_PARAGRAPH);
+        fprintRTF("\n{\\b ");
+        fprintRTF("Acknowledgments"); /* should be in cfg file, but it is not */
+        fprintRTF("}\n");
+        CmdEndParagraph(0);
+        oldalignment = getAlignment();
+        setAlignment(JUSTIFIED);
 
-	} else {
-		setAlignment(oldalignment);
-		CmdVspace(VSPACE_BIG_SKIP);				/* put \medskip after acknowledgments */
-	}
+    } else {
+        setAlignment(oldalignment);
+        CmdVspace(VSPACE_BIG_SKIP);             /* put \medskip after acknowledgments */
+    }
 }
 
 
@@ -1850,7 +1850,7 @@ void CmdMinipage(int code)
 
 /******************************************************************************
   purpose: recognize and parse Minipage parameters
-  		   currently this does nothing
+           currently this does nothing
  ******************************************************************************/
 {
     char *v_align, *width;
@@ -1957,20 +1957,20 @@ char *roman_item(int n, int upper)
 
 void CmdNonBreakSpace(int code)
 {
-	char cThis;
+    char cThis;
 /*    int size = CurrentFontSize() * ((float) code / 100.0);*/
 
     cThis = getNonSpace();
     ungetTexChar(cThis);
 
     if (getTexMode() == MODE_VERTICAL)
-		changeTexMode(MODE_HORIZONTAL);
+        changeTexMode(MODE_HORIZONTAL);
 /*    fprintRTF("{\\fs%d\\~}", size);*/
 
-	if (code == 100) 
-    	fprintRTF("\\~ ");
-	else
-    	fprintRTF("{\\charscalex%d\\~}", code);
+    if (code == 100) 
+        fprintRTF("\\~ ");
+    else
+        fprintRTF("{\\charscalex%d\\~}", code);
     
 }
 
@@ -2001,8 +2001,8 @@ void CmdEndInput(int code)
 void CmdTextFont(int code)
 {
 
-	char *s = getBraceParam();
-	free(s);
+    char *s = getBraceParam();
+    free(s);
 }
 
 /******************************************************************************
@@ -2018,32 +2018,32 @@ void CmdThe(int code)
 
  The \rule command generates a rectangular "blob of ink."  
  It can be used to produce horizontal or vertical lines. The arguments are
-  	raise-height specifies how high to raise the rule (optional)
- 	width specifies the length of the rule (mandatory)
- 	height specifies the height of the rule (mandatory)
+    raise-height specifies how high to raise the rule (optional)
+    width specifies the length of the rule (mandatory)
+    height specifies the height of the rule (mandatory)
  The default value for raise-height is zero; a negative value lowers the rule.
 
  The reference point of the rule box is the lower left-hand corner.
  ******************************************************************************/
 void CmdRule(int code)
 {
-	char *raise, *width, *height;
-	int dim,n,i;
-	
-	raise = getBracketParam();
-	width = getBraceParam();
-	height = getBraceParam();
-	
-	dim = getStringDimension(width);
-	
-	n = dim / CurrentFontSize()/5;
-	
-	for (i=0; i<n; i++) 
-		fprintRTF("_");
-	
-	if (raise) free(raise);
-	free(width);
-	free(height);
+    char *raise, *width, *height;
+    int dim,n,i;
+    
+    raise = getBracketParam();
+    width = getBraceParam();
+    height = getBraceParam();
+    
+    dim = getStringDimension(width);
+    
+    n = dim / CurrentFontSize()/5;
+    
+    for (i=0; i<n; i++) 
+        fprintRTF("_");
+    
+    if (raise) free(raise);
+    free(width);
+    free(height);
 }
 
 /******************************************************************************
@@ -2106,21 +2106,21 @@ void CmdIgnoreEnviron(int code)
  ******************************************************************************/
 void CmdIflatextortf(int code)
 {
-	char *entire_if, *else_clause;
-	
-	/* extract entire if statement, removing comments */
-	entire_if = getTexUntil("\\fi", FALSE);
-	
-	/* look for else */
-	else_clause = strstr(entire_if, "\\else");
-	if (else_clause != NULL) *else_clause = '\0';
-	
-	ConvertString(entire_if);
-	
-	/* put the appropriate piece back for processing */
-	diagnostics(2,"CmdIflatextortf clause is");
-	diagnostics(2,"       <%s>", entire_if);	
-	free(entire_if);
+    char *entire_if, *else_clause;
+    
+    /* extract entire if statement, removing comments */
+    entire_if = getTexUntil("\\fi", FALSE);
+    
+    /* look for else */
+    else_clause = strstr(entire_if, "\\else");
+    if (else_clause != NULL) *else_clause = '\0';
+    
+    ConvertString(entire_if);
+    
+    /* put the appropriate piece back for processing */
+    diagnostics(2,"CmdIflatextortf clause is");
+    diagnostics(2,"       <%s>", entire_if);    
+    free(entire_if);
 }
 
 static int NumForColor(char * color)
@@ -2144,247 +2144,247 @@ static int NumForColor(char * color)
         n = 8;
     else if (strcmp(color, "gray") == 0)
         n = 16;
-	else if (strcmp(color, "Almond") == 0)
-		n = 17;
-	else if (strcmp(color, "AntiqueBrass") == 0)
-		n = 18;
-	else if (strcmp(color, "Apricot") == 0)
-		n = 19;
-	else if (strcmp(color, "Aquamarine") == 0)
-		n = 20;
-	else if (strcmp(color, "Asparagus") == 0)
-		n = 21;
-	else if (strcmp(color, "AtomicTangerine") == 0)
-		n = 22;
-	else if (strcmp(color, "BananaMania") == 0)
-		n = 23;
-	else if (strcmp(color, "Beaver") == 0)
-		n = 24;
-	else if (strcmp(color, "Bittersweet") == 0)
-		n = 25;
-	else if (strcmp(color, "Black") == 0)
-		n = 26;
-	else if (strcmp(color, "Blue") == 0)
-		n = 27;
-	else if (strcmp(color, "BlueBell") == 0)
-		n = 28;
-	else if (strcmp(color, "BlueGreen") == 0)
-		n = 29;
-	else if (strcmp(color, "BlueViolet") == 0)
-		n = 30;
-	else if (strcmp(color, "Blush") == 0)
-		n = 31;
-	else if (strcmp(color, "BrickRed") == 0)
-		n = 32;
-	else if (strcmp(color, "Brown") == 0)
-		n = 33;
-	else if (strcmp(color, "BurntOrange") == 0)
-		n = 34;
-	else if (strcmp(color, "BurntSienna") == 0)
-		n = 35;
-	else if (strcmp(color, "CadetBlue") == 0)
-		n = 36;
-	else if (strcmp(color, "Canary") == 0)
-		n = 37;
-	else if (strcmp(color, "CaribbeanGreen") == 0)
-		n = 38;
-	else if (strcmp(color, "CarnationPink") == 0)
-		n = 39;
-	else if (strcmp(color, "Cerise") == 0)
-		n = 40;
-	else if (strcmp(color, "Cerulean") == 0)
-		n = 41;
-	else if (strcmp(color, "Chestnut") == 0)
-		n = 42;
-	else if (strcmp(color, "Copper") == 0)
-		n = 43;
-	else if (strcmp(color, "Cornflower") == 0)
-		n = 44;
-	else if (strcmp(color, "CottonCandy") == 0)
-		n = 45;
-	else if (strcmp(color, "Dandelion") == 0)
-		n = 46;
-	else if (strcmp(color, "Denim") == 0)
-		n = 47;
-	else if (strcmp(color, "DesertSand") == 0)
-		n = 48;
-	else if (strcmp(color, "Eggplant") == 0)
-		n = 49;
-	else if (strcmp(color, "ElectricLime") == 0)
-		n = 50;
-	else if (strcmp(color, "Fern") == 0)
-		n = 51;
-	else if (strcmp(color, "ForestGreen") == 0)
-		n = 52;
-	else if (strcmp(color, "Fuchsia") == 0)
-		n = 53;
-	else if (strcmp(color, "FuzzyWuzzyBrown") == 0)
-		n = 54;
-	else if (strcmp(color, "Gold") == 0)
-		n = 55;
-	else if (strcmp(color, "Goldenrod") == 0)
-		n = 56;
-	else if (strcmp(color, "GrannySmithApple") == 0)
-		n = 57;
-	else if (strcmp(color, "Gray") == 0)
-		n = 58;
-	else if (strcmp(color, "Green") == 0)
-		n = 59;
-	else if (strcmp(color, "GreenYellow") == 0)
-		n = 60;
-	else if (strcmp(color, "HotMagenta") == 0)
-		n = 61;
-	else if (strcmp(color, "InchWorm") == 0)
-		n = 62;
-	else if (strcmp(color, "Indigo") == 0)
-		n = 63;
-	else if (strcmp(color, "JazzberryJam") == 0)
-		n = 64;
-	else if (strcmp(color, "JungleGreen") == 0)
-		n = 65;
-	else if (strcmp(color, "LaserLemon") == 0)
-		n = 66;
-	else if (strcmp(color, "Lavender") == 0)
-		n = 67;
-	else if (strcmp(color, "MacaroniandCheese") == 0)
-		n = 68;
-	else if (strcmp(color, "Magenta") == 0)
-		n = 69;
-	else if (strcmp(color, "Mahogany") == 0)
-		n = 70;
-	else if (strcmp(color, "Manatee") == 0)
-		n = 71;
-	else if (strcmp(color, "MangoTango") == 0)
-		n = 72;
-	else if (strcmp(color, "Maroon") == 0)
-		n = 73;
-	else if (strcmp(color, "Mauvelous") == 0)
-		n = 74;
-	else if (strcmp(color, "Melon") == 0)
-		n = 75;
-	else if (strcmp(color, "MidnightBlue") == 0)
-		n = 76;
-	else if (strcmp(color, "MountainMeadow") == 0)
-		n = 77;
-	else if (strcmp(color, "NavyBlue") == 0)
-		n = 78;
-	else if (strcmp(color, "NeonCarrot") == 0)
-		n = 79;
-	else if (strcmp(color, "OliveGreen") == 0)
-		n = 80;
-	else if (strcmp(color, "Orange") == 0)
-		n = 81;
-	else if (strcmp(color, "Orchid") == 0)
-		n = 82;
-	else if (strcmp(color, "OuterSpace") == 0)
-		n = 83;
-	else if (strcmp(color, "OutrageousOrange") == 0)
-		n = 84;
-	else if (strcmp(color, "PacificBlue") == 0)
-		n = 85;
-	else if (strcmp(color, "Peach") == 0)
-		n = 86;
-	else if (strcmp(color, "Periwinkle") == 0)
-		n = 87;
-	else if (strcmp(color, "PiggyPink") == 0)
-		n = 88;
-	else if (strcmp(color, "PineGreen") == 0)
-		n = 89;
-	else if (strcmp(color, "PinkFlamingo") == 0)
-		n = 90;
-	else if (strcmp(color, "PinkSherbet") == 0)
-		n = 91;
-	else if (strcmp(color, "Plum") == 0)
-		n = 92;
-	else if (strcmp(color, "PurpleHeart") == 0)
-		n = 93;
-	else if (strcmp(color, "PurpleMountainsÕMajesty") == 0)
-		n = 94;
-	else if (strcmp(color, "PurplePizzazz") == 0)
-		n = 95;
-	else if (strcmp(color, "RadicalRed") == 0)
-		n = 96;
-	else if (strcmp(color, "RawSienna") == 0)
-		n = 97;
-	else if (strcmp(color, "RazzleDazzleRose") == 0)
-		n = 98;
-	else if (strcmp(color, "Razzmatazz") == 0)
-		n = 99;
-	else if (strcmp(color, "Red") == 0)
-		n = 100;
-	else if (strcmp(color, "RedOrange") == 0)
-		n = 101;
-	else if (strcmp(color, "RedViolet") == 0)
-		n = 102;
-	else if (strcmp(color, "RobinEggBlue") == 0)
-		n = 103;
-	else if (strcmp(color, "RoyalPurple") == 0)
-		n = 104;
-	else if (strcmp(color, "Salmon") == 0)
-		n = 105;
-	else if (strcmp(color, "Scarlet") == 0)
-		n = 106;
-	else if (strcmp(color, "ScreaminGreen") == 0)
-		n = 107;
-	else if (strcmp(color, "SeaGreen") == 0)
-		n = 108;
-	else if (strcmp(color, "Sepia") == 0)
-		n = 109;
-	else if (strcmp(color, "Shadow") == 0)
-		n = 110;
-	else if (strcmp(color, "Shamrock") == 0)
-		n = 111;
-	else if (strcmp(color, "ShockingPink") == 0)
-		n = 112;
-	else if (strcmp(color, "Silver") == 0)
-		n = 113;
-	else if (strcmp(color, "SkyBlue") == 0)
-		n = 114;
-	else if (strcmp(color, "SpringGreen") == 0)
-		n = 115;
-	else if (strcmp(color, "Sunglow") == 0)
-		n = 116;
-	else if (strcmp(color, "SunsetOrange") == 0)
-		n = 117;
-	else if (strcmp(color, "Tan") == 0)
-		n = 118;
-	else if (strcmp(color, "TickleMePink") == 0)
-		n = 119;
-	else if (strcmp(color, "Timberwolf") == 0)
-		n = 120;
-	else if (strcmp(color, "TropicalRainForest") == 0)
-		n = 121;
-	else if (strcmp(color, "Tumbleweed") == 0)
-		n = 122;
-	else if (strcmp(color, "TurquoiseBlue") == 0)
-		n = 123;
-	else if (strcmp(color, "UnmellowYellow") == 0)
-		n = 124;
-	else if (strcmp(color, "Violet(Purple)") == 0)
-		n = 125;
-	else if (strcmp(color, "VioletRed") == 0)
-		n = 126;
-	else if (strcmp(color, "VividTangerine") == 0)
-		n = 127;
-	else if (strcmp(color, "VividViolet") == 0)
-		n = 128;
-	else if (strcmp(color, "White") == 0)
-		n = 129;
-	else if (strcmp(color, "WildBlueYonder") == 0)
-		n = 130;
-	else if (strcmp(color, "WildStrawberry") == 0)
-		n = 131;
-	else if (strcmp(color, "WildWatermelon") == 0)
-		n = 132;
-	else if (strcmp(color, "Wisteria") == 0)
-		n = 133;
-	else if (strcmp(color, "Yellow") == 0)
-		n = 134;
-	else if (strcmp(color, "YellowGreen") == 0)
-		n = 135;
-	else if (strcmp(color, "YellowOrange") == 0)
-		n = 136;
-	return n;
+    else if (strcmp(color, "Almond") == 0)
+        n = 17;
+    else if (strcmp(color, "AntiqueBrass") == 0)
+        n = 18;
+    else if (strcmp(color, "Apricot") == 0)
+        n = 19;
+    else if (strcmp(color, "Aquamarine") == 0)
+        n = 20;
+    else if (strcmp(color, "Asparagus") == 0)
+        n = 21;
+    else if (strcmp(color, "AtomicTangerine") == 0)
+        n = 22;
+    else if (strcmp(color, "BananaMania") == 0)
+        n = 23;
+    else if (strcmp(color, "Beaver") == 0)
+        n = 24;
+    else if (strcmp(color, "Bittersweet") == 0)
+        n = 25;
+    else if (strcmp(color, "Black") == 0)
+        n = 26;
+    else if (strcmp(color, "Blue") == 0)
+        n = 27;
+    else if (strcmp(color, "BlueBell") == 0)
+        n = 28;
+    else if (strcmp(color, "BlueGreen") == 0)
+        n = 29;
+    else if (strcmp(color, "BlueViolet") == 0)
+        n = 30;
+    else if (strcmp(color, "Blush") == 0)
+        n = 31;
+    else if (strcmp(color, "BrickRed") == 0)
+        n = 32;
+    else if (strcmp(color, "Brown") == 0)
+        n = 33;
+    else if (strcmp(color, "BurntOrange") == 0)
+        n = 34;
+    else if (strcmp(color, "BurntSienna") == 0)
+        n = 35;
+    else if (strcmp(color, "CadetBlue") == 0)
+        n = 36;
+    else if (strcmp(color, "Canary") == 0)
+        n = 37;
+    else if (strcmp(color, "CaribbeanGreen") == 0)
+        n = 38;
+    else if (strcmp(color, "CarnationPink") == 0)
+        n = 39;
+    else if (strcmp(color, "Cerise") == 0)
+        n = 40;
+    else if (strcmp(color, "Cerulean") == 0)
+        n = 41;
+    else if (strcmp(color, "Chestnut") == 0)
+        n = 42;
+    else if (strcmp(color, "Copper") == 0)
+        n = 43;
+    else if (strcmp(color, "Cornflower") == 0)
+        n = 44;
+    else if (strcmp(color, "CottonCandy") == 0)
+        n = 45;
+    else if (strcmp(color, "Dandelion") == 0)
+        n = 46;
+    else if (strcmp(color, "Denim") == 0)
+        n = 47;
+    else if (strcmp(color, "DesertSand") == 0)
+        n = 48;
+    else if (strcmp(color, "Eggplant") == 0)
+        n = 49;
+    else if (strcmp(color, "ElectricLime") == 0)
+        n = 50;
+    else if (strcmp(color, "Fern") == 0)
+        n = 51;
+    else if (strcmp(color, "ForestGreen") == 0)
+        n = 52;
+    else if (strcmp(color, "Fuchsia") == 0)
+        n = 53;
+    else if (strcmp(color, "FuzzyWuzzyBrown") == 0)
+        n = 54;
+    else if (strcmp(color, "Gold") == 0)
+        n = 55;
+    else if (strcmp(color, "Goldenrod") == 0)
+        n = 56;
+    else if (strcmp(color, "GrannySmithApple") == 0)
+        n = 57;
+    else if (strcmp(color, "Gray") == 0)
+        n = 58;
+    else if (strcmp(color, "Green") == 0)
+        n = 59;
+    else if (strcmp(color, "GreenYellow") == 0)
+        n = 60;
+    else if (strcmp(color, "HotMagenta") == 0)
+        n = 61;
+    else if (strcmp(color, "InchWorm") == 0)
+        n = 62;
+    else if (strcmp(color, "Indigo") == 0)
+        n = 63;
+    else if (strcmp(color, "JazzberryJam") == 0)
+        n = 64;
+    else if (strcmp(color, "JungleGreen") == 0)
+        n = 65;
+    else if (strcmp(color, "LaserLemon") == 0)
+        n = 66;
+    else if (strcmp(color, "Lavender") == 0)
+        n = 67;
+    else if (strcmp(color, "MacaroniandCheese") == 0)
+        n = 68;
+    else if (strcmp(color, "Magenta") == 0)
+        n = 69;
+    else if (strcmp(color, "Mahogany") == 0)
+        n = 70;
+    else if (strcmp(color, "Manatee") == 0)
+        n = 71;
+    else if (strcmp(color, "MangoTango") == 0)
+        n = 72;
+    else if (strcmp(color, "Maroon") == 0)
+        n = 73;
+    else if (strcmp(color, "Mauvelous") == 0)
+        n = 74;
+    else if (strcmp(color, "Melon") == 0)
+        n = 75;
+    else if (strcmp(color, "MidnightBlue") == 0)
+        n = 76;
+    else if (strcmp(color, "MountainMeadow") == 0)
+        n = 77;
+    else if (strcmp(color, "NavyBlue") == 0)
+        n = 78;
+    else if (strcmp(color, "NeonCarrot") == 0)
+        n = 79;
+    else if (strcmp(color, "OliveGreen") == 0)
+        n = 80;
+    else if (strcmp(color, "Orange") == 0)
+        n = 81;
+    else if (strcmp(color, "Orchid") == 0)
+        n = 82;
+    else if (strcmp(color, "OuterSpace") == 0)
+        n = 83;
+    else if (strcmp(color, "OutrageousOrange") == 0)
+        n = 84;
+    else if (strcmp(color, "PacificBlue") == 0)
+        n = 85;
+    else if (strcmp(color, "Peach") == 0)
+        n = 86;
+    else if (strcmp(color, "Periwinkle") == 0)
+        n = 87;
+    else if (strcmp(color, "PiggyPink") == 0)
+        n = 88;
+    else if (strcmp(color, "PineGreen") == 0)
+        n = 89;
+    else if (strcmp(color, "PinkFlamingo") == 0)
+        n = 90;
+    else if (strcmp(color, "PinkSherbet") == 0)
+        n = 91;
+    else if (strcmp(color, "Plum") == 0)
+        n = 92;
+    else if (strcmp(color, "PurpleHeart") == 0)
+        n = 93;
+    else if (strcmp(color, "PurpleMountainsÕMajesty") == 0)
+        n = 94;
+    else if (strcmp(color, "PurplePizzazz") == 0)
+        n = 95;
+    else if (strcmp(color, "RadicalRed") == 0)
+        n = 96;
+    else if (strcmp(color, "RawSienna") == 0)
+        n = 97;
+    else if (strcmp(color, "RazzleDazzleRose") == 0)
+        n = 98;
+    else if (strcmp(color, "Razzmatazz") == 0)
+        n = 99;
+    else if (strcmp(color, "Red") == 0)
+        n = 100;
+    else if (strcmp(color, "RedOrange") == 0)
+        n = 101;
+    else if (strcmp(color, "RedViolet") == 0)
+        n = 102;
+    else if (strcmp(color, "RobinEggBlue") == 0)
+        n = 103;
+    else if (strcmp(color, "RoyalPurple") == 0)
+        n = 104;
+    else if (strcmp(color, "Salmon") == 0)
+        n = 105;
+    else if (strcmp(color, "Scarlet") == 0)
+        n = 106;
+    else if (strcmp(color, "ScreaminGreen") == 0)
+        n = 107;
+    else if (strcmp(color, "SeaGreen") == 0)
+        n = 108;
+    else if (strcmp(color, "Sepia") == 0)
+        n = 109;
+    else if (strcmp(color, "Shadow") == 0)
+        n = 110;
+    else if (strcmp(color, "Shamrock") == 0)
+        n = 111;
+    else if (strcmp(color, "ShockingPink") == 0)
+        n = 112;
+    else if (strcmp(color, "Silver") == 0)
+        n = 113;
+    else if (strcmp(color, "SkyBlue") == 0)
+        n = 114;
+    else if (strcmp(color, "SpringGreen") == 0)
+        n = 115;
+    else if (strcmp(color, "Sunglow") == 0)
+        n = 116;
+    else if (strcmp(color, "SunsetOrange") == 0)
+        n = 117;
+    else if (strcmp(color, "Tan") == 0)
+        n = 118;
+    else if (strcmp(color, "TickleMePink") == 0)
+        n = 119;
+    else if (strcmp(color, "Timberwolf") == 0)
+        n = 120;
+    else if (strcmp(color, "TropicalRainForest") == 0)
+        n = 121;
+    else if (strcmp(color, "Tumbleweed") == 0)
+        n = 122;
+    else if (strcmp(color, "TurquoiseBlue") == 0)
+        n = 123;
+    else if (strcmp(color, "UnmellowYellow") == 0)
+        n = 124;
+    else if (strcmp(color, "Violet(Purple)") == 0)
+        n = 125;
+    else if (strcmp(color, "VioletRed") == 0)
+        n = 126;
+    else if (strcmp(color, "VividTangerine") == 0)
+        n = 127;
+    else if (strcmp(color, "VividViolet") == 0)
+        n = 128;
+    else if (strcmp(color, "White") == 0)
+        n = 129;
+    else if (strcmp(color, "WildBlueYonder") == 0)
+        n = 130;
+    else if (strcmp(color, "WildStrawberry") == 0)
+        n = 131;
+    else if (strcmp(color, "WildWatermelon") == 0)
+        n = 132;
+    else if (strcmp(color, "Wisteria") == 0)
+        n = 133;
+    else if (strcmp(color, "Yellow") == 0)
+        n = 134;
+    else if (strcmp(color, "YellowGreen") == 0)
+        n = 135;
+    else if (strcmp(color, "YellowOrange") == 0)
+        n = 136;
+    return n;
 }
 
 /******************************************************************************
@@ -2405,17 +2405,17 @@ void CmdTextColor(int code)
     free(color);
     
     if (code) {  /* non-zero code indicates \textcolor */
-    	text1 = getBraceParam();
-    	text = strdup_noendblanks(text1);
-    	fprintRTF("{");
-		if (n > 0) fprintRTF("\\cf%d ", n);
-		ConvertString(text);
+        text1 = getBraceParam();
+        text = strdup_noendblanks(text1);
+        fprintRTF("{");
+        if (n > 0) fprintRTF("\\cf%d ", n);
+        ConvertString(text);
         fprintRTF("}");
-    	free(text);
-    	free(text1);
+        free(text);
+        free(text1);
     } else {
-	    if (n > 0) fprintRTF("\\cf%d ", n); 
-	}
+        if (n > 0) fprintRTF("\\cf%d ", n); 
+    }
     
 }
 
@@ -2424,7 +2424,7 @@ void CmdTextColor(int code)
 ******************************************************************************/
 void CmdLap(int code)
 {
-	char *s = getBraceParam();
-	ConvertString(s);
-	free(s);
+    char *s = getBraceParam();
+    ConvertString(s);
+    free(s);
 }

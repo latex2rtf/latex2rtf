@@ -125,7 +125,7 @@ int CurrentFileDescriptor(void)
 {
     int fd=0;
     if (g_parser_file)
-    	fd = fileno(g_parser_file);
+        fd = fileno(g_parser_file);
     
     return fd;
 }
@@ -145,15 +145,15 @@ char *CurrentFileName(void)
 }
 
 /*
-	The following two routines allow parsing of multiple files and strings
+    The following two routines allow parsing of multiple files and strings
 */
 
 int PushSource(const char *filename, const char *string)
 
 /***************************************************************************
  purpose:     change the source used by getRawTexChar() to either file or string
- 			  --> pass NULL for unused argument (both NULL means use stdin)
- 			  --> PushSource duplicates string
+              --> pass NULL for unused argument (both NULL means use stdin)
+              --> PushSource duplicates string
 ****************************************************************************/
 {
     char s[50];
@@ -365,35 +365,35 @@ void CmdInclude(int code)
     } else {                    /* \input gnu */
         i = 0;
         while (cNext != '\0' && !isspace(cNext)) {
-        	if (i<99) name[i] = (char) cNext;
-        	i++;
-        	cNext = getTexChar();
+            if (i<99) name[i] = (char) cNext;
+            i++;
+            cNext = getTexChar();
         }
         
         if (i<99) 
-        	name[i] = '\0';
-		else {
-        	name[99] = '\0';
-        	diagnostics(WARNING, "\\input filename '%s' more than 100 chars, skipping",name);
-        	return;
+            name[i] = '\0';
+        else {
+            name[99] = '\0';
+            diagnostics(WARNING, "\\input filename '%s' more than 100 chars, skipping",name);
+            return;
         }
  
         basename = strdup(name);
     }
 
-	if (strstr(basename, "german.sty") != NULL) {
-    	GermanMode = TRUE;
-     	PushEnvironment(GERMAN_MODE);
-     	free(basename);
-     	return;
+    if (strstr(basename, "german.sty") != NULL) {
+        GermanMode = TRUE;
+        PushEnvironment(GERMAN_MODE);
+        free(basename);
+        return;
 
     } else if (strstr(basename, "french.sty") != NULL) {
         FrenchMode = TRUE;
         PushEnvironment(FRENCH_MODE);
-     	free(basename);
-     	return;
-	}
-	
+        free(basename);
+        return;
+    }
+    
     if (basename && strstr(basename, ".tex") == NULL && strstr(basename, ".ltx") == NULL)         /* append .tex if missing */
         texname = strdup_together(basename, ".tex");
 
@@ -403,10 +403,10 @@ void CmdInclude(int code)
     else if (basename && PushSource(basename, NULL) == 0)     /* Try the basename second*/
         diagnostics(WARNING, "Including file <%s>", basename);
 
-	/* \include{file} always starts a new page */
-	if (code == 0)
-		PushSource(NULL, "\\pagebreak ");
-		
+    /* \include{file} always starts a new page */
+    if (code == 0)
+        PushSource(NULL, "\\pagebreak ");
+        
     if (basename) free(basename);
     if (texname)  free(texname);
 }
@@ -417,7 +417,7 @@ void CmdInclude(int code)
 
 int getParserDepth(void)
 {
-	return g_parser_depth;
+    return g_parser_depth;
 }
 
 
@@ -426,7 +426,7 @@ char getRawTexChar(void)
 /***************************************************************************
  purpose:     get the next character from the input stream with minimal
               filtering  (CRLF or CR or LF ->  \n) and '\t' -> ' '
-			  it also keeps track of the line number
+              it also keeps track of the line number
               should only be used by \verb and \verbatim and getTexChar()
 ****************************************************************************/
 {
@@ -458,20 +458,20 @@ char getRawTexChar(void)
     } else {
 
         if (g_parser_string && *g_parser_string) {
-			thechar = *g_parser_string;
+            thechar = *g_parser_string;
 
-			/* convert CR, CRLF, or LF to \n */			
-			if (thechar == CR) {   
-				g_parser_string++;
-				thechar = *g_parser_string;
-				if (thechar != LF)
-					g_parser_string--;
-				thechar = '\n';
-			} else if (thechar == LF)
-				thechar = '\n';
-			else if (thechar == '\t')
-            	thechar = ' ';
-            	
+            /* convert CR, CRLF, or LF to \n */         
+            if (thechar == CR) {   
+                g_parser_string++;
+                thechar = *g_parser_string;
+                if (thechar != LF)
+                    g_parser_string--;
+                thechar = '\n';
+            } else if (thechar == LF)
+                thechar = '\n';
+            else if (thechar == '\t')
+                thechar = ' ';
+                
             g_parser_currentChar = thechar;
             g_parser_string++;
         } 
@@ -489,14 +489,14 @@ char getRawTexChar(void)
     g_parser_penultimateChar = g_parser_lastChar;
     g_parser_lastChar = g_parser_currentChar;
     if (0) {
-		if (g_parser_currentChar=='\n')
-			diagnostics(5,"getRawTexChar = <\\n>");
-		else if (g_parser_currentChar=='\0')
-			diagnostics(5,"getRawTexChar = <\\0> depth=%d, files=%d", g_parser_depth, g_parser_include_level);
-		else
-			diagnostics(5,"getRawTexChar = <%2c>",g_parser_currentChar);
-	}
-	/* if (g_parser_currentChar=='\0') exit(0);*/
+        if (g_parser_currentChar=='\n')
+            diagnostics(5,"getRawTexChar = <\\n>");
+        else if (g_parser_currentChar=='\0')
+            diagnostics(5,"getRawTexChar = <\\0> depth=%d, files=%d", g_parser_depth, g_parser_include_level);
+        else
+            diagnostics(5,"getRawTexChar = <%2c>",g_parser_currentChar);
+    }
+    /* if (g_parser_currentChar=='\0') exit(0);*/
     return g_parser_currentChar;
 }
 
@@ -538,7 +538,7 @@ char getTexChar()
 /***************************************************************************
  purpose:     get the next character from the input stream
               This should be the usual place to access the LaTeX file
-			  It filters the input stream so that % is handled properly
+              It filters the input stream so that % is handled properly
 ****************************************************************************/
 {
     char cThis;
@@ -557,14 +557,14 @@ char getTexChar()
         g_parser_backslashes++;
     else
         g_parser_backslashes = 0;
-	if (0) {
-		if (cThis=='\n')
-			diagnostics(6,"getRawTexChar = <\\n> backslashes=%d line=%ld", g_parser_backslashes, g_parser_line);
-		else if (cThis=='\0')
-			diagnostics(6,"getRawTexChar = <\\0> backslashes=%d line=%ld", g_parser_backslashes, g_parser_line);
-		else
-			diagnostics(6,"getRawTexChar = <%2c> backslashes=%d line=%ld",cThis, g_parser_backslashes, g_parser_line);
-	}
+    if (0) {
+        if (cThis=='\n')
+            diagnostics(6,"getRawTexChar = <\\n> backslashes=%d line=%ld", g_parser_backslashes, g_parser_line);
+        else if (cThis=='\0')
+            diagnostics(6,"getRawTexChar = <\\0> backslashes=%d line=%ld", g_parser_backslashes, g_parser_line);
+        else
+            diagnostics(6,"getRawTexChar = <%2c> backslashes=%d line=%ld",cThis, g_parser_backslashes, g_parser_line);
+    }
     return cThis;
 }
 
@@ -589,9 +589,9 @@ char getNonBlank(void)
 {
     char c;
 
-	c = getTexChar();
+    c = getTexChar();
     while (c == ' ' || c == '\n') {
-    	c = getTexChar();
+        c = getTexChar();
     }
     return c;
 }
@@ -621,7 +621,7 @@ void skipSpaces(void)
     ungetTexChar(c);
 }
 
-void	skipWhiteSpace(void)
+void    skipWhiteSpace(void)
 /***************************************************************************
  Description: skip over spaces and linefeeds
 ****************************************************************************/
@@ -654,13 +654,13 @@ char *getDelimitedText(char left, char right, int raw)
 
 /******************************************************************************
   purpose: general scanning routine that allocates and returns a string
-  		   that is between "left" and "right" that accounts for escaping by '\'
-  		   
-  		   Example for getDelimitedText('{','}',TRUE) 
-  		   
-  		   "{the \{ is shown {\it by} a\\}" ----> "the \{ is shown {\it by} a\\"
-  		    
-  		    Note the missing opening brace in the example above
+           that is between "left" and "right" that accounts for escaping by '\'
+           
+           Example for getDelimitedText('{','}',TRUE) 
+           
+           "{the \{ is shown {\it by} a\\}" ----> "the \{ is shown {\it by} a\\"
+            
+            Note the missing opening brace in the example above
  ******************************************************************************/
 {
     char buffer[5000];
@@ -788,7 +788,7 @@ char *getSimpleCommand(void)
     if (buffer[0] != '\\')
         return NULL;
 
-	buffer[1] = getTexChar();
+    buffer[1] = getTexChar();
 
     for (size = 2; size < 127; size++) {
         buffer[size] = getRawTexChar(); /* \t \r '%' all end command */
@@ -813,7 +813,7 @@ char *getBracketParam(void)
 
 /******************************************************************************
   purpose: return bracketed parameter
-  			
+            
   \item[1]   --->  "1"        \item[]   --->  ""        \item the  --->  NULL
        ^                           ^                         ^
   \item [1]  --->  "1"        \item []  --->  ""        \item  the --->  NULL
@@ -849,10 +849,10 @@ static char *getBraceParam0(int raw_flag)
            ^                                     ^
      \bar{text}    --->  "text"              \bar text     --->  "t"
          ^                                       ^
-	_\alpha        ---> "\alpha"             _{\alpha}     ---> "\alpha"
-	 ^                                        ^
-	_2             ---> "2"                  _{2}          ---> "2"
-	 ^                                        ^
+    _\alpha        ---> "\alpha"             _{\alpha}     ---> "\alpha"
+     ^                                        ^
+    _2             ---> "2"                  _{2}          ---> "2"
+     ^                                        ^
  **************************************************************************/
 {
     char s[2], *text;
@@ -882,12 +882,12 @@ static char *getBraceParam0(int raw_flag)
 
 char *getBraceParam(void)
 {
-	return getBraceParam0(FALSE);
+    return getBraceParam0(FALSE);
 }
 
 char *getBraceRawParam(void)
 {
-	return getBraceParam0(TRUE);
+    return getBraceParam0(TRUE);
 }
 
 char *getLeftRightParam(void)
@@ -1017,17 +1017,17 @@ char *getSpacedTexUntil(char *target, int raw)
     char buffer[BUFFSIZE];
     char *s;
     int buffer_pos, target_pos, target_len, max_buffer_pos, start_pos;
-	
+    
     PushTrackLineNumber(FALSE);
 
     diagnostics(5, "getSpacedTexUntil target = <%s> raw_search = %d ", target, raw);
 
-	buffer_pos = 0;
-	target_pos = 0;
-	start_pos  = 0;
-	target_len = (int) strlen(target);
-	max_buffer_pos = -1;
-	
+    buffer_pos = 0;
+    target_pos = 0;
+    start_pos  = 0;
+    target_len = (int) strlen(target);
+    max_buffer_pos = -1;
+    
     do {
         
         /* the next character might already be in the buffer */
@@ -1041,9 +1041,9 @@ char *getSpacedTexUntil(char *target, int raw)
         }
 
         if (buffer[buffer_pos] == target[target_pos]) {
-        	if (target_pos == 0) 
-        		start_pos = buffer_pos;
-        	target_pos++;
+            if (target_pos == 0) 
+                start_pos = buffer_pos;
+            target_pos++;
         } 
         
         /* does not match next character in target ... */
@@ -1055,34 +1055,34 @@ char *getSpacedTexUntil(char *target, int raw)
         
         /* next character in target is '|' */ 
         } else if (buffer[buffer_pos] != ' ' && buffer[buffer_pos] != '\n') {
-        	
-			/* next char is non-blank ... either match or reset */
-			target_pos++;  /* move past wildcard */
-			if (buffer[buffer_pos] == target[target_pos]) {
-				target_pos++;
-			} else {
-				buffer_pos = start_pos;
-				target_pos = 0;
-			}
+            
+            /* next char is non-blank ... either match or reset */
+            target_pos++;  /* move past wildcard */
+            if (buffer[buffer_pos] == target[target_pos]) {
+                target_pos++;
+            } else {
+                buffer_pos = start_pos;
+                target_pos = 0;
+            }
         }
         
         if (0) {
-		if (buffer[buffer_pos] != '\n')
-			diagnostics(WARNING, "this char = <%c>, %d, %d, max=%d", buffer[buffer_pos], buffer_pos, target_pos, max_buffer_pos);
-		else
-			diagnostics(WARNING, "this char = <\\n>, %d, %d, max=%d", buffer[buffer_pos], buffer_pos, target_pos, max_buffer_pos);
-		}
-		
+        if (buffer[buffer_pos] != '\n')
+            diagnostics(WARNING, "this char = <%c>, %d, %d, max=%d", buffer[buffer_pos], buffer_pos, target_pos, max_buffer_pos);
+        else
+            diagnostics(WARNING, "this char = <\\n>, %d, %d, max=%d", buffer[buffer_pos], buffer_pos, target_pos, max_buffer_pos);
+        }
+        
         buffer_pos++;
 
 
-		if (buffer_pos == BUFFSIZE)
-			diagnostics(ERROR, "Could not find <%s> in %d characters \n\
-			Recompile with larger BUFFSIZE in getTexUntil() in parser.c", target, BUFFSIZE);
+        if (buffer_pos == BUFFSIZE)
+            diagnostics(ERROR, "Could not find <%s> in %d characters \n\
+            Recompile with larger BUFFSIZE in getTexUntil() in parser.c", target, BUFFSIZE);
 
     } while (target_pos < target_len);
 
-	/* terminate buffer */
+    /* terminate buffer */
     buffer[start_pos] = '\0';
 
     PopTrackLineNumber();
@@ -1117,7 +1117,7 @@ int getDimension(void)
 /* skip "spread" */
     if (cThis == 's') {
         getTexChar();
-		getTexChar();
+        getTexChar();
         getTexChar();
         getTexChar();
         getTexChar();
@@ -1151,15 +1151,15 @@ int getDimension(void)
         return 0;
     }
 
-/*	num *= 2;                    convert pts to twips */
+/*  num *= 2;                    convert pts to twips */
 
 /* obtain unit of measure */
     skipSpaces();
     buffer[0] = tolower((int) getTexChar());
 
-	if (buffer[0] == '\0')  /* no units specified ... assume points */
+    if (buffer[0] == '\0')  /* no units specified ... assume points */
         return (int) (num * 20);
-	
+    
 /* skip "true" */
     if (buffer[0] == 't') {
         getTexChar();
@@ -1225,8 +1225,8 @@ int getDimension(void)
 int getSlashSlashParam(void)
 {
     char cThis, *vertical_space;
-	int height = 0;
-	
+    int height = 0;
+    
     cThis = getTexChar();
     if (cThis != '*')
         ungetTexChar(cThis);
@@ -1236,7 +1236,7 @@ int getSlashSlashParam(void)
         height = getStringDimension(vertical_space);
         free(vertical_space);
     }
-	
-	return height;
+    
+    return height;
 }
 

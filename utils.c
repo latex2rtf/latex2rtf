@@ -121,8 +121,8 @@ char *my_strndup(const char *src, size_t n)
 char *strdup_together(const char *s, const char *t)
 {
     char *both;
-	size_t siz;
-	
+    size_t siz;
+    
     if (s == NULL) {
         if (t == NULL)
             return NULL;
@@ -131,7 +131,7 @@ char *strdup_together(const char *s, const char *t)
     if (t == NULL)
         return strdup(s);
 
-	if (0) diagnostics(1, "'%s' + '%s'", s, t);
+    if (0) diagnostics(1, "'%s' + '%s'", s, t);
     siz = strlen(s) + strlen(t) + 1;
     both = (char *) malloc(siz);
 
@@ -141,7 +141,7 @@ char *strdup_together(const char *s, const char *t)
     my_strlcpy(both, s, siz);
     my_strlcat(both, t, siz);
 
-	return both;
+    return both;
 }
 
 /******************************************************************************
@@ -150,10 +150,10 @@ char *strdup_together(const char *s, const char *t)
 char *strdup_together3(const char *s, const char *t, const char *u)
 {
     char *two, *three;
-	two = strdup_together(s,t);
-	three = strdup_together(two,u);
-	free(two);
-	return three;
+    two = strdup_together(s,t);
+    three = strdup_together(two,u);
+    free(two);
+    return three;
 }
 
 /******************************************************************************
@@ -162,10 +162,10 @@ char *strdup_together3(const char *s, const char *t, const char *u)
 char *strdup_together4(const char *s, const char *t, const char *u, const char *v)
 {
     char *four, *three;
-	three = strdup_together3(s,t,u);
-	four = strdup_together(three,v);
-	free(three);
-	return four;
+    three = strdup_together3(s,t,u);
+    four = strdup_together(three,v);
+    free(three);
+    return four;
 }
 
 /******************************************************************************
@@ -314,12 +314,12 @@ char *strdup_noendblanks(const char *s)
     if (*s == '\0')
         return strdup("");
 
-	/* find pointer to first non-space character in string */
+    /* find pointer to first non-space character in string */
     t = (char *) s;
     while (*t == ' ' || *t == '\n')
         t++;                    /* first non blank char */
 
-	/* find pointer to last non-space character in string */
+    /* find pointer to last non-space character in string */
     p = (char *) s + strlen(s) - 1;
     while (p >= t && (*p == ' ' || *p == '\n'))
         p--;                    /* last non blank char */
@@ -355,44 +355,44 @@ char *ExtractLabelTag(const char *text)
 /******************************************************************************
  purpose: provide functionality of getBraceParam() for strings
  
- 		if s contains "aaa {stuff}cdef", then  
- 			parameter = getStringBraceParam(&s)
- 			
- 		  gives
- 			parameter = "stuff"
- 			s="cdef"
+        if s contains "aaa {stuff}cdef", then  
+            parameter = getStringBraceParam(&s)
+            
+          gives
+            parameter = "stuff"
+            s="cdef"
  ******************************************************************************/
 char *getStringBraceParam(char **s)
 
 {
-	char *p_start, *p, *parameter, last;
-	int braces = 1;
-		
-	/* find start of parameter */
-	if (*s == NULL) return NULL;
-	p_start = strchr(*s,'{');
-	if (p_start==NULL) return NULL;
+    char *p_start, *p, *parameter, last;
+    int braces = 1;
+        
+    /* find start of parameter */
+    if (*s == NULL) return NULL;
+    p_start = strchr(*s,'{');
+    if (p_start==NULL) return NULL;
 
-	/* scan to enclosing brace */
-	p_start++;
-	p=p_start;	
-	last = '\0';
-	while (*p != '\0' && braces > 0) {
-		if (*p == '{' && last != '\\')
-			braces++;
-		if (*p == '}' && last != '\\')
-			braces--;
-		last = *p;
-		p++;
-	}
-	
-	parameter = my_strndup(p_start, p-p_start-1);
-	*s = p;
+    /* scan to enclosing brace */
+    p_start++;
+    p=p_start;  
+    last = '\0';
+    while (*p != '\0' && braces > 0) {
+        if (*p == '{' && last != '\\')
+            braces++;
+        if (*p == '}' && last != '\\')
+            braces--;
+        last = *p;
+        p++;
+    }
+    
+    parameter = my_strndup(p_start, p-p_start-1);
+    *s = p;
 
-	diagnostics(6,"Extract parameter=<%s> after=<%s>", parameter, *s); 
-	
-	return parameter;
-	
+    diagnostics(6,"Extract parameter=<%s> after=<%s>", parameter, *s); 
+    
+    return parameter;
+    
 }
 
 
@@ -419,10 +419,10 @@ char *ExtractAndRemoveTag(char *tag, char *text)
             break;
     }
 
-	contents = getStringBraceParam(&s);
-	if (contents == NULL) return NULL;
-	
-	/* erase "tag{contents}" */
+    contents = getStringBraceParam(&s);
+    if (contents == NULL) return NULL;
+    
+    /* erase "tag{contents}" */
     do
         *start++ = *s++;
     while (*s);               
@@ -447,92 +447,92 @@ char *ExtractAndRemoveTag(char *tag, char *text)
    
 char * keyvalue_pair(char *s, char **key, char **value)
 {
-	char *k, *v;	
-	*key = NULL;
-	*value = NULL;
-	if (s==NULL) return NULL;
-		
-	/* skip any blanks at start */
-	while (*s == ' ') s++;
+    char *k, *v;    
+    *key = NULL;
+    *value = NULL;
+    if (s==NULL) return NULL;
+        
+    /* skip any blanks at start */
+    while (*s == ' ') s++;
 
-	if (*s=='\0') return NULL;  /*possibly all blanks*/
-	
-	/* find the end of the key */
-	k = s;
-	while (*k != '=' && *k != ',' && *k != '\0') 
-		k++;
-		
-	/* allocate and copy string into the key */
-	*key = my_strndup(s, k-s);
-	
-	if (*k == '\0') return NULL;
-	
-	if (*k == ',') return k+1;
-	
-	/* '=' found, now parse value */
-	s = k+1;
-	
-	/* skip any blanks at start */
-	while (*s == ' ') s++;
-	
-	/* find the end of the value */
-	v = s;
-	while (*v != ',' && *v != '\0') {
-	    if (*v == '{')
-		while (*(++v) != '}')
-		    ;
-	    else
-		v++;
-	}
-	/* allocate and copy this into the value */
-	*value = my_strndup(s, v-s);
-	
-	if (*v == '\0') return NULL;
-	return v+1;
+    if (*s=='\0') return NULL;  /*possibly all blanks*/
+    
+    /* find the end of the key */
+    k = s;
+    while (*k != '=' && *k != ',' && *k != '\0') 
+        k++;
+        
+    /* allocate and copy string into the key */
+    *key = my_strndup(s, k-s);
+    
+    if (*k == '\0') return NULL;
+    
+    if (*k == ',') return k+1;
+    
+    /* '=' found, now parse value */
+    s = k+1;
+    
+    /* skip any blanks at start */
+    while (*s == ' ') s++;
+    
+    /* find the end of the value */
+    v = s;
+    while (*v != ',' && *v != '\0') {
+        if (*v == '{')
+        while (*(++v) != '}')
+            ;
+        else
+        v++;
+    }
+    /* allocate and copy this into the value */
+    *value = my_strndup(s, v-s);
+    
+    if (*v == '\0') return NULL;
+    return v+1;
 }
 
 int getStringDimension(char *s)
 {
-	int size = 0;
-	
-	if (s != NULL) {
-		PushSource(NULL, s);
-		size = getDimension();
-		PopSource();
-	}
-	
+    int size = 0;
+    
+    if (s != NULL) {
+        PushSource(NULL, s);
+        size = getDimension();
+        PopSource();
+    }
+    
     diagnostics(5, "getStringDimension fore '%s' is %d twips", s, size);
-	return size;
+    return size;
 }
 
 void show_string(int level, const char *s, const char *label)
 {
-	int width=100;
-	long i;
-	char c;
-	long len;
-	
-	if (g_verbosity_level<level) return;
-		
-	if (s == NULL) {
-		diagnostics(WARNING, "\n%s: NULL",label);
-		return;
-	}
-		
-	len = strlen(s);
-	fprintf(ERROUT, "\n%s: ", label);
+    int width=100;
+    long i;
+    char c;
+    long len;
+    
+    if (g_verbosity_level<level) return;
+        
+    if (s == NULL) {
+        diagnostics(WARNING, "\n%s: NULL",label);
+        return;
+    }
+        
+    len = strlen(s);
+    fprintf(ERROUT, "\n%s: ", label);
 
-	for (i=0; i<len; i++) {
-	
-		if (i==width)
-			fprintf(ERROUT, "\n%-*d: ", (int) strlen(label), (int) strlen(s));
-		else if (i>1 && i % width == 0) 
-			fprintf(ERROUT, "\n%s: ",label);
-		c = s[i];
-		if (c == '\n') c = '=';
-		if (c == '\0') c = '*';
-		fprintf(ERROUT,"%c",c);
-	}
+    for (i=0; i<len; i++) {
+    
+        if (i==width)
+            fprintf(ERROUT, "\n%-*d: ", (int) strlen(label), (int) strlen(s));
+        else if (i>1 && i % width == 0) 
+            fprintf(ERROUT, "\n%s: ",label);
+        c = s[i];
+        if (c == '\n') c = '=';
+        if (c == '\0') c = '*';
+        fprintf(ERROUT,"%c",c);
+    }
 }
 
 /* these next two routines fall under the copyright banner below.  The

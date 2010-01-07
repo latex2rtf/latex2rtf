@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 This file is available from http://sourceforge.net/projects/latex2rtf/
  
 Authors:
-	2008 Scott Prahl
+    2008 Scott Prahl
 */
 
 #include <stdlib.h>
@@ -62,60 +62,60 @@ EQ fields should never be nested
 
 int EQ_field_active(void)
 {
-	int i;
-	for (i=0; i<=g_field_depth; i++) {
-		if (g_field[i] == FIELD_EQ) 
-			return 1;
-	}
-	return 0;
+    int i;
+    for (i=0; i<=g_field_depth; i++) {
+        if (g_field[i] == FIELD_EQ) 
+            return 1;
+    }
+    return 0;
 }
 void startField(int type)
 {        
     if (!g_fields_allowed) return;
     
     switch (type) {
-    	case FIELD_EQ:
-     		diagnostics(4,"starting EQ field");
-   			diagnostics(6, "EQ fields allowed = %d",g_fields_use_EQ);
-    		if (!g_fields_use_EQ) return;
-    		if (EQ_field_active())
-    			diagnostics(1,"nested EQ fields ???");
+        case FIELD_EQ:
+            diagnostics(4,"starting EQ field");
+            diagnostics(6, "EQ fields allowed = %d",g_fields_use_EQ);
+            if (!g_fields_use_EQ) return;
+            if (EQ_field_active())
+                diagnostics(1,"nested EQ fields ???");
 
-    		fprintRTF("{\\field{\\*\\fldinst{ EQ ");
-    		break;
-    		
-    	case FIELD_REF:
-    		diagnostics(4,"starting REF field");
-    		if (!g_fields_use_REF) return;
-    		break;
-    		
-    	case FIELD_SYMBOL:
-        	diagnostics(4,"starting SYMBOL field");
-			if (!g_fields_use_SYMBOL) return;
-    		break;
-    		
-    	case FIELD_PAGE:
-        	diagnostics(4,"starting PAGE field");
-    		if (!g_fields_use_PAGE) return;
-    		break;
-    		
-    	case FIELD_PAGE_REF:
-        	diagnostics(4,"starting PAGE_REF field");
-    		if (!g_fields_use_PAGE_REF) return;
-    		break;
-    		
-    	case FIELD_COMMENT:
-        	diagnostics(4,"starting COMMENT field");
-    		if (!g_fields_use_COMMENT) return;
-        	fprintRTF("{\\field{\\*\\fldinst{ COMMENTS \" ");
-    		break;
-	}
-	
-	g_field_depth++;
-	g_field[g_field_depth] = type;
-	if (g_field_depth >= FIELD_MAX_DEPTH)
-		diagnostics(0, "Nesting of fields is excessive!");
-		
+            fprintRTF("{\\field{\\*\\fldinst{ EQ ");
+            break;
+            
+        case FIELD_REF:
+            diagnostics(4,"starting REF field");
+            if (!g_fields_use_REF) return;
+            break;
+            
+        case FIELD_SYMBOL:
+            diagnostics(4,"starting SYMBOL field");
+            if (!g_fields_use_SYMBOL) return;
+            break;
+            
+        case FIELD_PAGE:
+            diagnostics(4,"starting PAGE field");
+            if (!g_fields_use_PAGE) return;
+            break;
+            
+        case FIELD_PAGE_REF:
+            diagnostics(4,"starting PAGE_REF field");
+            if (!g_fields_use_PAGE_REF) return;
+            break;
+            
+        case FIELD_COMMENT:
+            diagnostics(4,"starting COMMENT field");
+            if (!g_fields_use_COMMENT) return;
+            fprintRTF("{\\field{\\*\\fldinst{ COMMENTS \" ");
+            break;
+    }
+    
+    g_field_depth++;
+    g_field[g_field_depth] = type;
+    if (g_field_depth >= FIELD_MAX_DEPTH)
+        diagnostics(0, "Nesting of fields is excessive!");
+        
 }
 
 void endCurrentField(void)
@@ -123,83 +123,83 @@ void endCurrentField(void)
     diagnostics(4, "end Field");
     if (!g_fields_allowed) return;
     if (g_field_depth < 0) {
-    	diagnostics(1, "oops, looks like fields are too shallow!");
-    	return;
+        diagnostics(1, "oops, looks like fields are too shallow!");
+        return;
     }
     
     switch (g_field[g_field_depth]) {
-    	case FIELD_EQ:
-    		if (!g_fields_use_EQ) return;
-    		fprintRTF("}}{\\fldrslt }}\n");
-    		break;
-    		
-    	case FIELD_REF:
-    		if (!g_fields_use_REF) return;
-    		break;
-    		
-    	case FIELD_SYMBOL:
-    		if (!g_fields_use_SYMBOL) return;
-    		break;
-    		
-    	case FIELD_PAGE:
-    		if (!g_fields_use_PAGE) return;
-    		break;
-    		
-    	case FIELD_PAGE_REF:
-    		if (!g_fields_use_PAGE_REF) return;
-    		break;
-    		
-    	case FIELD_COMMENT:
-    		if (!g_fields_use_COMMENT) return;
-    		fprintRTF("\" }}{\\fldrslt }}\n");
-    		break;
-	}
-	
-	g_field_depth--;
+        case FIELD_EQ:
+            if (!g_fields_use_EQ) return;
+            fprintRTF("}}{\\fldrslt }}\n");
+            break;
+            
+        case FIELD_REF:
+            if (!g_fields_use_REF) return;
+            break;
+            
+        case FIELD_SYMBOL:
+            if (!g_fields_use_SYMBOL) return;
+            break;
+            
+        case FIELD_PAGE:
+            if (!g_fields_use_PAGE) return;
+            break;
+            
+        case FIELD_PAGE_REF:
+            if (!g_fields_use_PAGE_REF) return;
+            break;
+            
+        case FIELD_COMMENT:
+            if (!g_fields_use_COMMENT) return;
+            fprintRTF("\" }}{\\fldrslt }}\n");
+            break;
+    }
+    
+    g_field_depth--;
 }
 
 void endAllFields(void)
 {
     if (!g_fields_allowed) return;
-	while (g_field_depth >= 0) 
-		endCurrentField();
+    while (g_field_depth >= 0) 
+        endCurrentField();
 }
 
 void fprintfRTF_field_separator(void)
 {
-	fprintRTF("%c", g_field_separator);
+    fprintRTF("%c", g_field_separator);
 }
 
 void set_field_separator(char c)
 {
-	g_field_separator = c;
+    g_field_separator = c;
 }
 
 void set_fields_use_REF(int i)
 {
-	g_fields_use_REF = i;
+    g_fields_use_REF = i;
 }
 
 int fields_use_REF(void)
 {
-	return g_fields_use_REF;
+    return g_fields_use_REF;
 }
 
 void set_fields_use_EQ(int i)
 {
-	g_fields_use_EQ = i;
+    g_fields_use_EQ = i;
 }
 
 int fields_use_EQ(void)
 {
-	return g_fields_use_EQ;
+    return g_fields_use_EQ;
 }
 
 int processing_fields(void)
 {
-	if (g_field_depth >= 0)
-		return 1;
-	else
-		return 0;
+    if (g_field_depth >= 0)
+        return 1;
+    else
+        return 0;
 }
 

@@ -19,10 +19,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 This file is available from http://sourceforge.net/projects/latex2rtf/
  
 Authors:
-	1995	  Fernando Dorner, Andreas Granzer, Freidrich Polzer, Gerhard Trisko
-	1995-1997 Ralf Schlatterbeck
-	1998-2000 Georg Lehner
-	2001-2007 Scott Prahl
+    1995      Fernando Dorner, Andreas Granzer, Freidrich Polzer, Gerhard Trisko
+    1995-1997 Ralf Schlatterbeck
+    1998-2000 Georg Lehner
+    2001-2007 Scott Prahl
 */
 #if defined(NOSTDERR)
 #define ERROUT stdout
@@ -167,8 +167,8 @@ int main(int argc, char **argv)
 
     InitializeStack();
     InitializeLatexLengths();
-	InitializeBibliography();
-	
+    InitializeBibliography();
+    
     while ((c = my_getopt(argc, argv, "lhpuvFSVWZ:o:a:b:d:f:i:s:u:C:D:M:P:T:t:")) != EOF) {
         switch (c) {
             case 'a':
@@ -209,7 +209,7 @@ int main(int argc, char **argv)
                 break;
             case 'D':
                 sscanf(optarg, "%d", &x);
-				g_dots_per_inch = (uint16_t) x;
+                g_dots_per_inch = (uint16_t) x;
                 if (g_dots_per_inch < 25 || g_dots_per_inch > 600)
                     diagnostics(WARNING, "Dots per inch must be between 25 and 600 dpi\n");
                 break;
@@ -315,7 +315,7 @@ int main(int argc, char **argv)
         diagnostics(ERROR, " Type \"latex2rtf -h\" for help");
     }
 
-/* Parse filename.	Extract directory if possible.	Beware of stdin cases */
+/* Parse filename.  Extract directory if possible.  Beware of stdin cases */
 
     if (argc == 1 && strcmp(*argv, "-") != 0) { /* filename exists and != "-" */
         char *s, *t;
@@ -347,9 +347,9 @@ int main(int argc, char **argv)
 
         if (g_rtf_name == NULL) {
             if (g_home_dir)
-				g_rtf_name = strdup_together3(g_home_dir,basename,".rtf");
-			else
-            	g_rtf_name = strdup_together(basename, ".rtf");
+                g_rtf_name = strdup_together3(g_home_dir,basename,".rtf");
+            else
+                g_rtf_name = strdup_together(basename, ".rtf");
         }
     }
 
@@ -395,7 +395,7 @@ int main(int argc, char **argv)
         CloseRtf(&fRtf);
         printf("\n");
 
-	if (0) debug_malloc();
+    if (0) debug_malloc();
 
         return 0;
     } else {
@@ -407,7 +407,7 @@ int main(int argc, char **argv)
 static void SetEndianness(void)
 
 /*
-purpose : Figure out endianness of machine.	 Needed for graphics support
+purpose : Figure out endianness of machine.  Needed for graphics support
 */
 {
     unsigned int endian_test = (unsigned int) 0xaabbccdd;
@@ -434,10 +434,10 @@ static void ConvertWholeDocument(void)
     preParse(&body, &sec_head, &label);
 
     diagnostics(2, "\\begin{document}");
-	diagnostics(5,"label for this section is'%s'", label);
-	diagnostics(5, "next section '%s'", sec_head);
-	show_string(2, body, "body ");
-	
+    diagnostics(5,"label for this section is'%s'", label);
+    diagnostics(5, "next section '%s'", sec_head);
+    show_string(2, body, "body ");
+    
     ConvertString(body);
     free(body);
     if (label)
@@ -452,10 +452,10 @@ static void ConvertWholeDocument(void)
             g_section_label = label;
         }
         
-		diagnostics(2, "processing '%s'", sec_head);	
-		diagnostics(5, "label is   '%s'", g_section_label);
-		diagnostics(5, "next  is   '%s'", sec_head2);	
-		show_string(2, body, "body ");
+        diagnostics(2, "processing '%s'", sec_head);    
+        diagnostics(5, "label is   '%s'", g_section_label);
+        diagnostics(5, "next  is   '%s'", sec_head2);   
+        show_string(2, body, "body ");
 
         ConvertString(sec_head);
         ConvertString(body);
@@ -465,27 +465,27 @@ static void ConvertWholeDocument(void)
     }
     
     if (g_endfloat_figures && g_fff_name) {
-    	g_endfloat_figures = FALSE;
+        g_endfloat_figures = FALSE;
         if (PushSource(g_fff_name, NULL) == 0) {
-        	CmdNewPage(NewPage);
-        	CmdListOf(LIST_OF_FIGURES);
-        	Convert();
+            CmdNewPage(NewPage);
+            CmdListOf(LIST_OF_FIGURES);
+            Convert();
         }
      }
     
     if (g_endfloat_tables && g_ttt_name) {
-    	g_endfloat_tables = FALSE;
+        g_endfloat_tables = FALSE;
         if (PushSource(g_ttt_name, NULL) == 0) {
-        	CmdNewPage(NewPage);
-        	CmdListOf(LIST_OF_TABLES);
-        	Convert();
+            CmdNewPage(NewPage);
+            CmdListOf(LIST_OF_TABLES);
+            Convert();
         }
      }
      
     if (strcmp(sec_head,"\\end{document}")==0) {
         diagnostics(2, "\\end{document}");
-    	ConvertString(sec_head);
-	}
+        ConvertString(sec_head);
+    }
 }
 
 static void print_version(void)
@@ -496,7 +496,7 @@ static void print_version(void)
     fprintf(stdout, "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n");
     fprintf(stdout, "Written by Prahl, Lehner, Granzer, Dorner, Polzer, Trisko, Schlatterbeck.\n");
 
-/*		fprintf(stdout, "RTFPATH = '%s'\n", getenv("RTFPATH"));*/
+/*      fprintf(stdout, "RTFPATH = '%s'\n", getenv("RTFPATH"));*/
 }
 
 static void print_usage(void)
@@ -622,7 +622,7 @@ purpose: Writes the message to stderr depending on debugging level
                 break;
         }
         vfprintf(ERROUT, format, apf);
-    	first = FALSE;
+        first = FALSE;
     }
     va_end(apf);
 
@@ -714,20 +714,20 @@ purpose: reads the LaTeX preamble (to \begin{document} ) for the file
     char t[] = "\\begin|{|document|}";
     FILE *rtf_file;
 
-	/* Here we switch the file pointers ... it is important that nothing
-	   get printed to fRtf until the entire preamble has been processed.  
-	   This is really hard to track down, so the processed RTF get sent
-	   directly to stderr instead.
-	*/
-	rtf_file = fRtf;
-	fRtf = ERROUT;
-	
+    /* Here we switch the file pointers ... it is important that nothing
+       get printed to fRtf until the entire preamble has been processed.  
+       This is really hard to track down, so the processed RTF get sent
+       directly to stderr instead.
+    */
+    rtf_file = fRtf;
+    fRtf = ERROUT;
+    
     g_preamble = getSpacedTexUntil(t, 1);
 
     diagnostics(2, "Read LaTeX Preamble");
     diagnostics(5, "Entering ConvertString() from ConvertLatexPreamble");
 
-	show_string(5, g_preamble, "preamble");	
+    show_string(5, g_preamble, "preamble"); 
 
     ConvertString(g_preamble);
     diagnostics(5, "Exiting ConvertString() from ConvertLatexPreamble");
@@ -740,7 +740,7 @@ void OpenRtfFile(char *filename, FILE ** f)
 /****************************************************************************
 purpose: creates output file and writes RTF-header.
 params: filename - name of outputfile, possibly NULL for already open file
-	f - pointer to filepointer to store file ID
+    f - pointer to filepointer to store file ID
  ****************************************************************************/
 {
     if (filename == NULL) {
@@ -775,8 +775,8 @@ globals: g_tex_name;
         diagnostics(WARNING, "\\section{}s.  For example ");
         diagnostics(WARNING, "   \\begin{small} ... \\section{A} ... \\section{B} ... \\end{small}");
         diagnostics(WARNING, "will definitely fail.");
-	}
-	
+    }
+    
     if (BraceLevel - 1 > g_safety_braces)
         diagnostics(WARNING, "Try translating with 'latex2rtf -Z%d %s'", BraceLevel - 1, g_tex_name);
 
@@ -800,9 +800,9 @@ purpose: output a single escaped character to the RTF file
          this is primarily useful for the verbatim-like enviroments
  ****************************************************************************/
 {
-	if (getTexMode() == MODE_VERTICAL)
-		changeTexMode(MODE_HORIZONTAL);
-	if (cThis == '\\')
+    if (getTexMode() == MODE_VERTICAL)
+        changeTexMode(MODE_HORIZONTAL);
+    if (cThis == '\\')
         fprintRTF("%s","\\\\");
     else if (cThis == '{')
         fprintRTF("%s", "\\{");
@@ -820,8 +820,8 @@ purpose: output a string with escaped characters to the RTF file
  ****************************************************************************/
 void putRtfStrEscaped(const char * string)
 {
-	char *s = (char *) string;
-	if (string == NULL) return;
+    char *s = (char *) string;
+    if (string == NULL) return;
     while (*s) putRtfCharEscaped(*s++);
 }
 
@@ -847,19 +847,19 @@ purpose: output a formatted string to the RTF file.  It is assumed that the
 
     while (*text) {
 
-		WriteEightBitChar(text[0], fRtf);
-	
-		if (*text == '{' && last != '\\')
-			PushFontSettings();
-	
-		if (*text == '}' && last != '\\')
-			PopFontSettings();
-	
-		if (*text == '\\' && last != '\\')
-			MonitorFontChanges(text);
-	
-		last= *text;
-		text++;
+        WriteEightBitChar(text[0], fRtf);
+    
+        if (*text == '{' && last != '\\')
+            PushFontSettings();
+    
+        if (*text == '}' && last != '\\')
+            PopFontSettings();
+    
+        if (*text == '\\' && last != '\\')
+            MonitorFontChanges(text);
+    
+        last= *text;
+        text++;
     }
 }
 
@@ -876,28 +876,28 @@ purpose: return the directory to store temporary files
 #else
 
     size_t n;
-	char *t = NULL;
-	char *u = NULL;
+    char *t = NULL;
+    char *u = NULL;
     char pathsep_str[2] = { PATHSEP, 0 };   /* for os2 or w32 "unix" compiler */
-	
+    
    /* first use any temporary directory specified as an option */
     if (g_tmp_dir) {
         t = strdup(g_tmp_dir);
 
     /* next try the environment variable TMPDIR */
     } else {
-		u = getenv("TMPDIR");
-		if (u != NULL)
-			t = strdup(u);
-	}
+        u = getenv("TMPDIR");
+        if (u != NULL)
+            t = strdup(u);
+    }
     /* finally just return "/tmp/" */
     if (t==NULL)
         t = strdup("/tmp/");
 
     /* append a final '/' if missing */
-	
-	n=strlen(t)-1;
-	
+    
+    n=strlen(t)-1;
+    
     if (n > 1 && *(t + n) != PATHSEP) {
         u = strdup_together(t, pathsep_str);
         free(t);
@@ -946,11 +946,11 @@ purpose: opens "g_home_dir/path"  and
     p = fopen(name, mode);
 
     if (p == NULL) {
-    	if (strstr(path, ".tex") != NULL)
-        	p = (FILE *) open_cfg(path, FALSE);
-	} else
-    	diagnostics(2, "Opened '%s'", name);
-	
+        if (strstr(path, ".tex") != NULL)
+            p = (FILE *) open_cfg(path, FALSE);
+    } else
+        diagnostics(2, "Opened '%s'", name);
+    
     if (p == NULL) {
         diagnostics(WARNING, "Cannot open '%s'", name);
         fflush(NULL);

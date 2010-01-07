@@ -24,55 +24,55 @@ Authors:
 */
 
 /*
-	All changes to font size, font style, and font face are 
-	handled in this file.  Explicit changing of font characteristics
-	should not be done elsewhere.
-	
-	Font handling in LaTeX uses five independent parameters 
-	
-		* Font encoding    --- OT1, OT
-		* Font family      --- roman, typewriter, sans serif
-		* Font size        --- normal, large, ...
-		* Font shape       --- upright, italics, small caps
-		* Font series      --- medium, bold
-		
-	Font changes in LaTeX use commands that fall into three categories.  
-	
-		commands that are independent of the previous state, e.g.,
-		{\sc before {\it some text}} will typeset in "some text"
-		in italics 
-		
-		commands that add to the previous state {\sc before \textit{some text}}
-		will typeset "some text" in italic small caps (if available)
-		
-		commands that are affected by the previous state {\it before \emph{some text}}
-		will typeset "some text" in an upright font
-		
-	RTF has no commands to directly emulate this third type of command.  The first
-	type is readily simulated by resetting the font properties before setting the
-	desired setting.  The second type of command is the normal way that RTF handles
-	fonts, and therefore is not a problem.
+    All changes to font size, font style, and font face are 
+    handled in this file.  Explicit changing of font characteristics
+    should not be done elsewhere.
+    
+    Font handling in LaTeX uses five independent parameters 
+    
+        * Font encoding    --- OT1, OT
+        * Font family      --- roman, typewriter, sans serif
+        * Font size        --- normal, large, ...
+        * Font shape       --- upright, italics, small caps
+        * Font series      --- medium, bold
+        
+    Font changes in LaTeX use commands that fall into three categories.  
+    
+        commands that are independent of the previous state, e.g.,
+        {\sc before {\it some text}} will typeset in "some text"
+        in italics 
+        
+        commands that add to the previous state {\sc before \textit{some text}}
+        will typeset "some text" in italic small caps (if available)
+        
+        commands that are affected by the previous state {\it before \emph{some text}}
+        will typeset "some text" in an upright font
+        
+    RTF has no commands to directly emulate this third type of command.  The first
+    type is readily simulated by resetting the font properties before setting the
+    desired setting.  The second type of command is the normal way that RTF handles
+    fonts, and therefore is not a problem.
 
-	Limiting the extent of font changes is handled by braces in the RTF file.  This
-	leads to the following problem,
-	
-		\textit{some text {\em roman text} more italic text {\em more roman text}} 
-		
-	which should be translated to
-	
-		{\i some text {\i0 roman text} more italic text {\i0 more roman text}}
-		
-	when \em is encountered by latex2rtf, the extent of the emphasis is unknown:
-	it may continue to the next brace, it may continue to the end of an environment
-	\end{center}, or it may continue to the end of the document.  In the example above,
-	the text will be reset to italics by the first closing brace.  This is easy, but
-	the problem is that the at the next \em, it is necessary to know that the font has 
-	been changed back.
-	
-	Consequently, it is necessary to know the current latex font setting *for each
-	RTF brace level*.  The easiest way to do this is to filter everything fprintf'ed 
-	to the RTF file
-				
+    Limiting the extent of font changes is handled by braces in the RTF file.  This
+    leads to the following problem,
+    
+        \textit{some text {\em roman text} more italic text {\em more roman text}} 
+        
+    which should be translated to
+    
+        {\i some text {\i0 roman text} more italic text {\i0 more roman text}}
+        
+    when \em is encountered by latex2rtf, the extent of the emphasis is unknown:
+    it may continue to the next brace, it may continue to the end of an environment
+    \end{center}, or it may continue to the end of the document.  In the example above,
+    the text will be reset to italics by the first closing brace.  This is easy, but
+    the problem is that the at the next \em, it is necessary to know that the font has 
+    been changed back.
+    
+    Consequently, it is necessary to know the current latex font setting *for each
+    RTF brace level*.  The easiest way to do this is to filter everything fprintf'ed 
+    to the RTF file
+                
 */
 
 #include <stdlib.h>
@@ -122,18 +122,18 @@ int RtfFontNumber(const char *Fname)
         diagnostics(6, "RTF font %d has name='%s' of type='%s'", font_id, font_name, font_type);
 
         if (strcmp(font_name, Fname) == 0) {  /* right name, now make sure charset is correct*/
-			int charset = 0;
-	
-			if (strncmp(font_name, "Symbol",   6) == 0 || strncmp(font_name, "MT Extra", 8) == 0)
-				return font_id;      /* Symbol and MT Extra is same in all charsets! */
+            int charset = 0;
+    
+            if (strncmp(font_name, "Symbol",   6) == 0 || strncmp(font_name, "MT Extra", 8) == 0)
+                return font_id;      /* Symbol and MT Extra is same in all charsets! */
 
-			if (strncmp(font_type, "Cyrillic", 8) == 0)
-				charset = 204;
-	
-			if (strncmp(font_type, "Latin2", 6) == 0)
-				charset = 238;
+            if (strncmp(font_type, "Cyrillic", 8) == 0)
+                charset = 204;
+    
+            if (strncmp(font_type, "Latin2", 6) == 0)
+                charset = 238;
 
-			if (g_fcharset_number == charset) return font_id;
+            if (g_fcharset_number == charset) return font_id;
         }
     }
     return TexFontNumber("Roman");  /* default font */
@@ -146,19 +146,19 @@ int TexFontNumber(const char *Fname)
   example: TexFontNumber("Roman")
  ****************************************************************************/
 {
-	ConfigEntryT **p;
-	int number=0;
-	
+    ConfigEntryT **p;
+    int number=0;
+    
     if (strcmp(Fname,"CurrentFontSize")==0)
-    	return CurrentFontSize();
+        return CurrentFontSize();
 
     if (strcmp(Fname,"DefaultFontSize")==0)
-    	return DefaultFontSize();
-    			
+        return DefaultFontSize();
+                
     p = SearchCfgEntry(Fname, FONT_A);
     
     if (p) number = (**p).original_id;
-    	
+        
     diagnostics(4,"TexFontNumber for '%s' is %d", Fname, number);
     
     return number;
@@ -168,10 +168,10 @@ void CmdFontFamily(int code)
 
 /******************************************************************************
   purpose: selects the appropriate font family
-     			F_FAMILY_ROMAN    for \rmfamily
-     			F_FAMILY_ROMAN_1  for \rm
-     			F_FAMILY_ROMAN_2  for \textrm{...}
-     			F_FAMILY_ROMAN_3  for \begin{rmfamily} or \end{rmfamily}
+                F_FAMILY_ROMAN    for \rmfamily
+                F_FAMILY_ROMAN_1  for \rm
+                F_FAMILY_ROMAN_2  for \textrm{...}
+                F_FAMILY_ROMAN_3  for \begin{rmfamily} or \end{rmfamily}
  ******************************************************************************/
 {
     char *s;
@@ -267,11 +267,11 @@ void CmdFontShape(int code)
 
 /****************************************************************************
      purpose : sets the font to upright, italic, or small caps
-     			F_SHAPE_ITALIC    for \itshape
-     			F_SHAPE_ITALIC_1  for \it
-     			F_SHAPE_ITALIC_2  for \textit{...}
-     			F_SHAPE_ITALIC_3  for \begin{itshape}
-     			F_SHAPE_ITALIC_4  for \begin{it}
+                F_SHAPE_ITALIC    for \itshape
+                F_SHAPE_ITALIC_1  for \it
+                F_SHAPE_ITALIC_2  for \textit{...}
+                F_SHAPE_ITALIC_3  for \begin{itshape}
+                F_SHAPE_ITALIC_4  for \begin{it}
 
  ****************************************************************************/
 {
@@ -364,9 +364,9 @@ void CmdFontSeries(int code)
      purpose : sets the font weight to medium or bold
      
      F_SERIES_BOLD        for  \bfseries ... 
-	 F_SERIES_BOLD_1      for  \bf ... 
-	 F_SERIES_BOLD_2      for  \textbf{...}
-	 F_SERIES_BOLD_3      for  \begin{bfseries} ... \end{bfseries}
+     F_SERIES_BOLD_1      for  \bf ... 
+     F_SERIES_BOLD_2      for  \textbf{...}
+     F_SERIES_BOLD_3      for  \begin{bfseries} ... \end{bfseries}
 
  ****************************************************************************/
 {
@@ -456,15 +456,15 @@ void CmdEmphasize(int code)
 /****************************************************************************
  purpose: LaTeX commands \em, \emph, and \begin{em} ... \end{em}
  
- 		  the \emph{string} construction is handled by \textit{string} or \textup{string}
- 		  
- 		  {\em string} should be properly localized by brace mechanisms
- 		  
- 		  \begin{em} ... \end{em} will be localized by environment mechanisms
+          the \emph{string} construction is handled by \textit{string} or \textup{string}
+          
+          {\em string} should be properly localized by brace mechanisms
+          
+          \begin{em} ... \end{em} will be localized by environment mechanisms
 
-	 F_EMPHASIZE_1        for  \em ... 
-	 F_EMPHASIZE_2        for  \emph{...}
-	 F_EMPHASIZE_3        for  \begin{em} ... \end{em}
+     F_EMPHASIZE_1        for  \em ... 
+     F_EMPHASIZE_2        for  \emph{...}
+     F_EMPHASIZE_3        for  \begin{em} ... \end{em}
  ******************************************************************************/
 {
     int true_code = code & ~ON;
@@ -522,9 +522,9 @@ void CmdTextNormal(int code)
  purpose: handle \textnormal{text}  {\normalfont ...} commands
 
      F_TEXT_NORMAL        for  \normalfont ... 
-	 F_TEXT_NORMAL_1
-	 F_TEXT_NORMAL_2      for  \textnormal{...}
-	 F_TEXT_NORMAL_3      for  \begin{normalfont} ... \end{normalfont}
+     F_TEXT_NORMAL_1
+     F_TEXT_NORMAL_2      for  \textnormal{...}
+     F_TEXT_NORMAL_3      for  \begin{normalfont} ... \end{normalfont}
 
  ******************************************************************************/
 {
@@ -611,7 +611,7 @@ void InitializeDocumentFont(int family, int size, int shape, int series)
 
 /******************************************************************************
   purpose: Initialize the basic font properties for a document
-  		   pass -1 to avoid setting any parameter
+           pass -1 to avoid setting any parameter
  ******************************************************************************/
 {
     if (size >= 0)
@@ -673,7 +673,7 @@ int CurrentCyrillicFontFamily(void)
     ConfigEntryT **font_handle;
 
     num = CurrentFontFamily();
-	font_handle = SearchCfgEntryByID(num, FONT_A);
+    font_handle = SearchCfgEntryByID(num, FONT_A);
     font_type = (**font_handle).TexCommand;
     diagnostics(6, "CurrentCyrillicFontFamily current active font type =<%s>", font_type);
 
@@ -704,7 +704,7 @@ int CurrentLatin1FontFamily(void)
     ConfigEntryT **font_handle;
 
     num = CurrentFontFamily();
-	font_handle = SearchCfgEntryByID(num, FONT_A);
+    font_handle = SearchCfgEntryByID(num, FONT_A);
     font_type = (**font_handle).TexCommand;
     diagnostics(6, "CurrentLatin1FontFamily current active font type =<%s>", font_type);
 
@@ -737,7 +737,7 @@ int CurrentLatin2FontFamily(void)
     num = CurrentFontFamily();
 
 /* obtain name and type of current active font */
-	font_handle = SearchCfgEntryByID(num, FONT_A);
+    font_handle = SearchCfgEntryByID(num, FONT_A);
     font_type = (**font_handle).TexCommand;
     diagnostics(6, "CurrentLatin2FontFamily current active font type =<%s>", font_type);
 
@@ -832,20 +832,20 @@ void MonitorFontChanges(const unsigned char *text)
     else if (strstart(text, "\\i0")) {
         int mode=getTexMode();
         if (mode==MODE_MATH || mode==MODE_DISPLAYMATH)
-        	RtfFontInfo[FontInfoDepth].shape = F_SHAPE_MATH_UPRIGHT;
+            RtfFontInfo[FontInfoDepth].shape = F_SHAPE_MATH_UPRIGHT;
         else
-        	RtfFontInfo[FontInfoDepth].shape = F_SHAPE_UPRIGHT;
-	}
+            RtfFontInfo[FontInfoDepth].shape = F_SHAPE_UPRIGHT;
+    }
     else if (strstart(text, "\\i ") || strstart(text, "\\i\\"))
         RtfFontInfo[FontInfoDepth].shape = F_SHAPE_ITALIC;
 
     else if (strstart(text, "\\scaps0")){
         int mode=getTexMode();
         if (mode==MODE_MATH || mode==MODE_DISPLAYMATH)
-        	RtfFontInfo[FontInfoDepth].shape = F_SHAPE_MATH_UPRIGHT;
+            RtfFontInfo[FontInfoDepth].shape = F_SHAPE_MATH_UPRIGHT;
         else
-        	RtfFontInfo[FontInfoDepth].shape = F_SHAPE_UPRIGHT;
-	}
+            RtfFontInfo[FontInfoDepth].shape = F_SHAPE_UPRIGHT;
+    }
 
     else if (strstart(text, "\\scaps ") || strstart(text, "\\scaps\\"))
         RtfFontInfo[FontInfoDepth].shape = F_SHAPE_CAPS;

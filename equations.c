@@ -77,7 +77,7 @@ static char *SlurpDollarEquation(void)
 
 /******************************************************************************
  purpose   : reads an equation delimited by $...$
- 			 this routine is needed to handle $ x \mbox{if $x$} $ 
+             this routine is needed to handle $ x \mbox{if $x$} $ 
  ******************************************************************************/
 {
     int brace = 0;
@@ -114,7 +114,7 @@ static char *SlurpDollarEquation(void)
 static void SlurpEquation(int code, char **pre, char **eq, char **post)
 {
     int true_code = code & ~ON;
-	
+    
     switch (true_code) {
 
         case EQN_MATH:
@@ -210,7 +210,7 @@ static int EquationNeedsFields(char *eq)
  ******************************************************************************/
 {
     if (EQ_field_active())
-    	return 0;
+        return 0;
     
     if (strstr(eq, "\\frac"))
         return 1;
@@ -283,21 +283,21 @@ static void WriteEquationAsComment(char *pre, char *eq, char *post)
 
 static void PrepareRtfEquation(int code, int EQ_Needed)
 {
-	g_current_eqn_needs_EQ = EQ_Needed;
+    g_current_eqn_needs_EQ = EQ_Needed;
 
     switch (code) {
 
         case EQN_MATH:
             diagnostics(4, "PrepareRtfEquation ... \\begin{math}");
             if (getTexMode() == MODE_VERTICAL)
-            	startParagraph("Normal", GENERIC_PARAGRAPH);
+                startParagraph("Normal", GENERIC_PARAGRAPH);
             setTexMode(MODE_MATH);
             break;
 
         case EQN_DOLLAR:
             diagnostics(4, "PrepareRtfEquation ... $");
             if (getTexMode() == MODE_VERTICAL)
-            	startParagraph("Normal", GENERIC_PARAGRAPH);
+                startParagraph("Normal", GENERIC_PARAGRAPH);
             fprintRTF("{");
             setTexMode(MODE_MATH);
             break;
@@ -305,7 +305,7 @@ static void PrepareRtfEquation(int code, int EQ_Needed)
         case EQN_ENSUREMATH:
             diagnostics(4, "PrepareRtfEquation ... \\ensuremath{}");
             if (getTexMode() == MODE_VERTICAL)
-            	startParagraph("Normal", GENERIC_PARAGRAPH);
+                startParagraph("Normal", GENERIC_PARAGRAPH);
             fprintRTF("{");
             setTexMode(MODE_MATH);
             break;
@@ -313,7 +313,7 @@ static void PrepareRtfEquation(int code, int EQ_Needed)
         case EQN_RND_OPEN:
             diagnostics(4, "PrepareRtfEquation ... \\(");
             if (getTexMode() == MODE_VERTICAL)
-            	startParagraph("Normal", GENERIC_PARAGRAPH);
+                startParagraph("Normal", GENERIC_PARAGRAPH);
             fprintRTF("{");
             setTexMode(MODE_MATH);
             break;
@@ -322,15 +322,15 @@ static void PrepareRtfEquation(int code, int EQ_Needed)
         case EQN_BRACKET_OPEN:
         case EQN_DISPLAYMATH:
         case EQN_EQUATION_STAR:
-			if (code == EQN_DISPLAYMATH)
-				diagnostics(4, "PrepareRtfEquation -- $$");
-			if (code == EQN_DISPLAYMATH)
-				diagnostics(4, "PrepareRtfEquation -- displaymath");
-			if (code == EQN_BRACKET_OPEN)
-				diagnostics(4, "PrepareRtfEquation -- \\[");
-			if (code == EQN_EQUATION_STAR)
-				diagnostics(4, "PrepareRtfEquation -- equation*");
-		
+            if (code == EQN_DISPLAYMATH)
+                diagnostics(4, "PrepareRtfEquation -- $$");
+            if (code == EQN_DISPLAYMATH)
+                diagnostics(4, "PrepareRtfEquation -- displaymath");
+            if (code == EQN_BRACKET_OPEN)
+                diagnostics(4, "PrepareRtfEquation -- \\[");
+            if (code == EQN_EQUATION_STAR)
+                diagnostics(4, "PrepareRtfEquation -- equation*");
+        
             g_show_equation_number = FALSE;
             startParagraph("equation", EQUATION_PARAGRAPH);
             fprintRTF("\\tab\n");
@@ -350,23 +350,23 @@ static void PrepareRtfEquation(int code, int EQ_Needed)
 
         case EQN_ALIGN_STAR:
         case EQN_ARRAY_STAR:
-			if (code == EQN_ARRAY_STAR)
-            	diagnostics(4, "PrepareRtfEquation -- eqnarray* ");
-			if (code == EQN_ALIGN_STAR)
-           		diagnostics(4, "PrepareRtfEquation -- align* ");
-           		
+            if (code == EQN_ARRAY_STAR)
+                diagnostics(4, "PrepareRtfEquation -- eqnarray* ");
+            if (code == EQN_ALIGN_STAR)
+                diagnostics(4, "PrepareRtfEquation -- align* ");
+                
             g_show_equation_number = FALSE;
             g_processing_eqnarray = TRUE;
             g_processing_tabular = TRUE;
             g_equation_column = 1;
-			g_multiline_equation_type = code;
+            g_multiline_equation_type = code;
             
             if (g_equation_display_bitmap)
-            	startParagraph("bitmapCenter", EQUATION_PARAGRAPH);
+                startParagraph("bitmapCenter", EQUATION_PARAGRAPH);
             else if (code == EQN_ALIGN_STAR)
-            	startParagraph("equationAlign", EQUATION_PARAGRAPH);
+                startParagraph("equationAlign", EQUATION_PARAGRAPH);
             else
-            	startParagraph("equationArray", EQUATION_PARAGRAPH);
+                startParagraph("equationArray", EQUATION_PARAGRAPH);
             
             fprintRTF("\\tab\n");
             setTexMode(MODE_DISPLAYMATH);
@@ -374,23 +374,23 @@ static void PrepareRtfEquation(int code, int EQ_Needed)
 
         case EQN_ALIGN:
         case EQN_ARRAY:
-			if (code == EQN_ALIGN)
-            	diagnostics(4, "PrepareRtfEquation --- eqnarray");
-			if (code == EQN_ARRAY)
-            	diagnostics(4, "PrepareRtfEquation --- align");
+            if (code == EQN_ALIGN)
+                diagnostics(4, "PrepareRtfEquation --- eqnarray");
+            if (code == EQN_ARRAY)
+                diagnostics(4, "PrepareRtfEquation --- align");
 
             g_show_equation_number = TRUE;
             g_processing_eqnarray = TRUE;
             g_processing_tabular = TRUE;
             g_equation_column = 1;
-			g_multiline_equation_type = code;
+            g_multiline_equation_type = code;
             
             if (g_equation_display_bitmap)
-            	startParagraph("bitmapCenter", EQUATION_PARAGRAPH);
+                startParagraph("bitmapCenter", EQUATION_PARAGRAPH);
             else if (code == EQN_ALIGN)
-            	startParagraph("equationAlignNum", EQUATION_PARAGRAPH);
+                startParagraph("equationAlignNum", EQUATION_PARAGRAPH);
             else
-            	startParagraph("equationArrayNum", EQUATION_PARAGRAPH);
+                startParagraph("equationArrayNum", EQUATION_PARAGRAPH);
 
             fprintRTF("\\tab\n");
             setTexMode(MODE_DISPLAYMATH);
@@ -402,32 +402,32 @@ static void PrepareRtfEquation(int code, int EQ_Needed)
     }
 
     if (g_current_eqn_needs_EQ && !processing_fields()) 
-    	startField(FIELD_EQ);
+        startField(FIELD_EQ);
 
 }
 
 static char *CreateEquationLabel(void)
 {
-	char *number = (char *) malloc(30);
-		
-	if (g_document_type == FORMAT_REPORT ||
-	    g_document_type == FORMAT_BOOK )
-		snprintf(number, 29, "%d.%d", getCounter("chapter"), getCounter("equation"));
-	else
-		snprintf(number, 29, "%d", getCounter("equation"));
-		
-	return number;
+    char *number = (char *) malloc(30);
+        
+    if (g_document_type == FORMAT_REPORT ||
+        g_document_type == FORMAT_BOOK )
+        snprintf(number, 29, "%d.%d", getCounter("chapter"), getCounter("equation"));
+    else
+        snprintf(number, 29, "%d", getCounter("equation"));
+        
+    return number;
 }
 
-	
+    
 
 
 static void FinishRtfEquation(int code, int EQ_Needed)
 {
     if (EQ_Needed) {
-    	endCurrentField();
-		g_current_eqn_needs_EQ = 0;
-	}
+        endCurrentField();
+        g_current_eqn_needs_EQ = 0;
+    }
 
     switch (code) {
 
@@ -504,8 +504,8 @@ static void FinishRtfEquation(int code, int EQ_Needed)
 
                incrementCounter("equation");
                if (!g_equation_display_bitmap) {
-                	for (; g_equation_column < 3; g_equation_column++)
-                    	fprintRTF("\\tab\n");
+                    for (; g_equation_column < 3; g_equation_column++)
+                        fprintRTF("\\tab\n");
                 }
                 fprintRTF("\\tab{\\b0 (");
                 number = CreateEquationLabel();
@@ -534,9 +534,9 @@ static char *scanback(char *s, char *t)
 
 /******************************************************************************
  purpose   : Find '{' that starts a fraction designated by \over 
- 			 Consider \int_0 { \{a_{x+y} + b \} \over a_{x+y} }
- 	                  ^		 ^                  ^
- 	                  s    result               t
+             Consider \int_0 { \{a_{x+y} + b \} \over a_{x+y} }
+                      ^      ^                  ^
+                      s    result               t
  ******************************************************************************/
 {
     int braces = 1;
@@ -567,9 +567,9 @@ static char *scanahead(char *s)
 
 /******************************************************************************
  purpose   : Find '}' that ends a fraction designated by \over 
- 			 Consider \int_0 { \{a_{x+y} + b \} \over a_{x+y} }
- 	                                            ^             ^ 
- 	                                            s             t
+             Consider \int_0 { \{a_{x+y} + b \} \over a_{x+y} }
+                                                ^             ^ 
+                                                s             t
  ******************************************************************************/
 {
     char *t;
@@ -666,9 +666,9 @@ static void ConvertOverToFrac(char **equation)
 static int EquationGetsNoNumber(const char *s)
 {
   if (strstr(s, "\\nonumber"))
-  	return TRUE;
+    return TRUE;
   if (strstr(s, "\\notag"))
-  	return TRUE;
+    return TRUE;
   
   return FALSE;
 }
@@ -698,19 +698,19 @@ static void WriteEquationAsRTF(int code, char **eq)
  ******************************************************************************/
 static void SetEquationLabel(char *eq)
 {
-	char *t;
-	
-	if (g_suppress_equation_number) return;
-	if (eq==NULL || *eq=='\0') return;
-		
-	t = strstr(eq,"\\label");
-	if (t) {
-	    t += strlen("\\label");
-		PushSource(NULL,t);
-		g_equation_label=getBraceParam();
-    	diagnostics(4, "Bitmap equation label = '%s'", g_equation_label);
-		PopSource();
-	}
+    char *t;
+    
+    if (g_suppress_equation_number) return;
+    if (eq==NULL || *eq=='\0') return;
+        
+    t = strstr(eq,"\\label");
+    if (t) {
+        t += strlen("\\label");
+        PushSource(NULL,t);
+        g_equation_label=getBraceParam();
+        diagnostics(4, "Bitmap equation label = '%s'", g_equation_label);
+        PopSource();
+    }
 
 }
 
@@ -728,9 +728,9 @@ void CmdEquation(int code)
         return;
 
     if (code==EQN_ENSUREMATH)
-    	eq = getBraceParam();
+        eq = getBraceParam();
     else
-    	SlurpEquation(code, &pre, &eq, &post);
+        SlurpEquation(code, &pre, &eq, &post);
 
     diagnostics(4, "Entering CmdEquation --------%x\n<%s>\n<%s>\n<%s>", code, pre, eq, post);
 
@@ -752,10 +752,10 @@ void CmdEquation(int code)
     diagnostics(4, "inline=%d  inline_rtf   =%d", inline_equation, g_equation_inline_rtf);
     diagnostics(4, "inline=%d display_rtf   =%d", inline_equation, g_equation_display_rtf);
 
-	/* bitmap versions of equations */
+    /* bitmap versions of equations */
     if (( inline_equation && g_equation_inline_bitmap ) || 
         (!inline_equation && g_equation_display_bitmap))   {
-    	if (true_code == EQN_ALIGN || true_code == EQN_ARRAY) {
+        if (true_code == EQN_ALIGN || true_code == EQN_ARRAY) {
             char *s, *t;
 
             s = eq;
@@ -766,12 +766,12 @@ void CmdEquation(int code)
                 g_suppress_equation_number = EquationGetsNoNumber(s);
                 PrepareRtfEquation(true_code, FALSE);
 
-        		if (true_code == EQN_ARRAY)
-                	WriteLatexAsBitmap("\\begin{eqnarray*}", s, "\\end{eqnarray*}");
+                if (true_code == EQN_ARRAY)
+                    WriteLatexAsBitmap("\\begin{eqnarray*}", s, "\\end{eqnarray*}");
                 else
-                	WriteLatexAsBitmap("\\begin{align*}", s, "\\end{align*}");
+                    WriteLatexAsBitmap("\\begin{align*}", s, "\\end{align*}");
 
-            	SetEquationLabel(s);
+                SetEquationLabel(s);
                 FinishRtfEquation(true_code, FALSE);
                 if (t) s = t + 2;
             } while (t);
@@ -779,7 +779,7 @@ void CmdEquation(int code)
         } else {
             PrepareRtfEquation(true_code, FALSE);
             if (true_code == EQN_EQUATION && g_amsmath_package)
-            	g_suppress_equation_number = EquationGetsNoNumber(eq);
+                g_suppress_equation_number = EquationGetsNoNumber(eq);
             
             WriteLatexAsBitmap(pre, eq, post);
             SetEquationLabel(eq);
@@ -810,18 +810,18 @@ void CmdEquation(int code)
  ******************************************************************************/
 void CmdEnsuremath(int code)
 {
-	int mode = getTexMode();
+    int mode = getTexMode();
 
     diagnostics(4, "Entering CmdEnsuremath");
-	if (mode == MODE_MATH || mode == MODE_DISPLAYMATH) {
-		char *eq = getBraceParam();
+    if (mode == MODE_MATH || mode == MODE_DISPLAYMATH) {
+        char *eq = getBraceParam();
         diagnostics(4, "already in math mode <%s>", eq);
-		ConvertString(eq);
-		free(eq);
-	} else {
+        ConvertString(eq);
+        free(eq);
+    } else {
         diagnostics(4, "need to start new equation");
-		CmdEquation(EQN_ENSUREMATH);
-	}
+        CmdEquation(EQN_ENSUREMATH);
+    }
 }
 
 
@@ -910,43 +910,43 @@ void CmdArrows(int code)
 
     switch (code) {
         case LEFT_RIGHT:
-    		fprintRTF(" \\\\o ({\\up%d ", size);
+            fprintRTF(" \\\\o ({\\up%d ", size);
             ConvertString("\\leftarrow");
             fprintRTF("}%c{\\dn%d ", g_field_separator, size);
             ConvertString("\\rightarrow");
-    		fprintRTF("}) ");
+            fprintRTF("}) ");
             break;
 
         case RIGHT_LEFT:
-    		fprintRTF(" \\\\o ({\\up%d ", size);
+            fprintRTF(" \\\\o ({\\up%d ", size);
             ConvertString("\\rightarrow");
             fprintRTF("}%c{\\dn%d ", g_field_separator, size);
             ConvertString("\\leftarrow");
-    		fprintRTF("}) ");
+            fprintRTF("}) ");
             break;
 
         case RIGHT_LEFT_HARPOONS:
-    		fprintRTF(" \\\\o ({\\up%d ", size);
+            fprintRTF(" \\\\o ({\\up%d ", size);
             ConvertString("\\leftharpoonup");
             fprintRTF("}%c{\\dn%d ", g_field_separator, size);
             ConvertString("\\rightharpoondown");
-    		fprintRTF("}) ");
+            fprintRTF("}) ");
             break;
 
         case RIGHT_RIGHT:
-    		fprintRTF(" \\\\o ({\\up%d ", size);
+            fprintRTF(" \\\\o ({\\up%d ", size);
             ConvertString("\\rightarrow");
             fprintRTF("}%c{\\dn%d ", g_field_separator, size);
             ConvertString("\\rightarrow");
-    		fprintRTF("}) ");
+            fprintRTF("}) ");
             break;
 
         case LEFT_LEFT:
-    		fprintRTF(" \\\\o ({\\up%d ", size);
+            fprintRTF(" \\\\o ({\\up%d ", size);
             ConvertString("\\leftarrow");
             fprintRTF("}%c{\\dn%d ", g_field_separator, size);
             ConvertString("\\leftarrow");
-    		fprintRTF("}) ");
+            fprintRTF("}) ");
             break;
 
         case LONG_LEFTRIGHT:
@@ -955,11 +955,11 @@ void CmdArrows(int code)
             break;
 
         case LONG_RIGHTLEFT:
-    		fprintRTF(" \\\\o ({\\up%d ", size);
+            fprintRTF(" \\\\o ({\\up%d ", size);
             ConvertString("\\longrightarrow");
             fprintRTF("}%c{\\dn%d ", g_field_separator, size);
             ConvertString("\\longleftarrow");
-    		fprintRTF("}) ");
+            fprintRTF("}) ");
             break;
 
         case LONG_LEFT:
@@ -1031,11 +1031,11 @@ parameter: type of operand
     char *upper_limit = NULL;
     char *lower_limit = NULL;
     int possible_limits = TRUE;
-	char * command = NULL;
+    char * command = NULL;
     char cThis;
-	
-	diagnostics(4, "Entering CmdIntegral");
-	
+    
+    diagnostics(4, "Entering CmdIntegral");
+    
     /* is there an exponent/subscript ? */
     cThis = getNonBlank();
 
@@ -1049,31 +1049,31 @@ parameter: type of operand
         } else if (strcmp(command, "\\limits") == 0) {
             free(command);
             command = NULL;
-        	cThis = getNonBlank();
+            cThis = getNonBlank();
         } else {
             possible_limits = FALSE;
         }    
     }
     
     if (possible_limits) {
-		if (cThis == '_')
-			lower_limit = getBraceParam();
-		else if (cThis == '^')
-			upper_limit = getBraceParam();
-		else
-			ungetTexChar(cThis);
-	
-		if (upper_limit || lower_limit) {
-			cThis = getNonBlank();
-			if (cThis == '_')
-				lower_limit = getBraceParam();
-			else if (cThis == '^')
-				upper_limit = getBraceParam();
-			else
-				ungetTexChar(cThis);
-		}
-	}
-	
+        if (cThis == '_')
+            lower_limit = getBraceParam();
+        else if (cThis == '^')
+            upper_limit = getBraceParam();
+        else
+            ungetTexChar(cThis);
+    
+        if (upper_limit || lower_limit) {
+            cThis = getNonBlank();
+            if (cThis == '_')
+                lower_limit = getBraceParam();
+            else if (cThis == '^')
+                upper_limit = getBraceParam();
+            else
+                ungetTexChar(cThis);
+        }
+    }
+    
     if (fields_use_EQ()) {
 
         fprintRTF(" \\\\i ");
@@ -1151,10 +1151,10 @@ parameter: type of operand
         }
     }
 
-	if (command) {
-		ConvertString(command);
-		free(command);
-	}
+    if (command) {
+        ConvertString(command);
+        free(command);
+    }
     if (lower_limit)
         free(lower_limit);
     if (upper_limit)
@@ -1349,8 +1349,8 @@ static void getDelimOrCommand(char *delim, char **s)
 
 /******************************************************************************
  purpose   : Handles \left \right
- 			 to properly handle \left. or \right. would require prescanning the
- 			 entire equation.  
+             to properly handle \left. or \right. would require prescanning the
+             entire equation.  
  ******************************************************************************/
 void CmdLeftRight(int code)
 {
@@ -1472,7 +1472,7 @@ void CmdArray(int code)
         free(col_align);
         if (v_align) free(v_align);
 
-		g_processing_arrays++;
+        g_processing_arrays++;
 
     } else {
         fprintRTF(")");
@@ -1559,10 +1559,10 @@ void CmdOverLine(int code)
  ***************************************************************************/
 void CmdArraySlashSlash(int height)
 {
-	char cThis = getNonBlank();
-	ungetTexChar(cThis);
+    char cThis = getNonBlank();
+    ungetTexChar(cThis);
     diagnostics(4, "CmdArraySlashSlash height = %d, multiline=%d", height,g_multiline_equation_type);
-	fprintRTF("%c", g_field_separator);
+    fprintRTF("%c", g_field_separator);
 }
 
 /***************************************************************************
@@ -1574,63 +1574,63 @@ void CmdEqnArraySlashSlash(int height)
     
     diagnostics(4, "CmdEqnArraySlashSlash height = %d, multiline=%d", height,g_multiline_equation_type);
 
-	if (EQ_field_active()) {
-		diagnostics(4,"ending field due to \\\\");
-		restart_field = 1;
-		endCurrentField();
-	}
+    if (EQ_field_active()) {
+        diagnostics(4,"ending field due to \\\\");
+        restart_field = 1;
+        endCurrentField();
+    }
 
-	if (g_show_equation_number && !g_suppress_equation_number) {
-		char number[20];
+    if (g_show_equation_number && !g_suppress_equation_number) {
+        char number[20];
 
-		for (; g_equation_column < 3; g_equation_column++)
-			fprintRTF("\\tab\n");
-		incrementCounter("equation");
+        for (; g_equation_column < 3; g_equation_column++)
+            fprintRTF("\\tab\n");
+        incrementCounter("equation");
 
-		fprintRTF("\\tab{\\b0 (");
-		snprintf(number, 20, "%d", getCounter("equation"));
-		InsertBookmark(g_equation_label, number);
-		if (g_equation_label) {
-			free(g_equation_label);
-			g_equation_label = NULL;
-		}
-		fprintRTF(")}");
-	}
+        fprintRTF("\\tab{\\b0 (");
+        snprintf(number, 20, "%d", getCounter("equation"));
+        InsertBookmark(g_equation_label, number);
+        if (g_equation_label) {
+            free(g_equation_label);
+            g_equation_label = NULL;
+        }
+        fprintRTF(")}");
+    }
 
     switch (g_multiline_equation_type) {
-    	case EQN_ALIGN_STAR:
-        	startParagraph("equationAlign", EQUATION_PARAGRAPH);
-    		setTexMode(MODE_DISPLAYMATH); 
+        case EQN_ALIGN_STAR:
+            startParagraph("equationAlign", EQUATION_PARAGRAPH);
+            setTexMode(MODE_DISPLAYMATH); 
             g_processing_eqnarray = TRUE;
-        	break;
-    	case EQN_ARRAY_STAR:
-        	startParagraph("equationArray", EQUATION_PARAGRAPH);
-    		setTexMode(MODE_DISPLAYMATH); 
+            break;
+        case EQN_ARRAY_STAR:
+            startParagraph("equationArray", EQUATION_PARAGRAPH);
+            setTexMode(MODE_DISPLAYMATH); 
             g_processing_eqnarray = TRUE;
-        	break;
-    	case EQN_ALIGN:
-        	startParagraph("equationAlignNum", EQUATION_PARAGRAPH);
-    		setTexMode(MODE_DISPLAYMATH); 
+            break;
+        case EQN_ALIGN:
+            startParagraph("equationAlignNum", EQUATION_PARAGRAPH);
+            setTexMode(MODE_DISPLAYMATH); 
             g_processing_eqnarray = TRUE;
-        	break;
-    	case EQN_ARRAY:
-        	startParagraph("equationArrayNum", EQUATION_PARAGRAPH);
-    		setTexMode(MODE_DISPLAYMATH); 
+            break;
+        case EQN_ARRAY:
+            startParagraph("equationArrayNum", EQUATION_PARAGRAPH);
+            setTexMode(MODE_DISPLAYMATH); 
             g_processing_eqnarray = TRUE;
-       		break;
+            break;
         default :
-        	diagnostics(0, "something wrong with multiline equation");
-        	break;
+            diagnostics(0, "something wrong with multiline equation");
+            break;
         
-	}
-	
-	fprintRTF("\\tab\n");
+    }
+    
+    fprintRTF("\\tab\n");
 
     if (restart_field) 
-    	startField(FIELD_EQ);
+        startField(FIELD_EQ);
 
-	g_suppress_equation_number = FALSE;
-	g_equation_column = 1;
+    g_suppress_equation_number = FALSE;
+    g_equation_column = 1;
 }
 
 /***************************************************************************
@@ -1642,28 +1642,28 @@ void CmdSlashSlash(int height)
     diagnostics(4, "CmdSlashSlash height = %d", height);
     
     if (g_processing_tabbing) {
-		diagnostics(3," I don't think this should happen anymore! ");
+        diagnostics(3," I don't think this should happen anymore! ");
         PopBrace();
         PushBrace();
-    	g_tab_counter = 0;
-    	return;
+        g_tab_counter = 0;
+        return;
     }
 
-	if (EQ_field_active()) {
-		diagnostics(4,"ending field due to \\\\");
-		restart_field = 1;
-		endCurrentField();
-	}
+    if (EQ_field_active()) {
+        diagnostics(4,"ending field due to \\\\");
+        restart_field = 1;
+        endCurrentField();
+    }
 
-	if (height>0)
-		setVspace(getVspace()+height);
+    if (height>0)
+        setVspace(getVspace()+height);
 
     /* we are ending a line in an environment that is unknown
        so just start a new line with the whatever was used last */
     startParagraph("last",0);
     
     if (restart_field) 
-    	startField(FIELD_EQ);
+        startField(FIELD_EQ);
 
 }
 

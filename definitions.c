@@ -84,26 +84,26 @@ static int strequal(char *a, char *b)
 /* static void printDefinitions(void)
 {
 int i=0;
-	diagnostics(WARNING, "\n");
-	while(i < iDefinitionCount ) {
-		diagnostics(WARNING, "[%d] name     =<%s>\n",i, Definitions[i].name);
-		diagnostics(WARNING, "    opt_param=<%s>\n", Definitions[i].opt_param);
-		diagnostics(WARNING, "    def      =<%s>\n", Definitions[i].def);
-		diagnostics(WARNING, "    params   =<%d>\n", Definitions[i].params);
-		i++;
-	}
+    diagnostics(WARNING, "\n");
+    while(i < iDefinitionCount ) {
+        diagnostics(WARNING, "[%d] name     =<%s>\n",i, Definitions[i].name);
+        diagnostics(WARNING, "    opt_param=<%s>\n", Definitions[i].opt_param);
+        diagnostics(WARNING, "    def      =<%s>\n", Definitions[i].def);
+        diagnostics(WARNING, "    params   =<%d>\n", Definitions[i].params);
+        i++;
+    }
 }
 
 static void printTheorems(void)
 {
 int i=0;
-	diagnostics(WARNING, "\n");
-	for (i=0; i< iNewTheoremCount; i++) {
-		diagnostics(WARNING, "[%d] name   =<%s>\n",i, NewTheorems[i].name);
-		diagnostics(WARNING, "    caption    =<%s>\n", NewTheorems[i].caption);
-		diagnostics(WARNING, "    like =<%s>\n", NewTheorems[i].numbered_like);
-		diagnostics(WARNING, "    within    =<%s>\n", NewTheorems[i].within);
-	}
+    diagnostics(WARNING, "\n");
+    for (i=0; i< iNewTheoremCount; i++) {
+        diagnostics(WARNING, "[%d] name   =<%s>\n",i, NewTheorems[i].name);
+        diagnostics(WARNING, "    caption    =<%s>\n", NewTheorems[i].caption);
+        diagnostics(WARNING, "    like =<%s>\n", NewTheorems[i].numbered_like);
+        diagnostics(WARNING, "    within    =<%s>\n", NewTheorems[i].within);
+    }
 }
 */
 
@@ -120,11 +120,11 @@ static char *expandmacro(char *macro, char *opt_param, int params)
     char *args[9], *dmacro, *macro_piece, *next_piece, *expanded, *buffer=NULL, *cs;
     int buff_size = 512;   /* extra slop for macro expansion */
 
-	diagnostics(5, "expandmacro...");
-	diagnostics(5, "expandmacro: contents '%s'", macro);
-	diagnostics(5, "expandmacro: optional '%s'", opt_param);
-	diagnostics(5, "expandmacro: num args  %d", params);
-	
+    diagnostics(5, "expandmacro...");
+    diagnostics(5, "expandmacro: contents '%s'", macro);
+    diagnostics(5, "expandmacro: optional '%s'", opt_param);
+    diagnostics(5, "expandmacro: num args  %d", params);
+    
     if (params <= 0)
         return strdup(macro);
 
@@ -144,13 +144,13 @@ static char *expandmacro(char *macro, char *opt_param, int params)
 
     dmacro = strdup(macro);
     macro_piece = dmacro;
-	buff_size += (int) strlen(macro_piece);
+    buff_size += (int) strlen(macro_piece);
 
-	diagnostics(5, "expandmacro: buff_size = %d\n", buff_size);
-	if(buff_size > 0)
-		buffer = (char*) calloc(sizeof(char) * buff_size, sizeof(char));
- 	
-	expanded = buffer;
+    diagnostics(5, "expandmacro: buff_size = %d\n", buff_size);
+    if(buff_size > 0)
+        buffer = (char*) calloc(sizeof(char) * buff_size, sizeof(char));
+    
+    expanded = buffer;
 
     /* convert "\csname " but leave inital backslash */
     while ((cs = strstr(dmacro, "\\csname ")) != NULL)
@@ -164,7 +164,7 @@ static char *expandmacro(char *macro, char *opt_param, int params)
     while ((cs = strstr(dmacro, "\\endcsname")) != NULL)
         my_strcpy(cs, cs + strlen("\\endcsname"));
 
-	diagnostics(5, "expandmacro: after removing cs crap '%s'", macro_piece);
+    diagnostics(5, "expandmacro: after removing cs crap '%s'", macro_piece);
 
     /* do not use strtok because it may be used elsewhere */
     while (macro_piece && *macro_piece) {
@@ -199,7 +199,7 @@ static char *expandmacro(char *macro, char *opt_param, int params)
                 diagnostics(5, "expandmacro: found ##, appending # to expanded macro");
                 if (expanded+1 < buffer+buff_size) {
                     *expanded='#';
-                	expanded++;
+                    expanded++;
                 } else 
                     diagnostics(WARNING, "insufficient buffer to expand macro <%s>", macro);
 
@@ -210,7 +210,7 @@ static char *expandmacro(char *macro, char *opt_param, int params)
                     /* begin with a space if the last character was a character */
                     char c = *(expanded-1);
                     if (isalpha(c)) {
-                    	*expanded=' ';
+                        *expanded=' ';
                         expanded++;
                     }
                     
@@ -231,13 +231,13 @@ static char *expandmacro(char *macro, char *opt_param, int params)
     for (i = 0; i < params; i++) {
         if (args[i])
             free(args[i]);
-	}
-	
+    }
+    
     if (dmacro)
         free(dmacro);
 
     if (buffer)
-    	free(buffer);
+        free(buffer);
 
     diagnostics(4, "expandmacro: result is '%s'", expanded);
     
@@ -257,8 +257,8 @@ int maybeDefinition(char *s, size_t n)
         return TRUE;
 
     for (i = 0; i < iDefinitionCount; i++) {
-    	/*
-    	char *ss = my_strndup(s,strlen(Definitions[i].name));
+        /*
+        char *ss = my_strndup(s,strlen(Definitions[i].name));
         diagnostics(WARNING, "def seeking=<%s>, i=%d, current=<%s>", ss, i, Definitions[i].name);
         free(ss);
         */
@@ -280,16 +280,16 @@ int existsDefinition(char *s)
 
     for (i = 0; i < iDefinitionCount; i++) {
     /*
-		char *tt = my_strndup(s,strlen(Definitions[i].name));
-		diagnostics(WARNING, "def text has=<%s>, i=%d, trying=<%s>", tt, i, Definitions[i].name);
-		free(tt);
-	*/
+        char *tt = my_strndup(s,strlen(Definitions[i].name));
+        diagnostics(WARNING, "def text has=<%s>, i=%d, trying=<%s>", tt, i, Definitions[i].name);
+        free(tt);
+    */
         if (strcmp(s, Definitions[i].name) == 0) {
     /*
-			char *ss = my_strndup(s,strlen(Definitions[i].name));
-			diagnostics(WARNING, "def text has=<%s>, i=%d, matched=<%s>", ss, i, Definitions[i].name);
-			free(ss);
-	*/
+            char *ss = my_strndup(s,strlen(Definitions[i].name));
+            diagnostics(WARNING, "def text has=<%s>, i=%d, matched=<%s>", ss, i, Definitions[i].name);
+            free(ss);
+    */
             break;
         }
     }
@@ -448,37 +448,37 @@ int maybeEnvironment(char *s, size_t n)
 
     for (i = 0; i < iNewEnvironmentCount; i++) {
     
-		if (0) {
-		char *ss = my_strndup(s,n);
-		diagnostics(2, "trying env seeking=<%s>, i=%d, current=<%s>", ss, i, NewEnvironments[i].endname);
-		free(ss);
-		}
-		
+        if (0) {
+        char *ss = my_strndup(s,n);
+        diagnostics(2, "trying env seeking=<%s>, i=%d, current=<%s>", ss, i, NewEnvironments[i].endname);
+        free(ss);
+        }
+        
         if (strncmp(s, NewEnvironments[i].begname, n) == 0) {
-			if (0) {
-			char *ss = my_strndup(s,n);
-			diagnostics(2, "possible env seeking=<%s>, i=%d, current=<%s>", ss, i, NewEnvironments[i].begname);
-			free(ss);
-			}
+            if (0) {
+            char *ss = my_strndup(s,n);
+            diagnostics(2, "possible env seeking=<%s>, i=%d, current=<%s>", ss, i, NewEnvironments[i].begname);
+            free(ss);
+            }
             return TRUE;
         }
 
     
         if (strncmp(s, NewEnvironments[i].endname, n) == 0) {
-			if (0) {
-			char *ss = my_strndup(s,n);
-			diagnostics(2, "possible env seeking=<%s>, i=%d, current=<%s>", ss, i, NewEnvironments[i].endname);
-			free(ss);
-			}
+            if (0) {
+            char *ss = my_strndup(s,n);
+            diagnostics(2, "possible env seeking=<%s>, i=%d, current=<%s>", ss, i, NewEnvironments[i].endname);
+            free(ss);
+            }
             return TRUE;
         }
     }
 
-	if (0) {
-	char *ss = my_strndup(s,n);
-	diagnostics(2, "failed all env seeking=<%s>", ss);
-	free(ss);
-	}
+    if (0) {
+    char *ss = my_strndup(s,n);
+    diagnostics(2, "failed all env seeking=<%s>", ss);
+    free(ss);
+    }
     return FALSE;
 }
 

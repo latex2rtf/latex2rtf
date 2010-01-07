@@ -85,20 +85,20 @@ static FILE *try_path(const char *path, const char *cfg_file)
 {
     char *both;
     FILE *fp;
-	char separator[2];
-	
-	separator[0] = PATHSEP;
-	separator[1] = '\0';
-	
+    char separator[2];
+    
+    separator[0] = PATHSEP;
+    separator[1] = '\0';
+    
     if (path == NULL || cfg_file == NULL)
         return NULL;
 
 
     /* fix path ending if needed */
     if (path[strlen(path)] != PATHSEP) 
-    	both = strdup_together3(path,separator,cfg_file);
+        both = strdup_together3(path,separator,cfg_file);
     else
-    	both = strdup_together(path,cfg_file);
+        both = strdup_together(path,cfg_file);
 
     diagnostics(2, "trying to open '%s'", both);
 
@@ -234,8 +234,8 @@ static int read_cfg(FILE * cfgfile, ConfigEntryT *** pointer_array, int do_remov
         cmdend = strrchr(line, '.');
         if (cmdend == NULL){
             diagnostics(ERROR, "Bad config file, missing final period\nBad line is \"%s\"", line);
-			exit(1);
-		}
+            exit(1);
+        }
 
         /* Replace period with NULL */
         *cmdend = '\0';
@@ -261,8 +261,8 @@ static int read_cfg(FILE * cfgfile, ConfigEntryT *** pointer_array, int do_remov
         cmdend = strchr(line, ',');
         if (cmdend == NULL) {
             diagnostics(ERROR, "Bad config file, missing ',' between elements\nBad line is\"%s\"", line);
-			exit(1);
-		}
+            exit(1);
+        }
 
         /* terminate command */
         *cmdend = '\0';
@@ -317,8 +317,8 @@ ConfigEntryT **SearchCfgEntry(const char *theTexCommand, int WhichCfg)
 {
     ConfigEntryT compare_item;
     ConfigEntryT *compare_ptr, **p, **base;
-	int size;
-	
+    int size;
+    
     compare_item.TexCommand = theTexCommand;
     compare_item.RtfCommand = "";
     compare_item.original_id= 0;
@@ -336,7 +336,7 @@ ConfigEntryT **SearchCfgEntry(const char *theTexCommand, int WhichCfg)
     p = (ConfigEntryT **) bsearch(&compare_ptr, base, size, sizeof(compare_ptr), (fptr) cfg_compare);
     
     if (p)
-    	diagnostics(5, "seeking '%s'  found '%s'", theTexCommand, (**p).TexCommand);
+        diagnostics(5, "seeking '%s'  found '%s'", theTexCommand, (**p).TexCommand);
     return p;
 }
 
@@ -346,21 +346,21 @@ ConfigEntryT **SearchCfgEntryByID(const int id, int WhichCfg)
  * purpose:  Get the entry with the given id
  ****************************************************************************/
 {
-	int i, max;
-	ConfigEntryT ** entry;
-			
-	max = configinfo[WhichCfg].config_info_size;
-	if (id > (int) max) return NULL;
+    int i, max;
+    ConfigEntryT ** entry;
+            
+    max = configinfo[WhichCfg].config_info_size;
+    if (id > (int) max) return NULL;
 
-	/* now iterate through all the entries looking for the right one */
-	entry = (ConfigEntryT **) configinfo[WhichCfg].config_info;
-	for (i=0; i<max; i++) {
-		if ( id == (**entry).original_id ) return entry;
-		entry++;
-	}
-	
-	/* not found, should not be reached */
-	return NULL;
+    /* now iterate through all the entries looking for the right one */
+    entry = (ConfigEntryT **) configinfo[WhichCfg].config_info;
+    for (i=0; i<max; i++) {
+        if ( id == (**entry).original_id ) return entry;
+        entry++;
+    }
+    
+    /* not found, should not be reached */
+    return NULL;
 }
 
 char *SearchCfgRtf(const char *theTexCommand, int WhichCfg)
@@ -411,14 +411,14 @@ ConfigEntryT **CfgNextByInsertion(int WhichCfg, ConfigEntryT ** last)
  * purpose:  Get the next entry from specified configuration data
  ****************************************************************************/
 {
-	int next_id;
-	
-	if (last == NULL)
-		next_id = 0;
-	else
-		next_id = (**last).original_id + 1;
-		
-	return SearchCfgEntryByID(next_id, WhichCfg);
+    int next_id;
+    
+    if (last == NULL)
+        next_id = 0;
+    else
+        next_id = (**last).original_id + 1;
+        
+    return SearchCfgEntryByID(next_id, WhichCfg);
 }
 
 /****************************************************************************
@@ -435,7 +435,7 @@ void ReadLanguage(char *lang)
     FILE *fp;
     char *langfn;
 
-	langfn = strdup_together(lang, ".cfg");
+    langfn = strdup_together(lang, ".cfg");
 
     fp = (FILE *) open_cfg(langfn, TRUE);
     free(langfn);
@@ -490,8 +490,8 @@ char *ReadUptoMatch(FILE * infile, const char *scanchars)
         buffer = (char *) malloc(BUFFER_INCREMENT * sizeof(char));
         if (buffer == NULL) {
             diagnostics(ERROR, "Cannot allocate memory for input buffer");
-			exit(1);
-		}
+            exit(1);
+        }
         bufsize = BUFFER_INCREMENT;
     }
 
@@ -512,8 +512,8 @@ char *ReadUptoMatch(FILE * infile, const char *scanchars)
             buffer = (char *) realloc(buffer, bufsize);
             if (buffer == NULL) {
                 diagnostics(ERROR, "Cannot allocate memory for input buffer");
-				exit(1);
-			}
+                exit(1);
+            }
         }
     }
     buffer[bufindex] = '\0';

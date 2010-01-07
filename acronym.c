@@ -88,23 +88,23 @@ void UsePackageAcronym(char *options)
     LoadAuxFile();
 
     if (options != NULL) {
-	char *acroOptions = strdup(options);
-	char *opt;
-	diagnostics(WARNING,"acronym package with option%c %s",
-		    strHasChar(options,',') ? 's' : ' ',
-		    options);
-	for (opt=strtok(acroOptions,",");
-	     NULL != opt;
-	     opt=strtok(NULL,",")) {
-	    if (streq(opt,"printonlyused")) {
-		acroPrintOnlyUsed = TRUE;
-	    } else if (streq(opt,"withpage")) {
-		acroPrintWithPage = TRUE;
-	    } else {
-		diagnostics(WARNING,"acronym package: option %s unknown",opt);
-	    }
-	}
-	free(acroOptions);
+        char *acroOptions = strdup(options);
+        char *opt;
+        diagnostics(WARNING,"acronym package with option%c %s",
+                    strHasChar(options,',') ? 's' : ' ',
+                    options);
+        for (opt=strtok(acroOptions,",");
+             NULL != opt;
+             opt=strtok(NULL,",")) {
+            if (streq(opt,"printonlyused")) {
+                acroPrintOnlyUsed = TRUE;
+            } else if (streq(opt,"withpage")) {
+                acroPrintWithPage = TRUE;
+            } else {
+                diagnostics(WARNING,"acronym package: option %s unknown",opt);
+            }
+        }
+        free(acroOptions);
     }
 }
 
@@ -115,16 +115,16 @@ void CmdBeginAcronym(int code)
     /*  diagnostics(5,"CmdBeginAcronym(0x%04x) ON = 0x%04x",code,ON); */
     
     if (ON == (code & ON)) {
-	char *longest = getBracketParam();
-	if (NULL != longest) {
-	    diagnostics(WARNING,"Ignoring longest acronym hint '[%s]'",longest);
-	    free(longest);
-	}
-	inAcroEnvironment = TRUE;
-	PushEnvironment(ACRONYM_MODE);
+        char *longest = getBracketParam();
+        if (NULL != longest) {
+            diagnostics(WARNING,"Ignoring longest acronym hint '[%s]'",longest);
+            free(longest);
+        }
+        inAcroEnvironment = TRUE;
+        PushEnvironment(ACRONYM_MODE);
     } else {
-	inAcroEnvironment = FALSE;
-	PopEnvironment();
+        inAcroEnvironment = FALSE;
+        PopEnvironment();
     }
 }
 
@@ -157,12 +157,12 @@ acroEntry *searchEntry(char *acDef)
     int i;
  
     if (acDef != NULL) {
-	for (i = 0; i<acroNum; i++) {
-	    if (0 == strcmp(acDef,acroTable[i].acDef)) {
-		return &acroTable[i];
-	    }
-	}
-	/* 	diagnostics(WARNING,"Undefined acronym '%s'",acDef); */
+        for (i = 0; i<acroNum; i++) {
+            if (0 == strcmp(acDef,acroTable[i].acDef)) {
+                return &acroTable[i];
+            }
+        }
+        /*      diagnostics(WARNING,"Undefined acronym '%s'",acDef); */
     }
     return NULL;
 }
@@ -190,14 +190,14 @@ static void ConvertFmt2String(char *fmt,char *s1,char *s2)
 static void printLong(acroEntry *entry,int plural)
 {
     if (FALSE == plural) {
-	ConvertString(entry->acLong);
+        ConvertString(entry->acLong);
     } else {
-	if (NULL != entry->acLongPlural) {
-	    ConvertString(entry->acLongPlural);
-	} else {
-	    ConvertString(entry->acLong);
-	    ConvertString("s");
-	}
+        if (NULL != entry->acLongPlural) {
+            ConvertString(entry->acLongPlural);
+        } else {
+            ConvertString(entry->acLong);
+            ConvertString("s");
+        }
     }
 }
 
@@ -208,14 +208,14 @@ static void printLong(acroEntry *entry,int plural)
 static void printShort(acroEntry *entry,int plural)
 {
     if (FALSE == plural) {
-	ConvertString(entry->acShort);
+        ConvertString(entry->acShort);
     } else {
-	if (NULL != entry->acShortPlural) {
-	    ConvertString(entry->acShortPlural);
-	} else {
-	    ConvertString(entry->acShort);
-	    ConvertString("s");
-	}
+        if (NULL != entry->acShortPlural) {
+            ConvertString(entry->acShortPlural);
+        } else {
+            ConvertString(entry->acShort);
+            ConvertString("s");
+        }
     }
 }
 
@@ -228,9 +228,9 @@ static char* regularPlural(char *singular)
     int singularLength = strlen(singular);
     char *result = malloc(singularLength+2);
     if (NULL != result) {
-	strcpy(result,singular);
-	result[singularLength]='s';
-	result[singularLength+1]='\0';
+        strcpy(result,singular);
+        result[singularLength]='s';
+        result[singularLength+1]='\0';
     }
     return result;
 }
@@ -242,17 +242,17 @@ static char* regularPlural(char *singular)
 static acroEntry *createEntry(char *acDef) {
     acroEntry *result = searchEntry(acDef);
     if (NULL == result) {
-	acroTable = realloc(acroTable,(++acroNum)*sizeof(acroEntry));
-	if (NULL != acroTable) {
-	    result = &acroTable[acroNum-1];
-	    result->acDef         = acDef;
-	    result->acShort       = NULL;
-	    result->acLong        = NULL;
-	    result->acShortPlural = NULL;
-	    result->acLongPlural  = NULL;
-	    result->used          = FALSE;
-	    result->printable     = FALSE;
-	}
+        acroTable = realloc(acroTable,(++acroNum)*sizeof(acroEntry));
+        if (NULL != acroTable) {
+            result = &acroTable[acroNum-1];
+            result->acDef         = acDef;
+            result->acShort       = NULL;
+            result->acLong        = NULL;
+            result->acShortPlural = NULL;
+            result->acLongPlural  = NULL;
+            result->used          = FALSE;
+            result->printable     = FALSE;
+        }
     }
     return result;
 }
@@ -269,20 +269,20 @@ static void acroDiag(acroEntry *thisEntry)
     diagnostics(diagLevel,"defining acronym");
     diagnostics(diagLevel," acroTable[%d].acDef         = %s",entry,thisEntry->acDef);
     if (NULL != thisEntry->acShort)
-	diagnostics(diagLevel," acroTable[%d].acShort       = %s",entry,thisEntry->acShort);
+        diagnostics(diagLevel," acroTable[%d].acShort       = %s",entry,thisEntry->acShort);
     if (NULL != thisEntry->acLong)
-	diagnostics(diagLevel," acroTable[%d].acLong        = %s",entry,thisEntry->acLong);
+        diagnostics(diagLevel," acroTable[%d].acLong        = %s",entry,thisEntry->acLong);
     if (NULL != thisEntry->acShortPlural)
-	diagnostics(diagLevel," acroTable[%d].acShortPlural = %s",entry,thisEntry->acShortPlural);
+        diagnostics(diagLevel," acroTable[%d].acShortPlural = %s",entry,thisEntry->acShortPlural);
     if (NULL != thisEntry->acLongPlural)
-	diagnostics(diagLevel," acroTable[%d].acLongPlural  = %s",entry,thisEntry->acLongPlural);
+        diagnostics(diagLevel," acroTable[%d].acLongPlural  = %s",entry,thisEntry->acLongPlural);
 }
 
 /* **********************************************************
    Ignore \acroplural,\acrodef and \acrodefplural
    Handle \acro (in the acronym environment) and
           \newacro and \newacroplural (in the .aux file) only
-	  *************************************************** */
+          *************************************************** */
 
 void CmdAcrodef(int code)
 {
@@ -294,73 +294,73 @@ void CmdAcrodef(int code)
     /*  diagnostics(5,"void CmdAcrodef(%d)",code); */
     
     if (code == ACRONYM_NEWACRO) {
-	acroEntry *thisEntry = createEntry(acDef);
-	
-	if (acShort == NULL)
-	    acShort = acDef;
+        acroEntry *thisEntry = createEntry(acDef);
+        
+        if (acShort == NULL)
+            acShort = acDef;
 
-	if (NULL != thisEntry) {
-	    thisEntry->acShort    = acShort;
-	    thisEntry->acLong     = acLong;
+        if (NULL != thisEntry) {
+            thisEntry->acShort    = acShort;
+            thisEntry->acLong     = acLong;
 
-	    acroDiag(thisEntry);
-	} else {
-	    diagnostics(ERROR,"Out of memory!");
-	}
+            acroDiag(thisEntry);
+        } else {
+            diagnostics(ERROR,"Out of memory!");
+        }
     } else if (code == ACRONYM_NEWACROPLURAL) {
-	acroEntry *thisEntry = createEntry(acDef);
+        acroEntry *thisEntry = createEntry(acDef);
  
-	if (NULL != thisEntry) {
-	    thisEntry->acShortPlural = (acShort == NULL) ? regularPlural(acDef) : acShort;
-	    thisEntry->acLongPlural  = acLong;
-	    acroDiag(thisEntry);
-	} else {
-	    diagnostics(ERROR,"Out of memory!");
-	}
+        if (NULL != thisEntry) {
+            thisEntry->acShortPlural = (acShort == NULL) ? regularPlural(acDef) : acShort;
+            thisEntry->acLongPlural  = acLong;
+            acroDiag(thisEntry);
+        } else {
+            diagnostics(ERROR,"Out of memory!");
+        }
     } else if (code == ACRONYM_ACRO) {
-	/*
-	 * just to know whether we have to print it or not!
-	 * use acShort and acLong from the definition
-	 */
-	acroEntry *thisEntry = searchEntry(acDef);
-	if (NULL != thisEntry) {
+        /*
+         * just to know whether we have to print it or not!
+         * use acShort and acLong from the definition
+         */
+        acroEntry *thisEntry = searchEntry(acDef);
+        if (NULL != thisEntry) {
     
-	    int doPrint =
-		/*  (inAcroEnvironment == TRUE) &&  */
-		((thisEntry->used == TRUE) ||
-		 (acroPrintOnlyUsed == FALSE));
+            int doPrint =
+                /*  (inAcroEnvironment == TRUE) &&  */
+                ((thisEntry->used == TRUE) ||
+                 (acroPrintOnlyUsed == FALSE));
  
-	    /*  diagnostics(5,"\\acro('%s','%s')",(NULL != acShort) ? acShort:acDef,acLong); */
+            /*  diagnostics(5,"\\acro('%s','%s')",(NULL != acShort) ? acShort:acDef,acLong); */
  
-	    if (doPrint) {
-		int vspace = getLength("itemsep") + getLength("parsep");
-		CmdEndParagraph(0);
-		setVspace(vspace);
-		
-		CmdIndent(INDENT_USUAL);
-		startParagraph("acronym", FIRST_PARAGRAPH);
-		fprintRTF("{\\b ");
-		ConvertString((NULL != acShort) ? acShort : acDef); 
-		fprintRTF("}\\tab\n");
-		ConvertString(acLong);
-		if (TRUE == acroPrintWithPage) {
-		    /*
-		     * use alloca to dispose automatically when exiting
-		     * block
-		     */
-		    char *acroLabel = alloca(strlen(acDef)+8);
-		    char *acroPage;
-		    sprintf(acroLabel,"acro:%s",acDef);
-		    acroPage = getLabelPage(acroLabel);
-		    if (NULL != acroPage) {
-			fprintRTF("\\~\\tab\\~");
-			ConvertString(acroPage);
-		    }
-		}
-	    }
-	} else {
-	    diagnostics(WARNING,"Undefined acronym '%s'",acDef);
-	}
+            if (doPrint) {
+                int vspace = getLength("itemsep") + getLength("parsep");
+                CmdEndParagraph(0);
+                setVspace(vspace);
+                
+                CmdIndent(INDENT_USUAL);
+                startParagraph("acronym", FIRST_PARAGRAPH);
+                fprintRTF("{\\b ");
+                ConvertString((NULL != acShort) ? acShort : acDef); 
+                fprintRTF("}\\tab\n");
+                ConvertString(acLong);
+                if (TRUE == acroPrintWithPage) {
+                    /*
+                     * use alloca to dispose automatically when exiting
+                     * block
+                     */
+                    char *acroLabel = alloca(strlen(acDef)+8);
+                    char *acroPage;
+                    sprintf(acroLabel,"acro:%s",acDef);
+                    acroPage = getLabelPage(acroLabel);
+                    if (NULL != acroPage) {
+                        fprintRTF("\\~\\tab\\~");
+                        ConvertString(acroPage);
+                    }
+                }
+            }
+        } else {
+            diagnostics(WARNING,"Undefined acronym '%s'",acDef);
+        }
     }
 }
 
@@ -378,19 +378,19 @@ void CmdAC(int code)
 
     shortAc = getBraceParam();
     if (shortAc != NULL) {
-	ConvertString(shortAc);
-	diagnostics(5,"in CmdAC(), pushing '%s'",shortAc);
+        ConvertString(shortAc);
+        diagnostics(5,"in CmdAC(), pushing '%s'",shortAc);
     }
 }
 /*
-  \ac{acronym}  	Expand and identify the acronym the first time; use only the acronym thereafter
-  \acf{acronym} 	Use the full name of the acronym.
-  \acs{acronym} 	Use the acronym, even before the first corresponding \ac command
-  \acl{acronym} 	Expand the acronym without using the acronym itself.
+  \ac{acronym}          Expand and identify the acronym the first time; use only the acronym thereafter
+  \acf{acronym}         Use the full name of the acronym.
+  \acs{acronym}         Use the acronym, even before the first corresponding \ac command
+  \acl{acronym}         Expand the acronym without using the acronym itself.
 
-  \acf{SW}  	Scientific Word (SW) documents are beautifully typeset.
-  \acs{SW} 	SW documents are beautifully typeset.
-  \acl{SW} 	Scientific Word documents are beautifully typeset.
+  \acf{SW}      Scientific Word (SW) documents are beautifully typeset.
+  \acs{SW}      SW documents are beautifully typeset.
+  \acl{SW}      Scientific Word documents are beautifully typeset.
 
   \acp{label}
   plural form of acronym by adding an s. \acfp. \acsp, \aclp work as well.
@@ -410,47 +410,47 @@ void CmdAc(int code)
     found = searchEntry(ac);
  
     if (found == NULL) {
-	if (basecode == ACRONYM_AC)
-	    ConvertFmt2String("\\textsf{\\textbf{%s! (%s!)}}",ac,ac);
-	else
-	    ConvertFmtString("\\textsf{\\textbf{%s!}}",ac);
-	diagnostics(WARNING,"Undefined acronym '%s'",ac);
-	return;
+        if (basecode == ACRONYM_AC)
+            ConvertFmt2String("\\textsf{\\textbf{%s! (%s!)}}",ac,ac);
+        else
+            ConvertFmtString("\\textsf{\\textbf{%s!}}",ac);
+        diagnostics(WARNING,"Undefined acronym '%s'",ac);
+        return;
     }
  
     if (basecode == ACRONYM_AC) {
-	if (found->used == TRUE) {
-	    basecode = ACRONYM_ACS;
-	} else {
-	    found->used = (star == FALSE);
-	    basecode = ACRONYM_ACF;
-	}
+        if (found->used == TRUE) {
+            basecode = ACRONYM_ACS;
+        } else {
+            found->used = (star == FALSE);
+            basecode = ACRONYM_ACF;
+        }
     }
  
     if (markUsed == TRUE && star == FALSE)
-	found->used = TRUE;
+        found->used = TRUE;
  
     switch(basecode) {
     case ACRONYM_ACF:
-	printLong(found,plural);
-	ConvertString(" (");
-	printShort(found,plural);
-	ConvertString(")");
-	break;
+        printLong(found,plural);
+        ConvertString(" (");
+        printShort(found,plural);
+        ConvertString(")");
+        break;
     case ACRONYM_ACS:
-	printShort(found,plural);
-	break;
+        printShort(found,plural);
+        break;
     case ACRONYM_ACL:
-	printLong(found,plural);
-	break;
+        printLong(found,plural);
+        break;
     case ACRONYM_ACFI:
-	ConvertFmt2String("\\textit{%s} (%s)",
- 			  found->acLong,
- 			  found->acShort);
-	break;
+        ConvertFmt2String("\\textit{%s} (%s)",
+                          found->acLong,
+                          found->acShort);
+        break;
     default:
-	diagnostics(WARNING,"Fell through CmdAc()!");
-	break;
+        diagnostics(WARNING,"Fell through CmdAc()!");
+        break;
     }
 } 
 
@@ -463,7 +463,7 @@ void CmdAcUsed(int code)
     char      *ac      = getBraceParam();
     acronym = searchEntry(ac);
     if (acronym != NULL) {
-	acronym->used = TRUE;
+        acronym->used = TRUE;
     }
 }
 
@@ -476,7 +476,7 @@ void CmdAcResetAll(int code)
 {
     int i;
     for (i=0;i<acroNum;i++)
-	acroTable[i].used = FALSE;
+        acroTable[i].used = FALSE;
 }
 
 /*  \acroextra */
@@ -486,6 +486,6 @@ void CmdAcroExtra(int code)
 {
     char      *ac      = getBraceParam();
     if (ac != NULL) {
-	ConvertString(ac);
+        ConvertString(ac);
     }
 }

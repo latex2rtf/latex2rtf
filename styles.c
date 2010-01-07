@@ -38,33 +38,33 @@ static char *g_current_style = NULL;
 
 void SetCurrentStyle(const char *style)
 {
-	if (g_current_style)
-		free(g_current_style);
-	g_current_style = strdup(style);
+    if (g_current_style)
+        free(g_current_style);
+    g_current_style = strdup(style);
 }
 
 char *GetCurrentStyle(void)
 {
-	return g_current_style;
+    return g_current_style;
 }
 
 int IsSameAsCurrentStyle(const char *s)
 {
-	if (g_current_style==NULL)
-		return FALSE;
-		
-	if (strcmp(s,g_current_style)==0) 
-		return TRUE;
-	else
-		return FALSE;
+    if (g_current_style==NULL)
+        return FALSE;
+        
+    if (strcmp(s,g_current_style)==0) 
+        return TRUE;
+    else
+        return FALSE;
 }
 
 void InsertCurrentStyle(void)
 {
-	if (g_current_style==NULL)
-		InsertStyle("Normal");
-	else
-		InsertStyle(g_current_style);
+    if (g_current_style==NULL)
+        InsertStyle("Normal");
+    else
+        InsertStyle(g_current_style);
 }
 
 void InsertBasicStyle(const char *rtf, int include_header_info)
@@ -73,8 +73,8 @@ void InsertBasicStyle(const char *rtf, int include_header_info)
   purpose: uses data from style.cfg to try and insert RTF commands
            that correspond to the appropriate style sheet or character style
            for example
-           		InsertBasicStyle("section", FALSE);
-           		
+                InsertBasicStyle("section", FALSE);
+                
         rtf="\rtfsequence,\rtfheader"
  ******************************************************************************/
 {
@@ -90,7 +90,7 @@ void InsertBasicStyle(const char *rtf, int include_header_info)
     if (style == NULL) return;
 
 /* skip blanks */
-	style++;
+    style++;
     while (*style == ' ')
         style++;                
 
@@ -106,7 +106,7 @@ void InsertBasicStyle(const char *rtf, int include_header_info)
     while (style < style_end) {
 
         if (style == comma)
-        	fprintRTF(" ");
+            fprintRTF(" ");
         else if (*style == '*')
             WriteFontName((const char **)&style);
         else
@@ -117,37 +117,37 @@ void InsertBasicStyle(const char *rtf, int include_header_info)
     
  /* emit final blank to make sure that RTF is properly terminated */
     if (!include_header_info)
-    	fprintRTF(" ");
+        fprintRTF(" ");
 }
 
 void InsertStyle(const char *command)
 {
     const char *rtf;
 
-	if (strcmp(command,"Normal")==0) {
-    	if (getAlignment()==CENTERED) {
-    		InsertStyle("centerpar");
-    		return;
-    	}
-    	if (getAlignment()==RIGHT) {
-    		InsertStyle("rightpar");
-    		return;
-    	}
-    	if (getAlignment()==LEFT) {
-    		InsertStyle("leftpar");
-    		return;
-    	}
+    if (strcmp(command,"Normal")==0) {
+        if (getAlignment()==CENTERED) {
+            InsertStyle("centerpar");
+            return;
+        }
+        if (getAlignment()==RIGHT) {
+            InsertStyle("rightpar");
+            return;
+        }
+        if (getAlignment()==LEFT) {
+            InsertStyle("leftpar");
+            return;
+        }
     }
 
     diagnostics(4, "InsertStyle(\"%s\")", command);
     rtf = SearchCfgRtf(command, STYLE_A);
     if (rtf == NULL) {
         diagnostics(WARNING, "Cannot find '%s' style using 'Normal' style", command);
-    	SetCurrentStyle("Normal");
-    	rtf = SearchCfgRtf("Normal", STYLE_A);
+        SetCurrentStyle("Normal");
+        rtf = SearchCfgRtf("Normal", STYLE_A);
         InsertBasicStyle(rtf, FALSE);
     } else {
-    	SetCurrentStyle(command);
+        SetCurrentStyle(command);
         InsertBasicStyle(rtf, FALSE);
     }
 }

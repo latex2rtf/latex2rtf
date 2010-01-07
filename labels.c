@@ -63,12 +63,12 @@ static labelElem *newLabel(char *name,char *def)
     labelElem *result;
 
     labelTable =
-	(labelElem *)realloc(labelTable,
-			     (labelCount+1)*sizeof(labelElem));
+        (labelElem *)realloc(labelTable,
+                             (labelCount+1)*sizeof(labelElem));
     if (NULL != result) {
-	result = &labelTable[labelCount++];
-	result->labelName = name;
-	result->labelDef  = def;
+        result = &labelTable[labelCount++];
+        result->labelName = name;
+        result->labelDef  = def;
     }
     return result;
 }
@@ -78,10 +78,10 @@ labelElem *getLabel(char *name)
     labelElem *result = NULL;
     int        label;
     for (label = 0; label < labelCount; label++) {
-	if (streq(name,labelTable[label].labelName)) {
-	    result = &labelTable[label];
-	    break;
-	}   
+        if (streq(name,labelTable[label].labelName)) {
+            result = &labelTable[label];
+            break;
+        }   
     }
     return result;
 }
@@ -94,11 +94,11 @@ char *getLabelSection(char *name)
     char      *result = NULL;
     labelElem *label = getLabel(name);
     if (NULL != label) {
-	char *fullDef = strdup(label->labelDef);
-	PushSource(NULL, fullDef);
-	result = getBraceParam();
-	PopSource();
-	free(fullDef);
+        char *fullDef = strdup(label->labelDef);
+        PushSource(NULL, fullDef);
+        result = getBraceParam();
+        PopSource();
+        free(fullDef);
     }
     return result;
 }
@@ -111,14 +111,14 @@ char *getLabelPage(char *name)
     char      *result = NULL;
     labelElem *label = getLabel(name);
     if (NULL != label) {
-	char *fullDef = strdup(label->labelDef);
-	char *p;
-	PushSource(NULL, fullDef);
-	p = getBraceParam();
-	result = getBraceParam();
-	if (NULL != p) free(p);
-	PopSource();
-	free(fullDef);
+        char *fullDef = strdup(label->labelDef);
+        char *p;
+        PushSource(NULL, fullDef);
+        p = getBraceParam();
+        result = getBraceParam();
+        if (NULL != p) free(p);
+        PopSource();
+        free(fullDef);
     }
     return result;
 }
@@ -128,17 +128,17 @@ char *getLabelPage(char *name)
 void CmdNewLabel(int code)
 {
     if (LABEL_UNDONEW == code) {
-	char *p = getBraceParam();
-	diagnostics(WARNING,"undoing label '%s'",p);
-	free(p);
+        char *p = getBraceParam();
+        diagnostics(WARNING,"undoing label '%s'",p);
+        free(p);
     } else {
-	char *p1 = getBraceParam();
-	char *p2 = getBraceParam();
+        char *p1 = getBraceParam();
+        char *p2 = getBraceParam();
 
-	if (NULL == newLabel(p1,p2)) {
-	    diagnostics(WARNING,"memory overflow defining label '%s' as '%s'",p1,p2);
-	    free(p1);
-	    free(p2);
-	}
+        if (NULL == newLabel(p1,p2)) {
+            diagnostics(WARNING,"memory overflow defining label '%s' as '%s'",p1,p2);
+            free(p1);
+            free(p2);
+        }
     }
 }

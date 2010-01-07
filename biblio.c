@@ -63,17 +63,17 @@ static int         biblioCount = 0;
 static biblioElem *newBiblio(char *newKey)
 {
     biblioElem *result =
-	(biblioElem *)realloc(biblioTable,
-			      sizeof(biblioElem) * (biblioCount+1));
+        (biblioElem *)realloc(biblioTable,
+                              sizeof(biblioElem) * (biblioCount+1));
     
     if (NULL != result) {
-	biblioTable = result;
-	result = &result[biblioCount++];
-	result->biblioKey  = newKey;
-	result->biblioN    = NULL;
-	result->biblioFull = NULL;
-	result->biblioAbbr = NULL;
-	result->biblioYear = NULL;
+        biblioTable = result;
+        result = &result[biblioCount++];
+        result->biblioKey  = newKey;
+        result->biblioN    = NULL;
+        result->biblioFull = NULL;
+        result->biblioAbbr = NULL;
+        result->biblioYear = NULL;
     }
     return result;
 }
@@ -83,15 +83,15 @@ static void printTable()
 #ifdef VERBOSE_BIBLIO
     int i;
     for (i=0; i< biblioCount; i++) {
-	biblioElem *p = &biblioTable[i];
-	diagnostics(WARNING,"biblioTable[%d]",i);
-	diagnostics(WARNING,"%s %s %s %s %s %d",
-		    p->biblioKey,
-		    p->biblioN,
-		    p->biblioFull,
-		    p->biblioAbbr,
-		    p->biblioYear,
-		    p->biblioType);
+        biblioElem *p = &biblioTable[i];
+        diagnostics(WARNING,"biblioTable[%d]",i);
+        diagnostics(WARNING,"%s %s %s %s %s %d",
+                    p->biblioKey,
+                    p->biblioN,
+                    p->biblioFull,
+                    p->biblioAbbr,
+                    p->biblioYear,
+                    p->biblioType);
     }
 #endif
 }
@@ -100,9 +100,9 @@ biblioElem *getBiblio(char *key)
 {
     int i;
     for (i=0; i< biblioCount; i++) {
-	if (streq(biblioTable[i].biblioKey,key)) {
-	    return &biblioTable[i];
-	}
+        if (streq(biblioTable[i].biblioKey,key)) {
+            return &biblioTable[i];
+        }
     }
     return NULL;
 }
@@ -111,9 +111,9 @@ biblioElem *newBibCite(char *cite, char *tag)
 {
     biblioElem *newCite = newBiblio(cite);
     if (NULL != newCite) {
-	newCite->biblioN    = tag;
-	newCite->biblioType = BIBLIO_BIBCITE;
-	printTable();
+        newCite->biblioN    = tag;
+        newCite->biblioType = BIBLIO_BIBCITE;
+        printTable();
     }
     return newCite;
 }
@@ -122,10 +122,10 @@ biblioElem *newHarvardCite(char *cite,char *full,char* abbr,char *year)
 {
     biblioElem *newCite = newBiblio(cite);
     if (NULL != newCite) {
-	newCite->biblioFull = full;
-	newCite->biblioAbbr = abbr;
-	newCite->biblioYear = year;
-	newCite->biblioType = BIBLIO_HARVARD;
+        newCite->biblioFull = full;
+        newCite->biblioAbbr = abbr;
+        newCite->biblioYear = year;
+        newCite->biblioType = BIBLIO_HARVARD;
     }
     return newCite;
 }
@@ -134,11 +134,11 @@ biblioElem *newNatBibCite(char *cite,char *full,char* abbr,char *year,char *n)
 {
     biblioElem *newCite = newBiblio(cite);
     if (NULL != newCite) {
-	newCite->biblioFull = full;
-	newCite->biblioAbbr = abbr;
-	newCite->biblioYear = year;
-	newCite->biblioN    = n;
-	newCite->biblioType = BIBLIO_NATBIB;
+        newCite->biblioFull = full;
+        newCite->biblioAbbr = abbr;
+        newCite->biblioYear = year;
+        newCite->biblioN    = n;
+        newCite->biblioType = BIBLIO_NATBIB;
     }
     return newCite;
 }
@@ -155,9 +155,9 @@ void CmdBibCite(int code)
     char *p2 = getBraceParam();
 
     if (NULL == newBibCite(p1,p2)) {
-	diagnostics(WARNING,"memory exhausted for \\bibcite{%s}{%s}",p1,p2);
-	free(p1);
-	free(p2);
+        diagnostics(WARNING,"memory exhausted for \\bibcite{%s}{%s}",p1,p2);
+        free(p1);
+        free(p2);
     }
 }
 
@@ -171,6 +171,6 @@ void CmdAuxHarvardCite(int code)
     char *year = getBraceParam();
     
     if (NULL == newHarvardCite(key,full,abbr,year)) {
-	diagnostics(ERROR,"Memory overflow defining \\harvardcite(%s)",key);
+        diagnostics(ERROR,"Memory overflow defining \\harvardcite(%s)",key);
     }
 }

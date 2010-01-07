@@ -50,23 +50,23 @@ purpose : ignores variable-formats shown in file "ignore.cfg"
 returns : TRUE if variable was ignored correctly, otherwise FALSE
 
 #  NUMBER        simple numeric value
-#  MEASURE 		 numeric value with following unit of measure
+#  MEASURE       numeric value with following unit of measure
 #  OTHER         ignores anything to the first character after '='
-#	             and from there to next space. eg. \setbox\bak=\hbox
+#                and from there to next space. eg. \setbox\bak=\hbox
 #  COMMAND       ignores anything to next '\' and from there to occurence
-#	             of anything but a letter. eg. \newbox\bak
+#                of anything but a letter. eg. \newbox\bak
 #  SINGLE        ignore single command. eg. \noindent
-#  PARAMETER	 ignores a command with one paramter
-#  PACKAGE		 does not produce a Warning message if PACKAGE is encountered
-#  ENVCMD		 proceses contents of unknown environment as if it were plain latex
+#  PARAMETER     ignores a command with one paramter
+#  PACKAGE       does not produce a Warning message if PACKAGE is encountered
+#  ENVCMD        proceses contents of unknown environment as if it were plain latex
 #  ENVIRONMENT   ignores contents of that environment
  ****************************************************************************/
 {
     const char *RtfCommand;
     char *TexCommand;
-	
-	diagnostics(4, "trying to ignore '%s'", command);
-	
+    
+    diagnostics(4, "trying to ignore '%s'", command);
+    
     TexCommand = strdup_together("\\", command);
     RtfCommand = SearchCfgRtf(TexCommand, IGNORE_A);
     free(TexCommand);
@@ -94,7 +94,7 @@ returns : TRUE if variable was ignored correctly, otherwise FALSE
         CmdIgnoreParameter(No_Opt_Two_NormParam);
         
     } else if (strcmp(RtfCommand, "ENVIRONMENT") == 0) {
-		char *str = strdup_together3("end{", command, "}");
+        char *str = strdup_together3("end{", command, "}");
         Ignore_Environment(str);
         free(str);
         
@@ -143,8 +143,8 @@ void Ignore_Environment(char *cCommand)
   purpose: function, which ignores an unconvertable environment in LaTex
            and writes text unchanged into the Rtf-file.
 parameter: searchstring : includes the string to search for
-	   example: \begin{unknown} ... \end{unknown}
-		    searchstring="end{unknown}"
+       example: \begin{unknown} ... \end{unknown}
+            searchstring="end{unknown}"
  ******************************************************************************/
 {
     char unknown_environment[100];

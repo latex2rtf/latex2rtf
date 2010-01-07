@@ -122,7 +122,7 @@ void CmdClosing( /* @unused@ */ int code)
 
 /******************************************************************************
  purpose: special command in the LaTex-letter-environment will be converted to a
-	  similar Rtf-style
+      similar Rtf-style
  ******************************************************************************/
 {
     char oldalignment;
