@@ -276,10 +276,10 @@ void CmdBeginEnd(int code)
 
 /* usual environments */
     if (code == CMD_BEGIN) {
-        diagnostics(4, "\\begin{%s}", s);
+        diagnostics(5, "\\begin{%s}", s);
         (void) CallParamFunc(s, ON);
     } else {
-        diagnostics(4, "\\end{%s}", s);
+        diagnostics(5, "\\end{%s}", s);
         (void) CallParamFunc(s, OFF);
         CmdIndent(INDENT_INHIBIT);
     }
