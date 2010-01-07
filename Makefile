@@ -49,7 +49,8 @@ SRCS=commands.c chars.c direct.c encodings.c fonts.c funct1.c tables.c ignore.c 
 HDRS=commands.h chars.h direct.h encodings.h fonts.h funct1.h tables.h ignore.h \
     main.h stack.h cfg.h utils.h parser.h lengths.h counters.h letterformat.h \
     preamble.h equations.h convert.h xrefs.h definitions.h graphics.h encoding_tables.h \
-    version.h mygetopt.h styles.h preparse.h vertical.h fields.h
+    version.h mygetopt.h styles.h preparse.h vertical.h fields.h labels.h biblio.h acronym.h \
+	aux.h
 
 CFGS=cfg/fonts.cfg cfg/direct.cfg cfg/ignore.cfg cfg/style.cfg \
     cfg/afrikaans.cfg cfg/bahasa.cfg cfg/basque.cfg cfg/brazil.cfg cfg/breton.cfg \
@@ -122,7 +123,8 @@ TEST=  \
 	test/longstack.tex           test/table_array1.tex   test/table_array2.tex  \
 	test/bib_apacite3.tex        test/bib_apacite3.bib   test/color2.tex        \
 	test/fig_png.tex             test/fig_10x15.png      test/psfig.sty \
-	test/cyrillic.tex            test/greek.tex          test/direct.tex 
+	test/cyrillic.tex            test/greek.tex          test/direct.tex \
+	test/acronym.tex             test/acronym.bib
 	
 OBJS=fonts.o direct.o encodings.o commands.o stack.o funct1.o tables.o \
 	chars.o ignore.o cfg.o main.o utils.o parser.o lengths.o counters.o \
