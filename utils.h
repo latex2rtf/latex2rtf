@@ -23,6 +23,8 @@ Authors:
     1998-2000 Georg Lehner
     2001-2003 Scott Prahl
 */
+#ifndef _UTILS_H_DEFINED
+#define _UTILS_H_DEFINED 1
 
 int     odd(long n);
 int     even(long n);
@@ -49,3 +51,19 @@ void    show_string(int level, const char *s, const char *label);
 
 size_t my_strlcpy(char *dst, const char *src, size_t siz);
 size_t my_strlcat(char *dst, const char *src, size_t siz);
+
+static inline int streq(char *s1,char *s2)
+{
+	return (0 == strcmp(s1,s2));
+}
+
+static inline int strHasChar(char *s1,char c)
+{
+	return (NULL != strchr(s1,c));
+}
+
+static inline int strstarts(char *s1, char *s2)
+{
+    return (s1 == strstr(s1,s2));
+}
+#endif
