@@ -1,12 +1,17 @@
+#ifndef _CFG_INCLUDED
+#define _CFG_INCLUDED 1
+
+#include <stdio.h> /* for FILE* */
+
 #if defined(VMS) && defined(NEED_SNPRINTF)
 #include <X11VMS/vmsutil.h>
 #endif
-
-#define DIRECT_A    0
-#define FONT_A      1
-#define IGNORE_A    2
-#define STYLE_A     3
-#define LANGUAGE_A  4
+ 
+enum { DIRECT_A = 0,
+       FONT_A,
+       IGNORE_A,
+       STYLE_A,
+       LANGUAGE_A };
 
 #ifndef CFGDIR
 #ifdef VMS
@@ -17,10 +22,10 @@
 #endif
 
 #ifndef TRUE
-#define TRUE  1
-#define FALSE 0
+typedef enum { FALSE = 0,
+              TRUE } boolean;
 #endif
-
+ 
 typedef int (*fptr) (const void*, const void*);
 
 typedef struct ConfigEntryT
@@ -42,4 +47,5 @@ ConfigEntryT  **CfgStartIterate (void);
 ConfigEntryT  **CfgNext (int WhichCfg, ConfigEntryT **last);
 ConfigEntryT  **CfgNextByInsertion(int WhichCfg, ConfigEntryT ** last);
 
-void *			open_cfg(const char *name, int quit_on_error);
+FILE *          open_cfg(const char *name, int quit_on_error);
+#endif

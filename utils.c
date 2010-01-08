@@ -32,6 +32,16 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
+
+#ifdef UNIX
+# include <sys/types.h>
+# include <sys/stat.h>
+# include <unistd.h>
+#else
+# include <stdio.h>
+#endif
+
+#include "cfg.h"
 #include "main.h"
 #include "utils.h"
 #include "parser.h"
@@ -619,4 +629,23 @@ my_strlcat(char *dst, const char *src, size_t siz)
         *d = '\0';
 
         return(dlen + (s - src));        /* count does not include NUL */
+}
+
+
+/*
+ * handy litte portable file existance check
+ */
+int file_exists(char *fname)
+{
+    int result = FALSE;
+#ifdef UNIX
+    struct stat fStat;
+    result = (stat(fname,&fStat) == 0);
+#else
+    FILE *f = fopen(fname,"rb");
+    result = (NULL != f);
+    fclose(f);
+#endif
+    diagnostics(5,"file_exists(%s) returns %d",fname,result);
+    return result;
 }
