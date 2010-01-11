@@ -31,27 +31,13 @@ Authors:
 #include <string.h>
 #include <ctype.h>
 #include "main.h"
-#include "convert.h"
-#include "funct1.h"
-#include "commands.h"
-#include "stack.h"
-#include "fonts.h"
-#include "cfg.h"
-#include "ignore.h"
-#include "utils.h"
-#include "encodings.h"
 #include "parser.h"
-#include "counters.h"
+#include "utils.h"
+#include "cfg.h"
+#include "convert.h"
+#include "commands.h"
 #include "lengths.h"
-#include "definitions.h"
-#include "preamble.h"
-#include "xrefs.h"
-#include "equations.h"
-#include "direct.h"
-#include "styles.h"
-#include "graphics.h"
 #include "vertical.h"
-
 #include "auxfile.h"
 #include "acronym.h"
 #include "biblio.h"
@@ -367,7 +353,7 @@ void CmdAcrodef(int code)
 /*  ignore the first, push the second */
 /*  \AC@hyperlink{isis}{IS-IS} */
    
-void CmdAC(int code)
+void CmdACNew(int code)
 {
     char *shortAc;
 

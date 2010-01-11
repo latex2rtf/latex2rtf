@@ -129,8 +129,8 @@ TEST=  \
 OBJS=fonts.o direct.o encodings.o commands.o stack.o funct1.o tables.o \
 	chars.o ignore.o cfg.o main.o utils.o parser.o lengths.o counters.o \
 	preamble.o letterformat.o equations.o convert.o xrefs.o definitions.o graphics.o \
-	mygetopt.o styles.o preparse.o vertical.o fields.o 
-#	labels.o biblio.o acronym.o auxfile.o
+	mygetopt.o styles.o preparse.o vertical.o fields.o \
+	labels.o biblio.o auxfile.o	acronym.o
 
 all : checkdir latex2rtf
 

@@ -23,6 +23,7 @@
 #define QUOTATION_MODE    24
 #define BIBLIOGRAPHY_MODE 25
 #define HYPERREF_MODE     26
+#define ACRONYM_MODE      27
 
 #define ON 0x4000
 #define OFF 0x0000
