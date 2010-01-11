@@ -44,12 +44,12 @@ SRCS=commands.c chars.c direct.c encodings.c fonts.c funct1.c tables.c ignore.c 
 	main.c stack.c cfg.c utils.c parser.c lengths.c counters.c letterformat.c \
 	preamble.c equations.c convert.c xrefs.c definitions.c graphics.c \
 	mygetopt.c styles.c preparse.c vertical.c fields.c \
-	labels.c biblio.c acronym.c auxfile.c
+	labels.c biblio.c acronyms.c auxfile.c
 
 HDRS=commands.h chars.h direct.h encodings.h fonts.h funct1.h tables.h ignore.h \
     main.h stack.h cfg.h utils.h parser.h lengths.h counters.h letterformat.h \
     preamble.h equations.h convert.h xrefs.h definitions.h graphics.h encoding_tables.h \
-    version.h mygetopt.h styles.h preparse.h vertical.h fields.h labels.h biblio.h acronym.h \
+    version.h mygetopt.h styles.h preparse.h vertical.h fields.h labels.h biblio.h acronyms.h \
 	auxfile.h
 
 CFGS=cfg/fonts.cfg cfg/direct.cfg cfg/ignore.cfg cfg/style.cfg \
@@ -130,7 +130,7 @@ OBJS=fonts.o direct.o encodings.o commands.o stack.o funct1.o tables.o \
 	chars.o ignore.o cfg.o main.o utils.o parser.o lengths.o counters.o \
 	preamble.o letterformat.o equations.o convert.o xrefs.o definitions.o graphics.o \
 	mygetopt.o styles.o preparse.o vertical.o fields.o \
-	labels.o biblio.o auxfile.o	acronym.o
+	labels.o biblio.o auxfile.o	acronyms.o
 
 all : checkdir latex2rtf
 

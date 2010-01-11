@@ -34,5 +34,5 @@ void CmdAcroExtra(int code);
 void CmdAc(int code);
 void CmdAcResetAll(int code);
 void CmdAcUsed(int code);
-void CmdACNew(int code);
+void CmdAC(int code);
 #endif

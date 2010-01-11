@@ -45,6 +45,7 @@ Authors:
 #include "definitions.h"
 #include "graphics.h"
 #include "vertical.h"
+#include "acronyms.h"
 
 typedef struct commandtag {
     char *cmd_name;            /* LaTeX command name without \ */

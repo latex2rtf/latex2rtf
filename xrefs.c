@@ -43,6 +43,7 @@
 #include "vertical.h"
 #include "fields.h"
 #include "counters.h"
+#include "acronyms.h"
 
 char *g_figure_label = NULL;
 char *g_table_label = NULL;
@@ -2614,40 +2615,3 @@ void CmdAcronymDef(int code)
 {
     CmdIgnoreParameter(21);
 }
-
-/*
-static void CmdAcronym(int code)
-{
-if (code & ON) {
-        PushEnvironment(ACRONYM_MODE);
-        CmdVspace(VSPACE_BIG_SKIP);
-        startParagraph("section", SECTION_TITLE_PARAGRAPH);
-        fprintRTF("{");
-        InsertStyle("section");
-        ConvertString((SpanishMode) ? "Acr\\'{o}nimos" : "Acronyms");
-        CmdEndParagraph(0);
-        fprintRTF("}");
-        CmdVspace(VSPACE_SMALL_SKIP);
-    } else 
-        PopEnvironment();
-        
-        
-}
-*/
-void CmdAC(int code)
-{
-    char *shortAc, *key;
-    int i;
-    int n = (int) strlen("@hyperlink");
-    
-    /* skip '@hyperlink' */
-    for (i=0; i<n; i++) 
-        getTexChar();
-        
-    key = getBraceParam();
-    shortAc = getBraceParam();
-    ConvertString(shortAc);
-    free(shortAc);
-    free(key);
-}
-

@@ -143,21 +143,13 @@ void CmdBibpunct(int code);
 void CmdBibEntry(int code);
 void CmdNatexlab(int code);
 
-#define ACRONYM_AC        1
-#define ACRONYM_ACL       2
-#define ACRONYM_ACF       3
-#define ACRONYM_ACS       4
 #define ACRONYM_ACP    0x11
 #define ACRONYM_ACLP   0x12
 #define ACRONYM_ACFP   0x13
 #define ACRONYM_ACSP   0x14
-#define ACRONYM_PLURAL 0x10
-#define ACRONYM_STAR   0x20
-#define ACRONYM_USED   0x40
 
 void CmdAcronymReset(int code);
 void CmdAcronymAc(int code);
 void CmdAcronymUsed(int code);
 void CmdAcronymReset(int code);
 void CmdAcronymDef(int code);
-void CmdAC(int code);

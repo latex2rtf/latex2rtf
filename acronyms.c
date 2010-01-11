@@ -353,7 +353,7 @@ void CmdAcrodef(int code)
 /*  ignore the first, push the second */
 /*  \AC@hyperlink{isis}{IS-IS} */
    
-void CmdACNew(int code)
+void CmdAC(int code)
 {
     char *shortAc;
 
