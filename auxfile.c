@@ -93,7 +93,7 @@ static void FilterAuxFile(char *macros[],FILE *auxFile) {
 static char **loadedAuxFiles = NULL;
 static int loadedFiles = 0;
 
-static void LoadAuxliaryFile(char *fname,char **macros)
+static void LoadAuxiliaryFile(char *fname,char **macros)
 {
     int elems;
     char **newTable;
@@ -134,5 +134,5 @@ char *acronymAux[] = {
 
 void LoadAuxFile(void)
 {
-    LoadAuxliaryFile(g_aux_name,acronymAux);
+    LoadAuxiliaryFile(g_aux_name,acronymAux);
 }
