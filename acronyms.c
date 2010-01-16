@@ -39,7 +39,7 @@ Authors:
 #include "lengths.h"
 #include "vertical.h"
 #include "auxfile.h"
-#include "acronym.h"
+#include "acronyms.h"
 #include "biblio.h"
 #include "labels.h"
 
