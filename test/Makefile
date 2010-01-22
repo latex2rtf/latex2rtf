@@ -1,12 +1,12 @@
 #
 # Initial version 28 May 2001 Scott Prahl
 #
-LATEX= latex
+LATEX= latex -interaction=nonstopmode
 BIBTEX= bibtex
 LATEX2RTF= ../latex2rtf
 OPTIONS  = -Z3 -P ../cfg/:../scripts/ -T tmp/
 
-LATEX_LOG = | tee latex.log
+LATEX_LOG = > latex.log
 #LATEX_LOG = 
 
 RTF=	align.rtf	 array.rtf 		box.rtf 			ch.rtf	             \
