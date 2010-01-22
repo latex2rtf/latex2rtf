@@ -2478,24 +2478,26 @@ void CmdListOf(int code)
 
 static void GetAcronymFromAux(char *key, char **shortname, char **longname)
 {
-    char  *s, *t;
+    char  *s;
     *shortname = NULL;
     *longname = NULL;
     
     s = ScanAux("newacro", key, 3, g_aux_name); /* get short & long name */
 
-    t=s;
-    while (*t && *t != ']')
-        t++;
-    
-    if (*t == ']') 
-        *t = '\0';
-    else
-        return;
-    
-    *shortname = strdup(s);
-    *longname = strdup(t+1);
-    free(s);
+    if (NULL != s) {
+        char *t=s;
+        while (*t && *t != ']')
+            t++;
+        
+        if (*t == ']') 
+            *t = '\0';
+        else
+            return;
+        
+        *shortname = strdup(s);
+        *longname = strdup(t+1);
+        free(s);
+    }
 }
 
 static void incrementAcronymCounter(char *key)
