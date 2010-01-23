@@ -31,15 +31,17 @@
 #include "parser.h"
 #include "convert.h"
 
-/* List of commands to look for when handling acronyms */
+/* List of commands to look for when parsing the aux file */
+/* TODO: put all commands in a CommandArray and create    */
+/* an environment for .aux file handling                  */
 
 char *acronymAux[] = {
     "\\newlabel",
-    /*     "\\undonewlabel", */
-    "\\bibcite",
-    "\\harvardcite",
+    NULL,               /* go step by step, test labels first */
     "\\newacro",
     "\\newacroplural",
+    "\\bibcite",
+    "\\harvardcite",
     NULL
 };
 
@@ -84,10 +86,12 @@ static void FilterAuxFile(FILE *auxFile) {
                     diagnostics(WARNING,"AUX File stack overflow for <%s>",fname);
                 } else {
                     if (NULL == (fStack[++tosFStack] = fopen(fname,"r"))) {
+                        /* pop, warn and ignore */
                         diagnostics(WARNING,"File not found: %s",fname);
                         tosFStack--;
                     } else {
-                        diagnostics(WARNING,"( %s[%d])",fname,tosFStack);
+                        /* pushed => continue */
+                        diagnostics(WARNING,"([%d] %s)",tosFStack,fname);
                     }
                 }
                 continue;
@@ -115,13 +119,16 @@ static int alreadyLoaded = FALSE;
 void LoadAuxFile(void)
 {
     FILE *auxFile;
+    /* load and parse only once */
     if (alreadyLoaded == TRUE)
         return;
+    alreadyLoaded = TRUE;
+    /* ------------------------ */
     auxFile =  my_fopen(g_aux_name,"rb");
     if (NULL == auxFile) {
         diagnostics(WARNING, "%s not found.  Run LaTeX to create it.",g_aux_name);
     } else {
-        diagnostics(WARNING,"(%s)",g_aux_name);
+        diagnostics(WARNING,"([0]%s)",g_aux_name);
         FilterAuxFile(auxFile);
     }
 }

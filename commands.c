@@ -45,6 +45,8 @@ Authors:
 #include "definitions.h"
 #include "graphics.h"
 #include "vertical.h"
+
+#include "labels.h"
 #include "acronyms.h"
 
 static int iEnvCount = 0;               /* number of current environments */
@@ -397,6 +399,9 @@ static CommandArray commands[] = {
     {"markboth", CmdIgnoreParameter, No_Opt_Two_NormParam},
     {"markright", CmdIgnoreParameter, No_Opt_One_NormParam},
 
+    /************ commands for auxfile.c *******************/
+    { "newlabel", CmdNewLabel, 0 },
+    
     {"", NULL, 0}
 };
 

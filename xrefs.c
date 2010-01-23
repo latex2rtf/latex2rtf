@@ -43,6 +43,8 @@
 #include "vertical.h"
 #include "fields.h"
 #include "counters.h"
+#include "auxfile.h"
+#include "labels.h"
 #include "acronyms.h"
 
 char *g_figure_label = NULL;
@@ -223,8 +225,10 @@ purpose: obtains a reference from .aux file
     code==1 means \token{reference}{{sect}{line}} -> "sect"
     code==2 means \token{reference}{a}{b}{c}      -> "{a}{b}{c}"
     code==3 means \token{reference}[options]{a}   -> "{a}{b}{c}"
+
+PA: intermediate step before going to treating .aux file only once
  ************************************************************************/
-static char *ScanAux(char *token, char *reference, int code, char *aux_name)
+static char *origScanAux(char *token, char *reference, int code, char *aux_name)
 {
     static FILE *fAux = NULL;
     static int warned_once = FALSE;
@@ -266,9 +270,9 @@ static char *ScanAux(char *token, char *reference, int code, char *aux_name)
             t = strchr(s, '}');
             filename = my_strndup(s+8,t-s-8);
             
-            diagnostics(4, "In ScanAux, handling \\@input{%s}", filename);
+            diagnostics(4, "In origScanAux, handling \\@input{%s}", filename);
             fAux=NULL;
-            ret_val = ScanAux(token,reference,code,filename);
+            ret_val = origScanAux(token,reference,code,filename);
             free(filename);
             fclose(fAux);
             fAux = old_fAux;
@@ -319,6 +323,32 @@ static char *ScanAux(char *token, char *reference, int code, char *aux_name)
     return NULL;
 }
 
+/*************************************************************************
+purpose: obtains a reference from .aux file
+    code==0 means \token{reference}{number}       -> "number"
+    code==1 means \token{reference}{{sect}{line}} -> "sect"
+    code==2 means \token{reference}{a}{b}{c}      -> "{a}{b}{c}"
+    code==3 means \token{reference}[options]{a}   -> "{a}{b}{c}"
+ ************************************************************************/
+static char *ScanAux(char *token, char *reference, int code, char *aux_name)
+{
+    /* label handling stuff was more stable */
+    if (0 != strcmp(token,"newlabel"))
+        return origScanAux(token,reference,code,aux_name);
+
+    LoadAuxFile(); /* will be read only once */
+
+    switch (code) {
+        case 1: return getLabelSection(reference);
+        case 0: return getLabelDefinition(reference);
+        default:
+            diagnostics(ERROR,"assert failed in ScanAux: unknown code (%d) for newlabel",code);
+    }
+    /*
+     * signal error
+     */
+    return NULL;
+}
 /*************************************************************************
 purpose: obtains a \bibentry{reference} from the .bbl file
          this consists of all lines after \bibentry{reference} until two
