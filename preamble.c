@@ -682,9 +682,11 @@ static void CmdUseOnepackage(char* package, char *options)
             ParseOptGeometry(options);
         }
     
-    } else
+    } else if (strcmp(package,"ifpdf") == 0) {
+        ConvertString("\\newif\\ifpdf");
+    } else{
         setDocumentOptions(package);
-      
+    }
 }
 
 /******************************************************************************
