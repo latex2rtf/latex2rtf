@@ -47,12 +47,6 @@ Authors:
 #include "vertical.h"
 #include "acronyms.h"
 
-typedef struct commandtag {
-    char *cmd_name;            /* LaTeX command name without \ */
-    void (*func) (int);         /* function to convert LaTeX to RTF */
-    int param;                  /* used in various ways */
-} CommandArray;
-
 static int iEnvCount = 0;               /* number of current environments */
 static CommandArray *Environments[100]; /* call chain for current environments */
 static int g_par_indent_array[100];
