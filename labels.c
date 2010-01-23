@@ -37,14 +37,28 @@ Authors:
 
 static labelElem *labelTable = NULL;
 static int labelCount = 0;
+static int labelReserved = 0;
+#define labelDelta 8
+
+/* reserve 8 labels in a row when we grow the label table */
+/* return pointer to new label or NULL if memory overflow */
 
 static labelElem *newLabel(char *name,char *def)
 {
-    labelElem *result;
+    labelElem *result = labelTable;
 
-    labelTable =
-        (labelElem *)realloc(labelTable,
-                             (labelCount+1)*sizeof(labelElem));
+    if (labelCount == labelReserved) {
+        /* time to reserve another chunk */
+        /* of 8 labels                   */
+        result =
+            (labelElem *)realloc(labelTable,
+                                (labelReserved+labelDelta)*sizeof(labelElem));
+        if (NULL != result) {
+            labelTable = result;
+            labelReserved += labelDelta;
+        }
+    }
+    
     if (NULL != result) {
         result = &labelTable[labelCount++];
         result->labelName = name;
@@ -62,6 +76,25 @@ labelElem *getLabel(char *name)
             result = &labelTable[label];
             break;
         }   
+    }
+    return result;
+}
+
+/* support for labels created by \usepackage{nameref}     */
+/* \newlabel{acro:undef}{{1}{1}{Test section\relax }{}{}} */
+/* returns the nameref                                    */
+char *getLabelNameref(char *name)
+{
+    char      *result = NULL;
+    labelElem *label = getLabel(name);
+    if (NULL != label) {
+        char *fullDef = strdup(label->labelDef);
+        PushSource(NULL, fullDef);
+        ignoreBraceParam(); /* section */
+        ignoreBraceParam(); /* page */
+        result = getBraceParam();
+        PopSource();
+        free(fullDef); /* getBraceParam() strdup's, free this */
     }
     return result;
 }
@@ -92,11 +125,9 @@ char *getLabelPage(char *name)
     labelElem *label = getLabel(name);
     if (NULL != label) {
         char *fullDef = strdup(label->labelDef);
-        char *p;
         PushSource(NULL, fullDef);
-        p = getBraceParam();
+        ignoreBraceParam();
         result = getBraceParam();
-        if (NULL != p) free(p);
         PopSource();
         free(fullDef);
     }

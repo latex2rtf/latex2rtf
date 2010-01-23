@@ -12,6 +12,7 @@ typedef struct _labelElem {
 labelElem *getLabel(char *name);
 char *getLabelSection(char *name);
 char *getLabelPage(char *name);
+char *getLabelNameref(char *name);
 
 void CmdNewLabel(int code);
 #endif
