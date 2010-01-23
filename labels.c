@@ -133,6 +133,18 @@ char *getLabelPage(char *name)
     }
     return result;
 }
+/*  from \newlabel{sec:test}{{1.1}{1}} */
+/*  returns the definition {1.1}{1} */
+
+char *getLabelDefinition(char *name)
+{
+    char      *result = NULL;
+    labelElem *label = getLabel(name);
+    if (NULL != label) {
+        result = strdup(label->labelDef);
+    }
+    return result;
+}
 
 /*  \newlabel{sec:test}{{1.1}{1}} */
 

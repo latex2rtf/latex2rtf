@@ -10,6 +10,8 @@ typedef struct _labelElem {
 } labelElem;
 
 labelElem *getLabel(char *name);
+
+char *getLabelDefinition(char *name);
 char *getLabelSection(char *name);
 char *getLabelPage(char *name);
 char *getLabelNameref(char *name);
