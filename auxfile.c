@@ -1,5 +1,5 @@
 /*
- * aux.c - handle the auxiliary files
+ * auxfile.c - handle .aux files
  * 
  * Copyright (C) 1995-2002 The Free Software Foundation
  * 
@@ -20,7 +20,7 @@
  * This file is available from http://sourceforge.net/projects/latex2rtf/
  * 
  * Authors: 1995-1997 Ralf Schlatterbeck 1998-2000 Georg Lehner 2001-2002 Scott
- * Prahl
+ * Prahl 2000-2010 Pedro A. Aranda
  */
 
 #include <math.h>
@@ -30,6 +30,19 @@
 #include "utils.h"
 #include "parser.h"
 #include "convert.h"
+
+/* List of commands to look for when handling acronyms */
+
+char *acronymAux[] = {
+    "\\newlabel",
+    /*     "\\undonewlabel", */
+    "\\bibcite",
+    "\\harvardcite",
+    "\\newacro",
+    "\\newacroplural",
+    NULL
+};
+
 /*
  * open and read an auxiliary file.
  * filter lines which start with the
@@ -37,7 +50,7 @@
  * and send them to ConvertString()
  */
 
-static void FilterAuxFile(char *macros[],FILE *auxFile) {
+static void FilterAuxFile(FILE *auxFile) {
     char linebuffer[512];
     char **candidate;
     int  tosFStack;
@@ -50,6 +63,11 @@ static void FilterAuxFile(char *macros[],FILE *auxFile) {
     fStack[tosFStack] = auxFile;
     
     while (tosFStack != -1) {
+        /*
+         * checked line reading with Linux only
+         * TODO: check with other OSes and change to char-by-char reading if necessary
+         * IDEA: common line reading routing @ program level
+         */
         while (fgets(linebuffer,511,fStack[tosFStack]) != NULL) {
             char *lfcr = strchr(linebuffer,'\n');
             if (lfcr != NULL) *lfcr = 0;
@@ -68,11 +86,13 @@ static void FilterAuxFile(char *macros[],FILE *auxFile) {
                     if (NULL == (fStack[++tosFStack] = fopen(fname,"r"))) {
                         diagnostics(WARNING,"File not found: %s",fname);
                         tosFStack--;
+                    } else {
+                        diagnostics(WARNING,"( %s[%d])",fname,tosFStack);
                     }
                 }
                 continue;
             }
-            for (candidate = macros; *candidate != NULL; candidate++) {
+            for (candidate = acronymAux; *candidate != NULL; candidate++) {
                 if (strstarts(linebuffer,*candidate)) {
                     char c1 = linebuffer[strlen(*candidate)];
                     if (c1 != 0) {
@@ -90,49 +110,18 @@ static void FilterAuxFile(char *macros[],FILE *auxFile) {
     }
 }
 
-static char **loadedAuxFiles = NULL;
-static int loadedFiles = 0;
-
-static void LoadAuxiliaryFile(char *fname,char **macros)
-{
-    int elems;
-    char **newTable;
-    
-    for (elems = 0; elems < loadedFiles; elems++) {
-        if (streq(loadedAuxFiles[elems],fname)) {
-            return;             /* already loaded */
-        }
-    }
-    newTable = (char **)realloc(loadedAuxFiles,
-                                sizeof(char *) * (loadedFiles+1));
-    if (NULL != newTable) {
-        FILE *auxFile =           my_fopen(fname,"rb");
-        loadedAuxFiles =          newTable;
-        newTable[loadedFiles++] = fname;
-        if (NULL == auxFile) {
-            diagnostics(WARNING, "%s not found.  Run LaTeX to create it.",fname);
-        } else {
-            FilterAuxFile(macros,auxFile);
-            diagnostics(WARNING,"(%s)",fname);
-        }
-    } else {
-        diagnostics(ERROR,"Memory overflow when opening '%s'",fname);
-    }
-}
-
-/* List of commands to look for when handling acronyms */
-
-char *acronymAux[] = {
-    "\\newlabel",
-    /*     "\\undonewlabel", */
-    "\\bibcite",
-    "\\harvardcite",
-    "\\newacro",
-    "\\newacroplural",
-    NULL
-};
+static int alreadyLoaded = FALSE;
 
 void LoadAuxFile(void)
 {
-    LoadAuxiliaryFile(g_aux_name,acronymAux);
+    FILE *auxFile;
+    if (alreadyLoaded == TRUE)
+        return;
+    auxFile =  my_fopen(g_aux_name,"rb");
+    if (NULL == auxFile) {
+        diagnostics(WARNING, "%s not found.  Run LaTeX to create it.",g_aux_name);
+    } else {
+        diagnostics(WARNING,"(%s)",g_aux_name);
+        FilterAuxFile(auxFile);
+    }
 }
