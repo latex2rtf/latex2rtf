@@ -1,3 +1,6 @@
+#ifndef _MAIN_H_INCLUDED
+#define _MAIN_H_INCLUDED 1
+
 #if defined(UNIX)
 #define ENVSEP ':'
 #define PATHSEP '/'
@@ -47,6 +50,12 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdint.h>
+
+/*** handy boolean type definition ***/
+#ifndef TRUE
+typedef enum { FALSE = 0,
+              TRUE } boolean;
+#endif
 
 /*** interpret comment lines that follow the '%' with this string ***/
 extern const char  * InterpretCommentString;
@@ -141,3 +150,5 @@ char *my_strdup(const char *str);
 FILE *my_fopen(char *path, char *mode);
 
 void debug_malloc(void);
+
+#endif

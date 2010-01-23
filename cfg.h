@@ -1,5 +1,5 @@
-#ifndef _CFG_INCLUDED
-#define _CFG_INCLUDED 1
+#ifndef _CFG_H_INCLUDED
+#define _CFG_H_INCLUDED 1
 
 #include <stdio.h> /* for FILE* */
 
@@ -21,10 +21,6 @@ enum { DIRECT_A = 0,
 #endif
 #endif
 
-#ifndef TRUE
-typedef enum { FALSE = 0,
-              TRUE } boolean;
-#endif
  
 typedef int (*fptr) (const void*, const void*);
 
