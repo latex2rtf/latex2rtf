@@ -36,5 +36,8 @@ void CmdAcResetAll(int code);
 void CmdAcUsed(int code);
 void CmdAC(int code);
 
+int acronymHint(int maxWidth);
+
 extern CommandArray acronymCommands[];
+
 #endif

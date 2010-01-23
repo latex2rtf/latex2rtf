@@ -61,6 +61,7 @@ that affect these quantities
 #include "xrefs.h"
 #include "counters.h"
 #include "fields.h"
+#include "acronyms.h"
 
 static int g_TeX_mode = MODE_VERTICAL;
 static int g_line_spacing = 240;
@@ -339,6 +340,10 @@ void startParagraph(const char *style, int indenting)
 
     if (strcmp(the_style,"bitmapCenter")==0)
         fprintRTF("\\tqc\\tx%d\\tqr\\tx%d", b, width);
+
+    /* TODO change width/6 with hint */
+    if (strcmp(the_style,"acronym")==0)
+        fprintRTF("\\tx%d\\tqr\\tldot\\tx%d", acronymHint(width), width);
         
     fprintRTF("\\sl%i\\slmult1 ", getLineSpacing());
 

@@ -309,7 +309,8 @@ static void acroDiag(acroEntry *thisEntry)
    Ignore \acroplural,\acrodef and \acrodefplural
    Handle \acro (in the acronym environment) and
           \newacro and \newacroplural (in the .aux file) only
-          *************************************************** */
+    TODO: acronym paragraph style: hint for first tab 
+   ********************************************************** */
 
 void CmdAcrodef(int code)
 {
@@ -369,9 +370,7 @@ void CmdAcrodef(int code)
                 setVspace(vspace);
                 
                 CmdIndent(INDENT_USUAL);
-                /* TODO: startParagraph("acronym", FIRST_PARAGRAPH); */
-                /* in ider to place the page number correctly */
-                startParagraph("item", FIRST_PARAGRAPH);
+                startParagraph("acronym", FIRST_PARAGRAPH);
                 fprintRTF("{\\b ");
                 ConvertString((NULL != acShort) ? acShort : acDef); 
                 fprintRTF("}\\tab\n");
@@ -399,6 +398,14 @@ void CmdAcrodef(int code)
             break;
         }
     }
+}
+
+/* **************************************************** */
+/* return a hint for the first tab in the acronym style */
+/* **************************************************** */
+int acronymHint(int maxWidth)
+{
+    return (int)(maxWidth / 6.00);
 }
 
 /*  ignore the first, push the second */
