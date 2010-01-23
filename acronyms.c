@@ -43,6 +43,46 @@ Authors:
 #include "biblio.h"
 #include "labels.h"
 
+/* I move the acronymCommands here and make them available
+   as soon as the preamble detects a \usepackage[..]{acronym} 
+   by pushing an ACRONYM_MODE into the environments */
+   
+CommandArray acronymCommands[] = 
+{
+    {"acrodef",       CmdAcrodef,     ACRONYM_ACRODEF},
+    {"acrodefplural", CmdAcrodef,     ACRONYM_ACRODEFPLURAL},
+    {"acro",          CmdAcrodef,     ACRONYM_ACRO},
+    {"acroplural",    CmdAcrodef,     ACRONYM_ACROPLURAL},
+    {"acresetall",    CmdAcResetAll,  0},
+    {"AC"     ,       CmdAC,          0},
+    {"acused" ,       CmdAcUsed,      0},
+    {"acroextra",     CmdAcroExtra,   0},
+    
+    {"ac"     ,    CmdAc,           ACRONYM_AC},
+    {"acl"    ,    CmdAc,           ACRONYM_ACL},
+    {"acs"    ,    CmdAc,           ACRONYM_ACS},
+    {"acf"    ,    CmdAc,           ACRONYM_ACF},
+    {"acfi"   ,    CmdAc,           ACRONYM_ACFI}, 
+    {"acp"    ,    CmdAc,           ACRONYM_AC   | ACRONYM_PLURAL },
+    {"aclp"   ,    CmdAc,           ACRONYM_ACL  | ACRONYM_PLURAL },
+    {"acsp"   ,    CmdAc,           ACRONYM_ACS  | ACRONYM_PLURAL },
+    {"acfp"   ,    CmdAc,           ACRONYM_ACF  | ACRONYM_PLURAL },
+    {"acsu"   ,    CmdAc,           ACRONYM_ACS  | ACRONYM_USED },
+    {"aclu"   ,    CmdAc,           ACRONYM_ACL  | ACRONYM_USED },
+    {"ac*"    ,    CmdAc,           ACRONYM_AC   | ACRONYM_STAR },
+    {"acs*"   ,    CmdAc,           ACRONYM_ACS  | ACRONYM_STAR },
+    {"acl*"   ,    CmdAc,           ACRONYM_ACL  | ACRONYM_STAR },
+    {"acf*"   ,    CmdAc,           ACRONYM_ACF  | ACRONYM_STAR },
+    {"acp*"   ,    CmdAc,           ACRONYM_AC   | ACRONYM_PLURAL | ACRONYM_STAR},
+    {"acsp*"  ,    CmdAc,           ACRONYM_ACS  | ACRONYM_PLURAL | ACRONYM_STAR},
+    {"aclp*"  ,    CmdAc,           ACRONYM_ACL  | ACRONYM_PLURAL | ACRONYM_STAR},
+    {"acfp*"  ,    CmdAc,           ACRONYM_ACF  | ACRONYM_PLURAL | ACRONYM_STAR},
+    {"acfi*"  ,    CmdAc,           ACRONYM_AC   | ACRONYM_STAR },
+    {"acsu*"  ,    CmdAc,           ACRONYM_ACS  | ACRONYM_STAR | ACRONYM_USED },
+    {"aclu*"  ,    CmdAc,           ACRONYM_ACL  | ACRONYM_STAR | ACRONYM_USED },
+    {""       ,    NULL, 0 }
+};
+
 /* *****************************************************
    Acronyms:
    this version is quite aligned with acronyms.sty v1.35
@@ -60,8 +100,7 @@ Authors:
    * printonlyused
    * withpage
    
-   TODO:
-   implement taking the bracket parameter into account.
+   TODO: implement better 'acronym' paragraph style
 
    Date:   29-Dec-2009
    Author: Pedro A. Aranda Gutiérrez
@@ -72,7 +111,8 @@ void UsePackageAcronym(char *options)
     diagnostics(WARNING,"acronym package support: almost v1.35");
     /*  we need an .aux file to get the acronyms from */
     LoadAuxFile();
-
+    /* we have to activate the acronym commands */
+    PushEnvironment(ACRONYM_MODE);
     if (options != NULL) {
         char *acroOptions = strdup(options);
         char *opt;
@@ -94,8 +134,9 @@ void UsePackageAcronym(char *options)
     }
 }
 
-static int inAcroEnvironment = FALSE;
+/* TODO: implement longest acronym hint */
 
+static int inAcroEnvironment = FALSE;
 void CmdBeginAcronym(int code)
 {
     /*  diagnostics(5,"CmdBeginAcronym(0x%04x) ON = 0x%04x",code,ON); */
@@ -107,10 +148,10 @@ void CmdBeginAcronym(int code)
             free(longest);
         }
         inAcroEnvironment = TRUE;
-        PushEnvironment(ACRONYM_MODE);
+        /* PushEnvironment(ACRONYM_MODE); */
     } else {
         inAcroEnvironment = FALSE;
-        PopEnvironment();
+        /* PopEnvironment(); */
     }
 }
 
@@ -273,14 +314,16 @@ static void acroDiag(acroEntry *thisEntry)
 void CmdAcrodef(int code)
 {
     char *acDef = NULL, *acShort = NULL, *acLong = NULL;
+    acroEntry *thisEntry = NULL;
+
     acDef   = getBraceParam();
     acShort = getBracketParam();
     acLong  = getBraceParam();
 
     /*  diagnostics(5,"void CmdAcrodef(%d)",code); */
-    
-    if (code == ACRONYM_NEWACRO) {
-        acroEntry *thisEntry = createEntry(acDef);
+    switch (code) {
+    case ACRONYM_NEWACRO:
+        thisEntry = createEntry(acDef);
         
         if (acShort == NULL)
             acShort = acDef;
@@ -293,9 +336,10 @@ void CmdAcrodef(int code)
         } else {
             diagnostics(ERROR,"Out of memory!");
         }
-    } else if (code == ACRONYM_NEWACROPLURAL) {
-        acroEntry *thisEntry = createEntry(acDef);
- 
+        break;
+    case ACRONYM_NEWACROPLURAL:
+        thisEntry = createEntry(acDef);
+
         if (NULL != thisEntry) {
             thisEntry->acShortPlural = (acShort == NULL) ? regularPlural(acDef) : acShort;
             thisEntry->acLongPlural  = acLong;
@@ -303,12 +347,13 @@ void CmdAcrodef(int code)
         } else {
             diagnostics(ERROR,"Out of memory!");
         }
-    } else if (code == ACRONYM_ACRO) {
+        break;
+    case ACRONYM_ACRO:
         /*
          * just to know whether we have to print it or not!
          * use acShort and acLong from the definition
          */
-        acroEntry *thisEntry = searchEntry(acDef);
+        thisEntry = searchEntry(acDef);
         if (NULL != thisEntry) {
     
             int doPrint =
@@ -324,28 +369,34 @@ void CmdAcrodef(int code)
                 setVspace(vspace);
                 
                 CmdIndent(INDENT_USUAL);
-                startParagraph("acronym", FIRST_PARAGRAPH);
+                /* TODO: startParagraph("acronym", FIRST_PARAGRAPH); */
+                /* in ider to place the page number correctly */
+                startParagraph("item", FIRST_PARAGRAPH);
                 fprintRTF("{\\b ");
                 ConvertString((NULL != acShort) ? acShort : acDef); 
                 fprintRTF("}\\tab\n");
                 ConvertString(acLong);
                 if (TRUE == acroPrintWithPage) {
-                    /*
-                     * use alloca to dispose automatically when exiting
-                     * block
-                     */
-                    char *acroLabel = alloca(strlen(acDef)+8);
-                    char *acroPage;
-                    sprintf(acroLabel,"acro:%s",acDef);
-                    acroPage = getLabelPage(acroLabel);
-                    if (NULL != acroPage) {
-                        fprintRTF("\\~\\tab\\~");
-                        ConvertString(acroPage);
+                    char *acroLabel = malloc(strlen(acDef)+8);
+                    if (NULL != acroLabel) {
+                        char *acroPage;
+                        sprintf(acroLabel,"acro:%s",acDef);
+                        acroPage = getLabelPage(acroLabel);
+                        if (NULL != acroPage) {
+                            fprintRTF(" \\tab ");
+                            ConvertString(acroPage);
+                        }
+                        strfree(acroPage);
                     }
+                    strfree(acroLabel);
                 }
             }
-        } else {
-            diagnostics(WARNING,"Undefined acronym '%s'",acDef);
+            /* fall through to free parameters */
+        default:
+            strfree(acDef);
+            strfree(acShort);
+            strfree(acLong);
+            break;
         }
     }
 }
@@ -367,6 +418,7 @@ void CmdAC(int code)
         ConvertString(shortAc);
         diagnostics(5,"in CmdAC(), pushing '%s'",shortAc);
     }
+    strfree(shortAc);
 }
 /*
   \ac{acronym}          Expand and identify the acronym the first time; use only the acronym thereafter
@@ -381,7 +433,6 @@ void CmdAC(int code)
   \acp{label}
   plural form of acronym by adding an s. \acfp. \acsp, \aclp work as well.
 
-  \acfi{label}  Now like \acf{label}    
 */
 void CmdAc(int code)
 {
@@ -438,6 +489,7 @@ void CmdAc(int code)
         diagnostics(WARNING,"Fell through CmdAc()!");
         break;
     }
+    strfree(ac);
 } 
 
 /*  \acused{ac} */
@@ -451,12 +503,13 @@ void CmdAcUsed(int code)
     if (acronym != NULL) {
         acronym->used = TRUE;
     }
+    strfree(ac);
 }
 
-/*  \acresetall */
-/*     resets all acronyms to not used. */
-/*     Useful after the abstract to redefine */
-/*     all acronyms in the introduction.  */
+/*  \acresetall                                 */
+/*     resets all acronyms to not used.         */
+/*     Useful after the abstract to redefine    */
+/*     all acronyms in the introduction.        */
 
 void CmdAcResetAll(int code)
 {
@@ -465,13 +518,14 @@ void CmdAcResetAll(int code)
         acroTable[i].used = FALSE;
 }
 
-/*  \acroextra */
-/*    push the contents for further conversion */
+/*  \acroextra                                  */
+/*    push the contents for further conversion  */
 
 void CmdAcroExtra(int code)
 {
-    char      *ac      = getBraceParam();
+    char      *ac = getBraceParam();
     if (ac != NULL) {
         ConvertString(ac);
     }
+    strfree(ac);
 }

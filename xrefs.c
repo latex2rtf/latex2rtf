@@ -2505,6 +2505,8 @@ void CmdListOf(int code)
     CmdNewPage(NewPage);
     CmdEndParagraph(0);
 }
+#if 0
+/* this has all gone to acronyms.h */
 
 static void GetAcronymFromAux(char *key, char **shortname, char **longname)
 {
@@ -2647,3 +2649,4 @@ void CmdAcronymDef(int code)
 {
     CmdIgnoreParameter(21);
 }
+#endif

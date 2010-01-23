@@ -44,6 +44,7 @@ Authors:
 #include "direct.h"
 #include "styles.h"
 #include "vertical.h"
+#include "acronyms.h"
 
 extern char *Version;  /*storage and definition in version.h */
 
@@ -681,7 +682,8 @@ static void CmdUseOnepackage(char* package, char *options)
         if (options) {
             ParseOptGeometry(options);
         }
-    
+    } else if (strcmp(package,"acronym") == 0) {
+        UsePackageAcronym(options);
     } else if (strcmp(package,"ifpdf") == 0) {
         ConvertString("\\newif\\ifpdf");
     } else{

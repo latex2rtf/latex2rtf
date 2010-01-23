@@ -19,8 +19,9 @@
  * 
  * This file is available from http://sourceforge.net/projects/latex2rtf/
  * 
- * Authors: 1995-1997 Ralf Schlatterbeck 1998-2000 Georg Lehner 2001-2002 Scott
- * Prahl 2000-2010 Pedro A. Aranda
+ * Authors: 
+ * 2009-2010 Pedro A. Aranda
+ *           Scott Prahl 
  */
 
 #include <math.h>
@@ -37,9 +38,9 @@
 
 char *acronymAux[] = {
     "\\newlabel",
-    NULL,               /* go step by step, test labels first */
     "\\newacro",
     "\\newacroplural",
+    NULL,               /* go step by step, then acronyms */
     "\\bibcite",
     "\\harvardcite",
     NULL
@@ -128,7 +129,7 @@ void LoadAuxFile(void)
     if (NULL == auxFile) {
         diagnostics(WARNING, "%s not found.  Run LaTeX to create it.",g_aux_name);
     } else {
-        diagnostics(WARNING,"([0]%s)",g_aux_name);
+        diagnostics(WARNING,"(%s)",g_aux_name);
         FilterAuxFile(auxFile);
     }
 }

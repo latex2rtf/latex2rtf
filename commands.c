@@ -366,33 +366,7 @@ static CommandArray commands[] = {
     {"centering", CmdAlign, PAR_CENTERING},
     
     {"halign", CmdHAlign, 0},
-    
-    {"acrodef",    CmdAcronymDef,   0},
-    {"acresetall", CmdAcronymReset, 0},
-    {"AC"     ,    CmdAC,           0},
-    {"ac"     ,    CmdAcronymAc,    ACRONYM_AC},
-    {"acl"    ,    CmdAcronymAc,    ACRONYM_ACL},
-    {"acs"    ,    CmdAcronymAc,    ACRONYM_ACS},
-    {"acf"    ,    CmdAcronymAc,    ACRONYM_ACF},
-    {"acfi"   ,    CmdAcronymAc,    ACRONYM_ACF}, 
-    {"acp"    ,    CmdAcronymAc,    ACRONYM_ACP},
-    {"aclp"   ,    CmdAcronymAc,    ACRONYM_ACLP},
-    {"acsp"   ,    CmdAcronymAc,    ACRONYM_ACSP},
-    {"acfp"   ,    CmdAcronymAc,    ACRONYM_ACFP},
-    {"acsu"   ,    CmdAcronymAc,    ACRONYM_ACS  | ACRONYM_USED},
-    {"aclu"   ,    CmdAcronymAc,    ACRONYM_ACL  | ACRONYM_USED},
-    {"ac*"    ,    CmdAcronymAc,    ACRONYM_AC   | ACRONYM_STAR},
-    {"acs*"   ,    CmdAcronymAc,    ACRONYM_ACS  | ACRONYM_STAR},
-    {"acl*"   ,    CmdAcronymAc,    ACRONYM_ACL  | ACRONYM_STAR},
-    {"acf*"   ,    CmdAcronymAc,    ACRONYM_ACF  | ACRONYM_STAR},
-    {"acp*"   ,    CmdAcronymAc,    ACRONYM_ACP  | ACRONYM_STAR},
-    {"acsp*"  ,    CmdAcronymAc,    ACRONYM_ACSP | ACRONYM_STAR},
-    {"aclp*"  ,    CmdAcronymAc,    ACRONYM_ACLP | ACRONYM_STAR},
-    {"acfp*"  ,    CmdAcronymAc,    ACRONYM_ACFP | ACRONYM_STAR},
-    {"acfi*"  ,    CmdAcronymAc,    ACRONYM_AC   | ACRONYM_STAR},
-    {"acsu*"  ,    CmdAcronymAc,    ACRONYM_ACS  | ACRONYM_STAR | ACRONYM_USED},
-    {"aclu*"  ,    CmdAcronymAc,    ACRONYM_ACL  | ACRONYM_STAR | ACRONYM_USED},
-    
+        
     {"efloatseparator", CmdIgnoreParameter,0},
     {"pagestyle", CmdIgnoreParameter, No_Opt_One_NormParam},
     {"pagenumbering", CmdIgnoreParameter, No_Opt_One_NormParam},
@@ -400,7 +374,9 @@ static CommandArray commands[] = {
     {"markright", CmdIgnoreParameter, No_Opt_One_NormParam},
 
     /************ commands for auxfile.c *******************/
-    { "newlabel", CmdNewLabel, 0 },
+    { "newlabel",      CmdNewLabel, 0 },
+    { "newacro",       CmdAcrodef, ACRONYM_NEWACRO },
+    { "newacroplural", CmdAcrodef, ACRONYM_NEWACROPLURAL },
     
     {"", NULL, 0}
 };
@@ -511,7 +487,7 @@ static CommandArray ItemizeCommands[] = {
 
 static CommandArray DescriptionCommands[] = {
     {"item", CmdItem, DESCRIPTION_MODE},
-    {"acro", CmdAcronymItem, 0},
+    /* {"acro", CmdAcronymItem, 0}, */
     {"", NULL, 0}
 };
 
@@ -700,7 +676,8 @@ static CommandArray params[] = {
     {"itemize", CmdList, ITEMIZE_MODE},
     {"compactitem", CmdList, ITEMIZE_MODE},
     {"description", CmdList, DESCRIPTION_MODE},
-    {"acronym", CmdList, DESCRIPTION_MODE},
+    
+    {"acronym", CmdBeginAcronym, 0},
     
     {"asparaenum", CmdList, ENUMERATE_MODE},
     {"inparaenum", CmdList, INPARAENUM_MODE},
@@ -1134,7 +1111,8 @@ static char *EnvironmentName(CommandArray *code)
         return strdup("verse");
     if (code == genericCommands)
         return strdup("generic");
-
+    if (code == acronymCommands)
+        return strdup("acronym");
     return strdup("unknown");
 }
 
@@ -1258,6 +1236,9 @@ globals: changes Environment - array of active environments
             break;
         case IGNORE_MODE:
             Environments[iEnvCount] = ignoreCommands;
+            break;
+        case ACRONYM_MODE:
+            Environments[iEnvCount] = acronymCommands;
             break;
 
         default:

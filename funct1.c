@@ -1030,6 +1030,8 @@ void CmdItem(int code)
         CmdIndent(INDENT_NONE);
 }
 
+#if 0
+/* moved to acronyms.c */
 void CmdAcronymItem(int code)
 
 /******************************************************************************
@@ -1062,6 +1064,7 @@ void CmdAcronymItem(int code)
     free(key);
     free(def);
 }
+#endif
 
 void CmdResizeBox(int code)
 {

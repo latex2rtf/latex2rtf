@@ -1,7 +1,7 @@
 #ifndef _ACRONYM_INCLUDED
 #define _ACRONYM_INCLUDED 1
 
-enum {
+enum { 
     ACRONYM_NEWACRO = 1,
     ACRONYM_NEWACROPLURAL,
     ACRONYM_ACRO,
@@ -35,4 +35,6 @@ void CmdAc(int code);
 void CmdAcResetAll(int code);
 void CmdAcUsed(int code);
 void CmdAC(int code);
+
+extern CommandArray acronymCommands[];
 #endif
