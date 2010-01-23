@@ -3,7 +3,7 @@
 #
 LATEX= latex -interaction=nonstopmode
 BIBTEX= bibtex
-LATEX2RTF= ../latex2rtf
+LATEX2RTF= ../latex2rtf 
 OPTIONS  = -Z3 -P ../cfg/:../scripts/ -T tmp/
 
 LATEX_LOG = > latex.log
@@ -113,7 +113,9 @@ extra_tests: $(EXTRA_TESTS)
 %.rtf:	%.tex
 	$(LATEX2RTF) $(OPTIONS) $<
 
-acronym.rtf:acronym.tex acronym.bib
+acronym.rtf:	acronym
+
+acronym:
 	$(LATEX) acronym $(LATEX_LOG)
 	$(BIBTEX) acronym $(LATEX_LOG)
 	$(LATEX) acronym $(LATEX_LOG)
