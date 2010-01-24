@@ -981,8 +981,7 @@ static void PutPngFile(char *png, double height_goal, double width_goal, double 
         uint16_t sx, sy;
         int bad_res;
         
-    diagnostics(4, "PutPngFile '%s'", png);
-
+    diagnostics(WARNING,"<%s>",png);
     GetPngSize(png, &w_pixels, &h_pixels, &xres, &yres, &bad_res);
     if (w_pixels == 0 || h_pixels == 0) return;
 
@@ -1769,35 +1768,72 @@ static char *upper_case_string(char *s)
     return t;
 }
 
-/******************************************************************************
- purpose   : return s.ext or s.EXT if it exists otherwise return NULL
- ******************************************************************************/
-static char *exists_with_extension(char *s, char *ext)
+static char *try_file_extension(char *s, char *ext) 
 {
     char *t, *x;
-    FILE *fp;
-
     t = strdup_together(s, ext);
-    fp = fopen(t, "rb");
-    diagnostics(4, "trying to open %s, result = %0x", t, fp);
-    if (fp) {
-        fclose(fp);
+
+    if (file_exists(t)) {
         return t;
     }
-    free(t);
+    strfree(t);
 
 /* now try upper case version of ext */
     x = upper_case_string(ext);
     t = strdup_together(s, x);
     free(x);
 
-    fp = fopen(t, "rb");
-    diagnostics(4, "trying to open %s, result = %0x", t, fp);
-    if (fp) {
-        fclose(fp);
+    if (file_exists(t)) {
         return t;
     }
-    free(t);
+    strfree(t);
+    
+    return NULL;
+}
+
+/******************************************************************************
+ purpose   : return s.ext or s.EXT if it exists otherwise return NULL
+ ******************************************************************************/
+static char *exists_with_extension(char *s, char *ext)
+{
+    char *x;
+    int  i;
+    
+    if (nGraphicsPathElems == 0 || 
+        strchr(s,PATHSEP) != NULL) {
+        /*
+         * if no graphics path defined, try the plain file only
+         */
+        return try_file_extension(s,ext);
+    } 
+    /*
+     * else try the different directories in the graphics path
+     */
+    for (i=0; i<nGraphicsPathElems; i++) {
+        char *newfile;
+        int    newlength = strlen(s)+strlen(graphicsPath[i])+2;
+        newfile = malloc(newlength);
+        x = NULL;
+        if (newfile != NULL) {
+            int len = strlen(graphicsPath[i]);
+            /*
+             * this creates 
+             * graphicsPath[i]+PATHSEP+newfile
+             */
+            strcpy(newfile,graphicsPath[i]);
+            newfile[len++] = PATHSEP;
+            newfile[len] = 0;
+            strcat(newfile,s);
+            /*
+             * check the new file;
+             */
+            x = try_file_extension(newfile,ext);
+        }
+        /* free the buffer */
+        strfree(newfile);
+        if (NULL != x)
+            return x;
+    }
     return NULL;
 }
 

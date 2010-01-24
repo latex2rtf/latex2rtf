@@ -15,8 +15,8 @@
 \usepackage{ifpdf}
 %% \usepackage{harvard}
 %% backport in progress
-\usepackage{graphics}
-\graphicspath{{./graphs}{./dibujos}}
+\usepackage{graphicx}
+\graphicspath{{./graphs}{./figures}}
 %% end tested packages
 \title{acronym and srcltx support for LaTEX2rtf}
 \author{Pedro A. Aranda Guti\'errez}
@@ -77,17 +77,6 @@ doesn't mark the acronym as used! (see generated acronym.dvi)
 \section{Shortcuts}
 \label{sec:shortcut}
 
-Language options can be included in the document class:
-\begin{verbatim}
-\documentclass[a4paper,11pt,spanish]{article}
-\end{verbatim}
-to print the correct Acronym section header. 
-
-Needs \texttt{ACRONAME} to be correctly configured in the latex2rtf
-language specific configuration file. The main and only difference with
-the original package is that the \textbf{Acronyms} section header will
-always be generated.
-
 The text for the \ac{NA}, which is defined as
 \begin{verbatim}
 \acro{NA}[NA]{Number of Avogadro \acroextra{ (See Section~\ref{sec:test})}}
@@ -99,6 +88,18 @@ It is also necessary to scan the .aux file for other things, like
 citations.. Let's see if I have gotten it right and I can cite the
 multivendor interworking book \cite{Goralski-cisco-juniper} or the
 Defcon paper \cite{defcon16-bgp}
+
+\section {Additional tests}
+
+\begin{figure}
+\includegraphics{fig_oval}
+\caption{Figure included from graphs} 
+\end{figure}
+
+\begin{figure}
+\includegraphics{fig_tex}
+\caption{Figure included from figures} 
+\end{figure}
 
 \section*{Acronyms}
 \begin{acronym}[BGP-4]
