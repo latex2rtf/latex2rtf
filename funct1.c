@@ -1030,42 +1030,6 @@ void CmdItem(int code)
         CmdIndent(INDENT_NONE);
 }
 
-#if 0
-/* moved to acronyms.c */
-void CmdAcronymItem(int code)
-
-/******************************************************************************
- purpose : handles \acro{key}[optional text]{definition}
-  ******************************************************************************/
-{
-    char *key, *alt, *def;
-    int vspace;
-    
-    diagnostics(5, "Entering CmdAcronymItem");
-
-    key = getBraceParam();
-    alt = getBracketParam();
-    def = getBraceParam();
-    if (alt) {
-        free(key);
-        key=alt;
-    }
-    
-    CmdEndParagraph(0);
-    vspace = getLength("itemsep") + getLength("parsep");
-    setVspace(vspace);
-
-    CmdIndent(INDENT_USUAL);
-    startParagraph("item", FIRST_PARAGRAPH);
-    fprintRTF("{\\b ");
-    ConvertString(key);
-    fprintRTF("}\\tab\n");
-    ConvertString(def);
-    free(key);
-    free(def);
-}
-#endif
-
 void CmdResizeBox(int code)
 {
     char *size, *options, *content;
