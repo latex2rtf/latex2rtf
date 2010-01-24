@@ -904,7 +904,7 @@ On entry baseline should be in pixels.
 \picscaleyN Vertical scaling as a percentage
 
 ******************************************************************************/
-static void PutPngFile(char *png, double height_goal, double width_goal, double scale, double baseline)
+static void PutPngFile(char *png, double height_goal, double width_goal, double scale, double baseline,int ignore)
 {
     FILE *fp;
     double xres,yres;
@@ -1236,7 +1236,7 @@ static void PutPdfFile(char *s, double height0, double width0, double scale, dou
     png = pdf_to_png(s);
     
     if (png) {
-        PutPngFile(png, height0, width0, scale, baseline);
+        PutPngFile(png, height0, width0, scale, baseline,0);
         my_unlink(png);
         free(png);
     }
@@ -1254,7 +1254,7 @@ static void PutEpsFile(char *s, double height0, double width0, double scale, dou
     if (1) {
         png = eps_to_png(s);
         if (png) {
-            PutPngFile(png, height0, width0, scale, baseline);
+            PutPngFile(png, height0, width0, scale, baseline,0);
             my_unlink(png);
             free(png);
         }
@@ -1298,7 +1298,7 @@ static void PutTiffFile(char *s, double height0, double width0, double scale, do
         out = SysGraphicsConvert(CONVERT_SIMPLE, 0, g_dots_per_inch, tiff, png);
         
         if (out != NULL) {
-        PutPngFile(out, height0, width0, scale, baseline);
+        PutPngFile(out, height0, width0, scale, baseline, 0);
                 my_unlink(out);
         free(out);
     }
@@ -1326,7 +1326,7 @@ static void PutGifFile(char *s, double height0, double width0, double scale, dou
     out = SysGraphicsConvert(CONVERT_SIMPLE, 0, g_dots_per_inch, gif, png);
 
         if (out != NULL) {
-        PutPngFile(out, height0, width0, scale, baseline);
+        PutPngFile(out, height0, width0, scale, baseline,0);
                 my_unlink(out);
         free(out);
     }
@@ -1508,7 +1508,7 @@ void PutLatexFile(const char *tex_file_stem, double scale, const char *pre)
         height_goal = (scale * png_height * POINTS_PER_METER / png_yres * 20.0 + 0.5);
         width_goal  = (scale * png_width  * POINTS_PER_METER / png_xres * 20.0 + 0.5);
         
-        PutPngFile(png_file_name, height_goal, width_goal, scale*100, baseline);
+        PutPngFile(png_file_name, height_goal, width_goal, scale*100, baseline, 0);
         
         free(tmp_path);
         free(png_file_name);
@@ -2051,7 +2051,7 @@ void CmdGraphics(int code)
                         PutPictFile(fullpathname, height, width, scale, baseline, TRUE);
         
                 else if (has_extension(fullpathname, ".png"))
-                        PutPngFile(fullpathname, height, width, scale, baseline);
+                        PutPngFile(fullpathname, height, width, scale, baseline, 0);
         
                 else if (has_extension(fullpathname, ".gif"))
                         PutGifFile(fullpathname, height, width, scale, baseline, TRUE);

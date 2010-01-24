@@ -1,3 +1,6 @@
+#ifndef _INCLUDED_GRAPHICS_H
+#define _INCLUDED_GRAPHICS_H 1
+
 #define FIGURE_INCLUDEGRAPHICS 1
 #define FIGURE_EPSFFILE         2
 #define FIGURE_EPSFBOX         3
@@ -15,3 +18,11 @@ void CmdPsGraph(int code);
 void CmdMusic(int code);
 void CmdPsset(int code);
 void CmdNewPsStyle(int code);
+
+typedef void PutFileFnc(char *fname, double height_goal, double width_goal, double scale, double baseline,int flag);
+
+typedef struct {
+    char       *extension;
+    PutFileFnc *encoder;
+} GraphConvertArray;
+#endif
