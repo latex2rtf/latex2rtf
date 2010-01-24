@@ -1778,63 +1778,21 @@ static int has_extension(char *s, char *ext)
     return FALSE;
 }
 
+/* using the GraphConvertTable */
+
 static char *append_graphic_extension(char *s)
 {
-    char *t;
-
-    if (has_extension(s, ".pict") ||
-        has_extension(s, ".png")  ||
-        has_extension(s, ".gif")  ||
-        has_extension(s, ".emf")  ||
-        has_extension(s, ".wmf")  ||
-        has_extension(s, ".eps")  ||
-        has_extension(s, ".pdf")  ||
-        has_extension(s, ".ps")   ||
-        has_extension(s, ".tiff") || 
-        has_extension(s, ".tif")  || 
-        has_extension(s, ".jpg")  || 
-        has_extension(s, ".jpeg"))
-        return strdup(s);
-
-    t = exists_with_extension(s, ".png");
-    if (t) return t;
-
-    t = exists_with_extension(s, ".jpg");
-    if (t) return t;
-
-    t = exists_with_extension(s, ".jpeg");
-    if (t) return t;
-
-    t = exists_with_extension(s, ".tif");
-    if (t) return t;
-
-    t = exists_with_extension(s, ".tiff");
-    if (t) return t;
-
-    t = exists_with_extension(s, ".gif");
-    if (t) return t;
-
-    t = exists_with_extension(s, ".eps");
-    if (t) return t;
-
-    t = exists_with_extension(s, ".pdf");
-    if (t) return t;
-
-    t = exists_with_extension(s, ".ps");
-    if (t) return t;
-
-    t = exists_with_extension(s, ".pict");
-    if (t) return t;
-
-    t = exists_with_extension(s, ".emf");
-    if (t) return t;
-
-    t = exists_with_extension(s, ".wmf");
-    if (t) return t;
-
-    /* failed to find any file */
+    GraphConvertArray *thisFormat;
+    for (thisFormat = GraphConvertTable; thisFormat->extension != NULL; thisFormat++) {
+        if (has_extension(s,thisFormat->extension))
+            return strdup(s);
+    }
+    for (thisFormat = GraphConvertTable; thisFormat->extension != NULL; thisFormat++) {
+        char *t = exists_with_extension(s,thisFormat->extension);
+        if (NULL != t)
+            return t;
+    }
     return strdup(s);
-
 }
 
 /******************************************************************************
@@ -2071,49 +2029,20 @@ void CmdGraphics(int code)
     }
 
     if (filename) {
+                GraphConvertArray *thisFormat;
                 changeTexMode(MODE_HORIZONTAL);
         
                 fullname = strdup_absolute_path(filename);
                 fullpathname = append_graphic_extension(fullname);
                 free(fullname);
-                
-                if (has_extension(fullpathname, ".pict"))
-                        PutPictFile(fullpathname, height, width, scale, baseline, TRUE);
         
-                else if (has_extension(fullpathname, ".png"))
-                        PutPngFile(fullpathname, height, width, scale, baseline, 0);
-        
-                else if (has_extension(fullpathname, ".gif"))
-                        PutGifFile(fullpathname, height, width, scale, baseline, TRUE);
-        
-                else if (has_extension(fullpathname, ".emf"))
-                        PutEmfFile(fullpathname, height, width, scale, baseline, TRUE);
-        
-                else if (has_extension(fullpathname, ".wmf"))
-                        PutWmfFile(fullpathname, height, width, scale, baseline, TRUE);
-        
-                else if (has_extension(fullpathname, ".eps"))
-                        PutEpsFile(fullpathname, height, width, scale, baseline, TRUE);
-        
-                else if (has_extension(fullpathname, ".pdf"))
-                        PutPdfFile(fullpathname, height, width, scale, baseline, TRUE);
-        
-                else if (has_extension(fullpathname, ".ps"))
-                        PutEpsFile(fullpathname, height, width, scale, baseline, TRUE);
-        
-                else if (has_extension(fullpathname, ".tiff"))
-                        PutTiffFile(fullpathname, height, width, scale, baseline, TRUE);
-        
-                else if (has_extension(fullpathname, ".tif"))
-                        PutTiffFile(fullpathname, height, width, scale, baseline, TRUE);
-        
-                else if (has_extension(fullpathname, ".jpg"))
-                        PutJpegFile(fullpathname, height, width, scale, baseline, TRUE);
-        
-                else if (has_extension(fullpathname, ".jpeg"))
-                        PutJpegFile(fullpathname, height, width, scale, baseline, TRUE);
-        
-                else
+                for (thisFormat = GraphConvertTable; thisFormat->extension != NULL; thisFormat++) {
+                    if (has_extension(fullpathname,thisFormat->extension)) {
+                        thisFormat->encoder(fullpathname, height, width, scale, baseline, TRUE);
+                        break;
+                    }
+                }        
+                if (thisFormat->extension == NULL)
                         diagnostics(WARNING, "Conversion of \"%s\" not supported", filename);
         
                 free(filename);
