@@ -2,7 +2,7 @@
 #define _INCLUDED_GRAPHICS_H 1
 
 #define FIGURE_INCLUDEGRAPHICS 1
-#define FIGURE_EPSFFILE         2
+#define FIGURE_EPSFFILE        2
 #define FIGURE_EPSFBOX         3
 #define FIGURE_BOXEDEPSF       4
 #define FIGURE_PSFIG           5
@@ -19,7 +19,7 @@ void CmdMusic(int code);
 void CmdPsset(int code);
 void CmdNewPsStyle(int code);
 
-typedef void PutFileFnc(char *fname, double height_goal, double width_goal, double scale, double baseline,int flag);
+typedef void PutFileFnc(char *, double, double, double, double,int);
 
 typedef struct {
     char       *extension;

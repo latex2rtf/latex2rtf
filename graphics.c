@@ -143,6 +143,36 @@ typedef struct _GdiCommentMultiFormats {
     EMRFORMAT *Data;            /* Array of comment data */
 } GDICOMMENTMULTIFORMATS;
 
+/**********************************
+ table for graphics format handling
+ **********************************/
+
+static void PutPictFile(char *, double, double, double, double, int);
+static void PutPngFile (char *, double, double, double, double, int);
+static void PutJpegFile(char *, double, double, double, double, int);
+static void PutEmfFile (char *, double, double, double, double, int);
+static void PutWmfFile (char *, double, double, double, double, int);
+static void PutPdfFile (char *, double, double, double, double, int);
+static void PutEpsFile (char *, double, double, double, double, int);
+static void PutTiffFile(char *, double, double, double, double, int);
+static void PutGifFile (char *, double, double, double, double, int);
+
+static GraphConvertArray GraphConvertTable[] = {
+    { ".pict", PutPictFile },
+    { ".png",  PutPngFile  },
+    { ".gif",  PutGifFile  },
+    { ".emf",  PutEmfFile  },
+    { ".wmf",  PutWmfFile  },
+    { ".eps",  PutEpsFile  },
+    { ".pdf",  PutPdfFile  },
+    { ".ps",   PutEpsFile  },
+    { ".tiff", PutTiffFile },
+    { ".tif",  PutTiffFile },
+    { ".jpg",  PutJpegFile },
+    { ".jpeg", PutJpegFile },
+    { NULL, NULL }
+};
+
 #define CONVERT_SIMPLE 1
 #define CONVERT_CROP   2
 #define CONVERT_LATEX  3
