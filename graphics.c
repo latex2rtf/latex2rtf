@@ -157,6 +157,8 @@ static void PutEpsFile (char *, double, double, double, double, int);
 static void PutTiffFile(char *, double, double, double, double, int);
 static void PutGifFile (char *, double, double, double, double, int);
 
+#define MAX_EXTENSION_LENGTH 5 /* length of the longest extension string */
+
 static GraphConvertArray GraphConvertTable[] = {
     { ".pict", PutPictFile },
     { ".png",  PutPngFile  },
@@ -172,6 +174,42 @@ static GraphConvertArray GraphConvertTable[] = {
     { ".jpeg", PutJpegFile },
     { NULL, NULL }
 };
+
+/********************************************************************************
+    purpose: implement \graphicspath{{dir1}{dir2}{...}}
+ ********************************************************************************/
+static char **graphicsPath = NULL;
+static int nGraphicsPathElems = 0;
+
+static void appendGraphicsPath (char *newPath)
+{
+    int i;
+    diagnostics(WARNING,"adding '%s' to graphics path",newPath);
+    for (i = 0; i < nGraphicsPathElems; i++)
+    {
+        if (streq (graphicsPath[i], newPath)) {
+            diagnostics(WARNING,"Repeated graphics path element {%s}",newPath);
+            return;
+        }
+    }
+    graphicsPath =
+        realloc (graphicsPath, sizeof (char *) * (nGraphicsPathElems + 1));
+    graphicsPath[nGraphicsPathElems++] = newPath;
+    diagnostics (5, "Included %s in graphics search path", newPath);
+}
+
+void CmdGraphicsPath(int code)
+{
+    char *directories = getBraceParam();
+    if (directories != NULL) {
+        char *candidate=strtok(directories,"{}");
+        while (NULL != candidate) {
+            appendGraphicsPath(strdup(candidate));
+            candidate = strtok(NULL,"{}");
+        }
+    }
+    strfree(directories);
+}
 
 #define CONVERT_SIMPLE 1
 #define CONVERT_CROP   2

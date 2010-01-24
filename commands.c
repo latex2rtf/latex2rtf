@@ -378,6 +378,8 @@ static CommandArray commands[] = {
     { "newacro",       CmdAcrodef, ACRONYM_NEWACRO },
     { "newacroplural", CmdAcrodef, ACRONYM_NEWACROPLURAL },
     
+    /*********** graphics in the premable *****************/
+    { "graphicspath",  CmdGraphicsPath, 0 },
     {"", NULL, 0}
 };
 

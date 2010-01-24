@@ -18,6 +18,7 @@ void CmdPsGraph(int code);
 void CmdMusic(int code);
 void CmdPsset(int code);
 void CmdNewPsStyle(int code);
+void CmdGraphicsPath(int code);
 
 typedef void PutFileFnc(char *, double, double, double, double,int);
 
