@@ -5,6 +5,10 @@ LATEX= latex -interaction=nonstopmode
 BIBTEX= bibtex
 LATEX2RTF= ../latex2rtf 
 OPTIONS  = -Z3 -P ../cfg/:../scripts/ -T tmp/
+MKDIR?=mkdir -p
+RMDIR?=rm -rf
+RM?=rm -f
+MV?=mv
 
 LATEX_LOG = > latex.log
 #LATEX_LOG = 
@@ -28,7 +32,8 @@ BIB_TESTS=  bib_apacite.rtf        bib_harvard.rtf        bib_super.rtf      \
 	
 FIG_TESTS=  fig_endfloat.rtf  fig_test.rtf      fig_test3.rtf \
             fig_size.rtf      fig_test2.rtf     fig_test4.rtf \
-            picture.rtf       fig_subfig.rtf    fig_png.rtf
+            picture.rtf       fig_subfig.rtf    fig_png.rtf \
+            graphicspath.rtf
 
 ENC_TESTS= 	enc_applemac.rtf enc_cp437.rtf  enc_cp865.rtf    enc_latin2.rtf enc_latin5.rtf \
 			enc_cp1250.rtf   enc_cp850.rtf  enc_decmulti.rtf enc_latin3.rtf enc_latin9.rtf\
@@ -56,7 +61,7 @@ bib:
 	$(MAKE) bib_tests
 
 fig:
-	mkdir -p tmp
+	$(MKDIR) tmp
 	$(MAKE) fig_tests
 
 enc:
@@ -72,14 +77,14 @@ char:
 	$(MAKE) char_tests
 
 table:
-	mkdir -p tmp
+	$(MKDIR) tmp
 	$(MAKE) table_tests
 
 extra:
 	$(MAKE) extra_tests
 	
 all:
-	mkdir -p tmp
+	$(MKDIR) tmp
 	$(MAKE) basic_tests
 	$(MAKE) babel_tests
 	$(MAKE) bib_tests
@@ -236,7 +241,7 @@ bib_harvard.rtf: bib_harvard.tex bib_harvard.bib
 	$(LATEX) bib_harvard $(LATEX_LOG)
 	$(LATEX) bib_harvard $(LATEX_LOG)
 	$(LATEX2RTF) $(OPTIONS) bib_harvard
-	rm -rf bib_harvard.out
+	$(RM) bib_harvard.out
 
 bibentry_plain.rtf: bibentry_plain.tex bibentry_plain.bib
 	$(LATEX) bibentry_plain $(LATEX_LOG)
@@ -278,7 +283,7 @@ fig_test.rtf: fig_test.tex fig_test.eps fig_testc.ps
 
 fig_test2.rtf: fig_test2.tex fig_testb.pdf fig_testc.pdf
 	$(LATEX2RTF) $(OPTIONS) -D 300 fig_test2
-	mv fig_test2.rtf fig_test2a.rtf
+	$(MV) fig_test2.rtf fig_test2a.rtf
 	$(LATEX2RTF) $(OPTIONS) fig_test2
 
 fig_test3.rtf: fig_test3.tex fig_testd.ps fig_testd.pdf
@@ -351,16 +356,16 @@ check:
 	./bracecheck
 	
 clean:
-	mv fig_testb.pdf fig_testb.tmp
-	mv fig_testc.pdf fig_testc.tmp
-	mv fig_testd.pdf fig_testd.tmp
-	mv fig_teste.pdf fig_teste.tmp
-	rm -f *.dvi *.rtf *.aux *.blg *.bbl *.log *.pdf *.toc *.lot *.idx *.ilg *.ind
-	rm -f l2r*tex frlicense.dat *.fff *.lof
-	mv fig_testb.tmp fig_testb.pdf
-	mv fig_testc.tmp fig_testc.pdf
-	mv fig_testd.tmp fig_testd.pdf
-	mv fig_teste.tmp fig_teste.pdf
-	rm -rf tmp
+	-$(MV) fig_testb.pdf fig_testb.tmp
+	-$(MV) fig_testc.pdf fig_testc.tmp
+	-$(MV) fig_testd.pdf fig_testd.tmp
+	-$(MV) fig_teste.pdf fig_teste.tmp
+	-$(RM) *.dvi *.rtf *.aux *.blg *.bbl *.log *.pdf *.toc *.lot *.idx *.ilg *.ind
+	-$(RM) l2r*tex frlicense.dat *.fff *.lof
+	-$(MV) fig_testb.tmp fig_testb.pdf
+	-$(MV) fig_testc.tmp fig_testc.pdf
+	-$(MV) fig_testd.tmp fig_testd.pdf
+	-$(MV) fig_teste.tmp fig_teste.pdf
+	-$(RMDIR) tmp
 
 .PHONY: clean all check
