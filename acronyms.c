@@ -369,7 +369,7 @@ void CmdAcrodef(int code)
                 CmdEndParagraph(0);
                 setVspace(vspace);
                 
-                CmdIndent(INDENT_USUAL);
+                /* CmdIndent(INDENT_USUAL); */
                 startParagraph("acronym", FIRST_PARAGRAPH);
                 fprintRTF("{\\b ");
                 ConvertString((NULL != acShort) ? acShort : acDef); 
@@ -389,6 +389,7 @@ void CmdAcrodef(int code)
                     }
                     strfree(acroLabel);
                 }
+                CmdEndParagraph(0);
             }
             /* fall through to free parameters */
         default:
