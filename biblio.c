@@ -151,7 +151,6 @@ void CmdAuxHarvardCite(int code)
     char *abbr = getBraceParam();
     char *year = getBraceParam();
    
-    diagnostics(WARNING,"newHarvardCite(%s,%s,%s,%s)",key,full,abbr,year); 
     if (NULL == newHarvardCite(key,full,abbr,year)) {
         diagnostics(ERROR,"Memory overflow defining \\harvardcite(%s)",key);
     }
