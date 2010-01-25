@@ -233,28 +233,35 @@ harvardcite is done natively without calling ScanAux
 
 static char *ScanAux(int token_id, char *reference, int code)
 {
-    char *result = NULL;
+    switch (token_id) {
+        case NEWLABEL_TOKEN :
+            switch (code) {
+                case SCANAUX_NUMBER: 
+                    return getLabelDefinition(reference);
+                case SCANAUX_SECT: 
+                    return getLabelSection(reference);
+                default:
+                    diagnostics(ERROR,"assert failed in ScanAux: unknown code (%d) for token %d",code,token_id);
+                    return NULL;
+            }
+            break;
+            
+        case BIBCITE_TOKEN:
+            switch (code) {
+                case SCANAUX_NUMBER: 
+                    return getBiblioRef(reference);
+                case SCANAUX_SECT: 
+                    return getBiblioFirst(reference);
+                default:
+                    diagnostics(ERROR,"assert failed in ScanAux: unknown code (%d) for token %d",code,token_id);
+                    return NULL;
+            }
+            break;
 
-    if (NEWLABEL_TOKEN == token_id) {
-        switch (code) {
-            case 0: return getLabelDefinition(reference);
-            case 1: return getLabelSection(reference);
-            default:
-                diagnostics(ERROR,"assert failed in ScanAux: unknown code (%d) for token %d",code,token_id);
-                return NULL;
-        }
+        default:
+            diagnostics(ERROR,"assert failed in ScanAux: unknown token_id %d",token_id);        
     }
-    if (BIBCITE_TOKEN == token_id) {
-        switch (code) {
-            case 0: return getBiblioRef(reference);
-            case 1: return getBiblioFirst(reference);
-            default:
-                diagnostics(ERROR,"assert failed in ScanAux: unknown code (%d) for token %d",code,token_id);
-                return NULL;
-        }
-    }
-    diagnostics(ERROR,"assert failed in ScanAux: unknown token_id %d",token_id);
-    return result;
+    return NULL;
 }
 /*************************************************************************
 purpose: obtains a \bibentry{reference} from the .bbl file
@@ -508,7 +515,7 @@ void CmdBibitem(int code)
     label = getBracketParam();
     key = getBraceParam();
     signet = strdup_nobadchars(key);
-    s = ScanAux(BIBCITE_TOKEN, key, 0);
+    s = ScanAux(BIBCITE_TOKEN, key, SCANAUX_NUMBER);
 
     if (label && !s) {          /* happens when file needs to be latex'ed again */
         if (!g_warned_once){
@@ -704,7 +711,7 @@ void CmdLabel(int code)
         case LABEL_EQREF:
         case LABEL_VREF:
             signet = strdup_nobadchars(text);
-            s = ScanAux(NEWLABEL_TOKEN, text, 1);
+            s = ScanAux(NEWLABEL_TOKEN, text, SCANAUX_SECT);
             if (code == LABEL_EQREF)
                 fprintRTF("(");
                 
@@ -755,7 +762,7 @@ void CmdLabel(int code)
 
         case LABEL_NAMEREF:
             signet = strdup_nobadchars(text);
-            s = ScanAux(NEWLABEL_TOKEN, text, 0);
+            s = ScanAux(NEWLABEL_TOKEN, text, SCANAUX_NUMBER);
             if (s) {
                 /* s should look like {2}{1}{Random Stuff\relax }{section.2}{} */
                 t = strchr(s,'{');
@@ -1430,7 +1437,7 @@ void CmdCite(int code)
     keys = strdup_noblanks(text);
     free(text);
     if (g_sorted_citations){
-        text = reorder_citations(keys,0);
+        text = reorder_citations(keys,SCANAUX_NUMBER);
         free(keys);
         keys = text;
     }
@@ -1453,7 +1460,7 @@ void CmdCite(int code)
             continue;
         }
         
-        s = ScanAux(BIBCITE_TOKEN, key, 0); /* look up bibliographic * reference */
+        s = ScanAux(BIBCITE_TOKEN, key, SCANAUX_NUMBER); /* look up bibliographic * reference */
             
         if (g_document_bibstyle == BIBSTYLE_APALIKE) {  /* can't use Word refs for APALIKE or APACITE */
             t = s ? s : key;
@@ -1599,7 +1606,7 @@ void CmdNatbibCite(int code)
     keys = strdup_noblanks(text);
     free(text);
     if (g_sorted_citations){
-        text = reorder_citations(keys,1);
+        text = reorder_citations(keys,SCANAUX_SECT);
         free(keys);
         keys = text;
     }
@@ -1623,7 +1630,7 @@ void CmdNatbibCite(int code)
         } else {
         
             /* look up citation and write it to the RTF stream */
-            s = ScanAux(BIBCITE_TOKEN, key, 0);
+            s = ScanAux(BIBCITE_TOKEN, key, SCANAUX_NUMBER);
                 
             diagnostics(4, "natbib key=[%s] <%s> ", key, s);
             if (s) {
@@ -1704,7 +1711,7 @@ void CmdHarvardCite(int code)
     keys = strdup_noblanks(text);
     free(text);
     if (g_sorted_citations){
-        text = reorder_citations(keys,0);
+        text = reorder_citations(keys,SCANAUX_SECT);
         free(keys);
         keys = text;
     }

@@ -153,7 +153,7 @@ enum {
 
 enum {
     SCANAUX_NUMBER = 0,
-    SCANAUX_FIRST
+    SCANAUX_SECT
 };
 
 #endif
