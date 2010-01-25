@@ -223,10 +223,10 @@ static char * my_fgets(FILE *f)
 
 /*************************************************************************
 purpose: obtains a reference from .aux file
-    code==0 means \token{reference}{number}       -> "number"
-    code==1 means \token{reference}{{sect}{line}} -> "sect"
+    code==SCANAUX_NUMBER (0) means \token{reference}{number}       -> "number"
+    code==SCANAUX_SECT   (1) means \token{reference}{{sect}{line}} -> "sect"
 
-for 'newlabel' and 'bibcite'
+for 'newlabel' (NEWLABEL_TOKEN) and 'bibcite' (BIBCITE_TOKEN)
 
 harvardcite is done natively without calling ScanAux
  ************************************************************************/
@@ -1711,7 +1711,7 @@ void CmdHarvardCite(int code)
     keys = strdup_noblanks(text);
     free(text);
     if (g_sorted_citations){
-        text = reorder_citations(keys,SCANAUX_SECT);
+        text = reorder_citations(keys,SCANAUX_NUMBER);
         free(keys);
         keys = text;
     }
