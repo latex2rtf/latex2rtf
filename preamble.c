@@ -44,6 +44,7 @@ Authors:
 #include "direct.h"
 #include "styles.h"
 #include "vertical.h"
+#include "auxfile.h"
 #include "acronyms.h"
 
 extern char *Version;  /*storage and definition in version.h */
@@ -481,6 +482,9 @@ static void setDocumentOptions(char *optionlist)
         else if (strcmp(option, "harvard") == 0) {
             PushEnvironment(HARVARD_MODE);
             g_document_bibstyle = BIBSTYLE_HARVARD;
+            /* parse the .aux file for harvardcite's */
+            /* if not already done so                */
+            LoadAuxFile();
         } else if (strcmp(option, "natbib") == 0) {
             PushEnvironment(NATBIB_MODE);
             g_document_bibstyle = BIBSTYLE_NATBIB;

@@ -40,9 +40,9 @@ char *acronymAux[] = {
     "\\newlabel",
     "\\newacro",
     "\\newacroplural",
-    NULL,               /* go step by step, then acronyms */
-    "\\bibcite",
     "\\harvardcite",
+    NULL,               /* go step by step */
+    "\\bibcite",
     NULL
 };
 

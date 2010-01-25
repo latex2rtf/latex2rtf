@@ -48,6 +48,7 @@ Authors:
 
 #include "labels.h"
 #include "acronyms.h"
+#include "biblio.h"
 
 static int iEnvCount = 0;               /* number of current environments */
 static CommandArray *Environments[100]; /* call chain for current environments */
@@ -374,9 +375,10 @@ static CommandArray commands[] = {
     {"markright", CmdIgnoreParameter, No_Opt_One_NormParam},
 
     /************ commands for auxfile.c *******************/
-    { "newlabel",      CmdNewLabel, 0 },
-    { "newacro",       CmdAcrodef, ACRONYM_NEWACRO },
-    { "newacroplural", CmdAcrodef, ACRONYM_NEWACROPLURAL },
+    { "newlabel",      CmdNewLabel,       0 },
+    { "newacro",       CmdAcrodef,        ACRONYM_NEWACRO },
+    { "newacroplural", CmdAcrodef,        ACRONYM_NEWACROPLURAL },
+    { "harvardcite",   CmdAuxHarvardCite, 0 },
     
     /*********** graphics in the premable *****************/
     { "graphicspath",  CmdGraphicsPath, 0 },

@@ -46,6 +46,7 @@
 #include "auxfile.h"
 #include "labels.h"
 #include "acronyms.h"
+#include "biblio.h"
 
 char *g_figure_label = NULL;
 char *g_table_label = NULL;
@@ -1258,16 +1259,16 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first, i
     free(full);
 }
 
-static void ConvertHarvard(char *s, int code, char *pre, char *post, int first)
+/* convert preparsed harvard cites */
+static void ConvertHarvard(biblioElem *bibElem, int code, char *pre, char *post, int first)
 {
     char *year, *abbv, *full;
     int author_repeated, year_repeated;
 
-    PushSource(NULL, s);
-    full = getBraceParam();
-    abbv = getBraceParam();
-    year = getBraceParam();
-    PopSource();
+    year = bibElem->biblioYear;
+    abbv = bibElem->biblioAbbr;
+    full = bibElem->biblioFull;
+
     diagnostics(4, "harvard pre=[%s] post=<%s> full=<%s> abbv=<%s> year=<%s>", pre, post, full, abbv, year);
     author_repeated = FALSE;
     year_repeated = FALSE;
@@ -1311,9 +1312,6 @@ static void ConvertHarvard(char *s, int code, char *pre, char *post, int first)
              fprintRTF(")");
              break;
     }
-    free(year);
-    free(abbv);
-    free(full);
 }
 
 void CmdNatexlab(int code) 
@@ -1808,7 +1806,7 @@ void CmdHarvardCite(int code)
 
     g_current_cite_item = 0;
     while (key) {
-        char *ss;
+        biblioElem *hcite;
 
         g_current_cite_item++;
 
@@ -1819,27 +1817,23 @@ void CmdHarvardCite(int code)
             next_keys = popCommaName(key); 
             continue;
         }
-
-        ss = ScanAux("harvardcite", key, 2, g_aux_name); /* look up bibliographic reference */
-            
-        diagnostics(4, "harvard key=[%s] <%s>", key, ss);
+        hcite = getBiblio(key);
         
         if (!first_key) {
             ConvertString(g_bibpunct_cite_sep);
             fprintRTF(" ");
         }
-
-        if (ss) {
-            g_current_cite_seen = citation_used(key);
-            ConvertHarvard(ss, code, pretext, NULL, first_key);
-        } else 
-            ConvertString(key);
         
+        /* make sure the cite was found and that the type is hardvard */
+        if (NULL != hcite && hcite->biblioType == BIBLIO_HARVARD) {
+            g_current_cite_seen = citation_used(key);
+            ConvertHarvard(hcite, code, pretext, NULL, first_key);
+        } else {
+            ConvertString(key);
+        }
         first_key = FALSE;
         key = next_keys;
         next_keys = popCommaName(key);
-        if (ss)
-            free(ss);
     }
 
     /* final text after citation */
