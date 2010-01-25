@@ -33,6 +33,7 @@ Authors:
 #include "main.h"
 #include "parser.h"
 #include "utils.h"
+#include "auxfile.h"
 #include "labels.h"
 
 static labelElem *labelTable = NULL;
@@ -71,6 +72,8 @@ labelElem *getLabel(char *name)
 {
     labelElem *result = NULL;
     int        label;
+    LoadAuxFile();      /* LoadAuxFile if not already loaded */
+    
     for (label = 0; label < labelCount; label++) {
         if (streq(name,labelTable[label].labelName)) {
             result = &labelTable[label];

@@ -220,112 +220,6 @@ static char * my_fgets(FILE *f)
     return strdup(AuxLine);
 }
 
-#if 0
-/*************************************************************************
-purpose: obtains a reference from .aux file
-    code==0 means \token{reference}{number}       -> "number"
-    code==1 means \token{reference}{{sect}{line}} -> "sect"
-    code==2 means \token{reference}{a}{b}{c}      -> "{a}{b}{c}"
-    code==3 means \token{reference}[options]{a}   -> "{a}{b}{c}"
-
-PA: has been replaced by the read once functionality
- ************************************************************************/
-static char *origScanAux(char *token, char *reference, int code, char *aux_name)
-{
-    static FILE *fAux = NULL;
-    static int warned_once = FALSE;
-    char target[512];
-    char *s, *t, *AuxLine;
-    int braces;
-    static int once = 0;
-    
-    once++;
-
-    if (g_aux_file_missing || strlen(token) == 0) {
-        return NULL;
-    }
-    diagnostics(4, "seeking '%s' in '%s' calls:%d ", reference, aux_name, once);
-    
-    snprintf(target, 512, "\\%s{%s}", token, reference);
-
-    if (fAux == NULL)
-        fAux = my_fopen(aux_name, "rb"); /* WH: changed to binary 2007-10-30 */
-    else
-        rewind(fAux);
-        
-    if (fAux == NULL && !warned_once) {
-        diagnostics(WARNING, "No .aux file.  Run LaTeX to create one.");
-        g_aux_file_missing = TRUE;
-        warned_once = TRUE;
-        return NULL;
-    }
-
-    AuxLine = my_fgets(fAux);
-    
-    while (AuxLine != NULL) {
-
-        s = strstr(AuxLine, "\\@input{");
-        if (s) {
-            char *ret_val, *filename;
-            FILE *old_fAux = fAux;
-            
-            t = strchr(s, '}');
-            filename = my_strndup(s+8,t-s-8);
-            
-            diagnostics(4, "In origScanAux, handling \\@input{%s}", filename);
-            fAux=NULL;
-            ret_val = origScanAux(token,reference,code,filename);
-            free(filename);
-            fclose(fAux);
-            fAux = old_fAux;
-            if (ret_val != NULL) {
-                free(AuxLine);
-                return ret_val;
-            }
-        }
-
-        s = strstr(AuxLine, target);
-        if (s) {
-            s += strlen(target);    /* move to \token{reference}{ */
-            
-            if (code == 2) {
-                char *ss;
-                diagnostics(4, "found <%s>", s);
-                ss = strdup_noendblanks(s);
-                free(AuxLine);
-                return ss;
-            }
-                
-            if (code == 1)
-                s++;            /* move to \token{reference}{{ */
-
-            t = s;
-            braces = 1;
-            while (braces > 1 || (code!=3 && braces >0)) {   /* skip matched braces */
-                t++;
-                if (*t == '{')
-                    braces++;
-                if (*t == '}')
-                    braces--;
-                if (*t == '\0') {
-                    free(AuxLine);
-                    return NULL;
-                }
-            }
-
-            *t = '\0';
-            diagnostics(4, "found <%s>", s + 1);
-            t = strdup(s+1);
-            free(AuxLine);
-            return t;
-        }
-        free(AuxLine);
-        AuxLine = my_fgets(fAux);
-    }
-    return NULL;
-}
-
-#endif
 
 /*************************************************************************
 purpose: obtains a reference from .aux file
@@ -340,8 +234,6 @@ harvardcite is done natively without calling ScanAux
 static char *ScanAux(char *token, char *reference, int code, char *aux_name)
 {
     char *result = NULL;
-
-    LoadAuxFile(); /* will be read only once */
 
     if (0 == strcmp(token,"newlabel")) {
         switch (code) {
@@ -361,13 +253,7 @@ static char *ScanAux(char *token, char *reference, int code, char *aux_name)
                 return NULL;
         }
     }
-#if 0
-    result = origScanAux(token, reference, code, aux_name);
-        diagnostics(WARNING,"ScanAux('%s','%s',%d,'%s') = '%s'",
-        token, reference, code, aux_name, result); 
-#else
-        diagnostics(ERROR,"assert failed in ScanAux: unknown token %s",token);
-#endif
+    diagnostics(ERROR,"assert failed in ScanAux: unknown token %s",token);
     return result;
 }
 /*************************************************************************
@@ -1285,9 +1171,9 @@ static void ConvertHarvard(biblioElem *bibElem, int code, char *pre, char *post,
     char *year, *abbv, *full;
     int author_repeated, year_repeated;
 
-    year = bibElem->biblioYear;
-    abbv = bibElem->biblioAbbr;
-    full = bibElem->biblioFull;
+    year = strdup(bibElem->biblioYear);
+    abbv = strdup(bibElem->biblioAbbr);
+    full = strdup(bibElem->biblioFull);
 
     diagnostics(4, "harvard pre=[%s] post=<%s> full=<%s> abbv=<%s> year=<%s>", pre, post, full, abbv, year);
     author_repeated = FALSE;
@@ -1332,6 +1218,9 @@ static void ConvertHarvard(biblioElem *bibElem, int code, char *pre, char *post,
              fprintRTF(")");
              break;
     }
+    strfree(full);
+    strfree(year);
+    strfree(abbv);
 }
 
 void CmdNatexlab(int code) 

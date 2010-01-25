@@ -140,7 +140,7 @@ static void FilterAuxFile(FILE *auxFile) {
                     if (c1 != 0) {
                         char c2 = linebuffer[strlen(*candidate)+1];
                         if (c1 == '{' || (c1 == ' ' && c2 == '{'))
-                            ConvertString(linebuffer);
+                            ConvertString(strdup(linebuffer));
                     }
                 }
             }

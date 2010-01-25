@@ -31,6 +31,7 @@ Authors:
 #include "main.h"
 #include "utils.h"
 #include "parser.h"
+#include "auxfile.h"
 #include "biblio.h"
 
 /*
@@ -80,6 +81,7 @@ static void printTable()
 biblioElem *getBiblio(char *key)
 {
     int i;
+    LoadAuxFile();      /* load auxfile if not already loaded */
     for (i=0; i< biblioCount; i++) {
         if (streq(biblioTable[i].biblioKey,key)) {
             return &biblioTable[i];
