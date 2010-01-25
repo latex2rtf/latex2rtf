@@ -1,3 +1,6 @@
+#ifndef _INCLUDED_XREFS_H
+#define _INCLUDED_XREFS_H 1
+
 #define FOOTNOTE            1
 #define FOOTNOTE_TEXT       2
 #define FOOTNOTE_THANKS     3
@@ -143,3 +146,14 @@ void CmdBibpunct(int code);
 void CmdBibEntry(int code);
 void CmdNatexlab(int code);
 
+enum {
+    BIBCITE_TOKEN = 0,
+    NEWLABEL_TOKEN
+};
+
+enum {
+    SCANAUX_NUMBER = 0,
+    SCANAUX_FIRST
+};
+
+#endif

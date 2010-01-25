@@ -240,12 +240,13 @@ splint:
 # created using "make depend"
 commands.o: commands.c cfg.h main.h convert.h chars.h fonts.h preamble.h \
   funct1.h tables.h equations.h letterformat.h commands.h parser.h \
-  xrefs.h ignore.h lengths.h definitions.h graphics.h vertical.h
+  xrefs.h ignore.h lengths.h definitions.h graphics.h vertical.h labels.h \
+  acronyms.h biblio.h
 chars.o: chars.c main.h commands.h fonts.h cfg.h ignore.h encodings.h \
   parser.h chars.h funct1.h convert.h utils.h vertical.h fields.h
 direct.o: direct.c main.h direct.h fonts.h cfg.h utils.h
-encodings.o: encodings.c main.h fonts.h funct1.h encodings.h \
-  encoding_tables.h chars.h
+encodings.o: encodings.c main.h encoding_tables.h fonts.h chars.h \
+  parser.h
 fonts.o: fonts.c main.h convert.h fonts.h funct1.h commands.h cfg.h \
   parser.h stack.h vertical.h
 funct1.o: funct1.c main.h convert.h funct1.h commands.h stack.h fonts.h \
@@ -263,7 +264,7 @@ main.o: main.c main.h mygetopt.h convert.h commands.h chars.h fonts.h \
   fields.h
 stack.o: stack.c main.h stack.h
 cfg.o: cfg.c main.h convert.h funct1.h cfg.h utils.h
-utils.o: utils.c main.h utils.h parser.h
+utils.o: utils.c cfg.h main.h utils.h parser.h
 parser.o: parser.c main.h commands.h cfg.h stack.h utils.h parser.h \
   fonts.h lengths.h definitions.h funct1.h
 lengths.o: lengths.c main.h utils.h lengths.h parser.h
@@ -272,7 +273,7 @@ letterformat.o: letterformat.c main.h parser.h letterformat.h cfg.h \
   commands.h funct1.h convert.h vertical.h
 preamble.o: preamble.c main.h convert.h utils.h preamble.h fonts.h cfg.h \
   encodings.h parser.h funct1.h lengths.h ignore.h commands.h counters.h \
-  xrefs.h direct.h styles.h vertical.h
+  xrefs.h direct.h styles.h vertical.h auxfile.h acronyms.h
 equations.o: equations.c main.h convert.h commands.h stack.h fonts.h \
   cfg.h ignore.h parser.h equations.h counters.h funct1.h lengths.h \
   utils.h graphics.h xrefs.h chars.h preamble.h vertical.h fields.h
@@ -281,7 +282,8 @@ convert.o: convert.c main.h convert.h commands.h chars.h funct1.h fonts.h \
   utils.h parser.h lengths.h counters.h preamble.h vertical.h fields.h
 xrefs.o: xrefs.c main.h utils.h convert.h funct1.h commands.h cfg.h \
   xrefs.h parser.h preamble.h lengths.h fonts.h styles.h definitions.h \
-  equations.h vertical.h fields.h counters.h
+  equations.h vertical.h fields.h counters.h auxfile.h labels.h \
+  acronyms.h biblio.h
 definitions.o: definitions.c main.h convert.h definitions.h parser.h \
   funct1.h utils.h cfg.h counters.h
 graphics.o: graphics.c main.h cfg.h graphics.h parser.h utils.h \
@@ -293,5 +295,10 @@ preparse.o: preparse.c preparse.h cfg.h main.h utils.h definitions.h \
   parser.h funct1.h
 vertical.o: vertical.c main.h funct1.h cfg.h utils.h parser.h lengths.h \
   vertical.h convert.h commands.h styles.h fonts.h stack.h xrefs.h \
-  counters.h fields.h
+  counters.h fields.h acronyms.h
 fields.o: fields.c main.h fields.h
+labels.o: labels.c main.h parser.h utils.h auxfile.h labels.h
+biblio.o: biblio.c main.h utils.h parser.h auxfile.h biblio.h
+acronyms.o: acronyms.c main.h parser.h utils.h cfg.h convert.h commands.h \
+  lengths.h vertical.h auxfile.h acronyms.h biblio.h labels.h
+auxfile.o: auxfile.c main.h utils.h parser.h convert.h
