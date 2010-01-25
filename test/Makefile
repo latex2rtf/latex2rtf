@@ -42,7 +42,7 @@ ENC_TESTS= 	enc_applemac.rtf enc_cp437.rtf  enc_cp865.rtf    enc_latin2.rtf enc_
 			enc_maccyr.rtf   eqns-koi8.rtf 	enc_utf8x.rtf
 
 BABEL_TESTS=babel_german.rtf babel_russian.rtf babel_czech.rtf babel_french.rtf \
-	        babel_spanish.rtf babel_frenchb.rtf
+	        babel_frenchb.rtf # babel_spanish.rtf 
 	        
 EQN_TESTS=  eqns.rtf	eqns2.rtf eqns-koi8.rtf ttgfsr7.rtf spago1.rtf misc2.rtf\
             frac.rtf	subsup.rtf	theorem.rtf eqnnumber.rtf eqnnumber2.rtf
@@ -61,7 +61,7 @@ bib:
 	$(MAKE) bib_tests
 
 fig:
-	$(MKDIR) tmp
+	-$(MKDIR) tmp
 	$(MAKE) fig_tests
 
 enc:
@@ -77,14 +77,14 @@ char:
 	$(MAKE) char_tests
 
 table:
-	$(MKDIR) tmp
+	-$(MKDIR) tmp
 	$(MAKE) table_tests
 
 extra:
 	$(MAKE) extra_tests
 	
 all:
-	$(MKDIR) tmp
+	-$(MKDIR) tmp
 	$(MAKE) basic_tests
 	$(MAKE) babel_tests
 	$(MAKE) bib_tests

@@ -41,7 +41,6 @@ char *acronymAux[] = {
     "\\newacro",
     "\\newacroplural",
     "\\harvardcite",
-    NULL,               /* go step by step */
     "\\bibcite",
     NULL
 };

@@ -379,9 +379,8 @@ static CommandArray commands[] = {
     { "newacro",       CmdAcrodef,        ACRONYM_NEWACRO },
     { "newacroplural", CmdAcrodef,        ACRONYM_NEWACROPLURAL },
     { "harvardcite",   CmdAuxHarvardCite, 0 },
+    { "bibcite",       CmdBibCite,        0 },
     
-    /*********** graphics in the premable *****************/
-    { "graphicspath",  CmdGraphicsPath, 0 },
     {"", NULL, 0}
 };
 
@@ -481,6 +480,7 @@ static CommandArray PreambleCommands[] = {
     {"extrasfrench", CmdIgnoreParameter, No_Opt_One_NormParam},
     {"AtEndDocument", CmdIgnoreParameter, No_Opt_One_NormParam},
     {"docnumber", CmdIgnoreParameter, No_Opt_One_NormParam},
+    { "graphicspath",  CmdGraphicsPath, 0 },
     {"", NULL, 0}
 };                              /* end of list */
 

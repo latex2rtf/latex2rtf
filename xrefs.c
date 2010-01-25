@@ -220,6 +220,7 @@ static char * my_fgets(FILE *f)
     return strdup(AuxLine);
 }
 
+#if 0
 /*************************************************************************
 purpose: obtains a reference from .aux file
     code==0 means \token{reference}{number}       -> "number"
@@ -227,7 +228,7 @@ purpose: obtains a reference from .aux file
     code==2 means \token{reference}{a}{b}{c}      -> "{a}{b}{c}"
     code==3 means \token{reference}[options]{a}   -> "{a}{b}{c}"
 
-PA: intermediate step before going to treating .aux file only once
+PA: has been replaced by the read once functionality
  ************************************************************************/
 static char *origScanAux(char *token, char *reference, int code, char *aux_name)
 {
@@ -324,31 +325,50 @@ static char *origScanAux(char *token, char *reference, int code, char *aux_name)
     return NULL;
 }
 
+#endif
+
 /*************************************************************************
 purpose: obtains a reference from .aux file
     code==0 means \token{reference}{number}       -> "number"
     code==1 means \token{reference}{{sect}{line}} -> "sect"
-    code==2 means \token{reference}{a}{b}{c}      -> "{a}{b}{c}"
-    code==3 means \token{reference}[options]{a}   -> "{a}{b}{c}"
+
+for 'newlabel' and 'bibcite'
+
+harvardcite is done natively without calling ScanAux
  ************************************************************************/
+
 static char *ScanAux(char *token, char *reference, int code, char *aux_name)
 {
-    /* label handling stuff was more stable */
-    if (0 != strcmp(token,"newlabel"))
-        return origScanAux(token,reference,code,aux_name);
+    char *result = NULL;
 
     LoadAuxFile(); /* will be read only once */
 
-    switch (code) {
-        case 1: return getLabelSection(reference);
-        case 0: return getLabelDefinition(reference);
-        default:
-            diagnostics(ERROR,"assert failed in ScanAux: unknown code (%d) for newlabel",code);
+    if (0 == strcmp(token,"newlabel")) {
+        switch (code) {
+            case 1: return getLabelSection(reference);
+            case 0: return getLabelDefinition(reference);
+            default:
+                diagnostics(ERROR,"assert failed in ScanAux: unknown code (%d) for %s",code,token);
+                return NULL;
+        }
     }
-    /*
-     * signal error
-     */
-    return NULL;
+    if (0 == strcmp(token,"bibcite")) {
+        switch (code) {
+            case 0: return getBiblioRef(reference);
+            case 1: return getBiblioFirst(reference);
+            default:
+                diagnostics(ERROR,"assert failed in ScanAux: unknown code (%d) for %s",code,token);
+                return NULL;
+        }
+    }
+#if 0
+    result = origScanAux(token, reference, code, aux_name);
+        diagnostics(WARNING,"ScanAux('%s','%s',%d,'%s') = '%s'",
+        token, reference, code, aux_name, result); 
+#else
+        diagnostics(ERROR,"assert failed in ScanAux: unknown token %s",token);
+#endif
+    return result;
 }
 /*************************************************************************
 purpose: obtains a \bibentry{reference} from the .bbl file

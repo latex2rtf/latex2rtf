@@ -20,6 +20,8 @@ biblioElem *newBibCite(char *cite, char *tag);
 biblioElem *newHarvardCite(char *cite,char *full,char* abbr,char *year);
 biblioElem *newNatBibCite(char *cite,char *full,char* abbr,char *year,char *n);
 
+char *getBiblioRef(char *key);
+char *getBiblioFirst(char *key);
 void CmdBibCite(int code);
 void CmdAuxHarvardCite(int code);
 #endif

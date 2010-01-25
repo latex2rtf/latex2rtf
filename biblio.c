@@ -88,6 +88,36 @@ biblioElem *getBiblio(char *key)
     return NULL;
 }
 
+/* for normal bibliographic references: */
+/* \bibcite{key}{ref}                   */
+/* returns ref                          */
+char *getBiblioRef(char *key) {
+    biblioElem *result = getBiblio(key);
+    if (result != NULL) {
+        return strdup(result->biblioN);
+    }
+    return NULL;
+}
+
+/* for extended bibliographic references: */
+/* \bibcite{key}{{first}{}{}...}          */
+/* returns first                          */
+
+char *getBiblioFirst(char *key) {
+    biblioElem *result = getBiblio(key);
+    if (result != NULL) {
+        char *ref = strdup(result->biblioN);
+        char *res = NULL;
+        if (NULL != ref) {
+            PushSource(NULL,ref);
+            res = getBraceParam();
+            PopSource();
+        }
+        strfree(ref);
+        return res;
+    }
+    return NULL;
+}
 biblioElem *newBibCite(char *cite, char *tag)
 {
     biblioElem *newCite = newBiblio(cite);
@@ -139,7 +169,7 @@ void CmdBibCite(int code)
         diagnostics(WARNING,"memory exhausted for \\bibcite{%s}{%s}",p1,p2);
         free(p1);
         free(p2);
-    }
+    } 
 }
 
 /*  \harvardcite{latex}{Lamport}{Lamport}{1986} */
