@@ -231,29 +231,29 @@ for 'newlabel' and 'bibcite'
 harvardcite is done natively without calling ScanAux
  ************************************************************************/
 
-static char *ScanAux(char *token, char *reference, int code)
+static char *ScanAux(int token_id, char *reference, int code)
 {
     char *result = NULL;
 
-    if (0 == strcmp(token,"newlabel")) {
+    if (NEWLABEL_TOKEN == token_id) {
         switch (code) {
-            case 1: return getLabelSection(reference);
             case 0: return getLabelDefinition(reference);
+            case 1: return getLabelSection(reference);
             default:
-                diagnostics(ERROR,"assert failed in ScanAux: unknown code (%d) for %s",code,token);
+                diagnostics(ERROR,"assert failed in ScanAux: unknown code (%d) for token %d",code,token_id);
                 return NULL;
         }
     }
-    if (0 == strcmp(token,"bibcite")) {
+    if (BIBCITE_TOKEN == token_id) {
         switch (code) {
             case 0: return getBiblioRef(reference);
             case 1: return getBiblioFirst(reference);
             default:
-                diagnostics(ERROR,"assert failed in ScanAux: unknown code (%d) for %s",code,token);
+                diagnostics(ERROR,"assert failed in ScanAux: unknown code (%d) for token %d",code,token_id);
                 return NULL;
         }
     }
-    diagnostics(ERROR,"assert failed in ScanAux: unknown token %s",token);
+    diagnostics(ERROR,"assert failed in ScanAux: unknown token_id %d",token_id);
     return result;
 }
 /*************************************************************************
@@ -508,7 +508,7 @@ void CmdBibitem(int code)
     label = getBracketParam();
     key = getBraceParam();
     signet = strdup_nobadchars(key);
-    s = ScanAux("bibcite", key, 0);
+    s = ScanAux(BIBCITE_TOKEN, key, 0);
 
     if (label && !s) {          /* happens when file needs to be latex'ed again */
         if (!g_warned_once){
@@ -704,7 +704,7 @@ void CmdLabel(int code)
         case LABEL_EQREF:
         case LABEL_VREF:
             signet = strdup_nobadchars(text);
-            s = ScanAux("newlabel", text, 1);
+            s = ScanAux(NEWLABEL_TOKEN, text, 1);
             if (code == LABEL_EQREF)
                 fprintRTF("(");
                 
@@ -755,7 +755,7 @@ void CmdLabel(int code)
 
         case LABEL_NAMEREF:
             signet = strdup_nobadchars(text);
-            s = ScanAux("newlabel", text, 0);
+            s = ScanAux(NEWLABEL_TOKEN, text, 0);
             if (s) {
                 /* s should look like {2}{1}{Random Stuff\relax }{section.2}{} */
                 t = strchr(s,'{');
@@ -1314,7 +1314,7 @@ static char * reorder_citations(char *keys, int scan_aux_code)
     remaining_keys = popCommaName(key);
     n=0;
     while (key  && n < 100) {
-        char *s = ScanAux("bibcite", key, scan_aux_code); 
+        char *s = ScanAux(BIBCITE_TOKEN, key, scan_aux_code); 
         if (s) {
             int number;
             sscanf(s,"%d",&number);
@@ -1453,7 +1453,7 @@ void CmdCite(int code)
             continue;
         }
         
-        s = ScanAux("bibcite", key, 0); /* look up bibliographic * reference */
+        s = ScanAux(BIBCITE_TOKEN, key, 0); /* look up bibliographic * reference */
             
         if (g_document_bibstyle == BIBSTYLE_APALIKE) {  /* can't use Word refs for APALIKE or APACITE */
             t = s ? s : key;
@@ -1623,7 +1623,7 @@ void CmdNatbibCite(int code)
         } else {
         
             /* look up citation and write it to the RTF stream */
-            s = ScanAux("bibcite", key, 0);
+            s = ScanAux(BIBCITE_TOKEN, key, 0);
                 
             diagnostics(4, "natbib key=[%s] <%s> ", key, s);
             if (s) {
