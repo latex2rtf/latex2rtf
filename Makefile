@@ -1,14 +1,15 @@
 CC?=gcc
 TAR?=gnutar
-RM?=rm
-MKDIR=mkdir -p
+RM?=rm -f
+MKDIR?=mkdir -p
+RMDIR?=rm -rf
 PKGMANDIR?=man
 
 CFLAGS:=$(CFLAGS) -DUNIX
 #CFLAGS:=-O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4 -m64 -mtune=generic -DUNIX -fsigned-char 
-#CFLAGS:=$(CFLAGS) -DMSDOS -DNOSTDERR #Windows/DOS
-#CFLAGS:=$(CFLAGS) -DMAC_CLASSIC   #MacOS 8/9
-#CFLAGS:=$(CFLAGS) -DOS2           #OS/2
+#CFLAGS:=$(CFLAGS) -DMSDOS -DNOSTDERR   # Windows/DOS
+#CFLAGS:=$(CFLAGS) -DMAC_CLASSIC        # MacOS 8/9
+#CFLAGS:=$(CFLAGS) -DOS2                # OS/2
 
 #Uncomment for some windows machines (not needed for djgpp)
 #EXE_SUFFIX=.exe
@@ -157,8 +158,8 @@ fullcheck: latex2rtf
 checkdir: $(README) $(SRCS) $(HDRS) $(CFGS) $(SCRIPTS) $(TEST) doc/latex2rtf.texi Makefile vms_make.com
 
 clean: checkdir
-	$(RM) -f $(OBJS) core $(BINARY_NAME)
-	$(RM) -rf tmp
+	$(RM) $(OBJS) core $(BINARY_NAME)
+	$(RMDIR) tmp
 
 depend: $(SRCS)
 	$(CC) -MM $(SRCS) >makefile.depend
@@ -181,7 +182,7 @@ dist: checkdir releasedate latex2rtf doc $(SRCS) $(HDRS) $(CFGS) $(README) Makef
 	ln $(SCRIPTS)      $(L2R_VERSION)/scripts
 	ln $(TEST)         $(L2R_VERSION)/test
 	$(TAR) cvfz $(L2R_VERSION).tar.gz $(L2R_VERSION)
-	rm -rf $(L2R_VERSION)
+	$(RMDIR) $(L2R_VERSION)
 
 uptodate:
 	perl -pi.bak -e '$$date=scalar localtime; s/\(.*/($$date)";/' version.h
@@ -228,7 +229,7 @@ install-info: doc/latex2rtf.info
 	install-info --info-dir=$(INFO_INSTALL) doc/latex2rtf.info
 
 realclean: checkdir clean
-	$(RM) -f makefile.depend $(L2R_VERSION).tar.gz
+	$(RM) makefile.depend $(L2R_VERSION).tar.gz
 	cd doc && $(MAKE) clean
 	cd test && $(MAKE) clean
 

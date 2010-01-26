@@ -384,17 +384,29 @@ static char *SysGraphicsConvert(int opt, int offset, uint16_t dpi, const char *i
         }
         
 #endif
-
-    diagnostics(3, "`%s`", cmd);
+    diagnostics(4, "`%s`", cmd);
+#ifdef UNIX
+    /*
+     * MINGW on WinXP needs backslashes instead of slashes
+     */
+#ifdef WIN32
+    {
+        char *p;
+        while (NULL != (p = strchr(cmd,'/')))
+            *p = '\\';
+    }
+    diagnostics(4, " -> `%s`", cmd);
+#endif
+#endif
     err = system(cmd);
 
     if (err != 0) {
-        diagnostics(WARNING, "error=%d when converting %s", err, in);
-                free(out_tmp);
+        diagnostics(WARNING, "\nerror=%d when converting %s", err, in);
+        strfree(out_tmp);
         return NULL;
     }
         
-        return out_tmp;
+    return out_tmp;
 }
 
 static void PicComment(int16_t label, int16_t size, FILE * fp)
@@ -516,7 +528,7 @@ static char *eps_to_pict(char *s)
     /* create a bitmap version of the eps file */
     return_value = SysGraphicsConvert(CONVERT_CROP, offset, g_dots_per_inch, eps, pict);
     free(pict);
-        if (return_value == NULL) goto Exit;
+    if (return_value == NULL) goto Exit;
         
     /* open the eps file and make sure that it is less than 32k */
     fp_eps = fopen(eps, "rb");
@@ -1734,12 +1746,13 @@ void WriteLatexAsBitmap(char *pre, char *eq, char *post)
         name = SaveEquationAsFile(NULL, pre, eq, post);
 
         if (name) {
-                if (strstr(pre, "music") || strstr(pre, "figure") 
-                                                                 || strstr(pre, "picture")
-                                                                 || strstr(pre, "tabular")
-                                                                 || strstr(pre, "tabbing")
-                                                                 || strstr(pre, "psgraph")
-                                                                 || strstr(pre, "pspicture")) 
+                if (strstr(pre, "music") 
+                    || strstr(pre, "figure") 
+                    || strstr(pre, "picture")
+                    || strstr(pre, "tabular")
+                    || strstr(pre, "tabbing")
+                    || strstr(pre, "psgraph")
+                    || strstr(pre, "pspicture")) 
                         PutLatexFile(name, g_png_figure_scale, pre);
                 else
                         PutLatexFile(name, g_png_equation_scale, pre);
@@ -2112,6 +2125,7 @@ void CmdGraphics(int code)
         
                 for (thisFormat = GraphConvertTable; thisFormat->extension != NULL; thisFormat++) {
                     if (has_extension(fullpathname,thisFormat->extension)) {
+                        diagnostics(WARNING,"encoder('%s',....",fullpathname);
                         thisFormat->encoder(fullpathname, height, width, scale, baseline, TRUE);
                         break;
                     }
