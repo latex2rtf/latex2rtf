@@ -1550,8 +1550,9 @@ void PutLatexFile(const char *tex_file_stem, double scale, const char *pre)
         
         png_file_name = strdup_together(tex_file_stem, ".png");
         tmp_path = SysGraphicsConvert(CONVERT_LATEX, bmoffset, png_resolution, tex_file_stem, png_file_name);
-        if ( tmp_path == NULL) {
-                diagnostics(WARNING, "PutLatexFile failed to convert '%s' to png");
+
+        if (NULL == tmp_path) {
+                diagnostics(WARNING, "PutLatexFile failed to convert '%s' to png",tex_file_stem);
                 free(png_file_name);
                 return;
         }
