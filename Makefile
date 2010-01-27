@@ -5,11 +5,12 @@ MKDIR?=mkdir -p
 RMDIR?=rm -rf
 PKGMANDIR?=man
 
-CFLAGS:=$(CFLAGS) -DUNIX
 #CFLAGS:=-O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4 -m64 -mtune=generic -DUNIX -fsigned-char 
-#CFLAGS:=$(CFLAGS) -DMSDOS -DNOSTDERR   # Windows/DOS
-#CFLAGS:=$(CFLAGS) -DMAC_CLASSIC        # MacOS 8/9
-#CFLAGS:=$(CFLAGS) -DOS2                # OS/2
+PLATFORM?=-DUNIX
+#PLATFORM?=-DMSDOS -DNOSTDERR   # Windows/DOS
+#PLATFORM?=-DMAC_CLASSIC        # MacOS 8/9
+#PLATFORM?=-DOS2                # OS/2
+CFLAGS:=$(CFLAGS) $(PLATFORM)
 
 #Uncomment for some windows machines (not needed for djgpp)
 #EXE_SUFFIX=.exe
@@ -158,8 +159,8 @@ fullcheck: latex2rtf
 checkdir: $(README) $(SRCS) $(HDRS) $(CFGS) $(SCRIPTS) $(TEST) doc/latex2rtf.texi Makefile vms_make.com
 
 clean: checkdir
-	$(RM) $(OBJS) core $(BINARY_NAME)
-	$(RMDIR) tmp
+	-$(RM) $(OBJS) core $(BINARY_NAME)
+	-$(RMDIR) tmp
 
 depend: $(SRCS)
 	$(CC) -MM $(SRCS) >makefile.depend
