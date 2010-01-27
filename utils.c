@@ -643,8 +643,10 @@ int file_exists(char *fname)
     result = (stat(fname,&fStat) == 0);
 #else
     FILE *f = fopen(fname,"rb");
-    result = (NULL != f);
-    fclose(f);
+    if (NULL != f) {
+        result = TRUE;
+        fclose(f);
+    }
 #endif
     diagnostics(5,"file_exists(%s) returns %d",fname,result);
     return result;
