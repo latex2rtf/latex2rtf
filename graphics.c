@@ -385,19 +385,7 @@ static char *SysGraphicsConvert(int opt, int offset, uint16_t dpi, const char *i
         
 #endif
     diagnostics(4, "`%s`", cmd);
-#ifdef UNIX
-    /*
-     * MINGW on WinXP needs backslashes instead of slashes
-     */
-#ifdef WIN32
-    {
-        char *p;
-        while (NULL != (p = strchr(cmd,'/')))
-            *p = '\\';
-    }
-    diagnostics(4, " -> `%s`", cmd);
-#endif
-#endif
+
     err = system(cmd);
 
     if (err != 0) {
