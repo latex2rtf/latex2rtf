@@ -5,7 +5,7 @@ MKDIR?=mkdir -p
 RMDIR?=rm -rf
 PKGMANDIR?=man
 
-#CFLAGS:=-O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4 -m64 -mtune=generic -DUNIX -fsigned-char 
+#CFLAGS:=-O2 -pipe -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4 -m64 -mtune=generic
 PLATFORM?=-DUNIX
 #PLATFORM?=-DMSDOS -DNOSTDERR   # Windows/DOS
 #PLATFORM?=-DMAC_CLASSIC        # MacOS 8/9
