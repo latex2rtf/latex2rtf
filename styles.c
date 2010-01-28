@@ -107,8 +107,8 @@ void InsertBasicStyle(const char *rtf, int include_header_info)
 
         if (style == comma)
             fprintRTF(" ");
-        else if (*style == '*')
-            WriteFontName((const char **)&style);
+        else if (*style == '*') 
+            WriteCFGFontNumber(&style);
         else
             fprintRTF("%c", *style);
 

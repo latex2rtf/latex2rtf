@@ -1,2 +1,2 @@
 int TryDirectConvert(char *command);
-int WriteFontName(const char **buffpoint);
+void WriteCFGFontNumber(char **cfg_stream);
