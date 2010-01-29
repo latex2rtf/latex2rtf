@@ -521,7 +521,7 @@ parameter: code: type of section-recursion-level
         case SECT_NORM_STAR:
             CmdVspace(VSPACE_BIG_SKIP);
             if (g_document_type == FORMAT_APA) {
-                startParagraph("apa_section", SECTION_TITLE_PARAGRAPH);
+                startParagraph("section", SECTION_TITLE_PARAGRAPH);
             } else {            
                 startParagraph("section", SECTION_TITLE_PARAGRAPH);
             
@@ -544,7 +544,7 @@ parameter: code: type of section-recursion-level
         case SECT_SUB_STAR:
             CmdVspace(VSPACE_MEDIUM_SKIP);
             if (g_document_type == FORMAT_APA) {
-                startParagraph("apa_subsection", SECTION_TITLE_PARAGRAPH);
+                startParagraph("subsection", SECTION_TITLE_PARAGRAPH);
             } else {            
                 startParagraph("subsection", SECTION_TITLE_PARAGRAPH);
                 if (code == SECT_SUB && getCounter("secnumdepth") >= 1) {
@@ -566,7 +566,7 @@ parameter: code: type of section-recursion-level
         case SECT_SUBSUB_STAR:
             CmdVspace(VSPACE_MEDIUM_SKIP);
             if (g_document_type == FORMAT_APA) {
-                startParagraph("apa_subsubsection", GENERIC_PARAGRAPH);
+                startParagraph("subsubsection", GENERIC_PARAGRAPH);
                 fprintRTF("{\\i ");
                 ConvertString(heading);
                 fprintRTF(".} ");
