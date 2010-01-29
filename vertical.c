@@ -359,7 +359,7 @@ void startParagraph(const char *style, int indenting)
 
     fprintRTF("\\fi%d ", parindent);
     if (0 && strstr(style,"last")==0) 
-        fprintRTF("\\f%d\\fs%d ", parindent,fontfamily,fontsize);
+        fprintRTF("\\f%d\\fs%d ",fontfamily,fontsize);
     
     setTexMode(MODE_HORIZONTAL); 
 
