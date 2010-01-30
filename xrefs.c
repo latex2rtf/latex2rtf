@@ -2341,7 +2341,7 @@ void CmdHarvard(int code)
         fprintRTF("(");
         break;
 
-    case CITE_HARVARD_YEAR_RIGHT;
+    case CITE_HARVARD_YEAR_RIGHT:
         fprintRTF(")");
         break;
         
