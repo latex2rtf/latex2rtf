@@ -179,7 +179,7 @@ void CmdFontFamily(int code)
 
     true_code = code & ~ON;
 
-    diagnostics(5, "CmdFontFamily (before) depth=%d, family=%d, size=%d, shape=%d, series=%d",
+    diagnostics(6, "CmdFontFamily (before) depth=%d, family=%d, size=%d, shape=%d, series=%d",
       FontInfoDepth, RtfFontInfo[FontInfoDepth].family,
       RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape, RtfFontInfo[FontInfoDepth].series);
 
@@ -258,7 +258,7 @@ void CmdFontFamily(int code)
             break;
     }
 
-    diagnostics(5, "CmdFontFamily (after) depth=%d, family=%d, size=%d, shape=%d, series=%d",
+    diagnostics(6, "CmdFontFamily (after) depth=%d, family=%d, size=%d, shape=%d, series=%d",
       FontInfoDepth, RtfFontInfo[FontInfoDepth].family,
       RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape, RtfFontInfo[FontInfoDepth].series);
 }

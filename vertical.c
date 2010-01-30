@@ -240,8 +240,8 @@ void startParagraph(const char *style, int indenting)
     static char last_style[50], the_style[50];
     static int last_indent;
     static int status = 0;
-    int fontfamily = CurrentFontFamily();
-    int fontsize = CurrentFontSize();
+    int orig_font_family = CurrentFontFamily();
+    int orig_font_size = CurrentFontSize();
     
     /* special style "last" will just repeat previous */
     if (strcmp(style,"last")==0) {
@@ -323,7 +323,7 @@ void startParagraph(const char *style, int indenting)
         g_column_new = FALSE;
     }
 
-    fprintRTF("{\\pard\\plain");
+    fprintRTF("\\pard\\plain");
     InsertStyle(the_style);
     if (strcmp(the_style,"equation")==0)
         fprintRTF("\\tqc\\tx%d", b);
@@ -358,8 +358,19 @@ void startParagraph(const char *style, int indenting)
         fprintRTF("\\ri%d", g_right_margin_indent);
 
     fprintRTF("\\fi%d ", parindent);
-    if (0 && strstr(style,"last")==0) 
-        fprintRTF("\\f%d\\fs%d ",fontfamily,fontsize);
+    
+    if (strcmp("part",the_style)          != 0 && 
+        strcmp("chapter",the_style)       != 0 &&
+        strcmp("section",the_style)       != 0 &&
+        strcmp("subsection",the_style)    != 0 &&
+        strcmp("subsubsection",the_style) != 0 ) {
+        
+		if (CurrentFontFamily() != orig_font_family)
+			fprintRTF("\\f%d ", orig_font_family);
+	
+		if (CurrentFontSize() != orig_font_size)
+			fprintRTF("\\fs%d ", orig_font_size);
+    }
     
     setTexMode(MODE_HORIZONTAL); 
 
@@ -380,12 +391,11 @@ void CmdEndParagraph(int code)
  ******************************************************************************/
 {
     int mode = getTexMode();
-
     diagnostics(5, "CmdEndParagraph mode = %s", TexModeName[mode]);
         
     if (g_par_brace == 1) {
         endAllFields();
-        fprintRTF("\\par}\n");
+        fprintRTF("\\par\n");
         setTexMode(MODE_VERTICAL);
         g_par_brace=0;
         g_paragraph_inhibit_indent = FALSE;
