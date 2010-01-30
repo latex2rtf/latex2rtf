@@ -2321,31 +2321,35 @@ void CmdNumberLine(int code)
 }
 
 /******************************************************************************
-purpose: handles \harvarditem{a}{b}{c} \harvardyearleft \harvardyearright
+purpose: handles 
+    \harvarditem[optional]{a}{b}{c} 
+    \harvardyearleft 
+    \harvardyearright
+    \harvardand
 ******************************************************************************/
 void CmdHarvard(int code)
 {
-    char *s=NULL;
-
-    if (code == CITE_HARVARD_ITEM) {
-        s = getBracketParam();
-        if (s) free(s);
-        s = getBraceParam();
-        free(s);
-        s = getBraceParam();
-        free(s);
-        s = getBraceParam();
-        free(s);
-    }
+    switch (code) {
+    case CITE_HARVARD_ITEM:
+        ignoreBracketParam();
+        ignoreBraceParam();
+        ignoreBraceParam();
+        ignoreBraceParam();
+        break;
     
-    if (code == CITE_HARVARD_YEAR_LEFT) 
+    case CITE_HARVARD_YEAR_LEFT:
         fprintRTF("(");
+        break;
 
-    if (code == CITE_HARVARD_YEAR_RIGHT) 
+    case CITE_HARVARD_YEAR_RIGHT;
         fprintRTF(")");
+        break;
         
-    if (code == CITE_HARVARD_AND)
+    case CITE_HARVARD_AND:
         fprintRTF("&");
+    default:
+        break;
+    }
 }
 
 /******************************************************************************
