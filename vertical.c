@@ -360,6 +360,7 @@ void startParagraph(const char *style, int indenting)
     fprintRTF("\\fi%d ", parindent);
     
     if (strcmp("part",the_style)          != 0 && 
+        strcmp("title",the_style)         != 0 &&
         strcmp("chapter",the_style)       != 0 &&
         strcmp("section",the_style)       != 0 &&
         strcmp("subsection",the_style)    != 0 &&

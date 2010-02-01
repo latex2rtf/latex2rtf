@@ -521,7 +521,6 @@ parameter: code: type of section-recursion-level
 
         case SECT_NORM:
         case SECT_NORM_STAR:
-    PushFontSettings();
             CmdVspace(VSPACE_BIG_SKIP);
             if (g_document_type == FORMAT_APA) {
                 startParagraph("section", SECTION_TITLE_PARAGRAPH);
@@ -541,12 +540,10 @@ parameter: code: type of section-recursion-level
             ConvertString(heading);
             CmdEndParagraph(0);
             CmdVspace(VSPACE_SMALL_SKIP);
-    PopFontSettings();
             break;
 
         case SECT_SUB:
         case SECT_SUB_STAR:
-    PushFontSettings();
             CmdVspace(VSPACE_MEDIUM_SKIP);
             if (g_document_type == FORMAT_APA) {
                 startParagraph("subsection", SECTION_TITLE_PARAGRAPH);
@@ -565,7 +562,6 @@ parameter: code: type of section-recursion-level
             ConvertString(heading);
             CmdEndParagraph(0);
             CmdVspace(VSPACE_SMALL_SKIP);
-    PopFontSettings();
             break;
 
         case SECT_SUBSUB:
