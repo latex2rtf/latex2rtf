@@ -110,7 +110,7 @@ int RtfFontNumber(const char *Fname)
     char *font_type, *font_name;
     int font_id;
 
-    diagnostics(4, "seeking=%s", Fname);
+    diagnostics(6, "seeking=%s", Fname);
 
     config_handle = CfgStartIterate();
 
@@ -159,7 +159,7 @@ int TexFontNumber(const char *Fname)
     
     if (p) number = (**p).original_id;
         
-    diagnostics(4,"TexFontNumber for '%s' is %d", Fname, number);
+    diagnostics(6,"TexFontNumber for '%s' is %d", Fname, number);
     
     return number;
 }
@@ -381,6 +381,8 @@ void CmdFontSeries(int code)
         true_code == F_SERIES_BOLD_4) && !(code & ON))
         return;
 
+    if (getTexMode() == MODE_VERTICAL)
+        changeTexMode(MODE_HORIZONTAL);
 
     switch (code) {
         case F_SERIES_MEDIUM_3:
@@ -437,6 +439,9 @@ void CmdFontSize(int code)
       FontInfoDepth, RtfFontInfo[FontInfoDepth].family,
       RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape, RtfFontInfo[FontInfoDepth].series);
 
+    if (getTexMode() == MODE_VERTICAL)
+        changeTexMode(MODE_HORIZONTAL);
+
     if (code == F_SMALLER)
         scaled_size = (int) (CurrentFontSize() / 1.2 + 0.5);
     else if (code == F_LARGER)
@@ -473,6 +478,9 @@ void CmdEmphasize(int code)
       FontInfoDepth, RtfFontInfo[FontInfoDepth].family,
       RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape, RtfFontInfo[FontInfoDepth].series);
 
+    if (getTexMode() == MODE_VERTICAL)
+        changeTexMode(MODE_HORIZONTAL);
+
     if (true_code == F_EMPHASIZE_3 && !(code & ON))
         return;
 
@@ -508,6 +516,9 @@ void CmdUnderline(int code)
 
     diagnostics(5, "Entering CmdUnderline");
 
+    if (getTexMode() == MODE_VERTICAL)
+        changeTexMode(MODE_HORIZONTAL);
+
     fprintRTF("{\\ul ");
     s = getBraceParam();
     ConvertString(s);
@@ -536,6 +547,9 @@ void CmdTextNormal(int code)
 
     if (true_code == F_TEXT_NORMAL_3 && !(code & ON))
         return;
+
+    if (getTexMode() == MODE_VERTICAL)
+        changeTexMode(MODE_HORIZONTAL);
 
     if (code == F_TEXT_NORMAL_2)
         fprintRTF("{");
@@ -818,8 +832,8 @@ void MonitorFontChanges(const unsigned char *text)
 {
     int n;
 
-    diagnostics(5, "\nMonitorFont %10s\n", text);
-    diagnostics(5, "MonitorFont before depth=%d, family=%d, size=%d, shape=%d, series=%d",
+    diagnostics(6, "\nMonitorFont %10s\n", text);
+    diagnostics(6, "MonitorFont before depth=%d, family=%d, size=%d, shape=%d, series=%d",
       FontInfoDepth, RtfFontInfo[FontInfoDepth].family,
       RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape, RtfFontInfo[FontInfoDepth].series);
 
@@ -863,7 +877,7 @@ void MonitorFontChanges(const unsigned char *text)
         RtfFontInfo[FontInfoDepth].series = RtfFontInfo[0].series;
     }
 
-    diagnostics(5, "MonitorFont after depth=%d, family=%d, size=%d, shape=%d, series=%d",
+    diagnostics(6, "MonitorFont after depth=%d, family=%d, size=%d, shape=%d, series=%d",
       FontInfoDepth, RtfFontInfo[FontInfoDepth].family,
       RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape, RtfFontInfo[FontInfoDepth].series);
 

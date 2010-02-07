@@ -561,7 +561,7 @@ returns: success or not
     cThis = getTexChar();
     mode = getTexMode();
 
-    diagnostics(5, "Beginning TranslateCommand() \\%c", cThis);
+    diagnostics(4, "Beginning TranslateCommand() \\%c", cThis);
 
     switch (cThis) {
         case 'a':
@@ -810,7 +810,7 @@ returns: success or not
     }
 
     cCommand[i] = '\0';         /* mark end of string with zero */
-    diagnostics(5, "TranslateCommand() <%s>", cCommand);
+    diagnostics(4, "TranslateCommand() <%s>", cCommand);
 
     if (i==MAXCOMMANDLEN-1) {
         diagnostics(WARNING, "Skipping absurdly long command <%s>", cCommand);
