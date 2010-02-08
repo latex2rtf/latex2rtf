@@ -85,7 +85,7 @@ static int isShortStr(char *s)
 /*****************************************************************************
  purpose: create overstrike character using a Word field
  
-          font        "MT Extra", "simple", or "unicode"
+          font        "simple", or "unicode"
           s           string containing the character to be overstriken
                       and may be a simple command like \alpha
           overstrike  decimal value for overstrike character
@@ -127,12 +127,7 @@ static void putOverstrikeChar(const char *font, char *s,
         else
             fprintRTF("?");
 
-    } else {  /* seems to only work for MT Extra */
-
-        fprintRTF("{\\field{\\*\\fldinst SYMBOL %u \\\\f ", overstrike);
-        fprintRTF("\"%s\" \\\\h}{\\fldrslt }}", font);
-
-    }
+    } 
     
     fprintRTF("})");
 
@@ -181,7 +176,7 @@ void CmdUmlauteChar(int code)
     if (cParam == NULL)
         return;
 
-    /* These encodings will fail in equation field translation */
+    /* These encodings may fail in equation field translation */
     if (processing_fields()==0) {
         switch (cParam[0]) {
             case 'A':
@@ -281,74 +276,57 @@ void CmdGraveChar(int code)
  purpose: converts symbols with grave accents (\`{a}) from LaTeX to RTF
  ******************************************************************************/
 {
-    int done = 0;
     char *cParam = getBraceParam();
 
-    if (cParam == NULL)
-        return;
+	if (strcmp(cParam, "\\i") == 0) {
+		fprintRTF("\\'ed");
+		free(cParam);
+		return;
+	}
 
-    /* These encodings will fail in equation field translation */
-    if (processing_fields()==0) {
-        switch (cParam[0]) {
-            case 'A':
-                fprintRTF("\\'c0");
-                done = 1;
-                break;
-            case 'E':
-                fprintRTF("\\'c8");
-                done = 1;
-                break;
-            case 'I':
-                fprintRTF("\\'cc");
-                done = 1;
-                break;
-            case 'O':
-                fprintRTF("\\'d2");
-                done = 1;
-                break;
-            case 'U':
-                fprintRTF("\\'d9");
-                done = 1;
-                break;
-            case 'a':
-                fprintRTF("\\'e0");
-                done = 1;
-                break;
-            case 'e':
-                fprintRTF("\\'e8");
-                done = 1;
-                break;
-            case 'i':
-                fprintRTF("\\'ec");
-                done = 1;
-                break;
-            case 'o':
-                fprintRTF("\\'f2");
-                done = 1;
-                break;
-            case 'u':
-                fprintRTF("\\'f9");
-                done = 1;
-                break;
-            case 'N':
-                fprintRTF("\\u504N");
-                done = 1;
-                break;            
-            case 'n':
-                fprintRTF("\\u505n");
-                done = 1;
-                break;
-        }
-    
-        if (strcmp(cParam, "\\i") == 0) {
-            fprintRTF("\\'ed");
-            done = 1;
-        }
-
-    }
-
-    if (!done) 
-        putOverstrikeChar("MT Extra", cParam, 35, 0.1);
+	switch (cParam[0]) {
+		case 'A':
+			fprintRTF("\\'c0");
+			break;
+		case 'E':
+			fprintRTF("\\'c8");
+			break;
+		case 'I':
+			fprintRTF("\\'cc");
+			break;
+		case 'O':
+			fprintRTF("\\'d2");
+			break;
+		case 'U':
+			fprintRTF("\\'d9");
+			break;
+		case 'a':
+			fprintRTF("\\'e0");
+			break;
+		case 'e':
+			fprintRTF("\\'e8");
+			break;
+		case 'i':
+			fprintRTF("\\'ec");
+			break;
+		case 'o':
+			fprintRTF("\\'f2");
+			break;
+		case 'u':
+			fprintRTF("\\'f9");
+			break;
+		case 'N':
+			fprintRTF("\\u504N");
+			break;            
+		case 'n':
+			fprintRTF("\\u505n");
+			break;
+		default:
+			/* char followed by unicode combining character 0x0300 with grave accent \'60 */
+			ConvertString(cParam);
+			fprintRTF("\\u768\\'60");
+			break;	
+	}
 
     free(cParam);
 }
@@ -531,68 +509,62 @@ void CmdMacronChar(int code)
  purpose: converts special symbols from LaTeX to RTF
  ******************************************************************************/
 {
-    int done = 0;
     char *cParam = getBraceParam();
 
-    if (cParam == NULL)
-        return;
+    diagnostics(4,"CmdMacronChar letter='%s' in eq field=%d",cParam, processing_fields());
 
-    /* These encodings will fail in equation field translation */
-    if (processing_fields()==0) {
-        switch (cParam[0]) {
-            case 'A':
-                putUnicodeChar(0x01,0x00,'A');
-                done = 1;
-                break;
-            case 'a':
-                putUnicodeChar(0x01,0x01,'a');
-                done = 1;
-                break;
-            case 'E':
-                putUnicodeChar(0x01,0x12,'E');
-                done = 1;
-                break;
-            case 'e':
-                putUnicodeChar(0x01,0x13,'e');
-                done = 1;
-                break;
-            case 'I':
-                putUnicodeChar(0x01,0x2A,'l');
-                done = 1;
-                break;
-            case 'i':
-                putUnicodeChar(0x01,0x2B,'i');
-                done = 1;
-                break;
-            case 'O':
-                putUnicodeChar(0x01,0x4C,'O');
-                done = 1;
-                break;
-            case 'o':
-                putUnicodeChar(0x01,0x4D,'o');
-                done = 1;
-                break;
-            case 'U':
-                putUnicodeChar(0x01,0x6A,'U');
-                done = 1;
-                break;
-            case 'u':
-                putUnicodeChar(0x01,0x6B,'u');
-                done = 1;
-                break;
-            case 'Y':
-                putUnicodeChar(0x02,0x32,'Y');
-                done = 1;
-                break;
-            case 'y':
-                putUnicodeChar(0x02,0x33,'y');
-                done = 1;
-                break;
-        }
-    }
-    
-    if (!done) 
-        putOverstrikeChar("unicode", cParam, 772, 0.1);
+	switch (cParam[0]) {
+		case '\0':
+			fprintRTF("\\'5f");
+			break;
+		case 'A':
+			putUnicodeChar(0x01,0x00,'A');
+			break;
+		case 'a':
+			putUnicodeChar(0x01,0x01,'a');
+			break;
+		case 'E':
+			putUnicodeChar(0x01,0x12,'E');
+			break;
+		case 'e':
+			putUnicodeChar(0x01,0x13,'e');
+			break;
+		case 'I':
+			putUnicodeChar(0x01,0x2A,'l');
+			break;
+		case 'i':
+			putUnicodeChar(0x01,0x2B,'i');
+			break;
+		case 'G':
+			putUnicodeChar(0x1E,0x20,'G');
+			break;
+		case 'g':
+			putUnicodeChar(0x1E,0x21,'g');
+			break;
+		case 'O':
+			putUnicodeChar(0x01,0x4C,'O');
+			break;
+		case 'o':
+			putUnicodeChar(0x01,0x4D,'o');
+			break;
+		case 'U':
+			putUnicodeChar(0x01,0x6A,'U');
+			break;
+		case 'u':
+			putUnicodeChar(0x01,0x6B,'u');
+			break;
+		case 'Y':
+			putUnicodeChar(0x02,0x32,'Y');
+			break;
+		case 'y':
+			putUnicodeChar(0x02,0x33,'y');
+			break;
+		default:
+			/* char followed by unicode combining character 0x0304 with macron \'5f */
+			ConvertString(cParam);
+			fprintRTF("\\u772\\'5f");
+			break;	
+	}
 
     free(cParam);
 }
@@ -603,115 +575,89 @@ void CmdHatChar(int code)
  purpose: \^{o} and \hat{o} symbols from LaTeX to RTF
  ******************************************************************************/
 {
-    int done = 0;
     char *cParam = getBraceParam();
     
-    if (cParam == NULL)
-        return;
-
-    diagnostics(4,"CmdHatChar letter='%s' in eq field=%d",cParam,
-                processing_fields());
+    diagnostics(4,"CmdHatChar letter='%s' in eq field=%d",cParam, processing_fields());
     
-    /* These encodings will fail in equation field translation */
-    if (processing_fields()==0) {
-        switch (cParam[0]) {
-            case 'A':
-                    fprintRTF("\\'c2");
-                    done=1;
-                    break;
-            case 'E':
-                    fprintRTF("\\'ca");
-                    done=1;
-                    break;
-            case 'I':
-                    fprintRTF("\\'ce");
-                    done=1;
-                    break;
-            case 'O':
-                    fprintRTF("\\'d4");
-                    done=1;
-                    break;
-            case 'U':
-                    fprintRTF("\\'db");
-                    done=1;
-                    break;
-            case 'a':
-                    fprintRTF("\\'e2");
-                    done=1;
-                    break;
-            case 'e':
-                    fprintRTF("\\'ea");
-                    done=1;
-                    break;
-            case 'i':
-                    fprintRTF("\\'ee");
-                    done=1;
-                    break;
-            case 'o':
-                    fprintRTF("\\'f4");
-                    done=1;
-                    break;
-            case 'u':
-                    fprintRTF("\\'fb");
-                    done=1;
-                    break;
-            case 'C':
-                    fprintRTF("\\u264C");
-                    done=1;
-                    break;
-            case 'c':
-                    fprintRTF("\\u265c");
-                    done=1;
-                    break;
-            case 'G':
-                    fprintRTF("\\u284G");
-                    done=1;
-                    break;
-            case 'g':
-                    fprintRTF("\\u285g");
-                    done=1;
-                    break;
-            case 'H':
-                    fprintRTF("\\u292H");
-                    done=1;
-                    break;
-            case 'h':
-                    fprintRTF("\\u293h");
-                    done=1;
-                    break;
-            case 'J':
-                    fprintRTF("\\u308J");
-                    done=1;
-                    break;
-            case 'S':
-                    fprintRTF("\\u348S");
-                    done=1;
-                    break;
-            case 's':
-                    fprintRTF("\\u349s");
-                    done=1;
-                    break;
-            case 'W':
-                    fprintRTF("\\u372W");
-                    done=1;
-                    break;
-            case 'w':
-                    fprintRTF("\\u373w");
-                    done=1;
-                    break;
-            case 'Y':
-                    fprintRTF("\\u374Y");
-                    done=1;
-                    break;
-            case 'y':
-                    fprintRTF("\\u375y");
-                    done=1;
-                    break;
-        }
-    } 
-
-    if (!done) 
-        putOverstrikeChar("MT Extra", cParam, 36, 0.1);
+	switch (cParam[0]) {
+		case '\0':
+			fprintRTF("\\'5e");
+			break;
+		case 'a':
+			fprintRTF("\\'e2");
+			break;
+		case 'A':
+			fprintRTF("\\'c2");
+			break;
+		case 'e':
+			fprintRTF("\\'ea");
+			break;
+		case 'E':
+			fprintRTF("\\'ca");
+			break;
+		case 'i':
+			fprintRTF("\\'ee");
+			break;
+		case 'I':
+			fprintRTF("\\'ce");
+			break;
+		case 'o':
+			fprintRTF("\\'f4");
+			break;
+		case 'O':
+			fprintRTF("\\'d4");
+			break;
+		case 'u':
+			fprintRTF("\\'fb");
+			break;
+		case 'U':
+			fprintRTF("\\'db");
+			break;
+		case 'C':
+			fprintRTF("\\u264C");
+			break;
+		case 'c':
+			fprintRTF("\\u265c");
+			break;
+		case 'G':
+			fprintRTF("\\u284G");
+			break;
+		case 'g':
+			fprintRTF("\\u285g");
+			break;
+		case 'H':
+			fprintRTF("\\u292H");
+			break;
+		case 'h':
+			fprintRTF("\\u293h");
+			break;
+		case 'J':
+			fprintRTF("\\u308J");
+			break;
+		case 'S':
+			fprintRTF("\\u348S");
+			break;
+		case 's':
+			fprintRTF("\\u349s");
+			break;
+		case 'W':
+			fprintRTF("\\u372W");
+			break;
+		case 'w':
+			fprintRTF("\\u373w");
+			break;
+		case 'Y':
+			fprintRTF("\\u374Y");
+			break;
+		case 'y':
+			fprintRTF("\\u375y");
+			break;
+		default:
+			/* char followed by unicode combining character 0x0302 with circumflex \'5e */
+			ConvertString(cParam);
+			fprintRTF("\\u770\\'5e");
+			break;	
+	}
         
     free(cParam);
 }
@@ -929,9 +875,6 @@ void CmdCedillaChar(int code)
                 break;
         }
     }
-
-/* combining cedilla missing from MT Extra */
-/* putOverstrikeChar("MT Extra", cParam, 255, 0); */
 
     if (!done) 
         putOverstrikeChar("unicode", cParam, 807, 0.0);
@@ -1181,74 +1124,58 @@ void CmdDotChar(int code)
           need something that looks like \\O(a,\\S(\f2\'26)) in RTF file
  ******************************************************************************/
 {
-    int done = 0;
     char *cParam = getBraceParam();
     
     if (cParam == NULL) return;
     
-    diagnostics(4,"CmdDotChar letter='%s' in eq field=%d",cParam,
-                processing_fields());
+    diagnostics(4,"CmdDotChar letter='%s' in eq field=%d",cParam, processing_fields());
     
-    /* These encodings will fail in equation field translation */
-    if (processing_fields()==0) {
-        switch (cParam[0]) {
-            case 'A':
-                    fprintRTF("\\u550A");
-                    done=1;
-                    break;  
-            case 'a':
-                    fprintRTF("\\u551a");
-                    done=1;
-                    break;  
-            case 'C':
-                    fprintRTF("\\u266C");
-                    done=1;
-                    break;              
-            case 'c':
-                    fprintRTF("\\u267c");
-                    done=1;
-                    break;              
-            case 'E':
-                    fprintRTF("\\u278E");
-                    done=1;
-                    break;              
-            case 'e':
-                    fprintRTF("\\u279e");
-                    done=1;
-                    break;              
-            case 'G':
-                    fprintRTF("\\u288G");
-                    done=1;
-                    break;              
-            case 'g':
-                    fprintRTF("\\u289g");
-                    done=1;
-                    break;              
-            case 'I':
-                    fprintRTF("\\u304I");
-                    done=1;
-                    break;              
-            case 'O':
-                    fprintRTF("\\u558O");
-                    done=1;
-                    break;              
-            case 'o':
-                    fprintRTF("\\u559o");
-                    done=1;
-                    break;              
-            case 'Z':
-                    fprintRTF("\\u379Z");
-                    done=1;
-                    break;              
-            case 'z':
-                    fprintRTF("\\u380z");
-                    done=1;
-                    break;
-        }
+	switch (cParam[0]) {
+		case 'A':
+			fprintRTF("\\u550A");
+			break;  
+		case 'a':
+			fprintRTF("\\u551a");
+			break;  
+		case 'C':
+			fprintRTF("\\u266C");
+			break;              
+		case 'c':
+			fprintRTF("\\u267c");
+			break;              
+		case 'E':
+			fprintRTF("\\u278E");
+			break;              
+		case 'e':
+			fprintRTF("\\u279e");
+			break;              
+		case 'G':
+			fprintRTF("\\u288G");
+			break;              
+		case 'g':
+			fprintRTF("\\u289g");
+			break;              
+		case 'I':
+			fprintRTF("\\u304I");
+			break;              
+		case 'O':
+			fprintRTF("\\u558O");
+			break;              
+		case 'o':
+			fprintRTF("\\u559o");
+			break;              
+		case 'Z':
+			fprintRTF("\\u379Z");
+			break;              
+		case 'z':
+			fprintRTF("\\u380z");
+			break;
+		default:
+			/* char followed by unicode combining character 0x0307 */
+			ConvertString(cParam);
+			fprintRTF("\\u775.");
+			break;	
     }
-
-    if (!done) 
-        putOverstrikeChar("MT Extra", cParam, 38, 0.1);
 
     free(cParam);
 }
@@ -1434,7 +1361,7 @@ void CmdVecChar(int code)
     diagnostics(4,"CmdVecChar letter='%s' in eq field=%d",cParam,
                 processing_fields());
     
-    putOverstrikeChar("MT Extra", cParam, 114, 0.70);
+    putOverstrikeChar("unicode", cParam, 8594, 0.70);
 
     free(cParam);
 }
