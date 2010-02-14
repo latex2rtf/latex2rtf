@@ -127,12 +127,6 @@ int RtfFontNumber(const char *Fname)
             if (strncmp(font_name, "Symbol",   6) == 0 || strncmp(font_name, "MT Extra", 8) == 0)
                 return font_id;      /* Symbol and MT Extra is same in all charsets! */
 
-            if (strncmp(font_type, "Cyrillic", 8) == 0)
-                charset = 204;
-    
-            if (strncmp(font_type, "Latin2", 6) == 0)
-                charset = 238;
-
             if (g_fcharset_number == charset) return font_id;
         }
     }
@@ -673,101 +667,6 @@ int CurrentFontFamily(void)
 {
     diagnostics(5, "CurrentFontFamily -- family=%d", RtfFontInfo[FontInfoDepth].family);
     return RtfFontInfo[FontInfoDepth].family;
-}
-
-int CurrentCyrillicFontFamily(void)
-
-/******************************************************************************
-  purpose: returns the cyrillic font that should be used ... 
-           if the current font is cyrillic font then -1 is returned
- ******************************************************************************/
-{
-    int num;
-    const char *font_type;
-    ConfigEntryT **font_handle;
-
-    num = CurrentFontFamily();
-    font_handle = SearchCfgEntryByID(num, FONT_A);
-    font_type = (**font_handle).TexCommand;
-    diagnostics(6, "CurrentCyrillicFontFamily current active font type =<%s>", font_type);
-
-    if (strncmp(font_type, "Cyrillic", 8) == 0)
-        return -1;
-
-    if (strcmp(font_type, "Slanted") == 0)
-        return TexFontNumber("Cyrillic Slanted");
-
-    if (strcmp(font_type, "Sans Serif") == 0)
-        return TexFontNumber("Cyrillic Sans Serif");
-
-    if (strcmp(font_type, "Typewriter") == 0)
-        return TexFontNumber("Cyrillic Typewriter");
-
-    return TexFontNumber("Cyrillic Roman");
-}
-
-int CurrentLatin1FontFamily(void)
-
-/******************************************************************************
-  purpose: returns the Latin1 font that should be used ... 
-           if the current font is Latin1 font then -1 is returned
- ******************************************************************************/
-{
-    int num;
-    const char *font_type;
-    ConfigEntryT **font_handle;
-
-    num = CurrentFontFamily();
-    font_handle = SearchCfgEntryByID(num, FONT_A);
-    font_type = (**font_handle).TexCommand;
-    diagnostics(6, "CurrentLatin1FontFamily current active font type =<%s>", font_type);
-
-    if (strcmp(font_type, "Roman") == 0)
-        return TexFontNumber("Slanted");
-
-    if (strcmp(font_type, "Slanted") == 0)
-        return TexFontNumber("Slanted");
-
-    if (strcmp(font_type, "Sans Serif") == 0)
-        return TexFontNumber("Sans Serif");
-
-    if (strcmp(font_type, "Typewriter") == 0)
-        return TexFontNumber("Typewriter");
-
-    return TexFontNumber("Roman");
-}
-
-int CurrentLatin2FontFamily(void)
-
-/******************************************************************************
-  purpose: returns the Latin2 font that should be used ... 
-           if the current font is Latin2 font then -1 is returned
- ******************************************************************************/
-{
-    int num;
-    const char *font_type;
-    ConfigEntryT **font_handle;
-
-    num = CurrentFontFamily();
-
-/* obtain name and type of current active font */
-    font_handle = SearchCfgEntryByID(num, FONT_A);
-    font_type = (**font_handle).TexCommand;
-    diagnostics(6, "CurrentLatin2FontFamily current active font type =<%s>", font_type);
-
-    if (strncmp(font_type, "Latin2", 8) == 0)
-        return -1;
-
-    if (strcmp(font_type, "Slanted") == 0)
-        return TexFontNumber("Latin2 Slanted");
-
-    if (strcmp(font_type, "Sans Serif") == 0)
-        return TexFontNumber("Latin2 Sans Serif");
-
-    if (strcmp(font_type, "Typewriter") == 0)
-        return TexFontNumber("Latin2 Typewriter");
-
-    return TexFontNumber("Latin2 Roman");
 }
 
 int CurrentFontShape(void)

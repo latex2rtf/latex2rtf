@@ -1512,43 +1512,6 @@ void CmdFrenchAbbrev(int code)
     fprintRTF("}");
 }
 
-void CmdCyrillicChar(int code)
-
-/******************************************************************************
- * purpose : insert cyrillic character into RTF stream
- * ******************************************************************************/
-{
-    int n;
-
-    if (code <= 0 || code >= 255)
-        return;
-
-    n = CurrentCyrillicFontFamily();
-
-    if (n >= 0)
-        fprintRTF("{\\f%d\\\'%.2X}", n, code);
-    else                        /* already using Cyrillic Font */
-        fprintRTF("\\\'%.2X", code);
-}
-
-/******************************************************************************
- * purpose : insert cyrillic string into RTF stream
- * ******************************************************************************/
-void CmdCyrillicStrChar(char *s)
-{
-    int n;
-
-    if (s == NULL || strlen(s) != 2)
-        return;
-
-    n = CurrentCyrillicFontFamily();
-
-    if (n >= 0)
-        fprintRTF("{\\f%d\\\'%s}", n, s);
-    else                        /* already using Cyrillic Font */
-        fprintRTF("\\\'%s", s);
-}
-
 /******************************************************************************
  * purpose : \celcius and \degreecelsius from SIUnits.sty
  * ******************************************************************************/

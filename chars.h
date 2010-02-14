@@ -31,9 +31,7 @@ void CmdLogo(int code);
 
 void CmdFrenchAbbrev(int code);
 void CmdCzechAbbrev(int code);
-void CmdCyrillicChar(int code);
 void CmdLatin2Char(int code);
-void CmdCyrillicStrChar(char *s);
 void CmdEuro(int code);
 void CmdDegreeCelsius(int code);
 void CmdPolishL(int code);

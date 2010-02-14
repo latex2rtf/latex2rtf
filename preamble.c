@@ -181,25 +181,25 @@ void setPackageInputenc(char *option)
                 (strcmp(option, "1251")   == 0)  ) {
         my_strlcpy(g_charset_encoding_name, "1251", 20);
 
-    }    else if (strcmp(option, "raw") == 0) {
+    } else if (strcmp(option, "raw") == 0) {
         my_strlcpy(g_charset_encoding_name, "raw", 20);
         g_fcharset_number = 255;    /* OEM in RTF Specification */
 
     } else if (strcmp(option, "raw437") == 0) {
         g_fcharset_number = 254;    /* IBM PC in RTF Specification */
-        my_strlcpy(g_charset_encoding_name, "raw", 20);
+        my_strlcpy(g_charset_encoding_name, "437", 20);
 
     } else if (strcmp(option, "raw852") == 0) {
         g_fcharset_number = 255;    /* Microsoft bug ... */
-        my_strlcpy(g_charset_encoding_name, "raw", 20);
+        my_strlcpy(g_charset_encoding_name, "852", 20);
 
     } else if (strcmp(option, "raw1250") == 0) {
         g_fcharset_number = 238;    /* East European in RTF Specification */
-        my_strlcpy(g_charset_encoding_name, "raw", 20);
+        my_strlcpy(g_charset_encoding_name, "1250", 20);
 
     } else if (strcmp(option, "raw1251") == 0) {
         g_fcharset_number = 204;    /* Cyrillic in RTF Specification */
-        my_strlcpy(g_charset_encoding_name, "raw", 20);
+        my_strlcpy(g_charset_encoding_name, "1251", 20);
 
     } else if (strcmp(option, "raw1253") == 0) {
         g_fcharset_number = 161;    /* Greek in RTF Specification */
@@ -1184,9 +1184,6 @@ static void WriteFontHeader(void)
 
         if (strncmp(font_name, "Symbol",   6) == 0 || strncmp(font_name, "MT Extra", 8) == 0)
             charset = 2;
-
-        if (strncmp(font_type, "Cyrillic", 8) == 0)
-            charset = 204;
 
         if (strncmp(font_type, "Latin2", 6) == 0)
             charset = 238;

@@ -80,9 +80,6 @@ int 	DefaultFontSeries(void);
 void	CmdFontSize(int code);
 int		CurrentFontSize(void);
 int		DefaultFontSize(void);
-int 	CurrentCyrillicFontFamily(void);
-int 	CurrentLatin1FontFamily(void);
-int 	CurrentLatin2FontFamily(void);
 
 void	CmdEmphasize(int code);
 void	CmdUnderline(int code);
