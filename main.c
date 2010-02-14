@@ -318,7 +318,7 @@ int main(int argc, char **argv)
 /* Parse filename.  Extract directory if possible.  Beware of stdin cases */
 
     if (argc == 1 && strcmp(*argv, "-") != 0) { /* filename exists and != "-" */
-        char *s, *t;
+        char *s, *t, *ext;
 
         basename = strdup(*argv);   /* parse filename */
         s = strrchr(basename, PATHSEP);
@@ -331,26 +331,16 @@ int main(int argc, char **argv)
             *(s + 1) = '\0';    /* g_home_dir = /tmp/ */
         }
 
-        t = strstr(basename, ".ltx");   /* remove .ltx if present */
-        if (t != NULL) {
-            *t = '\0';
-            g_tex_name = strdup_together(basename, ".ltx");
-
-        } else {
-
-            t = strstr(basename, ".tex");   /* remove .tex if present */
-            if (t != NULL)
-                *t = '\0';
-
-            g_tex_name = strdup_together(basename, ".tex");
-        }
-
-        if (g_rtf_name == NULL) {
-            if (g_home_dir)
-                g_rtf_name = strdup_together3(g_home_dir,basename,".rtf");
-            else
-                g_rtf_name = strdup_together(basename, ".rtf");
-        }
+        /* remove .tex or .ltx if present */
+        ext = basename + strlen(basename) - 4;
+        if (strcmp(ext, ".tex") == 0 || strcmp(ext, ".ltx") == 0) {
+            g_tex_name = strdup_together(g_home_dir, basename);
+            *ext = '\0';
+        } else 
+            g_tex_name = strdup_together3(g_home_dir, basename, ".tex");
+        
+        if (g_rtf_name == NULL) 
+            g_rtf_name = strdup_together3(g_home_dir,basename,".rtf");
     }
 
     if (g_aux_name == NULL && basename != NULL)

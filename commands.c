@@ -679,6 +679,11 @@ static CommandArray params[] = {
     {"compactitem", CmdList, ITEMIZE_MODE},
     {"description", CmdList, DESCRIPTION_MODE},
     
+    {"enumerate*", CmdList, ENUMERATE_MODE},
+    {"itemize*", CmdList, ITEMIZE_MODE},
+    {"description*", CmdList, DESCRIPTION_MODE},
+    {"basedescipt", CmdList, DESCRIPTION_MODE},
+    
     {"acronym", CmdBeginAcronym, 0},
     
     {"asparaenum", CmdList, ENUMERATE_MODE},
