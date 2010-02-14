@@ -124,9 +124,6 @@ int RtfFontNumber(const char *Fname)
         if (strcmp(font_name, Fname) == 0) {  /* right name, now make sure charset is correct*/
             int charset = 0;
     
-            if (strncmp(font_name, "Symbol",   6) == 0 || strncmp(font_name, "MT Extra", 8) == 0)
-                return font_id;      /* Symbol and MT Extra is same in all charsets! */
-
             if (g_fcharset_number == charset) return font_id;
         }
     }

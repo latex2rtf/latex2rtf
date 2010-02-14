@@ -176,8 +176,8 @@ static CommandArray commands[] = {
     {"i", CmdDotlessChar, 0},
     {"j", CmdDotlessChar, 1},
     {"H", CmdDoubleAcuteChar, 0},
-    {"l", CmdPolishL, 0},
-    {"L", CmdPolishL, 1},
+    {"l", CmdUnicodeChar, 323},
+    {"L", CmdUnicodeChar, 322},
     
 /* sectioning commands */
     {"part", CmdSection, SECT_PART},
@@ -195,10 +195,10 @@ static CommandArray commands[] = {
     {"subparagraph", CmdSection, SECT_SUBSUBSUBSUB},
     {"subparagraph*", CmdSection, SECT_SUBSUBSUBSUB_STAR},
 
-    {"ldots", CmdLdots, 0},
-    {"dots", CmdLdots, 0},
-    {"dotfill", CmdLdots, 1},
-    {"textellipsis", CmdLdots, 2},
+    {"ldots", CmdUnicodeChar, 8230},
+    {"dots", CmdUnicodeChar, 8230},
+    {"dotfill", CmdUnicodeChar, 8230},
+    {"textellipsis", CmdUnicodeChar, 8230},
 
     {"maketitle", CmdMakeTitle, 0},
     {"par", CmdEndParagraph, 0},

@@ -34,8 +34,6 @@ void CmdCzechAbbrev(int code);
 void CmdLatin2Char(int code);
 void CmdEuro(int code);
 void CmdDegreeCelsius(int code);
-void CmdPolishL(int code);
-void CmdLdots(int code);
 void CmdNot(int code);
 
 #define IERF 1

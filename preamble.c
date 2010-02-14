@@ -1181,15 +1181,7 @@ static void WriteFontHeader(void)
         font_type = (char *) (*config_handle)->TexCommand;
         font_name = (char *) (*config_handle)->RtfCommand;
         charset = g_fcharset_number;
-
-        if (strncmp(font_name, "Symbol",   6) == 0 || strncmp(font_name, "MT Extra", 8) == 0)
-            charset = 2;
-
-        if (strncmp(font_type, "Latin2", 6) == 0)
-            charset = 238;
-
         fprintRTF("{\\f%d\\fnil\\fcharset%d %s;}\n", num, charset, font_name);
-
         num++;
     }
 

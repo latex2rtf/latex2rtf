@@ -45,11 +45,9 @@ This file is available from http://sourceforge.net/projects/latex2rtf/
  ******************************************************************************/
 static void putUnicodeChar(unsigned char b1, unsigned char b2, char default_char)
 {
-    /*
-    if (b1 == 0)
-        fprintRTF("%c", b2);
-    else 
-    */
+	if (getTexMode() == MODE_VERTICAL)
+        changeTexMode(MODE_HORIZONTAL);
+
     if (b1<128)
         fprintRTF("\\u%d%c",b1*256+b2,default_char);
     else
@@ -62,7 +60,12 @@ static void putUnicodeChar(unsigned char b1, unsigned char b2, char default_char
 void CmdUnicodeChar(int code)
 {
     unsigned char a,b;
-    uint16_t thechar = code;
+    uint16_t thechar;
+    
+	if (getTexMode() == MODE_VERTICAL)
+        changeTexMode(MODE_HORIZONTAL);
+    
+    thechar = code;
     a = thechar >> 8;
     b = thechar - a * 256;
     putUnicodeChar(a,b,'?');
@@ -1123,34 +1126,6 @@ void CmdDotlessChar(int code)
 }
 
 /******************************************************************************
- purpose: converts \l and \L to 'l' and 'L' or Unicode equivalent
- ******************************************************************************/
-void CmdPolishL(int code)
-{
-    if (code == 1)
-       fprintRTF("\\u322L");  /* LATIN SMALL LETTER L WITH STROKE 0x0142 */
-    else
-       fprintRTF("\\u323l");  /* LATIN CAPITAL LETTER L WITH STROKE 0x0142 */
-}
-
-void CmdLdots( /* @unused@ */ int code)
-
-/******************************************************************************
- purpose: converts the LaTeX-\ldots-command into "..." in Rtf
- ******************************************************************************/
-{
-    int num = RtfFontNumber("Symbol");
-    
-    if (getTexMode() != MODE_MATH && getTexMode() != MODE_DISPLAYMATH)
-        changeTexMode(MODE_HORIZONTAL);
-
-    if (!processing_fields()) 
-        fprintRTF("\\u8230\\'85",num);
-    else
-        fprintRTF("{\\f%d\\u-3908\\'85}",num);
-}
-
-/******************************************************************************
  purpose: converts \euro{amount} and \EUR{amount}
  ******************************************************************************/
 void CmdEuro(int code)
@@ -1296,7 +1271,7 @@ void CmdLogo(int code)
  purpose : converts the LaTeX, TeX, SLiTex, etc logos to RTF 
  ******************************************************************************/
 {
-    int font_num, dnsize;
+    int dnsize;
 
     changeTexMode(MODE_HORIZONTAL);
     fprintRTF("{\\plain ");
@@ -1323,8 +1298,9 @@ void CmdLogo(int code)
         case CMD_LATEXE:
             LaTeXlogo();
             dnsize = (int) (0.3 * CurrentFontSize() + 0.45);
-            font_num = RtfFontNumber("Symbol");
-            fprintRTF("2{\\dn%d\\f%d e}", dnsize, font_num);
+            fprintRTF("2{\\dn%d", dnsize);
+            putUnicodeChar(0x03,0xF5,'e');
+            fprintRTF("}");
             break;
 
         case CMD_AMSTEX:
