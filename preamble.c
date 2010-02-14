@@ -1226,7 +1226,7 @@ static void WriteStyleHeader(void)
         rtf = (*style)->RtfCommand;
         diagnostics(5, "style <%s>=<%s>", (*style)->TexCommand, rtf);
         fprintRTF("{");
-        InsertBasicStyle(rtf, TRUE);
+        InsertBasicStyle(rtf, INSERT_STYLE_FOR_HEADER);
         fprintRTF(";}\n");
     }
     fprintRTF("}\n");

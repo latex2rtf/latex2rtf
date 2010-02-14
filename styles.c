@@ -67,15 +67,15 @@ void InsertCurrentStyle(void)
         InsertStyle(g_current_style);
 }
 
-void InsertBasicStyle(const char *rtf, int include_header_info)
+void InsertBasicStyle(const char *rtf, int how)
 
 /******************************************************************************
   purpose: uses data from style.cfg to try and insert RTF commands
            that correspond to the appropriate style sheet or character style
            for example
-                InsertBasicStyle("section", FALSE);
+                InsertBasicStyle(rtf, INSERT_STYLE_NORMAL);
                 
-        rtf="\rtfsequence,\rtfheader"
+           where rtf="\rtfsequence,\rtfheader"
  ******************************************************************************/
 {
     char *style, *style_end, *comma;
@@ -98,11 +98,27 @@ void InsertBasicStyle(const char *rtf, int include_header_info)
     comma = strchr(style, ',');
     if (comma == NULL) return;
 
-    if (include_header_info)
-        style_end = style + strlen(style);
-    else
-        style_end = comma;
-        
+	switch (how) {
+	
+		case INSERT_STYLE_NORMAL:
+        	style_end = comma;
+			break;
+			
+		case INSERT_STYLE_FOR_HEADER:
+        	style_end = style + strlen(style);
+			break;
+
+		case INSERT_STYLE_NO_STYLE:
+			/* move start just past style bit e.g., \s2 */
+			if (strstarts(style,"\\s")) {
+				style += 2;
+				while (*style >= '0' && *style <= '9') 
+					style++;
+			}
+        	style_end = comma;
+			break;
+	}
+	
     while (style < style_end) {
 
         if (style == comma)
@@ -116,15 +132,28 @@ void InsertBasicStyle(const char *rtf, int include_header_info)
     }
     
  /* emit final blank to make sure that RTF is properly terminated */
-    if (!include_header_info)
+    if (how == INSERT_STYLE_FOR_HEADER)
         fprintRTF(" ");
 }
 
-void InsertStyle(const char *command)
+/* if the_style ends with '0' then do not insert the style sequence \s2
+   and just insert the rtf commands, otherwise do both 
+   This is needed so that chapter headings work properly in the table
+   of contents
+*/
+void InsertStyle(const char *the_style)
 {
-    const char *rtf;
+    char *rtf, *last_char;
+    int how = INSERT_STYLE_NORMAL;
+    char *style = strdup(the_style);
 
-    if (strcmp(command,"Normal")==0) {
+	last_char = style + strlen(style) - 1;
+	if (*last_char == '0') {
+		how = INSERT_STYLE_NO_STYLE;
+		*last_char = '\0'; 
+	}
+	
+    if (strcmp(style,"Normal")==0) {
         if (getAlignment()==CENTERED) {
             InsertStyle("centerpar");
             return;
@@ -139,15 +168,17 @@ void InsertStyle(const char *command)
         }
     }
 
-    diagnostics(4, "InsertStyle(\"%s\")", command);
-    rtf = SearchCfgRtf(command, STYLE_A);
+    diagnostics(4, "InsertStyle(%s)", style);
+    rtf = SearchCfgRtf(style, STYLE_A);
     if (rtf == NULL) {
-        diagnostics(WARNING, "Cannot find '%s' style using 'Normal' style", command);
+        diagnostics(WARNING, "Cannot find '%s' style using 'Normal' style", style);
         SetCurrentStyle("Normal");
         rtf = SearchCfgRtf("Normal", STYLE_A);
-        InsertBasicStyle(rtf, FALSE);
+        InsertBasicStyle(rtf, INSERT_STYLE_NORMAL);
     } else {
-        SetCurrentStyle(command);
-        InsertBasicStyle(rtf, FALSE);
+        SetCurrentStyle(style);
+        InsertBasicStyle(rtf, how);
     }
+    
+    free(style);
 }

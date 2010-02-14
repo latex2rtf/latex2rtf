@@ -359,12 +359,11 @@ void startParagraph(const char *style, int indenting)
 
     fprintRTF("\\fi%d ", parindent);
     
-    if (strcmp("part",the_style)          != 0 && 
-        strcmp("title",the_style)         != 0 &&
-        strcmp("chapter",the_style)       != 0 &&
-        strcmp("section",the_style)       != 0 &&
-        strcmp("subsection",the_style)    != 0 &&
-        strcmp("subsubsection",the_style) != 0 ) {
+    /* these are strstr because might end in 0 */
+    if (strstr("part",the_style)          != NULL && 
+        strstr("title",the_style)         != NULL &&
+        strstr("chapter",the_style)       != NULL &&
+        strstr("section",the_style)       != NULL ) {
         
 		if (CurrentFontFamily() != orig_font_family)
 			fprintRTF("\\f%d ", orig_font_family);

@@ -495,7 +495,7 @@ parameter: code: type of section-recursion-level
         case SECT_CHAPTER_STAR:
             unit_label = NULL;
             if (getCounter("chapter") > 0) CmdNewPage(NewPage);
-            startParagraph("chapter", SECTION_TITLE_PARAGRAPH);
+            startParagraph("chapter0", SECTION_TITLE_PARAGRAPH);
             chapter_name=GetBabelName("CHAPTERNAME");
             ConvertString(chapter_name);
             if (code == SECT_CHAPTER && getCounter("secnumdepth") >= -1) {
