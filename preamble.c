@@ -60,6 +60,8 @@ static int g_geomMargr = 0;
 static int g_geomMargt = 0;
 static int g_geomMargb = 0;
 
+static int gColorPackage = 0;
+
 static char *g_preambleTitle = NULL;
 static char *g_preambleAuthor = NULL;
 static char *g_preambleDate = NULL;
@@ -523,7 +525,7 @@ static void setDocumentOptions(char *optionlist)
                    strcmp(option, "amssymb"     ) == 0) {
             /* do nothing ... but don't complain */
         } else if (strcmp(option, "color") == 0) {
-            diagnostics(WARNING, "Color support limited to eight basic colors");
+        	gColorPackage = 1;
         } else if (strcmp(option, "man") == 0 ||
                    strcmp(option, "jou") == 0) {
             diagnostics(WARNING, "ignoring [%s], assuming [doc]", option);
@@ -1410,6 +1412,12 @@ static void WriteColorTable(void)
     fprintRTF("\\red255\\green0\\blue0;\n");    /* red */
     fprintRTF("\\red255\\green255\\blue0;\n");  /* yellow */
     fprintRTF("\\red255\\green255\\blue255;\n");    /* white */
+    
+    if (!gColorPackage) {
+    	fprintRTF("}\n");
+    	return;
+    }
+
     fprintRTF("\\red0\\green0\\blue128;\n");    /* dark blue */
     fprintRTF("\\red0\\green128\\blue128;\n");  /* dark cyan */
     fprintRTF("\\red0\\green128\\blue0;\n");    /* dark green */
@@ -1537,7 +1545,8 @@ static void WriteColorTable(void)
     fprintRTF("\\red205\\green164\\blue222;\n");    /* Wisteria */  
     fprintRTF("\\red252\\green232\\blue131;\n");    /* Yellow */    
     fprintRTF("\\red197\\green227\\blue132;\n");    /* Yellow Green */  
-    fprintRTF("\\red255\\green182\\blue83;\n"); /* Yellow Orange */     
+    fprintRTF("\\red255\\green182\\blue83;\n"); /* Yellow Orange */   
+    
     fprintRTF("}\n");
 }
 
