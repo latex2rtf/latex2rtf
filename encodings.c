@@ -29,6 +29,7 @@ Authors:
 #include <string.h>
 #include "main.h"
 #include "encoding_tables.h"
+#include "encodings.h"
 #include "fonts.h"
 #include "chars.h"
 #include "parser.h"
@@ -41,7 +42,7 @@ void CmdChar(int code)
 {
     char c;
     
-    if (CurrentFontFamily() ==TexFontNumber("Typewriter"))
+    if (CurrentFontFamily() == TexFontNumber("Typewriter"))
         CmdUnicodeChar(cmttUnicode[code]);
     else
         CmdUnicodeChar(cmrUnicode[code]);
@@ -61,72 +62,54 @@ void WriteEightBitChar(unsigned char cThis, FILE *f)
     }
 
     eightbit_index = cThis - 128;
-    diagnostics(6, "WriteEightBitChar char=%d index=%d encoding=%s", (unsigned int) cThis, eightbit_index, g_charset_encoding_name);
+    diagnostics(6, "WriteEightBitChar char=%d index=%d encoding=%d", (unsigned int) cThis, eightbit_index, CurrentFontEncoding());
 
-    if (strcmp(g_charset_encoding_name, "raw") == 0)
+    if (CurrentFontEncoding() == ENCODING_RAW)
         fprintRTF("\\'%2X", (unsigned char) cThis);
-    else if (strcmp(g_charset_encoding_name, "latin1") == 0)
+    else if (CurrentFontEncoding() == ENCODING_1251)
         CmdUnicodeChar(eightbit_index+128);
-    else if (strcmp(g_charset_encoding_name, "applemac") == 0)
+    else if (CurrentFontEncoding() == ENCODING_1251)
+        CmdUnicodeChar(cp1251Unicode[eightbit_index]);
+    else if (CurrentFontEncoding() == ENCODING_APPLE)
         CmdUnicodeChar(appleUnicode[eightbit_index]);
-    else if (strcmp(g_charset_encoding_name, "cp437") == 0)
+    else if (CurrentFontEncoding() == ENCODING_437)
         CmdUnicodeChar(cp437Unicode[eightbit_index]);
-    else if (strcmp(g_charset_encoding_name, "cp850") == 0)
+    else if (CurrentFontEncoding() == ENCODING_850)
         CmdUnicodeChar(cp850Unicode[eightbit_index]);
-    else if (strcmp(g_charset_encoding_name, "cp852") == 0)
+    else if (CurrentFontEncoding() == ENCODING_852)
         CmdUnicodeChar(cp852Unicode[eightbit_index]);
-    else if (strcmp(g_charset_encoding_name, "cp865") == 0)
+    else if (CurrentFontEncoding() == ENCODING_855)
+        CmdUnicodeChar(cp855Unicode[eightbit_index]);
+    else if (CurrentFontEncoding() == ENCODING_865)
         CmdUnicodeChar(cp865Unicode[eightbit_index]);
-    else if (strcmp(g_charset_encoding_name, "437") == 0)
-        CmdUnicodeChar(cp437Unicode[eightbit_index]);
-    else if (strcmp(g_charset_encoding_name, "850") == 0)
-        CmdUnicodeChar(cp850Unicode[eightbit_index]);
-    else if (strcmp(g_charset_encoding_name, "852") == 0)
-        CmdUnicodeChar(cp852Unicode[eightbit_index]);
-    else if (strcmp(g_charset_encoding_name, "865") == 0)
-        CmdUnicodeChar(cp865Unicode[eightbit_index]);
-    else if (strcmp(g_charset_encoding_name, "cp1250") == 0)
+    else if (CurrentFontEncoding() == ENCODING_866)
+        CmdUnicodeChar(cp866Unicode[eightbit_index]);
+    else if (CurrentFontEncoding() == ENCODING_1250)
         CmdUnicodeChar(cp1250Unicode[eightbit_index]);
-    else if (strcmp(g_charset_encoding_name, "cp1252") == 0)
+    else if (CurrentFontEncoding() == ENCODING_1252)
         CmdUnicodeChar(cp1252Unicode[eightbit_index]);
-    else if (strcmp(g_charset_encoding_name, "1250") == 0)
-        CmdUnicodeChar(cp1250Unicode[eightbit_index]);
-    else if (strcmp(g_charset_encoding_name, "1252") == 0)
-        CmdUnicodeChar(cp1252Unicode[eightbit_index]);
-    else if (strcmp(g_charset_encoding_name, "latin2") == 0)
+    else if (CurrentFontEncoding() == ENCODING_LATIN_2)
         CmdUnicodeChar(latin2Unicode[eightbit_index]);
-    else if (strcmp(g_charset_encoding_name, "latin3") == 0)
+    else if (CurrentFontEncoding() == ENCODING_LATIN_3)
         CmdUnicodeChar(latin3Unicode[eightbit_index]);
-    else if (strcmp(g_charset_encoding_name, "latin4") == 0)
+    else if (CurrentFontEncoding() == ENCODING_LATIN_4)
         CmdUnicodeChar(latin4Unicode[eightbit_index]);
-    else if (strcmp(g_charset_encoding_name, "latin5") == 0)
+    else if (CurrentFontEncoding() == ENCODING_LATIN_5)
         CmdUnicodeChar(latin5Unicode[eightbit_index]);
-    else if (strcmp(g_charset_encoding_name, "latin9") == 0)
+    else if (CurrentFontEncoding() == ENCODING_LATIN_9)
         CmdUnicodeChar(latin9Unicode[eightbit_index]);
-    else if (strcmp(g_charset_encoding_name, "latin10") == 0)
+    else if (CurrentFontEncoding() == ENCODING_LATIN_10)
         CmdUnicodeChar(latin10Unicode[eightbit_index]);
-    else if (strcmp(g_charset_encoding_name, "next") == 0)
+    else if (CurrentFontEncoding() == ENCODING_NEXT)
         CmdUnicodeChar(nextUnicode[eightbit_index]);
-    else if (strcmp(g_charset_encoding_name, "cp1251") == 0)
-        CmdUnicodeChar(cp1251Unicode[eightbit_index]);
-    else if (strcmp(g_charset_encoding_name, "cp855") == 0)
-        CmdUnicodeChar(cp855Unicode[eightbit_index]);
-    else if (strcmp(g_charset_encoding_name, "cp866") == 0)
-        CmdUnicodeChar(cp866Unicode[eightbit_index]);
-    else if (strcmp(g_charset_encoding_name, "1251") == 0)
-        CmdUnicodeChar(cp1251Unicode[eightbit_index]);
-    else if (strcmp(g_charset_encoding_name, "855") == 0)
-        CmdUnicodeChar(cp855Unicode[eightbit_index]);
-    else if (strcmp(g_charset_encoding_name, "866") == 0)
-        CmdUnicodeChar(cp866Unicode[eightbit_index]);
-    else if (strcmp(g_charset_encoding_name, "koi8-r") == 0)
+    else if (CurrentFontEncoding() == ENCODING_KOI8_R)
         CmdUnicodeChar(koi8rUnicode[eightbit_index]);
-    else if (strcmp(g_charset_encoding_name, "koi8-u") == 0)
+    else if (CurrentFontEncoding() == ENCODING_KOI8_U)
         CmdUnicodeChar(koi8uUnicode[eightbit_index]);
-    else if (strcmp(g_charset_encoding_name, "decmulti") == 0)
+    else if (CurrentFontEncoding() == ENCODING_DEC)
         CmdUnicodeChar(decmultiUnicode[eightbit_index]);
-    else if (strcmp(g_charset_encoding_name, "macce") == 0)
+    else if (CurrentFontEncoding() == ENCODING_APPLE_CE)
         CmdUnicodeChar(appleCEUnicode[eightbit_index]);
-    else if (strcmp(g_charset_encoding_name, "maccyr") == 0)
+    else if (CurrentFontEncoding() == ENCODING_APPLE_CYRILLIC)
         CmdUnicodeChar(appleCyrrilicUnicode[eightbit_index]);
 }

@@ -63,7 +63,7 @@
 #define F_SMALLER           -1
 #define F_LARGER            -2
 
-void	InitializeDocumentFont(int family, int size, int shape, int series);
+void	InitializeDocumentFont(int family, int size, int shape, int series, int encoding);
 
 void	CmdFontFamily(int code);
 int		CurrentFontFamily(void);
@@ -80,6 +80,10 @@ int 	DefaultFontSeries(void);
 void	CmdFontSize(int code);
 int		CurrentFontSize(void);
 int		DefaultFontSize(void);
+
+void    CmdFontEncoding(int code);
+int     CurrentFontEncoding(void);
+int		DefaultFontEncoding(void);
 
 void	CmdEmphasize(int code);
 void	CmdUnderline(int code);

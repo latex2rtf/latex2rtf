@@ -65,7 +65,6 @@ static int gColorPackage = 0;
 static char *g_preambleTitle = NULL;
 static char *g_preambleAuthor = NULL;
 static char *g_preambleDate = NULL;
-static char *g_preambleEncoding = NULL;
 static char *g_preambleAffiliation = NULL;
 static char *g_preambleAbstract = NULL;
 static char *g_preambleAck = NULL;
@@ -113,102 +112,68 @@ void setPackageBabel(char *option)
         CzechMode = TRUE;
         PushEnvironment(CZECH_MODE);
         ReadLanguage("czech");
-        g_fcharset_number = 238;    /* East European in RTF Specification */
-        my_strlcpy(g_charset_encoding_name, "raw", 20);
+        CmdFontEncoding(ENCODING_LATIN_2);
     }
 
 }
 
 void setPackageInputenc(char *option)
 {
-    g_preambleEncoding = strdup_noblanks(option);
-    g_fcharset_number = 0;  /* ANSI in RTF Specification */
-
-    if (strcmp(option, "applemac") == 0 ||
-      strcmp(option, "decmulti") == 0 ||
-      strcmp(option, "latin1") == 0 ||
-      strcmp(option, "latin2") == 0 ||
-      strcmp(option, "latin3") == 0 ||
-      strcmp(option, "latin4") == 0 ||
-      strcmp(option, "latin5") == 0 ||
-      strcmp(option, "latin9") == 0 ||
-      strcmp(option, "latin10") == 0 ||
-      strcmp(option, "next") == 0 ||
-      strcmp(option, "maccyr") == 0 ||
-      strcmp(option, "macce") == 0 ||
-      strcmp(option, "ot2enc") == 0 ||
-      strcmp(option, "koi8-r") == 0 || 
-      strcmp(option, "koi8-u") == 0) {
-
-        my_strlcpy(g_charset_encoding_name, option, 20);
-
-    } else if ( (strcmp(option, "cp437")   == 0) ||
-                (strcmp(option, "cp437de") == 0) ||
-                (strcmp(option, "437de")   == 0) ||
-                (strcmp(option, "437")     == 0) ) {
-        my_strlcpy(g_charset_encoding_name, "437", 20);
-
-    } else if ( (strcmp(option, "ansinew") == 0) ||
-                (strcmp(option, "cp1252")  == 0) ||
-                (strcmp(option, "1252")    == 0)  ) {
-        my_strlcpy(g_charset_encoding_name, "1252", 20);
-
-    } else if ( (strcmp(option, "cp850") == 0) ||
-                (strcmp(option, "850")   == 0)  ) {
-        my_strlcpy(g_charset_encoding_name, "850", 20);
-
-    } else if ( (strcmp(option, "cp852") == 0) ||
-                (strcmp(option, "852")   == 0)  ) {
-        my_strlcpy(g_charset_encoding_name, "852", 20);
-
-    } else if ( (strcmp(option, "cp855") == 0) ||
-                (strcmp(option, "855")   == 0)  ) {
-        my_strlcpy(g_charset_encoding_name, "855", 20);
-
-    } else if ( (strcmp(option, "cp865") == 0) ||
-                (strcmp(option, "865")   == 0)  ) {
-        my_strlcpy(g_charset_encoding_name, "865", 20);
-
-    } else if ( (strcmp(option, "cp866") == 0) ||
-                (strcmp(option, "866")   == 0)  ) {
-        my_strlcpy(g_charset_encoding_name, "866", 20);
-
-    } else if ( (strcmp(option, "cp1250") == 0) ||
-                (strcmp(option, "1250")   == 0)  ) {
-        my_strlcpy(g_charset_encoding_name, "1250", 20);
-
-    } else if ( (strcmp(option, "cp1251") == 0) ||
-                (strcmp(option, "1251")   == 0)  ) {
-        my_strlcpy(g_charset_encoding_name, "1251", 20);
-
-    } else if (strcmp(option, "raw") == 0) {
-        my_strlcpy(g_charset_encoding_name, "raw", 20);
-        g_fcharset_number = 255;    /* OEM in RTF Specification */
-
-    } else if (strcmp(option, "raw437") == 0) {
-        g_fcharset_number = 254;    /* IBM PC in RTF Specification */
-        my_strlcpy(g_charset_encoding_name, "437", 20);
-
-    } else if (strcmp(option, "raw852") == 0) {
-        g_fcharset_number = 255;    /* Microsoft bug ... */
-        my_strlcpy(g_charset_encoding_name, "852", 20);
-
-    } else if (strcmp(option, "raw1250") == 0) {
-        g_fcharset_number = 238;    /* East European in RTF Specification */
-        my_strlcpy(g_charset_encoding_name, "1250", 20);
-
-    } else if (strcmp(option, "raw1251") == 0) {
-        g_fcharset_number = 204;    /* Cyrillic in RTF Specification */
-        my_strlcpy(g_charset_encoding_name, "1251", 20);
-
-    } else if (strcmp(option, "raw1253") == 0) {
-        g_fcharset_number = 161;    /* Greek in RTF Specification */
-        my_strlcpy(g_charset_encoding_name, "raw", 20);
-        
-    } else if (strcmp(option, "utf8") == 0) {
-        my_strlcpy(g_charset_encoding_name, "utf8", 20);
-
-    } else
+    if (strstr(option, "applemac"))
+    	CmdFontEncoding(ENCODING_APPLE);
+    else if (strstr(option, "decmulti"))
+    	CmdFontEncoding(ENCODING_DEC);
+    else if (strstr(option, "latin1"))
+    	CmdFontEncoding(ENCODING_1251);
+    else if (strstr(option, "latin2"))
+    	CmdFontEncoding(ENCODING_LATIN_2);
+    else if (strstr(option, "latin3"))
+    	CmdFontEncoding(ENCODING_LATIN_3);
+    else if (strstr(option, "latin4"))
+    	CmdFontEncoding(ENCODING_LATIN_4);
+    else if (strstr(option, "latin5"))
+    	CmdFontEncoding(ENCODING_LATIN_5);
+    else if (strstr(option, "latin9"))
+    	CmdFontEncoding(ENCODING_LATIN_9);
+    else if (strstr(option, "latin10"))
+    	CmdFontEncoding(ENCODING_LATIN_10);
+    else if (strstr(option, "next"))
+    	CmdFontEncoding(ENCODING_NEXT);
+    else if (strstr(option, "maccyr"))
+    	CmdFontEncoding(ENCODING_APPLE_CYRILLIC);
+    else if (strstr(option, "macce"))
+    	CmdFontEncoding(ENCODING_APPLE_CE);
+    else if (strstr(option, "ot2enc"))
+    	CmdFontEncoding(ENCODING_OT2);
+    else if (strstr(option, "koi8-r"))
+    	CmdFontEncoding(ENCODING_KOI8_R);
+    else if (strstr(option, "koi8-u"))
+    	CmdFontEncoding(ENCODING_KOI8_U);
+    else if (strstr(option, "437"))
+    	CmdFontEncoding(ENCODING_437);
+	else if (strstr(option, "ansinew"))
+    	CmdFontEncoding(ENCODING_1252);
+	else if (strstr(option, "1252"))
+    	CmdFontEncoding(ENCODING_1252);
+	else if (strstr(option, "850"))
+    	CmdFontEncoding(ENCODING_850);
+	else if (strstr(option, "852"))
+    	CmdFontEncoding(ENCODING_852);
+	else if (strstr(option, "865"))
+    	CmdFontEncoding(ENCODING_865);
+	else if (strstr(option, "866"))
+    	CmdFontEncoding(ENCODING_866);
+	else if (strstr(option, "1250"))
+    	CmdFontEncoding(ENCODING_1250);
+	else if (strstr(option, "1251"))
+    	CmdFontEncoding(ENCODING_1251);
+	else if (strstr(option, "1253"))
+    	CmdFontEncoding(ENCODING_1253);
+	else if (strstr(option, "raw"))
+    	CmdFontEncoding(ENCODING_RAW);
+	else if (strstr(option, "utf8"))
+    	CmdFontEncoding(ENCODING_UTF8);
+    else
         diagnostics(WARNING, "Input Encoding <%s> not supported", option);
 }
 
@@ -411,19 +376,19 @@ static void setPaperSize(char *option)
 static void setPointSize(char *option)
 {
     if (strcmp(option, "10pt") == 0) {
-        InitializeDocumentFont(-1, 20, -1, -1);
+        InitializeDocumentFont(-1, 20, -1, -1, ENCODING_1251);
         setLength("baselineskip", 12 * 20);
         setLength("parindent", 15 * 20);
         setLength("parskip", 0 * 20);
 
     } else if (strcmp(option, "11pt") == 0) {
-        InitializeDocumentFont(-1, 22, -1, -1);
+        InitializeDocumentFont(-1, 22, -1, -1, ENCODING_1251);
         setLength("baselineskip", 14 * 20);
         setLength("parindent", 17 * 20);
         setLength("parskip", 0 * 20);
 
     } else {
-        InitializeDocumentFont(-1, 24, -1, -1);
+        InitializeDocumentFont(-1, 24, -1, -1, ENCODING_1251);
         setLength("baselineskip", (int) 14.5 * 20);
         setLength("parindent", 18 * 20);
         setLength("parskip", 0 * 20);
@@ -1172,7 +1137,6 @@ static void WriteFontHeader(void)
     int num=0;
     ConfigEntryT **config_handle;
     char *font_type, *font_name;
-    int charset;
 
     fprintRTF("{\\fonttbl");
 
@@ -1180,8 +1144,7 @@ static void WriteFontHeader(void)
     while ((config_handle = CfgNextByInsertion(FONT_A, config_handle)) != NULL) {
         font_type = (char *) (*config_handle)->TexCommand;
         font_name = (char *) (*config_handle)->RtfCommand;
-        charset = g_fcharset_number;
-        fprintRTF("{\\f%d\\fnil\\fcharset%d %s;}\n", num, charset, font_name);
+        fprintRTF("{\\f%d\\fnil\\fcharset0 %s;}\n", num, font_name);
         num++;
     }
 

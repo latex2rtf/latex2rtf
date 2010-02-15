@@ -78,9 +78,6 @@ int FrenchMode = FALSE;        /* support frenchstyle */
 int RussianMode = FALSE;       /* support russianstyle */
 int CzechMode = FALSE;         /* support czech */
 
-char g_charset_encoding_name[20] = "cp1252";
-int g_fcharset_number = 0;
-
 int twoside = FALSE;
 int g_verbosity_level = WARNING;
 int g_little_endian = FALSE;   /* set properly in main() */
@@ -377,7 +374,7 @@ int main(int argc, char **argv)
     if (PushSource(g_tex_name, NULL) == 0) {
         OpenRtfFile(g_rtf_name, &fRtf);
 
-        InitializeDocumentFont(TexFontNumber("Roman"), 20, F_SHAPE_UPRIGHT, F_SERIES_MEDIUM);
+        InitializeDocumentFont(TexFontNumber("Roman"), 20, F_SHAPE_UPRIGHT, F_SERIES_MEDIUM, ENCODING_1251);
         PushTrackLineNumber(TRUE);
 
         ConvertWholeDocument();

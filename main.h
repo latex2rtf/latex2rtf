@@ -39,8 +39,8 @@
 #define MAXCOMMANDLEN 100
 
 /* available values for alignment */
-#define LEFT	  'l'
-#define RIGHT	  'r'
+#define LEFT      'l'
+#define RIGHT     'r'
 #define CENTERED  'c'
 #define JUSTIFIED 'j'
 
@@ -60,87 +60,85 @@ typedef enum { FALSE = 0,
 /*** interpret comment lines that follow the '%' with this string ***/
 extern const char  * InterpretCommentString;
 
-void			diagnostics(int level, char *format,...);
+void            diagnostics(int level, char *format,...);
 
-extern			char *g_aux_name;
-extern			char *g_toc_name;
-extern			char *g_lof_name;
-extern			char *g_lot_name;
-extern			char *g_bbl_name;
-extern			char *g_home_dir;
-extern			char *progname;			/* name of the executable file */
+extern          char *g_aux_name;
+extern          char *g_toc_name;
+extern          char *g_lof_name;
+extern          char *g_lot_name;
+extern          char *g_bbl_name;
+extern          char *g_home_dir;
+extern          char *progname;         /* name of the executable file */
 
-extern int		GermanMode;
-extern int		FrenchMode;
-extern int		RussianMode;
-extern int		CzechMode;
-extern int		pagenumbering;
-extern int		headings;
+extern int      GermanMode;
+extern int      FrenchMode;
+extern int      RussianMode;
+extern int      CzechMode;
+extern int      pagenumbering;
+extern int      headings;
 
-extern int		g_verbosity_level;
-extern int		RecursionLevel;
+extern int      g_verbosity_level;
+extern int      RecursionLevel;
 
 /* table  & tabbing variables */
-extern long		pos_begin_kill;
-extern int		g_tab_counter;
-extern int		g_equation_column;
+extern long     pos_begin_kill;
+extern int      g_tab_counter;
+extern int      g_equation_column;
 
-extern int		twocolumn;
-extern int		titlepage;
+extern int      twocolumn;
+extern int      titlepage;
 
-extern int		g_processing_equation;
-extern int		g_processing_preamble;
-extern int		g_processing_figure;
-extern int		g_processing_table;
-extern int		g_processing_tabbing;
-extern int		g_processing_tabular;
-extern int		g_processing_eqnarray;
-extern int		g_processing_arrays;
-extern uint16_t	g_dots_per_inch;
+extern int      g_processing_equation;
+extern int      g_processing_preamble;
+extern int      g_processing_figure;
+extern int      g_processing_table;
+extern int      g_processing_tabbing;
+extern int      g_processing_tabular;
+extern int      g_processing_eqnarray;
+extern int      g_processing_arrays;
+extern uint16_t g_dots_per_inch;
 
-extern int		g_document_type;
-extern int		g_document_bibstyle;
+extern int      g_document_type;
+extern int      g_document_bibstyle;
 
-extern int		g_equation_number;
-extern int		g_escape_parens;
-extern int		g_show_equation_number;
-extern int		g_enumerate_depth;
-extern int		g_suppress_equation_number;
-extern int		g_aux_file_missing;
-extern int		g_bbl_file_missing;
-extern char		g_charset_encoding_name[20];
-extern int		g_fcharset_number;
+extern int      g_equation_number;
+extern int      g_escape_parens;
+extern int      g_show_equation_number;
+extern int      g_enumerate_depth;
+extern int      g_suppress_equation_number;
+extern int      g_aux_file_missing;
+extern int      g_bbl_file_missing;
 extern int      g_graphics_package;
 extern int      g_amsmath_package;
 
-extern char		*g_figure_label;
-extern char		*g_table_label;
-extern char		*g_equation_label;
-extern char		*g_section_label;
-extern char		*g_config_path;
-extern char		*g_script_dir;
-extern char		g_field_separator;
-extern char		*g_preamble;
+extern char     *g_figure_label;
+extern char     *g_table_label;
+extern char     *g_equation_label;
+extern char     *g_section_label;
+extern char     *g_config_path;
+extern char     *g_script_dir;
+extern char     g_field_separator;
+extern char     *g_preamble;
 
-extern double	g_png_equation_scale; 
-extern double	g_png_figure_scale;
-extern int		g_latex_figures;
-extern int		g_endfloat_figures;
-extern int		g_endfloat_tables;
-extern int		g_endfloat_markers;
+extern double   g_png_equation_scale; 
+extern double   g_png_figure_scale;
+extern int      g_latex_figures;
+extern int      g_endfloat_figures;
+extern int      g_endfloat_tables;
+extern int      g_endfloat_markers;
 
-extern int		g_equation_inline_rtf;
-extern int		g_equation_display_rtf;
-extern int		g_equation_inline_bitmap;
-extern int		g_equation_display_bitmap;
-extern int		g_equation_comment;
-extern int     g_equation_raw_latex;
+extern int      g_equation_inline_rtf;
+extern int      g_equation_display_rtf;
+extern int      g_equation_inline_bitmap;
+extern int      g_equation_display_bitmap;
+extern int      g_equation_comment;
+extern int      g_equation_raw_latex;
 
-extern int 	g_tabular_display_rtf;
-extern int 	g_tabular_display_bitmap;
+extern int      g_tabular_display_rtf;
+extern int      g_tabular_display_bitmap;
 
-extern int		g_little_endian;
-extern int		g_tableofcontents;
+extern int      g_little_endian;
+extern int      g_tableofcontents;
 
 void fprintRTF(char *format, ...);
 void putRtfCharEscaped(char cThis);

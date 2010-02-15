@@ -145,7 +145,7 @@ purpose: converts inputfile and writes result to outputfile
         pending_new_paragraph--;
 
         /* preliminary support for utf8 sequences.  Thanks to CSH */
-        if ((cThis & 0x8000) && (strcmp(g_charset_encoding_name, "utf8") == 0)) {
+        if ((cThis & 0x8000) && (CurrentFontEncoding() == ENCODING_UTF8)) {
             uint8_t byte;
             uint16_t len, value, i;
 

@@ -3,6 +3,11 @@ RTF format used by various text processors, most notably Word.
 
 For the Copyright of the Program see the file Copyright.
 
+As of verison 2.1.0, latex2rtf uses Unicode for all characters.  Since
+most fonts are missing some special math characters, it is recommended
+that the STIX fonts (http://www.mozilla.org/projects/mathml/fonts/)
+be installed for best results.  
+
 As of version 1.9.13, latex2rtf supports converting equations to
 bitmaps.  This requires TeX and ImageMagick.  See scripts/README.
 

@@ -94,6 +94,7 @@ typedef struct RtfFontInfoType {
     int shape;
     int series;
     int size;
+    int encoding;
 } RtfFontInfoType;
 
 #define MAX_FONT_INFO_DEPTH 301
@@ -121,11 +122,8 @@ int RtfFontNumber(const char *Fname)
         
         diagnostics(6, "RTF font %d has name='%s' of type='%s'", font_id, font_name, font_type);
 
-        if (strcmp(font_name, Fname) == 0) {  /* right name, now make sure charset is correct*/
-            int charset = 0;
-    
-            if (g_fcharset_number == charset) return font_id;
-        }
+        if (strcmp(font_name, Fname) == 0) 
+            return font_id;
     }
     return TexFontNumber("Roman");  /* default font */
 }
@@ -612,7 +610,7 @@ static int strstartnum(const unsigned char *text, const char *str, int *num)
 }
 
 
-void InitializeDocumentFont(int family, int size, int shape, int series)
+void InitializeDocumentFont(int family, int size, int shape, int series, int encoding)
 
 /******************************************************************************
   purpose: Initialize the basic font properties for a document
@@ -627,6 +625,8 @@ void InitializeDocumentFont(int family, int size, int shape, int series)
         RtfFontInfo[0].shape = shape;
     if (series >= 0)
         RtfFontInfo[0].series = series;
+    if (encoding >= 0)
+        RtfFontInfo[0].encoding = encoding;
 
     diagnostics(5, "InitializeDocumentFont family=%d, size=%d, shape=%d, series=%d",
       RtfFontInfo[0].family, RtfFontInfo[0].size, RtfFontInfo[0].shape, RtfFontInfo[0].series);
@@ -654,6 +654,12 @@ int DefaultFontSeries(void)
 {
     diagnostics(5, "DefaultFontSeries -- series=%d", RtfFontInfo[0].series);
     return RtfFontInfo[0].series;
+}
+
+int DefaultFontEncoding(void)
+{
+    diagnostics(5, "DefaultFontSeries -- series=%d", RtfFontInfo[0].encoding);
+    return RtfFontInfo[0].encoding;
 }
 
 int CurrentFontFamily(void)
@@ -697,6 +703,26 @@ int CurrentFontSeries(void)
     return RtfFontInfo[FontInfoDepth].series;
 }
 
+int CurrentFontEncoding(void)
+
+/******************************************************************************
+  purpose: returns the current RTF encoding
+ ******************************************************************************/
+{
+    diagnostics(5, "CurrentFontSeries -- encoding=%d", RtfFontInfo[FontInfoDepth].encoding);
+    return RtfFontInfo[FontInfoDepth].encoding;
+}
+
+void CmdFontEncoding(int code)
+
+/******************************************************************************
+  purpose: sets the current RTF encoding
+ ******************************************************************************/
+{
+    RtfFontInfo[FontInfoDepth].encoding = code;
+    diagnostics(5, "CurrentFontSeries -- encoding=%d", RtfFontInfo[FontInfoDepth].encoding);
+}
+
 void PushFontSettings(void)
 {
     if (FontInfoDepth == MAX_FONT_INFO_DEPTH)
@@ -706,6 +732,7 @@ void PushFontSettings(void)
     RtfFontInfo[FontInfoDepth + 1].family = RtfFontInfo[FontInfoDepth].family;
     RtfFontInfo[FontInfoDepth + 1].shape = RtfFontInfo[FontInfoDepth].shape;
     RtfFontInfo[FontInfoDepth + 1].series = RtfFontInfo[FontInfoDepth].series;
+    RtfFontInfo[FontInfoDepth + 1].encoding = RtfFontInfo[FontInfoDepth].encoding;
     FontInfoDepth++;
 
     diagnostics(6, "PushFontSettings depth=%d, family=%d, size=%d, shape=%d, series=%d",
@@ -719,7 +746,7 @@ void PopFontSettings(void)
         diagnostics(WARNING, "FontInfoDepth = 0, cannot PopFontSettings()!");
 
     FontInfoDepth--;
-    diagnostics(6, "PopFontSettings depth=%d, family=%d, size=%d, shape=%d, series=%d",
+    diagnostics(6, "PopFontSettings depth=%d, family=%d, size=%d, shape=%d, series=%d, encoding=%d",
       FontInfoDepth, RtfFontInfo[FontInfoDepth].family,
       RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape, RtfFontInfo[FontInfoDepth].series);
 }

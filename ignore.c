@@ -40,10 +40,28 @@ Authors:
 #include "utils.h"
 #include "vertical.h"
 
-static void IgnoreVar(void);
-static void IgnoreCmd(void);
+/****************************************************************************
+purpose : ignores anything till a space or a newline
+ ****************************************************************************/
+static void IgnoreVar(void)
+{
+    char c;
+	do { c = getTexChar(); } while (c && c != '\n' && c != ' ');
+}
 
-int TryVariableIgnore(const char *command)
+
+/****************************************************************************
+purpose : ignores anything till an alphanumeric character
+ ****************************************************************************/
+static void IgnoreCmd(void)
+{
+    char c;
+
+	do { c = getTexChar(); } while (c && c != '\\');
+	do { c = getTexChar(); } while (c && !isalpha((int) c));
+    
+    ungetTexChar(c);
+}
 
 /****************************************************************************
 purpose : ignores variable-formats shown in file "ignore.cfg"
@@ -61,6 +79,7 @@ returns : TRUE if variable was ignored correctly, otherwise FALSE
 #  ENVCMD        proceses contents of unknown environment as if it were plain latex
 #  ENVIRONMENT   ignores contents of that environment
  ****************************************************************************/
+int TryVariableIgnore(const char *command)
 {
     const char *RtfCommand;
     char *TexCommand;
@@ -108,37 +127,6 @@ returns : TRUE if variable was ignored correctly, otherwise FALSE
     return TRUE;
 }
 
-
-void IgnoreVar(void)
-
-/****************************************************************************
-purpose : ignores anything till a space or a newline
- ****************************************************************************/
-{
-    char c;
-
-    while ((c = getTexChar()) && c != '\n' && c != ' ') {
-    }
-}
-
-
-void IgnoreCmd(void)
-
-/****************************************************************************
-purpose : ignores anything till an alphanumeric character
- ****************************************************************************/
-{
-    char c;
-
-    while ((c = getTexChar()) && c != '\\') {
-    }
-    while ((c = getTexChar()) && !isalpha((int) c)) {
-    }
-    ungetTexChar(c);
-}
-
-void Ignore_Environment(char *cCommand)
-
 /******************************************************************************
   purpose: function, which ignores an unconvertable environment in LaTex
            and writes text unchanged into the Rtf-file.
@@ -146,6 +134,7 @@ parameter: searchstring : includes the string to search for
        example: \begin{unknown} ... \end{unknown}
             searchstring="end{unknown}"
  ******************************************************************************/
+void Ignore_Environment(char *cCommand)
 {
     char unknown_environment[100];
     char *buffer;
