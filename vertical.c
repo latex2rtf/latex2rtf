@@ -237,8 +237,9 @@ void startParagraph(const char *style, int indenting)
 {
     int width, a, b, c;
     int parindent,parskip;
-    static char last_style[50], the_style[50];
-    static int last_indent;
+    static char last_style[50] = "Normal";
+    static char the_style[50] = "Normal";
+    static int last_indent = 0;
     static int status = 0;
     int orig_font_family = CurrentFontFamily();
     int orig_font_size = CurrentFontSize();
