@@ -1,0 +1,231 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%            -*-LaTeX-*-
+%%%   OT2-new-sample.tex   %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%  Date:   23-Jan-2002
+%%  Author: wd (Wolfgang.Dobler@kis.uni-freiburg.de)
+%%  Description: 
+% 
+%% Choose appropriate driver:
+\RequirePackage{ifpdf}
+\ifpdf
+  \def\mydriver{pdftex}         % writing PDF
+\else
+  \def\mydriver{dvips}          % writing DVI
+\fi
+\documentclass[\mydriver,12pt,twoside,notitlepage,a4paper]{article}
+
+\usepackage[bookmarks=false]{hyperref}
+%\usepackage[OT2,T1]{fontenc}
+\usepackage[T2A,OT1]{fontenc}
+\usepackage[ot2enc]{inputenc}
+\usepackage[russian,british]{babel}
+
+\usepackage{booktabs,parskip,vmargin}
+\setpapersize{A4}
+\setmargrb{20mm}{15mm}{20mm}{15mm}
+
+\frenchspacing
+\sloppy
+
+
+\begin{document}
+\thispagestyle{empty}
+
+\subsection*{Preamble}
+Note that \verb|babel| needs to be included \emph{after} \verb|fontenc| in
+order for rare letters like Yatz, Izhitza and Fita to be available (I have
+no clue why):
+\begin{verbatim}
+  \usepackage[OT2,T1]{fontenc}
+  \usepackage[russian,british]{babel}
+\end{verbatim}
+or
+\begin{verbatim}
+  \usepackage[T2A,OT1]{fontenc}
+  \usepackage[ot2enc]{inputenc}
+  \usepackage[russian,british]{babel}
+\end{verbatim}
+
+\clearpage
+\subsection*{Symbol table}
+The OT2 character symbols have changed (or I have been using an
+out-of-date table). The new symbols are listed below.
+
+\begin{center}
+
+\begin{tabular}{ll}
+\texttt{$\backslash$CYRA} & {\cyr \CYRA} \\
+\texttt{$\backslash$CYRB} & {\cyr \CYRB} \\
+\texttt{$\backslash$CYRC} & {\cyr \CYRC} \\
+\texttt{$\backslash$CYRD} & {\cyr \CYRD} \\
+\texttt{$\backslash$CYRE} & {\cyr \CYRE} \\
+\texttt{$\backslash$CYRF} & {\cyr \CYRF} \\
+\texttt{$\backslash$CYRG} & {\cyr \CYRG} \\
+\texttt{$\backslash$CYRH} & {\cyr \CYRH} \\
+\texttt{$\backslash$CYRI} & {\cyr \CYRI} \\
+\texttt{$\backslash$CYRJE} & {\cyr \CYRJE} \\
+\texttt{$\backslash$CYRK} & {\cyr \CYRK} \\
+\texttt{$\backslash$CYRL} & {\cyr \CYRL} \\
+\texttt{$\backslash$CYRM} & {\cyr \CYRM} \\
+\texttt{$\backslash$CYRN} & {\cyr \CYRN} \\
+\texttt{$\backslash$CYRO} & {\cyr \CYRO} \\
+\texttt{$\backslash$CYRP} & {\cyr \CYRP} \\
+\texttt{$\backslash$CYRCH} & {\cyr \CYRCH} \\
+\texttt{$\backslash$CYRR} & {\cyr \CYRR} \\
+\texttt{$\backslash$CYRS} & {\cyr \CYRS} \\
+\texttt{$\backslash$CYRT} & {\cyr \CYRT} \\
+\texttt{$\backslash$CYRU} & {\cyr \CYRU} \\
+\texttt{$\backslash$CYRV} & {\cyr \CYRV} \\
+\texttt{$\backslash$CYRSHCH} & {\cyr \CYRSHCH} \\
+\texttt{$\backslash$CYRSH} & {\cyr \CYRSH} \\
+\texttt{$\backslash$CYRERY} & {\cyr \CYRERY} \\
+\texttt{$\backslash$CYRZ} & {\cyr \CYRZ} \\
+\texttt{$\backslash$CYRSFTSN} & {\cyr \CYRSFTSN} \\
+\texttt{$\backslash$CYRHRDSN} & {\cyr \CYRHRDSN} \\
+\texttt{$\backslash$CYRYU} & {\cyr \CYRYU} \\
+\texttt{$\backslash$CYRZH} & {\cyr \CYRZH} \\
+\texttt{$\backslash$CYRISHRT} & {\cyr \CYRISHRT} \\
+\texttt{$\backslash$CYRYO} & {\cyr \CYRYO} \\
+\texttt{$\backslash$CYRIZH} & {\cyr \CYRIZH} \\
+\texttt{$\backslash$CYRFITA} & {\cyr \CYRFITA} \\
+\texttt{$\backslash$CYRDZE} & {\cyr \CYRDZE} \\
+\texttt{$\backslash$CYRYA} & {\cyr \CYRYA} \\
+\end{tabular}\quad
+%
+\begin{tabular}{ll}
+\texttt{$\backslash$cyra} & {\cyr \cyra} \\
+\texttt{$\backslash$cyrb} & {\cyr \cyrb} \\
+\texttt{$\backslash$cyrc} & {\cyr \cyrc} \\
+\texttt{$\backslash$cyrd} & {\cyr \cyrd} \\
+\texttt{$\backslash$cyre} & {\cyr \cyre} \\
+\texttt{$\backslash$cyrf} & {\cyr \cyrf} \\
+\texttt{$\backslash$cyrg} & {\cyr \cyrg} \\
+\texttt{$\backslash$cyrh} & {\cyr \cyrh} \\
+\texttt{$\backslash$cyri} & {\cyr \cyri} \\
+\texttt{$\backslash$cyrje} & {\cyr \cyrje} \\
+\texttt{$\backslash$cyrk} & {\cyr \cyrk} \\
+\texttt{$\backslash$cyrl} & {\cyr \cyrl} \\
+\texttt{$\backslash$cyrm} & {\cyr \cyrm} \\
+\texttt{$\backslash$cyrn} & {\cyr \cyrn} \\
+\texttt{$\backslash$cyro} & {\cyr \cyro} \\
+\texttt{$\backslash$cyrp} & {\cyr \cyrp} \\
+\texttt{$\backslash$cyrch} & {\cyr \cyrch} \\
+\texttt{$\backslash$cyrr} & {\cyr \cyrr} \\
+\texttt{$\backslash$cyrs} & {\cyr \cyrs} \\
+\texttt{$\backslash$cyrt} & {\cyr \cyrt} \\
+\texttt{$\backslash$cyru} & {\cyr \cyru} \\
+\texttt{$\backslash$cyrv} & {\cyr \cyrv} \\
+\texttt{$\backslash$cyrshch} & {\cyr \cyrshch} \\
+\texttt{$\backslash$cyrsh} & {\cyr \cyrsh} \\
+\texttt{$\backslash$cyrery} & {\cyr \cyrery} \\
+\texttt{$\backslash$cyrz} & {\cyr \cyrz} \\
+\texttt{$\backslash$cyrsftsn} & {\cyr \cyrsftsn} \\
+\texttt{$\backslash$cyrhrdsn} & {\cyr \cyrhrdsn} \\
+\texttt{$\backslash$cyryu} & {\cyr \cyryu} \\
+\texttt{$\backslash$cyrzh} & {\cyr \cyrzh} \\
+\texttt{$\backslash$cyrishrt} & {\cyr \cyrishrt} \\
+\texttt{$\backslash$cyryo} & {\cyr \cyryo} \\
+\texttt{$\backslash$cyrizh} & {\cyr \cyrizh} \\
+\texttt{$\backslash$cyrfita} & {\cyr \cyrfita} \\
+\texttt{$\backslash$cyrdze} & {\cyr \cyrdze} \\
+\texttt{$\backslash$cyrya} & {\cyr \cyrya} \\
+\end{tabular}\quad
+%
+\begin{tabular}{ll}
+%\texttt{$\backslash$''} & {\cyr \"} \\
+%\verb|\'| & {\cyr \'} \\
+\texttt{$\backslash$CYRNJE} & {\cyr \CYRNJE} \\
+\texttt{$\backslash$CYRLJE} & {\cyr \CYRLJE} \\
+\texttt{$\backslash$CYRDZHE} & {\cyr \CYRDZHE} \\
+\texttt{$\backslash$CYREREV} & {\cyr \CYREREV} \\
+\texttt{$\backslash$CYRII} & {\cyr \CYRII} \\
+\texttt{$\backslash$CYRIE} & {\cyr \CYRIE} \\
+\texttt{$\backslash$CYRDJE} & {\cyr \CYRDJE} \\
+\texttt{$\backslash$CYRTSHE} & {\cyr \CYRTSHE} \\
+\texttt{$\backslash$cyrnje} & {\cyr \cyrnje} \\
+\texttt{$\backslash$cyrlje} & {\cyr \cyrlje} \\
+\texttt{$\backslash$cyrdzhe} & {\cyr \cyrdzhe} \\
+\texttt{$\backslash$cyrerev} & {\cyr \cyrerev} \\
+\texttt{$\backslash$cyrii} & {\cyr \cyrii} \\
+\texttt{$\backslash$cyrie} & {\cyr \cyrie} \\
+\texttt{$\backslash$cyrdje} & {\cyr \cyrdje} \\
+\texttt{$\backslash$cyrtshe} & {\cyr \cyrtshe} \\
+\texttt{$\backslash$CYRYAT} & {\cyr \CYRYAT} \\
+\texttt{$\backslash$cyryat} & {\cyr \cyryat} \\
+\texttt{$\backslash$i} & {\cyr \i} \\
+\texttt{$\backslash$textquoteleft} & {\cyr \textquoteleft} \\
+\texttt{$\backslash$textquoteright} & {\cyr \textquoteright} \\
+\texttt{$\backslash$textquotedblleft} & {\cyr \textquotedblleft} \\
+\texttt{$\backslash$textquotedblright} & {\cyr \textquotedblright} \\
+\texttt{$\backslash$guillemotleft} & {\cyr \guillemotleft} \\
+\texttt{$\backslash$guillemotright} & {\cyr \guillemotright} \\
+\texttt{$\backslash$textendash} & {\cyr \textendash} \\
+\texttt{$\backslash$cyrdash} & {\cyr \cyrdash} \\
+\texttt{$\backslash$textemdash} & {\cyr \textemdash} \\
+\texttt{$\backslash$textnumero} & {\cyr \textnumero} \\
+\end{tabular}
+
+\end{center}
+
+
+\clearpage
+\subsection*{Single character mappings}
+Apart from these explicit names there are also the individual letters
+and ligatures which are mapped according to
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+  \emph{Letter/ligature}
+       & \emph{Result} \\
+\midrule
+  a, A & {\cyr a, A} \\
+  b, B & {\cyr b, B} \\
+  c, C & {\cyr c, C} \\
+  d, D & {\cyr d, D} \\
+  e, E & {\cyr e, E} \\
+  f, F & {\cyr f, F} \\
+  g, G & {\cyr g, G} \\
+  h, H & {\cyr h, H} \\
+  i, I & {\cyr i, I} \\
+  j, J & {\cyr j, J} \\
+  k, K & {\cyr k, K} \\
+  l, L & {\cyr l, L} \\
+  m, M & {\cyr m, M} \\
+  n, N & {\cyr n, N} \\
+  o, O & {\cyr o, O} \\
+  p, P & {\cyr p, P} \\
+  q, Q & {\cyr q, Q} \\
+  r, R & {\cyr r, R} \\
+  s, S & {\cyr s, S} \\
+  t, T & {\cyr t, T} \\
+  u, U & {\cyr u, U} \\
+  v, V & {\cyr v, V} \\
+  w, W & {\cyr w, W} \\
+  x, X & {\cyr x, X} \\
+  y, Y & {\cyr y, Y} \\
+  z, Z & {\cyr z, Z} \\
+\midrule
+  Dj, dj     & {\cyr Dj, dj} \\
+  Zh, zh     & {\cyr Zh, zh} \\
+  Lj, lj     & {\cyr Lj, lj} \\
+  Nj, nj     & {\cyr Nj, nj} \\
+  Kh, kh     & {\cyr Kh, kh} \\
+  Ts, ts     & {\cyr Ts, ts} \\
+  Ch, ch     & {\cyr Ch, ch} \\
+  Sh, sh     & {\cyr Sh, sh} \\
+  Shch, shch & {\cyr Shch, shch} \\
+  Yu, yu     & {\cyr Yu, yu} \\
+  Ya, ya     & {\cyr Ya, ya} \\
+  N0         & {\cyr N0} \\
+  
+
+\bottomrule
+\end{tabular}
+\end{center}
+
+
+\end{document}
+
+% End of file OT2-new-sample.tex

@@ -45,6 +45,7 @@ Authors:
 #include "definitions.h"
 #include "graphics.h"
 #include "vertical.h"
+#include "encodings.h"
 
 #include "labels.h"
 #include "acronyms.h"
@@ -347,7 +348,7 @@ static CommandArray commands[] = {
     {"rlap", CmdLap, 0},
     {"llap", CmdLap, 1},
     {"not", CmdNot, 0},
-
+	
     {"url",               CmdHtml, LABEL_URL},
     {"urlstyle",          CmdHtml, LABEL_URLSTYLE},
     {"htmladdnormallink", CmdHtml, LABEL_HTMLADDNORMALREF},
@@ -581,71 +582,105 @@ static CommandArray FrenchModeCommands[] = {
 /* commands for Russian Mode */
 /********************************************************************/
 static CommandArray RussianModeCommands[] = {
-    {"CYRA", CmdUnicodeChar, 0xC0 + 864},
-    {"CYRB", CmdUnicodeChar, 0xC1 + 864},
-    {"CYRV", CmdUnicodeChar, 0xC2 + 864},
-    {"CYRG", CmdUnicodeChar, 0xC3 + 864},
-    {"CYRD", CmdUnicodeChar, 0xC4 + 864},
-    {"CYRE", CmdUnicodeChar, 0xC5 + 864},
-    {"CYRZH", CmdUnicodeChar, 0xC6 + 864},
-    {"CYRZ", CmdUnicodeChar, 0xC7 + 864},
-    {"CYRI", CmdUnicodeChar, 0xC8 + 864},
-    {"CYRISHRT", CmdUnicodeChar, 0xC9 + 864},
-    {"CYRK", CmdUnicodeChar, 0xCA + 864},
-    {"CYRL", CmdUnicodeChar, 0xCB + 864},
-    {"CYRM", CmdUnicodeChar, 0xCC + 864},
-    {"CYRN", CmdUnicodeChar, 0xCD + 864},
-    {"CYRO", CmdUnicodeChar, 0xCE + 864},
-    {"CYRP", CmdUnicodeChar, 0xCF + 864},
-    {"CYRR", CmdUnicodeChar, 0xD0 + 864},
-    {"CYRS", CmdUnicodeChar, 0xD1 + 864},
-    {"CYRT", CmdUnicodeChar, 0xD2 + 864},
-    {"CYRU", CmdUnicodeChar, 0xD3 + 864},
-    {"CYRF", CmdUnicodeChar, 0xD4 + 864},
-    {"CYRH", CmdUnicodeChar, 0xD5 + 864},
-    {"CYRC", CmdUnicodeChar, 0xD6 + 864},
-    {"CYRCH", CmdUnicodeChar, 0xD7 + 864},
-    {"CYRSH", CmdUnicodeChar, 0xD8 + 864},
-    {"CYRCHSH", CmdUnicodeChar, 0xD9 + 864},
-    {"CYRHRDSN", CmdUnicodeChar, 0xDA + 864},
-    {"CYRERY", CmdUnicodeChar, 0xDB + 864},
-    {"CYRSFTSN", CmdUnicodeChar, 0xDC + 864},
-    {"CYREREV", CmdUnicodeChar, 0xDD + 864},
-    {"CYRYU", CmdUnicodeChar, 0xDE + 864},
-    {"CYRYA", CmdUnicodeChar, 0xDF + 864},
-    {"cyra", CmdUnicodeChar, 0xE0 + 864},
-    {"cyrb", CmdUnicodeChar, 0xE1 + 864},
-    {"cyrv", CmdUnicodeChar, 0xE2 + 864},
-    {"cyrg", CmdUnicodeChar, 0xE3 + 864},
-    {"cyrd", CmdUnicodeChar, 0xE4 + 864},
-    {"cyre", CmdUnicodeChar, 0xE5 + 864},
-    {"cyrzh", CmdUnicodeChar, 0xE6 + 864},
-    {"cyrz", CmdUnicodeChar, 0xE7 + 864},
-    {"cyri", CmdUnicodeChar, 0xE8 + 864},
-    {"cyrishrt", CmdUnicodeChar, 0xE9 + 864},
-    {"cyrk", CmdUnicodeChar, 0xEA + 864},
-    {"cyrl", CmdUnicodeChar, 0xEB + 864},
-    {"cyrm", CmdUnicodeChar, 0xEC + 864},
-    {"cyrn", CmdUnicodeChar, 0xED + 864},
-    {"cyro", CmdUnicodeChar, 0xEE + 864},
-    {"cyrp", CmdUnicodeChar, 0xEF + 864},
-    {"cyrr", CmdUnicodeChar, 0xF0 + 864},
-    {"cyrs", CmdUnicodeChar, 0xF1 + 864},
-    {"cyrt", CmdUnicodeChar, 0xF2 + 864},
-    {"cyru", CmdUnicodeChar, 0xF3 + 864},
-    {"cyrf", CmdUnicodeChar, 0xF4 + 864},
-    {"cyrh", CmdUnicodeChar, 0xF5 + 864},
-    {"cyrc", CmdUnicodeChar, 0xF6 + 864},
-    {"cyrch", CmdUnicodeChar, 0xF7 + 864},
-    {"cyrsh", CmdUnicodeChar, 0xF8 + 864},
-    {"cyrchsh", CmdUnicodeChar, 0xF9 + 864},
-    {"cyrhrdsn", CmdUnicodeChar, 0xFA + 864},
-    {"cyrery", CmdUnicodeChar, 0xFB + 864},
-    {"cyrsftsn", CmdUnicodeChar, 0xFC + 864},
-    {"cyrerev", CmdUnicodeChar, 0xFD + 864},
-    {"cyryu", CmdUnicodeChar, 0xFE + 864},
-    {"cyrya", CmdUnicodeChar, 0xFF + 864},
-    {"", NULL, 0}
+	{"cyr", CmdFontEncoding, ENCODING_OT2},
+	{"CYRYO",CmdUnicodeChar,0x0401},
+	{"CYRDJE",CmdUnicodeChar,0x0402},
+	{"CYRIE",CmdUnicodeChar,0x0404},
+	{"CYRDZE",CmdUnicodeChar,0x0405},
+	{"CYRII",CmdUnicodeChar,0x0406},
+	{"CYRYI",CmdUnicodeChar,0x0407},
+	{"CYRJE",CmdUnicodeChar,0x0408},
+	{"CYRLJE",CmdUnicodeChar,0x0409},
+	{"CYRNJE",CmdUnicodeChar,0x040A},
+	{"CYRTSHE",CmdUnicodeChar,0x040B},
+	{"CYRUSHRT",CmdUnicodeChar,0x040E},
+	{"CYRDZHE",CmdUnicodeChar,0x040F},
+	{"CYRA",CmdUnicodeChar,0x0410},
+	{"CYRB",CmdUnicodeChar,0x0411},
+	{"CYRV",CmdUnicodeChar,0x0412},
+	{"CYRG",CmdUnicodeChar,0x0413},
+	{"CYRD",CmdUnicodeChar,0x0414},
+	{"CYRE",CmdUnicodeChar,0x0415},
+	{"CYRZH",CmdUnicodeChar,0x0416},
+	{"CYRZ",CmdUnicodeChar,0x0417},
+	{"CYRI",CmdUnicodeChar,0x0418},
+	{"CYRISHRT",CmdUnicodeChar,0x0419},
+	{"CYRK",CmdUnicodeChar,0x041A},
+	{"CYRL",CmdUnicodeChar,0x041B},
+	{"CYRM",CmdUnicodeChar,0x041C},
+	{"CYRN",CmdUnicodeChar,0x041D},
+	{"CYRO",CmdUnicodeChar,0x041E},
+	{"CYRP",CmdUnicodeChar,0x041F},
+	{"CYRR",CmdUnicodeChar,0x0420},
+	{"CYRS",CmdUnicodeChar,0x0421},
+	{"CYRT",CmdUnicodeChar,0x0422},
+	{"CYRU",CmdUnicodeChar,0x0423},
+	{"CYRF",CmdUnicodeChar,0x0424},
+	{"CYRH",CmdUnicodeChar,0x0425},
+	{"CYRC",CmdUnicodeChar,0x0426},
+	{"CYRCH",CmdUnicodeChar,0x0427},
+	{"CYRSH",CmdUnicodeChar,0x0428},
+	{"CYRSHCH",CmdUnicodeChar,0x0429},
+	{"CYRHRDSN",CmdUnicodeChar,0x042A},
+	{"CYRERY",CmdUnicodeChar,0x042B},
+	{"CYRSFTSN",CmdUnicodeChar,0x042C},
+	{"CYREREV",CmdUnicodeChar,0x042D},
+	{"CYRYU",CmdUnicodeChar,0x042E},
+	{"CYRYA",CmdUnicodeChar,0x042F},
+	{"cyra",CmdUnicodeChar,0x0430},
+	{"cyrb",CmdUnicodeChar,0x0431},
+	{"cyrv",CmdUnicodeChar,0x0432},
+	{"cyrg",CmdUnicodeChar,0x0433},
+	{"cyrd",CmdUnicodeChar,0x0434},
+	{"cyre",CmdUnicodeChar,0x0435},
+	{"cyrzh",CmdUnicodeChar,0x0436},
+	{"cyrz",CmdUnicodeChar,0x0437},
+	{"cyri",CmdUnicodeChar,0x0438},
+	{"cyrishrt",CmdUnicodeChar,0x0439},
+	{"cyrk",CmdUnicodeChar,0x043A},
+	{"cyrl",CmdUnicodeChar,0x043B},
+	{"cyrm",CmdUnicodeChar,0x043C},
+	{"cyrn",CmdUnicodeChar,0x043D},
+	{"cyro",CmdUnicodeChar,0x043E},
+	{"cyrp",CmdUnicodeChar,0x043F},
+	{"cyrr",CmdUnicodeChar,0x0440},
+	{"cyrs",CmdUnicodeChar,0x0441},
+	{"cyrt",CmdUnicodeChar,0x0442},
+	{"cyru",CmdUnicodeChar,0x0443},
+	{"cyrf",CmdUnicodeChar,0x0444},
+	{"cyrh",CmdUnicodeChar,0x0445},
+	{"cyrc",CmdUnicodeChar,0x0446},
+	{"cyrch",CmdUnicodeChar,0x0447},
+	{"cyrsh",CmdUnicodeChar,0x0448},
+	{"cyrshch",CmdUnicodeChar,0x0449},
+	{"cyrhrdsn",CmdUnicodeChar,0x044A},
+	{"cyrery",CmdUnicodeChar,0x044B},
+	{"cyrsftsn",CmdUnicodeChar,0x044C},
+	{"cyrerev",CmdUnicodeChar,0x044D},
+	{"cyryu",CmdUnicodeChar,0x044E},
+	{"cyrya",CmdUnicodeChar,0x044F},
+	{"cyryo",CmdUnicodeChar,0x0451},
+	{"cyrdje",CmdUnicodeChar,0x0452},
+	{"cyrie",CmdUnicodeChar,0x0454},
+	{"cyrdze",CmdUnicodeChar,0x0455},
+	{"cyrii",CmdUnicodeChar,0x0456},
+	{"cyryi",CmdUnicodeChar,0x0457},
+	{"cyrje",CmdUnicodeChar,0x0458},
+	{"cyrlje",CmdUnicodeChar,0x0459},
+	{"cyrnje",CmdUnicodeChar,0x045A},
+	{"cyrtshe",CmdUnicodeChar,0x045B},
+	{"cyrushrt",CmdUnicodeChar,0x045E},
+	{"cyrdzhe",CmdUnicodeChar,0x045F},
+	{"CYRYAT",CmdUnicodeChar,0x0462},
+	{"cyryat",CmdUnicodeChar,0x0463},
+	{"CYRBYUS",CmdUnicodeChar,0x046A},
+	{"cyrbyus",CmdUnicodeChar,0x046B},    
+	{"CYRFITA",CmdUnicodeChar,0x0472},    
+	{"cyrfita",CmdUnicodeChar,0x0473},    
+	{"CYRIZH",CmdUnicodeChar,0x0474},    
+	{"cyrizh",CmdUnicodeChar,0x0475},    
+	{"U", CmdWideBreveChar, 0},
+	{"", NULL, 0}
 };
 
 /********************************************************************/
@@ -974,88 +1009,6 @@ static CommandArray ignoreCommands[] = {
     {"", NULL, 0}
 };
 
-int CallCommandFunc(char *cCommand)
-
-/****************************************************************************
-purpose: Tries to call the command-function for the commandname
-params:  string with command name
-returns: success or failure
-globals: command-functions have side effects or recursive calls
- ****************************************************************************/
-{
-    int iCommand, iEnv,user_def_index;
-    char *macro_string;
-
-    diagnostics(5, "CallCommandFunc seeking <%s> (%d environments to look through)", cCommand, iEnvCount);
-
-    user_def_index = existsDefinition(cCommand);
-    if (user_def_index > -1) {
-        macro_string = expandDefinition(user_def_index);
-        diagnostics(5, "CallCommandFunc <%s> expanded to <%s>", cCommand, macro_string);
-        ConvertString(macro_string);
-        free(macro_string);
-        return TRUE;
-    }
-
-    /* search backwards through chain of environments*/
-    for (iEnv = iEnvCount - 1; iEnv >= 0; iEnv--) {
-    
-        /* test every command in the current enviroment */
-        iCommand = 0;
-        while (strcmp(Environments[iEnv][iCommand].cmd_name, "") != 0) {
-
-          /*  if (iCommand<10)
-                diagnostics(8,"CallCommandFunc (%d,%3d) Trying %s",iEnv,iCommand,Environments[iEnv][iCommand].cmd_name);
-        */
-        
-            if (strcmp(Environments[iEnv][iCommand].cmd_name, cCommand) == 0) {
-                if (Environments[iEnv][iCommand].func == NULL)
-                    return FALSE;
-                if (*Environments[iEnv][iCommand].func == CmdIgnoreParameter) {
-                    diagnostics(2, "Unknown command '\\%s'", cCommand);
-                }
-
-                diagnostics(5, "CallCommandFunc Found '%s' iEnvCommand=%d number=%d", Environments[iEnv][iCommand].cmd_name, iEnv, iCommand);
-                (*Environments[iEnv][iCommand].func) ((Environments[iEnv][iCommand].param));
-                return TRUE;    /* Command Function found */
-            }
-            ++iCommand;
-        }
-    }
-    return FALSE;
-}
-
-
-void CallParamFunc(char *cCommand, int AddParam)
-
-/****************************************************************************
-purpose: Try to call the environment-function for the commandname
-params:  cCommand - string with command name
-     AddParam - param "ORed"(||) to the int param of command-funct
-returns: sucess or not
-globals: command-functions have side effects or recursive calls
- ****************************************************************************/
-{
-    int i = 0;
-    char unknown_environment[100];
-
-    while (strcmp(params[i].cmd_name, "") != 0) {
-        if (strcmp(params[i].cmd_name, cCommand) == 0) {
-            assert(params[i].func != NULL);
-            (*params[i].func) ((params[i].param) | AddParam);
-            return;             /* command function found */
-        }
-        ++i;
-    }
-
-    /* unknown environment must be ignored */
-    if (AddParam == ON) {
-        snprintf(unknown_environment, 100, "\\%s%s%s", "end{", cCommand, "}");
-        Ignore_Environment(cCommand);
-        diagnostics(WARNING, "Unknown environment \\begin{%s} ... \\end{%s}", cCommand, cCommand);
-    }
-}
-
 int CurrentEnvironmentCount(void)
 
 /****************************************************************************
@@ -1124,18 +1077,9 @@ static char *EnvironmentName(CommandArray *code)
 }
 
 /****************************************************************************
-purpose: returns a name for the current environment number
- ****************************************************************************/
-static char *EnvironmentNameByNumber(int n)
-{
-    if (n<0) return "";
-    return EnvironmentName(Environments[n]);
-}
-
-/****************************************************************************
 purpose: prints the names of all the current environments
  ****************************************************************************/
-/*
+#if 0
 static void WriteEnvironmentStack(void)
 {
     int i;
@@ -1143,11 +1087,102 @@ static void WriteEnvironmentStack(void)
         
     for (i=0; i<iEnvCount; i++) {
         s=EnvironmentName(Environments[i]);
-        diagnostics(WARNING, "Environments[%2d]=\"%12s\"", i, s);
+        diagnostics(6, "Environments[%2d]=\"%12s\"", i, s);
         free(s);
     }
 }
-*/
+#endif
+
+int CallCommandFunc(char *cCommand)
+
+/****************************************************************************
+purpose: Tries to call the command-function for the commandname
+params:  string with command name
+returns: success or failure
+globals: command-functions have side effects or recursive calls
+ ****************************************************************************/
+{
+    int iCommand, iEnv,user_def_index;
+    char *macro_string;
+
+    diagnostics(6, "CallCommandFunc seeking <%s> (%d environments to look through)", cCommand, iEnvCount);
+
+    user_def_index = existsDefinition(cCommand);
+    if (user_def_index > -1) {
+        macro_string = expandDefinition(user_def_index);
+        diagnostics(5, "CallCommandFunc <%s> expanded to <%s>", cCommand, macro_string);
+        ConvertString(macro_string);
+        free(macro_string);
+        return TRUE;
+    }
+
+    /* search backwards through chain of environments*/
+    for (iEnv = iEnvCount - 1; iEnv >= 0; iEnv--) {
+    
+        /* test every command in the current enviroment */
+        iCommand = 0;
+        while (strcmp(Environments[iEnv][iCommand].cmd_name, "") != 0) {
+
+            /*if (iCommand<3)
+                diagnostics(1,"CallCommandFunc (%d,%3d) Trying %s",iEnv,iCommand,Environments[iEnv][iCommand].cmd_name);
+            */
+        
+            if (strcmp(Environments[iEnv][iCommand].cmd_name, cCommand) == 0) {
+                if (Environments[iEnv][iCommand].func == NULL)
+                    return FALSE;
+                if (*Environments[iEnv][iCommand].func == CmdIgnoreParameter) {
+                    diagnostics(2, "Unknown command '\\%s'", cCommand);
+                }
+
+                diagnostics(5, "CallCommandFunc Found '%s' iEnvCommand=%d number=%d", Environments[iEnv][iCommand].cmd_name, iEnv, iCommand);
+                (*Environments[iEnv][iCommand].func) ((Environments[iEnv][iCommand].param));
+                return TRUE;    /* Command Function found */
+            }
+            ++iCommand;
+        }
+    }
+    return FALSE;
+}
+
+
+void CallParamFunc(char *cCommand, int AddParam)
+
+/****************************************************************************
+purpose: Try to call the environment-function for the commandname
+params:  cCommand - string with command name
+     AddParam - param "ORed"(||) to the int param of command-funct
+returns: sucess or not
+globals: command-functions have side effects or recursive calls
+ ****************************************************************************/
+{
+    int i = 0;
+    char unknown_environment[100];
+
+    while (strcmp(params[i].cmd_name, "") != 0) {
+        if (strcmp(params[i].cmd_name, cCommand) == 0) {
+            assert(params[i].func != NULL);
+            (*params[i].func) ((params[i].param) | AddParam);
+            return;             /* command function found */
+        }
+        ++i;
+    }
+
+    /* unknown environment must be ignored */
+    if (AddParam == ON) {
+        snprintf(unknown_environment, 100, "\\%s%s%s", "end{", cCommand, "}");
+        Ignore_Environment(cCommand);
+        diagnostics(WARNING, "Unknown environment \\begin{%s} ... \\end{%s}", cCommand, cCommand);
+    }
+}
+
+/****************************************************************************
+purpose: returns a name for the current environment number
+ ****************************************************************************/
+static char *EnvironmentNameByNumber(int n)
+{
+    if (n<0) return "";
+    return EnvironmentName(Environments[n]);
+}
 
 void PushEnvironment(int code)
 
@@ -1257,7 +1292,7 @@ globals: changes Environment - array of active environments
     diagnostics(4, "\\begin{%s} [%d]", diag, iEnvCount-1);
     free(diag);
 
-  /*  WriteEnvironmentStack();*/
+/*    WriteEnvironmentStack();*/
 }
 
 /****************************************************************************
@@ -1287,5 +1322,5 @@ void PopEnvironment(void)
     free(this_env);
     free(last_env);
     
-  /*  WriteEnvironmentStack(); */
+/*    WriteEnvironmentStack(); */
 }

@@ -35,8 +35,9 @@ enum {
     ENCODING_UTF8
 };
 
-void CmdChar(int code);
 
+void CmdOT2Transliteration(int cThis);
+void CmdChar(int code);
 void WriteEightBitChar(unsigned char cThis, FILE *f);
 
 #endif

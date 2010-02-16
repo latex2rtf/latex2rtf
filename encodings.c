@@ -33,6 +33,230 @@ Authors:
 #include "fonts.h"
 #include "chars.h"
 #include "parser.h"
+#include "vertical.h"
+
+/*
+Cyrillic letters with one-letter Roman equivalents can be entered `as
+is': {\cyr a, b, v, g}, etc. This is also true for some letter
+sequences that are treated as ligatures by the \LaTeX\ Cyrillic
+fonts ({\cyr dj, zh, lj, nj, kh, ts, ch, sh, shch, yu} and {\cyr
+ya}). Note that if you want to write the letter combination {\cyr
+t{}s} you have to write \texttt{t\{\}s} in order not to produce a
+{\cyr ts}.
+*/
+
+void CmdOT2Transliteration(int cThis)
+{
+	int cNext,cThird;
+	switch (cThis) {
+		case 'd':
+			cNext = getTexChar();
+			if (cNext == 'j')
+				CmdUnicodeChar(0x0452); /* dj */
+			else {
+				ungetTexChar(cNext);
+				CmdUnicodeChar(ot2Unicode[cThis]);
+			}
+			break;
+		case 'z':
+			cNext = getTexChar();
+			if (cNext == 'h')
+				CmdUnicodeChar(0x0436);  /*zh*/
+			else {
+				ungetTexChar(cNext);
+				CmdUnicodeChar(ot2Unicode[cThis]);
+			}
+			break;
+		case 'l':
+			cNext = getTexChar();
+			if (cNext == 'j')
+				CmdUnicodeChar(0x0459);  /*lj*/
+			else {
+				ungetTexChar(cNext);
+				CmdUnicodeChar(ot2Unicode[cThis]);
+			}
+			break;
+		case 'n':
+			cNext = getTexChar();
+			if (cNext == 'j')
+				CmdUnicodeChar(0x045A); /*nj */
+			else {
+				ungetTexChar(cNext);
+				CmdUnicodeChar(ot2Unicode[cThis]);
+			}
+			break;
+		case 'k':
+			cNext = getTexChar();
+			if (cNext == 'h')
+				CmdUnicodeChar(0x0445);
+			else {
+				ungetTexChar(cNext);
+				CmdUnicodeChar(ot2Unicode[cThis]);
+			}
+			break;
+		case 't':
+			cNext = getTexChar();
+			if (cNext == 's')
+				CmdUnicodeChar(0x0446); /* ts */
+			else {
+				ungetTexChar(cNext);
+				CmdUnicodeChar(ot2Unicode[cThis]);
+			}
+			break;
+		case 'c':
+			cNext = getTexChar();
+			if (cNext == 'h')
+				CmdUnicodeChar(0x0447); /*ch*/
+			else {
+				ungetTexChar(cNext);
+				CmdUnicodeChar(ot2Unicode[cThis]);
+			}
+			break;
+		case 's':
+			cNext = getTexChar();
+			if (cNext != 'h') {
+				CmdUnicodeChar(ot2Unicode[cThis]); /*s*/
+				ungetTexChar(cNext);
+				break;
+			}
+			cThird = getTexChar();
+			if (cThird != 'c') {
+				CmdUnicodeChar(0x0448);  /*sh*/
+				ungetTexChar(cThird);
+				break;
+			}
+			cNext = getTexChar();
+			if (cNext != 'h') {
+				CmdUnicodeChar(0x0448);  /*sh*/
+				CmdUnicodeChar(ot2Unicode[cThird]); /*c*/
+				ungetTexChar(cNext);
+				break;
+			}
+			CmdUnicodeChar(0x0449);  /*shch*/
+			break;
+		case 'y':
+			cNext = getTexChar();
+			if (cNext == 'a') {
+				CmdUnicodeChar(0x044F); /*ya*/
+				ungetTexChar(cNext);
+				break;
+			}
+			if (cNext == 'u') {
+				CmdUnicodeChar(0x044E); /*yu*/
+				ungetTexChar(cNext);
+				break;
+			}
+			CmdUnicodeChar(ot2Unicode[cThis]); /*y*/
+			ungetTexChar(cNext);
+			break;
+
+		case 'D':
+			cNext = getTexChar();
+			if (cNext == 'j' || cNext == 'J')
+				CmdUnicodeChar(0x0402); /* dj */
+			else {
+				ungetTexChar(cNext);
+				CmdUnicodeChar(ot2Unicode[cThis]);
+			}
+			break;
+		case 'Z':
+			cNext = getTexChar();
+			if (cNext == 'h' || cNext == 'H')
+				CmdUnicodeChar(0x0416);  /*zh*/
+			else {
+				ungetTexChar(cNext);
+				CmdUnicodeChar(ot2Unicode[cThis]);
+			}
+			break;
+		case 'L':
+			cNext = getTexChar();
+			if (cNext == 'j' || cNext == 'J')
+				CmdUnicodeChar(0x0409);  /*lj*/
+			else {
+				ungetTexChar(cNext);
+				CmdUnicodeChar(ot2Unicode[cThis]);
+			}
+			break;
+		case 'N':
+			cNext = getTexChar();
+			if (cNext == 'j' || cNext == 'J')
+				CmdUnicodeChar(0x040A); /*nj */
+			else {
+				ungetTexChar(cNext);
+				CmdUnicodeChar(ot2Unicode[cThis]);
+			}
+			break;
+		case 'K':
+			cNext = getTexChar();
+			if (cNext == 'h' || cNext == 'H')
+				CmdUnicodeChar(0x0425);
+			else {
+				ungetTexChar(cNext);
+				CmdUnicodeChar(ot2Unicode[cThis]);
+			}
+			break;
+		case 'T':
+			cNext = getTexChar();
+			if (cNext == 's' || cNext == 'S')
+				CmdUnicodeChar(0x0426); /* ts */
+			else {
+				ungetTexChar(cNext);
+				CmdUnicodeChar(ot2Unicode[cThis]);
+			}
+			break;
+		case 'C':
+			cNext = getTexChar();
+			if (cNext == 'h' || cNext == 'H')
+				CmdUnicodeChar(0x0427); /*ch*/
+			else {
+				ungetTexChar(cNext);
+				CmdUnicodeChar(ot2Unicode[cThis]);
+			}
+			break;
+		case 'S':
+			cNext = getTexChar();
+			if (cNext != 'h' && cNext != 'H') {
+				CmdUnicodeChar(ot2Unicode[cThis]); /*s*/
+				ungetTexChar(cNext);
+				break;
+			}
+			cThird = getTexChar();
+			if (cThird != 'c' && cThird != 'c') {
+				CmdUnicodeChar(0x0428);  /*sh*/
+				ungetTexChar(cThird);
+				break;
+			}
+			cNext = getTexChar();
+			if (cNext != 'h' && cNext != 'H') {
+				CmdUnicodeChar(0x0428);  /*sh*/
+				CmdUnicodeChar(ot2Unicode[cThird]); /*c*/
+				ungetTexChar(cNext);
+				break;
+			}
+			CmdUnicodeChar(0x0429);  /*shch*/
+			break;
+		case 'Y':
+			cNext = getTexChar();
+			if (cNext == 'a' || cNext == 'A') {
+				CmdUnicodeChar(0x042F); /*ya*/
+				ungetTexChar(cNext);
+				break;
+			}
+			if (cNext == 'u' || cNext == 'U') {
+				CmdUnicodeChar(0x042E); /*yu*/
+				ungetTexChar(cNext);
+				break;
+			}
+			CmdUnicodeChar(ot2Unicode[cThis]); /*y*/
+			ungetTexChar(cNext);
+			break;
+
+		default:
+			CmdUnicodeChar(ot2Unicode[cThis]);
+			break;
+		}
+				
+}
 
 /******************************************************************************
  purpose: emits a character based on the TeX encoding

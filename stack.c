@@ -29,6 +29,7 @@ Authors:
 #include <stdlib.h>
 #include "main.h"
 #include "stack.h"
+#include "fonts.h"
 
 #define STACKSIZE 10000
 
@@ -187,6 +188,7 @@ void PushBrace(void)
 
 /*  diagnostics(6,"Pushing Brace Level");*/
     BasicPush(RecursionLevel, BraceLevel);
+    PushFontSettings();
     ++BraceLevel;
 }
 
@@ -202,6 +204,7 @@ int PopBrace(void)
 
     diagnostics(6, "Popping Brace Level");
     BraceLevel--;
+    PopFontSettings();
     PPopLevel = RecursionLevel;
 
     BasicPop(&PopLevel, &PopBrack);

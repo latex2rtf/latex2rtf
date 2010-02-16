@@ -331,10 +331,10 @@ int main(int argc, char **argv)
         /* remove .tex or .ltx if present */
         ext = basename + strlen(basename) - 4;
         if (strcmp(ext, ".tex") == 0 || strcmp(ext, ".ltx") == 0) {
-            g_tex_name = strdup_together(g_home_dir, basename);
+            g_tex_name = strdup(basename);
             *ext = '\0';
         } else 
-            g_tex_name = strdup_together3(g_home_dir, basename, ".tex");
+            g_tex_name = strdup_together(basename, ".tex");
         
         if (g_rtf_name == NULL) 
             g_rtf_name = strdup_together3(g_home_dir,basename,".rtf");

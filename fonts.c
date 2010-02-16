@@ -735,9 +735,12 @@ void PushFontSettings(void)
     RtfFontInfo[FontInfoDepth + 1].encoding = RtfFontInfo[FontInfoDepth].encoding;
     FontInfoDepth++;
 
-    diagnostics(6, "PushFontSettings depth=%d, family=%d, size=%d, shape=%d, series=%d",
+    diagnostics(6, "PushFontSettings depth=%2d, family=%2d, size=%2d, shape=%2d, series=%2d, encoding=%2d",
       FontInfoDepth, RtfFontInfo[FontInfoDepth].family,
-      RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape, RtfFontInfo[FontInfoDepth].series);
+      RtfFontInfo[FontInfoDepth].size, 
+      RtfFontInfo[FontInfoDepth].shape, 
+      RtfFontInfo[FontInfoDepth].series,
+      RtfFontInfo[FontInfoDepth].encoding);
 }
 
 void PopFontSettings(void)
@@ -746,9 +749,12 @@ void PopFontSettings(void)
         diagnostics(WARNING, "FontInfoDepth = 0, cannot PopFontSettings()!");
 
     FontInfoDepth--;
-    diagnostics(6, "PopFontSettings depth=%d, family=%d, size=%d, shape=%d, series=%d, encoding=%d",
+    diagnostics(6, "PopFontSettings  depth=%2d, family=%2d, size=%2d, shape=%2d, series=%2d, encoding=%2d",
       FontInfoDepth, RtfFontInfo[FontInfoDepth].family,
-      RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape, RtfFontInfo[FontInfoDepth].series);
+      RtfFontInfo[FontInfoDepth].size, 
+      RtfFontInfo[FontInfoDepth].shape, 
+      RtfFontInfo[FontInfoDepth].series,
+      RtfFontInfo[FontInfoDepth].encoding);
 }
 
 void MonitorFontChanges(const unsigned char *text)

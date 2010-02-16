@@ -92,7 +92,7 @@ TEST=  \
 	test/bib_apacite_dblsp.tex   test/enc_latin5.tex     test/german.tex        \
 	test/bib_apalike.tex         test/enc_latin9.tex     test/head_article.tex  \
 	test/bib_apalike2.tex        test/enc_maccyr.tex     test/head_book.tex     \
-	test/bib_apanat.tex          test/head_report.tex   \
+	test/bib_apanat.tex          test/head_report.tex                           \
 	test/bib_authordate.tex      test/enc_next.tex       test/hndout.sty        \
 	test/bib_harvard.bib         test/enc_utf8x.tex      test/ifclause.tex      \
 	test/bib_harvard.tex         test/endnote.tex        test/include.tex       \
@@ -118,15 +118,17 @@ TEST=  \
 	test/enc_cp1251.tex          test/fig_testb.pdf      test/tabular.tex       \
 	test/enc_cp1252.tex          test/fig_testb.ps       test/theorem.tex       \
 	test/enc_cp437.tex           test/fig_testc.pdf      test/ttgfsr7.tex       \
-	test/enc_cp850.tex           test/fig_testc.ps       test/ucsymbols.tex       \
+	test/enc_cp850.tex           test/fig_testc.ps       test/ucsymbols.tex     \
 	test/bib_apa.tex             test/bib_apa.bib        test/bib_apacite2.tex  \
 	test/bib_apacite2.bib        test/fig_subfig.tex     test/include4.tex      \
 	test/include5.tex            test/hyperref.tex       test/bib_super.bib     \
 	test/longstack.tex           test/table_array1.tex   test/table_array2.tex  \
 	test/bib_apacite3.tex        test/bib_apacite3.bib   test/color2.tex        \
-	test/fig_png.tex             test/fig_10x15.png      test/psfig.sty \
-	test/cyrillic.tex            test/greek.tex          test/direct.tex \
-	test/acronym.tex             test/acronym.bib        test/style.tex
+	test/fig_png.tex             test/fig_10x15.png      test/psfig.sty         \
+	test/cyrillic.tex            test/greek.tex          test/direct.tex        \
+	test/acronym.tex             test/acronym.bib        test/style.tex         \
+	test/enc_moroz_koi8.tex      test/enc_moroz_ot2.tex  test/enc_moroz_utf8.tex\
+	test/enc_ot2.tex      
 	
 OBJS=fonts.o direct.o encodings.o commands.o stack.o funct1.o tables.o \
 	chars.o ignore.o cfg.o main.o utils.o parser.o lengths.o counters.o \

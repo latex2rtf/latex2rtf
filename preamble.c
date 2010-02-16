@@ -86,29 +86,30 @@ void ExecGeomOptions (char *option, char *value1, char *value2);
 
 void setPackageBabel(char *option)
 {
-    if (strcmp(option, "german") == 0 || strcmp(option, "ngerman") == 0) {
+
+   if (strstr(option, "german")) { /* also catches ngerman */
         GermanMode = TRUE;
         PushEnvironment(GERMAN_MODE);
         ReadLanguage("german");
     }
 
-    if (strcmp(option, "french") == 0 || strcmp(option, "frenchb") == 0) {
+    if (strstr(option, "french")) { /* also frenchb */
         FrenchMode = TRUE;
         PushEnvironment(FRENCH_MODE);
         ReadLanguage("french");
     }
 
-    if (strcmp(option, "russian") == 0) {
+    if (strstr(option, "russian")) {
         RussianMode = TRUE;
         PushEnvironment(RUSSIAN_MODE);
         ReadLanguage("russian");
     }
 
-    if (strcmp(option, "spanish") == 0) {
+    if (strstr(option, "spanish")) {
         ReadLanguage("spanish");
     }
 
-    if (strcmp(option, "czech") == 0) {
+    if (strstr(option, "czech")) {
         CzechMode = TRUE;
         PushEnvironment(CZECH_MODE);
         ReadLanguage("czech");
@@ -143,8 +144,6 @@ void setPackageInputenc(char *option)
     	CmdFontEncoding(ENCODING_APPLE_CYRILLIC);
     else if (strstr(option, "macce"))
     	CmdFontEncoding(ENCODING_APPLE_CE);
-    else if (strstr(option, "ot2enc"))
-    	CmdFontEncoding(ENCODING_OT2);
     else if (strstr(option, "koi8-r"))
     	CmdFontEncoding(ENCODING_KOI8_R);
     else if (strstr(option, "koi8-u"))
@@ -173,6 +172,8 @@ void setPackageInputenc(char *option)
     	CmdFontEncoding(ENCODING_RAW);
 	else if (strstr(option, "utf8"))
     	CmdFontEncoding(ENCODING_UTF8);
+	else if (strstr(option, "ot2enc"))
+        setPackageBabel("russian");    	
     else
         diagnostics(WARNING, "Input Encoding <%s> not supported", option);
 }

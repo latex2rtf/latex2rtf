@@ -725,6 +725,35 @@ void CmdBreveChar(int code)
     free(cParam);
 }
 
+/*****************************************************************************
+ purpose: converts \U{i} ... probably specific to ot2
+ ******************************************************************************/
+void CmdWideBreveChar(int code)
+{
+    char *cParam = getBraceParam();
+    
+    switch (cParam[0]) {
+        case 'U':
+			CmdUnicodeChar(0x040E);
+			break;
+        case 'I':
+			CmdUnicodeChar(0x0419);
+			break;
+        case 'i':
+			CmdUnicodeChar(0x0439);
+			break;
+        case 'u':
+			CmdUnicodeChar(0x0439);
+			break;
+		default:
+			ConvertString(cParam);
+			fprintRTF("\\u774u");  /* unicode combining character 0x0306 */
+			break;
+	}
+		
+    free(cParam);
+}
+
 /******************************************************************************
  purpose: converts \v{a}
           need something that looks like \\O(a,\\S(\f1\'da)) in RTF file

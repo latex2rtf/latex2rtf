@@ -20,6 +20,7 @@ void CmdHatChar(int code);
 void CmdMacronChar(int code);
 void CmdVecChar(int code);
 void CmdBreveChar(int code);
+void CmdWideBreveChar(int code);
 void CmdDotChar(int code);
 void CmdUnderbarChar(int code);
 void CmdDotlessChar(int code);

@@ -1,0 +1,57 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%    -*- mode: LaTeX; coding: koi8-r; -*-
+%%%  Moroz_koi koi.tex   %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%  Date:   9-Aug-2002
+%%  Author: wd (Wolfgang.Dobler@ncl.ac.uk)
+%
+
+\documentclass[a4paper,12pt]{article}
+
+\usepackage[T2A]{fontenc}
+\usepackage[koi8-r]{inputenc}
+\usepackage[russian]{babel}
+
+\sloppy                         % Hyphenation is a problem..
+
+\author{A. S. Pushkin}
+\title{Зимнее утро (winter morning)}
+
+\begin{document}
+\maketitle
+
+\section{A section}
+
+\noindent
+Мороз и солнце, день чудесный!\\
+Ещ\"е ты дремлешь, друг прелестный?\\
+Пора, красавица, проснись!
+
+\subsection{Accented characters}
+You can still use accents and diacritica as usual:
+\begin{quote}
+  \"Uberm\"a{\ss}iger Lik\"orgenuss in der \"Offentlichkeit f\"uhrt
+  zu \"Arger 
+\end{quote}
+\begin{quote}
+  \^Etre ou ne pas \^etre --- c'est une question tr\`es int\'eressante
+  en Fran\c{c}ais
+\end{quote}
+
+\subsection{Шрифты}
+{\sc Конечно} {\bf все} {\em варианты} {\TeX}овских {\sl шрифтов}
+доступны и с {\sf кириллицей}.
+
+\end{document}
+
+%% Emacs-Mule quick reference:
+%% C-\           toggles input methods (cyrillic/ascii)
+%% C-x RET C-\   switches to (yet) another input method
+%% C-x RET f     changes the buffer-coding system
+
+
+% Make Emacs switch to russian keyboard layout
+%
+%% [Better not to use this 1] Local Variables:
+%% [Better not to use this 2] eval: (set-input-method 'cyrillic-jcuken)
+%% [Better not to use this 3] End:

@@ -39,7 +39,8 @@ ENC_TESTS= 	enc_applemac.rtf enc_cp437.rtf  enc_cp865.rtf    enc_latin2.rtf enc_
 			enc_cp1250.rtf   enc_cp850.rtf  enc_decmulti.rtf enc_latin3.rtf enc_latin9.rtf\
 			enc_cp1252.rtf   enc_cp852.rtf  enc_latin1.rtf   enc_latin4.rtf enc_next.rtf\
 			enc_cp1251.rtf   enc_cp855.rtf  enc_cp866.rtf    enc_koi8-r.rtf enc_koi8-u.rtf \
-			enc_maccyr.rtf   eqns-koi8.rtf 	enc_utf8x.rtf
+			enc_maccyr.rtf   eqns-koi8.rtf 	enc_utf8x.rtf    enc_ot2.rtf    enc_moroz_koi8.rtf \
+			enc_moroz_utf8.rtf enc_moroz_ot2.rtf
 
 BABEL_TESTS=babel_german.rtf babel_russian.rtf babel_czech.rtf babel_french.rtf \
 	        babel_frenchb.rtf # babel_spanish.rtf 

@@ -174,14 +174,7 @@ purpose: converts inputfile and writes result to outputfile
             }
             
             diagnostics(4,"(flag = 0x%X) char value = 0X%04X or %u (%u bytes)", (unsigned char) cThis, value, value, len);
-
-            /* values above 0x8000 must be negative! */
-            if (value < 0x8000)
-                fprintRTF("\\u%d?", value);
-            else
-                fprintRTF("\\u%d?", (uint16_t)(value-0x10000));
-                
-                
+            CmdUnicodeChar(value);
         }                       
         else
 
@@ -532,9 +525,13 @@ purpose: converts inputfile and writes result to outputfile
                 
 
                 } else {
-
-                    changeTexMode(MODE_HORIZONTAL);
-                    fprintRTF("%c", cThis);
+                    if (getTexMode()==MODE_VERTICAL) 
+                        changeTexMode(MODE_HORIZONTAL);
+                        
+                    if (CurrentFontEncoding() != ENCODING_OT2)
+                        fprintRTF("%c", cThis);
+                    else
+                        CmdOT2Transliteration(cThis);
                 }
                 break;
         }
