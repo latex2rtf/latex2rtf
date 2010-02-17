@@ -347,13 +347,14 @@ static char *SysGraphicsConvert(int opt, int offset, uint16_t dpi, const char *i
         }
         
         if (opt == CONVERT_PDF) {
-                #ifdef __APPLE__
+/*              #ifdef __APPLE__
                 char format_apple[] = "/usr/bin/sips -s format png -s dpiHeight %d -s dpiWidth %d --out '%s' '%s' > /dev/null";
                 snprintf(cmd, N, format_apple, dpi, dpi, out_tmp, in);
                 #else
-                char format_unix[] = "gs -q -dNOPAUSE -dSAFER -dBATCH -sDEVICE=pngalpha -r%d -sOutputFile='%s' '%s'";
+*/
+				char format_unix[] = "gs -q -dNOPAUSE -dSAFER -dBATCH -sDEVICE=pngalpha -r%d -sOutputFile='%s' '%s'";
                 snprintf(cmd, N, format_unix, dpi, out_tmp, in);
-                #endif
+/*                #endif */
         }
 
 #else
