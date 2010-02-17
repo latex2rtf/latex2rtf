@@ -119,14 +119,31 @@ int TryVariableIgnore(const char *command)
         
     } else if (strcmp(RtfCommand, "ENVCMD") == 0) {
         PushEnvironment(IGNORE_MODE);
-        
+#if 0 
+    /* this doesn't seem to happen at all */
     } else if (strcmp(RtfCommand, "PACKAGE") == 0) {
-    
+        diagnostics("TryVariableIgnore(%s) %s",command,RtfCommand);
+#endif        
     } 
     
     return TRUE;
 }
 
+int TryPackageIgnore(const char *package) {
+    const char *RtfCommand;
+    char *TexCommand;
+    int  result = FALSE;
+    
+    diagnostics(4, "trying to ignore '%s'", package);
+    
+    TexCommand = strdup_together("\\", package);
+    RtfCommand = SearchCfgRtf(TexCommand, IGNORE_A);
+    free(TexCommand);
+
+    if (NULL != RtfCommand)
+        result = (0 == strcmp(RtfCommand,"PACKAGE"));
+    return result;
+}
 /******************************************************************************
   purpose: function, which ignores an unconvertable environment in LaTex
            and writes text unchanged into the Rtf-file.

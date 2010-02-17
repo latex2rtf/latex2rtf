@@ -409,7 +409,9 @@ static void setDocumentOptions(char *optionlist)
 
 /*      while (*option == ' ') option++;  skip leading blanks */
         diagnostics(2, " (setDocumentOptions) option <%s>", option);
-        if (strcmp(option, "10pt") == 0 || strcmp(option, "11pt") == 0 || strcmp(option, "12pt") == 0)
+        if (TryPackageIgnore(option)) {
+            /* silently ignore */
+        } else if (strcmp(option, "10pt") == 0 || strcmp(option, "11pt") == 0 || strcmp(option, "12pt") == 0)
             setPointSize(option);
         else if (strcmp(option, "a4"         ) == 0 ||
                  strcmp(option, "a4paper"    ) == 0 ||
@@ -481,16 +483,8 @@ static void setDocumentOptions(char *optionlist)
                    strcmp(option, "paralist"    ) == 0 ) {
             diagnostics(WARNING, "Incomplete support for package/option '%s' ", option);
 
-        } else if (strcmp(option, "textcomp"    ) == 0 || 
-                   strcmp(option, "fontenc"     ) == 0 ||
-                   strcmp(option, "eurosym"     ) == 0 ||
-                   strcmp(option, "ucs"         ) == 0 ||
-                   strcmp(option, "alltt"       ) == 0 ||
-                   strcmp(option, "url"         ) == 0 ||
-                   strcmp(option, "nameref"     ) == 0 ||
-                   strcmp(option, "amssymb"     ) == 0) {
-            /* do nothing ... but don't complain */
-        } else if (strcmp(option, "color") == 0) {
+        } 
+        else if (strcmp(option, "color") == 0) {
         	gColorPackage = 1;
         } else if (strcmp(option, "man") == 0 ||
                    strcmp(option, "jou") == 0) {
@@ -566,9 +560,12 @@ static void CmdUseOnepackage(char* package, char *options)
 {
      diagnostics(4, "CmdUseOnepackage \\usepackage[%s]{%s}", options, package);
 
+    if (TryPackageIgnore(package) == TRUE) 
+        return;
+    
     if (strcmp(package, "inputenc") == 0 && options)
         setPackageInputenc(options);
-    
+
     else if (strcmp(package, "graphics") == 0)
         g_graphics_package = GRAPHICS_GRAPHICS;
     
@@ -658,7 +655,7 @@ static void CmdUseOnepackage(char* package, char *options)
         UsePackageAcronym(options);
     } else if (strcmp(package,"ifpdf") == 0) {
         ConvertString("\\newif\\ifpdf");
-    } else{
+    } else {
         setDocumentOptions(package);
     }
 }
