@@ -146,8 +146,8 @@ void CmdUmlauteChar(int code)
             fprintRTF(" \\u776.");
             break;
         default:
-            ConvertString(cParam);
             fprintRTF("\\u776.");   /* unicode combining character 0x308*/
+            ConvertString(cParam);
 
             break;  
     }
@@ -209,8 +209,8 @@ void CmdGraveChar(int code)
             fprintRTF(" \\u768\\'60");
             break;
         default:
-            ConvertString(cParam);
             fprintRTF("\\u768\\'60");  /* unicode combining character 0x0300 */
+            ConvertString(cParam);
             break;  
     }
 
@@ -313,8 +313,8 @@ void CmdAcuteChar(int code)
             fprintRTF("\\'b4");
             break;
         default:
-            ConvertString(cParam);
             fprintRTF("\\u769\\'b4");   /* unicode combining character 0x0301 */
+            ConvertString(cParam);
             break;  
     }
             
@@ -345,8 +345,8 @@ void CmdDoubleAcuteChar(int code)
             putUnicodeChar(0x02,0xDD,'"');
             break;
         default:
-            ConvertString(cParam);
             fprintRTF("\\u779\"");  /* unicode combining character 0x030B */
+            ConvertString(cParam);
             break;  
     }
     
@@ -407,8 +407,8 @@ void CmdMacronChar(int code)
             fprintRTF("\\'5f");
             break;
         default:
-            ConvertString(cParam);
             fprintRTF("\\u772\\'5f");  /* unicode combining character 0x0304 */
+            ConvertString(cParam);
             break;  
     }
 
@@ -496,8 +496,8 @@ void CmdHatChar(int code)
             fprintRTF("\\'5e");
             break;
         default:
-            ConvertString(cParam);
             fprintRTF("\\u770\\'5e");  /* unicode combining character 0x0302 */
+            ConvertString(cParam);
             break;  
     }
         
@@ -534,8 +534,8 @@ void CmdRingChar(int code)
             fprintRTF("\\'b0");
             break;
         default:
-            ConvertString(cParam);
             fprintRTF("\\u778\\'b0");  /* unicode combining character 0x030A */
+            ConvertString(cParam);
             break;  
     }
         
@@ -587,8 +587,8 @@ void CmdTildeChar(int code)
             fprintRTF("\\'7e");
             break;
         default:
-            ConvertString(cParam);
             fprintRTF("\\u771\\'7e");  /* unicode combining character 0x0303 */
+            ConvertString(cParam);
             break;  
     }
         
@@ -661,8 +661,8 @@ void CmdCedillaChar(int code)
             fprintRTF("\\'b8");
             break;
         default:
-            ConvertString(cParam);
             fprintRTF("\\u807\\'b8");  /* unicode combining character 0x0327 */
+            ConvertString(cParam);
             break;  
     }
 
@@ -717,8 +717,8 @@ void CmdBreveChar(int code)
             putUnicodeChar(0x02,0xD8,'u');
             break;
         default:
-            ConvertString(cParam);
             fprintRTF("\\u774u");  /* unicode combining character 0x0306 */
+            ConvertString(cParam);
             break;  
     }
 
@@ -746,8 +746,8 @@ void CmdWideBreveChar(int code)
 			CmdUnicodeChar(0x0439);
 			break;
 		default:
-			ConvertString(cParam);
 			fprintRTF("\\u774u");  /* unicode combining character 0x0306 */
+			ConvertString(cParam);
 			break;
 	}
 		
@@ -866,8 +866,8 @@ void CmdCaronChar(int code)
             putUnicodeChar(0x02,0xC7,'-');
             break;
         default:
-            ConvertString(cParam);
             fprintRTF("\\u780-");  /* unicode combining character 0x030C */
+            ConvertString(cParam);
             break;  
     }
 
@@ -926,8 +926,8 @@ void CmdDotChar(int code)
             putUnicodeChar(0x02,0xD9,'.');
             break;
         default:
-            ConvertString(cParam);
             fprintRTF("\\u775."); /* unicode combining character 0x0307 */
+            ConvertString(cParam);
             break;  
     }
 
@@ -1053,8 +1053,8 @@ void CmdUnderdotChar(int code)
             fprintRTF(" \\u803.");
             break;
         default:
-            ConvertString(cParam);
             fprintRTF("\\u803."); /* unicode combining character 0x0323 */
+            ConvertString(cParam);
             break;  
     }
     
@@ -1066,9 +1066,12 @@ void CmdUnderdotChar(int code)
  ******************************************************************************/
 void CmdVecChar(int code)
 {
+	int n = RtfFontNumber("STIXGeneral");
     char *cParam = getBraceParam();
-    ConvertString(cParam);
+    fprintRTF("{\\f%d ",n);
     putUnicodeChar(0x20,0xD7,'-');  /* COMBINING RIGHT ARROW ABOVE */
+    fprintRTF("}");
+    ConvertString(cParam);
     free(cParam);
 }
 
@@ -1135,8 +1138,8 @@ void CmdUnderbarChar(int code)
             fprintRTF("_");
             break;
         default:
-            ConvertString(cParam);
             fprintRTF("\\u817_"); /* unicode combining character 0x0331 */
+            ConvertString(cParam);
             break;  
     }
         
