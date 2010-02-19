@@ -76,6 +76,7 @@ void CmdUnicodeChar(int code)
  ******************************************************************************/
 void CmdUmlauteChar(int code)
 {
+    int n = RtfFontNumber("STIXGeneral");
     char *cParam = getBraceParam();
 
     if (strcmp(cParam, "\\i") == 0) {
@@ -146,7 +147,8 @@ void CmdUmlauteChar(int code)
             fprintRTF(" \\u776.");
             break;
         default:
-            fprintRTF("\\u776.");   /* unicode combining character 0x308*/
+	    fprintRTF("{\\f%d",n);
+            fprintRTF("\\u776.}");   /* unicode combining character 0x308*/
             ConvertString(cParam);
 
             break;  
@@ -160,6 +162,7 @@ void CmdUmlauteChar(int code)
  ******************************************************************************/
 void CmdGraveChar(int code)
 {
+    int n = RtfFontNumber("STIXGeneral");
     char *cParam = getBraceParam();
 
     if (strcmp(cParam, "\\i") == 0) {
@@ -209,7 +212,8 @@ void CmdGraveChar(int code)
             fprintRTF(" \\u768\\'60");
             break;
         default:
-            fprintRTF("\\u768\\'60");  /* unicode combining character 0x0300 */
+	    fprintRTF("{\\f%d",n);
+            fprintRTF("\\u768\\'60}");  /* unicode combining character 0x0300 */
             ConvertString(cParam);
             break;  
     }
@@ -222,6 +226,7 @@ void CmdGraveChar(int code)
  ******************************************************************************/
 void CmdAcuteChar(int code)
 {
+    int n = RtfFontNumber("STIXGeneral");
     char *cParam = getBraceParam();
 
     if (strcmp(cParam, "\\i") == 0) {
@@ -313,7 +318,8 @@ void CmdAcuteChar(int code)
             fprintRTF("\\'b4");
             break;
         default:
-            fprintRTF("\\u769\\'b4");   /* unicode combining character 0x0301 */
+	    fprintRTF("{\\f%d",n);
+            fprintRTF("\\u769\\'b4}");   /* unicode combining character 0x0301 */
             ConvertString(cParam);
             break;  
     }
@@ -326,6 +332,7 @@ void CmdAcuteChar(int code)
  ******************************************************************************/
 void CmdDoubleAcuteChar(int code)
 {
+    int n = RtfFontNumber("STIXGeneral");
     char *cParam = getBraceParam();
 
     switch (cParam[0]) {
@@ -345,7 +352,8 @@ void CmdDoubleAcuteChar(int code)
             putUnicodeChar(0x02,0xDD,'"');
             break;
         default:
-            fprintRTF("\\u779\"");  /* unicode combining character 0x030B */
+	    fprintRTF("{\\f%d",n);
+            fprintRTF("\\u779\"}");  /* unicode combining character 0x030B */
             ConvertString(cParam);
             break;  
     }
@@ -358,6 +366,7 @@ void CmdDoubleAcuteChar(int code)
  ******************************************************************************/
 void CmdMacronChar(int code)
 {
+    int n = RtfFontNumber("STIXGeneral");
     char *cParam = getBraceParam();
 
     switch (cParam[0]) {
@@ -407,7 +416,8 @@ void CmdMacronChar(int code)
             fprintRTF("\\'5f");
             break;
         default:
-            fprintRTF("\\u772\\'5f");  /* unicode combining character 0x0304 */
+	    fprintRTF("{\\f%d",n);
+	    fprintRTF("\\u772-}");  /* unicode combining character 0x0304 */
             ConvertString(cParam);
             break;  
     }
@@ -420,6 +430,7 @@ void CmdMacronChar(int code)
  ******************************************************************************/
 void CmdHatChar(int code)
 {
+    int n = RtfFontNumber("STIXGeneral");
     char *cParam = getBraceParam();
         
     switch (cParam[0]) {
@@ -496,7 +507,8 @@ void CmdHatChar(int code)
             fprintRTF("\\'5e");
             break;
         default:
-            fprintRTF("\\u770\\'5e");  /* unicode combining character 0x0302 */
+	    fprintRTF("{\\f%d",n);
+	    fprintRTF("\\u770\\'5e}");  /* unicode combining character 0x0302 */
             ConvertString(cParam);
             break;  
     }
@@ -509,6 +521,7 @@ void CmdHatChar(int code)
  ******************************************************************************/
 void CmdRingChar(int code)
 {
+    int n = RtfFontNumber("STIXGeneral");
     char *cParam = getBraceParam();
     
     switch (cParam[0]) {
@@ -534,7 +547,8 @@ void CmdRingChar(int code)
             fprintRTF("\\'b0");
             break;
         default:
-            fprintRTF("\\u778\\'b0");  /* unicode combining character 0x030A */
+	    fprintRTF("{\\f%d",n);
+            fprintRTF("\\u778\\'b0}");  /* unicode combining character 0x030A */
             ConvertString(cParam);
             break;  
     }
@@ -547,6 +561,7 @@ void CmdRingChar(int code)
  ******************************************************************************/
 void CmdTildeChar(int code)
 {
+    int n = RtfFontNumber("STIXGeneral");
     char *cParam = getBraceParam();
     
     if (strcmp(cParam, "\\i") == 0) {
@@ -587,7 +602,8 @@ void CmdTildeChar(int code)
             fprintRTF("\\'7e");
             break;
         default:
-            fprintRTF("\\u771\\'7e");  /* unicode combining character 0x0303 */
+	    fprintRTF("{\\f%d",n);
+            fprintRTF("\\u771\\'7e}");  /* unicode combining character 0x0303 */
             ConvertString(cParam);
             break;  
     }
@@ -600,6 +616,7 @@ void CmdTildeChar(int code)
  ******************************************************************************/
 void CmdCedillaChar(int code)
 {
+    int n = RtfFontNumber("STIXGeneral");
     char *cParam = getBraceParam();
     
     switch (cParam[0]) {
@@ -661,7 +678,8 @@ void CmdCedillaChar(int code)
             fprintRTF("\\'b8");
             break;
         default:
-            fprintRTF("\\u807\\'b8");  /* unicode combining character 0x0327 */
+	    fprintRTF("{\\f%d",n);
+            fprintRTF("\\u807\\'b8}");  /* unicode combining character 0x0327 */
             ConvertString(cParam);
             break;  
     }
@@ -674,6 +692,7 @@ void CmdCedillaChar(int code)
  ******************************************************************************/
 void CmdBreveChar(int code)
 {
+    int n = RtfFontNumber("STIXGeneral");
     char *cParam = getBraceParam();
     
     switch (cParam[0]) {
@@ -717,7 +736,8 @@ void CmdBreveChar(int code)
             putUnicodeChar(0x02,0xD8,'u');
             break;
         default:
-            fprintRTF("\\u774u");  /* unicode combining character 0x0306 */
+	    fprintRTF("{\\f%d",n);
+            fprintRTF("\\u774u}");  /* unicode combining character 0x0306 */
             ConvertString(cParam);
             break;  
     }
@@ -760,6 +780,7 @@ void CmdWideBreveChar(int code)
  ******************************************************************************/
 void CmdCaronChar(int code)
 {
+    int n = RtfFontNumber("STIXGeneral");
     char *cParam = getBraceParam();
 
     switch (cParam[0]) {
@@ -866,7 +887,8 @@ void CmdCaronChar(int code)
             putUnicodeChar(0x02,0xC7,'-');
             break;
         default:
-            fprintRTF("\\u780-");  /* unicode combining character 0x030C */
+	    fprintRTF("{\\f%d",n);
+            fprintRTF("\\u780-}");  /* unicode combining character 0x030C */
             ConvertString(cParam);
             break;  
     }
@@ -880,6 +902,7 @@ void CmdCaronChar(int code)
  ******************************************************************************/
 void CmdDotChar(int code)
 {
+    int n = RtfFontNumber("STIXGeneral");
     char *cParam = getBraceParam();
         
     switch (cParam[0]) {
@@ -926,7 +949,8 @@ void CmdDotChar(int code)
             putUnicodeChar(0x02,0xD9,'.');
             break;
         default:
-            fprintRTF("\\u775."); /* unicode combining character 0x0307 */
+	    fprintRTF("{\\f%d",n);
+	    fprintRTF("\\u775.}"); /* unicode combining character 0x0307 */
             ConvertString(cParam);
             break;  
     }
@@ -1066,7 +1090,7 @@ void CmdUnderdotChar(int code)
  ******************************************************************************/
 void CmdVecChar(int code)
 {
-	int n = RtfFontNumber("STIXGeneral");
+    int n = RtfFontNumber("STIXGeneral");
     char *cParam = getBraceParam();
     fprintRTF("{\\f%d ",n);
     putUnicodeChar(0x20,0xD7,'-');  /* COMBINING RIGHT ARROW ABOVE */
