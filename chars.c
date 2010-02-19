@@ -417,7 +417,7 @@ void CmdMacronChar(int code)
             break;
         default:
 	    fprintRTF("{\\f%d",n);
-	    fprintRTF("\\u772-}");  /* unicode combining character 0x0304 */
+	    fprintRTF("\\u772\\'5f}");  /* unicode combining character 0x0304 */
             ConvertString(cParam);
             break;  
     }
@@ -750,6 +750,7 @@ void CmdBreveChar(int code)
  ******************************************************************************/
 void CmdWideBreveChar(int code)
 {
+    int n = RtfFontNumber("STIXGeneral");
     char *cParam = getBraceParam();
     
     switch (cParam[0]) {
@@ -766,7 +767,8 @@ void CmdWideBreveChar(int code)
 			CmdUnicodeChar(0x0439);
 			break;
 		default:
-			fprintRTF("\\u774u");  /* unicode combining character 0x0306 */
+			fprintRTF("{\\f%d",n);
+			fprintRTF("\\u774u}");  /* unicode combining character 0x0306 */
 			ConvertString(cParam);
 			break;
 	}
@@ -963,6 +965,7 @@ void CmdDotChar(int code)
  ******************************************************************************/
 void CmdUnderdotChar(int code)
 {
+    int n = RtfFontNumber("STIXGeneral");
     char *cParam = getBraceParam();
 
     if (strcmp(cParam, "\\i") == 0) {
@@ -1077,7 +1080,8 @@ void CmdUnderdotChar(int code)
             fprintRTF(" \\u803.");
             break;
         default:
-            fprintRTF("\\u803."); /* unicode combining character 0x0323 */
+	    fprintRTF("{\\f%d",n);
+            fprintRTF("\\u803.}"); /* unicode combining character 0x0323 */
             ConvertString(cParam);
             break;  
     }
