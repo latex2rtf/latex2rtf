@@ -236,6 +236,10 @@ realclean: checkdir clean
 	cd doc && $(MAKE) clean
 	cd test && $(MAKE) clean
 
+appleclean:
+	sudo xattr -r -d com.apple.FinderInfo ../trunk
+	sudo xattr -r -d com.apple.TextEncoding ../trunk
+	
 splint: 
 	splint -weak $(SRCS) $(HDRS)
 	
@@ -244,13 +248,13 @@ splint:
 # created using "make depend"
 commands.o: commands.c cfg.h main.h convert.h chars.h fonts.h preamble.h \
   funct1.h tables.h equations.h letterformat.h commands.h parser.h \
-  xrefs.h ignore.h lengths.h definitions.h graphics.h vertical.h labels.h \
-  acronyms.h biblio.h
+  xrefs.h ignore.h lengths.h definitions.h graphics.h vertical.h \
+  encodings.h labels.h acronyms.h biblio.h
 chars.o: chars.c main.h commands.h fonts.h cfg.h ignore.h encodings.h \
   parser.h chars.h funct1.h convert.h utils.h vertical.h fields.h
 direct.o: direct.c main.h direct.h fonts.h cfg.h utils.h
-encodings.o: encodings.c main.h encoding_tables.h fonts.h chars.h \
-  parser.h
+encodings.o: encodings.c main.h encoding_tables.h encodings.h fonts.h \
+  chars.h parser.h vertical.h
 fonts.o: fonts.c main.h convert.h fonts.h funct1.h commands.h cfg.h \
   parser.h stack.h vertical.h
 funct1.o: funct1.c main.h convert.h funct1.h commands.h stack.h fonts.h \
@@ -266,7 +270,7 @@ main.o: main.c main.h mygetopt.h convert.h commands.h chars.h fonts.h \
   stack.h direct.h ignore.h version.h funct1.h cfg.h encodings.h utils.h \
   parser.h lengths.h counters.h preamble.h xrefs.h preparse.h vertical.h \
   fields.h
-stack.o: stack.c main.h stack.h
+stack.o: stack.c main.h stack.h fonts.h
 cfg.o: cfg.c main.h convert.h funct1.h cfg.h utils.h
 utils.o: utils.c cfg.h main.h utils.h parser.h
 parser.o: parser.c main.h commands.h cfg.h stack.h utils.h parser.h \
