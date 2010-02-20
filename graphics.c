@@ -352,7 +352,7 @@ static char *SysGraphicsConvert(int opt, int offset, uint16_t dpi, const char *i
                 snprintf(cmd, N, format_apple, dpi, dpi, out_tmp, in);
                 #else
 */
-				char format_unix[] = "gs -q -dNOPAUSE -dSAFER -dBATCH -sDEVICE=pngalpha -r%d -sOutputFile='%s' '%s'";
+                char format_unix[] = "gs -q -dNOPAUSE -dSAFER -dBATCH -sDEVICE=pngalpha -r%d -sOutputFile='%s' '%s'";
                 snprintf(cmd, N, format_unix, dpi, out_tmp, in);
 /*                #endif */
         }
@@ -1541,9 +1541,9 @@ void PutLatexFile(const char *tex_file_stem, double scale, const char *pre)
         tmp_path = SysGraphicsConvert(CONVERT_LATEX, bmoffset, png_resolution, tex_file_stem, png_file_name);
 
         if (NULL == tmp_path) {
-                diagnostics(WARNING, "PutLatexFile failed to convert '%s' to png",tex_file_stem);
-                free(png_file_name);
-                return;
+            diagnostics(WARNING, "PutLatexFile failed to convert '%s' to png",tex_file_stem);
+            free(png_file_name);
+            return;
         }
         
         /* Figures can only have so many bits ... figure out the width and height
@@ -1552,19 +1552,19 @@ void PutLatexFile(const char *tex_file_stem, double scale, const char *pre)
 
         if (png_width  > max_fig_size || png_height > max_fig_size) {
                 
-                if (png_height && png_height > png_width) 
-                        png_resolution = (uint16_t)((double)g_dots_per_inch / (double)png_height * max_fig_size);
-                else
-                        png_resolution = (uint16_t)((double)g_dots_per_inch / (double)png_width * max_fig_size);
+            if (png_height && png_height > png_width) 
+                png_resolution = (uint16_t)((double)g_dots_per_inch / (double)png_height * max_fig_size);
+            else
+                png_resolution = (uint16_t)((double)g_dots_per_inch / (double)png_width * max_fig_size);
 
-                free(tmp_path);
-                tmp_path = SysGraphicsConvert(CONVERT_LATEX, bmoffset, png_resolution, tex_file_stem, png_file_name);
-                if (tmp_path == NULL) {
-                        free(png_file_name);
-                        return;
-                }
-                
-                GetPngSize(png_file_name, &png_width, &png_height, &png_xres, &png_yres, &bad_res);
+            free(tmp_path);
+            tmp_path = SysGraphicsConvert(CONVERT_LATEX, bmoffset, png_resolution, tex_file_stem, png_file_name);
+            if (tmp_path == NULL) {
+                free(png_file_name);
+                return;
+            }
+            
+            GetPngSize(png_file_name, &png_width, &png_height, &png_xres, &png_yres, &bad_res);
         }
         
         /* we have a png file of the latex now ... insert it after figuring out offset and scaling */
@@ -1799,44 +1799,23 @@ static char *try_file_extension(char *s, char *ext)
  ******************************************************************************/
 static char *exists_with_extension(char *s, char *ext)
 {
-    char *x;
+    char *x, *newpath;
+    char sep[] = { PATHSEP, '\0' };
     int  i;
     
-    if (nGraphicsPathElems == 0 || 
-        strchr(s,PATHSEP) != NULL) {
-        /*
-         * if no graphics path defined, try the plain file only
-         */
+    /* if no graphics path or a name is fully specified then try the plain file only */
+    if (nGraphicsPathElems == 0 || strchr(s,PATHSEP)) {
         return try_file_extension(s,ext);
     } 
-    /*
-     * else try the different directories in the graphics path
-     */
+    
+    /* else try the different directories in the graphics path */
     for (i=0; i<nGraphicsPathElems; i++) {
-        char *newfile;
-        int    newlength = strlen(s)+strlen(graphicsPath[i])+2;
-        newfile = malloc(newlength);
-        x = NULL;
-        if (newfile != NULL) {
-            int len = strlen(graphicsPath[i]);
-            /*
-             * this creates 
-             * graphicsPath[i]+PATHSEP+newfile
-             */
-            strcpy(newfile,graphicsPath[i]);
-            newfile[len++] = PATHSEP;
-            newfile[len] = 0;
-            strcat(newfile,s);
-            /*
-             * check the new file;
-             */
-            x = try_file_extension(newfile,ext);
-        }
-        /* free the buffer */
-        strfree(newfile);
-        if (NULL != x)
-            return x;
+        newpath = strdup_together3(graphicsPath[i],sep,s);
+        x = try_file_extension(newpath,ext);
+        strfree(newpath);
+        if (x) return x;
     }
+    
     return NULL;
 }
 
@@ -1885,123 +1864,123 @@ static char *append_graphic_extension(char *s)
  ******************************************************************************/
 static void HandleGraphicsOptions(char *opt, char *opt2, double *h, double *w, double *s)
 {
-        char *key, *value;
-        double llx=0;
-        double lly=0;
-        double urx=0;
-        double ury=0;
+    char *key, *value;
+    double llx=0;
+    double lly=0;
+    double urx=0;
+    double ury=0;
 
-        *s=1.0;
-        *h=0;
-        *w=0;
+    *s=1.0;
+    *h=0;
+    *w=0;
 
-        diagnostics(4,"HandleGraphicsOptions <%s> <%s>",opt,opt2);
-                        
+    diagnostics(4,"HandleGraphicsOptions <%s> <%s>",opt,opt2);
+                    
 /*  \includegraphics[llx,lly][urx,ury]{filename} */
-        if (opt && opt2) {
-                
-                opt = keyvalue_pair(opt,&key,&value);
-                if (!key) return;
-                llx=getStringDimension(key);
-                free(key);
-                
-                keyvalue_pair(opt,&key,&value);
-                if (!key) return;
-                lly=getStringDimension(key);
-                free(key);
+    if (opt && opt2) {
+        
+        opt = keyvalue_pair(opt,&key,&value);
+        if (!key) return;
+        llx=getStringDimension(key);
+        free(key);
+        
+        keyvalue_pair(opt,&key,&value);
+        if (!key) return;
+        lly=getStringDimension(key);
+        free(key);
 
-                opt2 = keyvalue_pair(opt2,&key,&value);
-                if (!key) return;
-                urx=getStringDimension(key);
-                free(key);
-                
-                keyvalue_pair(opt2,&key,&value);
-                if (!key) return;
-                ury=getStringDimension(key);
-                free(key);
+        opt2 = keyvalue_pair(opt2,&key,&value);
+        if (!key) return;
+        urx=getStringDimension(key);
+        free(key);
+        
+        keyvalue_pair(opt2,&key,&value);
+        if (!key) return;
+        ury=getStringDimension(key);
+        free(key);
 
-                *h = ury-lly;
-                *w = urx-llx;
-                return;
-        } 
-                
+        *h = ury-lly;
+        *w = urx-llx;
+        return;
+    } 
+            
 
 /*  \includegraphics[width,height]{filename} for graphics */
 
-        if (g_graphics_package == GRAPHICS_GRAPHICS && opt) {
+    if (g_graphics_package == GRAPHICS_GRAPHICS && opt) {
 
-                keyvalue_pair(opt,&key,&value);
-                if (!key) return;
-                *w=getStringDimension(key);
-                free(key);
-                
-                keyvalue_pair(opt,&key,&value);
-                if (!key) return;
-                *h=getStringDimension(key);
-                free(key);
+        keyvalue_pair(opt,&key,&value);
+        if (!key) return;
+        *w=getStringDimension(key);
+        free(key);
+        
+        keyvalue_pair(opt,&key,&value);
+        if (!key) return;
+        *h=getStringDimension(key);
+        free(key);
 
-                return;
-        }
+        return;
+    }
 
 /*  \includegraphics[key=value,key1=value1]{filename} for graphicx */
 
-        while (opt) {           
-                opt = keyvalue_pair(opt,&key,&value);
-                
-                if (key) {
-                        diagnostics(5,"graphicx key=%s, value=%s", key, value);
+    while (opt) {           
+        opt = keyvalue_pair(opt,&key,&value);
+        
+        if (key) {
+            diagnostics(5,"graphicx key=%s, value=%s", key, value);
 
-                        if (strstr(key,"height"))
-                                *h=getStringDimension(value);
-        
-                        else if (strstr(key,"natheight")) 
-                                *h=getStringDimension(value);
-        
-                        else if (strstr(key,"totalheight"))
-                                *h=getStringDimension(value);
-        
-                        else if (strstr(key,"width")) 
-                                *w=getStringDimension(value);
-        
-                        else if (strstr(key,"natwidth")) 
-                                *w=getStringDimension(value);
-                        
-                        else if (strstr(key,"bbllx")) 
-                                llx=getStringDimension(value);
-        
-                        else if (strstr(key,"bblly"))
-                                lly=getStringDimension(value);
-        
-                        else if (strstr(key,"bburx"))
-                                urx=getStringDimension(value);
-        
-                        else if (strstr(key,"bbury"))
-                                ury=getStringDimension(value);
-                        
-                        else if (strstr(key,"bb")) {
-                                llx=getStringDimension(value);
-                                lly=getStringDimension(value);
-                                urx=getStringDimension(value);
-                                ury=getStringDimension(value);
-                                
-                        } else if (strstr(key,"scale")) {
-                                sscanf(value, "%lf", s);   /* just a float, not a dimension */
-                        }
-                        
-                        free(key);
-                }
-                
-                if (value) free(value); 
+            if (strstr(key,"height"))
+                *h=getStringDimension(value);
+
+            else if (strstr(key,"natheight")) 
+                *h=getStringDimension(value);
+
+            else if (strstr(key,"totalheight"))
+                *h=getStringDimension(value);
+
+            else if (strstr(key,"width")) 
+                *w=getStringDimension(value);
+
+            else if (strstr(key,"natwidth")) 
+                *w=getStringDimension(value);
+
+            else if (strstr(key,"bbllx")) 
+                llx=getStringDimension(value);
+
+            else if (strstr(key,"bblly"))
+                lly=getStringDimension(value);
+
+            else if (strstr(key,"bburx"))
+                urx=getStringDimension(value);
+
+            else if (strstr(key,"bbury"))
+                ury=getStringDimension(value);
+            
+            else if (strstr(key,"bb")) {
+                llx=getStringDimension(value);
+                lly=getStringDimension(value);
+                urx=getStringDimension(value);
+                ury=getStringDimension(value);
+
+            } else if (strstr(key,"scale")) {
+                sscanf(value, "%lf", s);   /* just a float, not a dimension */
+            }
+
+            free(key);
         }
 
-    diagnostics(5, "image scale  = %lf", *s);
-    diagnostics(5, "image height = %lf", *h);
-    diagnostics(5, "image width  = %lf", *w);
-        
-        if (urx)
-                *w=urx-llx;
-        if (ury)
-                *h=ury-lly;
+        if (value) free(value); 
+    }
+
+diagnostics(5, "image scale  = %lf", *s);
+diagnostics(5, "image height = %lf", *h);
+diagnostics(5, "image width  = %lf", *w);
+    
+    if (urx)
+        *w=urx-llx;
+    if (ury)
+        *h=ury-lly;
 }
 
 /******************************************************************************
@@ -2009,36 +1988,36 @@ static void HandleGraphicsOptions(char *opt, char *opt2, double *h, double *w, d
  ******************************************************************************/
 static void HandlePsfigOptions(char *opt, char **filename, double *h, double *w, double *s)
 {
-        *s=1.0;
-        *h=0.0;
-        *w=0.0;
-        *filename = NULL;
-        
-        diagnostics(4,"HandlePsfigOptions <%s>",opt);
-                
-        while (opt) {
-                char *key, *value;
-                
-                opt = keyvalue_pair(opt,&key,&value);
-                
-                if (key) {
-                        diagnostics(5,"psfig key=%s, value=%s", key, value);
-                        if (strstr(key,"figure"))
-                                *filename=strdup(value);
-        
-                        else if (strstr(key,"height")) {
-                                *h = getStringDimension(value);
-                        }
-        
-                        else if (strstr(key,"width")) {
-                                *w = getStringDimension(value);
-                        }
-                        
-                        free(key);
-                }
-                
-                if (value) free(value); 
+    *s=1.0;
+    *h=0.0;
+    *w=0.0;
+    *filename = NULL;
+
+    diagnostics(4,"HandlePsfigOptions <%s>",opt);
+
+    while (opt) {
+        char *key, *value;
+
+        opt = keyvalue_pair(opt,&key,&value);
+
+        if (key) {
+            diagnostics(5,"psfig key=%s, value=%s", key, value);
+            if (strstr(key,"figure"))
+                *filename=strdup(value);
+
+            else if (strstr(key,"height")) {
+                *h = getStringDimension(value);
+            }
+
+            else if (strstr(key,"width")) {
+                *w = getStringDimension(value);
+            }
+
+            free(key);
         }
+        
+        if (value) free(value); 
+    }
 }
 
 
@@ -2079,12 +2058,12 @@ void CmdGraphics(int code)
         int n,llx,lly,urx,ury;
         options = getBracketParam();
         if (options) {
-                n = sscanf(options,"%d %d %d %d", &llx,&lly,&urx,&ury);
-                if (n==4) {
-                        width  = (urx - llx) * 20;
-                        height = (ury - lly) * 20;
-                }
-                free(options);
+            n = sscanf(options,"%d %d %d %d", &llx,&lly,&urx,&ury);
+            if (n==4) {
+                width  = (urx - llx) * 20;
+                height = (ury - lly) * 20;
+            }
+            free(options);
         }
         filename = getBraceParam();
     }
@@ -2106,25 +2085,25 @@ void CmdGraphics(int code)
     }
 
     if (filename) {
-                GraphConvertArray *thisFormat;
-                changeTexMode(MODE_HORIZONTAL);
-        
-                fullname = strdup_absolute_path(filename);
-                fullpathname = append_graphic_extension(fullname);
-                free(fullname);
-        
-                for (thisFormat = GraphConvertTable; thisFormat->extension != NULL; thisFormat++) {
-                    if (has_extension(fullpathname,thisFormat->extension)) {
-                        diagnostics(WARNING,"encoder('%s',....",fullpathname);
-                        thisFormat->encoder(fullpathname, height, width, scale, baseline, TRUE);
-                        break;
-                    }
-                }        
-                if (thisFormat->extension == NULL)
-                        diagnostics(WARNING, "Conversion of \"%s\" not supported", filename);
-        
-                free(filename);
-                free(fullpathname);
+        GraphConvertArray *thisFormat;
+        changeTexMode(MODE_HORIZONTAL);
+
+        fullname = strdup_absolute_path(filename);
+        fullpathname = append_graphic_extension(fullname);
+        free(fullname);
+
+        for (thisFormat = GraphConvertTable; thisFormat->extension != NULL; thisFormat++) {
+            if (has_extension(fullpathname,thisFormat->extension)) {
+                diagnostics(2,"selected encoder for '%s'",fullpathname);
+                thisFormat->encoder(fullpathname, height, width, scale, baseline, TRUE);
+                break;
+            }
+        }        
+        if (thisFormat->extension == NULL)
+            diagnostics(WARNING, "Conversion of \"%s\" not supported", filename);
+
+        free(filename);
+        free(fullpathname);
     }
 }
 
