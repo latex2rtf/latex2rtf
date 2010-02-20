@@ -158,6 +158,8 @@ void setPackageInputenc(char *option)
     	CmdFontEncoding(ENCODING_850);
 	else if (strstr(option, "852"))
     	CmdFontEncoding(ENCODING_852);
+	else if (strstr(option, "855"))
+    	CmdFontEncoding(ENCODING_852);
 	else if (strstr(option, "865"))
     	CmdFontEncoding(ENCODING_865);
 	else if (strstr(option, "866"))

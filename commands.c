@@ -392,7 +392,7 @@ static CommandArray PreambleCommands[] = {
     {"documentclass", CmdDocumentStyle, 0},
     {"documentstyle", CmdDocumentStyle, 0},
     {"usepackage", CmdUsepackage, 0},
-/*    {"begin", CmdPreambleBeginEnd, CMD_BEGIN},*/
+    {"RequirePackage", CmdUsepackage, 0},
     {"flushbottom", CmdBottom, 0},
     {"raggedbottom", CmdBottom, 0},
     {"addtolength", CmdLength, LENGTH_ADD},
@@ -454,6 +454,7 @@ static CommandArray PreambleCommands[] = {
     {"hline", CmdHline, 0},
     {"cline", CmdHline, 1},
     {"ifx", CmdIf, 0},
+    {"ifpdf", CmdIf, 0},
     {"theendnotes", CmdTheEndNotes, 0},
     {"euro", CmdEuro, 0},
     {"EUR", CmdEuro, 1},
