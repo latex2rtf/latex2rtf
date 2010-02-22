@@ -53,7 +53,7 @@ CHAR_TESTS= accentchars.rtf oddchars.rtf overstrike.rtf ucsymbols.rtf greek.rtf 
 
 TABLE_TESTS= tabbing.rtf tabular.rtf table_array1.rtf table_array2.rtf
 
-EXTRA_TESTS= excalibur.rtf acronym.rtf
+EXTRA_TESTS= excalibur.rtf acronym.rtf qualisex.rtf
 
 basic:
 	$(MAKE) basic_tests
