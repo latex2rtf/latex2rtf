@@ -127,7 +127,7 @@ purpose: converts inputfile and writes result to outputfile
     char cThis = '\n';
     char cLast = '\0';
     char cNext;
-    int count, pending_new_paragraph;
+    int count;
 
     diagnostics(6, "Entering Convert ret = %d", ret);
     RecursionLevel++;
@@ -141,8 +141,6 @@ purpose: converts inputfile and writes result to outputfile
         else
             diagnostics(6, "Current character is '%c' mode = %d ret = %d level = %d", cThis, getTexMode(), ret,
               RecursionLevel);
-
-        pending_new_paragraph--;
 
         /* preliminary support for utf8 sequences.  Thanks to CSH */
         if ((cThis & 0x8000) && (CurrentFontEncoding() == ENCODING_UTF8)) {
@@ -243,7 +241,6 @@ purpose: converts inputfile and writes result to outputfile
                     cNext = getNonSpace();
 
                     if (cNext == '\n') {    /* new paragraph ... skip all ' ' and '\n' */
-                        pending_new_paragraph = 2;
                         CmdEndParagraph(0);
 
                     } else {    /* add a space if needed */

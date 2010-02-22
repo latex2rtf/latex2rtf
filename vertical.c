@@ -243,6 +243,8 @@ void startParagraph(const char *style, int indenting)
     static int status = 0;
     int orig_font_family = CurrentFontFamily();
     int orig_font_size = CurrentFontSize();
+    int orig_font_series = CurrentFontSeries();
+    int orig_font_shape = CurrentFontShape();
     
     /* special style "last" will just repeat previous */
     if (strcmp(style,"last")==0) {
@@ -312,6 +314,10 @@ void startParagraph(const char *style, int indenting)
     diagnostics(5, "right indent is   %d", g_right_margin_indent);
     diagnostics(5, "current parindent %d", getLength("parindent"));
     diagnostics(5, "this parindent    %d", parindent);
+    diagnostics(5, "current family      %d", CurrentFontFamily());
+    diagnostics(5, "current font size   %d", CurrentFontSize());
+    diagnostics(5, "current font series %d", CurrentFontSeries());
+    diagnostics(5, "current font shape  %d", CurrentFontShape());
 
     if (g_page_new) {
         fprintRTF("\\page\n");   /* causes new page */
@@ -361,16 +367,22 @@ void startParagraph(const char *style, int indenting)
     fprintRTF("\\fi%d ", parindent);
     
     /* these are strstr because might end in 0 */
-    if (strstr("part",the_style)          != NULL && 
-        strstr("title",the_style)         != NULL &&
-        strstr("chapter",the_style)       != NULL &&
-        strstr("section",the_style)       != NULL ) {
+    if (strstr("part",the_style)    == NULL && 
+        strstr("title",the_style)   == NULL &&
+        strstr("chapter",the_style) == NULL &&
+        strstr("section",the_style) == NULL ) {
         
-		if (CurrentFontFamily() != orig_font_family)
-			fprintRTF("\\f%d ", orig_font_family);
-	
-		if (CurrentFontSize() != orig_font_size)
-			fprintRTF("\\fs%d ", orig_font_size);
+        if (CurrentFontFamily() != orig_font_family)
+            fprintRTF("\\f%d ", orig_font_family);
+    
+        if (CurrentFontSize() != orig_font_size)
+            fprintRTF("\\fs%d ", orig_font_size);
+
+        if (CurrentFontSeries() != orig_font_series) 
+            CmdFontSeries(orig_font_series);
+            
+        if (CurrentFontShape() != orig_font_shape)
+            CmdFontShape(orig_font_shape);      
     }
     
     setTexMode(MODE_HORIZONTAL); 
