@@ -141,10 +141,12 @@ static int countTabularColumns(const char *format)
             case 'm':
             case 'p':
                 iCol++;
+                s++;
                 t=getStringBraceParam(&s);
                 if (t) free(t);
                 break;
             case '*':
+                s++;
                 t=getStringBraceParam(&s);
                 if (t) free(t);
                 t=getStringBraceParam(&s);
@@ -154,6 +156,7 @@ static int countTabularColumns(const char *format)
             case '>':
             case '@':
             case '!':
+                s++;
                 t=getStringBraceParam(&s);
                 if (t) free(t);
                 break;
@@ -198,6 +201,7 @@ static TabularT *NewTabularFromFormat(const char *format)
             case 'p':
                 iCol++;
                 table->align[iCol] = 'l';
+                s++;
                 t=getStringBraceParam(&s);
                 if (t) {
                     table->width[iCol] = getStringDimension(t);
@@ -207,12 +211,14 @@ static TabularT *NewTabularFromFormat(const char *format)
                 break;
             case '*':
                 diagnostics(WARNING, " '*{num}{cols}' not supported.");
+                s++;
                 t=getStringBraceParam(&s);
                 if (t) free(t);
                 t=getStringBraceParam(&s);
                 if (t) free(t);
                 break;
             case '<':
+                s++;
                 t=getStringBraceParam(&s);
                 old = table->before[iCol+1];
                 if (old) {
@@ -224,6 +230,7 @@ static TabularT *NewTabularFromFormat(const char *format)
                 diagnostics(6,"< item, residual='%s'",s);
                 break;
             case '>':
+                s++;
                 t=getStringBraceParam(&s);
                 old = table->after[iCol+1];
                 if (old) {
@@ -237,6 +244,7 @@ static TabularT *NewTabularFromFormat(const char *format)
             case '@':
             case '!':
                 if (!warned_once) diagnostics(WARNING, " '@{decl.}' and !{decl.} not supported.");
+                s++;
                 t=getStringBraceParam(&s);
                 free(t);
                 warned_once = TRUE;

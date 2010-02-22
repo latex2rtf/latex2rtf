@@ -32,6 +32,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #ifdef UNIX
 # include <sys/types.h>
@@ -362,7 +363,7 @@ char *ExtractLabelTag(const char *text)
     return label;
 }
 
-/******************************************************************************
+/**************************************************************************
  purpose: provide functionality of getBraceParam() for strings
  
         if s contains "aaa {stuff}cdef", then  
@@ -371,22 +372,50 @@ char *ExtractLabelTag(const char *text)
           gives
             parameter = "stuff"
             s="cdef"
+
+     \alpha\beta   --->  "\beta"             \bar \alpha   --->  "\alpha"
+           ^                                     ^
+     \bar{text}    --->  "text"              \bar text     --->  "t"
+         ^                                       ^
+    _\alpha        ---> "\alpha"             _{\alpha}     ---> "\alpha"
+     ^                                        ^
+    _2             ---> "2"                  _{2}          ---> "2"
+     ^                                        ^
  ******************************************************************************/
 char *getStringBraceParam(char **s)
 
 {
     char *p_start, *p, *parameter, last;
-    int braces = 1;
-        
-    /* find start of parameter */
-    if (*s == NULL) return NULL;
-    p_start = strchr(*s,'{');
-    if (p_start==NULL) return NULL;
+    int braces;
+    
+    if (*s == NULL) return strdup("");
+    
+    /* skip white space ... and one possible newline*/
+    while (**s == ' ') (*s)++;
+    if (**s == '\n') {
+        while (**s == ' ') (*s)++;
+    }
+    
+    p_start = *s;
 
-    /* scan to enclosing brace */
+    /* return simple command like \alpha */
+    if (**s == '\\') {
+        do { (*s)++; } while (isalpha(**s));
+    diagnostics(1,"getstringbraceparam \\ before='%s'", *s);
+        return my_strndup(p_start,(*s)-p_start);
+    }
+    
+    /* no brace ... advance one and return next character */
+    if (**s != '{' ) {
+        (*s)++; 
+        return my_strndup(p_start,1);
+     }
+    
+    /* usual case, return contents between braces */
     p_start++;
     p=p_start;  
     last = '\0';
+    braces = 1;
     while (*p != '\0' && braces > 0) {
         if (*p == '{' && last != '\\')
             braces++;
