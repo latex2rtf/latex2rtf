@@ -198,14 +198,14 @@ acroEntry *searchEntry(char *acDef)
 /* auxiliary functions */
 static void ConvertFmtString(char *fmt,char *str)
 {
-    char *buffer = malloc(strlen(fmt)+strlen(str)+1);
+    char *buffer = (char *) malloc(strlen(fmt)+strlen(str)+1);
     sprintf(buffer,fmt,str);
     ConvertString(buffer);
 }
 
 static void ConvertFmt2String(char *fmt,char *s1,char *s2)
 {
-    char *buffer = malloc(strlen(fmt)+strlen(s1)+strlen(s2)+1);
+    char *buffer = (char *) malloc(strlen(fmt)+strlen(s1)+strlen(s2)+1);
     sprintf(buffer,fmt,s1,s2);
     ConvertString(buffer);
 }
@@ -253,7 +253,7 @@ static void printShort(acroEntry *entry,int plural)
 static char* regularPlural(char *singular)
 {
     int singularLength = strlen(singular);
-    char *result = malloc(singularLength+2);
+    char *result = (char *) malloc(singularLength+2);
     if (NULL != result) {
         strcpy(result,singular);
         result[singularLength]='s';
@@ -269,7 +269,10 @@ static char* regularPlural(char *singular)
 static acroEntry *createEntry(char *acDef) {
     acroEntry *result = searchEntry(acDef);
     if (NULL == result) {
-        acroTable = realloc(acroTable,(++acroNum)*sizeof(acroEntry));
+    	void *ptr;
+    	ptr = (void *) acroTable;
+        ptr = realloc(ptr,(++acroNum)*sizeof(acroEntry));
+        acroTable = (acroEntry *) ptr;
         if (NULL != acroTable) {
             result = &acroTable[acroNum-1];
             result->acDef         = acDef;
@@ -357,7 +360,9 @@ void CmdAcrodef(int code)
         thisEntry = searchEntry(acDef);
         if (NULL != thisEntry) {
     
-            int doPrint =
+            int doPrint;
+            
+            doPrint =
                 /*  (inAcroEnvironment == TRUE) &&  */
                 ((thisEntry->used == TRUE) ||
                  (acroPrintOnlyUsed == FALSE));
@@ -376,7 +381,7 @@ void CmdAcrodef(int code)
                 fprintRTF("}\\tab\n");
                 ConvertString(acLong);
                 if (TRUE == acroPrintWithPage) {
-                    char *acroLabel = malloc(strlen(acDef)+8);
+                    char *acroLabel = (char *) malloc(strlen(acDef)+8);
                     if (NULL != acroLabel) {
                         char *acroPage;
                         sprintf(acroLabel,"acro:%s",acDef);
