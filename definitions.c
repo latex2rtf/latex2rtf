@@ -37,14 +37,16 @@ This file is available from http://sourceforge.net/projects/latex2rtf/
 #define MAX_ENVIRONMENTS 200
 #define MAX_THEOREMS 200
 
-struct {
+typedef struct {
     char *name;
     char *opt_param;
     char *def;
     int params;
-} Definitions[MAX_DEFINITIONS];
+} definition_type;
 
-struct {
+definition_type Definitions[MAX_DEFINITIONS];
+
+typedef struct {
     char *name;
     char *opt_param;
     char *begname;
@@ -52,14 +54,18 @@ struct {
     char *begdef;
     char *enddef;
     int params;
-} NewEnvironments[MAX_ENVIRONMENTS];
+} environment_type;
 
-struct {
+environment_type NewEnvironments[MAX_ENVIRONMENTS];
+
+typedef struct {
     char *name;
     char *numbered_like;
     char *caption;
     char *within;
-} NewTheorems[MAX_THEOREMS];
+} theorem_type;
+
+theorem_type NewTheorems[MAX_THEOREMS];
 
 static int iDefinitionCount = 0;
 static int iNewEnvironmentCount = 0;

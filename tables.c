@@ -1515,7 +1515,7 @@ void CmdHline(int code)
 
 static void HA_ExtractTemplateAndLines(const char *s, char **thetemplate, char ***thelines, int *nl)
 {
-    char *p, *ss, *template=NULL;
+    char *p, *ss, *HA_template=NULL;
     char ** lines;
     int nlines,i;
     
@@ -1526,17 +1526,17 @@ static void HA_ExtractTemplateAndLines(const char *s, char **thetemplate, char *
         nlines++;
         ss = p + 3;
     }
-    nlines--; /* since template does not count */
+    nlines--; /* since HA_template does not count */
 
     lines = (char **) malloc(nlines * sizeof(char *));
     
-    /* extract template */
+    /* extract HA_template */
     p = strstr(s,"\\cr");
     if (p) {
         size_t n = p-s+1;
-        template = (char *) malloc(n*sizeof(char));
-        my_strlcpy(template,s,n);
-        diagnostics(4,"template = '%s'",template);
+        HA_template = (char *) malloc(n*sizeof(char));
+        my_strlcpy(HA_template,s,n);
+        diagnostics(4,"HA_template = '%s'",HA_template);
     }
     
     /* now copy each line into a separate array entry */
@@ -1556,7 +1556,7 @@ static void HA_ExtractTemplateAndLines(const char *s, char **thetemplate, char *
     }
     *nl = nlines;
     *thelines = lines;
-    *thetemplate = template;
+    *thetemplate = HA_template;
 }
 
 static int HA_CountColumnsInHAlign(char **lines, int n)
@@ -1591,14 +1591,14 @@ static int HA_CountColumnsInHAlign(char **lines, int n)
     in the first case nrepeat=4 and ncol = 5
           second case nrepeat=1 and ncol = 2
  */
-static void HA_CountColumnsInTemplate(char *template, int *ncol, int *nrepeat)
+static void HA_CountColumnsInTemplate(char *HA_template, int *ncol, int *nrepeat)
 {
     char *s;
     int col=1;
 
     *nrepeat = 999;
     
-    s = (char *) template;
+    s = (char *) HA_template;
     
     /* make sure first character is not a '&' */
     while (isspace(*s)) s++;
@@ -1615,7 +1615,7 @@ static void HA_CountColumnsInTemplate(char *template, int *ncol, int *nrepeat)
 }
 
 /* extract the appropriate template for the nth column */
-static char * HA_GetCellTemplateN(const char *template, int n, int tcols, int trepeat)
+static char * HA_GetCellTemplateN(const char *HA_template, int n, int tcols, int trepeat)
 {
     char *s, *next, *cell, *clean_cell;
     
@@ -1629,7 +1629,7 @@ static char * HA_GetCellTemplateN(const char *template, int n, int tcols, int tr
             n = trepeat + (n - trepeat) % (tcols - trepeat + 1);
     }
     
-    s = (char *) template;
+    s = (char *) HA_template;
     TabularGetCell(s, &cell, &next);
     n--;
     while (n) {
@@ -1665,12 +1665,12 @@ static char * HA_GetCellN(const char *line, int n)
 }
 
 /* replace all the #'s in the template with the contents of cell */
-static char * HA_ExpandCellWithTemplate(const char *template, const char *cell)
+static char * HA_ExpandCellWithTemplate(const char *HA_template, const char *cell)
 {
     char buffer[500];
     char *s, *t, *b, *text;
     
-    t = (char *) template;
+    t = (char *) HA_template;
     b = buffer;
     
     /* do nothing if \omit is present */
@@ -1695,7 +1695,7 @@ static char * HA_ExpandCellWithTemplate(const char *template, const char *cell)
 }
 
 /* make guesses about alignment of columns based on presence of \hfil */
-static char * HA_AlignFromTemplate(const char *template, int ncols, int tcols, int trepeat)
+static char * HA_AlignFromTemplate(const char *HA_template, int ncols, int tcols, int trepeat)
 {
     char *s, *cell, *align;
     int i;
@@ -1705,7 +1705,7 @@ static char * HA_AlignFromTemplate(const char *template, int ncols, int tcols, i
     align[ncols+1] = '\0';
     
     for (i=1; i<=ncols; i++) {
-        cell = HA_GetCellTemplateN(template, i, tcols, trepeat);
+        cell = HA_GetCellTemplateN(HA_template, i, tcols, trepeat);
         align[i] = 'l';
         s = cell;
         while (isspace(*s)) s++;
@@ -1720,33 +1720,33 @@ static char * HA_AlignFromTemplate(const char *template, int ncols, int tcols, i
     return align;
 }
 
-static void HA_CleanTemplate(char *template)
+static void HA_CleanTemplate(char *HA_template)
 {
-    char *s=template;
+    char *s=HA_template;
     while ( (s=strstr(s,"\\hfill")) ) {*s++=' ';*s++=' ';*s++=' ';*s++=' ';*s++=' ';*s++=' ';}
-    s=template;
+    s=HA_template;
     while ( (s=strstr(s,"\\hfil")) ) {*s++=' ';*s++=' ';*s++=' ';*s++=' ';*s++=' ';}
-    s=template;
+    s=HA_template;
     while ( (s=strstr(s,"\\qquad")) ) {*s++=' ';*s++=' ';*s++=' ';*s++=' ';*s++=' ';*s++=' ';}
-    s=template;
+    s=HA_template;
     while ( (s=strstr(s,"\\quad")) ) {*s++=' ';*s++=' ';*s++=' ';*s++=' ';*s++=' ';}
-    diagnostics(5,"template='%s'",template);
+    diagnostics(5,"template='%s'",HA_template);
 }
 
 void CmdHAlign(int code)
 {
-    char *contents, *template, *align;
+    char *contents, *HA_template, *align;
     char **lines;
     int nlines, ncols,tcols,trepeat,i,line;
     
     contents = getBraceParam();
-    HA_ExtractTemplateAndLines(contents, &template, &lines, &nlines);
+    HA_ExtractTemplateAndLines(contents, &HA_template, &lines, &nlines);
     free(contents);
     
     ncols = HA_CountColumnsInHAlign(lines,nlines);
-    HA_CountColumnsInTemplate(template,&tcols,&trepeat);
-    align = HA_AlignFromTemplate(template, ncols,tcols,trepeat);
-    HA_CleanTemplate(template);
+    HA_CountColumnsInTemplate(HA_template,&tcols,&trepeat);
+    align = HA_AlignFromTemplate(HA_template, ncols,tcols,trepeat);
+    HA_CleanTemplate(HA_template);
     
     for (line=0; line<nlines; line++) {
         char *s = lines[line];
@@ -1761,7 +1761,7 @@ void CmdHAlign(int code)
             char *cell, *cell_template, *cell_text;
             
             cell = HA_GetCellN(s, i);
-            cell_template = HA_GetCellTemplateN(template, i, tcols, trepeat);
+            cell_template = HA_GetCellTemplateN(HA_template, i, tcols, trepeat);
             cell_text = HA_ExpandCellWithTemplate(cell_template,cell);
             diagnostics(5,"line=%d, col=%d, align=%c, cell is '%s'",line+1,i,align[i],cell_text);
             free(cell);
@@ -1782,5 +1782,5 @@ void CmdHAlign(int code)
 
     free(align);
     free(lines);
-    free(template);
+    free(HA_template);
 }

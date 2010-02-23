@@ -184,6 +184,7 @@ static int nGraphicsPathElems = 0;
 static void appendGraphicsPath (char *newPath)
 {
     int i;
+    void *ptr;
     diagnostics(WARNING,"adding '%s' to graphics path",newPath);
     for (i = 0; i < nGraphicsPathElems; i++)
     {
@@ -192,8 +193,10 @@ static void appendGraphicsPath (char *newPath)
             return;
         }
     }
-    graphicsPath =
-        realloc (graphicsPath, sizeof (char *) * (nGraphicsPathElems + 1));
+    ptr = (void *) graphicsPath;
+    ptr = realloc (ptr, sizeof (char *) * (nGraphicsPathElems + 1));
+    graphicsPath = (char **) ptr;
+    
     graphicsPath[nGraphicsPathElems++] = newPath;
     diagnostics (5, "Included %s in graphics search path", newPath);
 }

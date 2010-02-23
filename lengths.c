@@ -34,10 +34,12 @@ By convention all the values stored should be twips  20 twips = 1 pt
 
 #define MAX_LENGTHS 50
 
-struct {
+typedef struct {
     char *name;
     int distance;
-} Lengths[MAX_LENGTHS];
+} length_type;
+
+length_type Lengths[MAX_LENGTHS];
 
 static int iLengthCount = 0;
 

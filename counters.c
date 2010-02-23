@@ -28,10 +28,12 @@ This file is available from http://sourceforge.net/projects/latex2rtf/
 
 #define MAX_COUNTERS 500
 
-struct {
+typedef struct {
     char *name;
     int number;
-} Counters[MAX_COUNTERS];
+} counter_type;
+
+counter_type Counters[MAX_COUNTERS];
 
 static int iCounterCount = 0;
 
