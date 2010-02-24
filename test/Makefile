@@ -4,7 +4,7 @@
 LATEX= latex -interaction=nonstopmode
 BIBTEX= bibtex
 LATEX2RTF= ../latex2rtf 
-OPTIONS  = -Z3 -P ../cfg/:../scripts/ -T tmp/
+OPTIONS  = -Z3 -P ../cfg/:../scripts/ -T tmp/ -M12
 MKDIR?=mkdir -p
 RMDIR?=rm -rf
 RM?=rm -f
@@ -336,6 +336,10 @@ eqns.rtf: eqns.tex
 essential.rtf: essential.tex
 	$(LATEX) essential $(LATEX_LOG)
 	$(LATEX2RTF) $(OPTIONS) essential
+
+qualisex.rtf: qualisex.tex
+	$(LATEX) qualisex $(LATEX_LOG)
+	$(LATEX2RTF) $(OPTIONS) qualisex
 
 hyperref.rtf: hyperref.tex
 	$(LATEX) hyperref $(LATEX_LOG)

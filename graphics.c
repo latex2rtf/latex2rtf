@@ -301,98 +301,90 @@ static char *SysGraphicsConvert(int opt, int offset, uint16_t dpi, const char *i
 
 {
     char cmd[512], *out_tmp;
-        int err;
+    int err;
 
-    int N = 512;        
+    int N = 511;        
         
     out_tmp = strdup_tmp_path(out);
 
 #ifdef UNIX
 
-        if (strchr(in, (int) '\'')) {
-                diagnostics(WARNING, "single quote found in filename '%s'.  skipping conversion", in);
-                free(out_tmp);
-                return NULL;
-        }
-        
-        if (out && strchr(out_tmp, (int) '\'')) {
-                diagnostics(WARNING, "single quote found in filename '%s'.  skipping conversion", out_tmp);
-                free(out_tmp);
-                return NULL;
-        }
+    if (strchr(in, (int) '\'')) {
+        diagnostics(WARNING, "single quote found in filename '%s'.  skipping conversion", in);
+        free(out_tmp);
+        return NULL;
+    }
+    
+    if (out && strchr(out_tmp, (int) '\'')) {
+        diagnostics(WARNING, "single quote found in filename '%s'.  skipping conversion", out_tmp);
+        free(out_tmp);
+        return NULL;
+    }
 
-        if (opt == CONVERT_SIMPLE) {
-                char format_simple[] = "convert '%s' '%s'";
-                snprintf(cmd, N, format_simple, in, out_tmp);
-        }
+    if (opt == CONVERT_SIMPLE) {
+        char format_simple[] = "convert '%s' '%s'";
+        snprintf(cmd, N, format_simple, in, out_tmp);
+    }
 
-        if (opt == CONVERT_CROP) {
-                char format_crop[]   = "convert -trim +repage -units PixelsPerInch -density %d '%s' '%s'";
-                snprintf(cmd, N, format_crop, dpi, in, out_tmp);
-        }
+    if (opt == CONVERT_CROP) {
+        char format_crop[]   = "convert -trim +repage -units PixelsPerInch -density %d '%s' '%s'";
+        snprintf(cmd, N, format_crop, dpi, in, out_tmp);
+    }
 
-        if (opt == CONVERT_LATEX) {
-
-                if (g_home_dir == NULL) {
-                        char format_unix[] = "%slatex2png -d %d -o %d '%s'";
-                        
-                        if (g_script_dir)
-                                snprintf(cmd, N, format_unix, g_script_dir, dpi, offset, in);
-                        else
-                                snprintf(cmd, N, format_unix, "", dpi, offset, in);
-                } else {
-                        char format_unix[] = "%slatex2png -k -d %d -o %d -H '%s' '%s'";
-                        if (g_script_dir)
-                                snprintf(cmd, N, format_unix, g_script_dir, dpi, offset, g_home_dir, in);
-                        else
-                                snprintf(cmd, N, format_unix, "", dpi, offset, g_home_dir, in);
-                }
+    if (opt == CONVERT_LATEX) {
+        if (g_home_dir == NULL) {
+            char format_unix[] = "%slatex2png -d %d -o %d '%s'";
+            if (g_script_dir)
+                snprintf(cmd, N, format_unix, g_script_dir, dpi, offset, in);
+            else
+                snprintf(cmd, N, format_unix, "", dpi, offset, in);
+        } else {
+            char format_unix[] = "%slatex2png -k -d %d -o %d -H '%s' '%s'";
+            if (g_script_dir)
+                snprintf(cmd, N, format_unix, g_script_dir, dpi, offset, g_home_dir, in);
+            else
+                snprintf(cmd, N, format_unix, "", dpi, offset, g_home_dir, in);
         }
-        
-        if (opt == CONVERT_PDF) {
-/*              #ifdef __APPLE__
-                char format_apple[] = "/usr/bin/sips -s format png -s dpiHeight %d -s dpiWidth %d --out '%s' '%s' > /dev/null";
-                snprintf(cmd, N, format_apple, dpi, dpi, out_tmp, in);
-                #else
-*/
-                char format_unix[] = "gs -q -dNOPAUSE -dSAFER -dBATCH -sDEVICE=pngalpha -r%d -sOutputFile='%s' '%s'";
-                snprintf(cmd, N, format_unix, dpi, out_tmp, in);
-/*                #endif */
-        }
+    }
+    
+    if (opt == CONVERT_PDF) {
+        char format_unix[] = "gs -q -dNOPAUSE -dSAFER -dBATCH -sDEVICE=pngalpha -r%d -sOutputFile='%s' '%s'";
+        snprintf(cmd, N, format_unix, dpi, out_tmp, in);
+    }
 
 #else
 
-        if (opt == CONVERT_SIMPLE) {
-                char format_simple[] = "convert \"%s\" \"%s\"";
-                snprintf(cmd, N, format_simple, in, out_tmp);
-        }
+    if (opt == CONVERT_SIMPLE) {
+        char format_simple[] = "convert \"%s\" \"%s\"";
+        snprintf(cmd, N, format_simple, in, out_tmp);
+    }
 
-        if (opt == CONVERT_CROP) {
-                char format_crop[]   = "convert -crop 0x0 -units PixelsPerInch -density %d \"%s\" \"%s\"";
-                snprintf(cmd, N, format_crop, dpi, in, out_tmp);
-        }
+    if (opt == CONVERT_CROP) {
+        char format_crop[]   = "convert -crop 0x0 -units PixelsPerInch -density %d \"%s\" \"%s\"";
+        snprintf(cmd, N, format_crop, dpi, in, out_tmp);
+    }
 
-        if (opt == CONVERT_LATEX) {
-                if (g_home_dir == NULL){
-                        char format_xp[] = "bash latex2png -d %d -o %d \"%s\"";
-                        snprintf(cmd, N, format_xp, dpi, offset, in);
-                } else {
-                        char format_xp[] = "bash latex2png -d %d -o %d -H \"%s\" \"%s\"";
-                        snprintf(cmd, N, format_xp, dpi, offset, g_home_dir, in);
-                }
+    if (opt == CONVERT_LATEX) {
+        if (g_home_dir == NULL){
+            char format_xp[] = "bash latex2png -d %d -o %d \"%s\"";
+            snprintf(cmd, N, format_xp, dpi, offset, in);
+        } else {
+            char format_xp[] = "bash latex2png -d %d -o %d -H \"%s\" \"%s\"";
+            snprintf(cmd, N, format_xp, dpi, offset, g_home_dir, in);
         }
-        
-        if (opt == CONVERT_PDF) {
-                char format_xp[] = "bash pdf2pnga \"%s\" \"%s\" %d";
-                snprintf(cmd, N, format_xp, in, out_tmp, dpi);
-        }
+    }
+    
+    if (opt == CONVERT_PDF) {
+        char format_xp[] = "bash pdf2pnga \"%s\" \"%s\" %d";
+        snprintf(cmd, N, format_xp, in, out_tmp, dpi);
+    }
         
 #endif
     diagnostics(4, "`%s`", cmd);
 
     err = system(cmd);
 
-    if (err != 0) {
+    if (err) {
         diagnostics(WARNING, "\nerror=%d when converting %s", err, in);
         strfree(out_tmp);
         return NULL;
@@ -428,13 +420,13 @@ static void PicComment(int16_t label, int16_t size, FILE * fp)
 static char *strdup_new_extension(const char *s, const char *old_ext, const char *new_ext)
 {
     char *new_name, *p;
-        int s_len, o_len, n_len, siz;
-        
-        if (s==NULL || old_ext == NULL || new_ext == NULL) return NULL;
-        
-        s_len = (int) strlen(s);
-        o_len = (int) strlen(old_ext);
-        n_len = (int) strlen(new_ext);
+    int s_len, o_len, n_len, siz;
+    
+    if (s==NULL || old_ext == NULL || new_ext == NULL) return NULL;
+    
+    s_len = (int) strlen(s);
+    o_len = (int) strlen(old_ext);
+    n_len = (int) strlen(new_ext);
         
         /* make sure that old_ext exists */
     p= (char *) s;
@@ -444,10 +436,10 @@ static char *strdup_new_extension(const char *s, const char *old_ext, const char
     
     if (p == NULL) return NULL;
 
-        siz = s_len - o_len + n_len;    
-        new_name = (char *) malloc(siz);
-        my_strlcpy(new_name, s, s_len - o_len);
-        my_strlcat(new_name, new_ext, siz);
+    siz = s_len - o_len + n_len;    
+    new_name = (char *) malloc(siz);
+    my_strlcpy(new_name, s, s_len - o_len);
+    my_strlcat(new_name, new_ext, siz);
 
     return new_name;
 }

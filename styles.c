@@ -99,27 +99,27 @@ void InsertBasicStyle(const char *rtf, int how)
     comma = strchr(style, ',');
     if (comma == NULL) return;
 
-	switch (how) {
-	
-		case INSERT_STYLE_NORMAL:
-        	style_end = comma;
-			break;
-			
-		case INSERT_STYLE_FOR_HEADER:
-        	style_end = style + strlen(style);
-			break;
+    switch (how) {
+    
+        case INSERT_STYLE_NORMAL:
+            style_end = comma;
+            break;
+            
+        case INSERT_STYLE_FOR_HEADER:
+            style_end = style + strlen(style);
+            break;
 
-		case INSERT_STYLE_NO_STYLE:
-			/* move start just past style bit e.g., \s2 */
-			if (strstarts(style,"\\s")) {
-				style += 2;
-				while (*style >= '0' && *style <= '9') 
-					style++;
-			}
-        	style_end = comma;
-			break;
-	}
-	
+        case INSERT_STYLE_NO_STYLE:
+            /* move start just past style bit e.g., \s2 */
+            if (strstarts(style,"\\s")) {
+                style += 2;
+                while (*style >= '0' && *style <= '9') 
+                    style++;
+            }
+            style_end = comma;
+            break;
+    }
+    
     while (style < style_end) {
 
         if (style == comma)
@@ -148,23 +148,27 @@ void InsertStyle(const char *the_style)
     int how = INSERT_STYLE_NORMAL;
     char *style = strdup(the_style);
 
-	last_char = style + strlen(style) - 1;
-	if (*last_char == '0') {
-		how = INSERT_STYLE_NO_STYLE;
-		*last_char = '\0'; 
-	}
-	
+    last_char = style + strlen(style) - 1;
+    if (*last_char == '0') {
+        how = INSERT_STYLE_NO_STYLE;
+        *last_char = '\0'; 
+    }
+    
     if (strcmp(style,"Normal")==0) {
+
         if (getAlignment()==CENTERED) {
             InsertStyle("centerpar");
+            free(style);
             return;
         }
         if (getAlignment()==RIGHT) {
             InsertStyle("rightpar");
+            free(style);
             return;
         }
         if (getAlignment()==LEFT) {
             InsertStyle("leftpar");
+            free(style);
             return;
         }
     }
