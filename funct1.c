@@ -1497,7 +1497,7 @@ void CmdSpace(float kk)
  purpose: inserts a space of width kk*space 
  ******************************************************************************/
 {
-    int size = CurrentFontSize() * kk;
+    int size = (int) (CurrentFontSize() * kk);
 
     if (getTexMode() == MODE_VERTICAL)
         changeTexMode(MODE_HORIZONTAL);

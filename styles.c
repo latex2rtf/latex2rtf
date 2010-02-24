@@ -78,7 +78,8 @@ void InsertBasicStyle(const char *rtf, int how)
            where rtf="\rtfsequence,\rtfheader"
  ******************************************************************************/
 {
-    char *style, *style_end, *comma;
+    char *style, *comma;
+    char *style_end = NULL;
 
     if (rtf == NULL) return;
     

@@ -1006,8 +1006,8 @@ static void PutPngFile(char *png, double height_goal, double width_goal, double 
         AdjustScaling(h_twips,w_twips,height_goal,width_goal,scale,&sx,&sy);
         
         if (bad_res) {
-            sx *= POINTS_PER_METER / xres;
-            sy *= POINTS_PER_METER / yres;
+            sx = (uint16_t) (sx * POINTS_PER_METER / xres);
+            sy = (uint16_t) (sy * POINTS_PER_METER / yres);
         }
         
     diagnostics(4, "picw       = %8lu pixels,     pich        = %8lu pixels", w_pixels, h_pixels);

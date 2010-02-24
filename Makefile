@@ -5,12 +5,12 @@ MKDIR?=mkdir -p
 RMDIR?=rm -rf
 PKGMANDIR?=man
 
-#CFLAGS:=-O2 -pipe -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4 -m64 -mtune=generic
+#CFLAGS:=-O2 -pipe -Wp,-D_FORTIFY_SOURCE=2 -Wno-write-strings -fexceptions -fstack-protector --param=ssp-buffer-size=4 -m64 -mtune=generic
 PLATFORM?=-DUNIX
 #PLATFORM?=-DMSDOS -DNOSTDERR   # Windows/DOS
 #PLATFORM?=-DMAC_CLASSIC        # MacOS 8/9
 #PLATFORM?=-DOS2                # OS/2
-CFLAGS:=$(CFLAGS) $(PLATFORM)
+CFLAGS:=$(CFLAGS) $(PLATFORM) 
 
 #Uncomment for some windows machines (not needed for djgpp)
 #EXE_SUFFIX=.exe

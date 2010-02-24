@@ -123,7 +123,7 @@ static void reset_buffer(void)
     section_buffer_end = -1;
 }
 
-static void move_end_of_buffer(size_t n)
+static void move_end_of_buffer(long n)
 {
     section_buffer_end += n;
 
