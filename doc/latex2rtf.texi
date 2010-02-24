@@ -58,7 +58,7 @@ LaTeX2RTF
 @subtitle 
 A converter from @latex{} to RTF
 
-Edition 0.7.5
+Edition 0.7.6
 
 for program version 2.1.0
 
@@ -68,7 +68,7 @@ with contributions by Mikhail Polianski
 
 @page
 @vskip 0pt plus 1 filll
-Copyright @copyright{} 1998-2009 Georg Lehner, Wilfried Hennings, Scott Prahl
+Copyright @copyright{} 1998-2010 Georg Lehner, Wilfried Hennings, Scott Prahl
 
 Permission is granted to make and distribute verbatim copies of this
 manual provided the copyright notice and this permission notice are
@@ -166,7 +166,8 @@ Command List
 * Preamble Commands::           
 * Letter Commands::             
 * Language Commands::           
-* Citation Commands::           
+* Citation Commands::
+* Acronym Commands::           
 * Other Commands::              
 * Environments::                
 
@@ -200,7 +201,7 @@ Citation Commands
 @ifnottex
 
 Copyright 1998-2002 Georg Lehner,@* 
-updates Copyright 1999-2009 by Wilfried Hennings and Scott Prahl,@* 
+updates Copyright 1999-2010 by Wilfried Hennings and Scott Prahl,@* 
 with contributions by Mikhail Polianski.
 
 Permission is granted to make and distribute verbatim copies of this
@@ -219,7 +220,7 @@ into another language, under the above conditions for modified versions,
 except that this permission notice may be stated in a translation
 approved by the Free Software Foundation.
 
-@c This document applies to version 1.9.17 of @ltor{}.
+@c This document applies to version 2.1.0 of @ltor{}.
 @end ifnottex
 
 
@@ -317,22 +318,20 @@ The latest version of @ltor{} is available at
 and --- with some delay --- on CTAN sites: 
 e.g., @uref{http://www.dante.de} or @uref{http://www.ctan.org}.
 
-The DOS package (1.8aa and up) will also run under all MS Windows versions
+The DOS package will also run under all MS Windows versions
 except 64bit systems. 
 It requires an i386 processor or better.@*
 It should only be used on older Microsoft systems.@*
 For Win9x, ME, NT, or newer, you should use the win or win-NO-GUI package.
 
-The win-NO-GUI package (starting from @ltor{} 1.9.19) is identical 
-to the DOS package except that it is compiled with Cygwin (up to 1.9.19) 
-or MinGW (2.0.0 and up), and only runs under Win32 
-(Win9x, ME, NT, 2000, XP, 2003, Vista) but (2.0.0 and up) also on 64bit systems.
+The win-NO-GUI package is compiled with 
+MinGW (2.0.0 and up), and only runs under Win32 
+(Win9x, ME, NT, 2000, XP, 2003, Vista).
+From version 2.0.0 up it also runs on 64bit systems.
 
-The win package (starting from @ltor{} 1.9.15) is the DOS package
-(up to @ltor{} 1.9.17) or the win-NO-GUI package (@ltor{} 1.9.18 and up)
+The win package is the win-NO-GUI package
 plus Win32 GUI program (l2rshell).@*
-Up to version 1.9.19 it does not run under 64bit systems. 
-From version 2.0.0 it also runs under 64bit systems.
+From version 2.0.0 up it also runs on 64bit systems.
 
 The win64 package (@ltor{} 1.9.19) is the win package
 but with 32bit versions of the shell utilities so that it also runs
@@ -416,9 +415,12 @@ directory.
 
 The @acronym{UNIX} and Mac packages do not contain an executable for DOS 
 or Windows. You may compile it yourself (with djgpp or MinGW)
-or get the DOS package as file @file{latex2rtf-x.x.x_dos.zip}
-(where x.x.x is the version number)
+or get the @*
+DOS package as file @file{latex2rtf-x.x.x_dos.zip}
+(where x.x.x is the version number) @*
 or the Windows package as file @file{latex2rtf-x.x.x_win-NO-GUI.zip}
+(no installer, no GUI)@* 
+or file @file{latex2rtf-x.x.x_win.zip} (with installer and GUI) @*
 from @uref{http://sourceforge.net/projects/latex2rtf/,SourceForge}@*
 
 The DOS distribution contains a precompiled executable 
@@ -460,7 +462,7 @@ execute the @file{latex2rtf-x.x.x_win.exe}
 Note: The installer and GUI shell do not support Win9x and WinMe
 since @ltor{} v.1.9.17. 
 If you have one of these systems, you should use the 
-win package (1.9.19 and up) of @ltor{}. 
+win-NO-GUI package (1.9.19 and up) of @ltor{}. 
 
 To start the program double-click the @ltor{} icon, 
 or drag and drop a @file{.tex} file onto the icon.
@@ -924,10 +926,11 @@ the old 2.09 version of @code{\documentstyle[options]@{format#@}} and the newer
 @section Unicode Support
 
 As of version 1.9.17, @ltor{} has limited unicode support.  @latex{} files
-that use unicode sequences are just emitted directly into the RTF file.
+that use unicode sequences are just emitted directly into the RTF file.@*
 Symbols and odd characters in math sequences may also be converted to
-a unicode sequence if there is no corresponding symbol in the ``Symbol''
-or ``MT Extra'' fonts.
+a unicode sequence. Some of them need the STIXGeneral fonts 
+(see @ref{Math and Special Symbols}) to be installed on the system 
+where the rtf file is to be displayed or printed. 
 
 Support for unicode encoded input 
 is activated by the @latex{} command @*
@@ -1122,42 +1125,32 @@ MathType can be downloaded from @uref{http://www.dessci.com/en/products/mathtype
 The way that symbols are converted in the RTF is based on the following
 observations.  If the symbol is found in the latin 1 character set, then
 the current font is used, else the unicode code is inserted in the rtf code.
-(This is work in progress in the upcoming version 2.1.0)
+(Implemented since version 2.1.0)
 
 The means that on the system where the @file{.rtf} file is opened, a unicode
-font should be available or these glyphs will not be displayed correctly. On
-Windows machines the unicode font is ``Lucida Sans Unicode'', on MacOS X the
-font is ``Lucida Grande''.  Even when these fonts are installed, support for
-these unicode sequences seems to be hit-or-miss in various versions of Word since
-many of these symbols are not (yet) contained in the standard unicode fonts.
-We are planning to switch to the STIXFonts 
-@uref{http://www.mozilla.org/projects/mathml/fonts/} which contain all needed characters.
+font should be available or these glyphs will not be displayed correctly. 
+As only the STIX fonts (see @ref{Math and Special Symbols}) 
+contain all needed characters, these fonts should be 
+installed on the system where the rtf file is to be displayed or printed. 
 
 Many mathematical and special symbols are directly supported by @ltor{}.
-Less common symbols (not found in the fonts ``Symbol'' or ``MT Extra'')
+Less common symbols (not found in the standard font)
 are supported by the conversion table in the file @file{direct.cfg}, 
 see @ref{Direct Conversion}. 
-An alternative @file{direct.cfg} is available in which the symbols 
-are explicitly taken from ``Lucida Sans Unicode'', which contains more of the 
-symbols than the standard font Times / Times New Roman but which is only
-available on PCs with MS Windows.
-To use ``Lucida Sans Unicode'', rename @file{direct.cfg} 
-(to e.g., @file{direct_tm.cfg}) and rename @file{direct_ucs.cfg} to @file{direct.cfg}.
 
 Required fonts are:
 
 @itemize
 
-@item ``Times'' / ``Times New Roman'', preferably with Unicode extension (i.e. 
-supporting all European languages including Cyrillic, Greek, and Hebrew). ``Times'' 
-or ``Times New Roman'' is standard on all systems, but not its Unicode extension.
+@item ``Times'' / ``Times New Roman'' or ``Helvetica'' / ``Arial'', 
+preferably with Unicode extension (i.e. supporting all European languages 
+including Cyrillic, Greek, and Hebrew). ``Times'' or ``Times New Roman'' and 
+``Helvetica'' or ``Arial'' are standard on all systems, 
+but not their Unicode extension.
 
-@item ``Symbol'', which is standard on all systems.
-
-@item ``MT Extra''. This font is installed with the Microsoft Equation Editor,
-which comes with Microsoft Word, or its full version MathType. 
-If you don't have Word or MathType, you can get this font from 
-@uref{http://www.mathtype.com/en/dl/fonts/}
+@item ``STIXGeneral'' (4 fonts in plain, italic, bold, bold-italic). These fonts 
+are available from @uref{http://www.mozilla.org/projects/mathml/fonts/}
+or from @uref{http://latex2rtf.sourceforge.net/} 
 
 @end itemize
 
@@ -1385,19 +1378,20 @@ space. e.g., @code{\setbox\bak=\hbox}
 ignores anything to next @samp{\} and from there to the occurence of anything
 but a letter e.g., @code{\newbox\bak}
 @item  SINGLE
-ignore single command e.g., @code{\noindent}
+ignores single command e.g., @code{\noindent}
 @item  PARAMETER
 ignores a command with one parameter e.g., @code{\foo@{bar@}}
 @item PACKAGE
 does not produce a Warning message if PACKAGE is encountered, e.g.,
-`PACKAGE,kleenex.'
+`@code{\kleenex,PACKAGE.}' ignores `@code{\usepackage@{kleenex@}}'
 @item ENVCMD
-proceses contents of unknown environment as if it were plain @latex{}
-eg. `ENVCMD,environ.' Therefore @code{\begin@{environ@} text
-\end@{environ@}}' as `text'.
+intended to process contents of unknown environment as if it were 
+plain @latex{}, e.g. `@code{\environ,ENVCMD.}' @*
+Therefore `@code{\begin@{environ@} text
+\end@{environ@}}' would be converted to `text'. Doesn't work in @ltor{} version 2.1.0.
 @item ENVIRONMENT
-ignores contents of that environment, e.g., with `ENVIRONMENT,ifhtml.'
-@code{\begin@{ifhtml@} text \end@{ifhtml@}} ignores `text'.
+ignores contents of that environment, e.g., with `@code{\ifhtml,ENVIRONMENT.}'',
+`@code{\begin@{ifhtml@} text \end@{ifhtml@}}' ignores `text'.
 @end table
 
 The types are in upper case exactly as above. Do not use spaces. Lines starting
@@ -1528,7 +1522,7 @@ For subscription to these lists visit the page:
 or
 @uref{http://lists.sourceforge.net/lists/listinfo/latex2rtf-developers, developers list}
 
-As of December 2007, version 2.0.0 of @ltor{} is available. 
+As of February 2010, version 2.1.0 of @ltor{} is available. 
 
 The contents of this manual were composed by copying shamelessly what was
 available in the original sources and documentation.
@@ -1674,7 +1668,8 @@ implementing.
 * Preamble Commands::           
 * Letter Commands::             
 * Language Commands::           
-* Citation Commands::           
+* Citation Commands::
+* Acronym Commands::           
 * Other Commands::              
 * Environments::                
 @end menu
@@ -2967,7 +2962,7 @@ Found in @code{GermanModeCommands[]} in commands.c.
 @item cyrzh
 @end ftable
 
-@node Citation Commands, Other Commands, Language Commands, LaTeX Commands
+@node Citation Commands, Acronym Commands, Language Commands, LaTeX Commands
 @comment  node-name,  next,  previous,  up
 @subsection Citation Commands
 
@@ -3106,7 +3101,21 @@ Found in @code{GermanModeCommands[]} in commands.c.
 @item citeyearpar
 @end ftable
 
-@node Other Commands, Environments, Citation Commands, LaTeX Commands
+@node Acronym Commands, Other Commands, Citation Commands, LaTeX Commands
+@comment  node-name,  next,  previous,  up
+@subsection Acronym Commands
+
+@ftable @asis
+@item usepackage [options] @{acronym@}
+@item ac
+@item acfi
+@item acro
+@item acrodef
+@item acrodefplural
+@item acused
+@end ftable
+
+@node Other Commands, Environments, Acronym Commands, LaTeX Commands
 @comment  node-name,  next,  previous,  up
 @subsection Other Commands
 
@@ -3115,7 +3124,7 @@ item @*
 caption @*
 center @*
 
-@node Environments,  , Other Commands, LaTeX Commands
+@node Environments,, Other Commands, LaTeX Commands
 @comment  node-name,  next,  previous,  up
 @subsection Environments
 
