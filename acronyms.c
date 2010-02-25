@@ -269,8 +269,8 @@ static char* regularPlural(char *singular)
 static acroEntry *createEntry(char *acDef) {
     acroEntry *result = searchEntry(acDef);
     if (NULL == result) {
-    	void *ptr;
-    	ptr = (void *) acroTable;
+        void *ptr;
+        ptr = (void *) acroTable;
         ptr = realloc(ptr,(++acroNum)*sizeof(acroEntry));
         acroTable = (acroEntry *) ptr;
         if (NULL != acroTable) {
@@ -420,17 +420,11 @@ int acronymHint(int maxWidth)
 void CmdAC(int code)
 {
     char *shortAc;
-
     shortAc = getTexUntil("hyperlink",FALSE);
-    if (NULL != shortAc) free(shortAc);
-
+    strfree(shortAc);
     ignoreBraceParam();
-
     shortAc = getBraceParam();
-    if (shortAc != NULL) {
-        ConvertString(shortAc);
-        diagnostics(5,"in CmdAC(), pushing '%s'",shortAc);
-    }
+    ConvertString(shortAc);
     strfree(shortAc);
 }
 /*

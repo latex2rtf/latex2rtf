@@ -52,6 +52,8 @@ void    show_string(int level, const char *s, const char *label);
 size_t my_strlcpy(char *dst, const char *src, size_t siz);
 size_t my_strlcat(char *dst, const char *src, size_t siz);
 int    file_exists(char *fname);
+int    my_fgetc(FILE *f);
+char * my_fgets(char *buffer, int maxBuffer, FILE *f);
 
 static inline int streq(char *s1,char *s2)
 {

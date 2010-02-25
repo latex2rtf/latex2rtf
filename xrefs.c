@@ -170,57 +170,6 @@ static int citation_used(char *citation)
     return 0;
 }
 
-#define CR (char) 0x0d
-#define LF (char) 0x0a
-
-static int my_fgetc(FILE *f)
-{
-    int c;
-    
-    c = fgetc(f);
-    if (feof(f)) return '\0';
-        
-    if (c==CR) {
-        c = fgetc(f);
-        if (c == LF) return '\n';
-        ungetc(c,f);
-        return '\n';
-    } 
-    
-    if (c == LF ) return '\n';
-    if (c =='\t') return ' ';
-    
-    return c;
-}
-
-/* written to avoid '\\''\n' being seen as the end of a line */
-static char * my_fgets(FILE *f)
-{
-    char AuxLine[2048];
-    int i;
-    int cLast = '\0';
-    
-    if (f == NULL || feof(f)) return NULL;
-    
-    for(i=0; i<2048; i++) {
-        AuxLine[i] = my_fgetc(f);
-    
-        if (feof(f)) break;
-        
-        if (AuxLine[i] == '\n') {
-            if (cLast == '\\')
-                AuxLine[i] = ' ';  /* replace backslash-newline with backslash-space */
-            else 
-                break;
-        } 
-        cLast = AuxLine[i];
-    }
-        
-    AuxLine[i] = '\0';
-    return strdup(AuxLine);
-}
-
-
 /*************************************************************************
 purpose: obtains a reference from .aux file
     code==SCANAUX_NUMBER (0) means \token{reference}{number}       -> "number"
@@ -271,6 +220,7 @@ purpose: obtains a \bibentry{reference} from the .bbl file
  ************************************************************************/
 static char *ScanBbl(char *reference)
 {
+    char line[512];
     static FILE *f_bbl = NULL;
     char *buffer, *target;
     char *s=NULL;
@@ -291,10 +241,9 @@ static char *ScanBbl(char *reference)
     rewind(f_bbl);
 
     /* scan each line for \bibentry{reference} */
-    while ((buffer = my_fgets(f_bbl)) != NULL) {
-        s = strstr(buffer,target);
+    while (my_fgets(line, 511, f_bbl)) {
+    	s = strstr(line,target);
         if (s) break;
-        free(buffer);
     }
     
     free(target);

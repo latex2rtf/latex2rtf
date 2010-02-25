@@ -1,7 +1,6 @@
-
 /* graphics.c - routines that handle LaTeX graphics commands
 
-Copyright (C) 2001-2002 The Free Software Foundation
+Copyright (C) 2001-2010 The Free Software Foundation
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -18,9 +17,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 This file is available from http://sourceforge.net/projects/latex2rtf/
- 
-Authors:
-    2001-2002 Scott Prahl
 */
 
 #include <stdlib.h>
@@ -2225,9 +2221,9 @@ void CmdMusic(int code)
     diagnostics(4, "entering CmdMusic");
     contents = getTexUntil(endmusic, TRUE);
 
-        PrepareDisplayedBitmap("music");
+    PrepareDisplayedBitmap("music");
     WriteLatexAsBitmap("\\begin{music}", contents, endmusic);
-        FinishDisplayedBitmap();
+    FinishDisplayedBitmap();
 
     ConvertString(endmusic);             /* to balance the \begin{music} */
     free(contents);

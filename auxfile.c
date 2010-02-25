@@ -45,46 +45,6 @@ char *acronymAux[] = {
     NULL
 };
 
-/* portable fgets function which honours \ at the end of line */
-/* fgets works for Linux but not for win32                    */
-/* tested on Linux and win32                                  */
-/* This is more or less what we already had in xrefs.c        */
-/* The other will go, once we get rid of the original ScanAux */
-/* interface                                                  */
-
-static char *my_fgets(char *buffer,int maxBuffer,FILE *f) {
-    int buffOffset = 0;
-    char c;
-    buffer[0] = 0;      /* cleanup buffer */
-    while ((c = fgetc (f)) != EOF) {
-        buffer[buffOffset]     = c;
-        buffer[buffOffset + 1] = 0;
-
-        if (c == '\r' || c == '\n') {
-        /* handle escaped double lines
-         \harvardcite{aharanov1995}{Aharanov, Whitehead, Kelemen \harvardand \
-         Spiegelman}{Aharanov et~al.}{1995}
-        */
-            if(buffOffset > 0) {        /* line is not empty */
-                if (buffer[buffOffset - 1] == '\\') {
-                    buffOffset--;
-                } else {
-                    break;
-                }
-            } /* line empty: continue with the next line*/
-        } else {
-            /* read next character */
-            buffOffset++;
-        }
-    }
-    /* we got an EOF */
-    if (buffOffset == 0 && c == EOF)
-        return NULL;
-    /* close the line for sure */
-    buffer[buffOffset] = 0;
-    return buffer;
-}
-
 /*
  * open and read an auxiliary file.
  * filter lines which start with the

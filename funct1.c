@@ -1589,10 +1589,8 @@ void CmdFigure(int code)
             WriteLatexAsBitmap("\\begin{figure}", figure_contents, "\\end{figure}");
             FinishDisplayedBitmap();
             ConvertString(caption);
-            if (label)
-                free(label);
-            if (caption)
-                free(caption);
+            strfree(label);
+            strfree(caption);
         } else {
             startParagraph("figure", GENERIC_PARAGRAPH);
             ConvertString(figure_contents);
@@ -1600,8 +1598,7 @@ void CmdFigure(int code)
         free(figure_contents);
         ConvertString(endfigure);
     } else {
-        if (g_figure_label)
-            free(g_figure_label);
+        strfree(g_figure_label);
         g_processing_figure = FALSE;
         diagnostics(4, "exiting CmdFigure");
         setAlignment(oldalignment);
@@ -1951,9 +1948,7 @@ void CmdIf(int code)
  ******************************************************************************/
 {
     char *s = getTexUntil("\\fi", FALSE);
-
-    if (s)
-        free(s);
+    strfree(s);
 }
 
 /******************************************************************************

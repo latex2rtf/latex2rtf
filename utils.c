@@ -680,3 +680,83 @@ int file_exists(char *fname)
     diagnostics(5,"file_exists(%s) returns %d",fname,result);
     return result;
 }
+
+#define CR (char) 0x0d
+#define LF (char) 0x0a
+
+int my_fgetc(FILE *f)
+{
+    int c;
+    
+    c = fgetc(f);
+    if (feof(f)) return '\0';
+        
+    if (c==CR) {
+        c = fgetc(f);
+        if (c == LF) return '\n';
+        ungetc(c,f);
+        return '\n';
+    } 
+    
+    if (c == LF ) return '\n';
+    if (c =='\t') return ' ';
+    
+    return c;
+}
+
+/* fgets function that honors '\' at end of line 
+
+      \harvardcite{aharanov1995}{Aharanov, Whitehead, Kelemen \harvardand \
+      Spiegelman}{Aharanov et~al.}{1995}
+      
+   returns number of characters read
+*/
+
+int xmy_fgets(char *buffer, int maxBuffer, FILE *f) 
+{
+    int i = 0;
+    
+    while ( i < maxBuffer ) {
+        buffer[i] = my_fgetc(f);
+
+        if (buffer[i] == '\0') return i;           /* line ends with EOF */
+        
+        if (buffer[i] == '\n') {
+            buffer[i] = '\0';
+            i--;
+            if ( i >= 0 ) {
+                if ( buffer[i] != '\\' ) return i; /* usual case */
+                i--;                               /* discard '\\' */
+            }
+        }
+        i++;
+    } 
+    
+    buffer[maxBuffer] = '\0';
+    return maxBuffer;
+}
+
+char * my_fgets(char *buffer, int maxBuffer, FILE *f) 
+{
+    int i;
+    int cLast = '\0';
+    
+    if (f == NULL || feof(f)) return NULL;
+    
+    for (i=0; i<maxBuffer; i++) {
+        buffer[i] = my_fgetc(f);
+    
+        if (buffer[i] == '\0') return buffer;
+        
+        if (buffer[i] == '\n') {
+            if (cLast == '\\')
+                buffer[i] = ' ';  /* replace backslash-newline with backslash-space */
+            else 
+                break;
+        } 
+        cLast = buffer[i];
+    }
+        
+    buffer[i] = '\0';
+    return buffer;
+}
