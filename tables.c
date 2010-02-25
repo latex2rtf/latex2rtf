@@ -1456,12 +1456,9 @@ void CmdTable(int code)
             ConvertString("\\end{table*}");
     } else {
         g_processing_table = FALSE;
-    /*    if (getTexMode() != MODE_VERTICAL)*/
-            CmdEndParagraph(0);
-        if (g_table_label)
-            free(g_table_label);
+        CmdEndParagraph(0);
+        strfree(g_table_label);
         setAlignment(oldalignment);
- /*       CmdEndParagraph(0); */
         CmdVspace(VSPACE_BIG_SKIP);
     }
 }
