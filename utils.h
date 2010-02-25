@@ -70,7 +70,6 @@ static inline int strstarts(char *s1, char *s2)
 
 static inline void strfree(char *s)
 {
-    if (NULL != s)
-        free(s);
+    if (NULL != s) { free(s); s = NULL; }
 }
 #endif

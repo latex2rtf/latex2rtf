@@ -820,39 +820,35 @@ typedef struct _pHYsChunkEntry
 
 static unsigned char * getPngChunk(FILE *fp, char *s)
 {
-        uint32_t crc, DataLength;
-        char Type[5];
-        unsigned char *data;
+    uint32_t crc, DataLength;
+    char Type[5];
+    unsigned char *data;
+    
+    Type[4]='\0';
+    
+    diagnostics(6, "getPngChunk ... seeking '%s'",s);
+    data = NULL;
+    do {
+        if (data) free(data);
         
-        Type[4]='\0';
+        /* read chuck size */
+        fread(&DataLength, 4, 1, fp);
+        if (g_little_endian) DataLength = LETONL(DataLength);
         
-        diagnostics(6, "getPngChunk ... seeking '%s'",s);
-        data = NULL;
-        do {
-                if (data!=NULL) 
-                        free(data);
-                
-                /* read chuck size */
-                fread(&DataLength, 4, 1, fp);
-                if (g_little_endian) 
-                        DataLength = LETONL(DataLength);
-                
-                /* read chunk type */
-                fread(Type, 1, 4, fp);
-                if (strcmp(Type,"IEND") == 0) 
-                        return NULL;
-                
-                diagnostics(6,"found chunk '%s' size %u bytes",Type, DataLength);
-                data = (unsigned char *) malloc(DataLength);
-                if (data == NULL) return NULL;
-                
-                fread(data, DataLength, 1, fp);
-                fread(&crc, 4, 1, fp);
-                crc++; /* ignored, but touch to eliminate warning */
-                
-        } while (strcmp(s,Type) != 0);
+        /* read chunk type */
+        fread(Type, 1, 4, fp);
+        if (strcmp(Type,"IEND") == 0) return NULL;
         
-        return data;    
+        diagnostics(6,"found chunk '%s' size %u bytes",Type, DataLength);
+        data = (unsigned char *) malloc(DataLength);
+        if (data == NULL) return NULL;
+        
+        fread(data, DataLength, 1, fp);
+        fread(&crc, 4, 1, fp);
+        crc++; /* ignored, but touch to eliminate warning */
+    } while (strcmp(s,Type) != 0);
+    
+    return data;    
 }
 
 /******************************************************************************
@@ -889,52 +885,49 @@ static void GetPngSize(char *s, uint32_t *w_pixels, uint32_t *h_pixels, double *
         return;
     }
 
-        data = getPngChunk(fp,"IHDR");
-        if (data == NULL) {
+    data = getPngChunk(fp,"IHDR");
+    if (data == NULL) {
         diagnostics(WARNING, "Graphics file '%s': could not locate IHDR chunk!", s);
         fclose(fp);
         return;
-        }
+    }
 
-        p = (uint32_t *) data;  
-        *w_pixels = (g_little_endian) ? LETONL(*p) : *p;
-        p++;
-        *h_pixels = (g_little_endian) ? LETONL(*p) : *p;
-        free(data);
+    p = (uint32_t *) data;  
+    *w_pixels = (g_little_endian) ? LETONL(*p) : *p;
+    p++;
+    *h_pixels = (g_little_endian) ? LETONL(*p) : *p;
+    free(data);
                 
-        data = getPngChunk(fp,"pHYs");
-        if (data == NULL) {
+    data = getPngChunk(fp,"pHYs");
+    if (data == NULL) {
         diagnostics(2, "Graphics file '%s': could not locate pHYs chunk!", s);
         diagnostics(2, "defaulting to 72 pixels/inch for resolution");
         fclose(fp);
         return;
-        }
+    }
 
-        p = (uint32_t *) data;  
-        *xres = (g_little_endian) ? LETONL(*p) : *p;
-        p++;
-        *yres = (g_little_endian) ? LETONL(*p) : *p;
-        
-        free(data);
+    p = (uint32_t *) data;  
+    *xres = (g_little_endian) ? LETONL(*p) : *p;
+    p++;
+    *yres = (g_little_endian) ? LETONL(*p) : *p;
+    free(data);
 
-        if (fabs(*xres-POINTS_PER_METER)<2) *xres = POINTS_PER_METER;
-        if (fabs(*yres-POINTS_PER_METER)<2) *yres = POINTS_PER_METER;
+    if (fabs(*xres-POINTS_PER_METER)<2) *xres = POINTS_PER_METER;
+    if (fabs(*yres-POINTS_PER_METER)<2) *yres = POINTS_PER_METER;
 
-        /* dots per inch, not per meter! */
-        if (*xres < POINTS_PER_METER) {
-                *bad_res = 1;
-                diagnostics(5, "bogus resolution in png image! ");
-                diagnostics(5, "xres = %g, yres = %g, pixels/meter", *xres, *yres);
-                diagnostics(5, "xres = %g, yres = %g, pixels/in", 
-                                *xres*72.0/POINTS_PER_METER, *yres*72.0/POINTS_PER_METER);
-                *xres *= POINTS_PER_METER/72.0;
-                *yres *= POINTS_PER_METER/72.0;
-        } else 
-                *bad_res = 0;
-        
+    /* dots per inch, not per meter! */
+    if (*xres < POINTS_PER_METER) {
+        *bad_res = 1;
+        diagnostics(5, "bogus resolution in png image! ");
         diagnostics(5, "xres = %g, yres = %g, pixels/meter", *xres, *yres);
-        diagnostics(5, "xres = %g, yres = %g, pixels/in", 
-                                        *xres*72.0/POINTS_PER_METER, *yres*72.0/POINTS_PER_METER);
+        diagnostics(5, "xres = %g, yres = %g, pixels/in",  *xres*72.0/POINTS_PER_METER, *yres*72.0/POINTS_PER_METER);
+        *xres *= POINTS_PER_METER/72.0;
+        *yres *= POINTS_PER_METER/72.0;
+    } else 
+        *bad_res = 0;
+    
+    diagnostics(5, "xres = %g, yres = %g, pixels/meter", *xres, *yres);
+    diagnostics(5, "xres = %g, yres = %g, pixels/in", *xres*72.0/POINTS_PER_METER, *yres*72.0/POINTS_PER_METER);
 
     fclose(fp);
 }
@@ -974,8 +967,8 @@ static void PutPngFile(char *png, double height_goal, double width_goal, double 
     double xres,yres;
     uint32_t w_pixels, h_pixels, b;
     uint32_t w_twips, h_twips;
-        uint16_t sx, sy;
-        int bad_res;
+    uint16_t sx, sy;
+    int bad_res;
         
     diagnostics(WARNING,"<%s>",png);
     GetPngSize(png, &w_pixels, &h_pixels, &xres, &yres, &bad_res);
@@ -985,22 +978,22 @@ static void PutPngFile(char *png, double height_goal, double width_goal, double 
     fp = fopen(png, "rb");
     if (fp == NULL) return;
 
-        /*                     pixels     points     20 twips   */
-        /* twips = (pixels) / -------- * -------- * ----------  */
-        /*                     meter       meter      1 point   */
+    /*                     pixels     points     20 twips   */
+    /* twips = (pixels) / -------- * -------- * ----------  */
+    /*                     meter       meter      1 point   */
 
-        w_twips = (int)(w_pixels / xres * POINTS_PER_METER * 20.0 + 0.5);
-        h_twips = (int)(h_pixels / yres * POINTS_PER_METER * 20.0 + 0.5);
-        
-        /* because \dn command requires half-points! */
-        b = (uint32_t) baseline * 2;
-        
-        AdjustScaling(h_twips,w_twips,height_goal,width_goal,scale,&sx,&sy);
-        
-        if (bad_res) {
-            sx = (uint16_t) (sx * POINTS_PER_METER / xres);
-            sy = (uint16_t) (sy * POINTS_PER_METER / yres);
-        }
+    w_twips = (int)(w_pixels / xres * POINTS_PER_METER * 20.0 + 0.5);
+    h_twips = (int)(h_pixels / yres * POINTS_PER_METER * 20.0 + 0.5);
+    
+    /* because \dn command requires half-points! */
+    b = (uint32_t) baseline * 2;
+    
+    AdjustScaling(h_twips,w_twips,height_goal,width_goal,scale,&sx,&sy);
+    
+    if (bad_res) {
+        sx = (uint16_t) (sx * POINTS_PER_METER / xres);
+        sy = (uint16_t) (sy * POINTS_PER_METER / yres);
+    }
         
     diagnostics(4, "picw       = %8lu pixels,     pich        = %8lu pixels", w_pixels, h_pixels);
     diagnostics(4, "picwgoal   = %8lu twips,      pichgoal    = %8lu twips", w_twips, h_twips);
@@ -1513,9 +1506,9 @@ void PutLatexFile(const char *tex_file_stem, double scale, const char *pre)
     char *tmp_path;
     int  bmoffset;
     int bad_res;
-        double height_goal, width_goal;
-        double baseline = 0;
-        double png_xres, png_yres;
+    double height_goal, width_goal;
+    double baseline = 0;
+    double png_xres, png_yres;
     uint32_t png_width = 0;
     uint32_t png_height= 0;
     uint16_t png_resolution=0;
@@ -1523,59 +1516,59 @@ void PutLatexFile(const char *tex_file_stem, double scale, const char *pre)
         
     diagnostics(4, "Rendering LaTeX as a bitmap...");
 
-        /* arrived at by trial and error ... works for sizes from 72 to 1200 dpi */
+    /* arrived at by trial and error ... works for sizes from 72 to 1200 dpi */
     bmoffset = g_dots_per_inch / 60 + 1;
 
     /* it is possible that the latex image is too wide or tall for Word
        we only know this after we have tried once.  If the image is too
        large then the resolution is made smaller and the PNG is remade */
     
-        png_resolution = (uint16_t) g_dots_per_inch;
-        
-        png_file_name = strdup_together(tex_file_stem, ".png");
-        tmp_path = SysGraphicsConvert(CONVERT_LATEX, bmoffset, png_resolution, tex_file_stem, png_file_name);
+    png_resolution = (uint16_t) g_dots_per_inch;
+    
+    png_file_name = strdup_together(tex_file_stem, ".png");
+    tmp_path = SysGraphicsConvert(CONVERT_LATEX, bmoffset, png_resolution, tex_file_stem, png_file_name);
 
-        if (NULL == tmp_path) {
-            diagnostics(WARNING, "PutLatexFile failed to convert '%s' to png",tex_file_stem);
-            free(png_file_name);
+    if (NULL == tmp_path) {
+        diagnostics(WARNING, "PutLatexFile failed to convert '%s' to png",tex_file_stem);
+        strfree(png_file_name);
+        return;
+    }
+    
+    /* Figures can only have so many bits ... figure out the width and height
+       and if these are too large then reduce resolution and make a new bitmap */
+    GetPngSize(png_file_name, &png_width, &png_height, &png_xres, &png_yres, &bad_res);
+
+    if (png_width  > max_fig_size || png_height > max_fig_size) {
+            
+        if (png_height && png_height > png_width) 
+            png_resolution = (uint16_t)((double)g_dots_per_inch / (double)png_height * max_fig_size);
+        else
+            png_resolution = (uint16_t)((double)g_dots_per_inch / (double)png_width * max_fig_size);
+
+        strfree(tmp_path);
+        tmp_path = SysGraphicsConvert(CONVERT_LATEX, bmoffset, png_resolution, tex_file_stem, png_file_name);
+        if (tmp_path == NULL) {
+            strfree(png_file_name);
             return;
         }
         
-        /* Figures can only have so many bits ... figure out the width and height
-           and if these are too large then reduce resolution and make a new bitmap */
         GetPngSize(png_file_name, &png_width, &png_height, &png_xres, &png_yres, &bad_res);
+    }
+    
+    /* we have a png file of the latex now ... insert it after figuring out offset and scaling */
 
-        if (png_width  > max_fig_size || png_height > max_fig_size) {
-                
-            if (png_height && png_height > png_width) 
-                png_resolution = (uint16_t)((double)g_dots_per_inch / (double)png_height * max_fig_size);
-            else
-                png_resolution = (uint16_t)((double)g_dots_per_inch / (double)png_width * max_fig_size);
-
-            free(tmp_path);
-            tmp_path = SysGraphicsConvert(CONVERT_LATEX, bmoffset, png_resolution, tex_file_stem, png_file_name);
-            if (tmp_path == NULL) {
-                free(png_file_name);
-                return;
-            }
-            
-            GetPngSize(png_file_name, &png_width, &png_height, &png_xres, &png_yres, &bad_res);
-        }
-        
-        /* we have a png file of the latex now ... insert it after figuring out offset and scaling */
-
-        baseline = GetBaseline(tex_file_stem, pre);
-        
-        diagnostics(4, "PutLatexFile bitmap has (height=%d,width=%d) baseline=%g  resolution=%u", 
-                                        png_height, png_width, baseline, png_resolution);
-        
-        height_goal = (scale * png_height * POINTS_PER_METER / png_yres * 20.0 + 0.5);
-        width_goal  = (scale * png_width  * POINTS_PER_METER / png_xres * 20.0 + 0.5);
-        
-        PutPngFile(png_file_name, height_goal, width_goal, scale*100, baseline, 0);
-        
-        free(tmp_path);
-        free(png_file_name);
+    baseline = GetBaseline(tex_file_stem, pre);
+    
+    diagnostics(4, "PutLatexFile bitmap has (height=%d,width=%d) baseline=%g  resolution=%u", 
+                                    png_height, png_width, baseline, png_resolution);
+    
+    height_goal = (scale * png_height * POINTS_PER_METER / png_yres * 20.0 + 0.5);
+    width_goal  = (scale * png_width  * POINTS_PER_METER / png_xres * 20.0 + 0.5);
+    
+    PutPngFile(png_file_name, height_goal, width_goal, scale*100, baseline, 0);
+    
+    strfree(tmp_path);
+    strfree(png_file_name);
 }
 
 static char *SaveEquationAsFile(const char *post_begin_document,
@@ -1692,12 +1685,12 @@ void WriteLatexAsBitmap(char *pre, char *eq, char *post)
 {
     char *p, *name, *abbrev;
 
-        /* go to a bit a trouble to give the user some feedback */
-        name = strdup_together3(pre,eq,post);
-        abbrev = abbreviate(name, 50);
+    /* go to a bit a trouble to give the user some feedback */
+    name = strdup_together3(pre,eq,post);
+    abbrev = abbreviate(name, 50);
     diagnostics(WARNING, "Rendering PNG for '%s'", abbrev);
-        free(abbrev);
-        free(name);
+    strfree(abbrev);
+    strfree(name);
         
     if (eq == NULL)
         return;
@@ -1706,7 +1699,7 @@ void WriteLatexAsBitmap(char *pre, char *eq, char *post)
     if (strcmp(pre, "\\begin{eqnarray}") == 0) {
     
         p = strstr(eq, "\\label");
-        if (p != NULL && strlen(p) > 6) /* found one ... is there a second? */
+        if (p && strlen(p) > 6) /* found one ... is there a second? */
             p = strstr(p + 6, "\\label");
         if (p == NULL)
             name = SaveEquationAsFile(NULL, "\\begin{eqnarray*}", eq, "\\end{eqnarray*}");
@@ -1718,31 +1711,32 @@ void WriteLatexAsBitmap(char *pre, char *eq, char *post)
         p = strstr(eq, "\\label");
         if (p != NULL && strlen(p) > 6) /* found one ... is there a second? */
             p = strstr(p + 6, "\\label");
-        if (p == NULL)
-            name = SaveEquationAsFile(NULL, "\\begin{align*}", eq, "\\end{align*}");
-        else
+            
+        if (p)
             name = SaveEquationAsFile(NULL, pre, eq, post);
+        else
+            name = SaveEquationAsFile(NULL, "\\begin{align*}", eq, "\\end{align*}");
             
     } else if (strstr(pre, "psgraph") != NULL || strstr(pre, "pspicture") != NULL ){
         char *s = strdup_together(g_psset_info, g_psstyle_info);
         name = SaveEquationAsFile(s, pre, eq, post);
-        if (s) free(s);
-    } else
+        strfree(s);
+    } else {
         name = SaveEquationAsFile(NULL, pre, eq, post);
 
         if (name) {
-                if (strstr(pre, "music") 
-                    || strstr(pre, "figure") 
-                    || strstr(pre, "picture")
-                    || strstr(pre, "tabular")
-                    || strstr(pre, "tabbing")
-                    || strstr(pre, "psgraph")
-                    || strstr(pre, "pspicture")) 
-                        PutLatexFile(name, g_png_figure_scale, pre);
-                else
-                        PutLatexFile(name, g_png_equation_scale, pre);
-                        
-                free(name);
+            if (strstr(pre, "music") 
+                || strstr(pre, "figure") 
+                || strstr(pre, "picture")
+                || strstr(pre, "tabular")
+                || strstr(pre, "tabbing")
+                || strstr(pre, "psgraph")
+                || strstr(pre, "pspicture")) 
+                PutLatexFile(name, g_png_figure_scale, pre);
+            else
+                PutLatexFile(name, g_png_equation_scale, pre);
+           strfree(name);
+        }
     }   
     
 }
