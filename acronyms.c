@@ -390,17 +390,17 @@ void CmdAcrodef(int code)
                             fprintRTF(" \\tab ");
                             ConvertString(acroPage);
                         }
-                        strfree(acroPage);
+                        safe_free(acroPage);
                     }
-                    strfree(acroLabel);
+                    safe_free(acroLabel);
                 }
                 CmdEndParagraph(0);
             }
             /* fall through to free parameters */
         default:
-            strfree(acDef);
-            strfree(acShort);
-            strfree(acLong);
+            safe_free(acDef);
+            safe_free(acShort);
+            safe_free(acLong);
             break;
         }
     }
@@ -421,11 +421,11 @@ void CmdAC(int code)
 {
     char *shortAc;
     shortAc = getTexUntil("hyperlink",FALSE);
-    strfree(shortAc);
+    safe_free(shortAc);
     ignoreBraceParam();
     shortAc = getBraceParam();
     ConvertString(shortAc);
-    strfree(shortAc);
+    safe_free(shortAc);
 }
 /*
   \ac{acronym}          Expand and identify the acronym the first time; use only the acronym thereafter
@@ -496,7 +496,7 @@ void CmdAc(int code)
         diagnostics(WARNING,"Fell through CmdAc()!");
         break;
     }
-    strfree(ac);
+    safe_free(ac);
 } 
 
 /*  \acused{ac} */
@@ -510,7 +510,7 @@ void CmdAcUsed(int code)
     if (acronym != NULL) {
         acronym->used = TRUE;
     }
-    strfree(ac);
+    safe_free(ac);
 }
 
 /*  \acresetall                                 */
@@ -534,5 +534,5 @@ void CmdAcroExtra(int code)
     if (ac != NULL) {
         ConvertString(ac);
     }
-    strfree(ac);
+    safe_free(ac);
 }

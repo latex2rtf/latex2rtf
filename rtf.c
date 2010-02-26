@@ -22,7 +22,7 @@ void InsertReference(char *text,
 {
     char *s = getRef(text);
     ConvertString(NULL != s ? s : "\\textbf{??}");
-    strfree(s);
+    safe_free(s);
 }
 
 /*

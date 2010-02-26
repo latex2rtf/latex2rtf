@@ -207,7 +207,7 @@ void CmdGraphicsPath(int code)
             candidate = strtok(NULL,"{}");
         }
     }
-    strfree(directories);
+    safe_free(directories);
 }
 
 #define CONVERT_SIMPLE 1
@@ -382,7 +382,7 @@ static char *SysGraphicsConvert(int opt, int offset, uint16_t dpi, const char *i
 
     if (err) {
         diagnostics(WARNING, "\nerror=%d when converting %s", err, in);
-        strfree(out_tmp);
+        safe_free(out_tmp);
         return NULL;
     }
         
@@ -1526,7 +1526,7 @@ void PutLatexFile(const char *tex_file_stem, double scale, const char *pre)
 
     if (NULL == tmp_path) {
         diagnostics(WARNING, "PutLatexFile failed to convert '%s' to png",tex_file_stem);
-        strfree(png_file_name);
+        safe_free(png_file_name);
         return;
     }
     
@@ -1541,10 +1541,10 @@ void PutLatexFile(const char *tex_file_stem, double scale, const char *pre)
         else
             png_resolution = (uint16_t)((double)g_dots_per_inch / (double)png_width * max_fig_size);
 
-        strfree(tmp_path);
+        safe_free(tmp_path);
         tmp_path = SysGraphicsConvert(CONVERT_LATEX, bmoffset, png_resolution, tex_file_stem, png_file_name);
         if (tmp_path == NULL) {
-            strfree(png_file_name);
+            safe_free(png_file_name);
             return;
         }
         
@@ -1563,8 +1563,8 @@ void PutLatexFile(const char *tex_file_stem, double scale, const char *pre)
     
     PutPngFile(png_file_name, height_goal, width_goal, scale*100, baseline, 0);
     
-    strfree(tmp_path);
-    strfree(png_file_name);
+    safe_free(tmp_path);
+    safe_free(png_file_name);
 }
 
 static char *SaveEquationAsFile(const char *post_begin_document,
@@ -1685,8 +1685,8 @@ void WriteLatexAsBitmap(char *pre, char *eq, char *post)
     name = strdup_together3(pre,eq,post);
     abbrev = abbreviate(name, 50);
     diagnostics(WARNING, "Rendering PNG for '%s'", abbrev);
-    strfree(abbrev);
-    strfree(name);
+    safe_free(abbrev);
+    safe_free(name);
         
     if (eq == NULL)
         return;
@@ -1716,7 +1716,7 @@ void WriteLatexAsBitmap(char *pre, char *eq, char *post)
     } else if (strstr(pre, "psgraph") != NULL || strstr(pre, "pspicture") != NULL ){
         char *s = strdup_together(g_psset_info, g_psstyle_info);
         name = SaveEquationAsFile(s, pre, eq, post);
-        strfree(s);
+        safe_free(s);
     } else {
         name = SaveEquationAsFile(NULL, pre, eq, post);
 
@@ -1731,7 +1731,7 @@ void WriteLatexAsBitmap(char *pre, char *eq, char *post)
                 PutLatexFile(name, g_png_figure_scale, pre);
             else
                 PutLatexFile(name, g_png_equation_scale, pre);
-           strfree(name);
+           safe_free(name);
         }
     }   
     
@@ -1764,7 +1764,7 @@ static char *try_file_extension(char *s, char *ext)
     if (file_exists(t)) {
         return t;
     }
-    strfree(t);
+    safe_free(t);
 
 /* now try upper case version of ext */
     x = upper_case_string(ext);
@@ -1774,7 +1774,7 @@ static char *try_file_extension(char *s, char *ext)
     if (file_exists(t)) {
         return t;
     }
-    strfree(t);
+    safe_free(t);
     
     return NULL;
 }
@@ -1797,7 +1797,7 @@ static char *exists_with_extension(char *s, char *ext)
     for (i=0; i<nGraphicsPathElems; i++) {
         newpath = strdup_together3(graphicsPath[i],sep,s);
         x = try_file_extension(newpath,ext);
-        strfree(newpath);
+        safe_free(newpath);
         if (x) return x;
     }
     

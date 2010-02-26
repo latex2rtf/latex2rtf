@@ -115,7 +115,7 @@ char *getBiblioFirst(char *key) {
             res = getBraceParam();
             PopSource();
         }
-        strfree(ref);
+        safe_free(ref);
         return res;
     }
     return NULL;

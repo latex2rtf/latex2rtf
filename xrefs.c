@@ -1174,9 +1174,9 @@ static void ConvertHarvard(biblioElem *bibElem, int code, char *pre, char *post,
              fprintRTF(")");
              break;
     }
-    strfree(full);
-    strfree(year);
-    strfree(abbv);
+    safe_free(full);
+    safe_free(year);
+    safe_free(abbv);
 }
 
 void CmdNatexlab(int code) 

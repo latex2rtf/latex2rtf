@@ -1,7 +1,6 @@
-
 /* equations.c - Translate TeX equations
 
-Copyright (C) 1995-2002 The Free Software Foundation
+Copyright (C) 1995-2010 The Free Software Foundation
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -1442,8 +1441,9 @@ void CmdLeftRight(int code)
         putRtfCharEscaped(rdelim);
     }
 
-    if (lcommand) free(lcommand);
-    if (rcommand) free(rcommand);
+    safe_free(contents);
+    safe_free(lcommand);
+    safe_free(rcommand);
 }
 
 void CmdArray(int code)

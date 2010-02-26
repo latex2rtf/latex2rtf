@@ -70,8 +70,8 @@ static inline int strstarts(char *s1, char *s2)
     return (s1 == strstr(s1,s2));
 }
 
-static inline void strfree(char *s)
+static inline void safe_free(char *s)
 {
-    if (NULL != s) { free(s); s = NULL; }
+    if (s) free(s); 
 }
 #endif

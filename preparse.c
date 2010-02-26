@@ -456,6 +456,7 @@ void preParse(char **body, char **header, char **label)
             diagnostics(6, "\\end{document}");
             move_end_of_buffer(-strlen(command[e_document_item]));
             add_chr_to_buffer('\0');
+            safe_free(*header);
             *header = strdup(command[e_document_item]);
             p = section_buffer;
             while (*p==' ' || *p == '\n') p++;
@@ -609,6 +610,7 @@ void preParse(char **body, char **header, char **label)
     while (*p==' ' || *p == '\n') p++;
     
     *body = strdup(p);
+    safe_free(*header);
     *header = next_header;
     PopTrackLineNumber();
 }

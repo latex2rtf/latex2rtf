@@ -1457,7 +1457,7 @@ void CmdTable(int code)
     } else {
         g_processing_table = FALSE;
         CmdEndParagraph(0);
-        strfree(g_table_label);
+        safe_free(g_table_label);
         setAlignment(oldalignment);
         CmdVspace(VSPACE_BIG_SKIP);
     }
