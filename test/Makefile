@@ -4,7 +4,7 @@
 LATEX= latex -interaction=nonstopmode
 BIBTEX= bibtex
 LATEX2RTF= ../latex2rtf 
-OPTIONS  = -Z3 -P ../cfg/:../scripts/ -T tmp/
+OPTIONS  = -Z3 -P ../cfg/:../scripts/ -T tmp/ -M12
 MKDIR?=mkdir -p
 RMDIR?=rm -rf
 RM?=rm -f

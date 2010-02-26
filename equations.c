@@ -781,7 +781,10 @@ void CmdEquation(int code)
             if (true_code == EQN_EQUATION && g_amsmath_package)
                 g_suppress_equation_number = EquationGetsNoNumber(eq);
             
-            WriteLatexAsBitmap(pre, eq, post);
+            if (true_code == EQN_ENSUREMATH) 
+                WriteLatexAsBitmap("\\ensuremath{", eq, "}");
+            else
+                WriteLatexAsBitmap(pre, eq, post);
             SetEquationLabel(eq);
             FinishRtfEquation(true_code, FALSE);
         }
