@@ -17,12 +17,6 @@
 #define PATHSEP ''
 #endif
 
-#if defined(MAC_CLASSIC)
-#define ENVSEP '^'
-#define PATHSEP ':'
-#include "MainMain.h"
-#endif
-
 #ifdef HAS_STRDUP
 #else
 #define strdup my_strdup

@@ -248,9 +248,9 @@ static char *strdup_tmp_path(const char *s)
     else
         fullname = strdup_together(tmp, p + 1);
 
-    free(tmp);
+    safe_free(tmp);
 
-        return fullname;
+    return fullname;
 }
 
 /******************************************************************************
@@ -300,8 +300,11 @@ static char *SysGraphicsConvert(int opt, int offset, uint16_t dpi, const char *i
     int err;
 
     int N = 511;        
-        
+
     out_tmp = strdup_tmp_path(out);
+
+    if (in == NULL || out == NULL || out_tmp == NULL)
+        return NULL;
 
 #ifdef UNIX
 
@@ -310,8 +313,8 @@ static char *SysGraphicsConvert(int opt, int offset, uint16_t dpi, const char *i
         free(out_tmp);
         return NULL;
     }
-    
-    if (out && strchr(out_tmp, (int) '\'')) {
+
+    if (out_tmp && strchr(out_tmp, (int) '\'')) {
         diagnostics(WARNING, "single quote found in filename '%s'.  skipping conversion", out_tmp);
         free(out_tmp);
         return NULL;
@@ -378,6 +381,10 @@ static char *SysGraphicsConvert(int opt, int offset, uint16_t dpi, const char *i
 #endif
     diagnostics(4, "`%s`", cmd);
 
+#if 1
+    safe_free(out_tmp);
+    return NULL;
+#else
     err = system(cmd);
 
     if (err) {
@@ -387,6 +394,7 @@ static char *SysGraphicsConvert(int opt, int offset, uint16_t dpi, const char *i
     }
         
     return out_tmp;
+#endif
 }
 
 static void PicComment(int16_t label, int16_t size, FILE * fp)
@@ -606,6 +614,7 @@ static char *eps_to_png(char *name)
 {
     char *png, *out;
         
+    if (name == NULL) return NULL;
     diagnostics(3, " eps_to_png '%s'", name);
 
     if (strstr(name, ".eps") != NULL)
@@ -631,18 +640,19 @@ static char *eps_to_png(char *name)
 static char *pdf_to_png(char *pdf)
 {
     char *png, *out;
-
+    if (pdf == NULL) return NULL;
+       
     diagnostics(2, "converting '%s' to png file", pdf);
 
     if (strstr(pdf, ".pdf") != NULL)
         png = strdup_new_extension(pdf, ".pdf", ".png");
-        else if (strstr(pdf, ".PDF") != NULL)
+    else if (strstr(pdf, ".PDF") != NULL)
         png = strdup_new_extension(pdf, ".PDF", ".png");
-        else
-                return NULL;
+    else
+        return NULL;
                 
     out = SysGraphicsConvert(CONVERT_PDF, 0, g_dots_per_inch, pdf, png);
-        free(png);
+    safe_free(png);
     return out;
 }
 
@@ -1261,7 +1271,7 @@ static void PutWmfFile(char *s, double height0, double width0, double scale, dou
     diagnostics(4, "width = %d, height = %d", width, height);
     fprintRTF("\n{\\pict\\wmetafile1\\picw%d\\pich%d\n", width, height);
 
-        AdjustScaling(height,width,height0,width0,scale,&sx,&sy);
+    AdjustScaling(height,width,height0,width0,scale,&sx,&sy);
     if (sx != 100 && sy != 100)
         fprintRTF("\\picscalex%d\\picscaley%d", sx,sy);
 
@@ -1290,7 +1300,7 @@ static void PutPdfFile(char *s, double height0, double width0, double scale, dou
     if (png) {
         PutPngFile(png, height0, width0, scale, baseline,0);
         my_unlink(png);
-        free(png);
+        safe_free(png);
     }
 }
 
@@ -1347,11 +1357,11 @@ static void PutTiffFile(char *s, double height0, double width0, double scale, do
     }
 
     tiff = strdup_together(g_home_dir, s);
-        out = SysGraphicsConvert(CONVERT_SIMPLE, 0, g_dots_per_inch, tiff, png);
+    out = SysGraphicsConvert(CONVERT_SIMPLE, 0, g_dots_per_inch, tiff, png);
         
-        if (out != NULL) {
+    if (out != NULL) {
         PutPngFile(out, height0, width0, scale, baseline, 0);
-                my_unlink(out);
+        my_unlink(out);
         free(out);
     }
     
@@ -1377,9 +1387,9 @@ static void PutGifFile(char *s, double height0, double width0, double scale, dou
     gif = strdup_together(g_home_dir, s);
     out = SysGraphicsConvert(CONVERT_SIMPLE, 0, g_dots_per_inch, gif, png);
 
-        if (out != NULL) {
+    if (out != NULL) {
         PutPngFile(out, height0, width0, scale, baseline,0);
-                my_unlink(out);
+        my_unlink(out);
         free(out);
     }
     free(gif);
@@ -1583,43 +1593,43 @@ static char *SaveEquationAsFile(const char *post_begin_document,
     tmp_dir = getTmpPath();
     snprintf(name, 15, "l2r_%04d", file_number);
     tex_file_stem = strdup_together(tmp_dir, name);
-    free(tmp_dir);
+    safe_free(tmp_dir);
 
     tex_file_name = strdup_together(tex_file_stem, ".tex");
 
     diagnostics(4, "SaveEquationAsFile = %s", tex_file_name);
 
     f = fopen(tex_file_name, "w");
-    free(tex_file_name);
+    safe_free(tex_file_name);
 
         /* cannot open the file for writing */
     if (f==NULL) {
         diagnostics(WARNING, "Could not open '%s' to save equation",tex_file_stem);
-        free(tex_file_stem);
+        safe_free(tex_file_stem);
         return NULL;
     }
     
-        eq = strdup_noendblanks(eq_with_spaces);
-        
-        fprintf(f, "%s", g_preamble);
-        fprintf(f, "\\thispagestyle{empty}\n");
-        fprintf(f, "\\begin{document}\n");
-        if (post_begin_document) 
-                fprintf(f, "%s\n", post_begin_document);
-                
-        fprintf(f, "\\setcounter{equation}{%d}\n", getCounter("equation"));
-        
-        if ((strcmp(pre, "$") == 0) || (strcmp(pre, "\\begin{math}") == 0) || (strcmp(pre, "\\(") == 0)) {
-                fprintf(f, "%%INLINE_DOT_ON_BASELINE\n");
-                fprintf(f, "%s\n.\\quad %s\n%s", pre, eq, post);
-        } else if (strstr(pre, "equation"))
-                fprintf(f, "$$%s$$", eq);
-        else
-                fprintf(f, "%s\n%s\n%s", pre, eq, post);
+    eq = strdup_noendblanks(eq_with_spaces);
+    
+    fprintf(f, "%s", g_preamble);
+    fprintf(f, "\\thispagestyle{empty}\n");
+    fprintf(f, "\\begin{document}\n");
+    if (post_begin_document) 
+            fprintf(f, "%s\n", post_begin_document);
+            
+    fprintf(f, "\\setcounter{equation}{%d}\n", getCounter("equation"));
+    
+    if ((strcmp(pre, "$") == 0) || (strcmp(pre, "\\begin{math}") == 0) || (strcmp(pre, "\\(") == 0)) {
+        fprintf(f, "%%INLINE_DOT_ON_BASELINE\n");
+        fprintf(f, "%s\n.\\quad %s\n%s", pre, eq, post);
+    } else if (strstr(pre, "equation"))
+        fprintf(f, "$$%s$$", eq);
+    else
+        fprintf(f, "%s\n%s\n%s", pre, eq, post);
 
-        fprintf(f, "\n\\end{document}");
-        fclose(f);
-        free(eq);
+    fprintf(f, "\n\\end{document}");
+    fclose(f);
+    free(eq);
 
     return (tex_file_stem);
 }
@@ -1673,26 +1683,25 @@ static char * abbreviate(const char *s, int len)
         
 }
 
-void WriteLatexAsBitmap(char *pre, char *eq, char *post)
-
 /******************************************************************************
  purpose   : Convert LaTeX to Bitmap and write to RTF file
  ******************************************************************************/
+void WriteLatexAsBitmap(char *pre, char *eq, char *post)
 {
-    char *p, *name, *abbrev;
-
+    char *p, *abbrev, *latex_to_convert;
+    char *name = NULL;
+    
     /* go to a bit a trouble to give the user some feedback */
-    name = strdup_together3(pre,eq,post);
-    abbrev = abbreviate(name, 50);
+    latex_to_convert = strdup_together3(pre,eq,post);
+    abbrev = abbreviate(latex_to_convert, 50);
     diagnostics(WARNING, "Rendering PNG for '%s'", abbrev);
     safe_free(abbrev);
-    safe_free(name);
+    safe_free(latex_to_convert);
         
-    if (eq == NULL)
-        return;
+    if (eq == NULL) return;
 
 /* suppress bitmap equation numbers in eqnarrays with zero or one \label{}'s*/
-    if (strcmp(pre, "\\begin{eqnarray}") == 0) {
+    if (pre && streq(pre, "\\begin{eqnarray}")) {
     
         p = strstr(eq, "\\label");
         if (p && strlen(p) > 6) /* found one ... is there a second? */
@@ -1702,7 +1711,7 @@ void WriteLatexAsBitmap(char *pre, char *eq, char *post)
         else
             name = SaveEquationAsFile(NULL, pre, eq, post);
 
-    } else if (strcmp(pre, "\\begin{align}") == 0) {
+    } else if (pre && streq(pre, "\\begin{align}")) {
     
         p = strstr(eq, "\\label");
         if (p != NULL && strlen(p) > 6) /* found one ... is there a second? */
@@ -1714,9 +1723,10 @@ void WriteLatexAsBitmap(char *pre, char *eq, char *post)
             name = SaveEquationAsFile(NULL, "\\begin{align*}", eq, "\\end{align*}");
             
     } else if (strstr(pre, "psgraph") != NULL || strstr(pre, "pspicture") != NULL ){
-        char *s = strdup_together(g_psset_info, g_psstyle_info);
-        name = SaveEquationAsFile(s, pre, eq, post);
-        safe_free(s);
+        p = strdup_together(g_psset_info, g_psstyle_info);
+        name = SaveEquationAsFile(p, pre, eq, post);
+        safe_free(p);
+        
     } else {
         name = SaveEquationAsFile(NULL, pre, eq, post);
 
@@ -1731,9 +1741,9 @@ void WriteLatexAsBitmap(char *pre, char *eq, char *post)
                 PutLatexFile(name, g_png_figure_scale, pre);
             else
                 PutLatexFile(name, g_png_equation_scale, pre);
-           safe_free(name);
         }
     }   
+    safe_free(name);
     
 }
 

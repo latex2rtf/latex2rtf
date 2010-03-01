@@ -382,7 +382,7 @@ int main(int argc, char **argv)
         CloseRtf(&fRtf);
         printf("\n");
 
-    if (1) debug_malloc();
+    if (0) debug_malloc();
 
         return 0;
     } else {
@@ -856,7 +856,7 @@ char *getTmpPath(void)
 purpose: return the directory to store temporary files
  ****************************************************************************/
 {
-#if defined(MSDOS) || defined(MACINTOSH) || defined(__MWERKS__)
+#if defined(MSDOS)
 
     return strdup("");
 
@@ -866,7 +866,7 @@ purpose: return the directory to store temporary files
     char *t = NULL;
     char *u = NULL;
     char pathsep_str[2] = { PATHSEP, 0 };   /* for os2 or w32 "unix" compiler */
-    
+
    /* first use any temporary directory specified as an option */
     if (g_tmp_dir) {
         t = strdup(g_tmp_dir);
@@ -877,6 +877,7 @@ purpose: return the directory to store temporary files
         if (u != NULL)
             t = strdup(u);
     }
+
     /* finally just return "/tmp/" */
     if (t==NULL)
         t = strdup("/tmp/");
@@ -885,10 +886,10 @@ purpose: return the directory to store temporary files
     
     n=strlen(t)-1;
     
-    if (n > 1 && *(t + n) != PATHSEP) {
+    if (n > 1 && t[n] != PATHSEP) {
         u = strdup_together(t, pathsep_str);
         free(t);
-        return u;
+        t = u;
     }
 
     return t;

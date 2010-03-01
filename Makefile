@@ -8,7 +8,6 @@ PKGMANDIR?=man
 #CFLAGS:=-O2 -pipe -Wp,-D_FORTIFY_SOURCE=2 -Wno-write-strings --param=ssp-buffer-size=4 -m64 -mtune=generic
 PLATFORM?=-DUNIX
 #PLATFORM?=-DMSDOS -DNOSTDERR   # Windows/DOS
-#PLATFORM?=-DMAC_CLASSIC        # MacOS 8/9
 #PLATFORM?=-DOS2                # OS/2
 CFLAGS:=$(CFLAGS) $(PLATFORM)
 
