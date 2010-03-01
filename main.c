@@ -952,8 +952,9 @@ void debug_malloc(void)
 {
     char c;
 
-    diagnostics(WARNING, "Malloc Debugging --- press return to continue");
+    diagnostics(2, "Malloc Debugging --- press return to continue");
     fflush(NULL);
+    if (2 <= g_verbosity_level) {
     fscanf(stdin, "%c", &c);
-    c++;
+    c++;}
 }
