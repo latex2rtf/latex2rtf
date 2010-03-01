@@ -478,7 +478,7 @@ static void ConvertWholeDocument(void)
 static void print_version(void)
 {
     fprintf(stdout, "latex2rtf %s\n\n", Version);
-    fprintf(stdout, "Copyright (C) 2007 Free Software Foundation, Inc.\n");
+    fprintf(stdout, "Copyright (C) 2010 Free Software Foundation, Inc.\n");
     fprintf(stdout, "This is free software; see the source for copying conditions.  There is NO\n");
     fprintf(stdout, "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n");
     fprintf(stdout, "Written by Prahl, Lehner, Granzer, Dorner, Polzer, Trisko, Schlatterbeck.\n");

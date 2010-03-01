@@ -1,5 +1,84 @@
 latex2rtf changes from 2.0.0 to 2.1.0
 
+r1101 | prahl
+    fix bug in abbreviate() debugging command
+    add hskip to ignore.cfg
+    fix more whitespace problems in graphics.c
+    eliminate unused variables
+    add const to inline functions in utils.h
+
+r1100 | whennings
+    main.c, debug_malloc : ask for "press return" only if -d2 or higher
+
+r1099 | prahl
+    remove MAC_CLASSIC from Makefile ... it has not been built for a *long* time
+    Fix leak in WriteLatexAsBitmap()
+
+r1098 | whennings
+    added section "APA support" to documentation for release 2.1.0
+
+r1097 | prahl
+    rename strfree to safe_free
+    fix leak in left right equation
+    fix leak in preparse
+
+r1096 | prahl
+    add a few extra compile time options
+    fix bug with \ensuremath{} and bitmaps
+    add -M12 to Makefile for testing purposes
+
+r1095 | prahl
+    replaced broken my_fgets() in acronyms.c with version in utils.c
+    removed version of my_fgets() from xrefs.c 
+    inserted some strfree() calls
+    fixed some whitespace issues
+
+r1094 | prahl
+    use strfree and delete comments
+
+r1093 | prahl
+    more white space fixes 
+
+r1092 | prahl
+    white space fixes for graphics
+    fix leak in InsertStyle()
+
+r1091 | whennings
+    updated documentation for release 2.1.0, also commenting text in ignore.cfg
+
+r1090 | prahl
+    fix warnings found when compiling with C++
+
+r1089 | prahl
+    add casts to compile under c++
+
+r1088 | prahl
+    small changes so that the program compiles under g++
+    rename 'template' to 'HA_template' to avoid reserved word
+    do a careful pointer casting dance in graphics.c to avoid error
+
+r1087 | prahl
+    improvements to ignore.c 
+    fix bugs
+    improve documentation
+    add more ignored commands
+
+r1086 | whennings
+    added "qualisex" to test/Makefile
+
+r1085 | prahl
+    fix pretty serious bug found in qualisex.tex that showed
+    that font shape was not being carried over into new 
+    paragraphs.  Also removed vestigal variable from convert
+    that has not been used for some time.
+
+r1084 | prahl
+    fix bug in getStringBraceParam() so that it is closer
+    to getBraceParam().
+
+r1083 | prahl
+    update changlog for 2.1 release
+
 r1082 | prahl
     touch version.h 
     update dependancies in Makefile
