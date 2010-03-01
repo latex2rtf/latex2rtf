@@ -55,17 +55,17 @@ int    file_exists(char *fname);
 int    my_fgetc(FILE *f);
 char * my_fgets(char *buffer, int maxBuffer, FILE *f);
 
-static inline int streq(char *s1,char *s2)
+static inline int streq(const char *s1, const char *s2)
 {
-    return (0 == strcmp(s1,s2));
+    return (strcmp(s1,s2) == 0);
 }
 
-static inline int strHasChar(char *s1,char c)
+static inline int strHasChar(const char *s1, const char c)
 {
     return (NULL != strchr(s1,c));
 }
 
-static inline int strstarts(char *s1, char *s2)
+static inline int strstarts(const char *s1, const char *s2)
 {
     return (s1 == strstr(s1,s2));
 }

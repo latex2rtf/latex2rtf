@@ -252,11 +252,10 @@ static int EquationNeedsFields(char *eq)
     return 0;
 }
 
-static void WriteEquationAsRawLatex(char *pre, char *eq, char *post)
-
 /******************************************************************************
  purpose   : Writes equation to RTF file as plain text 
  ******************************************************************************/
+static void WriteEquationAsRawLatex(char *pre, char *eq, char *post)
 {
     fprintRTF("<<:");
     putRtfStrEscaped(pre);
@@ -266,11 +265,10 @@ static void WriteEquationAsRawLatex(char *pre, char *eq, char *post)
 }
 
 
-static void WriteEquationAsComment(char *pre, char *eq, char *post)
-
 /******************************************************************************
  purpose   : Writes equation to RTF file as text of COMMENT field
  ******************************************************************************/
+static void WriteEquationAsComment(char *pre, char *eq, char *post)
 {
     diagnostics(3,"WriteEquationAsComment");
     startField(FIELD_COMMENT);
@@ -280,9 +278,13 @@ static void WriteEquationAsComment(char *pre, char *eq, char *post)
     endCurrentField();
 }
 
+/******************************************************************************
+ purpose   : Call before emitting bitmap or RTF for equation
+ ******************************************************************************/
 static void PrepareRtfEquation(int code, int EQ_Needed)
 {
     g_current_eqn_needs_EQ = EQ_Needed;
+    diagnostics(4, "PrepareRtfEquation ...");
 
     switch (code) {
 
@@ -418,11 +420,13 @@ static char *CreateEquationLabel(void)
     return number;
 }
 
-    
-
-
+/******************************************************************************
+ purpose   : Call after emitting bitmap or RTF for equation
+ ******************************************************************************/
 static void FinishRtfEquation(int code, int EQ_Needed)
 {
+    diagnostics(4, "FinishRtfEquation ...");
+    
     if (EQ_Needed) {
         endCurrentField();
         g_current_eqn_needs_EQ = 0;
@@ -705,12 +709,9 @@ static void SetEquationLabel(char *eq)
     t = strstr(eq,"\\label");
     if (t) {
         t += strlen("\\label");
-        PushSource(NULL,t);
-        g_equation_label=getBraceParam();
+        g_equation_label=getStringBraceParam(&t);
         diagnostics(4, "Bitmap equation label = '%s'", g_equation_label);
-        PopSource();
     }
-
 }
 
 /******************************************************************************
@@ -718,8 +719,10 @@ static void SetEquationLabel(char *eq)
  ******************************************************************************/
 void CmdEquation(int code)
 {
-    char *pre=NULL, *eq=NULL, *post=NULL;
     int inline_equation, number, true_code;
+    char *pre  = NULL;
+    char *eq   = NULL;
+    char *post = NULL;
 
     true_code = code & ~ON;
 
@@ -760,6 +763,7 @@ void CmdEquation(int code)
             s = eq;
             diagnostics(4, "eqnarray whole = <%s>", s);
             do {
+                /* each line becomes separate bitmap */
                 t = strstr(s, "\\\\");
                 if (t) *t = '\0';
                 g_suppress_equation_number = EquationGetsNoNumber(s);

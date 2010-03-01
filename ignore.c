@@ -78,16 +78,13 @@ purpose : ignores a dimension
  ****************************************************************************/
 static void IgnoreMeasure(void)
 {
-    char c;
-    int d;
-
-    c = getNonSpace();
+    char c = getNonSpace();
     if (c == '=')
         c = getNonSpace();
     
     ungetTexChar(c);
 
-    d = getDimension();
+    getDimension();
 }
 
 /****************************************************************************

@@ -1136,13 +1136,12 @@ static void WriteFontHeader(void)
 {
     int num=0;
     ConfigEntryT **config_handle;
-    char *font_type, *font_name;
+    char *font_name;
 
     fprintRTF("{\\fonttbl");
 
     config_handle = CfgStartIterate();
     while ((config_handle = CfgNextByInsertion(FONT_A, config_handle)) != NULL) {
-        font_type = (char *) (*config_handle)->TexCommand;
         font_name = (char *) (*config_handle)->RtfCommand;
         fprintRTF("{\\f%d\\fnil\\fcharset0 %s;}\n", num, font_name);
         num++;

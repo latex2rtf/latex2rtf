@@ -301,6 +301,8 @@ static char *SysGraphicsConvert(int opt, int offset, uint16_t dpi, const char *i
 
     int N = 511;        
 
+    diagnostics(4, "SysGraphicsConvert '%s'", in);
+
     out_tmp = strdup_tmp_path(out);
 
     if (in == NULL || out == NULL || out_tmp == NULL)
@@ -381,10 +383,6 @@ static char *SysGraphicsConvert(int opt, int offset, uint16_t dpi, const char *i
 #endif
     diagnostics(4, "`%s`", cmd);
 
-#if 1
-    safe_free(out_tmp);
-    return NULL;
-#else
     err = system(cmd);
 
     if (err) {
@@ -394,7 +392,6 @@ static char *SysGraphicsConvert(int opt, int offset, uint16_t dpi, const char *i
     }
         
     return out_tmp;
-#endif
 }
 
 static void PicComment(int16_t label, int16_t size, FILE * fp)
@@ -1535,7 +1532,7 @@ void PutLatexFile(const char *tex_file_stem, double scale, const char *pre)
     tmp_path = SysGraphicsConvert(CONVERT_LATEX, bmoffset, png_resolution, tex_file_stem, png_file_name);
 
     if (NULL == tmp_path) {
-        diagnostics(WARNING, "PutLatexFile failed to convert '%s' to png",tex_file_stem);
+        diagnostics(WARNING, "PutLatexFile failed to convert '%s.tex' to '%s'",tex_file_stem,png_file_name);
         safe_free(png_file_name);
         return;
     }
@@ -1597,7 +1594,7 @@ static char *SaveEquationAsFile(const char *post_begin_document,
 
     tex_file_name = strdup_together(tex_file_stem, ".tex");
 
-    diagnostics(4, "SaveEquationAsFile = %s", tex_file_name);
+    diagnostics(2, "SaveEquationAsFile = %s", tex_file_name);
 
     f = fopen(tex_file_name, "w");
     safe_free(tex_file_name);
@@ -1619,7 +1616,7 @@ static char *SaveEquationAsFile(const char *post_begin_document,
             
     fprintf(f, "\\setcounter{equation}{%d}\n", getCounter("equation"));
     
-    if ((strcmp(pre, "$") == 0) || (strcmp(pre, "\\begin{math}") == 0) || (strcmp(pre, "\\(") == 0)) {
+    if ( streq(pre, "$") || streq(pre, "\\begin{math}") || streq(pre, "\\(") ) {
         fprintf(f, "%%INLINE_DOT_ON_BASELINE\n");
         fprintf(f, "%s\n.\\quad %s\n%s", pre, eq, post);
     } else if (strstr(pre, "equation"))
@@ -1631,13 +1628,13 @@ static char *SaveEquationAsFile(const char *post_begin_document,
     fclose(f);
     free(eq);
 
-    return (tex_file_stem);
+    return tex_file_stem;
 }
 
-void PrepareDisplayedBitmap(char *the_type)
 /******************************************************************************
  purpose   : Call before WriteLatexAsBitmap()
  ******************************************************************************/
+void PrepareDisplayedBitmap(char *the_type)
 {
     CmdEndParagraph(0);
     CmdVspace(VSPACE_SMALL_SKIP);
@@ -1645,10 +1642,10 @@ void PrepareDisplayedBitmap(char *the_type)
     startParagraph(the_type, FIRST_PARAGRAPH);
 }
 
-void FinishDisplayedBitmap(void)
 /******************************************************************************
  purpose   : Call after WriteLatexAsBitmap()
  ******************************************************************************/
+void FinishDisplayedBitmap(void)
 {
     CmdEndParagraph(0);
     CmdVspace(VSPACE_SMALL_SKIP);
@@ -1657,30 +1654,36 @@ void FinishDisplayedBitmap(void)
 
 static char * abbreviate(const char *s, int len)
 {
-        char *t;
-        int i,n,half;
+    char *t,*p;
+    int i,n,half;
         
-        if (s==NULL) return strdup("<NULL>");
+    if (s==NULL) return strdup("< EMPTY >");
         
-        t = strdup(s);
-        n = (int) strlen(t);
-        if (n > len) {  
-                half = (len-5)/2;
-                t[half+0] = ' ';
-                t[half+1] = '.';
-                t[half+2] = '.';
-                t[half+3] = '.';
-                t[half+4] = ' ';
-                for (i=0; i<half; i++)
-                        t[half+5+i] = s[n-half+i];
-                t[len-1] = '\0';
-        }
+    n = (int) strlen(s);
+    
+    if (n<len) {
+        t =strdup(s);
+    } else { 
+        t = malloc(len * sizeof(char));
         
-        for (i=0; i<len; i++)
-                if (t[i] == '\n') t[i] = ' ';
-                
-        return t;
+        half = (len - 6)/2;
+        for (i=0; i<=half; i++)
+            t[i] = s[i];
         
+        t[half+1] = ' ';
+        t[half+2] = '.';
+        t[half+3] = '.';
+        t[half+4] = '.';
+        t[half+5] = ' ';
+    
+        for (i=0; i<=half; i++)
+            t[half + 6 + i] = s[n-half+i];
+    }
+    
+    /*replace \n by spaces */
+    while ( (p=strchr(t,'\n')) ) *p = ' ';
+                    
+    return t;
 }
 
 /******************************************************************************
@@ -1712,9 +1715,9 @@ void WriteLatexAsBitmap(char *pre, char *eq, char *post)
             name = SaveEquationAsFile(NULL, pre, eq, post);
 
     } else if (pre && streq(pre, "\\begin{align}")) {
-    
+
         p = strstr(eq, "\\label");
-        if (p != NULL && strlen(p) > 6) /* found one ... is there a second? */
+        if (p && strlen(p) > 6) /* found one ... is there a second? */
             p = strstr(p + 6, "\\label");
             
         if (p)
@@ -1722,29 +1725,28 @@ void WriteLatexAsBitmap(char *pre, char *eq, char *post)
         else
             name = SaveEquationAsFile(NULL, "\\begin{align*}", eq, "\\end{align*}");
             
-    } else if (strstr(pre, "psgraph") != NULL || strstr(pre, "pspicture") != NULL ){
+    } else if (pre && (strstr(pre, "psgraph") || strstr(pre, "pspicture")) ){
         p = strdup_together(g_psset_info, g_psstyle_info);
         name = SaveEquationAsFile(p, pre, eq, post);
         safe_free(p);
         
-    } else {
+    } else 
         name = SaveEquationAsFile(NULL, pre, eq, post);
-
-        if (name) {
-            if (strstr(pre, "music") 
-                || strstr(pre, "figure") 
-                || strstr(pre, "picture")
-                || strstr(pre, "tabular")
-                || strstr(pre, "tabbing")
-                || strstr(pre, "psgraph")
-                || strstr(pre, "pspicture")) 
-                PutLatexFile(name, g_png_figure_scale, pre);
-            else
-                PutLatexFile(name, g_png_equation_scale, pre);
-        }
-    }   
-    safe_free(name);
     
+    if (name) {
+        if (strstr(pre, "music") 
+            || strstr(pre, "figure") 
+            || strstr(pre, "picture")
+            || strstr(pre, "tabular")
+            || strstr(pre, "tabbing")
+            || strstr(pre, "psgraph")
+            || strstr(pre, "pspicture")) 
+            PutLatexFile(name, g_png_figure_scale, pre);
+        else
+            PutLatexFile(name, g_png_equation_scale, pre);
+
+        safe_free(name);
+    }
 }
 
 static char *upper_case_string(char *s)
@@ -2108,7 +2110,7 @@ void CmdGraphics(int code)
  ******************************************************************************/
 void CmdPsPicture(int code)
 {
-    char *contents;
+    char *contents = NULL;
     char post[] = "\\end{pspicture}";
 
     if (!(code & ON)) {
@@ -2118,15 +2120,14 @@ void CmdPsPicture(int code)
         diagnostics(4, "entering CmdPsPicture");
     
 
-        contents = getTexUntil(post, 0);
+    contents = getTexUntil(post, 0);
 
-        PrepareDisplayedBitmap("PS picture");
-        WriteLatexAsBitmap("\\begin{pspicture}", contents, post);
-        FinishDisplayedBitmap();
+    PrepareDisplayedBitmap("PS picture");
+    WriteLatexAsBitmap("\\begin{pspicture}", contents, post);
+    FinishDisplayedBitmap();
 
-        ConvertString(post);    /* to balance the \begin{picture} */
-        free(contents);
-    
+    ConvertString(post);    /* to balance the \begin{picture} */    
+    safe_free(contents);
 }
 
 /******************************************************************************
@@ -2135,7 +2136,7 @@ void CmdPsPicture(int code)
  ******************************************************************************/
 void CmdPsGraph(int code)
 {
-    char *contents;
+    char *contents = NULL;
     char post[] = "\\end{psgraph}";
 
     if (!(code & ON)) {
@@ -2144,15 +2145,14 @@ void CmdPsGraph(int code)
     } else 
         diagnostics(4, "entering CmdPsGraph");
 
-        contents = getTexUntil(post, 0);
+    contents = getTexUntil(post, 0);
 
-        PrepareDisplayedBitmap("PS Graph");
-        WriteLatexAsBitmap("\\begin{psgraph}", contents, post);
-        FinishDisplayedBitmap();
+    PrepareDisplayedBitmap("PS Graph");
+    WriteLatexAsBitmap("\\begin{psgraph}", contents, post);
+    FinishDisplayedBitmap();
 
-        ConvertString(post);    /* to balance the \begin{graph} */
-        free(contents);
-    
+    ConvertString(post);    /* to balance the \begin{graph} */
+    safe_free(contents);
 }
 
 /******************************************************************************
@@ -2162,10 +2162,10 @@ void CmdPsGraph(int code)
 void CmdPsset(int code)
 {
     char *contents = getBraceParam();
-        if (g_psset_info) free(g_psset_info);
+    if (g_psset_info) free(g_psset_info);
         
-        g_psset_info = strdup_together3("\\psset{", contents, "}");
-        free(contents);
+    g_psset_info = strdup_together3("\\psset{", contents, "}");
+    safe_free(contents);
 }
 
 /******************************************************************************
@@ -2174,19 +2174,18 @@ void CmdPsset(int code)
  ******************************************************************************/
 void CmdNewPsStyle(int code)
 {
-        char *a, *b, *c;
+    char *a, *b, *c;
         
     a = getBraceParam();
     b = getBraceParam();
     c = strdup_together4(g_psstyle_info,"\\newpsstyle{",a,"}{");
-        if (g_psstyle_info) free(g_psstyle_info);
+    if (g_psstyle_info) free(g_psstyle_info);
     g_psstyle_info = strdup_together3(c,b,"} ");
         
-        free(a);
-        free(b);
-        free(c);
+    safe_free(a);
+    safe_free(b);
+    safe_free(c);
 }
-
 
 /******************************************************************************
   purpose: handle \begin{picture} ... \end{picture}
@@ -2194,7 +2193,7 @@ void CmdNewPsStyle(int code)
  ******************************************************************************/
 void CmdPicture(int code)
 {
-    char *picture;
+    char *picture = NULL;
     char post[] = "\\end{picture}";
 
     if (!(code & ON)) {
@@ -2203,15 +2202,14 @@ void CmdPicture(int code)
     } else 
         diagnostics(4, "entering CmdPicture");
 
-        picture = getTexUntil(post, 0);
+    picture = getTexUntil(post, 0);
 
-        PrepareDisplayedBitmap("latex picture");
-        WriteLatexAsBitmap("\\begin{picture}", picture, post);
-        FinishDisplayedBitmap();
+    PrepareDisplayedBitmap("latex picture");
+    WriteLatexAsBitmap("\\begin{picture}", picture, post);
+    FinishDisplayedBitmap();
 
-        ConvertString(post);    /* to balance the \begin{picture} */
-        free(picture);
-    
+    ConvertString(post);    /* to balance the \begin{picture} */
+    safe_free(picture);
 }
 
 /******************************************************************************
@@ -2219,7 +2217,7 @@ void CmdPicture(int code)
  ******************************************************************************/
 void CmdMusic(int code)
 {
-    char *contents;
+    char *contents = NULL;
     char endmusic[] = "\\end{music}";
 
     if (!(code & ON)) {
@@ -2236,5 +2234,5 @@ void CmdMusic(int code)
     FinishDisplayedBitmap();
 
     ConvertString(endmusic);             /* to balance the \begin{music} */
-    free(contents);
+    safe_free(contents);
 }
