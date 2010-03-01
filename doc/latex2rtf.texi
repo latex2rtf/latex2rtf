@@ -139,7 +139,8 @@ Features
 * Tables::                      
 * Graphics::                    
 * Pagestyles::                  
-* Hyperlatex::                  
+* Hyperlatex::
+* APA Support::                  
 
 Configuration 
 
@@ -912,7 +913,8 @@ correctly to RTF.
 * Tables::                      
 * Graphics::                    
 * Pagestyles::                  
-* Hyperlatex::                  
+* Hyperlatex::
+* APA Support::                  
 @end menu
 
 @node LaTeX2e, Unicode Support, Features, Features
@@ -1192,7 +1194,7 @@ The twosided option to the \documentstyle or \documentclass produces the
 corresponding RTF tokens.
 Note that these features require RTF Version 1.4.
 
-@node Hyperlatex,  , Pagestyles, Features
+@node Hyperlatex, APA Support, Pagestyles, Features
 @section Hyperlatex
 @cindex hyperlatex
 
@@ -1213,6 +1215,18 @@ parameter is thrown away right now, see @ref{LaTeX2RTF under Development}.
 Note that you have to update your @file{.cfg} files if you are upgrading, since
 there are a lot of HTML oriented commands in Hyperlatex that we simply can
 `ignore'.
+
+@node APA Support, , Hyperlatex, Features
+@section APA Support
+@cindex APA Support
+
+Some APA citation styles are supported, see @ref{Citation Commands} 
+
+Support for APA text formatting is only rudimentary at the moment
+(headings without numbering). 
+If you want to format a document according to APA,
+rename cfg/style.cfg to style_sav.cfg 
+and rename cfg/styleAPA.cfg to style.cfg before starting @ltor{}.
 
 @node Configuration, Error Messages and Logging, Features, Top
 @chapter Configuration 
