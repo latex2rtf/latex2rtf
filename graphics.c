@@ -1664,7 +1664,7 @@ static char * abbreviate(const char *s, int len)
     if (n<len) {
         t =strdup(s);
     } else { 
-        t = malloc(len * sizeof(char));
+        t = (char *) malloc(len * sizeof(char));
         
         half = (len - 6)/2;
         for (i=0; i<=half; i++)
