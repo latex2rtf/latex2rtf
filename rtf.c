@@ -18,7 +18,7 @@ void emitBookmark(char *extra, char *presignet,char *signet,char *text)
  purpose: emit RTF code to reference a bookmark
  ******************************************************************************/
 void InsertReference(char *text,
-		     referenceGetter *getRef)
+             referenceGetter *getRef)
 {
     char *s = getRef(text);
     ConvertString(NULL != s ? s : "\\textbf{??}");
@@ -32,37 +32,37 @@ void InsertReference(char *text,
   referenceBookmark("PAGEREF","\\\\* MERGEFORMAT","BM",signet,text,NULL);
 */
 static void callBookmark(char *pre,
-			 char *post,
-			 char *type,
-			 char *signet,
-			 char *text,
-			 referenceGetter *getRef)
+             char *post,
+             char *type,
+             char *signet,
+             char *text,
+             referenceGetter *getRef)
 {
     fprintRTF("{\\field{\\*\\fldinst{\\lang1024 %s %s%s %s }}",
-	      pre,type,signet,post);
+          pre,type,signet,post);
     
     if (NULL != text) {
-	fprintRTF ("{\\fldrslt{");
-	if (NULL == getRef) {
-	    fprintRTF(text);
-	} else {
-	    InsertReference(text,getRef);
-	}
-	fprintRTF("}}");
+    fprintRTF ("{\\fldrslt{");
+    if (NULL == getRef) {
+        fprintRTF(text);
+    } else {
+        InsertReference(text,getRef);
+    }
+    fprintRTF("}}");
     }
     fprintRTF("}");
 }
 
 void referenceBookmark(char *type,
-		       char *signet,
-		       char *text,
-		       referenceGetter *getRef)
+               char *signet,
+               char *text,
+               referenceGetter *getRef)
 {
     callBookmark("REF","\\\\* MERGEFORMAT",type,signet,text,getRef);
 }
 
 void pageBookmark(char *type,
-		  char *signet)
+          char *signet)
 {
     callBookmark("PAGEREF","\\\\* MERGEFORMAT",type,signet,NULL,NULL);
 }

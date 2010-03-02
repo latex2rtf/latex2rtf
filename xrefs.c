@@ -242,7 +242,7 @@ static char *ScanBbl(char *reference)
 
     /* scan each line for \bibentry{reference} */
     while (my_fgets(line, 511, f_bbl)) {
-    	s = strstr(line,target);
+        s = strstr(line,target);
         if (s) break;
     }
     

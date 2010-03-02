@@ -1,4 +1,3 @@
-
 /* chars.c - Handle special TeX characters and logos
 
 Copyright (C) 2002 The Free Software Foundation
@@ -45,7 +44,7 @@ This file is available from http://sourceforge.net/projects/latex2rtf/
  ******************************************************************************/
 static void putUnicodeChar(unsigned char b1, unsigned char b2, char default_char)
 {
-	if (getTexMode() == MODE_VERTICAL)
+    if (getTexMode() == MODE_VERTICAL)
         changeTexMode(MODE_HORIZONTAL);
 
     if (b1<128)
@@ -62,7 +61,7 @@ void CmdUnicodeChar(int code)
     unsigned char a,b;
     uint16_t thechar;
     
-	if (getTexMode() == MODE_VERTICAL)
+    if (getTexMode() == MODE_VERTICAL)
         changeTexMode(MODE_HORIZONTAL);
     
     thechar = code;
@@ -147,10 +146,9 @@ void CmdUmlauteChar(int code)
             fprintRTF(" \\u776.");
             break;
         default:
-	    fprintRTF("{\\f%d",n);
+            fprintRTF("{\\f%d",n);
             fprintRTF("\\u776.}");   /* unicode combining character 0x308*/
             ConvertString(cParam);
-
             break;  
     }
 
@@ -212,7 +210,7 @@ void CmdGraveChar(int code)
             fprintRTF(" \\u768\\'60");
             break;
         default:
-	    fprintRTF("{\\f%d",n);
+            fprintRTF("{\\f%d",n);
             fprintRTF("\\u768\\'60}");  /* unicode combining character 0x0300 */
             ConvertString(cParam);
             break;  
@@ -318,7 +316,7 @@ void CmdAcuteChar(int code)
             fprintRTF("\\'b4");
             break;
         default:
-	    fprintRTF("{\\f%d",n);
+            fprintRTF("{\\f%d",n);
             fprintRTF("\\u769\\'b4}");   /* unicode combining character 0x0301 */
             ConvertString(cParam);
             break;  
@@ -352,7 +350,7 @@ void CmdDoubleAcuteChar(int code)
             putUnicodeChar(0x02,0xDD,'"');
             break;
         default:
-	    fprintRTF("{\\f%d",n);
+            fprintRTF("{\\f%d",n);
             fprintRTF("\\u779\"}");  /* unicode combining character 0x030B */
             ConvertString(cParam);
             break;  
@@ -416,8 +414,8 @@ void CmdMacronChar(int code)
             fprintRTF("\\'5f");
             break;
         default:
-	    fprintRTF("{\\f%d",n);
-	    fprintRTF("\\u772\\'5f}");  /* unicode combining character 0x0304 */
+            fprintRTF("{\\f%d",n);
+            fprintRTF("\\u772\\'5f}");  /* unicode combining character 0x0304 */
             ConvertString(cParam);
             break;  
     }
@@ -507,8 +505,8 @@ void CmdHatChar(int code)
             fprintRTF("\\'5e");
             break;
         default:
-	    fprintRTF("{\\f%d",n);
-	    fprintRTF("\\u770\\'5e}");  /* unicode combining character 0x0302 */
+            fprintRTF("{\\f%d",n);
+            fprintRTF("\\u770\\'5e}");  /* unicode combining character 0x0302 */
             ConvertString(cParam);
             break;  
     }
@@ -547,7 +545,7 @@ void CmdRingChar(int code)
             fprintRTF("\\'b0");
             break;
         default:
-	    fprintRTF("{\\f%d",n);
+            fprintRTF("{\\f%d",n);
             fprintRTF("\\u778\\'b0}");  /* unicode combining character 0x030A */
             ConvertString(cParam);
             break;  
@@ -602,7 +600,7 @@ void CmdTildeChar(int code)
             fprintRTF("\\'7e");
             break;
         default:
-	    fprintRTF("{\\f%d",n);
+            fprintRTF("{\\f%d",n);
             fprintRTF("\\u771\\'7e}");  /* unicode combining character 0x0303 */
             ConvertString(cParam);
             break;  
@@ -678,7 +676,7 @@ void CmdCedillaChar(int code)
             fprintRTF("\\'b8");
             break;
         default:
-	    fprintRTF("{\\f%d",n);
+            fprintRTF("{\\f%d",n);
             fprintRTF("\\u807\\'b8}");  /* unicode combining character 0x0327 */
             ConvertString(cParam);
             break;  
@@ -736,7 +734,7 @@ void CmdBreveChar(int code)
             putUnicodeChar(0x02,0xD8,'u');
             break;
         default:
-	    fprintRTF("{\\f%d",n);
+            fprintRTF("{\\f%d",n);
             fprintRTF("\\u774u}");  /* unicode combining character 0x0306 */
             ConvertString(cParam);
             break;  
@@ -755,24 +753,24 @@ void CmdWideBreveChar(int code)
     
     switch (cParam[0]) {
         case 'U':
-			CmdUnicodeChar(0x040E);
-			break;
+            CmdUnicodeChar(0x040E);
+            break;
         case 'I':
-			CmdUnicodeChar(0x0419);
-			break;
+            CmdUnicodeChar(0x0419);
+            break;
         case 'i':
-			CmdUnicodeChar(0x0439);
-			break;
+            CmdUnicodeChar(0x0439);
+            break;
         case 'u':
-			CmdUnicodeChar(0x0439);
-			break;
-		default:
-			fprintRTF("{\\f%d",n);
-			fprintRTF("\\u774u}");  /* unicode combining character 0x0306 */
-			ConvertString(cParam);
-			break;
-	}
-		
+            CmdUnicodeChar(0x0439);
+            break;
+        default:
+            fprintRTF("{\\f%d",n);
+            fprintRTF("\\u774u}");  /* unicode combining character 0x0306 */
+            ConvertString(cParam);
+            break;
+    }
+        
     free(cParam);
 }
 
@@ -889,7 +887,7 @@ void CmdCaronChar(int code)
             putUnicodeChar(0x02,0xC7,'-');
             break;
         default:
-	    fprintRTF("{\\f%d",n);
+            fprintRTF("{\\f%d",n);
             fprintRTF("\\u780-}");  /* unicode combining character 0x030C */
             ConvertString(cParam);
             break;  
@@ -951,8 +949,8 @@ void CmdDotChar(int code)
             putUnicodeChar(0x02,0xD9,'.');
             break;
         default:
-	    fprintRTF("{\\f%d",n);
-	    fprintRTF("\\u775.}"); /* unicode combining character 0x0307 */
+            fprintRTF("{\\f%d",n);
+            fprintRTF("\\u775.}"); /* unicode combining character 0x0307 */
             ConvertString(cParam);
             break;  
     }
@@ -1080,7 +1078,7 @@ void CmdUnderdotChar(int code)
             fprintRTF(" \\u803.");
             break;
         default:
-	    fprintRTF("{\\f%d",n);
+            fprintRTF("{\\f%d",n);
             fprintRTF("\\u803.}"); /* unicode combining character 0x0323 */
             ConvertString(cParam);
             break;  

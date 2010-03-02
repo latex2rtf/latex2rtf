@@ -1,5 +1,5 @@
 #ifndef _INCLUDED_XREFS_H
-#define _INCLUDED_XREFS_H 1
+#define _INCLUDED_XREFS_H   1
 
 #define FOOTNOTE            1
 #define FOOTNOTE_TEXT       2
@@ -7,16 +7,16 @@
 #define ENDNOTE             4
 #define ENDNOTE_TEXT        5
 
-#define LABEL_LABEL 		1
-#define LABEL_HYPERREF		2
-#define LABEL_REF			3
-#define LABEL_HYPERCITE	    4
-#define LABEL_CITE			5
-#define LABEL_HYPERPAGEREF	6
-#define LABEL_PAGEREF		7
+#define LABEL_LABEL         1
+#define LABEL_HYPERREF      2
+#define LABEL_REF           3
+#define LABEL_HYPERCITE     4
+#define LABEL_CITE          5
+#define LABEL_HYPERPAGEREF  6
+#define LABEL_PAGEREF       7
 #define LABEL_HTMLADDNORMALREF 8
 #define LABEL_HTMLREF       9
-#define LABEL_EQREF			10
+#define LABEL_EQREF         10
 #define LABEL_VREF          11
 #define LABEL_HREF          12
 #define LABEL_URL           13
@@ -104,9 +104,9 @@
 #define CITE_NAME               35
 #define CITE_HARVARD_AND        36
 
-#define LIST_OF_FIGURES		1
-#define LIST_OF_TABLES		2
-#define TABLE_OF_CONTENTS	3
+#define LIST_OF_FIGURES     1
+#define LIST_OF_TABLES      2
+#define TABLE_OF_CONTENTS   3
 
 void InitializeBibliography(void);
 void CmdTheEndNotes(int code);

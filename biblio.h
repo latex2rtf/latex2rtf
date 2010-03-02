@@ -2,8 +2,8 @@
 #define _BIBLIO_INCLUDED 1
 
 typedef enum { BIBLIO_BIBCITE = 0,
-	       BIBLIO_HARVARD,
-	       BIBLIO_NATBIB } BiblioType;
+               BIBLIO_HARVARD,
+               BIBLIO_NATBIB } BiblioType;
 
 typedef struct _biblioElem {
     char       *biblioKey;

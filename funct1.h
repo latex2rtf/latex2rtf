@@ -1,6 +1,6 @@
 /* funct1.h
 
-Copyright (C) 2002 The Free Software Foundation
+Copyright (C) 2002-2010 The Free Software Foundation
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -34,7 +34,7 @@ This file is available from http://sourceforge.net/projects/latex2rtf/
 
 #define BOX_HBOX       1
 #define BOX_VBOX       2
-#define BOX_MBOX 	   3
+#define BOX_MBOX       3
 #define BOX_FBOX       4
 #define BOX_PARBOX     5
 #define BOX_MAKEBOX    6
@@ -185,7 +185,7 @@ void CmdIflatextortf(int code);
 void CmdNewif(int code);
 void CmdElse(int code);
 void CmdFi(int code);
-int TryConditionSet(char *command);
+int  TryConditionSet(char *command);
 void CmdAppendix(int code);
 void CmdAcronymItem(int code);
 void CmdLap(int code);

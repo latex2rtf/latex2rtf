@@ -1,1 +1,1 @@
-void	preParse(char **body, char **header, char **label);
+void preParse(char **body, char **header, char **label);

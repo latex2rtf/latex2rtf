@@ -5,25 +5,19 @@ MKDIR?=mkdir -p
 RMDIR?=rm -rf
 PKGMANDIR?=man
 
-#CFLAGS:=-O2 -pipe -Wp,-D_FORTIFY_SOURCE=2 -Wno-write-strings --param=ssp-buffer-size=4 -m64 -mtune=generic
-CFLAGS?=-Wno-write-strings
-CFLAGS:=$(CFLAGS) -fexceptions -fstack-protector
-PLATFORM?=-DUNIX
-#PLATFORM?=-DMSDOS			# Windows/DOS
-#PLATFORM?=-DMSDOS -DNOSTDERR   	# Windows/DOS without stderr
-#CFLAGS:=$(CFLAGS) -enable-auto-import	# Windows MinGW
-#CFLAGS:=$(CFLAGS) -lssp		# DOS djgpp
-#PLATFORM?=-DOS2			# OS/2
-CFLAGS:=$(CFLAGS) $(PLATFORM)
+#reasonable default set of compiler flags
+CFLAGS?=-g -Wall -Wno-write-strings -fsigned-char
+
+PLATFORM?=-DUNIX   # Mac OS X, Linux, BSD
+#PLATFORM?=-DMSDOS # Windows/DOS
+#PLATFORM?=-DOS2   # OS/2 (does anyone still use this?)
+#PLATFORM?=-DMSDOS -DNOSTDERR  # Windows/DOS without stderr
 
 #Uncomment for some windows machines (neither needed for djgpp nor for MinGW)
 #EXE_SUFFIX=.exe
 
 #Uncomment next line for DOS/Windows
 #PREFIX_DRIVE=C:
-
-#Uncomment next line when using rsx compiler, target win32
-#CFLAGS:=$(CFLAGS) -Zwin32  
 
 #Base directory - adapt as needed
 # Unix:
@@ -43,7 +37,7 @@ CFG_INSTALL=$(PREFIX)/share/latex2rtf/cfg
 
 # Nothing to change below this line
 
-CFLAGS:=$(CFLAGS) -g -Wall -fsigned-char
+CFLAGS:=$(CFLAGS) $(PLATFORM)
 
 LIBS= -lm
 

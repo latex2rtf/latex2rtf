@@ -121,61 +121,61 @@ void setPackageBabel(char *option)
 void setPackageInputenc(char *option)
 {
     if (strstr(option, "applemac"))
-    	CmdFontEncoding(ENCODING_APPLE);
+        CmdFontEncoding(ENCODING_APPLE);
     else if (strstr(option, "decmulti"))
-    	CmdFontEncoding(ENCODING_DEC);
+        CmdFontEncoding(ENCODING_DEC);
     else if (strstr(option, "latin1"))
-    	CmdFontEncoding(ENCODING_1251);
+        CmdFontEncoding(ENCODING_1251);
     else if (strstr(option, "latin2"))
-    	CmdFontEncoding(ENCODING_LATIN_2);
+        CmdFontEncoding(ENCODING_LATIN_2);
     else if (strstr(option, "latin3"))
-    	CmdFontEncoding(ENCODING_LATIN_3);
+        CmdFontEncoding(ENCODING_LATIN_3);
     else if (strstr(option, "latin4"))
-    	CmdFontEncoding(ENCODING_LATIN_4);
+        CmdFontEncoding(ENCODING_LATIN_4);
     else if (strstr(option, "latin5"))
-    	CmdFontEncoding(ENCODING_LATIN_5);
+        CmdFontEncoding(ENCODING_LATIN_5);
     else if (strstr(option, "latin9"))
-    	CmdFontEncoding(ENCODING_LATIN_9);
+        CmdFontEncoding(ENCODING_LATIN_9);
     else if (strstr(option, "latin10"))
-    	CmdFontEncoding(ENCODING_LATIN_10);
+        CmdFontEncoding(ENCODING_LATIN_10);
     else if (strstr(option, "next"))
-    	CmdFontEncoding(ENCODING_NEXT);
+        CmdFontEncoding(ENCODING_NEXT);
     else if (strstr(option, "maccyr"))
-    	CmdFontEncoding(ENCODING_APPLE_CYRILLIC);
+        CmdFontEncoding(ENCODING_APPLE_CYRILLIC);
     else if (strstr(option, "macce"))
-    	CmdFontEncoding(ENCODING_APPLE_CE);
+        CmdFontEncoding(ENCODING_APPLE_CE);
     else if (strstr(option, "koi8-r"))
-    	CmdFontEncoding(ENCODING_KOI8_R);
+        CmdFontEncoding(ENCODING_KOI8_R);
     else if (strstr(option, "koi8-u"))
-    	CmdFontEncoding(ENCODING_KOI8_U);
+        CmdFontEncoding(ENCODING_KOI8_U);
     else if (strstr(option, "437"))
-    	CmdFontEncoding(ENCODING_437);
-	else if (strstr(option, "ansinew"))
-    	CmdFontEncoding(ENCODING_1252);
-	else if (strstr(option, "1252"))
-    	CmdFontEncoding(ENCODING_1252);
-	else if (strstr(option, "850"))
-    	CmdFontEncoding(ENCODING_850);
-	else if (strstr(option, "852"))
-    	CmdFontEncoding(ENCODING_852);
-	else if (strstr(option, "855"))
-    	CmdFontEncoding(ENCODING_852);
-	else if (strstr(option, "865"))
-    	CmdFontEncoding(ENCODING_865);
-	else if (strstr(option, "866"))
-    	CmdFontEncoding(ENCODING_866);
-	else if (strstr(option, "1250"))
-    	CmdFontEncoding(ENCODING_1250);
-	else if (strstr(option, "1251"))
-    	CmdFontEncoding(ENCODING_1251);
-	else if (strstr(option, "1253"))
-    	CmdFontEncoding(ENCODING_1253);
-	else if (strstr(option, "raw"))
-    	CmdFontEncoding(ENCODING_RAW);
-	else if (strstr(option, "utf8"))
-    	CmdFontEncoding(ENCODING_UTF8);
-	else if (strstr(option, "ot2enc"))
-        setPackageBabel("russian");    	
+        CmdFontEncoding(ENCODING_437);
+    else if (strstr(option, "ansinew"))
+        CmdFontEncoding(ENCODING_1252);
+    else if (strstr(option, "1252"))
+        CmdFontEncoding(ENCODING_1252);
+    else if (strstr(option, "850"))
+        CmdFontEncoding(ENCODING_850);
+    else if (strstr(option, "852"))
+        CmdFontEncoding(ENCODING_852);
+    else if (strstr(option, "855"))
+        CmdFontEncoding(ENCODING_852);
+    else if (strstr(option, "865"))
+        CmdFontEncoding(ENCODING_865);
+    else if (strstr(option, "866"))
+        CmdFontEncoding(ENCODING_866);
+    else if (strstr(option, "1250"))
+        CmdFontEncoding(ENCODING_1250);
+    else if (strstr(option, "1251"))
+        CmdFontEncoding(ENCODING_1251);
+    else if (strstr(option, "1253"))
+        CmdFontEncoding(ENCODING_1253);
+    else if (strstr(option, "raw"))
+        CmdFontEncoding(ENCODING_RAW);
+    else if (strstr(option, "utf8"))
+        CmdFontEncoding(ENCODING_UTF8);
+    else if (strstr(option, "ot2enc"))
+        setPackageBabel("russian");     
     else
         diagnostics(WARNING, "Input Encoding <%s> not supported", option);
 }
@@ -487,7 +487,7 @@ static void setDocumentOptions(char *optionlist)
 
         } 
         else if (strcmp(option, "color") == 0) {
-        	gColorPackage = 1;
+            gColorPackage = 1;
         } else if (strcmp(option, "man") == 0 ||
                    strcmp(option, "jou") == 0) {
             diagnostics(WARNING, "ignoring [%s], assuming [doc]", option);
@@ -1365,8 +1365,8 @@ static void WriteColorTable(void)
     fprintRTF("\\red255\\green255\\blue255;\n");    /* white */
     
     if (!gColorPackage) {
-    	fprintRTF("}\n");
-    	return;
+        fprintRTF("}\n");
+        return;
     }
 
     fprintRTF("\\red0\\green0\\blue128;\n");    /* dark blue */
