@@ -78,7 +78,7 @@ void CmdUmlauteChar(int code)
     int n = RtfFontNumber("STIXGeneral");
     char *cParam = getBraceParam();
 
-    if (strcmp(cParam, "\\i") == 0) {
+    if (strstr(cParam, "\\i")) {
         fprintRTF("\\'ef");
         free(cParam);
         return;
@@ -163,7 +163,7 @@ void CmdGraveChar(int code)
     int n = RtfFontNumber("STIXGeneral");
     char *cParam = getBraceParam();
 
-    if (strcmp(cParam, "\\i") == 0) {
+    if (strstr(cParam, "\\i")) {
         fprintRTF("\\'ec");
         free(cParam);
         return;
@@ -227,7 +227,7 @@ void CmdAcuteChar(int code)
     int n = RtfFontNumber("STIXGeneral");
     char *cParam = getBraceParam();
 
-    if (strcmp(cParam, "\\i") == 0) {
+    if (strstr(cParam, "\\i")) {
         fprintRTF("\\'ed");
         free(cParam);
         return;
@@ -366,6 +366,12 @@ void CmdMacronChar(int code)
 {
     int n = RtfFontNumber("STIXGeneral");
     char *cParam = getBraceParam();
+
+    if (strstr(cParam, "\\i")) {
+        putUnicodeChar(0x01,0x2B,'i');
+        free(cParam);
+        return;
+    }
 
     switch (cParam[0]) {
         case 'A':
@@ -562,7 +568,7 @@ void CmdTildeChar(int code)
     int n = RtfFontNumber("STIXGeneral");
     char *cParam = getBraceParam();
     
-    if (strcmp(cParam, "\\i") == 0) {
+    if (strstr(cParam, "\\i")) {
         fprintRTF("\\u297i");
         free(cParam);
         return;
@@ -966,7 +972,7 @@ void CmdUnderdotChar(int code)
     int n = RtfFontNumber("STIXGeneral");
     char *cParam = getBraceParam();
 
-    if (strcmp(cParam, "\\i") == 0) {
+    if (strstr(cParam, "\\i")) {
         fprintRTF("\\u301i");
         free(cParam);
     }
