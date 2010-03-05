@@ -164,7 +164,7 @@ void CmdGraveChar(int code)
     char *cParam = getBraceParam();
 
     if (strcmp(cParam, "\\i") == 0) {
-        fprintRTF("\\'ed");
+        fprintRTF("\\'ec");
         free(cParam);
         return;
     }
@@ -228,7 +228,7 @@ void CmdAcuteChar(int code)
     char *cParam = getBraceParam();
 
     if (strcmp(cParam, "\\i") == 0) {
-        fprintRTF("\\'ec");
+        fprintRTF("\\'ed");
         free(cParam);
         return;
     }
