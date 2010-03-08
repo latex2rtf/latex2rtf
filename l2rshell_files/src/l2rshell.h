@@ -24,6 +24,11 @@
 #define ID_AUXFILENAME                      1022
 #define ID_AUXFILE_BUTTON                   1023
 
+#define ID_TMPDIR_TEXT                      1025
+#define ID_TMPDEF                           1026
+#define ID_TMPDIRNAME                       1027
+#define ID_TMPDIR_BUTTON                    1028
+
 #define ID_BBLFILE_TEXT                     1030
 #define ID_BBLDEF                           1031
 #define ID_BBLFILENAME                      1032

@@ -526,7 +526,7 @@ static void print_usage(void)
     fprintf(stdout, "  -t#              table handling\n");
     fprintf(stdout, "       -t1          tabular and tabbing environments as RTF\n");
     fprintf(stdout, "       -t2          tabular and tabbing environments as bitmaps\n");
-    fprintf(stdout, "  -T /path/to/tmp  temporary directory (not used in DOS/Win version)\n");
+    fprintf(stdout, "  -T /path/to/tmp  temporary directory\n");
     fprintf(stdout, "  -v               version information\n");
     fprintf(stdout, "  -V               version information\n");
     fprintf(stdout, "  -W               include warnings in RTF\n");
@@ -856,17 +856,38 @@ char *getTmpPath(void)
 purpose: return the directory to store temporary files
  ****************************************************************************/
 {
-#if defined(MSDOS)
-
-    return strdup("");
-
-#else
-
     size_t n;
     char *t = NULL;
     char *u = NULL;
-    char pathsep_str[2] = { PATHSEP, 0 };   /* for os2 or w32 "unix" compiler */
+    char pathsep_str[2] = { PATHSEP, 0 };
 
+#if defined(MSDOS)
+    /* first use any temporary directory specified as an option */
+    if (g_tmp_dir) {
+        t = strdup(g_tmp_dir);
+
+    /* next try the environment variable TMPDIR */
+    } else {
+        u = getenv("TMPDIR");
+        if (u != NULL)
+            t = strdup(u);
+    }
+
+    /* finally just return ".\\" */
+    if (t==NULL)
+        t = strdup(".\\");
+
+    /* append a final '/' if missing */
+    
+    n=strlen(t)-1;
+    
+    if (n > 1 && t[n] != PATHSEP) {
+        u = strdup_together(t, pathsep_str);
+        free(t);
+        t = u;
+    }
+
+#else
    /* first use any temporary directory specified as an option */
     if (g_tmp_dir) {
         t = strdup(g_tmp_dir);
@@ -892,8 +913,8 @@ purpose: return the directory to store temporary files
         t = u;
     }
 
-    return t;
 #endif
+    return t;
 }
 
 char *my_strdup(const char *str)

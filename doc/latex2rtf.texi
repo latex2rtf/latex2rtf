@@ -60,7 +60,7 @@ A converter from @latex{} to RTF
 
 Edition 0.7.6
 
-for program version 2.1.0
+for program version 2.1.1
 
 @author Georg Lehner,
 updated by Wilfried Hennings and Scott Prahl,
@@ -221,7 +221,7 @@ into another language, under the above conditions for modified versions,
 except that this permission notice may be stated in a translation
 approved by the Free Software Foundation.
 
-@c This document applies to version 2.1.0 of @ltor{}.
+@c This document applies to version 2.1.1 of @ltor{}.
 @end ifnottex
 
 
@@ -475,7 +475,7 @@ freely available for download at @uref{http://www.miktex.org/},
 @uref{http://www.imagemagick.org} and @uref{http://www.ghostscript.com}
 
 The following versions were available at the time of writing 
-and used together with @ltor{} version 2.0.0 and 2.1.0: @*
+and used together with @ltor{} version 2.0.0 and 2.1.x: @*
 - MikTeX 2.8 @*
 - Ghostscript 8.70 @*
 - ImageMagick-6.5.7-3-Q8-windows-dll.exe
@@ -843,8 +843,7 @@ used to specify that semicolons should be used to separate arguments in RTF fiel
 has a version of Windows that uses `,' for decimal points.
 
 @item -T /path/to/tmp
-used to specify the folder where to put temporary files. Not used by the DOS and
-Windows versions.
+used to specify the folder where to put temporary files.
 
 @item -W
 includes warnings directly in the RTF file
@@ -1536,7 +1535,7 @@ For subscription to these lists visit the page:
 or
 @uref{http://lists.sourceforge.net/lists/listinfo/latex2rtf-developers, developers list}
 
-As of February 2010, version 2.1.0 of @ltor{} is available. 
+As of March 2010, version 2.1.1 of @ltor{} is available. 
 
 The contents of this manual were composed by copying shamelessly what was
 available in the original sources and documentation.

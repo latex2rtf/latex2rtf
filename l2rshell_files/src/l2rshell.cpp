@@ -1,7 +1,7 @@
     //////////////////////////////////////////////////////
     //                                                  //
     //      l2rshell (GUI for LaTeX2RTF converter)      //
-    //                 v.0.5.3 for win32                //
+    //                 v.0.6.0 for win32                //
     //    author: Mikhail Polianski (mnpol@mail.ru)     //
     //                                                  //
     //////////////////////////////////////////////////////
@@ -90,7 +90,7 @@ WORD* CreateDlg()
     pdlgtemplate=p=(PWORD)LocalAlloc(LPTR, 8000);
     // dialog template data
     DWORD lStyle=DS_3DLOOK|DS_CENTER|WS_MINIMIZEBOX|WS_VISIBLE|WS_CAPTION|WS_SYSMENU|DS_SHELLFONT;
-    DlgTemplate(p,lStyle,94,0,0,310,277,L"LaTeX2RTF");  //94 - total number of dialog items
+    DlgTemplate(p,lStyle,98,0,0,310,277,L"LaTeX2RTF");  //94 - total number of dialog items
     // group boxes
     lStyle=WS_CHILD|BS_GROUPBOX;
     DlgItemTemplate(p,lStyle,15,103,280,73,ID_EQUATIONS_GROUP,L"button", NULL);
@@ -114,8 +114,9 @@ WORD* CreateDlg()
     DlgItemTemplate(p,lStyle,25,213,60,12,ID_BITMAPS_TXT3,L"static", NULL);
     DlgItemTemplate(p,lStyle,134,213,60,12,ID_BITMAPS_TXT4,L"static", NULL);
     DlgItemTemplate(p,lStyle,229,213,60,12,ID_BITMAPS_TXT5,L"static", NULL);
-    DlgItemTemplate(p,lStyle,15,25,160,12,ID_BBLFILE_TEXT,L"static", NULL);
-    DlgItemTemplate(p,lStyle,15,65,70,12,ID_AUXFILE_TEXT,L"static", NULL);
+    DlgItemTemplate(p,lStyle,15,20,160,12,ID_BBLFILE_TEXT,L"static", NULL);
+    DlgItemTemplate(p,lStyle,15,45,70,12,ID_AUXFILE_TEXT,L"static", NULL);
+    DlgItemTemplate(p,lStyle,15,70,70,12,ID_TMPDIR_TEXT,L"static", NULL);
     DlgItemTemplate(p,lStyle,25,161,40,12,ID_RTF_TXT1,L"static", NULL);
     DlgItemTemplate(p,lStyle,100,161,170,12,ID_RTF_TXT2,L"static", NULL);
     DlgItemTemplate(p,lStyle,25,114,170,12,ID_RTF_TXT3,L"static", NULL);
@@ -142,8 +143,9 @@ WORD* CreateDlg()
     lStyle=WS_CHILD|ES_AUTOHSCROLL|WS_BORDER;
     DlgItemTemplate(p,lStyle,15,38,260,12,ID_TEXFILENAME,L"edit", NULL);
     DlgItemTemplate(p,lStyle,15,78,260,12,ID_RTFFILENAME,L"edit", NULL);
-    DlgItemTemplate(p,lStyle,15,38,260,12,ID_BBLFILENAME,L"edit", NULL);
-    DlgItemTemplate(p,lStyle,15,78,260,12,ID_AUXFILENAME,L"edit", NULL);  
+    DlgItemTemplate(p,lStyle,15,30,260,12,ID_BBLFILENAME,L"edit", NULL);
+    DlgItemTemplate(p,lStyle,15,55,260,12,ID_AUXFILENAME,L"edit", NULL);
+    DlgItemTemplate(p,lStyle,15,80,260,12,ID_TMPDIRNAME,L"edit", NULL);  
     DlgItemTemplate(p,lStyle,25,98,240,12,ID_CONFIG,L"edit", NULL);
     DlgItemTemplate(p,lStyle,25,138,240,12,ID_LATEX,L"edit", NULL);
     DlgItemTemplate(p,lStyle,25,178,240,12,ID_IMAGICK,L"edit", NULL);
@@ -160,8 +162,9 @@ WORD* CreateDlg()
     lStyle=WS_CHILD|BS_PUSHBUTTON;
     DlgItemTemplate(p,lStyle,285,38,12,12,ID_TEXFILE_BUTTON,L"button", L"...");
     DlgItemTemplate(p,lStyle,285,78,12,12,ID_RTFFILE_BUTTON,L"button", L"...");
-    DlgItemTemplate(p,lStyle,285,38,12,12,ID_BBLFILE_BUTTON,L"button", L"...");
-    DlgItemTemplate(p,lStyle,285,78,12,12,ID_AUXFILE_BUTTON,L"button",L"...");
+    DlgItemTemplate(p,lStyle,285,30,12,12,ID_BBLFILE_BUTTON,L"button", L"...");
+    DlgItemTemplate(p,lStyle,285,55,12,12,ID_AUXFILE_BUTTON,L"button",L"...");
+    DlgItemTemplate(p,lStyle,285,80,12,12,ID_TMPDIR_BUTTON,L"button",L"...");
     DlgItemTemplate(p,lStyle,275,98,12,12,ID_CONFIG_BUTTON,L"button",L"...");
     DlgItemTemplate(p,lStyle,275,138,12,12,ID_LATEX_BUTTON,L"button",L"...");
     DlgItemTemplate(p,lStyle,275,178,12,12,ID_IMAGICK_BUTTON,L"button",L"...");
@@ -181,8 +184,9 @@ WORD* CreateDlg()
     DlgItemTemplate(p,lStyle,160,159,40,12,ID_TABLES_TO_RTF,L"button", L"RTF");
     DlgItemTemplate(p,lStyle,220,159,40,12,ID_TABLES_TO_BITMAP,L"button", L"bitmap");
     DlgItemTemplate(p,lStyle,25,227,265,12,ID_BMPFORFIG,L"button", NULL);
-    DlgItemTemplate(p,lStyle,85,25,210,8,ID_BBLDEF,L"button", NULL);
-    DlgItemTemplate(p,lStyle,85,65,210,8,ID_AUXDEF,L"button",NULL);
+    DlgItemTemplate(p,lStyle,85,20,210,8,ID_BBLDEF,L"button", NULL);
+    DlgItemTemplate(p,lStyle,85,45,210,8,ID_AUXDEF,L"button",NULL);
+    DlgItemTemplate(p,lStyle,85,70,210,8,ID_TMPDEF,L"button",NULL); 
     DlgItemTemplate(p,lStyle,25,128,265,12,ID_PARANTHESES,L"button", NULL);
     DlgItemTemplate(p,lStyle,25,144,265,12,ID_SEMICOLONS,L"button", NULL);
     DlgItemTemplate(p,lStyle,125,112,60,12,ID_USEEQFIELDS,L"button", NULL);
@@ -233,6 +237,7 @@ LRESULT CALLBACK DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             SendMessage(GetDlgItem(hwnd, ID_RTFFILENAME), EM_LIMITTEXT, MAX_PATH-1, 0L);
             SendMessage(GetDlgItem(hwnd, ID_BBLFILENAME), EM_LIMITTEXT, MAX_PATH-1, 0L);
             SendMessage(GetDlgItem(hwnd, ID_AUXFILENAME), EM_LIMITTEXT, MAX_PATH-1, 0L);
+            SendMessage(GetDlgItem(hwnd, ID_TMPDIRNAME), EM_LIMITTEXT, MAX_PATH-1, 0L);
             SendMessage(GetDlgItem(hwnd, ID_CONFIG), EM_LIMITTEXT, MAX_PATH-1, 0L);
             SendMessage(GetDlgItem(hwnd, ID_LATEX), EM_LIMITTEXT, MAX_PATH-1, 0L);
             SendMessage(GetDlgItem(hwnd, ID_IMAGICK), EM_LIMITTEXT, MAX_PATH-1, 0L);
@@ -257,6 +262,11 @@ LRESULT CALLBACK DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             i = GetInitInt(L"auxdef", 1);
             SendMessage(GetDlgItem(hwnd, ID_AUXDEF), BM_SETCHECK, i, 0L);
             SendMessage(hwnd, WM_COMMAND, ID_AUXDEF, i);
+            // TMP dirname and "use default" checkbox
+            SetDlgItemText(hwnd, ID_TMPDIRNAME, GetInitString(L"tmpdirname", L"", str));
+            i = GetInitInt(L"tmpdef", 1);
+            SendMessage(GetDlgItem(hwnd, ID_TMPDEF), BM_SETCHECK, i, 0L);
+            SendMessage(hwnd, WM_COMMAND, ID_TMPDEF, i);
             // Language combo: must be initialized before Path to configuration directory
             SendMessage(GetDlgItem(hwnd, ID_LANG), CB_ADDSTRING, 0, (LPARAM)GetInitString(L"lang", L"-", str));
             SendMessage(GetDlgItem(hwnd, ID_LANG), CB_SETCURSEL, 0, 0);
@@ -438,6 +448,15 @@ LRESULT CALLBACK DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                     }
                 break;
                 
+                case ID_TMPDEF:
+                    SendMessage(GetDlgItem(hwnd, ID_TMPDIRNAME), EM_SETREADONLY, SendMessage(GetDlgItem(hwnd, ID_TMPDEF), BM_GETCHECK, 0, 0L), 0L);
+                    if(SendMessage(GetDlgItem(hwnd, ID_TMPDEF), BM_GETCHECK, 0, 0L))
+                    {
+                        lstrcpy(str, L"");
+                        SetDlgItemText(hwnd, ID_TMPDIRNAME, str);
+                    }
+                break;
+                
                 case ID_CFGDEF:
                     SendMessage(GetDlgItem(hwnd, ID_CONFIG), EM_SETREADONLY, SendMessage(GetDlgItem(hwnd, ID_CFGDEF), BM_GETCHECK, 0, 0L), 0L);
                     if(SendMessage(GetDlgItem(hwnd, ID_CFGDEF), BM_GETCHECK, 0, 0L))
@@ -515,6 +534,16 @@ LRESULT CALLBACK DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                         SetDlgItemText(hwnd, ID_AUXFILENAME, str);
                         SendMessage(GetDlgItem(hwnd, ID_AUXFILENAME), EM_SETREADONLY, 0, 0L);
                         SendMessage(GetDlgItem(hwnd, ID_AUXDEF), BM_SETCHECK, 0, 0L);
+                    }
+                break;
+                
+                case ID_TMPDIR_BUTTON:
+                    SendMessage(GetDlgItem(hwnd, ID_TEXFILENAME), WM_GETTEXT, MAX_PATH, (LPARAM)str);
+                    if(PathDialog(hwnd, str))
+                    {
+                        SetDlgItemText(hwnd, ID_TMPDIRNAME, str);
+                        SendMessage(GetDlgItem(hwnd, ID_TMPDIRNAME), EM_SETREADONLY, 0, 0L);
+                        SendMessage(GetDlgItem(hwnd, ID_TMPDEF), BM_SETCHECK, 0, 0L);
                     }
                 break;
                 
@@ -682,11 +711,18 @@ void Run(HWND hwnd)
         SendMessage(GetDlgItem(hwnd, ID_CONFIG), WM_GETTEXT, MAX_PATH, (LPARAM)str);
         lstrcat(out_str, str);
         lstrcat(out_str, L";");
-        
+
         lstrcat(out_str, L" & pushd ");
         SendMessage(GetDlgItem(hwnd, ID_TEXFILENAME), WM_GETTEXT, MAX_PATH, (LPARAM)str);
         getdir(str);
         lstrcat(out_str, str);
+        
+        if(!SendMessage(GetDlgItem(hwnd, ID_TMPDEF), BM_GETCHECK, 0, 0L))
+        {
+            SendMessage(GetDlgItem(hwnd, ID_TMPDIRNAME), WM_GETTEXT, MAX_PATH, (LPARAM)str);
+            lstrcat(out_str, L" & mkdir ");        
+            lstrcat(out_str, str);
+        }
         
         lstrcat(out_str, L" & latex2rt");
         
@@ -778,6 +814,13 @@ void Run(HWND hwnd)
             lstrcat(out_str, str);
         }
         
+        if(!SendMessage(GetDlgItem(hwnd, ID_TMPDEF), BM_GETCHECK, 0, 0L))
+        {
+            lstrcat(out_str, L" -T ");
+            SendMessage(GetDlgItem(hwnd, ID_TMPDIRNAME), WM_GETTEXT, MAX_PATH, (LPARAM)str);
+            lstrcat(out_str, str);
+        }
+            
         if(!SendMessage(GetDlgItem(hwnd, ID_AUXDEF), BM_GETCHECK, 0, 0L))
         {
             lstrcat(out_str, L" -a ");
@@ -807,9 +850,10 @@ void Run(HWND hwnd)
         lstrcat(out_str, L" & popd & pause");
 
         GetWindowsDirectory(str, MAX_PATH); // Default directory for CMD.exe (to avoid error message)
-        
-        //if(MessageBox(hwnd, out_str, L"l2rshell: command line", MB_OKCANCEL) == IDOK) // for Beta version only
+
+        if(MessageBox(hwnd, out_str, L"l2rshell: command line", MB_OKCANCEL) == IDOK) // for Beta version only
             ShellExecute(hwnd, NULL, L"cmd", out_str, str, SW_SHOWNORMAL);     
+        
     }
     
     else
@@ -879,6 +923,10 @@ void SetTab(HWND hwnd, int tabctrl_item)
     ShowWindow(GetDlgItem(hwnd, ID_BBLDEF), show_hide);
     ShowWindow(GetDlgItem(hwnd, ID_BBLFILENAME), show_hide);
     ShowWindow(GetDlgItem(hwnd, ID_BBLFILE_BUTTON), show_hide);
+    ShowWindow(GetDlgItem(hwnd, ID_TMPDIR_TEXT), show_hide);
+    ShowWindow(GetDlgItem(hwnd, ID_TMPDEF), show_hide);
+    ShowWindow(GetDlgItem(hwnd, ID_TMPDIRNAME), show_hide);
+    ShowWindow(GetDlgItem(hwnd, ID_TMPDIR_BUTTON), show_hide);
     ShowWindow(GetDlgItem(hwnd, ID_RTF_GROUP), show_hide);
     ShowWindow(GetDlgItem(hwnd, ID_PARANTHESES), show_hide);
     ShowWindow(GetDlgItem(hwnd, ID_SEMICOLONS), show_hide);
@@ -935,6 +983,11 @@ void SetTab(HWND hwnd, int tabctrl_item)
     ShowWindow(GetDlgItem(hwnd, ID_HOMEPAGE_BUTTON), show_hide);
     ShowWindow(GetDlgItem(hwnd, ID_CANHELP_BUTTON ), show_hide);
     ShowWindow(GetDlgItem(hwnd, ID_GPL_BUTTON), show_hide);
+}
+
+void setstr(WCHAR* path, WCHAR* newext)
+{
+    lstrcat(path, newext);
 }
 
 void changeext(WCHAR* path, WCHAR* newext)
@@ -999,6 +1052,7 @@ void ChangeTheLanguage(HWND hwnd)
     SendMessage(GetDlgItem(hwnd, ID_RTFDEF), WM_SETTEXT, 0, (LPARAM)str);
     SendMessage(GetDlgItem(hwnd, ID_BBLDEF), WM_SETTEXT, 0, (LPARAM)str);
     SendMessage(GetDlgItem(hwnd, ID_AUXDEF), WM_SETTEXT, 0, (LPARAM)str);
+    SendMessage(GetDlgItem(hwnd, ID_TMPDEF), WM_SETTEXT, 0, (LPARAM)str);
     SendMessage(GetDlgItem(hwnd, ID_CFGDEF), WM_SETTEXT, 0, (LPARAM)str);
     SendMessage(GetDlgItem(hwnd, ID_LATEXDEF), WM_SETTEXT, 0, (LPARAM)str);
     SendMessage(GetDlgItem(hwnd, ID_IMAGICKDEF), WM_SETTEXT, 0, (LPARAM)str);
@@ -1018,6 +1072,7 @@ void ChangeTheLanguage(HWND hwnd)
     SendMessage(GetDlgItem(hwnd, ID_BITMAPS_TXT4), WM_SETTEXT, 0, (LPARAM)GetLngString(hwnd, L"114", L"(equations)", str));
     SendMessage(GetDlgItem(hwnd, ID_BITMAPS_TXT5), WM_SETTEXT, 0, (LPARAM)GetLngString(hwnd, L"115", L"(bitmaps)", str));
     
+    SendMessage(GetDlgItem(hwnd, ID_TMPDIR_TEXT), WM_SETTEXT, 0, (LPARAM)GetLngString(hwnd, L"200", L"TMP dir:", str));
     SendMessage(GetDlgItem(hwnd, ID_BBLFILE_TEXT), WM_SETTEXT, 0, (LPARAM)GetLngString(hwnd, L"201", L"BBL file:", str));
     SendMessage(GetDlgItem(hwnd, ID_AUXFILE_TEXT), WM_SETTEXT, 0, (LPARAM)GetLngString(hwnd, L"202", L"AUX file:", str));
     SendMessage(GetDlgItem(hwnd, ID_RTF_GROUP), WM_SETTEXT, 0, (LPARAM)(LPARAM)GetLngString(hwnd, L"203", L"RTF", str));
@@ -1472,6 +1527,8 @@ void SaveUserData(HWND hwnd)
     WritePrivateProfileString(L"l2rshell", L"bbldef", str, inifile);
     wsprintf(str, L"%d", SendMessage(GetDlgItem(hwnd, ID_AUXDEF), BM_GETCHECK, 0, 0L));
     WritePrivateProfileString(L"l2rshell", L"auxdef", str, inifile);
+    wsprintf(str, L"%d", SendMessage(GetDlgItem(hwnd, ID_TMPDEF), BM_GETCHECK, 0, 0L));
+    WritePrivateProfileString(L"l2rshell", L"tmpdef", str, inifile);
     wsprintf(str, L"%d", SendMessage(GetDlgItem(hwnd, ID_CFGDEF), BM_GETCHECK, 0, 0L));
     WritePrivateProfileString(L"l2rshell", L"cfgdef", str, inifile);
     wsprintf(str, L"%d", SendMessage(GetDlgItem(hwnd, ID_LATEXDEF), BM_GETCHECK, 0, 0L));
@@ -1530,6 +1587,8 @@ void SaveUserData(HWND hwnd)
     WritePrivateProfileString(L"l2rshell", L"bblfilename", str, inifile);
     SendMessage(GetDlgItem(hwnd, ID_AUXFILENAME), WM_GETTEXT, MAX_PATH, (LPARAM)str);
     WritePrivateProfileString(L"l2rshell", L"auxfilename", str, inifile);
+    SendMessage(GetDlgItem(hwnd, ID_TMPDIRNAME), WM_GETTEXT, MAX_PATH, (LPARAM)str);
+    WritePrivateProfileString(L"l2rshell", L"tmpdirname", str, inifile);
     SendMessage(GetDlgItem(hwnd, ID_LANG), WM_GETTEXT, 50, (LPARAM)str);
     WritePrivateProfileString(L"l2rshell", L"lang", str, inifile);
     SendMessage(GetDlgItem(hwnd, ID_CODEPAGE), WM_GETTEXT, 50, (LPARAM)str);
