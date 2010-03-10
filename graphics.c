@@ -240,7 +240,9 @@ static char *strdup_tmp_path(const char *s)
         
     tmp = getTmpPath();
 
-    c = PATHSEP;
+   /* c = PATHSEP; WH: changed because even in Windows,
+                       LaTeX uses the forward slash as path separator*/
+    c = '/';
     p = strrchr(s, c);
 
     if (!p)
@@ -437,9 +439,9 @@ static char *strdup_new_extension(const char *s, const char *old_ext, const char
     
     if (p == NULL) return NULL;
 
-    siz = s_len - o_len + n_len;    
+    siz = s_len - o_len + n_len + 1;            /*WH: added 1 */
     new_name = (char *) malloc(siz);
-    my_strlcpy(new_name, s, s_len - o_len);
+    my_strlcpy(new_name, s, s_len - o_len + 1); /*WH: added 1 */
     my_strlcat(new_name, new_ext, siz);
 
     return new_name;
@@ -1797,11 +1799,18 @@ static char *try_file_extension(char *s, char *ext)
 static char *exists_with_extension(char *s, char *ext)
 {
     char *x, *newpath;
-    char sep[] = { PATHSEP, '\0' };
+    /* WH: changed because even in Windows, 
+           LaTeX uses the forward slash as path separator */
+    /* char sep[] = { PATHSEP, '\0' }; */
+    char sep[] = { '/', '\0' };
+        
     int  i;
     
     /* if no graphics path or a name is fully specified then try the plain file only */
-    if (nGraphicsPathElems == 0 || strchr(s,PATHSEP)) {
+    /* WH: changed because even in Windows, 
+           LaTeX uses the forward slash as path separator */
+    /* if (nGraphicsPathElems == 0 || strchr(s,PATHSEP)) {  */
+    if (nGraphicsPathElems == 0 || strchr(s,'/')) {  
         return try_file_extension(s,ext);
     } 
     
