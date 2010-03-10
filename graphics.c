@@ -233,17 +233,15 @@ static void my_unlink(char *filename)
  ******************************************************************************/
 static char *strdup_tmp_path(const char *s)
 {
-    char *tmp, *p, *fullname, c;
+    char *tmp, *p, *fullname;
 
     if (s == NULL)
         return NULL;
         
     tmp = getTmpPath();
 
-   /* c = PATHSEP; WH: changed because even in Windows,
-                       LaTeX uses the forward slash as path separator*/
-    c = '/';
-    p = strrchr(s, c);
+/* Even in Windows, LaTeX uses the forward slash as path separator */
+    p = strrchr(s, '/');
 
     if (!p)
         fullname = strdup_together(tmp, s);
@@ -431,7 +429,7 @@ static char *strdup_new_extension(const char *s, const char *old_ext, const char
     o_len = (int) strlen(old_ext);
     n_len = (int) strlen(new_ext);
         
-        /* make sure that old_ext exists */
+    /* make sure that old_ext exists */
     p= (char *) s;
     do {
         p = strstr(p, old_ext);
@@ -439,9 +437,9 @@ static char *strdup_new_extension(const char *s, const char *old_ext, const char
     
     if (p == NULL) return NULL;
 
-    siz = s_len - o_len + n_len + 1;            /*WH: added 1 */
+    siz = s_len - o_len + n_len + 1;
     new_name = (char *) malloc(siz);
-    my_strlcpy(new_name, s, s_len - o_len + 1); /*WH: added 1 */
+    my_strlcpy(new_name, s, s_len - o_len + 1);
     my_strlcat(new_name, new_ext, siz);
 
     return new_name;
@@ -1799,20 +1797,13 @@ static char *try_file_extension(char *s, char *ext)
 static char *exists_with_extension(char *s, char *ext)
 {
     char *x, *newpath;
-    /* WH: changed because even in Windows, 
-           LaTeX uses the forward slash as path separator */
-    /* char sep[] = { PATHSEP, '\0' }; */
-    char sep[] = { '/', '\0' };
-        
+    char sep[] = { '/', '\0' };        
     int  i;
     
-    /* if no graphics path or a name is fully specified then try the plain file only */
-    /* WH: changed because even in Windows, 
-           LaTeX uses the forward slash as path separator */
-    /* if (nGraphicsPathElems == 0 || strchr(s,PATHSEP)) {  */
-    if (nGraphicsPathElems == 0 || strchr(s,'/')) {  
+    /* if no graphics path or a name is fully specified then try the plain file only
+       (even in Windows, LaTeX uses the forward slash as path separator) */
+    if (nGraphicsPathElems == 0 || strchr(s,'/'))
         return try_file_extension(s,ext);
-    } 
     
     /* else try the different directories in the graphics path */
     for (i=0; i<nGraphicsPathElems; i++) {
