@@ -133,7 +133,7 @@ void InsertBasicStyle(const char *rtf, int how)
     }
     
  /* emit final blank to make sure that RTF is properly terminated */
-    if (how == INSERT_STYLE_FOR_HEADER)
+    if (how != INSERT_STYLE_FOR_HEADER)
         fprintRTF(" ");
 }
 
