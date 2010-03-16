@@ -63,8 +63,7 @@ CFGS=cfg/fonts.cfg cfg/direct.cfg cfg/ignore.cfg cfg/style.cfg \
     cfg/latin.cfg cfg/lsorbian.cfg cfg/magyar.cfg cfg/norsk.cfg cfg/nynorsk.cfg \
     cfg/polish.cfg cfg/portuges.cfg cfg/romanian.cfg cfg/samin.cfg cfg/scottish.cfg \
     cfg/serbian.cfg cfg/slovak.cfg cfg/slovene.cfg cfg/spanish.cfg cfg/swedish.cfg \
-    cfg/turkish.cfg cfg/usorbian.cfg cfg/welsh.cfg cfg/russian.cfg cfg/inc_test.tex \
-    cfg/ukrainian.cfg
+    cfg/turkish.cfg cfg/usorbian.cfg cfg/welsh.cfg cfg/russian.cfg cfg/ukrainian.cfg
 
 DOCS= doc/latex2rtf.1   doc/latex2png.1    doc/latex2rtf.texi doc/latex2rtf.pdf \
       doc/latex2rtf.txt doc/latex2rtf.info doc/latex2rtf.html doc/credits \
@@ -93,10 +92,10 @@ TEST=  \
 	test/bib_apacite_dblsp.tex   test/enc_latin5.tex     test/german.tex        \
 	test/bib_apalike.tex         test/enc_latin9.tex     test/head_article.tex  \
 	test/bib_apalike2.tex        test/enc_maccyr.tex     test/head_book.tex     \
-	test/bib_apanat.tex          test/head_report.tex                           \
-	test/bib_authordate.tex      test/enc_next.tex       test/hndout.sty        \
-	test/bib_harvard.bib         test/enc_utf8x.tex      test/ifclause.tex      \
-	test/bib_harvard.tex         test/endnote.tex        test/include.tex       \
+	test/bib_apanat.tex          test/head_report.tex    test/hndout.sty        \
+	test/bib_authordate.tex      test/enc_next.tex       test/ifclause.tex      \
+	test/bib_harvard.bib         test/enc_utf8x.tex      test/include.tex       \
+	test/bib_harvard.tex         test/endnote.tex        test/inc_test.tex      \
 	test/bib_natbib1.tex         test/eqnnumber.tex      test/include1.tex      \
 	test/bib_natbib2.tex         test/eqnnumber2.tex     test/include2.tex      \
 	test/bib_natbib3.tex         test/eqns-koi8.tex      test/include3.tex      \
