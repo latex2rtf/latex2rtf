@@ -133,8 +133,8 @@ void InsertBasicStyle(const char *rtf, int how)
     }
     
  /* emit final blank to make sure that RTF is properly terminated */
-    if (how != INSERT_STYLE_FOR_HEADER)
-        fprintRTF(" ");
+ /*   if (how != INSERT_STYLE_FOR_HEADER)
+        fprintRTF(" "); */
 }
 
 /* if the_style ends with '0' then do not insert the style sequence \s2
