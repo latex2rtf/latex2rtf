@@ -1,6 +1,6 @@
 \documentclass{article}
 \begin{document}
-\section{Some simple comments}
+\section{Some simple comments to check percentage signs}
 Here % this should not show up
 is a comment embedded in text.
 Sometimes one just uses
@@ -24,5 +24,20 @@ b), c), d) reducing the energy scale to 33\% for each picture,
 the total energy reveals the magnetocrystalline energy in the film
 plane}
 \end{figure}
+
+\section{Checks for the option bracket parameter}
+
+\begin{itemize}
+\item [NEEDS] testing \verb@[NEEDS]@
+\item [{[}NEEDS] containing \verb@[{[}NEEDS]@
+\item [NEEDS{]}] containing \verb@[NEEDS{]}]@
+\item [{[}NEEDS{]}] containing \verb@[{[}NEEDS{]}]@
+\item [NEEDS\{] containing \verb@[NEEDS\{]@
+\end{itemize}
+Open the file specified by <string> and include its contents at the
+current position. When the end of the file is reached, close the file
+and continue compilation. An error condition exists if the named file
+can not be opened, if an I/O exception occurs reading the file, or
+if an I/O exception occurs while closing the file.\bigskip{}
 
 \end{document}

@@ -658,33 +658,43 @@ char *getDelimitedText(char left, char right, int raw)
            
            Example for getDelimitedText('{','}',TRUE) 
            
-           "{the \{ is shown {\it by} a\\}" ----> "the \{ is shown {\it by} a\\"
+           "the \{ is shown {\it by} a\\} blah blah" ----> "the \{ is shown {\it by} a\\"
             
-            Note the missing opening brace in the example above
+           Note the missing opening brace in the example above
+           
+           It turns out that for getDelimitedText('[',']',TRUE)
+           
+           "the \] is shown {]} a\\] blah blah blah" ----> "the \] is shown {]} a\\"
+          
  ******************************************************************************/
 {
     char buffer[5000];
     int size = -1;
     int lefts_needed = 1;
-    char marker = ' ';
-    char last_char = ' ';
+    int brace_level = 0;
+    int last_char_was_backslash = FALSE;
 
     while (lefts_needed && size < 4999) {
-
         size++;
-        last_char = marker;
         buffer[size] = (raw) ? getRawTexChar() : getTexChar();
-        marker = buffer[size];
 
-        if (buffer[size] != right || last_char == '\\') {   /* avoid \} */
-            if (buffer[size] == left && last_char != '\\')  /* avoid \{ */
-                lefts_needed++;
-            else {
-                if (buffer[size] == '\\' && last_char == '\\')  /* avoid \\} */
-                    marker = ' ';
+        if (last_char_was_backslash)  {            /* ignore \{ etc.           */
+            if (buffer[size] == '\\') {            /* two backslashes in a row */
+                last_char_was_backslash = FALSE;   /* next char is not special */
+                continue;
             }
-        } else
-            lefts_needed--;
+        }
+
+        else if (buffer[size] == right && brace_level == 0) 
+        	lefts_needed--;
+        
+        else if (buffer[size] == '{') 
+        	brace_level++;
+        
+        else if (buffer[size] == '}') 
+        	brace_level--;
+
+        last_char_was_backslash = (buffer[size] == '\\') ? TRUE : FALSE;
     }
 
     buffer[size] = '\0';        /* overwrite final delimeter */
