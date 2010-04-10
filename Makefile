@@ -21,19 +21,22 @@ PLATFORM?=-DUNIX   # Mac OS X, Linux, BSD
 
 #Base directory - adapt as needed
 # Unix:
-PREFIX?=$(PREFIX_DRIVE)/usr/local
+PREFIX?=/usr/local
 # Windows:
-#PREFIX?=$(PREFIX_DRIVE)/PROGRA~1/latex2rtf
+#PREFIX?="/Program Files/latex2rtf"
 
 #Name of executable binary --- beware of 8.3 restriction under DOS
 BINARY_NAME=latex2rtf$(EXE_SUFFIX)
 
 # Location of binary, man, info, and support files - adapt as needed
-BIN_INSTALL=$(PREFIX)/bin
-MAN_INSTALL=$(PREFIX)/$(PKGMANDIR)/man1
-INFO_INSTALL=$(PREFIX)/info
-SUPPORT_INSTALL=$(PREFIX)/share/latex2rtf
-CFG_INSTALL=$(PREFIX)/share/latex2rtf/cfg
+#
+# DESTDIR is set by debian/rules
+#
+BIN_INSTALL=$(PREFIX_DRIVE)$(DESTDIR)$(PREFIX)/bin
+MAN_INSTALL=$(PREFIX_DRIVE)$(DESTDIR)$(PREFIX)/$(PKGMANDIR)/man1
+INFO_INSTALL=$(PREFIX_DRIVE)$(DESTDIR)$(PREFIX)/info
+SUPPORT_INSTALL=$(PREFIX_DRIVE)$(DESTDIR)$(PREFIX)/share/latex2rtf
+CFG_INSTALL=$(PREFIX_DRIVE)$(DESTDIR)$(PREFIX)/share/latex2rtf/cfg
 
 # Nothing to change below this line
 
