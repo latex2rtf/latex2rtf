@@ -87,6 +87,8 @@ void ExecGeomOptions (char *option, char *value1, char *value2);
 void setPackageBabel(char *option)
 {
 
+   if (option == NULL) return;
+   
    if (strstr(option, "german")) { /* also catches ngerman */
         GermanMode = TRUE;
         PushEnvironment(GERMAN_MODE);

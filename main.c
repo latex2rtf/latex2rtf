@@ -108,6 +108,7 @@ char *g_script_dir = NULL;
 char *g_tmp_dir = NULL;
 char *g_preamble = NULL;
 int g_escape_parens = FALSE;
+char *g_package_babel = NULL;
 
 int g_equation_display_rtf = TRUE;
 int g_equation_inline_rtf = TRUE;
@@ -187,10 +188,10 @@ int main(int argc, char **argv)
                 set_fields_use_REF(x & 2);
                 break;
             case 'i':
-                setPackageBabel(optarg);
+                g_package_babel = strdup(optarg);
                 break;
             case 'l':
-                setPackageBabel("latin1");
+                g_package_babel = strdup("latin1");
                 break;
             case 'o':
                 g_rtf_name = strdup(optarg);
@@ -414,6 +415,8 @@ static void ConvertWholeDocument(void)
     PushEnvironment(PREAMBLE_MODE);
     setTexMode(MODE_VERTICAL);
     ConvertLatexPreamble();
+    setPackageBabel(g_package_babel);
+    
     WriteRtfHeader();
     ConvertString(t);
 
