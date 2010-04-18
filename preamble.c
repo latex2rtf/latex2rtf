@@ -93,31 +93,26 @@ void setPackageBabel(char *option)
         GermanMode = TRUE;
         PushEnvironment(GERMAN_MODE);
         ReadLanguage("german");
+        return;
     }
 
     if (strstr(option, "french")) { /* also frenchb */
         FrenchMode = TRUE;
         PushEnvironment(FRENCH_MODE);
-        ReadLanguage("french");
     }
 
     if (strstr(option, "russian")) {
         RussianMode = TRUE;
         PushEnvironment(RUSSIAN_MODE);
-        ReadLanguage("russian");
-    }
-
-    if (strstr(option, "spanish")) {
-        ReadLanguage("spanish");
     }
 
     if (strstr(option, "czech")) {
         CzechMode = TRUE;
         PushEnvironment(CZECH_MODE);
-        ReadLanguage("czech");
         CmdFontEncoding(ENCODING_LATIN_2);
     }
 
+    ReadLanguage(option);
 }
 
 void setPackageInputenc(char *option)
@@ -426,14 +421,46 @@ static void setDocumentOptions(char *optionlist)
                  strcmp(option, "landscape"  ) == 0 || 
                  strcmp(option, "legalpaper" ) == 0)
             setPaperSize(option);
-        else if (strcmp(option, "german" ) == 0 ||
-                 strcmp(option, "ngerman") == 0 ||
-                 strcmp(option, "spanish") == 0 ||
-                 strcmp(option, "english") == 0 ||
-                 strcmp(option, "russian") == 0 ||
-                 strcmp(option, "czech"  ) == 0 || 
-                 strcmp(option, "frenchb") == 0 || 
-                 strcmp(option, "french") == 0)
+        else if (  streq(option, "afrikaans")
+                || streq(option, "bahasa")
+                || streq(option, "basque")
+                || streq(option, "brazil")
+                || streq(option, "breton")
+                || streq(option, "catalan")
+                || streq(option, "croatian")
+                || streq(option, "czech")
+                || streq(option, "danish")
+                || streq(option, "dutch")
+                || streq(option, "english")
+                || streq(option, "esperanto")
+                || streq(option, "estonian")
+                || streq(option, "finnish")
+                || streq(option, "french")
+                || streq(option, "galician")
+                || streq(option, "german")
+                || streq(option, "icelandic")
+                || streq(option, "irish")
+                || streq(option, "italian")
+                || streq(option, "latin")
+                || streq(option, "lsorbian")
+                || streq(option, "magyar")
+                || streq(option, "norsk")
+                || streq(option, "nynorsk")
+                || streq(option, "polish")
+                || streq(option, "portuges")
+                || streq(option, "romanian")
+                || streq(option, "russian")
+                || streq(option, "samin")
+                || streq(option, "scottish")
+                || streq(option, "serbian")
+                || streq(option, "slovak")
+                || streq(option, "slovene")
+                || streq(option, "spanish")
+                || streq(option, "swedish")
+                || streq(option, "turkish")
+                || streq(option, "ukrainian")
+                || streq(option, "usorbian")
+                || streq(option, "welsh") )
             setPackageBabel(option);
         else if (strcmp(option, "twoside") == 0)
             g_preambleTwoside = TRUE;

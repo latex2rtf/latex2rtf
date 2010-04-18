@@ -191,7 +191,7 @@ int main(int argc, char **argv)
                 g_package_babel = strdup(optarg);
                 break;
             case 'l':
-                g_package_babel = strdup("latin1");
+                g_package_babel = strdup("latin");
                 break;
             case 'o':
                 g_rtf_name = strdup(optarg);
