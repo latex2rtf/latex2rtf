@@ -1156,10 +1156,7 @@ including Cyrillic, Greek, and Hebrew). ``Times'' or ``Times New Roman'' and
 but not their Unicode extension.
 
 @item ``STIXGeneral'' (4 fonts in plain, italic, bold, bold-italic). These fonts 
-will be supplied by the STIX project @uref{http://www.aip.org/stixfonts/}, 
-but they are not yet officially released. Until the official release, their beta 
-versions are available from @uref{http://www.mozilla.org/projects/mathml/fonts/}
-or from @uref{http://latex2rtf.sourceforge.net/} 
+are available from @uref{http://www.stixfonts.org/}.
 
 @end itemize
 
