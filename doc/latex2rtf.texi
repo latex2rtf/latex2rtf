@@ -1156,7 +1156,16 @@ including Cyrillic, Greek, and Hebrew). ``Times'' or ``Times New Roman'' and
 but not their Unicode extension.
 
 @item ``STIXGeneral'' (4 fonts in plain, italic, bold, bold-italic). These fonts 
-are available from @uref{http://www.stixfonts.org/}.
+are available from @uref{http://www.stixfonts.org/}.@*
+Note that while Office 2003 on Vista works correctly with the Open Type
+version, it does not on Windows XP (Word 2003 assigns no character
+spacing, and Publisher doesn't display the character at all). On
+Windows XP, Office 2003 only displays the symbols correctly with the
+TrueType (ttf) version of the fonts. But stixfonts.org only supplies
+the Open Type (otf) version. @*
+So the TrueType beta version of the fonts can be downloaded from 
+@uref{http://sourceforge.net/projects/latex2rtf/files/STIXfonts/STIXbeta_ttf.zip/download}.
+
 
 @end itemize
 
