@@ -476,10 +476,10 @@ freely available for download at @uref{http://www.miktex.org/},
 @uref{http://www.imagemagick.org} and @uref{http://www.ghostscript.com}
 
 The following versions were available at the time of writing 
-and used together with @ltor{}version 2.0.0 and 2.1.x: @*
+and used together with @ltor{}version 2.1.x: @*
 - MikTeX 2.8 @*
-- Ghostscript 8.70 @*
-- ImageMagick-6.5.7-3-Q8-windows-dll.exe
+- Ghostscript 8.71 @*
+- ImageMagick-6.6.2-4-Q8-windows-dll.exe
 
 
 If MikTeX, ImageMagick and Ghostscript are installed, the paths to their 
