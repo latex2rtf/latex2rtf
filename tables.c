@@ -339,6 +339,7 @@ static void TabularGetRow(const char *tabular_text, char **row, char **next_row,
 {
     char *s, *dimension, *dim_start;
     int slash = FALSE;
+    int tabularnewline = FALSE;
     int row_chars = 0;
     int dim_chars = 0;
 
@@ -355,6 +356,10 @@ static void TabularGetRow(const char *tabular_text, char **row, char **next_row,
         slash = (*s == '\\') ? TRUE : FALSE;
         row_chars++;
         s++;
+        if (slash && strncmp(s,"tabularnewline", 14) == 0) {
+    		tabularnewline = TRUE;
+    		break;
+        }
     }
 
     /* don't include final \\ in copied text */
@@ -372,6 +377,11 @@ static void TabularGetRow(const char *tabular_text, char **row, char **next_row,
     if (*s == '\0') 
         return;
 
+	if (tabularnewline) {
+		*next_row = s+14;
+		return;
+	}
+	
     /* move after \\ */
     s++;
 
