@@ -342,8 +342,9 @@ static void TabularGetRow(const char *tabular_text, char **row, char **next_row,
     int tabularnewline = FALSE;
     int row_chars = 0;
     int dim_chars = 0;
-
-    diagnostics(5, "TabularGetFirstRow contents=%s", tabular_text);
+    int brace = 0;
+    
+    diagnostics(6, "TabularGetFirstRow contents=%s", tabular_text);
     s = (char *) tabular_text;
     *row = NULL;
     *next_row = NULL;
@@ -352,10 +353,13 @@ static void TabularGetRow(const char *tabular_text, char **row, char **next_row,
     if (!s)
         return;
 
-    while ( (*s != '\0') && (*s != '\\' || !slash)) {
+    while ( (*s != '\0') && (brace != 0 || *s != '\\' || !slash)) {
         slash = (*s == '\\') ? TRUE : FALSE;
         row_chars++;
         s++;
+        if (!slash && *s =='{') brace++;
+        if (!slash && *s =='}') brace--;        
+
         if (slash && strncmp(s,"tabularnewline", 14) == 0) {
     		tabularnewline = TRUE;
     		break;
