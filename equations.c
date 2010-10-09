@@ -255,15 +255,26 @@ static int EquationNeedsFields(char *eq)
 /******************************************************************************
  purpose   : Writes equation to RTF file as plain text 
  ******************************************************************************/
-static void WriteEquationAsRawLatex(char *pre, char *eq, char *post)
+static void WriteInlineEquationAsRawLatex(char *pre, char *eq, char *post)
 {
-    fprintRTF("<<:");
-    putRtfStrEscaped(pre);
+    fprintRTF("$");
+/*    putRtfStrEscaped(pre);*/
     putRtfStrEscaped(eq);
-    putRtfStrEscaped(post);
-    fprintRTF(":>>");
+/*    putRtfStrEscaped(post);*/
+    fprintRTF("$");
 }
 
+/******************************************************************************
+ purpose   : Writes equation to RTF file as plain text 
+ ******************************************************************************/
+static void WriteDisplayedEquationAsRawLatex(char *pre, char *eq, char *post)
+{
+    fprintRTF("$$");
+/*    putRtfStrEscaped(pre);*/
+    putRtfStrEscaped(eq);
+/*    putRtfStrEscaped(post);*/
+    fprintRTF("$$");
+}
 
 /******************************************************************************
  purpose   : Writes equation to RTF file as text of COMMENT field
@@ -746,8 +757,24 @@ void CmdEquation(int code)
     if (g_equation_comment)
         WriteEquationAsComment(pre, eq, post);
 
-    if (g_equation_raw_latex)
-        WriteEquationAsRawLatex(pre, eq, post);
+    if (g_equation_raw_latex && inline_equation) {
+    	fprintRTF("$");
+    	putRtfStrEscaped(eq);
+    	fprintRTF("$");
+    } else {
+    	if (true_code == EQN_DOLLAR_DOLLAR || true_code == EQN_BRACKET_OPEN  || 
+    	    true_code == EQN_DISPLAYMATH   || true_code == EQN_EQUATION      || true_code == EQN_EQUATION_STAR ) {
+    			fprintRTF("$$");
+    			putRtfStrEscaped(eq);
+    			fprintRTF("$$");
+    	} else {
+    			fprintRTF("$$");
+    			putRtfStrEscaped(pre);
+    			putRtfStrEscaped(eq);
+    			putRtfStrEscaped(post);
+    			fprintRTF("$$");
+    	}
+    }
 
     diagnostics(4, "inline=%d  inline_bitmap=%d", inline_equation, g_equation_inline_bitmap);
     diagnostics(4, "inline=%d display_bitmap=%d", inline_equation, g_equation_display_bitmap);
