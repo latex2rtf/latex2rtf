@@ -117,63 +117,63 @@ static void SlurpEquation(int code, char **pre, char **eq, char **post)
     switch (true_code) {
 
         case EQN_MATH:
-            diagnostics(4, "SlurpEquation() ... \\begin{math}");
+            diagnostics(4, "SlurpEquation() --- \\begin{math}");
             *pre = strdup("\\begin{math}");
             *post = strdup("\\end{math}");
             *eq = getTexUntil(*post, 0);
             break;
 
         case EQN_DOLLAR:
-            diagnostics(4, "SlurpEquation() ... $");
+            diagnostics(4, "SlurpEquation() --- $");
             *pre = strdup("$");
             *post = strdup("$");
             *eq = SlurpDollarEquation();
             break;
 
         case EQN_RND_OPEN:
-            diagnostics(4, "SlurpEquation() ... \\(");
+            diagnostics(4, "SlurpEquation() --- \\(");
             *pre = strdup("\\(");
             *post = strdup("\\)");
             *eq = getTexUntil(*post, 0);
             break;
 
         case EQN_DISPLAYMATH:
-            diagnostics(4, "SlurpEquation -- displaymath");
+            diagnostics(4, "SlurpEquation --- displaymath");
             *pre = strdup("\\begin{displaymath}");
             *post = strdup("\\end{displaymath}");
             *eq = getTexUntil(*post, 0);
             break;
 
         case EQN_EQUATION_STAR:
-            diagnostics(4, "SlurpEquation() -- equation*");
+            diagnostics(4, "SlurpEquation() --- equation*");
             *pre = strdup("\\begin{equation*}");
             *post = strdup("\\end{equation*}");
             *eq = getTexUntil(*post, 0);
             break;
 
         case EQN_DOLLAR_DOLLAR:
-            diagnostics(4, "SlurpEquation() -- $$");
+            diagnostics(4, "SlurpEquation() --- $$");
             *pre = strdup("$$");
             *post = strdup("$$");
             *eq = getTexUntil(*post, 0);
             break;
 
         case EQN_BRACKET_OPEN:
-            diagnostics(4, "SlurpEquation()-- \\[");
+            diagnostics(4, "SlurpEquation() --- \\[");
             *pre = strdup("\\[");
             *post = strdup("\\]");
             *eq = getTexUntil(*post, 0);
             break;
 
         case EQN_EQUATION:
-            diagnostics(4, "SlurpEquation() -- equation");
+            diagnostics(4, "SlurpEquation() --- equation");
             *pre = strdup("\\begin{equation}");
             *post = strdup("\\end{equation}");
             *eq = getTexUntil(*post, 0);
             break;
 
         case EQN_ARRAY_STAR:
-            diagnostics(4, "Entering CmdDisplayMath -- eqnarray* ");
+            diagnostics(4, "SlurpEquation() --- eqnarray* ");
             *pre = strdup("\\begin{eqnarray*}");
             *post = strdup("\\end{eqnarray*}");
             *eq = getTexUntil(*post, 0);
@@ -187,7 +187,7 @@ static void SlurpEquation(int code, char **pre, char **eq, char **post)
             break;
 
         case EQN_ALIGN_STAR:
-            diagnostics(4, "Entering CmdDisplayMath -- align* ");
+            diagnostics(4, "SlurpEquation() --- align* ");
             *pre = strdup("\\begin{align*}");
             *post = strdup("\\end{align*}");
             *eq = getTexUntil(*post, 0);
@@ -250,30 +250,6 @@ static int EquationNeedsFields(char *eq)
     if (strstr(eq, "\\overline"))
         return 1;
     return 0;
-}
-
-/******************************************************************************
- purpose   : Writes equation to RTF file as plain text 
- ******************************************************************************/
-static void WriteInlineEquationAsRawLatex(char *pre, char *eq, char *post)
-{
-    fprintRTF("$");
-/*    putRtfStrEscaped(pre);*/
-    putRtfStrEscaped(eq);
-/*    putRtfStrEscaped(post);*/
-    fprintRTF("$");
-}
-
-/******************************************************************************
- purpose   : Writes equation to RTF file as plain text 
- ******************************************************************************/
-static void WriteDisplayedEquationAsRawLatex(char *pre, char *eq, char *post)
-{
-    fprintRTF("$$");
-/*    putRtfStrEscaped(pre);*/
-    putRtfStrEscaped(eq);
-/*    putRtfStrEscaped(post);*/
-    fprintRTF("$$");
 }
 
 /******************************************************************************
@@ -762,18 +738,21 @@ void CmdEquation(int code)
     	putRtfStrEscaped(eq);
     	fprintRTF("$");
     } else {
+    	fprintRTF("\\\\[");
     	if (true_code == EQN_DOLLAR_DOLLAR || true_code == EQN_BRACKET_OPEN  || 
-    	    true_code == EQN_DISPLAYMATH   || true_code == EQN_EQUATION      || true_code == EQN_EQUATION_STAR ) {
-    			fprintRTF("$$");
+    	    true_code == EQN_EQUATION      || true_code == EQN_EQUATION_STAR ||
+    	    true_code == EQN_DISPLAYMATH )
     			putRtfStrEscaped(eq);
-    			fprintRTF("$$");
-    	} else {
-    			fprintRTF("$$");
+    	else if (true_code == EQN_ARRAY    || true_code == EQN_ARRAY_STAR) {
+    			putRtfStrEscaped("\\\\begin{align}");
+    			putRtfStrEscaped(eq);
+    			putRtfStrEscaped("\\\\end{align}");
+		} else {
     			putRtfStrEscaped(pre);
     			putRtfStrEscaped(eq);
     			putRtfStrEscaped(post);
-    			fprintRTF("$$");
     	}
+    	fprintRTF("\\\\]");
     }
 
     diagnostics(4, "inline=%d  inline_bitmap=%d", inline_equation, g_equation_inline_bitmap);
