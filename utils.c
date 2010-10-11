@@ -339,6 +339,42 @@ char *strdup_noendblanks(const char *s)
         return strdup("");
     return my_strndup(t, (size_t) (p - t + 1));
 }
+
+/******************************************************************************
+ purpose:  replaces all occurences of target in s with blanks
+******************************************************************************/
+void str_blank_out(char *s, const char *target)
+{
+    char *p;
+    int i, n;
+
+    if (s == NULL || target == NULL || *target == '\0')
+        return;
+    
+    n = strlen(target);
+    p = strstr(s,target);
+    while (p) {
+        for (i=0; i<n; i++) 
+            p[i] = ' ';
+        p = strstr(p+n,target);
+    }
+}
+
+/******************************************************************************
+ purpose:  deletes all occurences of target in s
+******************************************************************************/
+void str_delete(char *s, const char *target)
+{
+    char *p;
+    int n;
+    if (s == NULL || target == NULL || *target == '\0') return;   
+    
+    n = strlen(target);
+    p = s;
+    while (p = strstr(p,target)) 
+        p = my_strcpy(p,p+n);
+}
+
 /******************************************************************************
   purpose: return a copy of tag from \label{tag} in the string text
  ******************************************************************************/

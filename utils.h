@@ -48,6 +48,8 @@ char *  keyvalue_pair(char *t, char **key, char **value);
 int     getStringDimension(char *s);
 char *  getStringBraceParam(char **s);
 void    show_string(int level, const char *s, const char *label);
+void    str_blank_out(char *s, const char *target);
+void    str_delete(char *s, const char *target);
 
 size_t my_strlcpy(char *dst, const char *src, size_t siz);
 size_t my_strlcat(char *dst, const char *src, size_t siz);
