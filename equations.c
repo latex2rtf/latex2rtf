@@ -747,9 +747,9 @@ void CmdEquation(int code)
     	    true_code == EQN_DISPLAYMATH )
     			putRtfStrEscaped(eq1);
     	else if (true_code == EQN_ARRAY    || true_code == EQN_ARRAY_STAR) {
-    			putRtfStrEscaped("\\\\begin{align}");
+    			putRtfStrEscaped("\\begin{align}");
     			putRtfStrEscaped(eq1);
-    			putRtfStrEscaped("\\\\end{align}");
+    			putRtfStrEscaped("\\end{align}");
 		} else {
     			putRtfStrEscaped(pre);
     			putRtfStrEscaped(eq1);
