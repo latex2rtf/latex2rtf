@@ -371,7 +371,7 @@ void str_delete(char *s, const char *target)
     
     n = strlen(target);
     p = s;
-    while (p = strstr(p,target)) 
+    while ((p = strstr(p,target))) 
         p = my_strcpy(p,p+n);
 }
 
