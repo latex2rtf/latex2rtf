@@ -748,9 +748,10 @@ where # selects the type of equation conversion.  Use
     @item -M16  
     insert Word comment field that contains the original equation text
     @item -M32  
-    insert the raw latex equation delimited by @code{<<:} and @code{:>>}.  This
-    is potential useful when using version 6 of the MathType equation editor,
-    which converts typed or pasted TeX code into a MathType equation.@*
+    insert the raw latex equation delimited by @code{$ ... $} for
+    inline equations and by @code{\[ ... \]} for displayed equations.@*  
+    This is useful when using version 6 of the MathType equation 
+    editor, which converts typed or pasted TeX code into a MathType equation.@*
     Probably this could also be useful for use in OpenOffice, as OO has an 
     equation syntax which partially resembles TeX syntax.
     @end table
