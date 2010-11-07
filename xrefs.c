@@ -2,10 +2,10 @@
 /*
  * xrefs.c - commands for LaTeX cross references
  * 
- * Copyright (C) 2001-2002 The Free Software Foundation
+ * Copyright (C) 2001-2002 The safe_free Software Foundation
  * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free
+ * This program is safe_free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the safe_free
  * Software Foundation; either version 2 of the License, or (at your option)
  * any later version.
  * 
@@ -15,7 +15,7 @@
  * more details.
  * 
  * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc., 59
+ * this program; if not, write to the safe_free Software Foundation, Inc., 59
  * Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  * 
  * This file is available from http://sourceforge.net/projects/latex2rtf/
@@ -92,6 +92,7 @@ static char *g_bibpunct_cite_sep = NULL;
 static char *g_bibpunct_author_date_sep = NULL;
 static char *g_bibpunct_numbers_sep = NULL;
 static char *g_bibpunct_postnote_sep = NULL;
+static char *g_bibstyle_punct[2] = {"[", "]"};
 static int g_bibpunct_cite_sep_touched = FALSE;
 static int g_bibpunct_style_paren_touched = FALSE;
 static int   g_bibpunct_style = BIB_STYLE_ALPHA;
@@ -136,6 +137,15 @@ void set_bibpunct_style_paren(char *open, char *close)
     g_bibpunct_style_paren_touched = TRUE;
     g_bibpunct_open = strdup(open);
     g_bibpunct_close = strdup(close);
+}
+
+void set_author_date_and_numbers_sep(char *ad, char *n)
+{
+    safe_free(g_bibpunct_author_date_sep);
+    g_bibpunct_author_date_sep = strdup(ad);
+
+    safe_free(g_bibpunct_numbers_sep);
+    g_bibpunct_numbers_sep = strdup(n);
 }
 
 void set_sorted_citations(void)
@@ -246,7 +256,7 @@ static char *ScanBbl(char *reference)
         if (s) break;
     }
     
-    free(target);
+    safe_free(target);
     if (s == NULL) return NULL;
     buffer = (char *) malloc(4096);
     
@@ -265,7 +275,7 @@ static char *ScanBbl(char *reference)
     
     buffer[i+1] = '\0';
     s = strdup(buffer);
-    free(buffer);
+    safe_free(buffer);
     return s;
 }
 
@@ -349,8 +359,8 @@ void CmdFootNote(int code)
     ConvertString(text);
     fprintRTF("}\n");
     diagnostics(4, "Exiting CmdFootNote");
-    free(text);
-    if (number) free(number);
+    safe_free(text);
+    if (number) safe_free(number);
 }
 
 /******************************************************************************
@@ -358,7 +368,7 @@ void CmdFootNote(int code)
  ******************************************************************************/
 void CmdNoCite(int code)
 {
-    free(getBraceParam());      /* just skip the parameter */
+    safe_free(getBraceParam());      /* just skip the parameter */
 }
 
 /******************************************************************************
@@ -366,9 +376,121 @@ void CmdNoCite(int code)
  ******************************************************************************/
 void CmdBibliographyStyle(int code)
 {
-    char *s = getBraceParam();  /* throw away widest_label */
+    char *s = getBraceParam();  /* throw away bib style name */
+    
+    diagnostics(4, "CmdBibliographyStyle <%s>", s);
 
-    free(s);
+    safe_free(s);
+}
+
+/******************************************************************************
+ purpose: handle the \bibstyle
+ ******************************************************************************/
+void CmdBibStyle(int code)
+{
+    char *s = getBraceParam();  /* get style name */
+    
+    diagnostics(4, "CmdBibStyle <%s>", s);
+
+    /* Derived from `natbib.sty' on 2 Nov. 2010 */
+    if (strcmp(s, "nature") == 0) {
+        g_bibstyle_punct[0] = "" ;
+        g_bibstyle_punct[1] = ".";
+        g_bibpunct_style = BIB_STYLE_SUPER;
+        g_sorted_citations = TRUE;
+        g_compressed_citations = TRUE;
+        set_bibpunct_style_separator(",");
+        set_bibpunct_style_paren("","");
+        set_author_date_and_numbers_sep("", ",");
+    } else if (strcmp(s, "chicago") == 0) {
+        g_bibpunct_style = BIB_STYLE_ALPHA;
+        set_bibpunct_style_separator(";");
+        set_bibpunct_style_paren("(",")");
+        set_author_date_and_numbers_sep(",", ",");
+    } else if (strcmp(s, "named") == 0) {
+        g_bibpunct_style = BIB_STYLE_ALPHA;
+        set_bibpunct_style_separator(";");
+        set_bibpunct_style_paren("[","]");
+        set_bibpunct_style_separator(";");
+    } else if (strcmp(s, "agu") == 0) {
+        g_bibpunct_style = BIB_STYLE_ALPHA;
+        set_bibpunct_style_separator(";");
+        set_bibpunct_style_paren("[","]");
+        set_bibpunct_style_separator(";");
+        set_author_date_and_numbers_sep(",", ",~");
+    } else if (strcmp(s, "egs") == 0) {
+        g_bibpunct_style = BIB_STYLE_ALPHA;
+        set_bibpunct_style_paren("(",")");
+        set_bibpunct_style_separator(";");
+        set_author_date_and_numbers_sep(",", ",");
+    } else if (strcmp(s, "agsm") == 0) {
+        g_bibpunct_style = BIB_STYLE_ALPHA;
+        set_bibpunct_style_paren("(",")");
+        set_bibpunct_style_separator(",");
+        set_author_date_and_numbers_sep("", ",");
+    } else if (strcmp(s, "kluwer") == 0) {
+        g_bibpunct_style = BIB_STYLE_ALPHA;
+        set_bibpunct_style_paren("(",")");
+        set_bibpunct_style_separator(",");
+        set_author_date_and_numbers_sep("", ",");
+    } else if (strcmp(s, "dcu") == 0) {
+        g_bibpunct_style = BIB_STYLE_ALPHA;
+        set_bibpunct_style_paren("(",")");
+        set_bibpunct_style_separator(";");
+        set_author_date_and_numbers_sep(";", ",");
+    } else if (strcmp(s, "aa") == 0) {
+        g_bibpunct_style = BIB_STYLE_ALPHA;
+        set_bibpunct_style_paren("(",")");
+        set_bibpunct_style_separator(";");
+        set_author_date_and_numbers_sep("", ",");
+    } else if (strcmp(s, "pass") == 0) {
+        g_bibpunct_style = BIB_STYLE_ALPHA;
+        set_bibpunct_style_paren("(",")");
+        set_bibpunct_style_separator(";");
+        set_author_date_and_numbers_sep(",", ",");
+    } else if (strcmp(s, "anngeo") == 0) {
+        g_bibpunct_style = BIB_STYLE_ALPHA;
+        set_bibpunct_style_paren("(",")");
+        set_bibpunct_style_separator(";");
+        set_author_date_and_numbers_sep(",", ",");
+    } else if (strcmp(s, "nlinproc") == 0) {
+        g_bibpunct_style = BIB_STYLE_ALPHA;
+        set_bibpunct_style_paren("(",")");
+        set_bibpunct_style_separator(";");
+        set_author_date_and_numbers_sep(",", ",");
+    } else if (strcmp(s, "cospar") == 0) {
+        g_bibstyle_punct[0] = "" ;
+        g_bibstyle_punct[1] = ".";
+        g_bibpunct_style = BIB_STYLE_NUMBER;
+        set_bibpunct_style_paren("/","/");
+        set_bibpunct_style_separator(",");
+        set_author_date_and_numbers_sep("", "");
+    } else if (strcmp(s, "esa") == 0) {
+        g_bibstyle_punct[0] = "" ;
+        g_bibstyle_punct[1] = ".";
+        g_bibpunct_style = BIB_STYLE_NUMBER;
+        set_bibpunct_style_paren("(Ref.~",")");
+        set_bibpunct_style_separator(",");
+        set_author_date_and_numbers_sep("", "");
+    } else if (strcmp(s, "plain") == 0 ||
+               strcmp(s, "alpha") == 0 ||
+               strcmp(s, "abbrv") == 0 ||
+               strcmp(s, "unsrt") == 0) {
+        g_bibpunct_style = BIB_STYLE_NUMBER;
+        set_bibpunct_style_paren("[","]");
+        set_bibpunct_style_separator(",");
+        set_author_date_and_numbers_sep("", ",");
+    } else if (strcmp(s, "plainnat") == 0 ||
+               strcmp(s, "abbrvnat") == 0 ||
+               strcmp(s, "unsrtnat") == 0) {
+        g_bibpunct_style = BIB_STYLE_ALPHA;
+        set_bibpunct_style_paren("[","]");
+        set_bibpunct_style_separator(",");
+        set_author_date_and_numbers_sep(",", ",");
+    } else
+        diagnostics(WARNING, "\\bibstyle{%s} unknown -- ignored.", s);
+
+    safe_free(s);
 }
 
 /******************************************************************************
@@ -380,7 +502,7 @@ void CmdBibliography(int code)
     char *s;
 
     s = getBraceParam();        /* throw away bibliography name */
-    free(s);
+    safe_free(s);
 
     err = PushSource(g_bbl_name, NULL);
     g_in_bibliography = TRUE;
@@ -407,7 +529,7 @@ void CmdThebibliography(int code)
     if (code & ON) {
         char *s = getBraceParam();  /* throw away widest_label */
 
-        free(s);
+        safe_free(s);
 
         CmdEndParagraph(0);
         CmdVspace(VSPACE_MEDIUM_SKIP);
@@ -423,7 +545,7 @@ void CmdThebibliography(int code)
             char *str = expandDefinition(i);
 
             ConvertString(str);
-            free(str);
+            safe_free(str);
         } else {
             if (g_document_type == FORMAT_ARTICLE || g_document_type == FORMAT_APA)
                 ConvertBabelName("REFNAME");
@@ -479,22 +601,22 @@ void CmdBibitem(int code)
         diagnostics(4, "CmdBibitem <%s>", s);
         if (g_document_bibstyle == BIBSTYLE_STANDARD ||
             (g_document_bibstyle == BIBSTYLE_NATBIB && g_bibpunct_style != BIB_STYLE_ALPHA)) {
-            fprintRTF("[");
+            fprintRTF("%s", g_bibstyle_punct[0]);
             fprintRTF("{\\v\\*\\bkmkstart BIB_%s}", signet);
             ConvertString(s);
             fprintRTF("{\\*\\bkmkend BIB_%s}", signet);
-            fprintRTF("]");
+            fprintRTF("%s", g_bibstyle_punct[1]);
             fprintRTF("\\tab\n");
         }
         /* else emit nothing for APALIKE */
     }
 
     if (s)
-        free(s);
+        safe_free(s);
     if (label)
-        free(label);
-    free(signet);
-    free(key);
+        safe_free(label);
+    safe_free(signet);
+    safe_free(key);
 
     c = getNonBlank();
     ungetTexChar(c);
@@ -511,9 +633,9 @@ void CmdBibEntry(int code)
     s = ScanBbl(key);
     if (s) {
         ConvertString(s);
-        free(s);
+        safe_free(s);
     }
-    free(key);
+    safe_free(key);
 }
 
 void CmdNewblock(int code)
@@ -556,7 +678,7 @@ void CmdIndex(int code)
 
     fprintRTF("}}");
     diagnostics(4, "leaving CmdIndex");
-    free(text);
+    safe_free(text);
 }
 
 void CmdPrintIndex(int code)
@@ -616,7 +738,7 @@ void InsertBookmark(char *name, char *text)
             fprintRTF("{\\*\\bkmkend BM%s}", signet);
     }
 
-    free(signet);
+    safe_free(signet);
 }
 
 void InsertContentMark(char marker, char *s1, char *s2, char *s3)
@@ -641,7 +763,7 @@ void CmdLabel(int code)
     option = getBracketParam();
     text = getBraceParam();
     if (strlen(text) == 0) {
-        free(text);
+        safe_free(text);
         return;
     }
     switch (code) {
@@ -691,8 +813,8 @@ void CmdLabel(int code)
                     fprintRTF("}}}");
             }
 
-            free(signet);
-            if (s) free(s);
+            safe_free(signet);
+            if (s) safe_free(s);
                             
             break;
 
@@ -706,7 +828,7 @@ void CmdLabel(int code)
             fprintRTF("%s", signet);
             if (fields_use_REF())
                 fprintRTF("}}}");
-            free(signet);
+            safe_free(signet);
             break;
 
         case LABEL_NAMEREF:
@@ -735,14 +857,14 @@ void CmdLabel(int code)
                 }
             }
             
-            free(signet);
-            if (s) free(s);
+            safe_free(signet);
+            if (s) safe_free(s);
             break;
     }
 
-    free(text);
+    safe_free(text);
     if (option)
-        free(option);
+        safe_free(option);
 }
 
 /*
@@ -826,10 +948,10 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first, i
         }
 
         ConvertString(n);
-        free(n);
-        free(year);
-        free(abbv);
-        free(full);
+        safe_free(n);
+        safe_free(year);
+        safe_free(abbv);
+        safe_free(full);
         return;
     }
     
@@ -906,7 +1028,7 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first, i
                     char *ss = strdup(year + 4);
                     ConvertString(g_bibpunct_numbers_sep);
                     ConvertString(ss);
-                    free(ss);
+                    safe_free(ss);
                 }
             }
             
@@ -959,7 +1081,7 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first, i
                     char *ss = strdup(year + 4);
                     ConvertString(g_bibpunct_numbers_sep);
                     ConvertString(ss);
-                    free(ss);
+                    safe_free(ss);
                 }
             }
             if (last && post && !isEmptyName(post)) {
@@ -1059,7 +1181,7 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first, i
                     char *ss = strdup(year + 4);
                     ConvertString(g_bibpunct_numbers_sep);
                     ConvertString(ss);
-                    free(ss);
+                    safe_free(ss);
                 }
             }
 
@@ -1115,10 +1237,10 @@ static void ConvertNatbib(char *s, int code, char *pre, char *post, int first, i
             }
             break;
     }
-    free(n);
-    free(year);
-    free(abbv);
-    free(full);
+    safe_free(n);
+    safe_free(year);
+    safe_free(abbv);
+    safe_free(full);
 }
 
 /* convert preparsed harvard cites */
@@ -1184,7 +1306,7 @@ void CmdNatexlab(int code)
     char *s = getBracketParam();
     if (!BIB_STYLE_NUMBER) 
         ConvertString(s);
-    free(s);
+    safe_free(s);
 }
 
 /******************************************************************************
@@ -1209,19 +1331,17 @@ void CmdBibpunct(int code)
     
     s = getBracketParam();
     if (s) {
-        if (g_bibpunct_postnote_sep)
-            free(g_bibpunct_postnote_sep);
-        g_bibpunct_postnote_sep = strdup(s);
-        free(s);
+        safe_free(g_bibpunct_postnote_sep);
+        g_bibpunct_postnote_sep = s;
     }
     
-    free(g_bibpunct_open);
+    safe_free(g_bibpunct_open);
     g_bibpunct_open=getBraceParam();
 
-    free(g_bibpunct_close);
+    safe_free(g_bibpunct_close);
     g_bibpunct_close=getBraceParam();
 
-    free(g_bibpunct_cite_sep);
+    safe_free(g_bibpunct_cite_sep);
     g_bibpunct_cite_sep=getBraceParam();
 
     /* not implemented */
@@ -1232,12 +1352,12 @@ void CmdBibpunct(int code)
         g_bibpunct_style = BIB_STYLE_NUMBER;
     if (*s == 'a')
         g_bibpunct_style = BIB_STYLE_ALPHA;
-    free(s);
+    safe_free(s);
 
-    free(g_bibpunct_author_date_sep);
+    safe_free(g_bibpunct_author_date_sep);
     g_bibpunct_author_date_sep=getBraceParam();
 
-    free(g_bibpunct_numbers_sep);
+    safe_free(g_bibpunct_numbers_sep);
     g_bibpunct_numbers_sep=getBraceParam();
 
     g_bibpunct_cite_sep_touched = TRUE;
@@ -1274,7 +1394,7 @@ static char * reorder_citations(char *keys, int scan_aux_code)
         if (s) {
             int number;
             sscanf(s,"%d",&number);
-            free(s);
+            safe_free(s);
             names[n].key = key;
             names[n].number = number;
             n++;
@@ -1311,8 +1431,8 @@ static char * reorder_citations(char *keys, int scan_aux_code)
             dash = FALSE;
             b = strdup_together(a, names[i].key);
         }
-        free(a);
-        free(ordered_keys);
+        safe_free(a);
+        safe_free(ordered_keys);
         ordered_keys=b;
     }
     
@@ -1337,8 +1457,8 @@ void CmdCite(int code)
     g_last_year_cited[0] = '\0';
 
     if (g_document_bibstyle == BIBSTYLE_STANDARD) {
-        free(g_bibpunct_open);
-        free(g_bibpunct_close);
+        safe_free(g_bibpunct_open);
+        safe_free(g_bibpunct_close);
         g_bibpunct_open = strdup("[");
         g_bibpunct_close = strdup("]");
         option = getBracketParam();
@@ -1360,15 +1480,15 @@ void CmdCite(int code)
     
     text = getBraceParam();
     str1 = strdup_nocomments(text);
-    free(text);
+    safe_free(text);
     text = str1;
         
     if (strlen(text) == 0) {
-        free(text);
+        safe_free(text);
         if (pretext)
-            free(pretext);
+            safe_free(pretext);
         if (option)
-            free(option);
+            safe_free(option);
         return;
     }
     /* output text before citation */
@@ -1384,10 +1504,10 @@ void CmdCite(int code)
 
     /* clean-up keys and sort if necessary */
     keys = strdup_noblanks(text);
-    free(text);
+    safe_free(text);
     if (g_sorted_citations){
         text = reorder_citations(keys,SCANAUX_NUMBER);
-        free(keys);
+        safe_free(keys);
         keys = text;
     }
 
@@ -1456,15 +1576,13 @@ void CmdCite(int code)
             ConvertString(t);
             if (fields_use_REF())
                 fprintRTF("}}}");
-            if (signet)
-                free(signet);
+            safe_free(signet);
         }
         
         first_key = FALSE;
         key = next_keys;
         next_keys = popCommaName(key);  /* key modified to be a * single key */
-        if (s)
-            free(s);
+        safe_free(s);
     }
 
     /* final text after citation */
@@ -1478,12 +1596,9 @@ void CmdCite(int code)
         ConvertString(g_bibpunct_close);
     }
 
-    if (keys)
-        free(keys);
-    if (option)
-        free(option);
-    if (pretext)
-        free(pretext);
+    safe_free(keys);
+    safe_free(option);
+    safe_free(pretext);
 }
 
 /******************************************************************************
@@ -1504,12 +1619,12 @@ void CmdNatbibCite(int code)
     g_last_year_cited[0] = '\0';
 
     if (!g_bibpunct_cite_sep_touched) {
-        free(g_bibpunct_cite_sep);
+        safe_free(g_bibpunct_cite_sep);
         g_bibpunct_cite_sep = strdup(";");
     }
     
     if (!g_bibpunct_style_paren_touched) {
-        free(g_bibpunct_cite_sep);
+        safe_free(g_bibpunct_cite_sep);
         g_bibpunct_cite_sep = strdup(";");
     }
 
@@ -1530,16 +1645,16 @@ void CmdNatbibCite(int code)
         
     text = getBraceParam();
     str1 = strdup_nocomments(text);
-    free(text);
+    safe_free(text);
     text = str1;
         
     /* no citation, just clean up and exit */
     if (strlen(text) == 0) {
-        free(text);
+        safe_free(text);
         if (pretext)
-            free(pretext);
+            safe_free(pretext);
         if (option)
-            free(option);
+            safe_free(option);
         return;
     }
 
@@ -1553,10 +1668,10 @@ void CmdNatbibCite(int code)
 
     /* clean-up keys and sort if necessary */
     keys = strdup_noblanks(text);
-    free(text);
+    safe_free(text);
     if (g_sorted_citations){
         text = reorder_citations(keys,SCANAUX_SECT);
-        free(keys);
+        safe_free(keys);
         keys = text;
     }
 
@@ -1592,7 +1707,7 @@ void CmdNatbibCite(int code)
                 }
                 ConvertString(key);
             }
-            if (s) free(s);
+            if (s) safe_free(s);
             first_key = FALSE;
         }
         
@@ -1608,11 +1723,11 @@ void CmdNatbibCite(int code)
         fprintRTF("}"); 
     
     if (keys)
-        free(keys);
+        safe_free(keys);
     if (option)
-        free(option);
+        safe_free(option);
     if (pretext)
-        free(pretext);
+        safe_free(pretext);
 }
 
 /******************************************************************************
@@ -1640,13 +1755,13 @@ void CmdHarvardCite(int code)
     if (code == CITE_AFFIXED) 
         pretext = getBraceParam();
     s = strdup_nocomments(text);
-    free(text);
+    safe_free(text);
     text = s;
         
     if (strlen(text) == 0) {
-        free(text);
-        if (pretext) free(pretext);
-        if (posttext)free(posttext);
+        safe_free(text);
+        if (pretext) safe_free(pretext);
+        if (posttext)safe_free(posttext);
         return;
     }
     
@@ -1658,10 +1773,10 @@ void CmdHarvardCite(int code)
 
     /* clean-up keys and sort if necessary */
     keys = strdup_noblanks(text);
-    free(text);
+    safe_free(text);
     if (g_sorted_citations){
         text = reorder_citations(keys,SCANAUX_NUMBER);
-        free(keys);
+        safe_free(keys);
         keys = text;
     }
 
@@ -1713,11 +1828,11 @@ void CmdHarvardCite(int code)
     }
 
     if (keys)
-        free(keys);
+        safe_free(keys);
     if (posttext)
-        free(posttext);
+        safe_free(posttext);
     if (pretext)
-        free(pretext);
+        safe_free(pretext);
 }
 
 static void putHtmlRTF(const char *style)
@@ -1754,7 +1869,7 @@ static void InsertRtfHyperlink(const char *text,    const char *url,
     fprintRTF("\" }{{}}}{\\fldrslt{");
     ConvertString(text);
     fprintRTF("}}}");
-    free(fullurl);
+    safe_free(fullurl);
 }
 
 /******************************************************************************
@@ -1802,10 +1917,10 @@ void CmdHtml(int code)
                 name = getBraceParam();
                 b = strdup_together3(a,"#",category);
                 url = strdup_together3(b,".",name);
-                free(b);
-                free(name);
-                free(category);
-                free(a);
+                safe_free(b);
+                safe_free(name);
+                safe_free(category);
+                safe_free(a);
             }
             text = getBraceParam();
             InsertRtfHyperlink(text, url, baseurl, urlstyle);
@@ -1841,18 +1956,18 @@ void CmdHtml(int code)
             break;
 
         case LABEL_BASE_URL:
-            if (baseurl) free(baseurl);
+            if (baseurl) safe_free(baseurl);
             baseurl = getBraceRawParam();
             break;
 
         case LABEL_URLSTYLE:
-            if (urlstyle) free(urlstyle);
+            if (urlstyle) safe_free(urlstyle);
             urlstyle = getBraceParam();
             break;
     }
 
-    if (text) free(text);
-    if (url) free(url);
+    if (text) safe_free(text);
+    if (url) safe_free(url);
 }
 
 void CmdBCAY(int code)
@@ -1935,9 +2050,9 @@ void CmdBCAY(int code)
             break;
 
     }
-    free(s);
-    free(t);
-    free(year);
+    safe_free(s);
+    safe_free(t);
+    safe_free(year);
 }
 
 static void ConvertBraceParam(char *pre, char *post)
@@ -1950,14 +2065,14 @@ static void ConvertBraceParam(char *pre, char *post)
         fprintRTF("%s",post);
     }
         
-    if (s) free(s);
+    if (s) safe_free(s);
 }
 
 static void DiscardBraceParam(void)
 {
     char *s;
     s = getBraceParam();
-    if (s) free(s);
+    if (s) safe_free(s);
 }
 
 /******************************************************************************
@@ -2005,7 +2120,7 @@ void CmdApaCite(int code)
         case 11:
             s = getBraceParam();
             fprintRTF("et al.");
-            free(s);
+            safe_free(s);
             break;              /* BOthers */
         case 12:
             fprintRTF("in press");
@@ -2077,7 +2192,7 @@ void CmdApaCite(int code)
             s = getBraceParam();               /* BCnt {1} */
             if (sscanf(s, "%d", &n) == 1)
                 fprintRTF("%c", (char) 'a' + n - 1);
-            free(s);
+            safe_free(s);
             break;
         case 35:
             if (g_current_cite_paren || g_in_bibliography)
@@ -2180,7 +2295,7 @@ void CmdApaCite(int code)
             if (s && *s) {
                 sscanf(s, "%d", &n);
                 ConvertString(month[n-1]);
-                free(s);
+                safe_free(s);
             }
             break;
             
@@ -2217,7 +2332,7 @@ void CmdApaCite(int code)
             if (s && *s) {
                 fprintRTF(", ");
                 ConvertString(s);
-                free(s);
+                safe_free(s);
             }
             
             ConvertBraceParam(", {\\i ","}");   /* volume */
@@ -2251,7 +2366,7 @@ void CmdCiteName(int code)
     if (!g_suppress_name)
         ConvertString(s);
 
-    free(s);
+    safe_free(s);
 
 }
 
@@ -2266,7 +2381,7 @@ void CmdNumberLine(int code)
     diagnostics(4, "Entering CmdNumberLine [%s]", number);
     ConvertString(number);
     fprintRTF("\\tab\n");
-    free(number);
+    safe_free(number);
 }
 
 /******************************************************************************
@@ -2323,10 +2438,10 @@ void CmdContentsLine(int code)
     CmdEndParagraph(0);
     fprintRTF("}");
 
-    free(type);
-    free(text);
-    free(num);
-    free(contents_type);
+    safe_free(type);
+    safe_free(text);
+    safe_free(num);
+    safe_free(contents_type);
 }
 
 /******************************************************************************

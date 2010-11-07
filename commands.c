@@ -478,6 +478,7 @@ static CommandArray PreambleCommands[] = {
     {"abstract", CmdTitle, TITLE_ABSTRACT},
     {"acknowledgements", CmdTitle, TITLE_ACKNOWLEDGE},
     {"bibliographystyle", CmdBibliographyStyle, 0},
+    {"bibstyle", CmdBibStyle, 0},
     {"extrasfrench", CmdIgnoreParameter, No_Opt_One_NormParam},
     {"AtEndDocument", CmdIgnoreParameter, No_Opt_One_NormParam},
     {"docnumber", CmdIgnoreParameter, No_Opt_One_NormParam},
