@@ -2,10 +2,10 @@
 /*
  * xrefs.c - commands for LaTeX cross references
  * 
- * Copyright (C) 2001-2002 The safe_free Software Foundation
+ * Copyright (C) 2001-2002 The Free Software Foundation
  * 
- * This program is safe_free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the safe_free
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free
  * Software Foundation; either version 2 of the License, or (at your option)
  * any later version.
  * 
@@ -15,7 +15,7 @@
  * more details.
  * 
  * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the safe_free Software Foundation, Inc., 59
+ * this program; if not, write to the Free Software Foundation, Inc., 59
  * Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  * 
  * This file is available from http://sourceforge.net/projects/latex2rtf/
