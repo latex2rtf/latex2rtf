@@ -272,7 +272,7 @@ After every TranslateCommand-function the stack is cleaned
 For example:
 
 \ldots \LaTeX \today \TeX
- 1  2      3      4
+1      2      3      4
 1 Push 11
 2 Push 11
 3 Push 11

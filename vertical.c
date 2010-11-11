@@ -419,6 +419,17 @@ void CmdEndParagraph(int code)
 
 }
 
+void CmdHfill(int code)
+
+/******************************************************************************
+     purpose : should do something about the paragraph style but
+     for now, just make sure that we are in horizontal mode.
+ ******************************************************************************/
+{
+	if (getTexMode()==MODE_VERTICAL) 
+		changeTexMode(MODE_HORIZONTAL);
+}
+
 void CmdVspace(int code)
 
 /******************************************************************************
@@ -439,6 +450,7 @@ void CmdVspace(int code)
 
         case VSPACE_VSKIP:
             vspace = getDimension();
+            setTexMode(MODE_VERTICAL);
             CmdEndParagraph(0);
             break;
 
@@ -563,14 +575,12 @@ void CmdAlign(int code)
             old_alignment_before_centerline = getAlignment();
             setAlignment(LEFT);
 
-/*      fprintRTF("{"); */
-            diagnostics(4, "Entering Convert from CmdAlign (centerline)");
+            diagnostics(4, "Entering Convert from CmdAlign (raggedright)");
             Convert();
-            diagnostics(4, "Exiting Convert from CmdAlign (centerline)");
+            diagnostics(4, "Exiting Convert from CmdAlign (raggedright)");
             setAlignment(old_alignment_before_centerline);
             CmdEndParagraph(0);
 
-/*      fprintRTF("}");*/
             break;
 
         case (PAR_CENTER | ON):

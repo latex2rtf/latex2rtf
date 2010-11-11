@@ -32,6 +32,7 @@ void startParagraph(const char *style, int indenting);
 void CmdIndent(int code);
 void CmdNewPage(int code);
 void CmdAlign(int code);
+void CmdHfill(int code);
 
 void setLeftMarginIndent(int indent);
 void setRightMarginIndent(int indent);

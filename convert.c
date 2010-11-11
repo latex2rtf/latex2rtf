@@ -129,7 +129,7 @@ purpose: converts inputfile and writes result to outputfile
     char cNext;
     int count;
 
-    diagnostics(6, "Entering Convert ret = %d", ret);
+    diagnostics(4, "Entering Convert ret = %d", ret);
     RecursionLevel++;
     PushLevels();
 
@@ -180,9 +180,7 @@ purpose: converts inputfile and writes result to outputfile
 
             case '\\':
                 PushLevels();
-
                 TranslateCommand();
-
                 CleanStack();
 
                 if (ret > 0) {
@@ -207,8 +205,8 @@ purpose: converts inputfile and writes result to outputfile
                 CleanStack();
                 ret = RecursionLevel - PopBrace();
                 fprintRTF("}");
-                if (ret > 0) {
-                    diagnostics(5, "Exiting Convert via '}' ret = %d level = %d", ret, RecursionLevel);
+                if (ret > 1) {
+                    diagnostics(4, "Exiting Convert via '}' ret = %d level = %d", ret, RecursionLevel);
                     ret--;
                     RecursionLevel--;
                     return;
