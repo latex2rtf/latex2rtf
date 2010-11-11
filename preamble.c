@@ -86,33 +86,47 @@ void ExecGeomOptions (char *option, char *value1, char *value2);
 
 void setPackageBabel(char *option)
 {
+   char *replica,*language,*comma;
+
+     diagnostics(2, "setPackageBabel [%s]", option);
 
    if (option == NULL) return;
    
-   if (strstr(option, "german")) { /* also catches ngerman */
-        GermanMode = TRUE;
-        PushEnvironment(GERMAN_MODE);
-        ReadLanguage("german");
-        return;
+   replica = strdup_noblanks(option);
+   language = replica;
+   
+   while (language) {
+       
+       comma = strchr(language,',');
+       if (comma != NULL) *comma = '\0';
+           
+	   if (strstr(language, "german")) { /* also catches ngerman */
+			GermanMode = TRUE;
+			PushEnvironment(GERMAN_MODE);
+			ReadLanguage("german");
+			return;
+		}
+	
+		if (strstr(language, "french")) { /* also frenchb */
+			FrenchMode = TRUE;
+			PushEnvironment(FRENCH_MODE);
+		}
+	
+		if (strstr(language, "russian")) {
+			RussianMode = TRUE;
+			PushEnvironment(RUSSIAN_MODE);
+		}
+	
+		if (strstr(language, "czech")) {
+			CzechMode = TRUE;
+			PushEnvironment(CZECH_MODE);
+			CmdFontEncoding(ENCODING_LATIN_2);
+		}
+	
+		ReadLanguage(language);
+		language = (comma) ? comma+1 : NULL;
     }
-
-    if (strstr(option, "french")) { /* also frenchb */
-        FrenchMode = TRUE;
-        PushEnvironment(FRENCH_MODE);
-    }
-
-    if (strstr(option, "russian")) {
-        RussianMode = TRUE;
-        PushEnvironment(RUSSIAN_MODE);
-    }
-
-    if (strstr(option, "czech")) {
-        CzechMode = TRUE;
-        PushEnvironment(CZECH_MODE);
-        CmdFontEncoding(ENCODING_LATIN_2);
-    }
-
-    ReadLanguage(option);
+    safe_free(replica);
 }
 
 void setPackageInputenc(char *option)
@@ -589,7 +603,7 @@ void CmdDocumentStyle(int code)
 ******************************************************************************/
 static void CmdUseOnepackage(char* package, char *options)
 {
-     diagnostics(4, "CmdUseOnepackage \\usepackage[%s]{%s}", options, package);
+     diagnostics(2, "CmdUseOnepackage \\usepackage[%s]{%s}", options, package);
 
     if (TryPackageIgnore(package) == TRUE) 
         return;
