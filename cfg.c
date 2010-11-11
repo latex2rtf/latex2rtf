@@ -178,7 +178,7 @@ FILE *open_cfg(const char *name, int quit_on_error)
  
 /* failed ... give some feedback */
     if (quit_on_error) {
-        diagnostics(WARNING, "Cannot open the latex2rtf .cfg files");
+        diagnostics(WARNING, "Cannot open the latex2rtf config file '%s'",name);
         diagnostics(WARNING, "Locate the directory containing the .cfg files and");
         diagnostics(WARNING, "   (1) define the environment variable RTFPATH, *or*");
         diagnostics(WARNING, "   (2) use command line path option \"-P /path/to/cfg/file\", *or*");
