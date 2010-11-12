@@ -733,30 +733,32 @@ void CmdEquation(int code)
     if (g_equation_comment)
         WriteEquationAsComment(pre, eq, post);
 
-    if (g_equation_raw_latex && inline_equation) {
-    	fprintRTF("$");
-    	putRtfStrEscaped(eq);
-    	fprintRTF("$");
-    } else {
-		char *eq1 = strdup(eq);
-		str_delete(eq1,"\\nonumber");
-		str_delete(eq1,"\\notag");
-    	fprintRTF("\\\\[");
-    	if (true_code == EQN_DOLLAR_DOLLAR || true_code == EQN_BRACKET_OPEN  || 
-    	    true_code == EQN_EQUATION      || true_code == EQN_EQUATION_STAR ||
-    	    true_code == EQN_DISPLAYMATH )
-    			putRtfStrEscaped(eq1);
-    	else if (true_code == EQN_ARRAY    || true_code == EQN_ARRAY_STAR) {
-    			putRtfStrEscaped("\\begin{align}");
-    			putRtfStrEscaped(eq1);
-    			putRtfStrEscaped("\\end{align}");
+    if (g_equation_raw_latex) {
+    	if (inline_equation) {
+			fprintRTF("$");
+			putRtfStrEscaped(eq);
+			fprintRTF("$");
 		} else {
-    			putRtfStrEscaped(pre);
-    			putRtfStrEscaped(eq1);
-    			putRtfStrEscaped(post);
-    	}
-    	fprintRTF("\\\\]");
-    	free(eq1);
+			char *eq1 = strdup(eq);
+			str_delete(eq1,"\\nonumber");
+			str_delete(eq1,"\\notag");
+			fprintRTF("\\\\[");
+			if (true_code == EQN_DOLLAR_DOLLAR || true_code == EQN_BRACKET_OPEN  || 
+				true_code == EQN_EQUATION      || true_code == EQN_EQUATION_STAR ||
+				true_code == EQN_DISPLAYMATH )
+					putRtfStrEscaped(eq1);
+			else if (true_code == EQN_ARRAY    || true_code == EQN_ARRAY_STAR) {
+					putRtfStrEscaped("\\begin{align}");
+					putRtfStrEscaped(eq1);
+					putRtfStrEscaped("\\end{align}");
+			} else {
+					putRtfStrEscaped(pre);
+					putRtfStrEscaped(eq1);
+					putRtfStrEscaped(post);
+			}
+			fprintRTF("\\\\]");
+			free(eq1);
+		}
     }
 
     diagnostics(4, "inline=%d  inline_bitmap=%d", inline_equation, g_equation_inline_bitmap);

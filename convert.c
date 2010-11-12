@@ -184,7 +184,7 @@ purpose: converts inputfile and writes result to outputfile
                 CleanStack();
 
                 if (ret > 0) {
-                    diagnostics(5, "Exiting Convert via TranslateCommand ret = %d level = %d", ret, RecursionLevel);
+                    diagnostics(4, "Exiting Convert via TranslateCommand ret = %d level = %d", ret, RecursionLevel);
                     ret--;
                     RecursionLevel--;
                     return;
@@ -819,9 +819,9 @@ returns: success or not
 
     if (CallCommandFunc(cCommand)) {    /* call handling function for command */
         if (strcmp(cCommand, "end") == 0) {
-            diagnostics(5, "before PopBrace()");
+            diagnostics(4, "before PopBrace()");
             ret = RecursionLevel - PopBrace();
-            diagnostics(5, "after PopBrace(), ret=%d",ret);
+            diagnostics(4, "after PopBrace(), ret=%d",ret);
             fprintRTF("}");
         }
         return;

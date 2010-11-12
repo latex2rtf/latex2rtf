@@ -1107,7 +1107,7 @@ globals: command-functions have side effects or recursive calls
     int iCommand, iEnv,user_def_index;
     char *macro_string;
 
-    diagnostics(6, "CallCommandFunc seeking <%s> (%d environments to look through)", cCommand, iEnvCount);
+    diagnostics(4, "CallCommandFunc seeking <%s> (%d environments to look through)", cCommand, iEnvCount);
 
     user_def_index = existsDefinition(cCommand);
     if (user_def_index > -1) {
@@ -1125,7 +1125,8 @@ globals: command-functions have side effects or recursive calls
         iCommand = 0;
         while (strcmp(Environments[iEnv][iCommand].cmd_name, "") != 0) {
 
-            /*if (iCommand<3)
+            /*
+            if (iCommand<3)
                 diagnostics(1,"CallCommandFunc (%d,%3d) Trying %s",iEnv,iCommand,Environments[iEnv][iCommand].cmd_name);
             */
         

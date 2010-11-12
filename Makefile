@@ -67,7 +67,7 @@ CFGS=cfg/fonts.cfg cfg/direct.cfg cfg/ignore.cfg cfg/style.cfg \
     cfg/polish.cfg cfg/portuges.cfg cfg/romanian.cfg cfg/samin.cfg cfg/scottish.cfg \
     cfg/serbian.cfg cfg/slovak.cfg cfg/slovene.cfg cfg/spanish.cfg cfg/swedish.cfg \
     cfg/turkish.cfg cfg/usorbian.cfg cfg/welsh.cfg cfg/russian.cfg cfg/ukrainian.cfg \
-    cfg/frenchb.cfg cfg/greek.cfg
+    cfg/frenchb.cfg cfg/greek.cfg cfg/british.cfg
 
 DOCS= doc/latex2rtf.1   doc/latex2png.1    doc/latex2rtf.texi doc/latex2rtf.pdf \
       doc/latex2rtf.txt doc/latex2rtf.info doc/latex2rtf.html doc/credits \
