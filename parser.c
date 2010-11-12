@@ -271,8 +271,10 @@ void PopSource(void)
     char s[50];
     int i;
 
-    if (g_parser_depth < 0)
-        diagnostics(ERROR, "More PopSource() calls than PushSource() ");
+    if (g_parser_depth < 0) {
+        diagnostics(1, "Hmmm.  More PopSource() calls than PushSource() calls");
+        return;
+    }
 
     if (0) {
         diagnostics(WARNING, "Before PopSource** line=%d, g_parser_depth=%d, g_parser_include_level=%d",

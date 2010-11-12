@@ -88,14 +88,13 @@ void setPackageBabel(char *option)
 {
    char *replica,*language,*comma;
 
-     diagnostics(2, "setPackageBabel [%s]", option);
+   if (option == NULL || *option == '\0') return;
+   diagnostics(2, "setPackageBabel [%s]", option);
 
-   if (option == NULL) return;
-   
    replica = strdup_noblanks(option);
    language = replica;
    
-   while (language) {
+   while (language && *language) {
        
        comma = strchr(language,',');
        if (comma != NULL) *comma = '\0';
@@ -624,7 +623,7 @@ static void CmdUseOnepackage(char* package, char *options)
         setPackageBabel(package);
 
     else if (strcmp(package, "babel") == 0) {
-        if (options)
+        if (options && *options)
             setPackageBabel(options);
 
     } else if ( strcmp(package, "german")  == 0 ||

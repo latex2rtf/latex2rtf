@@ -54,13 +54,13 @@ void ConvertString(const char *string)
      purpose : converts string in TeX-format to Rtf-format
  ******************************************************************************/
 {
-    if (string == NULL)
+    if (string == NULL || string == '\0')
         return;
 
     if (PushSource(NULL, string) == 0) {
         diagnostics(5, "Entering Convert() from ConvertString()");
 
-        show_string(5, string, "convert");
+        show_string(3, string, "converting");
 
         while (StillSource())
             Convert();
@@ -83,7 +83,7 @@ void ConvertAllttString(char *s)
 
     if (s == NULL)
         return;
-    diagnostics(4, "Entering Convert() from StringAllttConvert()");
+    diagnostics(3, "Entering Convert() from StringAllttConvert()");
 
     if (PushSource(NULL, s) == 0) {
 
@@ -115,7 +115,7 @@ void ConvertAllttString(char *s)
         }
         PopSource();
     }
-    diagnostics(4, "Exiting Convert() from StringAllttConvert()");
+    diagnostics(3, "Exiting Convert() from StringAllttConvert()");
 }
 
 void Convert(void)
@@ -129,7 +129,7 @@ purpose: converts inputfile and writes result to outputfile
     char cNext;
     int count;
 
-    diagnostics(4, "Entering Convert ret = %d", ret);
+    diagnostics(3, "Entering Convert ret = %d", ret);
     RecursionLevel++;
     PushLevels();
 
@@ -183,8 +183,8 @@ purpose: converts inputfile and writes result to outputfile
                 TranslateCommand();
                 CleanStack();
 
-                if (ret > 0) {
-                    diagnostics(4, "Exiting Convert via TranslateCommand ret = %d level = %d", ret, RecursionLevel);
+                if (ret > 1) {
+                    diagnostics(3, "Exiting Convert via TranslateCommand ret = %d level = %d", ret, RecursionLevel);
                     ret--;
                     RecursionLevel--;
                     return;
@@ -206,7 +206,7 @@ purpose: converts inputfile and writes result to outputfile
                 ret = RecursionLevel - PopBrace();
                 fprintRTF("}");
                 if (ret > 1) {
-                    diagnostics(4, "Exiting Convert via '}' ret = %d level = %d", ret, RecursionLevel);
+                    diagnostics(3, "Exiting Convert via '}' ret = %d level = %d", ret, RecursionLevel);
                     ret--;
                     RecursionLevel--;
                     return;
@@ -535,7 +535,7 @@ purpose: converts inputfile and writes result to outputfile
         cLast = cThis;
     }
     RecursionLevel--;
-    diagnostics(5, "Exiting Convert via exhaustion ret = %d", ret);
+    diagnostics(3, "Exiting Convert via exhaustion ret = %d", ret);
 }
 
 static void TranslateCommand(void)

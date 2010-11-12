@@ -508,9 +508,9 @@ void CmdBibliography(int code)
     g_in_bibliography = TRUE;
     
     if (!err) {
-        diagnostics(4, "CmdBibliography ... begin Convert()");
+        diagnostics(2, "CmdBibliography ... begin Convert()");
         Convert();
-        diagnostics(4, "CmdBibliography ... done Convert()");
+        diagnostics(2, "CmdBibliography ... done Convert()");
         PopSource();
     } else
         diagnostics(WARNING, "Cannot open bibliography file.  Create %s using BibTeX", g_bbl_name);
@@ -528,6 +528,7 @@ void CmdThebibliography(int code)
 
     if (code & ON) {
         char *s = getBraceParam();  /* throw away widest_label */
+        diagnostics(4,"\\begin{thebibliography}");
 
         safe_free(s);
 
@@ -565,6 +566,7 @@ void CmdThebibliography(int code)
         setLength("parindent", -amount);
         setLeftMarginIndent(getLeftMarginIndent() + amount);
     } else {
+        diagnostics(4,"\\end{thebibliography}");
         CmdEndParagraph(0);
         CmdVspace(VSPACE_SMALL_SKIP);
         PopEnvironment();
@@ -2057,15 +2059,15 @@ void CmdBCAY(int code)
 
 static void ConvertBraceParam(char *pre, char *post)
 {
-    char *s;
+    char *s=NULL;
+    char *t=NULL;
     s = getBraceParam();
-    if (s && strlen(s) > 0) {
-        fprintRTF("%s",pre);
-        ConvertString(s);
-        fprintRTF("%s",post);
+    if (strlen(s)>0) {
+    	t = strdup_together3(pre,s,post);
+    	ConvertString(t);
+    	safe_free(t);
     }
-        
-    if (s) safe_free(s);
+    safe_free(s);
 }
 
 static void DiscardBraceParam(void)
@@ -2220,11 +2222,11 @@ void CmdApaCite(int code)
             break;
 
         case CITE_APA_CITE_A_TITLE:
-            ConvertBraceParam("\\ldblquote ","\\rdblquote ");
+            ConvertBraceParam("``","''");
             break;
 
          case CITE_APA_CITE_B_TITLE:
-            ConvertBraceParam("{\\i ","}");  /* \APACcitebtitle{title} */
+            ConvertBraceParam("\\textit{","}");  /* \APACcitebtitle{title} */
             break;
 
         case CITE_APA_CITE_INSERT:
@@ -2246,12 +2248,12 @@ void CmdApaCite(int code)
             
         case CITE_APA_REF_B_TITLE:
             DiscardBraceParam();    /* ignore first entry?? */
-            ConvertBraceParam("{\\i ","}");    /* \APACrefbtitle{title}{title} */
+            ConvertBraceParam("\\textit{","}");    /* \APACrefbtitle{title}{title} */
             break;
 
         case CITE_APA_JVNP:
-            ConvertBraceParam("{\\i ","}");    /*  \APACjournalVolNumPages{Journal of nothingness}{2}{}{1-2} */           
-            ConvertBraceParam(", {\\i ","}");   /* volume */
+            ConvertBraceParam("\\textit{","}");    /*  \APACjournalVolNumPages{Journal of nothingness}{2}{}{1-2} */           
+            ConvertBraceParam(", \\textit{","}");   /* volume */
             ConvertBraceParam("(",")"); /* number (10) */
             ConvertBraceParam(", ",""); /* pages */
             break;
@@ -2328,14 +2330,14 @@ void CmdApaCite(int code)
 
         case CITE_APA_ORIG_JOUR:
             s = getBraceParam();   /* year */
-            ConvertBraceParam("(Reprinted from {\\i  ","}"); /* article */
+            ConvertBraceParam("(Reprinted from \\textit{","}"); /* article */
             if (s && *s) {
                 fprintRTF(", ");
                 ConvertString(s);
                 safe_free(s);
             }
             
-            ConvertBraceParam(", {\\i ","}");   /* volume */
+            ConvertBraceParam(", \\textit{","}");   /* volume */
             ConvertBraceParam("(",")"); /* number (10) */
             ConvertBraceParam(", ",""); /* pages */
             fprintRTF(")");

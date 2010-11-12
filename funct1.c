@@ -1765,7 +1765,6 @@ void CmdAbstract(int code)
     }
     
     if (code == ABSTRACT_PRELUDE_END || 
-        code == ABSTRACT_BEGIN_END   || 
         code == (ABSTRACT_BEGIN_END | OFF) ) {
         CmdIndent(INDENT_USUAL);
         CmdEndParagraph(0);
