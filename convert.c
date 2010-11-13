@@ -262,17 +262,9 @@ purpose: converts inputfile and writes result to outputfile
                 }
                 break;
 
-            case '&':
-            
-                /* just write '&' if we are not in math mode */
-                if (getTexMode() != MODE_MATH && getTexMode() != MODE_DISPLAYMATH) {    
-                    if (g_processing_tabular) 
-                        diagnostics(0,"should not happen! tabular should handle this!");
+            case '&':         
+                /* should occur in array, align, or eqnarray environments  */
 
-                    fprintRTF("&");
-                    break;
-                }
-                
                 /* are we are in the middle of \begin{array} ... \end{array} */
                 if (g_processing_arrays) {
                     fprintRTF("%c", g_field_separator);
