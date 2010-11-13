@@ -60,7 +60,7 @@ void ConvertString(const char *string)
     if (PushSource(NULL, string) == 0) {
         diagnostics(5, "Entering Convert() from ConvertString()");
 
-        show_string(3, string, "converting");
+        show_string(4, string, "converting");
 
         while (StillSource())
             Convert();
