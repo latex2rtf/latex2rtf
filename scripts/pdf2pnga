@@ -1,14 +1,24 @@
-#!/bin/sh
+#!bash
 # Part of latex2rtf by Wilfried Hennings (Oct 2007)
 # usage: pdf2pnga pdf_input_file png_output_file density
+# echo "pdf2pnga" $1 $2 $3 $4 $5 >> pdf2pnga.log
 
 if [ -z "$1" ] ; then
-    echo "error: no input file specified"
+    echo " "
+    echo "!!! pdf2pnga: error: no input file specified !!!"
     exit 1
 fi
 
 if [ -z "$2" ] ; then
-    echo "error: no output file specified"
+    echo " "
+    echo "!!! pdf2pnga: error: no output file specified !!!"
+    exit 1
+fi
+
+# does the input file exist?
+if [ ! -f "$1" ] ; then
+    echo " "
+    echo "!!! pdf2pnga: error: input file $1 not found !!!"
     exit 1
 fi
 
@@ -27,12 +37,12 @@ fi
 
 if which gswin32c.exe >NUL ; then
    echo -dNOPAUSE -dBATCH -dSAFER -sDEVICE#pngalpha -r$dpi >_.at
-   gswin32c -q -sOutputFile#$2 @_.at $1
+   gswin32c -q "-sOutputFile#$2" @_.at "$1"
    rm -f _.at
 elif [ -e /usr/bin/sips ] ; then 
 #  If sips is available (which is the case in newer MacOSX systems), then use it.
-   /usr/bin/sips -s format png -s dpiHeight $dpi -s dpiWidth $dpi --out $2 $1 
+   /usr/bin/sips -s format png -s dpiHeight $dpi -s dpiWidth $dpi --out "$2" "$1" 
 else
-   gs -q -dNOPAUSE -dBATCH -dSAFER -sDEVICE=pngalpha -r$dpi -sOutputFile=$2 $1 
+   gs -q -dNOPAUSE -dBATCH -dSAFER -sDEVICE=pngalpha -r$dpi "-sOutputFile=$2" "$1" 
 fi
 

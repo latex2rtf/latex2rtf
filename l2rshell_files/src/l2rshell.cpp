@@ -1,11 +1,12 @@
     //////////////////////////////////////////////////////
     //                                                  //
     //      l2rshell (GUI for LaTeX2RTF converter)      //
-    //                 v.0.6.0 for win32                //
+    //                 v.0.6.2 for win32                //
     //    author: Mikhail Polianski (mnpol@mail.ru)     //
     //                                                  //
     //////////////////////////////////////////////////////
-
+    //     -> version number is also in line 1451       //
+//
 // libcomctl32 library has to be included into compiler options
 #include "l2rshell.h"
 #include "dlg.h"
@@ -90,14 +91,14 @@ WORD* CreateDlg()
     pdlgtemplate=p=(PWORD)LocalAlloc(LPTR, 8000);
     // dialog template data
     DWORD lStyle=DS_3DLOOK|DS_CENTER|WS_MINIMIZEBOX|WS_VISIBLE|WS_CAPTION|WS_SYSMENU|DS_SHELLFONT;
-    DlgTemplate(p,lStyle,98,0,0,310,277,L"LaTeX2RTF");  //94 - total number of dialog items
+    DlgTemplate(p,lStyle,100,0,0,310,277,L"LaTeX2RTF"); //100 - total number of dialog items
     // group boxes
     lStyle=WS_CHILD|BS_GROUPBOX;
     DlgItemTemplate(p,lStyle,15,103,280,73,ID_EQUATIONS_GROUP,L"button", NULL);
     DlgItemTemplate(p,lStyle,15,186,280,57,ID_BITMAPS_GROUP,L"button", NULL);
-    DlgItemTemplate(p,lStyle,15,103,280,73,ID_RTF_GROUP,L"button", NULL);
-    DlgItemTemplate(p,lStyle,15,186,135,57,ID_LANG_GROUP,L"button", NULL);
-    DlgItemTemplate(p,lStyle,160,186,135,57,ID_DEBUG_GROUP,L"button", NULL);
+    DlgItemTemplate(p,lStyle,15,97,280,73,ID_RTF_GROUP,L"button", NULL);
+    DlgItemTemplate(p,lStyle,15,174,135,57,ID_LANG_GROUP,L"button", NULL);
+    DlgItemTemplate(p,lStyle,160,174,135,72,ID_DEBUG_GROUP,L"button", NULL);
     DlgItemTemplate(p,lStyle,15,25,280,37,ID_CHANGELANG_GROUP,L"button", NULL);
     DlgItemTemplate(p,lStyle,15,72,280,171,ID_PATHS_GROUP,L"button", NULL);
     DlgItemTemplate(p,lStyle,15,25,280,218,ID_ABOUT_GROUP,L"button", NULL);
@@ -117,12 +118,14 @@ WORD* CreateDlg()
     DlgItemTemplate(p,lStyle,15,20,160,12,ID_BBLFILE_TEXT,L"static", NULL);
     DlgItemTemplate(p,lStyle,15,45,70,12,ID_AUXFILE_TEXT,L"static", NULL);
     DlgItemTemplate(p,lStyle,15,70,70,12,ID_TMPDIR_TEXT,L"static", NULL);
-    DlgItemTemplate(p,lStyle,25,161,40,12,ID_RTF_TXT1,L"static", NULL);
-    DlgItemTemplate(p,lStyle,100,161,170,12,ID_RTF_TXT2,L"static", NULL);
-    DlgItemTemplate(p,lStyle,25,114,170,12,ID_RTF_TXT3,L"static", NULL);
-    DlgItemTemplate(p,lStyle,25,203,50,12,ID_LANG_TXT1,L"static", NULL);
-    DlgItemTemplate(p,lStyle,25,223,50,12,ID_LANG_TXT2,L"static", NULL);
-    DlgItemTemplate(p,lStyle,170,203,74,24,ID_DEBUG_TXT,L"static", NULL);
+    DlgItemTemplate(p,lStyle,25,155,40,12,ID_RTF_TXT1,L"static", NULL);
+    DlgItemTemplate(p,lStyle,100,154,170,12,ID_RTF_TXT2,L"static", NULL);
+    DlgItemTemplate(p,lStyle,25,108,170,12,ID_RTF_TXT3,L"static", NULL);
+    DlgItemTemplate(p,lStyle,25,188,50,12,ID_LANG_TXT1,L"static", NULL);
+    DlgItemTemplate(p,lStyle,25,211,50,12,ID_LANG_TXT2,L"static", NULL);
+    DlgItemTemplate(p,lStyle,170,188,74,12,ID_DEBUG_TXT,L"static", NULL);
+    DlgItemTemplate(p,lStyle,170,201,115,12,ID_DEBUG_TXT2,L"static", NULL);
+    DlgItemTemplate(p,lStyle,170,212,90,12,ID_DEBUG_TXT3,L"static", NULL);
     DlgItemTemplate(p,lStyle,25,85,240,12,ID_CONFIG_TEXT,L"static", NULL);
     DlgItemTemplate(p,lStyle,25,125,240,12,ID_LATEX_TEXT,L"static", L"LaTeX (latex.exe)");
     DlgItemTemplate(p,lStyle,25,165,240,12,ID_IMAGICK_TEXT,L"static", L"ImageMagick (convert.exe)");
@@ -187,22 +190,22 @@ WORD* CreateDlg()
     DlgItemTemplate(p,lStyle,85,20,210,8,ID_BBLDEF,L"button", NULL);
     DlgItemTemplate(p,lStyle,85,45,210,8,ID_AUXDEF,L"button",NULL);
     DlgItemTemplate(p,lStyle,85,70,210,8,ID_TMPDEF,L"button",NULL); 
-    DlgItemTemplate(p,lStyle,25,128,265,12,ID_PARANTHESES,L"button", NULL);
-    DlgItemTemplate(p,lStyle,25,144,265,12,ID_SEMICOLONS,L"button", NULL);
-    DlgItemTemplate(p,lStyle,125,112,60,12,ID_USEEQFIELDS,L"button", NULL);
-    DlgItemTemplate(p,lStyle,200,112,90,12,ID_USEREFFIELDS,L"button", NULL);
-    DlgItemTemplate(p,lStyle,170,221,120,12,ID_WARNINGSINRTF,L"button", NULL);
+    DlgItemTemplate(p,lStyle,25,122,265,12,ID_PARANTHESES,L"button", NULL);
+    DlgItemTemplate(p,lStyle,25,138,265,12,ID_SEMICOLONS,L"button", NULL);
+    DlgItemTemplate(p,lStyle,125,106,60,12,ID_USEEQFIELDS,L"button", NULL);
+    DlgItemTemplate(p,lStyle,200,106,90,12,ID_USEREFFIELDS,L"button", NULL);
+    DlgItemTemplate(p,lStyle,170,230,120,12,ID_WARNINGSINRTF,L"button", NULL);
     DlgItemTemplate(p,lStyle,165,85,120,8,ID_CFGDEF,L"button", NULL);
     DlgItemTemplate(p,lStyle,165,125,120,8,ID_LATEXDEF,L"button", NULL);
     DlgItemTemplate(p,lStyle,165,165,120,8,ID_IMAGICKDEF,L"button", NULL);
     DlgItemTemplate(p,lStyle,165,205,120,8,ID_GSDEF,L"button", NULL);
     // lists
     lStyle=WS_CHILD|CBS_DROPDOWNLIST;
-    DlgItemTemplate(p,lStyle,70,159,23,120,ID_ADDEXTRA,L"combobox", NULL);
-    DlgItemTemplate(p,lStyle,255,201,23,96,ID_DEBUGLEVEL,L"combobox", NULL);
+    DlgItemTemplate(p,lStyle,70,153,23,120,ID_ADDEXTRA,L"combobox", NULL);
+    DlgItemTemplate(p,lStyle,255,186,23,96,ID_DEBUGLEVEL,L"combobox", NULL);
     lStyle=WS_CHILD|CBS_DROPDOWNLIST|WS_VSCROLL;
-    DlgItemTemplate(p,lStyle,70,201,75,86,ID_LANG,L"combobox", NULL);
-    DlgItemTemplate(p,lStyle,70,221,75,86,ID_CODEPAGE,L"combobox", NULL);
+    DlgItemTemplate(p,lStyle,70,186,75,86,ID_LANG,L"combobox", NULL);
+    DlgItemTemplate(p,lStyle,70,209,75,86,ID_CODEPAGE,L"combobox", NULL);
     lStyle=WS_CHILD|CBS_DROPDOWNLIST|WS_VSCROLL;
     DlgItemTemplate(p,lStyle,100,40,110,240,ID_SHELLLANG,L"combobox", NULL);
     // tab control
@@ -627,6 +630,14 @@ LRESULT CALLBACK DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                         ChangeTheLanguage(hwnd);
                     }
                 break;
+
+                case ID_DEBUGLEVEL:
+                    if(SendMessage(GetDlgItem(hwnd, ID_DEBUGLEVEL), CB_GETCURSEL, 0, 0L) < 2){
+                    SendMessage(GetDlgItem(hwnd, ID_DEBUG_TXT3), WM_SETTEXT, 0, (LPARAM)(LPARAM)GetLngString(hwnd, L"215", L"to the console window", str));}
+                    else {
+                    SendMessage(GetDlgItem(hwnd, ID_DEBUG_TXT3), WM_SETTEXT, 0, (LPARAM)(LPARAM)GetLngString(hwnd, L"216", L"to the file 'latex2rtf.log'", str));}
+                    RedrawWindow(hwnd, NULL, NULL, RDW_INVALIDATE);
+                break;
                 
                 case ID_CONFIG:
                     if(HIWORD(wParam)==EN_CHANGE)
@@ -847,11 +858,18 @@ void Run(HWND hwnd)
         getfilename(str);
         lstrcat(out_str, str);
         
+        if(SendMessage(GetDlgItem(hwnd, ID_DEBUGLEVEL), CB_GETCURSEL, 0, 0L)>1)
+        {
+            wsprintf(str, L" 2>latex2rtf.log");
+            lstrcat(out_str, str);
+        // MessageBox(hwnd, GetLngString(hwnd, L"214", L"The debugging output will be written to the file 'latex2rtf.log'", str), L"LaTeX2RTF", MB_OK);
+        }
+        
         lstrcat(out_str, L" & popd & pause");
 
         GetWindowsDirectory(str, MAX_PATH); // Default directory for CMD.exe (to avoid error message)
 
-        if(MessageBox(hwnd, out_str, L"l2rshell: command line", MB_OKCANCEL) == IDOK) // for Beta version only
+        // if(MessageBox(hwnd, out_str, L"l2rshell: command line", MB_OKCANCEL) == IDOK) // for Beta version only
             ShellExecute(hwnd, NULL, L"cmd", out_str, str, SW_SHOWNORMAL);     
         
     }
@@ -943,6 +961,8 @@ void SetTab(HWND hwnd, int tabctrl_item)
     ShowWindow(GetDlgItem(hwnd, ID_LANG_TXT2), show_hide);
     ShowWindow(GetDlgItem(hwnd, ID_DEBUG_GROUP), show_hide);
     ShowWindow(GetDlgItem(hwnd, ID_DEBUG_TXT), show_hide);
+    ShowWindow(GetDlgItem(hwnd, ID_DEBUG_TXT2), show_hide);
+    ShowWindow(GetDlgItem(hwnd, ID_DEBUG_TXT3), show_hide);
     ShowWindow(GetDlgItem(hwnd, ID_DEBUGLEVEL), show_hide);
     ShowWindow(GetDlgItem(hwnd, ID_WARNINGSINRTF), show_hide);
     // "Environment" tab
@@ -1089,6 +1109,11 @@ void ChangeTheLanguage(HWND hwnd)
     SendMessage(GetDlgItem(hwnd, ID_DEBUG_GROUP), WM_SETTEXT, 0, (LPARAM)(LPARAM)GetLngString(hwnd, L"211", L"Debugging", str));
     SendMessage(GetDlgItem(hwnd, ID_DEBUG_TXT), WM_SETTEXT, 0, (LPARAM)(LPARAM)GetLngString(hwnd, L"212", L"Debugging level:", str));
     SendMessage(GetDlgItem(hwnd, ID_WARNINGSINRTF), WM_SETTEXT, 0, (LPARAM)(LPARAM)GetLngString(hwnd, L"213", L"Include warnings in the RTF", str));
+    SendMessage(GetDlgItem(hwnd, ID_DEBUG_TXT2), WM_SETTEXT, 0, (LPARAM)(LPARAM)GetLngString(hwnd, L"214", L"The debugging output will be written", str));
+    if(SendMessage(GetDlgItem(hwnd, ID_DEBUGLEVEL), CB_GETCURSEL, 0, 0L) < 2){
+    SendMessage(GetDlgItem(hwnd, ID_DEBUG_TXT3), WM_SETTEXT, 0, (LPARAM)(LPARAM)GetLngString(hwnd, L"215", L"to the console window", str));}
+    else {
+    SendMessage(GetDlgItem(hwnd, ID_DEBUG_TXT3), WM_SETTEXT, 0, (LPARAM)(LPARAM)GetLngString(hwnd, L"216", L"to the file 'latex2rtf.log'", str));}
     
     i =SendMessage(GetDlgItem(hwnd, ID_LANG), CB_GETCURSEL, 0, 0);
     SendMessage(GetDlgItem(hwnd, ID_LANG), CB_INSERTSTRING, 0, (LPARAM)GetLngString(hwnd, L"250", L"-not specify-", str));
@@ -1423,7 +1448,7 @@ WCHAR* GetVersionString(WCHAR* str)   //returned value is 'str'
 {
     WCHAR inifile[MAX_PATH];
     
-    lstrcpy(str, L"LaTeX2RTF  +   l2rshell v.0.5.3");
+    lstrcpy(str, L"LaTeX2RTF  +   l2rshell v.0.6.2");
     
     GetModuleFileName(NULL, inifile, MAX_PATH);
     getdir(inifile);
