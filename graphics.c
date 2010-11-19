@@ -1797,7 +1797,6 @@ static char *try_file_extension(char *s, char *ext)
 static char *exists_with_extension(char *s, char *ext)
 {
     char *x, *newpath;
-    char sep[] = { '/', '\0' };        
     int  i;
             diagnostics(1,"trying graphics file '%s' and extension '%s'",s,ext);
             diagnostics(1,"nGraphicsPathElems %d",nGraphicsPathElems);
@@ -1810,10 +1809,11 @@ static char *exists_with_extension(char *s, char *ext)
     /* else try the different directories in the graphics path */
     for (i=0; i<nGraphicsPathElems; i++) {
         diagnostics(1,"trying path '%s'",graphicsPath[i]);
-        newpath = strdup_together3(graphicsPath[i],sep,s);
+        newpath = strdup_together(graphicsPath[i],s);
         diagnostics(1,"trying path '%s' and extension '%s'",newpath,ext);
         x = try_file_extension(newpath,ext);
         safe_free(newpath);
+        diagnostics(1,"result is '%s'",x);
         if (x) return x;
     }
     

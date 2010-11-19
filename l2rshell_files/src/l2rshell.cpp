@@ -1,7 +1,7 @@
     //////////////////////////////////////////////////////
     //                                                  //
     //      l2rshell (GUI for LaTeX2RTF converter)      //
-    //                 v.0.6.2 for win32                //
+    //                 v.0.6.3 for win32                //
     //    author: Mikhail Polianski (mnpol@mail.ru)     //
     //                                                  //
     //////////////////////////////////////////////////////
@@ -124,8 +124,7 @@ WORD* CreateDlg()
     DlgItemTemplate(p,lStyle,25,188,50,12,ID_LANG_TXT1,L"static", NULL);
     DlgItemTemplate(p,lStyle,25,211,50,12,ID_LANG_TXT2,L"static", NULL);
     DlgItemTemplate(p,lStyle,170,188,74,12,ID_DEBUG_TXT,L"static", NULL);
-    DlgItemTemplate(p,lStyle,170,201,115,12,ID_DEBUG_TXT2,L"static", NULL);
-    DlgItemTemplate(p,lStyle,170,212,90,12,ID_DEBUG_TXT3,L"static", NULL);
+    DlgItemTemplate(p,lStyle,181,213,80,12,ID_DEBUG_TXT2,L"static", NULL);
     DlgItemTemplate(p,lStyle,25,85,240,12,ID_CONFIG_TEXT,L"static", NULL);
     DlgItemTemplate(p,lStyle,25,125,240,12,ID_LATEX_TEXT,L"static", L"LaTeX (latex.exe)");
     DlgItemTemplate(p,lStyle,25,165,240,12,ID_IMAGICK_TEXT,L"static", L"ImageMagick (convert.exe)");
@@ -194,6 +193,7 @@ WORD* CreateDlg()
     DlgItemTemplate(p,lStyle,25,138,265,12,ID_SEMICOLONS,L"button", NULL);
     DlgItemTemplate(p,lStyle,125,106,60,12,ID_USEEQFIELDS,L"button", NULL);
     DlgItemTemplate(p,lStyle,200,106,90,12,ID_USEREFFIELDS,L"button", NULL);
+    DlgItemTemplate(p,lStyle,170,201,120,12,ID_DEBUGTOFILE,L"button", NULL);
     DlgItemTemplate(p,lStyle,170,230,120,12,ID_WARNINGSINRTF,L"button", NULL);
     DlgItemTemplate(p,lStyle,165,85,120,8,ID_CFGDEF,L"button", NULL);
     DlgItemTemplate(p,lStyle,165,125,120,8,ID_LATEXDEF,L"button", NULL);
@@ -309,6 +309,7 @@ LRESULT CALLBACK DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             SendMessage(GetDlgItem(hwnd, ID_SEMICOLONS), BM_SETCHECK, GetInitInt(L"semicolons", 0), 0L);
             SendMessage(GetDlgItem(hwnd, ID_USEEQFIELDS), BM_SETCHECK, GetInitInt(L"useeqfields", 1), 0L);
             SendMessage(GetDlgItem(hwnd, ID_USEREFFIELDS), BM_SETCHECK, GetInitInt(L"usereffields", 1), 0L);
+            SendMessage(GetDlgItem(hwnd, ID_DEBUGTOFILE), BM_SETCHECK, GetInitInt(L"debugtofile", 0), 0L);
             SendMessage(GetDlgItem(hwnd, ID_WARNINGSINRTF), BM_SETCHECK, GetInitInt(L"warningsinrtf", 0), 0L);
             
             ConvertToSomething(hwnd);
@@ -631,14 +632,6 @@ LRESULT CALLBACK DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                     }
                 break;
 
-                case ID_DEBUGLEVEL:
-                    if(SendMessage(GetDlgItem(hwnd, ID_DEBUGLEVEL), CB_GETCURSEL, 0, 0L) < 2){
-                    SendMessage(GetDlgItem(hwnd, ID_DEBUG_TXT3), WM_SETTEXT, 0, (LPARAM)(LPARAM)GetLngString(hwnd, L"215", L"to the console window", str));}
-                    else {
-                    SendMessage(GetDlgItem(hwnd, ID_DEBUG_TXT3), WM_SETTEXT, 0, (LPARAM)(LPARAM)GetLngString(hwnd, L"216", L"to the file 'latex2rtf.log'", str));}
-                    RedrawWindow(hwnd, NULL, NULL, RDW_INVALIDATE);
-                break;
-                
                 case ID_CONFIG:
                     if(HIWORD(wParam)==EN_CHANGE)
                         ResetLangCombo(hwnd);
@@ -858,11 +851,11 @@ void Run(HWND hwnd)
         getfilename(str);
         lstrcat(out_str, str);
         
-        if(SendMessage(GetDlgItem(hwnd, ID_DEBUGLEVEL), CB_GETCURSEL, 0, 0L)>1)
+        if(SendMessage(GetDlgItem(hwnd, ID_DEBUGTOFILE), BM_GETCHECK, 0, 0L))
         {
             wsprintf(str, L" 2>latex2rtf.log");
             lstrcat(out_str, str);
-        // MessageBox(hwnd, GetLngString(hwnd, L"214", L"The debugging output will be written to the file 'latex2rtf.log'", str), L"LaTeX2RTF", MB_OK);
+        // MessageBox(hwnd, L"The debugging output will be written to the file 'latex2rtf.log'", L"LaTeX2RTF", MB_OK);
         }
         
         lstrcat(out_str, L" & popd & pause");
@@ -961,9 +954,9 @@ void SetTab(HWND hwnd, int tabctrl_item)
     ShowWindow(GetDlgItem(hwnd, ID_LANG_TXT2), show_hide);
     ShowWindow(GetDlgItem(hwnd, ID_DEBUG_GROUP), show_hide);
     ShowWindow(GetDlgItem(hwnd, ID_DEBUG_TXT), show_hide);
-    ShowWindow(GetDlgItem(hwnd, ID_DEBUG_TXT2), show_hide);
-    ShowWindow(GetDlgItem(hwnd, ID_DEBUG_TXT3), show_hide);
     ShowWindow(GetDlgItem(hwnd, ID_DEBUGLEVEL), show_hide);
+    ShowWindow(GetDlgItem(hwnd, ID_DEBUGTOFILE), show_hide);
+    ShowWindow(GetDlgItem(hwnd, ID_DEBUG_TXT2), show_hide);
     ShowWindow(GetDlgItem(hwnd, ID_WARNINGSINRTF), show_hide);
     // "Environment" tab
     if(tabctrl_item==2) show_hide=SW_SHOW; else show_hide=SW_HIDE;
@@ -1108,12 +1101,9 @@ void ChangeTheLanguage(HWND hwnd)
     SendMessage(GetDlgItem(hwnd, ID_LANG_TXT2), WM_SETTEXT, 0, (LPARAM)(LPARAM)GetLngString(hwnd, L"210", L"Codepage:", str));
     SendMessage(GetDlgItem(hwnd, ID_DEBUG_GROUP), WM_SETTEXT, 0, (LPARAM)(LPARAM)GetLngString(hwnd, L"211", L"Debugging", str));
     SendMessage(GetDlgItem(hwnd, ID_DEBUG_TXT), WM_SETTEXT, 0, (LPARAM)(LPARAM)GetLngString(hwnd, L"212", L"Debugging level:", str));
+    SendMessage(GetDlgItem(hwnd, ID_DEBUGTOFILE), WM_SETTEXT, 0, (LPARAM)(LPARAM)GetLngString(hwnd, L"214", L"Write debug output", str));
+    SendMessage(GetDlgItem(hwnd, ID_DEBUG_TXT2), WM_SETTEXT, 0, (LPARAM)(LPARAM)GetLngString(hwnd, L"215", L"to file 'latex2rtf.log'", str));
     SendMessage(GetDlgItem(hwnd, ID_WARNINGSINRTF), WM_SETTEXT, 0, (LPARAM)(LPARAM)GetLngString(hwnd, L"213", L"Include warnings in the RTF", str));
-    SendMessage(GetDlgItem(hwnd, ID_DEBUG_TXT2), WM_SETTEXT, 0, (LPARAM)(LPARAM)GetLngString(hwnd, L"214", L"The debugging output will be written", str));
-    if(SendMessage(GetDlgItem(hwnd, ID_DEBUGLEVEL), CB_GETCURSEL, 0, 0L) < 2){
-    SendMessage(GetDlgItem(hwnd, ID_DEBUG_TXT3), WM_SETTEXT, 0, (LPARAM)(LPARAM)GetLngString(hwnd, L"215", L"to the console window", str));}
-    else {
-    SendMessage(GetDlgItem(hwnd, ID_DEBUG_TXT3), WM_SETTEXT, 0, (LPARAM)(LPARAM)GetLngString(hwnd, L"216", L"to the file 'latex2rtf.log'", str));}
     
     i =SendMessage(GetDlgItem(hwnd, ID_LANG), CB_GETCURSEL, 0, 0);
     SendMessage(GetDlgItem(hwnd, ID_LANG), CB_INSERTSTRING, 0, (LPARAM)GetLngString(hwnd, L"250", L"-not specify-", str));
@@ -1448,7 +1438,7 @@ WCHAR* GetVersionString(WCHAR* str)   //returned value is 'str'
 {
     WCHAR inifile[MAX_PATH];
     
-    lstrcpy(str, L"LaTeX2RTF  +   l2rshell v.0.6.2");
+    lstrcpy(str, L"LaTeX2RTF  +   l2rshell v.0.6.3");
     
     GetModuleFileName(NULL, inifile, MAX_PATH);
     getdir(inifile);
@@ -1586,6 +1576,8 @@ void SaveUserData(HWND hwnd)
     WritePrivateProfileString(L"l2rshell", L"parantheses", str, inifile);
     wsprintf(str, L"%d", SendMessage(GetDlgItem(hwnd, ID_SEMICOLONS), BM_GETCHECK, 0, 0L));
     WritePrivateProfileString(L"l2rshell", L"semicolons", str, inifile);
+    wsprintf(str, L"%d", SendMessage(GetDlgItem(hwnd, ID_DEBUGTOFILE), BM_GETCHECK, 0, 0L));
+    WritePrivateProfileString(L"l2rshell", L"debugtofile", str, inifile);
     wsprintf(str, L"%d", SendMessage(GetDlgItem(hwnd, ID_WARNINGSINRTF), BM_GETCHECK, 0, 0L));
     WritePrivateProfileString(L"l2rshell", L"warningsinrtf", str, inifile);
     wsprintf(str, L"%d", SendMessage(GetDlgItem(hwnd, ID_USEEQFIELDS), BM_GETCHECK, 0, 0L));

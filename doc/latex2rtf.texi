@@ -685,7 +685,9 @@ conversion of koi8-r, koi8-u, cp1251, cp855, cp866, maccyr, and macukr encodings
 The @option{-d} option determines the amount of debugging information to send to
 stderr while translating. debug_level=0 means only Errors, `1' Warning Messages
 (default) also.  The debug_level can go as high as `7' for insane amounts of 
-debugging fun.
+debugging fun. Warnings and error messages are output to stderr and by default 
+listed in the console window. They can be redirected to a file ``latex2rtf.log'' 
+by appending @code{2>latex2rtf.log} to the command line.
 
 @item -D dots_per_inch
 used to specify the number of dots per inch for equations converted to bitmaps.  
@@ -865,11 +867,12 @@ is useful for files that are not cleanly converted by @ltor{}.
 With no arguments other than switches starting with a ``-'', 
 @ltor{}acts as a filter, i.e., it reads from @code{stdin} and writes 
 to @code{stdout}.
-In addition, diagnostic messages are sent to @code{stderr} or 
-(DOS and Windows versions) also to @code{stdout}. If these standard
-channels are not redirected using @code{<} and @code{>}, then the
-input is read from the command line, and both output and error
-messages are printed on the screen.
+In addition, diagnostic messages are sent to @code{stderr}. 
+If these standard channels are not redirected using @code{<} 
+and @code{>}, then the input is read from the command line, 
+and both output and error messages are printed on the screen.
+To redirect warnings and error messages to a file 
+``latex2rtf.log'', append @code{2>latex2rtf.log} to the command line.
 
 If a non-switch argument is present, @ltor{}assumes it is the name of
 the input file. The file must have extension ``.tex'' but the extension
@@ -882,7 +885,9 @@ by removing the extension ``.tex'' and adding ``.rtf''.
 With the @option{-d} option you can specify how much processing information
 @ltor{}reports.
 If there is a logfile specified the output goes to this file. Nonetheless
-Warnings and Errors are logged to stderr always.
+Warnings and Errors are logged to stderr always. They can be redirected 
+to a file ``latex2rtf.log'' by appending @code{2>latex2rtf.log} 
+to the command line.
 
 Possible values of @option{-d} are
 @enumerate 0
@@ -1476,7 +1481,9 @@ As stated in the Debugging section, @ltor{}provides a means to control
 the amount of debugging information through the @option{-d#} switch.  
 By using a debugging level of 4, you can get a pretty good idea of what
 @latex{}command caused the problem and what line that command might be
-found on.  
+found on. Warnings and error messages are output to stderr and by default 
+listed in the console window. They can be redirected to a file 
+``latex2rtf.log'' by appending @code{2>latex2rtf.log} to the command line.
 
 @table @samp
 @item Fatal error messages

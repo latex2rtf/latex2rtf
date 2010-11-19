@@ -1,14 +1,7 @@
 Note: l2rshell is compiled with http://www.bloodshed.net/devcpp.html
 
-0.6.2 (2010-11-18)
-1) if debug level >1 then write debug output to file latex2rtf.log
-   and show this in the dialogue window 
- 
---------------------------------------------------------------------------------------------
-
-0.6.1 (2010-11-17)
-1) if debug level >1 then write debug output to file latex2rtf.log
-   and announce this in an informational message box
+0.6.3 (2010-11-19)
+1) added checkbox to choose writing debug output to file
  
 --------------------------------------------------------------------------------------------
 
