@@ -1,7 +1,8 @@
 Note: l2rshell is compiled with http://www.bloodshed.net/devcpp.html
 
 0.6.3 (2010-11-19)
-1) added checkbox to choose writing debug output to file
+1) added a checkbox to choose writing debug output to file
+   and an input field for specifying the filename for debug output
  
 --------------------------------------------------------------------------------------------
 

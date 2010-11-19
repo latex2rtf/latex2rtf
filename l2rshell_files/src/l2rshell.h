@@ -83,7 +83,7 @@
 #define ID_DEBUGLEVEL                       1102
 #define ID_WARNINGSINRTF                    1103
 #define ID_DEBUGTOFILE                      1104
-#define ID_DEBUG_TXT2                       1105
+#define ID_DEBUGFILENAME                    1105
 
 #define ID_PATHS_GROUP                      1110
 #define ID_CONFIG_TEXT                      1111
