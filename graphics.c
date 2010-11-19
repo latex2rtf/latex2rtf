@@ -1799,7 +1799,9 @@ static char *exists_with_extension(char *s, char *ext)
     char *x, *newpath;
     char sep[] = { '/', '\0' };        
     int  i;
-    
+            diagnostics(1,"trying graphics file '%s' and extension '%s'",s,ext);
+            diagnostics(1,"nGraphicsPathElems %d",nGraphicsPathElems);
+
     /* if no graphics path or a name is fully specified then try the plain file only
        (even in Windows, LaTeX uses the forward slash as path separator) */
     if (nGraphicsPathElems == 0 || strchr(s,'/'))
@@ -1807,7 +1809,9 @@ static char *exists_with_extension(char *s, char *ext)
     
     /* else try the different directories in the graphics path */
     for (i=0; i<nGraphicsPathElems; i++) {
+        diagnostics(1,"trying path '%s'",graphicsPath[i]);
         newpath = strdup_together3(graphicsPath[i],sep,s);
+        diagnostics(1,"trying path '%s' and extension '%s'",newpath,ext);
         x = try_file_extension(newpath,ext);
         safe_free(newpath);
         if (x) return x;
@@ -1836,14 +1840,16 @@ static int has_extension(char *s, char *ext)
 static char *append_graphic_extension(char *s)
 {
     GraphConvertArray *thisFormat;
-    for (thisFormat = GraphConvertTable; thisFormat->extension != NULL; thisFormat++) {
+	diagnostics(1,"appending graphics extension '%s'",s);
+	
+/*    for (thisFormat = GraphConvertTable; thisFormat->extension != NULL; thisFormat++) {
         if (has_extension(s,thisFormat->extension))
             return strdup(s);
     }
+*/    
     for (thisFormat = GraphConvertTable; thisFormat->extension != NULL; thisFormat++) {
         char *t = exists_with_extension(s,thisFormat->extension);
-        if (NULL != t)
-            return t;
+        if (t) return t;
     }
     return strdup(s);
 }
@@ -2091,7 +2097,7 @@ void CmdGraphics(int code)
 
         for (thisFormat = GraphConvertTable; thisFormat->extension != NULL; thisFormat++) {
             if (has_extension(fullpathname,thisFormat->extension)) {
-                diagnostics(2,"selected encoder for '%s'",fullpathname);
+                diagnostics(1,"selected encoder for '%s'",fullpathname);
                 thisFormat->encoder(fullpathname, height, width, scale, baseline, TRUE);
                 break;
             }
