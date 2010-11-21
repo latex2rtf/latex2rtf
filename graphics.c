@@ -193,7 +193,7 @@ static void appendGraphicsPath (char *newPath)
     graphicsPath = (char **) ptr;
     
     /* path must end with a '/' */
-    if (*(newPath+strlen(newPath)) == '/')
+    if (*(newPath+strlen(newPath)-1) == '/')
     	add = strdup(newPath);
     else
     	add = strdup_together(newPath,"/");
