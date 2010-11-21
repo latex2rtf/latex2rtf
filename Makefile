@@ -6,7 +6,7 @@ RMDIR?=rm -rf
 PKGMANDIR?=man
 
 #reasonable default set of compiler flags
-CFLAGS?=-g -Wall -Wno-write-strings
+CFLAGS?= -Wall -pedantic
 
 PLATFORM?=-DUNIX   # Mac OS X, Linux, BSD
 #PLATFORM?=-DMSDOS # Windows/DOS

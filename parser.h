@@ -48,13 +48,13 @@ int     CurrentFileDescriptor(void);
 int     getParserDepth(void);
 int     getSlashSlashParam(void);
 
-static void inline ignoreBraceParam() {
+inline static void ignoreBraceParam() {
     char *p = getBraceParam();
     if (NULL != p)
     free(p);
 }
 
-static void inline ignoreBracketParam() {
+inline static void  ignoreBracketParam() {
     char *p = getBracketParam();
     if (NULL != p)
     free(p);
