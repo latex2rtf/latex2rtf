@@ -207,7 +207,7 @@ void CmdGraphicsPath(int code)
     if (directories != NULL) {
         char *candidate=strtok(directories,"{}");
         while (NULL != candidate) {
-            appendGraphicsPath(strdup(candidate));
+            appendGraphicsPath(candidate);
             candidate = strtok(NULL,"{}");
         }
     }
