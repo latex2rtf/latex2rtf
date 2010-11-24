@@ -281,8 +281,7 @@ purpose: converts inputfile and writes result to outputfile
                     diagnostics(4,"tabbing to match '&'");
                     fprintRTF("\\tab\n");
                 }
-                g_equation_column++;
-               
+                g_equation_column++;               
                 break;
 
             case '~':

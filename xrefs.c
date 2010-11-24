@@ -511,7 +511,7 @@ void CmdBibliography(int code)
         diagnostics(2, "CmdBibliography ... begin Convert()");
         Convert();
         diagnostics(2, "CmdBibliography ... done Convert()");
-        PopSource();
+   /*     PopSource();*/
     } else
         diagnostics(WARNING, "Cannot open bibliography file.  Create %s using BibTeX", g_bbl_name);
 
