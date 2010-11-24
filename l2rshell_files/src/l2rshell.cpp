@@ -313,6 +313,7 @@ LRESULT CALLBACK DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             SendMessage(GetDlgItem(hwnd, ID_USEEQFIELDS), BM_SETCHECK, GetInitInt(L"useeqfields", 1), 0L);
             SendMessage(GetDlgItem(hwnd, ID_USEREFFIELDS), BM_SETCHECK, GetInitInt(L"usereffields", 1), 0L);
             SendMessage(GetDlgItem(hwnd, ID_DEBUGTOFILE), BM_SETCHECK, GetInitInt(L"debugtofile", 0), 0L);
+            SendMessage(GetDlgItem(hwnd, ID_DEBUGFILENAME), EM_SETREADONLY, 1-SendMessage(GetDlgItem(hwnd, ID_DEBUGTOFILE), BM_GETCHECK, 0, 0L), 0L);
             SendMessage(GetDlgItem(hwnd, ID_WARNINGSINRTF), BM_SETCHECK, GetInitInt(L"warningsinrtf", 0), 0L);
             
             ConvertToSomething(hwnd);
@@ -463,7 +464,11 @@ LRESULT CALLBACK DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                         SetDlgItemText(hwnd, ID_TMPDIRNAME, str);
                     }
                 break;
-                
+
+                case ID_DEBUGTOFILE:
+                    SendMessage(GetDlgItem(hwnd, ID_DEBUGFILENAME), EM_SETREADONLY, 1-SendMessage(GetDlgItem(hwnd, ID_DEBUGTOFILE), BM_GETCHECK, 0, 0L), 0L);
+                break;
+
                 case ID_DEBUGFILENAME:
                     if(HIWORD(wParam)==EN_CHANGE)
                     {

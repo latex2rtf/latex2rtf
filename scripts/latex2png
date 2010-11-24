@@ -24,8 +24,12 @@ DVIPS="dvips -q -l 1 -E -R"
 LATEX="latex --interaction batchmode"
 CONVERT="convert"
 GREP="grep"
-TEXINPSEP=":"
-VERSION="1.7"
+# !!!!!!!!!!!!!!!! Note !!!!!!!!!!!!!!
+# Under MS Windows, although this script runs under bash shell,
+# LaTeX is run in the Windows environment and thus needs the ";" as separator.
+TEXINPSEP=":" #Unix
+#TEXINPSEP=";"  #MS Windows
+VERSION="1.8"
 
 help()
 {
@@ -62,7 +66,7 @@ exit 0
 }
 
 opt_d=300       # default to 300 dpi
-opt_o=5		    # default for 300 dpi
+opt_o=5	        # default for 300 dpi
 opt_k=0         # default to killing intermediate files
 home_dir="."    # default to current directory
 ext="tex"       # default to latex input
