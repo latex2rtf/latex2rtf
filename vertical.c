@@ -302,6 +302,11 @@ void startParagraph(const char *style, int indenting)
             break;
     }
     
+    if (g_processing_preamble) {
+        diagnostics(5,"Encountered StartParagraph() in preamble");    
+        return;
+    }
+    
     if (g_par_brace != 0)
         diagnostics(5,"starting paragraph with braces = %d", g_par_brace);      
     g_par_brace++;
