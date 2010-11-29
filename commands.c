@@ -356,6 +356,7 @@ static CommandArray commands[] = {
     {"nobreakspace", CmdNonBreakSpace, 100},
     {"thinspace", CmdNonBreakSpace, 50},
     {"abstract", CmdAbstract, ABSTRACT_SIMPLE},
+    {"keywords", CmdKeywords, 0},
     {"endinput", CmdEndInput, 0},
     {"color", CmdTextColor, 0},
     {"textcolor", CmdTextColor, 1},
@@ -477,13 +478,14 @@ static CommandArray PreambleCommands[] = {
     {"date", CmdTitle, TITLE_DATE},
     {"affiliation", CmdTitle, TITLE_AFFILIATION},
     {"abstract", CmdTitle, TITLE_ABSTRACT},
+    {"keywords", CmdKeywords, 0},
     {"acknowledgements", CmdTitle, TITLE_ACKNOWLEDGE},
     {"bibliographystyle", CmdBibliographyStyle, 0},
     {"bibstyle", CmdBibStyle, 0},
     {"extrasfrench", CmdIgnoreParameter, No_Opt_One_NormParam},
     {"AtEndDocument", CmdIgnoreParameter, No_Opt_One_NormParam},
     {"docnumber", CmdIgnoreParameter, No_Opt_One_NormParam},
-    { "graphicspath",  CmdGraphicsPath, 0 },
+    {"graphicspath",  CmdGraphicsPath, 0 },
     {"", NULL, 0}
 };                              /* end of list */
 

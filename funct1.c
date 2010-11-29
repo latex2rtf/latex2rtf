@@ -179,6 +179,7 @@ void CmdNewEnvironment(int code)
 
 }
 
+
 void CmdNewTheorem(int code)
 {
     char *name, *caption, *numbered_like, *within;
@@ -1772,6 +1773,28 @@ void CmdAbstract(int code)
         setRightMarginIndent(getRightMarginIndent() - 1024);
         setAlignment(oldalignment);
         CmdVspace(VSPACE_MEDIUM_SKIP);  /* put \medskip after abstract */
+    }
+}
+
+/*
+ * Keywords
+ */
+void CmdKeywords(int code)
+{
+    char *keywords = getBraceParam();
+    if (NULL != keywords) {
+	CmdEndParagraph(0);
+	CmdVspace(VSPACE_SMALL_SKIP);
+	startParagraph("Normal", FIRST_PARAGRAPH);
+	fprintRTF("{{\\b ");
+	ConvertBabelName("KEYWORDS");
+	fprintRTF("}\\tab\n");
+	fprintRTF(keywords);
+	fprintRTF("\n}\n");
+	CmdEndParagraph(0);
+	CmdVspace(VSPACE_SMALL_SKIP);
+
+	free(keywords);
     }
 }
 

@@ -160,6 +160,7 @@ void CmdColumn(int code);
 void GetInputParam(char *, int);
 void CmdBottom(int code);
 void CmdAbstract(int code);
+void CmdKeywords(int code);
 void CmdAcknowledgments(int code);
 void CmdTitlepage(int code);
 void CmdAnnotation(int code);
@@ -189,3 +190,5 @@ int  TryConditionSet(char *command);
 void CmdAppendix(int code);
 void CmdAcronymItem(int code);
 void CmdLap(int code);
+
+
