@@ -62,7 +62,7 @@ void CmdHeader(int code);
 char *roman_item(int n, int upper);
 
 static int g_chapter_numbering = ARABIC_NUMBERING;
-static int g_appendix;
+static int g_appendix = 0;
 
 int g_processing_list_environment = FALSE;
 
@@ -347,10 +347,7 @@ static char *FormatNumber(int formatting, int n)
 
 static char *FormatSection(void) 
 {
-    if (g_appendix)
-        return FormatNumber(ALPHA_NUMBERING, getCounter("section"));
-    else
-        return FormatNumber(ARABIC_NUMBERING, getCounter("section"));
+    return FormatNumber(ARABIC_NUMBERING, getCounter("section"));
 }
 
 static char *FormatChapter(void) 
@@ -446,7 +443,7 @@ void CmdAppendix(int code)
  ******************************************************************************/
 {
     g_chapter_numbering = ALPHA_NUMBERING;
-    g_appendix=0;
+    g_appendix=1;
     setCounter("chapter",0);
 }
 
@@ -497,7 +494,10 @@ parameter: code: type of section-recursion-level
             unit_label = NULL;
             if (getCounter("chapter") > 0) CmdNewPage(NewPage);
             startParagraph("chapter0", SECTION_TITLE_PARAGRAPH);
-            chapter_name=GetBabelName("CHAPTERNAME");
+            if (g_appendix)
+            	chapter_name=GetBabelName("APPENDIXNAME");
+            else
+            	chapter_name=GetBabelName("CHAPTERNAME");
             ConvertString(chapter_name);
             if (code == SECT_CHAPTER && getCounter("secnumdepth") >= -1) {
                 incrementCounter("chapter");
