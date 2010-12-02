@@ -62,6 +62,7 @@ void CmdHeader(int code);
 char *roman_item(int n, int upper);
 
 static int g_chapter_numbering = ARABIC_NUMBERING;
+static int g_section_numbering = ARABIC_NUMBERING;
 static int g_appendix = 0;
 
 int g_processing_list_environment = FALSE;
@@ -347,7 +348,7 @@ static char *FormatNumber(int formatting, int n)
 
 static char *FormatSection(void) 
 {
-    return FormatNumber(ARABIC_NUMBERING, getCounter("section"));
+    return FormatNumber(g_section_numbering, getCounter("section"));
 }
 
 static char *FormatChapter(void) 
@@ -443,8 +444,11 @@ void CmdAppendix(int code)
  ******************************************************************************/
 {
     g_chapter_numbering = ALPHA_NUMBERING;
+    if (g_document_type == FORMAT_ARTICLE)
+    	g_section_numbering = ALPHA_NUMBERING;
     g_appendix=1;
     setCounter("chapter",0);
+    setCounter("section", 0);
 }
 
 void CmdSection(int code)
