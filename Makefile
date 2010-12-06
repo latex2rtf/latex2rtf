@@ -6,7 +6,7 @@ RMDIR?=rm -rf
 PKGMANDIR?=man
 
 #reasonable default set of compiler flags
-CFLAGS?= -Wall -pedantic
+CFLAGS?=-g -Wall -Wno-write-strings
 
 PLATFORM?=-DUNIX   # Mac OS X, Linux, BSD
 #PLATFORM?=-DMSDOS # Windows/DOS
@@ -16,27 +16,22 @@ PLATFORM?=-DUNIX   # Mac OS X, Linux, BSD
 #Uncomment for some windows machines (neither needed for djgpp nor for MinGW)
 #EXE_SUFFIX=.exe
 
-#Uncomment next line for DOS/Windows
-#PREFIX_DRIVE=C:
-
 #Base directory - adapt as needed
 # Unix:
-PREFIX?=/usr/local
-# Windows:
-#PREFIX?="/Program Files/latex2rtf"
+PREFIX?=/opt/local
+#Uncomment next line for DOS/Windows
+#PREFIX_DRIVE=C:
+#PREFIX?=$(PREFIX_DRIVE)/PROGRA~1/latex2rtf
 
 #Name of executable binary --- beware of 8.3 restriction under DOS
 BINARY_NAME=latex2rtf$(EXE_SUFFIX)
 
 # Location of binary, man, info, and support files - adapt as needed
-#
-# DESTDIR is set by debian/rules
-#
-BIN_INSTALL=$(PREFIX_DRIVE)$(DESTDIR)$(PREFIX)/bin
-MAN_INSTALL=$(PREFIX_DRIVE)$(DESTDIR)$(PREFIX)/$(PKGMANDIR)/man1
-INFO_INSTALL=$(PREFIX_DRIVE)$(DESTDIR)$(PREFIX)/info
-SUPPORT_INSTALL=$(PREFIX_DRIVE)$(DESTDIR)$(PREFIX)/share/latex2rtf
-CFG_INSTALL=$(PREFIX_DRIVE)$(DESTDIR)$(PREFIX)/share/latex2rtf/cfg
+BIN_INSTALL=$(PREFIX)/bin
+MAN_INSTALL=$(PREFIX)/$(PKGMANDIR)/man1
+INFO_INSTALL=$(PREFIX)/info
+SUPPORT_INSTALL=$(PREFIX)/share/latex2rtf
+CFG_INSTALL=$(PREFIX)/share/latex2rtf/cfg
 
 # Nothing to change below this line
 
@@ -66,8 +61,8 @@ CFGS=cfg/fonts.cfg cfg/direct.cfg cfg/ignore.cfg cfg/style.cfg \
     cfg/latin.cfg cfg/lsorbian.cfg cfg/magyar.cfg cfg/norsk.cfg cfg/nynorsk.cfg \
     cfg/polish.cfg cfg/portuges.cfg cfg/romanian.cfg cfg/samin.cfg cfg/scottish.cfg \
     cfg/serbian.cfg cfg/slovak.cfg cfg/slovene.cfg cfg/spanish.cfg cfg/swedish.cfg \
-    cfg/turkish.cfg cfg/usorbian.cfg cfg/welsh.cfg cfg/russian.cfg cfg/ukrainian.cfg \
-    cfg/frenchb.cfg cfg/greek.cfg cfg/british.cfg
+    cfg/turkish.cfg cfg/usorbian.cfg cfg/welsh.cfg cfg/russian.cfg \
+    cfg/ukrainian.cfg
 
 DOCS= doc/latex2rtf.1   doc/latex2png.1    doc/latex2rtf.texi doc/latex2rtf.pdf \
       doc/latex2rtf.txt doc/latex2rtf.info doc/latex2rtf.html doc/credits \
@@ -96,10 +91,10 @@ TEST=  \
 	test/bib_apacite_dblsp.tex   test/enc_latin5.tex     test/german.tex        \
 	test/bib_apalike.tex         test/enc_latin9.tex     test/head_article.tex  \
 	test/bib_apalike2.tex        test/enc_maccyr.tex     test/head_book.tex     \
-	test/bib_apanat.tex          test/head_report.tex    test/hndout.sty        \
-	test/bib_authordate.tex      test/enc_next.tex       test/ifclause.tex      \
-	test/bib_harvard.bib         test/enc_utf8x.tex      test/include.tex       \
-	test/bib_harvard.tex         test/endnote.tex        test/inc_test.tex      \
+	test/bib_apanat.tex          test/head_report.tex                           \
+	test/bib_authordate.tex      test/enc_next.tex       test/hndout.sty        \
+	test/bib_harvard.bib         test/enc_utf8x.tex      test/ifclause.tex      \
+	test/bib_harvard.tex         test/endnote.tex        test/include.tex       \
 	test/bib_natbib1.tex         test/eqnnumber.tex      test/include1.tex      \
 	test/bib_natbib2.tex         test/eqnnumber2.tex     test/include2.tex      \
 	test/bib_natbib3.tex         test/eqns-koi8.tex      test/include3.tex      \
@@ -204,17 +199,17 @@ doc: doc/latex2rtf.texi doc/Makefile
 
 install: latex2rtf doc/latex2rtf.1 $(CFGS) scripts/latex2png
 	cd doc && $(MAKE)
-	$(MKDIR) $(BIN_INSTALL)
-	$(MKDIR) $(MAN_INSTALL)
-	$(MKDIR) $(CFG_INSTALL)
-	cp $(BINARY_NAME)     $(BIN_INSTALL)
-	cp scripts/latex2png  $(BIN_INSTALL)
-	cp doc/latex2rtf.1    $(MAN_INSTALL)
-	cp doc/latex2png.1    $(MAN_INSTALL)
-	cp $(CFGS)            $(CFG_INSTALL)
-	cp doc/latex2rtf.html $(SUPPORT_INSTALL)
-	cp doc/latex2rtf.pdf  $(SUPPORT_INSTALL)
-	cp doc/latex2rtf.txt  $(SUPPORT_INSTALL)
+	$(MKDIR) $(DESTDIR)$(BIN_INSTALL)
+	$(MKDIR) $(DESTDIR)$(MAN_INSTALL)
+	$(MKDIR) $(DESTDIR)$(CFG_INSTALL)
+	cp $(BINARY_NAME)     $(DESTDIR)$(BIN_INSTALL)
+	cp scripts/latex2png  $(DESTDIR)$(BIN_INSTALL)
+	cp doc/latex2rtf.1    $(DESTDIR)$(MAN_INSTALL)
+	cp doc/latex2png.1    $(DESTDIR)$(MAN_INSTALL)
+	cp $(CFGS)            $(DESTDIR)$(CFG_INSTALL)
+	cp doc/latex2rtf.html $(DESTDIR)$(SUPPORT_INSTALL)
+	cp doc/latex2rtf.pdf  $(DESTDIR)$(SUPPORT_INSTALL)
+	cp doc/latex2rtf.txt  $(DESTDIR)$(SUPPORT_INSTALL)
 	@echo "******************************************************************"
 	@echo "*** latex2rtf successfully installed as \"$(BINARY_NAME)\""
 	@echo "*** in directory \"$(BIN_INSTALL)\""
@@ -231,9 +226,9 @@ install: latex2rtf doc/latex2rtf.1 $(CFGS) scripts/latex2png
 	@echo "******************************************************************"
 
 install-info: doc/latex2rtf.info
-	$(MKDIR) $(INFO_INSTALL)
-	cp doc/latex2rtf.info $(INFO_INSTALL)
-	install-info --info-dir=$(INFO_INSTALL) doc/latex2rtf.info
+	$(MKDIR) $(DESTDIR)$(INFO_INSTALL)
+	cp doc/latex2rtf.info $(DESTDIR)$(INFO_INSTALL)
+	install-info --info-dir=$(DESTDIR)$(INFO_INSTALL) doc/latex2rtf.info
 
 realclean: checkdir clean
 	$(RM) makefile.depend $(L2R_VERSION).tar.gz
