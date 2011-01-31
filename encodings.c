@@ -289,8 +289,8 @@ void WriteEightBitChar(unsigned char cThis, FILE *f)
 
     if (CurrentFontEncoding() == ENCODING_RAW)
         fprintRTF("\\'%2X", (unsigned char) cThis);
-    else if (CurrentFontEncoding() == ENCODING_1251)
-        CmdUnicodeChar(eightbit_index+128);
+/*    else if (CurrentFontEncoding() == ENCODING_1251) */ /* disabled 2011-01-29 */
+/*        CmdUnicodeChar(eightbit_index+128);  */         /* disabled 2011-01-29 */
     else if (CurrentFontEncoding() == ENCODING_1251)
         CmdUnicodeChar(cp1251Unicode[eightbit_index]);
     else if (CurrentFontEncoding() == ENCODING_APPLE)
