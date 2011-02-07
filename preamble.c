@@ -135,7 +135,7 @@ void setPackageInputenc(char *option)
     else if (strstr(option, "decmulti"))
         CmdFontEncoding(ENCODING_DEC);
     else if (strstr(option, "latin1"))
-        CmdFontEncoding(ENCODING_1251);
+        CmdFontEncoding(ENCODING_1252);
     else if (strstr(option, "latin2"))
         CmdFontEncoding(ENCODING_LATIN_2);
     else if (strstr(option, "latin3"))

@@ -285,12 +285,10 @@ void WriteEightBitChar(unsigned char cThis, FILE *f)
     }
 
     eightbit_index = cThis - 128;
-    diagnostics(6, "WriteEightBitChar char=%d index=%d encoding=%d", (unsigned int) cThis, eightbit_index, CurrentFontEncoding());
+    diagnostics(6, "  WriteEightBitChar '%c' char=%3d index=%d encoding=%2d", cThis, (unsigned int) cThis, eightbit_index, CurrentFontEncoding());
 
     if (CurrentFontEncoding() == ENCODING_RAW)
         fprintRTF("\\'%2X", (unsigned char) cThis);
-/*    else if (CurrentFontEncoding() == ENCODING_1251) */ /* disabled 2011-01-29 */
-/*        CmdUnicodeChar(eightbit_index+128);  */         /* disabled 2011-01-29 */
     else if (CurrentFontEncoding() == ENCODING_1251)
         CmdUnicodeChar(cp1251Unicode[eightbit_index]);
     else if (CurrentFontEncoding() == ENCODING_APPLE)
