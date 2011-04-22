@@ -49,6 +49,7 @@ typedef struct InputStackType {
 } InputStackType;
 
 #define PARSER_SOURCE_MAX 100
+#define SCAN_BUFFER_SIZE   5000
 
 static InputStackType g_parser_stack[PARSER_SOURCE_MAX];
 
@@ -670,13 +671,13 @@ char *getDelimitedText(char left, char right, int raw)
           
  ******************************************************************************/
 {
-    char buffer[5000];
+    char buffer[SCAN_BUFFER_SIZE];
     int size = -1;
     int lefts_needed = 1;
     int brace_level = 0;
     int last_char_was_backslash = FALSE;
 
-    while (lefts_needed && size < 4999) {
+    while (lefts_needed && size < SCAN_BUFFER_SIZE-1) {
         size++;
         buffer[size] = (raw) ? getRawTexChar() : getTexChar();
 
@@ -700,8 +701,10 @@ char *getDelimitedText(char left, char right, int raw)
     }
 
     buffer[size] = '\0';        /* overwrite final delimeter */
-    if (size == 4999)
-        diagnostics(ERROR, "Misplaced '%c' (Not found within 5000 chars)");
+    if (size == SCAN_BUFFER_SIZE-1) {
+        diagnostics(WARNING, "Could not find closing '%c' in %d chars", right, SCAN_BUFFER_SIZE);
+        return strdup(" NOT FOUND ");
+    }
 
     return strdup(buffer);
 }
