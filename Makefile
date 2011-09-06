@@ -27,11 +27,11 @@ DESTDIR?=/opt/local
 BINARY_NAME=latex2rtf$(EXE_SUFFIX)
 
 # Location of binary, man, info, and support files - adapt as needed
-BIN_INSTALL=$(DESTDIR)/bin
-MAN_INSTALL=$(DESTDIR)/$(PKGMANDIR)/man1
-INFO_INSTALL=$(DESTDIR)/info
-SUPPORT_INSTALL=$(DESTDIR)/share/latex2rtf
-CFG_INSTALL=$(DESTDIR)/share/latex2rtf/cfg
+BINDIR=/bin
+MANDIR=/$(PKGMANDIR)/man1
+INFODIR=/info
+SUPPORTDIR=/share/latex2rtf
+CFGDIR=/share/latex2rtf/cfg
 
 # Nothing to change below this line
 
@@ -141,10 +141,10 @@ latex2rtf: $(OBJS) $(HDRS)
 	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJS)	$(LIBS) -o $(BINARY_NAME)
 
 cfg.o: Makefile cfg.c
-	$(CC) $(CFLAGS) -DCFGDIR=\"$(CFG_INSTALL)\" -c cfg.c -o cfg.o
+	$(CC) $(CFLAGS) -DCFGDIR=\"$(DESTDIR)$(CFGDIR)\" -c cfg.c -o cfg.o
 
 main.o: Makefile main.c
-	$(CC) $(CFLAGS) -DCFGDIR=\"$(CFG_INSTALL)\" -c main.c -o main.o
+	$(CC) $(CFLAGS) -DCFGDIR=\"$(DESTDIR)$(CFGDIR)\" -c main.c -o main.o
 
 check test: latex2rtf
 	cd test && $(MAKE) clean
@@ -199,25 +199,25 @@ doc: doc/latex2rtf.texi doc/Makefile
 
 install: latex2rtf doc/latex2rtf.1 $(CFGS) scripts/latex2png
 	cd doc && $(MAKE)
-	$(MKDIR) $(DESTDIR)$(BIN_INSTALL)
-	$(MKDIR) $(DESTDIR)$(MAN_INSTALL)
-	$(MKDIR) $(DESTDIR)$(CFG_INSTALL)
-	cp $(BINARY_NAME)     $(DESTDIR)$(BIN_INSTALL)
-	cp scripts/latex2png  $(DESTDIR)$(BIN_INSTALL)
-	cp doc/latex2rtf.1    $(DESTDIR)$(MAN_INSTALL)
-	cp doc/latex2png.1    $(DESTDIR)$(MAN_INSTALL)
-	cp $(CFGS)            $(DESTDIR)$(CFG_INSTALL)
-	cp doc/latex2rtf.html $(DESTDIR)$(SUPPORT_INSTALL)
-	cp doc/latex2rtf.pdf  $(DESTDIR)$(SUPPORT_INSTALL)
-	cp doc/latex2rtf.txt  $(DESTDIR)$(SUPPORT_INSTALL)
+	$(MKDIR) $(DESTDIR)$(BINDIR)
+	$(MKDIR) $(DESTDIR)$(MANDIR)
+	$(MKDIR) $(DESTDIR)$(CFGDIR)
+	cp $(BINARY_NAME)     $(DESTDIR)$(BINDIR)
+	cp scripts/latex2png  $(DESTDIR)$(BINDIR)
+	cp doc/latex2rtf.1    $(DESTDIR)$(MANDIR)
+	cp doc/latex2png.1    $(DESTDIR)$(MANDIR)
+	cp $(CFGS)            $(DESTDIR)$(CFGDIR)
+	cp doc/latex2rtf.html $(DESTDIR)$(SUPPORTDIR)
+	cp doc/latex2rtf.pdf  $(DESTDIR)$(SUPPORTDIR)
+	cp doc/latex2rtf.txt  $(DESTDIR)$(SUPPORTDIR)
 	@echo "******************************************************************"
 	@echo "*** latex2rtf successfully installed as \"$(BINARY_NAME)\""
-	@echo "*** in directory \"$(BIN_INSTALL)\""
+	@echo "*** in directory \"$(DESTDIR)$(BINDIR)\""
 	@echo "***"
 	@echo "*** \"make install-info\" will install TeXInfo files "
 	@echo "***"
 	@echo "*** latex2rtf was compiled to search for its configuration files in"
-	@echo "***           \"$(CFG_INSTALL)\" "
+	@echo "***           \"$(DESTDIR)$(CFGDIR)\" "
 	@echo "***"
 	@echo "*** If the configuration files are moved then either"
 	@echo "***   1) set the environment variable RTFPATH to this new location, or"
@@ -226,9 +226,9 @@ install: latex2rtf doc/latex2rtf.1 $(CFGS) scripts/latex2png
 	@echo "******************************************************************"
 
 install-info: doc/latex2rtf.info
-	$(MKDIR) $(DESTDIR)$(INFO_INSTALL)
-	cp doc/latex2rtf.info $(DESTDIR)$(INFO_INSTALL)
-	install-info --info-dir=$(DESTDIR)$(INFO_INSTALL) doc/latex2rtf.info
+	$(MKDIR) $(DESTDIR)$(INFODIR)
+	cp doc/latex2rtf.info $(DESTDIR)$(INFODIR)
+	install-info --info-dir=$(DESTDIR)$(INFODIR) doc/latex2rtf.info
 
 realclean: checkdir clean
 	$(RM) makefile.depend $(L2R_VERSION).tar.gz
