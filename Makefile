@@ -18,7 +18,7 @@ PLATFORM?=-DUNIX   # Mac OS X, Linux, BSD
 
 #Base directory - adapt as needed
 # Unix:
-DESTDIR?=/opt/local
+DESTDIR?=/usr/local
 #Uncomment next line for DOS/Windows
 #DESTDIR_DRIVE=C:
 #DESTDIR?=$(DESTDIR_DRIVE)/PROGRA~1/latex2rtf
