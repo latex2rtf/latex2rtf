@@ -19,7 +19,7 @@ PLATFORM?=-DUNIX   # Mac OS X, Linux, BSD
 #Base directory - adapt as needed
 # Unix:
 DESTDIR?=/usr/local
-#Uncomment next line for DOS/Windows
+#Uncomment next 2 lines for Windows
 #DESTDIR_DRIVE=C:
 #DESTDIR?=$(DESTDIR_DRIVE)/PROGRA~1/latex2rtf
 
@@ -33,7 +33,15 @@ INFODIR=/info
 SUPPORTDIR=/share/latex2rtf
 CFGDIR=/share/latex2rtf/cfg
 
-# Nothing to change below this line
+#Uncomment next 5 lines for Windows
+#BINDIR=
+#MANDIR=
+#INFODIR=
+#SUPPORTDIR=
+#CFGDIR=/cfg
+
+# Nothing to change below this line - except:
+# for Windows, change "all : checkdir latex2rtf" to "all : latex2rtf"
 
 CFLAGS:=$(CFLAGS) $(PLATFORM)
 
@@ -135,7 +143,7 @@ OBJS=fonts.o direct.o encodings.o commands.o stack.o funct1.o tables.o \
 	mygetopt.o styles.o preparse.o vertical.o fields.o \
 	labels.o biblio.o auxfile.o	acronyms.o
 
-all : checkdir latex2rtf
+all : checkdir latex2rtf    # Windows: remove "checkdir"
 
 latex2rtf: $(OBJS) $(HDRS)
 	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJS)	$(LIBS) -o $(BINARY_NAME)
