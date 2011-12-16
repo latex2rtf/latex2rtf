@@ -79,7 +79,7 @@ char TexModeName[7][25] = { "bad", "internal vertical", "horizontal",
     "restricted horizontal", "math", "displaymath", "vertical"
 };
 
-char ParOptionName[4][10] = { "bad", "FIRST", "GENERIC", "SECTION"};
+char ParOptionName[6][12] = { "bad", "FIRST", "GENERIC", "SECTION", "EQUATION", "SLASHSLASH"};
 
 /******************************************************************************
      left and right margin accessor functions
@@ -249,7 +249,8 @@ void startParagraph(const char *style, int indenting)
     /* special style "last" will just repeat previous */
     if (strcmp(style,"last")==0) {
         diagnostics(4,"using last style = '%s'",last_style);
-        indenting = last_indent;
+        if (indenting != SLASHSLASH_PARAGRAPH)
+        	indenting = last_indent;
         strcpy(the_style,last_style);
     } else {
         diagnostics(4,"using style = '%s'",style);
@@ -292,6 +293,11 @@ void startParagraph(const char *style, int indenting)
             parindent = 0;
             break;
             
+        case SLASHSLASH_PARAGRAPH:
+            diagnostics(5, "SLASHSLASH_PARAGRAPH");
+            parindent = 0;
+            break;
+
         default:                            /* Worry about not indenting */
             diagnostics(5, "GENERIC_PARAGRAPH");
             if (g_paragraph_no_indent || g_paragraph_inhibit_indent)
@@ -319,6 +325,7 @@ void startParagraph(const char *style, int indenting)
     diagnostics(5, "right indent is   %d", g_right_margin_indent);
     diagnostics(5, "current parindent %d", getLength("parindent"));
     diagnostics(5, "this parindent    %d", parindent);
+    diagnostics(5, "current style is    %s", the_style);
     diagnostics(5, "current family      %d", CurrentFontFamily());
     diagnostics(5, "current font size   %d", CurrentFontSize());
     diagnostics(5, "current font series %d", CurrentFontSeries());
@@ -409,7 +416,7 @@ void CmdEndParagraph(int code)
  ******************************************************************************/
 {
     int mode = getTexMode();
-    diagnostics(5, "CmdEndParagraph mode = %s", TexModeName[mode]);
+    diagnostics(5, "CmdEndParagraph mode = %s, braces=%d", TexModeName[mode], g_par_brace);
         
     if (g_par_brace == 1) {
         endAllFields();
@@ -489,7 +496,7 @@ void CmdIndent(int code)
            INDENT_USUAL has startParagraph() use the value of \parindent
  ******************************************************************************/
 {
-    diagnostics(5, "CmdIndent mode = %d", getTexMode());
+    diagnostics(5, "CmdIndent TeX Mode = %s", TexModeName[getTexMode()]);
     if (code == INDENT_NONE)
         g_paragraph_no_indent = TRUE;
 
@@ -524,11 +531,42 @@ parameter: code: newpage or newcolumn-option
 }
 
 /******************************************************************************
-  purpose: support for \doublespacing
+  purpose: support for \singlespacing, \onehalfspacing, and \doublespacing
  ******************************************************************************/
-void CmdDoubleSpacing(int code)
+void CmdLineSpacing(int code)
 {
-    setLineSpacing(480);
+    setLineSpacing(code);
+}
+
+/******************************************************************************
+  purpose: support \begin{spacing}{xx} ... \end{spacing}
+ ******************************************************************************/
+void CmdSpacingEnviron(int code)
+{
+	char *sizeParam;
+	static int originalSpacing=240;
+	float spacing;
+    int true_code = code & ~ON;
+
+    if (code & ON) {
+		originalSpacing = getLineSpacing();
+		if (true_code==2)
+			setLineSpacing(480);
+		else {
+			sizeParam = getBraceParam();
+			if (*sizeParam) {     	
+				sscanf(sizeParam, "%f", &spacing);
+				setLineSpacing((int)240*spacing);
+				free(sizeParam);       	
+			}
+		}
+		PushEnvironment(SPACING_MODE);
+		return;
+	}
+	
+	CmdEndParagraph(0);
+	PopEnvironment();
+	setLineSpacing(originalSpacing);
 }
 
 void CmdAlign(int code)

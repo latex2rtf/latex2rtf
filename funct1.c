@@ -283,7 +283,8 @@ void CmdBeginEnd(int code)
     } else {
         diagnostics(5, "\\end{%s}", s);
         (void) CallParamFunc(s, OFF);
-        CmdIndent(INDENT_INHIBIT);
+    	if (strcmp(s, "setspace") != 0 && strcmp(s, "doublespace") != 0) 
+        	CmdIndent(INDENT_INHIBIT);
     }
     free(s);
 }

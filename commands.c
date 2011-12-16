@@ -464,7 +464,9 @@ static CommandArray PreambleCommands[] = {
     {"resizebox", CmdResizeBox, 0},
     {"resizebox*", CmdResizeBox, 1},    
     {"geometry",CmdGeometry,0},
-    {"doublespacing", CmdDoubleSpacing, 0},
+    {"singlespacing", CmdLineSpacing, LINE_SPACING_SINGLE},
+    {"onehalfspacing", CmdLineSpacing, LINE_SPACING_ONE_AND_A_HALF},
+    {"doublespacing", CmdLineSpacing, LINE_SPACING_DOUBLE},
     {"verbositylevel", CmdVerbosityLevel, 0},
     {"iflatextortf",CmdIflatextortf,0},
     {"latextortftrue",CmdIgnore,1}, 
@@ -687,6 +689,10 @@ static CommandArray RussianModeCommands[] = {
     {"", NULL, 0}
 };
 
+static CommandArray spacingCommands[] = {
+    {"", NULL, 0}
+};
+
 /********************************************************************/
 
 /* commands for begin-end environments */
@@ -782,7 +788,8 @@ static CommandArray params[] = {
     {"theindex", CmdIgnoreEnviron, 0},
     {"landscape", CmdTolerateEnviron, 0},
     {"sloppypar", CmdTolerateEnviron, 0},
-    {"doublespace", CmdTolerateEnviron, 0},
+    {"doublespace", CmdSpacingEnviron, 2},
+    {"spacing", CmdSpacingEnviron, 0},
     {"", NULL, 0}
 };                              /* end of list */
 
@@ -1077,6 +1084,8 @@ static char *EnvironmentName(CommandArray *code)
         return strdup("generic");
     if (code == acronymCommands)
         return strdup("acronym");
+    if (code == spacingCommands)
+        return strdup("setpace");
     return strdup("unknown");
 }
 
@@ -1286,6 +1295,9 @@ globals: changes Environment - array of active environments
             break;
         case ACRONYM_MODE:
             Environments[iEnvCount] = acronymCommands;
+            break;
+        case SPACING_MODE:
+            Environments[iEnvCount] = spacingCommands;
             break;
 
         default:

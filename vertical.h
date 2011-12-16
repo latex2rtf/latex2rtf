@@ -2,6 +2,7 @@
 #define GENERIC_PARAGRAPH         2
 #define SECTION_TITLE_PARAGRAPH   3
 #define EQUATION_PARAGRAPH        4
+#define SLASHSLASH_PARAGRAPH      5
 
 #define INDENT_NONE    1
 #define INDENT_INHIBIT 2
@@ -23,11 +24,16 @@ extern char TexModeName[7][25];
 #define VSPACE_MEDIUM_SKIP 2
 #define VSPACE_BIG_SKIP    3
 
+#define LINE_SPACING_SINGLE         240
+#define LINE_SPACING_ONE_AND_A_HALF 360
+#define LINE_SPACING_DOUBLE         480
+
 void CmdBeginEnd(int code);
 void CmdEndParagraph(int code);
 void CmdIndent(int code);
 void CmdVspace(int code);
-void CmdDoubleSpacing(int code);
+void CmdLineSpacing(int code);
+void CmdSpacingEnviron(int code);
 void startParagraph(const char *style, int indenting);
 void CmdIndent(int code);
 void CmdNewPage(int code);

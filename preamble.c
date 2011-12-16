@@ -535,6 +535,8 @@ static void setDocumentOptions(char *optionlist)
             diagnostics(WARNING, "ignoring [%s], assuming [doc]", option);
         } else if (strcmp(option, "doc") == 0) {
             diagnostics(WARNING, "Some support for apa class");
+        } else if (strcmp(option, "setspace") == 0) {
+            diagnostics(WARNING, "Incomplete support for setspace package");
         } else if (strcmp(option,"ifpdf") == 0) {
             diagnostics(WARNING, "Trivial support for the ifpdf package");
             ConvertString("\\newif\\ifpdf");

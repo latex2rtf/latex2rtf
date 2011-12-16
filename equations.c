@@ -1659,6 +1659,7 @@ void CmdEqnArraySlashSlash(int height)
 void CmdSlashSlash(int height)
 {
     int restart_field=0;
+    int parindent;
     diagnostics(4, "CmdSlashSlash height = %d", height);
     
     if (g_processing_tabbing) {
@@ -1680,7 +1681,10 @@ void CmdSlashSlash(int height)
 
     /* we are ending a line in an environment that is unknown
        so just start a new line with the whatever was used last */
-    startParagraph("last",0);
+//    parindent = getLength("parindent");
+//	CmdIndent(INDENT_NONE);
+    startParagraph("last",SLASHSLASH_PARAGRAPH);
+//	CmdIndent(parindent);
     
     if (restart_field) 
         startField(FIELD_EQ);
