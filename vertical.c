@@ -79,7 +79,7 @@ char TexModeName[7][25] = { "bad", "internal vertical", "horizontal",
     "restricted horizontal", "math", "displaymath", "vertical"
 };
 
-char ParOptionName[6][12] = { "bad", "FIRST", "GENERIC", "SECTION", "EQUATION", "SLASHSLASH"};
+char ParOptionName[7][12] = { "bad", "FIRST", "GENERIC", "SECTION", "EQUATION", "SLASHSLASH", "LIST"};
 
 /******************************************************************************
      left and right margin accessor functions
@@ -186,7 +186,7 @@ void changeTexMode(int mode)
     diagnostics(6, "TeX mode changing from [%s] -> [%s]", TexModeName[g_TeX_mode], TexModeName[mode]);
 
     if (g_TeX_mode == MODE_VERTICAL && mode == MODE_HORIZONTAL)
-        startParagraph("Normal", GENERIC_PARAGRAPH);
+        startParagraph("Normal", PARAGRAPH_GENERIC);
 
     if (g_TeX_mode == MODE_HORIZONTAL && mode == MODE_VERTICAL)
         CmdEndParagraph(0);
@@ -210,17 +210,26 @@ void changeTexMode(int mode)
     indenting describes how this paragraph and (perhaps) the following
     paragraph should be indented
     
-      SECTION_TITLE_PARAGRAPH  (do not indent this paragraph or the next)
-      FIRST_PARAGRAPH  (do not indent this paragraph but indent the next)
-      GENERIC_PARAGRAPH    (indent as needed)
+      PARAGRAPH_SECTION_TITLE  (do not indent this paragraph or the next)
+      PARAGRAPH_FIRST  (do not indent this paragraph but indent the next)
+      PARAGRAPH_GENERIC        (indent as needed)
+      PARAGRAPH_LIST           (the first paragraph of a list item)
+      PARAGRAPH_SLASHSLASH     
     
-    Sometimes it is necessary to know what the next paragraph will
+    Sometimes it is necessary to influence the next paragraph will
     be before it has been parsed.  For example, a section command
     should create a paragraph for the section title and then the
     next paragraph encountered should be handled like as a first 
     paragraph.  
     
-    For FIRST_PARAGRAPH, then it is the first paragraph in a section.
+    The problem arises because "\n\n" means different things in different
+    contexts.  After \section{aaa} "\n\n" does not indicate that the next
+    paragraph should be indented.  However after \end{itemize} "\n\n"
+    means that the next paragraph should be indented.  Now CmdEndParagraph()
+    will set g_paragraph_inhibit_indent to FALSE so that the common case
+    of starting new paragraphs is handled appropriately.
+    
+    For PARAGRAPH_FIRST, then it is the first paragraph in a section.
     Usually the first paragraph is not indented.  However, when the
     document is being typeset in french it should have normal indentation.
     Another special case occurs when the paragraph being typeset is
@@ -240,7 +249,8 @@ void startParagraph(const char *style, int indenting)
     static char last_style[50] = "Normal";
     static char the_style[50] = "Normal";
     static int last_indent = 0;
-    static int status = 0;
+    static int next_paragraph_after_section = TRUE;
+    
     int orig_font_family = CurrentFontFamily();
     int orig_font_size = CurrentFontSize();
     int orig_font_series = CurrentFontSeries();
@@ -249,7 +259,7 @@ void startParagraph(const char *style, int indenting)
     /* special style "last" will just repeat previous */
     if (strcmp(style,"last")==0) {
         diagnostics(4,"using last style = '%s'",last_style);
-        if (indenting != SLASHSLASH_PARAGRAPH)
+        if (indenting != PARAGRAPH_SLASHSLASH)
         	indenting = last_indent;
         strcpy(the_style,last_style);
     } else {
@@ -275,36 +285,36 @@ void startParagraph(const char *style, int indenting)
 
     switch(indenting) {
     
-        case SECTION_TITLE_PARAGRAPH:       /* titles are never indented */
-            diagnostics(5, "SECTION_TITLE_PARAGRAPH");
+        case PARAGRAPH_SECTION_TITLE:         /* titles are never indented */
+            diagnostics(5, "PARAGRAPH_SECTION_TITLE");
             parindent = 0;
-            status = 1;
             break;
     
-        case FIRST_PARAGRAPH:               /* French indents  first paragraph */
-            diagnostics(5, "FIRST_PARAGRAPH");
-            status = 1;
-            if (!FrenchMode && !g_processing_list_environment)
+        case PARAGRAPH_FIRST:                 /* French indents first paragraph */
+            diagnostics(5, "PARAGRAPH_FIRST");
+            if (!FrenchMode)
                 parindent = 0;
             break;
             
-        case EQUATION_PARAGRAPH:
-            diagnostics(5, "EQUATION_PARAGRAPH");
+        case PARAGRAPH_EQUATION:              /* typically centered with no indent */
+            diagnostics(5, "PARAGRAPH_EQUATION");
             parindent = 0;
             break;
             
-        case SLASHSLASH_PARAGRAPH:
-            diagnostics(5, "SLASHSLASH_PARAGRAPH");
+        case PARAGRAPH_SLASHSLASH:            /* \\ is a line break, don't indent */
+            diagnostics(5, "PARAGRAPH_SLASHSLASH");
             parindent = 0;
             break;
 
-        default:                            /* Worry about not indenting */
-            diagnostics(5, "GENERIC_PARAGRAPH");
-            if (g_paragraph_no_indent || g_paragraph_inhibit_indent)
+        case PARAGRAPH_LIST:                  /* first paragraph in a list, don't monkey */
+            diagnostics(5, "PARAGRAPH_LIST"); /* with indenting */
+            break;
+
+        default:                              /* Worry about not indenting */
+            diagnostics(5, "PARAGRAPH_GENERIC");
+            if (next_paragraph_after_section || g_paragraph_no_indent || 
+                g_paragraph_inhibit_indent   || g_processing_list_environment)
                 parindent = 0;
-            else if (status > 0) 
-                parindent = 0;
-            status--;
             break;
     }
     
@@ -326,10 +336,10 @@ void startParagraph(const char *style, int indenting)
     diagnostics(5, "current parindent %d", getLength("parindent"));
     diagnostics(5, "this parindent    %d", parindent);
     diagnostics(5, "current style is    %s", the_style);
-    diagnostics(5, "current family      %d", CurrentFontFamily());
-    diagnostics(5, "current font size   %d", CurrentFontSize());
-    diagnostics(5, "current font series %d", CurrentFontSeries());
-    diagnostics(5, "current font shape  %d", CurrentFontShape());
+    diagnostics(6, "current family      %d", CurrentFontFamily());
+    diagnostics(6, "current font size   %d", CurrentFontSize());
+    diagnostics(6, "current font series %d", CurrentFontSeries());
+    diagnostics(6, "current font shape  %d", CurrentFontShape());
 
     if (g_page_new) {
         fprintRTF("\\page\n");   /* causes new page */
@@ -401,12 +411,17 @@ void startParagraph(const char *style, int indenting)
 
     if (!g_processing_list_environment) {
         g_paragraph_no_indent = FALSE;
-        if (indenting == SECTION_TITLE_PARAGRAPH)
+        if (indenting == PARAGRAPH_SECTION_TITLE)
             g_paragraph_inhibit_indent = TRUE;
         else
             g_paragraph_inhibit_indent = FALSE;
     }
      
+    if (indenting == PARAGRAPH_SECTION_TITLE && !FrenchMode)
+    	next_paragraph_after_section = TRUE;
+    else
+    	next_paragraph_after_section = FALSE;
+
 }
 
 void CmdEndParagraph(int code)
@@ -427,6 +442,7 @@ void CmdEndParagraph(int code)
     } else {
         if (getTexMode() != MODE_VERTICAL)
             diagnostics(5,"*********************** ending paragraph with braces = %d", g_par_brace);
+        g_paragraph_inhibit_indent = FALSE;
     }
 
 }
@@ -462,20 +478,34 @@ void CmdVspace(int code)
 
         case VSPACE_VSKIP:
             vspace = getDimension();
-            setTexMode(MODE_VERTICAL);
-            CmdEndParagraph(0);
+    		if (getTexMode() != MODE_VERTICAL) {
+            	CmdEndParagraph(0);
+            	CmdIndent(INDENT_INHIBIT);
+            }    		
             break;
 
         case VSPACE_SMALL_SKIP:
             vspace = getLength("smallskipamount");
+    		if (getTexMode() != MODE_VERTICAL) {
+            	CmdEndParagraph(0);
+            	CmdIndent(INDENT_INHIBIT);
+            }    		
             break;
 
         case VSPACE_MEDIUM_SKIP:
             vspace = getLength("medskipamount");
+    		if (getTexMode() != MODE_VERTICAL) {
+            	CmdEndParagraph(0);
+            	CmdIndent(INDENT_INHIBIT);
+            }
             break;
 
         case VSPACE_BIG_SKIP:
             vspace = getLength("bigskipamount");
+    		if (getTexMode() != MODE_VERTICAL) {
+            	CmdEndParagraph(0);
+            	CmdIndent(INDENT_INHIBIT);
+            }
             break;
     }
 

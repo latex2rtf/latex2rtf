@@ -287,7 +287,7 @@ void CmdTheEndNotes(int code)
     diagnostics(4, "Entering CmdTheEndNotes");
 
     CmdVspace(VSPACE_BIG_SKIP);
-    startParagraph("bibliography", SECTION_TITLE_PARAGRAPH);
+    startParagraph("bibliography", PARAGRAPH_SECTION_TITLE);
     fprintRTF("{\\sect ");
     InsertStyle("section");
     fprintRTF(" Notes");
@@ -538,7 +538,7 @@ void CmdThebibliography(int code)
         if (g_document_type == FORMAT_APA) {
             ConvertString("\\begin{center}{\\bf");
         } else {
-            startParagraph("bibliography", SECTION_TITLE_PARAGRAPH);
+            startParagraph("bibliography", PARAGRAPH_SECTION_TITLE);
             fprintRTF("{\\plain\\b\\fs32 ");
         }
         i = existsDefinition("refname");    /* see if refname has * been redefined */
@@ -583,7 +583,7 @@ void CmdBibitem(int code)
 
     g_processing_list_environment = TRUE;
     CmdEndParagraph(0);
-    startParagraph("bibitem", FIRST_PARAGRAPH);
+    startParagraph("bibitem", PARAGRAPH_FIRST);
 
     label = getBracketParam();
     key = getBraceParam();
@@ -2431,7 +2431,7 @@ void CmdContentsLine(int code)
 
     diagnostics(4, "Entering CmdContentsLine %s [%s]", type, text);
 
-    startParagraph("contents", SECTION_TITLE_PARAGRAPH);
+    startParagraph("contents", PARAGRAPH_SECTION_TITLE);
     fprintRTF("{");
     contents_type = strdup_together("contents_", type);
     InsertStyle(contents_type);
@@ -2455,7 +2455,7 @@ void CmdListOf(int code)
     
     diagnostics(4, "Entering CmdListOf");
 
-    startParagraph("contents", SECTION_TITLE_PARAGRAPH);
+    startParagraph("contents", PARAGRAPH_SECTION_TITLE);
     fprintRTF(" ");
     
     switch (code) {
@@ -2478,7 +2478,7 @@ void CmdListOf(int code)
 
     CmdEndParagraph(0);
 
-    startParagraph("Normal", GENERIC_PARAGRAPH);
+    startParagraph("Normal", PARAGRAPH_GENERIC);
     CmdVspace(VSPACE_SMALL_SKIP);
     g_tableofcontents = TRUE;
     fprintRTF("{\\field{\\*\\fldinst TOC \\\\f %c }{\\fldrslt }}\n",c);  

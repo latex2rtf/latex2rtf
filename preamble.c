@@ -920,13 +920,13 @@ void CmdTitle(int code)
 
 void CmdTableOfContents(int code)
 {
-    startParagraph("contents", SECTION_TITLE_PARAGRAPH);
+    startParagraph("contents", PARAGRAPH_SECTION_TITLE);
     fprintRTF(" ");
     ConvertBabelName("CONTENTSNAME");
     CmdEndParagraph(0);
     
     g_tableofcontents = TRUE;
-    startParagraph("Normal", GENERIC_PARAGRAPH);
+    startParagraph("Normal", PARAGRAPH_GENERIC);
     CmdVspace(VSPACE_SMALL_SKIP);
     fprintRTF("{\\field{\\*\\fldinst TOC \\\\o \"1-3\" }{\\fldrslt }}\n");  
     CmdNewPage(NewPage);
@@ -938,7 +938,7 @@ void CmdTableOfContents(int code)
  ******************************************************************************/
 void CmdAnd(int code)
 {
-    startParagraph("author", GENERIC_PARAGRAPH);
+    startParagraph("author", PARAGRAPH_GENERIC);
 }
 
 
@@ -961,28 +961,28 @@ void CmdMakeTitle(int code)
     setAlignment(CENTERED);
     
     if (g_preambleTitle != NULL && strcmp(g_preambleTitle, "") != 0) {
-        startParagraph("title", GENERIC_PARAGRAPH);
+        startParagraph("title", PARAGRAPH_GENERIC);
         ConvertString(g_preambleTitle);
     }
     
     if (g_preambleAuthor != NULL && strcmp(g_preambleAuthor, "") != 0) {
-        startParagraph("author", GENERIC_PARAGRAPH);
+        startParagraph("author", PARAGRAPH_GENERIC);
         ConvertString(g_preambleAuthor);
     }
 
     if (g_preambleAffiliation != NULL && strcmp(g_preambleAffiliation, "") != 0) {
-        startParagraph("author", GENERIC_PARAGRAPH);
+        startParagraph("author", PARAGRAPH_GENERIC);
         ConvertString(g_preambleAffiliation);
     }
 
-    startParagraph("author", GENERIC_PARAGRAPH);
+    startParagraph("author", PARAGRAPH_GENERIC);
     if (g_preambleDate == NULL || strcmp(g_preambleDate, "") == 0) 
         fprintRTF("\\chdate ");
     else
         ConvertString(g_preambleDate);
 
     if (g_preambleAck != NULL && strcmp(g_preambleAck, "") != 0) {
-        startParagraph("author", GENERIC_PARAGRAPH);
+        startParagraph("author", PARAGRAPH_GENERIC);
         ConvertString(g_preambleAck);
     }
 
@@ -1002,7 +1002,7 @@ void CmdMakeTitle(int code)
         fprintRTF("\\page ");
 
     if (g_document_type == FORMAT_APA)
-        startParagraph("Normal",FIRST_PARAGRAPH);
+        startParagraph("Normal", PARAGRAPH_FIRST);
 
     PopTrackLineNumber();
 }

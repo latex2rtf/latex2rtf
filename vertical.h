@@ -1,8 +1,9 @@
-#define FIRST_PARAGRAPH           1
-#define GENERIC_PARAGRAPH         2
-#define SECTION_TITLE_PARAGRAPH   3
-#define EQUATION_PARAGRAPH        4
-#define SLASHSLASH_PARAGRAPH      5
+#define PARAGRAPH_FIRST           1
+#define PARAGRAPH_GENERIC         2
+#define PARAGRAPH_SECTION_TITLE   3
+#define PARAGRAPH_EQUATION        4
+#define PARAGRAPH_SLASHSLASH      5
+#define PARAGRAPH_LIST            6
 
 #define INDENT_NONE    1
 #define INDENT_INHIBIT 2

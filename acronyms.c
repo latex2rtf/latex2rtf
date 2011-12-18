@@ -375,7 +375,7 @@ void CmdAcrodef(int code)
                 setVspace(vspace);
                 
                 /* CmdIndent(INDENT_USUAL); */
-                startParagraph("acronym", FIRST_PARAGRAPH);
+                startParagraph("acronym", PARAGRAPH_FIRST);
                 fprintRTF("{\\b ");
                 ConvertString((NULL != acShort) ? acShort : acDef); 
                 fprintRTF("}\\tab\n");

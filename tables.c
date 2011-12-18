@@ -321,7 +321,7 @@ static TabularT *TabularPreamble(const char *format)
 
     if (getTexMode() != MODE_HORIZONTAL) {
         CmdIndent(INDENT_NONE);
-        startParagraph("last", FIRST_PARAGRAPH);
+        startParagraph("last", PARAGRAPH_FIRST);
     }
 
     fprintRTF("\\par\n");
@@ -1379,7 +1379,7 @@ void CmdTabbing(int code)
     
         if (getTexMode() != MODE_HORIZONTAL) {
             CmdIndent(INDENT_NONE);
-            startParagraph("tabbing", FIRST_PARAGRAPH);
+            startParagraph("tabbing", PARAGRAPH_FIRST);
         }
     
         fprintRTF("\\par\n");
@@ -1448,7 +1448,7 @@ void CmdTable(int code)
         if (g_endfloat_tables) {
             if (g_endfloat_markers) {
                 setAlignment(CENTERED);
-                startParagraph("endfloat", GENERIC_PARAGRAPH);
+                startParagraph("endfloat", PARAGRAPH_GENERIC);
                 incrementCounter("endfloattable");  /* two separate counters */
                 fprintRTF("[");                     /* one for tables and one for */
                 ConvertBabelName("TABLENAME");      /* endfloat tables */
@@ -1459,7 +1459,7 @@ void CmdTable(int code)
                 fprintRTF("%d about here]", getCounter("endfloattable"));
             }
         } else {
-            startParagraph("table", GENERIC_PARAGRAPH);
+            startParagraph("table", PARAGRAPH_GENERIC);
             ConvertString(table_contents);
         }
         free(table_contents);
@@ -1750,6 +1750,7 @@ void CmdHAlign(int code)
     char **lines;
     int nlines, ncols,tcols,trepeat,i,line;
     
+    CmdEndParagraph(0);
     contents = getBraceParam();
     HA_ExtractTemplateAndLines(contents, &HA_template, &lines, &nlines);
     free(contents);
@@ -1767,6 +1768,7 @@ void CmdHAlign(int code)
         for (i = 1; i <= ncols; i++)
             fprintRTF("\\cellx%d", getLength("textwidth") * (i) / (ncols));
         fprintRTF("\n");
+        setTexMode(MODE_HORIZONTAL);
 
         for (i=1; i<=ncols; i++) {
             char *cell, *cell_template, *cell_text;
@@ -1791,6 +1793,7 @@ void CmdHAlign(int code)
         free(lines[line]);
     }
 
+    setTexMode(MODE_VERTICAL);
     free(align);
     free(lines);
     free(HA_template);

@@ -278,14 +278,14 @@ static void PrepareRtfEquation(int code, int EQ_Needed)
         case EQN_MATH:
             diagnostics(4, "PrepareRtfEquation ... \\begin{math}");
             if (getTexMode() == MODE_VERTICAL)
-                startParagraph("Normal", GENERIC_PARAGRAPH);
+                startParagraph("Normal", PARAGRAPH_GENERIC);
             setTexMode(MODE_MATH);
             break;
 
         case EQN_DOLLAR:
             diagnostics(4, "PrepareRtfEquation ... $");
             if (getTexMode() == MODE_VERTICAL)
-                startParagraph("Normal", GENERIC_PARAGRAPH);
+                startParagraph("Normal", PARAGRAPH_GENERIC);
             fprintRTF("{");
             setTexMode(MODE_MATH);
             break;
@@ -293,7 +293,7 @@ static void PrepareRtfEquation(int code, int EQ_Needed)
         case EQN_ENSUREMATH:
             diagnostics(4, "PrepareRtfEquation ... \\ensuremath{}");
             if (getTexMode() == MODE_VERTICAL)
-                startParagraph("Normal", GENERIC_PARAGRAPH);
+                startParagraph("Normal", PARAGRAPH_GENERIC);
             fprintRTF("{");
             setTexMode(MODE_MATH);
             break;
@@ -301,7 +301,7 @@ static void PrepareRtfEquation(int code, int EQ_Needed)
         case EQN_RND_OPEN:
             diagnostics(4, "PrepareRtfEquation ... \\(");
             if (getTexMode() == MODE_VERTICAL)
-                startParagraph("Normal", GENERIC_PARAGRAPH);
+                startParagraph("Normal", PARAGRAPH_GENERIC);
             fprintRTF("{");
             setTexMode(MODE_MATH);
             break;
@@ -320,7 +320,7 @@ static void PrepareRtfEquation(int code, int EQ_Needed)
                 diagnostics(4, "PrepareRtfEquation -- equation*");
         
             g_show_equation_number = FALSE;
-            startParagraph("equation", EQUATION_PARAGRAPH);
+            startParagraph("equation", PARAGRAPH_EQUATION);
             fprintRTF("\\tab\n");
             setTexMode(MODE_DISPLAYMATH);
             break;
@@ -331,7 +331,7 @@ static void PrepareRtfEquation(int code, int EQ_Needed)
             g_show_equation_number = TRUE;
             g_suppress_equation_number = FALSE;
 
-            startParagraph("equationNum", EQUATION_PARAGRAPH);
+            startParagraph("equationNum", PARAGRAPH_EQUATION);
             fprintRTF("\\tab\n");
             setTexMode(MODE_DISPLAYMATH);
             break;
@@ -350,11 +350,11 @@ static void PrepareRtfEquation(int code, int EQ_Needed)
             g_multiline_equation_type = code;
             
             if (g_equation_display_bitmap)
-                startParagraph("bitmapCenter", EQUATION_PARAGRAPH);
+                startParagraph("bitmapCenter", PARAGRAPH_EQUATION);
             else if (code == EQN_ALIGN_STAR)
-                startParagraph("equationAlign", EQUATION_PARAGRAPH);
+                startParagraph("equationAlign", PARAGRAPH_EQUATION);
             else
-                startParagraph("equationArray", EQUATION_PARAGRAPH);
+                startParagraph("equationArray", PARAGRAPH_EQUATION);
             
             fprintRTF("\\tab\n");
             setTexMode(MODE_DISPLAYMATH);
@@ -374,11 +374,11 @@ static void PrepareRtfEquation(int code, int EQ_Needed)
             g_multiline_equation_type = code;
             
             if (g_equation_display_bitmap)
-                startParagraph("bitmapCenter", EQUATION_PARAGRAPH);
+                startParagraph("bitmapCenter", PARAGRAPH_EQUATION);
             else if (code == EQN_ALIGN)
-                startParagraph("equationAlignNum", EQUATION_PARAGRAPH);
+                startParagraph("equationAlignNum", PARAGRAPH_EQUATION);
             else
-                startParagraph("equationArrayNum", EQUATION_PARAGRAPH);
+                startParagraph("equationArrayNum", PARAGRAPH_EQUATION);
 
             fprintRTF("\\tab\n");
             setTexMode(MODE_DISPLAYMATH);
@@ -1619,22 +1619,22 @@ void CmdEqnArraySlashSlash(int height)
 
     switch (g_multiline_equation_type) {
         case EQN_ALIGN_STAR:
-            startParagraph("equationAlign", EQUATION_PARAGRAPH);
+            startParagraph("equationAlign", PARAGRAPH_EQUATION);
             setTexMode(MODE_DISPLAYMATH); 
             g_processing_eqnarray = TRUE;
             break;
         case EQN_ARRAY_STAR:
-            startParagraph("equationArray", EQUATION_PARAGRAPH);
+            startParagraph("equationArray", PARAGRAPH_EQUATION);
             setTexMode(MODE_DISPLAYMATH); 
             g_processing_eqnarray = TRUE;
             break;
         case EQN_ALIGN:
-            startParagraph("equationAlignNum", EQUATION_PARAGRAPH);
+            startParagraph("equationAlignNum", PARAGRAPH_EQUATION);
             setTexMode(MODE_DISPLAYMATH); 
             g_processing_eqnarray = TRUE;
             break;
         case EQN_ARRAY:
-            startParagraph("equationArrayNum", EQUATION_PARAGRAPH);
+            startParagraph("equationArrayNum", PARAGRAPH_EQUATION);
             setTexMode(MODE_DISPLAYMATH); 
             g_processing_eqnarray = TRUE;
             break;
@@ -1683,7 +1683,7 @@ void CmdSlashSlash(int height)
        so just start a new line with the whatever was used last */
 //    parindent = getLength("parindent");
 //	CmdIndent(INDENT_NONE);
-    startParagraph("last",SLASHSLASH_PARAGRAPH);
+	startParagraph("last", PARAGRAPH_SLASHSLASH);
 //	CmdIndent(parindent);
     
     if (restart_field) 

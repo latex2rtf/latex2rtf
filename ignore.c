@@ -197,7 +197,7 @@ void Ignore_Environment(char *cCommand)
     font = TexFontNumber("Typewriter");
     CmdEndParagraph(0);
     CmdIndent(INDENT_NONE);
-    startParagraph("Normal", GENERIC_PARAGRAPH);
+    startParagraph("Normal", PARAGRAPH_GENERIC);
     fprintRTF("\\qc [Sorry. Ignored ");
     fprintRTF("{\\plain\\f%d\\\\begin\\{%s\\} ... \\\\end\\{%s\\}}]", font, cCommand, cCommand);
     CmdEndParagraph(0);
