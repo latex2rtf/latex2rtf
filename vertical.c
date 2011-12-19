@@ -79,7 +79,8 @@ char TexModeName[7][25] = { "bad", "internal vertical", "horizontal",
     "restricted horizontal", "math", "displaymath", "vertical"
 };
 
-char ParOptionName[7][12] = { "bad", "FIRST", "GENERIC", "SECTION", "EQUATION", "SLASHSLASH", "LIST"};
+char ParOptionName[8][13] = { "bad", "FIRST", "GENERIC", "SECTION", 
+                              "EQUATION", "SLASHSLASH", "LIST", "ENVIRONMENT"};
 
 /******************************************************************************
      left and right margin accessor functions
@@ -215,6 +216,7 @@ void changeTexMode(int mode)
       PARAGRAPH_GENERIC        (indent as needed)
       PARAGRAPH_LIST           (the first paragraph of a list item)
       PARAGRAPH_SLASHSLASH     
+      PARAGRAPH_ENVIRONMENT    (include topsep before and after final --- not impl.)   
     
     Sometimes it is necessary to influence the next paragraph will
     be before it has been parsed.  For example, a section command

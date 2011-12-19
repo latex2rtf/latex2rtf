@@ -4,6 +4,7 @@
 #define PARAGRAPH_EQUATION        4
 #define PARAGRAPH_SLASHSLASH      5
 #define PARAGRAPH_LIST            6
+#define PARAGRAPH_ENVIRONMENT     7
 
 #define INDENT_NONE    1
 #define INDENT_INHIBIT 2
