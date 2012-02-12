@@ -4,18 +4,17 @@ This document is intended to give a broad overview of how latex2rtf operates.
 It is also intended to explain why somethings are the way that they are.
 
 The fundamental problem of latex2rtf is that LaTeX is a sophisticated set of
-macros that overlay the comple programming language of TeX.  RTF is a very
+macros that overlay the complete programming language of TeX.  RTF is a very
 limited mark-up language for describing what text should look like.  In
 principle, one could use the entire TeX engine to interpret the source latex
 file and then capture the characters as they are output at the end of TeX
 process.  Unfortunately, this just produces a character stream without
-preserving any of the document structure.
+preserving any of the document structure. 
 
 To avoid this loss, latex2rtf tries to directly translate as many of the
-high-level latex macro instructions as it can.  In fact, no LaTeX macro is
-expanded into a stream of TeX macros, each of which is in turn interpreted. 
-Instead, some effort is made to translate the LaTeX command directly into the
-corresponding RTF.
+high-level latex macro instructions as it can.  Thus, LaTeX macros are 
+not expanded into a stream of TeX macros, instead each LaTeX command is
+converted into a bunch of RTF commands.
 
 The central problem of latex2rtf from a programmer's point-of-view is that
 latex2rtf is a one-pass converter whose lexer and parser are all mixed together. 
