@@ -14,7 +14,10 @@ preserving any of the document structure.
 To avoid this loss, latex2rtf tries to directly translate as many of the
 high-level latex macro instructions as it can.  Thus, LaTeX macros are 
 not expanded into a stream of TeX macros, instead each LaTeX command is
-converted into a bunch of RTF commands.
+converted into a bunch of RTF commands.  One important practical consequence
+is that a command in a LaTeX .sty file that you are using will not 
+automatically supported.  Someone, at some time, must have written
+specific code to translate the command in the style file.
 
 The central problem of latex2rtf from a programmer's point-of-view is that
 latex2rtf is a one-pass converter whose lexer and parser are all mixed together. 
