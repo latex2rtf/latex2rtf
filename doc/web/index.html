@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en"> 
+<head> 
+<meta charset="utf-8" />
+<title> rtf2latex2e:</title>
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+
+<div id="wrapper">
+	<div id="topbar"><h1> rtf2latex2e:</div>
+	<div id="menu">
+	<a href="index.html">About</a>
+	<a href="manpage.html">Man Page</a>
+	<a href="docs.html">Documentation</a>
+	<a href="http://sourceforge.net/tracker/?group_id=22654">Support</a>
+	<a href="http://sourceforge.net/projects/latex2rtf/">Download</a>
+	</div>
+	
+	<div id="logo"></div>
+	<div id="content">
+	
+	<p>latex2rtf is a translator program to convert LaTeX formatted text files
+	into &ldquo;rich text format&rdquo; (RTF) files. RTF
+	is a published standard format by Microsoft. This standard can be
+	ambiguous in places, but RTF is supported by many text editors.  
+	Specifically, it is supported by Microsoft Word.  This means that
+	the conversion of a LaTeX document to RTF allows anyone with a
+	copy of Word to convert LaTeX files to Word .doc or .docx files.
+	
+	<p>Features
+	<ul>
+	<li> Conversion of a wide range of input encodings
+	<li> Conversion of equations (unfortunately using the broken
+	     Microsoft implementation of EQ fields)
+	<li> Conversion of tables
+	<li> Conversion of graphics
+	<li> Conversion of cross-references
+	<li> Conversion of bibliographies
+	</ul>
+
+	<p>The Word-centric conversion of LaTeX files is because that is
+	what I needed.  Perhaps one day this will change, but because the
+	Microsoft field extensions are poorly supported by Open Office (for
+	good reason), the emitted RTF files tend to be Microsoft Word specific.
+
+	<p>latex2rtf translates the text and as much of the formatting information
+    from LaTeX to RTF. Be forewarned that the typeset output is not
+    nearly as good as what you would get from using LaTeX
+    directly. So, why bother translating? Consider,
+    <ul>
+    <li>You use LaTeX and hate everything associated with Microsoft.
+    Nevertheless, you have to share your documents with people who don't
+    even know that there are alternatives.
+    <li>You know somebody who frequently sends you very fine LaTeX documents.
+    Unfortunately, you are &ldquo;on the other side&rdquo; and need to work
+    with this obscure LaTeX file.
+    <li>You like LaTeX and BibTeX. You interact with the rest of the
+    world. Unfortunately, your main collaborator is an unrepentant Word
+    user.
+    </ul>
+
+	<p>There are drawbacks to the conversion process. In fact, don't expect any LaTeX
+    file to be converted as you would like, don't expect it to be converted without errors or
+    warnings, and don't be especially surprised when it doesn't convert at all.  LaTeX2RTF is
+    known to have many bugs and many missing features. Paradoxically, this number seems to
+    grow more and more with each day.  However, we can categorically state that there are some
+    special cases in which a LaTeX file will be translated to RTF satisfactorily by
+    LaTeX2RTF &mdash; This was sort of disclaimer, ok? OK!
+
+	<p>
+	<a style="float:right" href="http://sourceforge.net/projects/latex2rtf">
+	<img src="http://sflogo.sourceforge.net/sflogo.php?group_id=22654&amp;type=15" alt="Get RTF to LaTeX converter at SourceForge" border="0" height="40" width="150">
+	</a>
+	</div>
+
+</div>
+
+</body>
+</html>
+<!-- Template created by T. Smith www.3formed.co.uk 
+** xhtml 1.0 strict demo template 1
+** please see website for more templates and web technology info 
+** contact tims@3formed.co.uk 
+** Websites designed & developed - Contact me for more information
+** Please do not remove this notice
+-->
