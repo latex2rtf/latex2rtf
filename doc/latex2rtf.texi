@@ -58,9 +58,9 @@ LaTeX2RTF
 @subtitle 
 A converter from @latex{}to RTF
 
-Edition 0.7.6
+Edition 0.7.7
 
-for program version 2.1.1
+for program version 2.2.0
 
 @author Georg Lehner,
 updated by Wilfried Hennings and Scott Prahl,
@@ -68,7 +68,7 @@ with contributions by Mikhail Polianski
 
 @page
 @vskip 0pt plus 1 filll
-Copyright @copyright{} 1998-2010 Georg Lehner, Wilfried Hennings, Scott Prahl
+Copyright @copyright{} 1998-2012 Georg Lehner, Wilfried Hennings, Scott Prahl
 
 Permission is granted to make and distribute verbatim copies of this
 manual provided the copyright notice and this permission notice are
@@ -201,8 +201,8 @@ Citation Commands
 
 @ifnottex
 
-Copyright 1998-2002 Georg Lehner,@* 
-updates Copyright 1999-2010 by Wilfried Hennings and Scott Prahl,@* 
+Copyright 1998-2002 Georg Lehner,
+updates Copyright 1999-2012 by Wilfried Hennings and Scott Prahl,
 with contributions by Mikhail Polianski.
 
 Permission is granted to make and distribute verbatim copies of this
@@ -221,7 +221,7 @@ into another language, under the above conditions for modified versions,
 except that this permission notice may be stated in a translation
 approved by the Free Software Foundation.
 
-@c This document applies to version 2.1.1 of @ltor{}.
+@c This document applies to version 2.2.0 of @ltor{}.
 @end ifnottex
 
 
@@ -265,7 +265,7 @@ warnings, and don't be especially surprised when it doesn't convert at all.  @lt
 known to have many bugs and many missing features. Paradoxically, this number seems to
 grow more and more with each day.  However, we can categorically state that there are some
 special cases in which a @latex{}file will be translated to RTF satisfactorily by
-@ltor{}--- This was sort of disclaimer, ok? OK!
+@ltor{}---This was sort of disclaimer, ok? OK!
 
 @latex{}is a system for typesetting text and therefore it focuses on the logical
 structure of a document, whilst RTF is meant to be a transport format for a family of
@@ -1090,12 +1090,12 @@ for many of them.
 
 There are five separate levels of equation translation based on the -M switch, 
 see @ref{LaTeX2RTF Options}.
-Each equation is now converted either to an EQ field or to a bitmap 
+Each equation is converted either to an EQ field or to a bitmap 
 or inserted as raw TeX code in the document. 
 
 This is an interim solution (for some definition of ``interim''). 
 Ideally the equations would become OLE equation objects in the
-RTF file, but this needs to be implemented.
+RTF file, but this needs to be implemented. 
 
 Some functions in the EQ fields have two or more parameters with a separator 
 between each two. Unfortunately, the interpretation of these separators depends 
@@ -1120,6 +1120,7 @@ the equation. However there are bugs in the interface between Word and Equation
 Editor which prevent symbols in font Symbol or MTExtra to be converted correctly. 
 The full commercial version of the Equation Editor, called MathType, handles
 this conversion correctly.
+
 If you have MathType version 6, an even better way to convert @latex{}equations to
 MathType is letting @ltor{}write the @latex{}code of the equations verbatim in the 
 rtf file (option -M32), then open the rtf file in Word, select the @latex{}code of 
@@ -1127,8 +1128,9 @@ an equation, cut it to the clipboard, open MathType, and paste the code.
 MathType will convert the code into an equation. Wilfried tried to automate this 
 in a Word macro, but this fails because the macro does not wait until MathType is
 started and ready to receive the pasted code. Maybe the MathType authors will 
-give us a hint or provide such a macro.@*
-MathType can be downloaded from @uref{http://www.dessci.com/en/products/mathtype/} 
+give us a hint or provide such a macro.
+
+MathType can be downloaded from @uref{http://www.dessci.com/} 
 (30 day test version).
 
 @node Math and Special Symbols, Tables, Equations, Features
@@ -1162,15 +1164,16 @@ including Cyrillic, Greek, and Hebrew). ``Times'' or ``Times New Roman'' and
 but not their Unicode extension.
 
 @item ``STIXGeneral'' (4 fonts in plain, italic, bold, bold-italic). These fonts 
-are available from @uref{http://www.stixfonts.org/}.@*
+are available from @uref{http://sourceforge.net/projects/stixfonts/}.
+
 Note that while Office 2003 on Vista works correctly with the Open Type
 version, it does not on Windows XP (Word 2003 assigns no character
 spacing, and Publisher doesn't display the character at all). On
 Windows XP, Office 2003 only displays the symbols correctly with the
 TrueType (ttf) version of the fonts. But stixfonts.org only supplies
-the Open Type (otf) version. @*
-So the TrueType beta version of the fonts can be downloaded from 
-@uref{http://sourceforge.net/projects/latex2rtf/files/STIXfonts/STIXbeta_ttf.zip/download}.
+the Open Type (otf) version.
+TrueType versions of the fonts can be downloaded from 
+@uref{http://sites.google.com/site/olegueret/stixfonts-ttf}.
 
 
 @end itemize
@@ -1184,7 +1187,8 @@ Conversion of tabular and tabbing environments is somewhat lame.  The
 main difficulty is that @latex{}(and html) will size the columns of
 a table automatically.  There is no such feature in RTF.  Consequently,
 the conversion defaults to making all the columns have equal size.  This
-is suboptimal and should be revised. @*
+is suboptimal and should be revised. 
+
 Another way is to use the option -t2
 to make latex render them as bitmaps and insert the bitmaps
 into the RTF file. This feature was added in version 1.9.19.

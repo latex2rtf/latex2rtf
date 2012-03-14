@@ -688,12 +688,12 @@ static void WriteEquationAsMTEF(int code, char **eq)
  purpose   : Translate equation to MTEF 
  ******************************************************************************/
 {
-/*
     PrepareRtfEquation(code, EQ_Needed);
     ConvertOverToFrac(eq);
+/*
     ConvertString(*eq);
-    FinishRtfEquation(code, EQ_Needed);
 */
+    FinishRtfEquation(code, EQ_Needed);
 }
 
 /******************************************************************************
