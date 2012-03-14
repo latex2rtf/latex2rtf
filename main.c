@@ -116,6 +116,7 @@ int g_equation_inline_bitmap = FALSE;
 int g_equation_display_bitmap = FALSE;
 int g_equation_comment = FALSE;
 int g_equation_raw_latex = FALSE;
+int g_equation_mtef = FALSE;
 int g_tableofcontents = FALSE;
 
 int g_tabular_display_rtf = TRUE;
@@ -223,6 +224,7 @@ int main(int argc, char **argv)
                 g_equation_inline_bitmap = (x &  8) ? TRUE : FALSE;
                 g_equation_comment       = (x & 16) ? TRUE : FALSE;
                 g_equation_raw_latex     = (x & 32) ? TRUE : FALSE;
+                g_equation_mtef          = (x & 64) ? TRUE : FALSE;
                 diagnostics(3, "Math option g_equation_display_rtf    = %d", g_equation_display_rtf);
                 diagnostics(3, "Math option g_equation_inline_rtf     = %d", g_equation_inline_rtf);
                 diagnostics(3, "Math option g_equation_display_bitmap = %d", g_equation_display_bitmap);
