@@ -5,7 +5,7 @@
     //    author: Mikhail Polianski (mnpol@mail.ru)     //
     //                                                  //
     //////////////////////////////////////////////////////
-    //     -> version number is also in line 1451       //
+    //     -> version number is also in line 1460       //
 //
 // libcomctl32 library has to be included into compiler options
 #include "l2rshell.h"
@@ -132,7 +132,7 @@ WORD* CreateDlg()
     DlgItemTemplate(p,lStyle,80,85,150,12,ID_ABOUT_TEXT03,L"static",L"Wilfried Hennings  (project administrator)");
     DlgItemTemplate(p,lStyle,80,100,75,12,ID_ABOUT_TEXT04,L"static",L"Fernando Dorner");
     DlgItemTemplate(p,lStyle,170,100,75,12,ID_ABOUT_TEXT05,L"static",L"Andreas Granzer");
-    DlgItemTemplate(p,lStyle,80,115,75,12,ID_ABOUT_TEXT06,L"static",L"Ralf Schlatterdeck");
+    DlgItemTemplate(p,lStyle,80,115,75,12,ID_ABOUT_TEXT06,L"static",L"Ralf Schlatterbeck");
     DlgItemTemplate(p,lStyle,170,115,75,12,ID_ABOUT_TEXT07,L"static",L"Friedrich Polzer");
     DlgItemTemplate(p,lStyle,80,130,75,12,ID_ABOUT_TEXT08,L"static",L"Gerhard Trisko");
     DlgItemTemplate(p,lStyle,170,130,75,12,ID_ABOUT_TEXT09,L"static",L"Georg Lehner");
