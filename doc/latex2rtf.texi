@@ -775,8 +775,8 @@ equations but fails for the rest with the message@*
 This is probably a bug in the djgpp 2.04 compiler; I chose this version
 because of its better support of long filenames under Win32 (95, 98, ME, 2000,
 XP, Vista).@*
-The Windows version, compiled with Cygwin in MinGW mode, successfully 
-converts at least 79 equations to bitmaps.
+The Windows version, compiled with MinGW, successfully 
+converts at least 500 equations to bitmaps.
 
 @item -o outputfile
 Unless an @file{outputfile} is specified with the @code{-o} option, the resulting RTF
@@ -785,7 +785,7 @@ filename is formed by removing @file{.tex} from the @file{inputfile} and appendi
 
 @item -p
 Escape parentheses in mathematical formulas.  This has no effect unless EQ fields
-are being generated.  When this option is used, then in a `(' or `)' that appears
+are being generated.  When this option is used, then a `(' or `)' that appears
 in an EQ field will be preceeded by a backslash.  Despite documentation to the
 contrary (which says that all parentheses should be escaped), adding escapes usually
 produces a worse result than doing nothing. If Word displays some formulas with 
