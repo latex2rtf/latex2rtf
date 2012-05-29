@@ -1295,8 +1295,10 @@ purpose: called on active german-mode and " character in input file to
             fprintRTF("{\\'84}");
             break;
         case '<':
+            fprintRTF("\\'ab");
             break;
         case '>':
+            fprintRTF("\\'bb");
             break;
         default:
             fprintRTF("%c", cThis);
