@@ -1,4 +1,283 @@
-latex2rtf changes from 2.0.0 to 2.1.0
+latex2rtf changes from 2.0.0
+
+r1179 | whennings
+    funct1.c: support french quotes in German mode
+
+r1178 | whennings
+    updated documentation (num of eqns converted to bitmaps, MinGW compiler)
+
+r1177 | whennings
+    minor updates to l2rshell
+
+r1176 | prahl
+    adding new html files
+
+r1175 | prahl
+    changing how html pages are made
+
+r1174 | prahl
+    fix permissions on latex2rtf.1
+
+r1173 | prahl
+    start plumbing to emit MTEF
+
+r1172 | prahl
+    support \textminus in direct.cfg
+
+r1171 | prahl
+    more editing of HACKING
+
+r1170 | prahl
+    fix spelling
+
+r1169 | whennings
+    Makefile adaptation for Windows
+
+r1168 | prahl
+    Add setspace.tex as a test file.
+    Think about spacing issues around environment.
+
+r1167 | prahl
+    Improve handling of indentation in many situations.
+    This fixes a bunch of minor bugs. There probably remain several, 
+    but latex2rtf works much better now in many situations.
+
+r1166 | prahl
+    add support for setspace package. Hacking this in revealed problems 
+    with how \\ was handled an the end of lines and also
+    how paragraph indentation is handled. 
+    Spacing between paragraphs is also suboptimal. 
+    Good grief, this stuff should work better than it currently does.
+
+r1165 | whennings
+    Makefile adaptation for Windows
+
+r1164 | prahl
+    change default directory from /opt/local to /usr/local
+
+r1163 | prahl
+    fix install directories in Makefile
+
+r1162 | whennings
+    scripts/README updated to reflect recent version of the latex2png script
+    scripts/l2rprep.bat updated to recent versions of Ghostscript and MikTeX
+
+r1161 | prahl
+    Change PREFIX to DESTDIR to follow the GNU standard
+    http://www.gnu.org/prep/standards/html_node/DESTDIR.html
+
+r1160 | prahl
+    Improve error message. We seem to fail in this routine surprisingly often.
+    Create a new define to make it easier to resize this buffer.
+
+r1159 | prahl
+    The last fix exposed a latent bug in the mapping of latin1->cp1251 instead of cp1252.
+
+r1158 | whennings
+    fixed handling of cp1251
+
+r1157 | paaguti
+    This new Makefile is better adapted for usage in MacPorts as well as for Debian
+
+r1156 | prahl
+    fix labeling after \appendix in article document
+
+r1155 | prahl
+    fixes for \appendix command
+
+r1154 | prahl
+    add translations for glossary from recent Babel distribution
+
+r1153 | paaguti
+    And the test file for the keywords command
+
+r1152 | paaguti
+    Include the support for the keywords command
+
+r1151 | prahl
+    prevent spurious RTF getting written to stderr
+
+r1150 | whennings
+    l2rshell: make logfile name field read-only if no logging to file
+    latex2png script: under MS Win, TEXINPUTS needs ";" separator
+
+r1149 | prahl
+    fix for 3117074, seems to work.  Also fix a bug when mathmode is not active in eqnalign.
+
+r1148 | prahl
+    fix leak
+
+r1147 | prahl
+    fix off by one error
+
+r1146 | prahl
+    fix for addgraphics
+
+r1145 | whennings
+    l2rshell: bugfixes, and additions to french and italian translation
+
+r1144 | whennings
+    l2rshell: added checkbox for writing the debug output to file
+    documentation: added how to redirect stderr to a file
+    graphics.c, exists_with_extension(): removed insertion of path separator
+
+r1143 | prahl
+    intermediate check-in of some debugging code because \graphicspath is not working correctly
+
+r1142 | whennings
+    l2rshell: fixed broken links for Help and About page,
+    for debug level >1 the debug output is written to file
+
+r1141 | prahl
+    turn down the debugging noise
+
+r1140 | prahl
+    allow for unusual case of horizontal text mode in an equation array environment
+
+r1139 | prahl
+    tweaks to get bib_apacite2 working again. Things look good now except for ttgfsr7
+
+r1138 | prahl
+    add british.cfg (identical to english.cfg)
+    remove debugging commands
+    fix overeager writing of raw latex to rtf file
+
+r1137 | prahl
+    fixes for multiple languages in babel
+    add greek.cfg
+
+r1136 | prahl
+    add frenchb.cfg and improve cfg warning
+
+r1135 | prahl
+    Fixes for odd scoping problems.  These were exposed by
+    bib_style.tex and carefully delineated for me by Wilfried.
+    These problems have been around for a long time.  
+    The bugs have not really been noticed before because we had
+    not looked carefully.  These fixes may introduce other
+    regressions and have not be thoroughly tested.
+
+r1134 | whennings
+    corrected unintentional changes in GPL copyright header in xrefs.c
+
+r1133 | prahl
+    This patch adds support to version 2.1.0 for the \bibstyle{...} command.
+    It simulates the natbib.sty features invoked for different styles,
+    principally mimicking the \bibpunct for each style, and varies
+    particular numeric bibliographies to have alternative numeric
+    punctuation (for example, "1." rather than "[1]"). (Patch by G. Helffrich).
+
+r1132 | whennings
+    documentation updated for delimiters used with the -M32 option
+
+r1131 | prahl
+    silence warning
+
+r1130 | whennings
+    corrected equations.c lines 750 and 752 (backslashes need not be escaped here)
+
+r1129 | prahl
+    unintentional change
+
+r1128 | prahl
+    remove \nonumber and \notag when using -M32 option
+
+r1127 | prahl
+    use \[ ... \] instead of $$ ... $$
+    replace \begin{eqnarray} with \begin{align}
+    all changes to streamline MathType conversion
+
+r1126 | prahl
+    attempt to streamline conversion of latex to MathType when using -M32
+
+r1125 | prahl
+    Improve parsing of rows in tabular and longtable environments
+    In particular, ignore \\ when surrounded by braces
+
+r1124 | prahl
+    increase buffer size from 512 to 1024
+
+r1123 | prahl
+    support for tabularnewline
+
+r1122 | whennings
+    updated documentation reflecting current versions of GhostScript and ImageMagick
+
+r1121 | whennings
+    again updated documentation regarding use of STIX fonts
+
+r1120 | whennings
+    documentation updated because STIX fonts are now officially released
+
+r1119 | prahl
+    Fix bug in which babel language was not functional for most
+    of the languages that were supposed to be supported
+
+r1118 | prahl
+    fix for command option -i
+
+r1117 | paaguti
+    Trivial change in the Makefile to make it more Debian friendly
+    Included $(DESTDIR) and moved the drive specification to the
+    lines which define the different directories. It's the only
+    magic needed, the rest happens in debian/rules if present. 
+
+r1116 | prahl
+    fix bug when parsing brackets [text {]} more text]
+
+r1115 | whennings
+    Updated Makefile for move of file inc_test.tex from /cfg to /test
+
+r1114 | whennings
+    In styles.c commented out lines 135-136 because the extra blank is unnecessary.
+    Extended file test/style.tex
+    Moved file inc_test.tex from /cfg to /test
+
+r1113 | prahl
+    revert changes to style.cfg because they don't work with MS Word under Windows
+
+r1112 | prahl
+    Use Title Case for all style definitions
+    Remove extra blank at in rtf header following style definition
+    This should help OpenOffice
+
+r1111 | paaguti
+    Include DeclareGraphicsExtensions in cfg/ignore.cfg
+    until a better solution is found
+
+r1110 | prahl
+    tighten up comments from the last check in.  Looks great otherwise.
+
+r1109 | whennings
+    In graphics.c, changed path delimiter handling.
+    In graphics.c, fixed creation of temporary file names.
+    Updated documentation.
+
+r1108 | whennings
+    In main.c, use of tmp directory for intermediate files enabled for DOS/Windows
+    Added option to choose tmp directory to GUI shell
+
+r1107 | prahl
+    support for \={\i}
+
+r1106 | prahl
+    Somehow \'{\i} and \`{\i} were reversed
+
+r1105 | prahl
+    Last simplification to Makefile to ease packaging by other environments
+
+r1104 | prahl
+    eliminate unnecessary compile time options from Makefile
+    eliminate unneeded option for rsx compiler
+    remove all tabs from header files and remaining .c files
+
+r1103 | whennings
+    added MinGW and djgpp options to Makefile
+
+r1102 | prahl
+    Update ChangeLog
+    Update Copyright
+    Update date
 
 r1101 | prahl
     fix bug in abbreviate() debugging command
