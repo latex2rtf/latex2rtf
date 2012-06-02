@@ -78,6 +78,7 @@ int     DefaultFontSeries(void);
 void    CmdFontSize(int code);
 int     CurrentFontSize(void);
 int     DefaultFontSize(void);
+void    CmdFontSizeEnviron(int code);
 
 void    CmdFontEncoding(int code);
 int     CurrentFontEncoding(void);
