@@ -777,6 +777,8 @@ void ExecGeomOptions (char *key, char *value1, char *value2)
     int dist1 = 0;
     int dist2 = 0;
     
+    if (key == NULL) return;
+    
     if (strstr(key, "ratio")) {
         if (strchr(value1, ':')) { /* each value is a ratio */
             value1 = strtok(value1, ": ");
