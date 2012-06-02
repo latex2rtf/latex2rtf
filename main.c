@@ -377,7 +377,7 @@ int main(int argc, char **argv)
     if (PushSource(g_tex_name, NULL) == 0) {
         OpenRtfFile(g_rtf_name, &fRtf);
 
-        InitializeDocumentFont(TexFontNumber("Roman"), 20, F_SHAPE_UPRIGHT, F_SERIES_MEDIUM, ENCODING_1251);
+        InitializeDocumentFont(TexFontNumber("Roman"), 20, F_SHAPE_UPRIGHT, F_SERIES_MEDIUM, ENCODING_1252);
         PushTrackLineNumber(TRUE);
 
         ConvertWholeDocument();

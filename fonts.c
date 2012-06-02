@@ -719,6 +719,7 @@ void CmdFontEncoding(int code)
   purpose: sets the current RTF encoding
  ******************************************************************************/
 {
+/* 	fprintf(stderr,"setting encoding from %d to %d\n",RtfFontInfo[FontInfoDepth].encoding,code);*/
     RtfFontInfo[FontInfoDepth].encoding = code;
     diagnostics(6, "CurrentFontSeries -- encoding=%d", RtfFontInfo[FontInfoDepth].encoding);
 }

@@ -119,7 +119,8 @@ void setPackageBabel(char *option)
 		if (strstr(language, "czech")) {
 			CzechMode = TRUE;
 			PushEnvironment(CZECH_MODE);
-			CmdFontEncoding(ENCODING_LATIN_2);
+			if (CurrentFontEncoding()==ENCODING_1252) /* has not been set already */
+				CmdFontEncoding(ENCODING_LATIN_2);
 		}
 	
 		ReadLanguage(language);
@@ -389,19 +390,19 @@ static void setPaperSize(char *option)
 static void setPointSize(char *option)
 {
     if (strcmp(option, "10pt") == 0) {
-        InitializeDocumentFont(-1, 20, -1, -1, ENCODING_1251);
+        InitializeDocumentFont(-1, 20, -1, -1, ENCODING_1252);
         setLength("baselineskip", 12 * 20);
         setLength("parindent", 15 * 20);
         setLength("parskip", 0 * 20);
 
     } else if (strcmp(option, "11pt") == 0) {
-        InitializeDocumentFont(-1, 22, -1, -1, ENCODING_1251);
+        InitializeDocumentFont(-1, 22, -1, -1, ENCODING_1252);
         setLength("baselineskip", 14 * 20);
         setLength("parindent", 17 * 20);
         setLength("parskip", 0 * 20);
 
     } else {
-        InitializeDocumentFont(-1, 24, -1, -1, ENCODING_1251);
+        InitializeDocumentFont(-1, 24, -1, -1, ENCODING_1252);
         setLength("baselineskip", (int) 14.5 * 20);
         setLength("parindent", 18 * 20);
         setLength("parskip", 0 * 20);
