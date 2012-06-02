@@ -445,6 +445,26 @@ void CmdFontSize(int code)
       RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape, RtfFontInfo[FontInfoDepth].series);
 }
 
+void CmdFontSizeEnviron(int code)
+
+/******************************************************************************
+  purpose: sets the font size e.g., \begin{small} ... \end{small}
+ ******************************************************************************/
+{
+    int true_code = code & ~ON;
+
+    diagnostics(6, "CmdFontSizeEnviron (before) depth=%d, family=%d, size=%d, shape=%d, series=%d",
+      FontInfoDepth, RtfFontInfo[FontInfoDepth].family,
+      RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape, RtfFontInfo[FontInfoDepth].series);
+
+    if (!(code & ON)) return;
+	CmdFontSize(true_code);
+
+    diagnostics(6, "CmdFontSizeEnviron (after) depth=%d, family=%d, size=%d, shape=%d, series=%d",
+      FontInfoDepth, RtfFontInfo[FontInfoDepth].family,
+      RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape, RtfFontInfo[FontInfoDepth].series);
+}
+
 void CmdEmphasize(int code)
 
 /****************************************************************************

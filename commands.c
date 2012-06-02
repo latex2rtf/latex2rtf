@@ -113,7 +113,6 @@ static CommandArray commands[] = {
     {"mathsl", CmdFontShape, F_SHAPE_SLANTED_2},
 
     {"tiny", CmdFontSize, 10},
-    {"ssmall", CmdFontSize, 12},    /* from moresize.sty */
     {"scriptsize", CmdFontSize, 14},
     {"footnotesize", CmdFontSize, 16},
     {"enotesize", CmdFontSize, 16},
@@ -171,6 +170,7 @@ static CommandArray commands[] = {
     {"d", CmdUnderdotChar, 0},
     {"v", CmdCaronChar, 0},
     {"r", CmdRingChar, 0},
+    {"accent", CmdRingChar, 1},
     {"b", CmdUnderbarChar, 0},
     {"c", CmdCedillaChar, 0},
     {"i", CmdDotlessChar, 0},
@@ -712,7 +712,6 @@ static CommandArray params[] = {
     {"picture", CmdPicture, 0},
     {"minipage", CmdMinipage, 0},
     {"music", CmdMusic, 0},
-    {"small", CmdTolerateEnviron, 0},
     {"pspicture", CmdPsPicture, 0},
     {"psgraph", CmdPsGraph, 0},
 
@@ -790,7 +789,19 @@ static CommandArray params[] = {
     {"sloppypar", CmdTolerateEnviron, 0},
     {"doublespace", CmdSpacingEnviron, 2},
     {"spacing", CmdSpacingEnviron, 0},
-    {"", NULL, 0}
+    
+    {"small", CmdFontSizeEnviron, 12},
+	{"tiny", CmdFontSizeEnviron, 10},
+	{"scriptsize", CmdFontSizeEnviron, 14},
+	{"footnotesize", CmdFontSizeEnviron, 16},
+	{"normalsize", CmdFontSizeEnviron, 20},
+	{"large", CmdFontSizeEnviron, 24},
+	{"Large", CmdFontSizeEnviron, 28},
+	{"LARGE", CmdFontSizeEnviron, 34},
+	{"huge", CmdFontSizeEnviron, 40},
+	{"Huge", CmdFontSizeEnviron, 50}, 
+	
+	{"", NULL, 0}
 };                              /* end of list */
 
 
