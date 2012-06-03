@@ -1,6 +1,6 @@
 /* main.c - LaTeX to RTF conversion program
 
-Copyright (C) 1995-2007 The Free Software Foundation
+Copyright (C) 1995-2012 The Free Software Foundation
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -483,7 +483,7 @@ static void ConvertWholeDocument(void)
 static void print_version(void)
 {
     fprintf(stdout, "latex2rtf %s\n\n", Version);
-    fprintf(stdout, "Copyright (C) 2010 Free Software Foundation, Inc.\n");
+    fprintf(stdout, "Copyright (C) 2012 Free Software Foundation, Inc.\n");
     fprintf(stdout, "This is free software; see the source for copying conditions.  There is NO\n");
     fprintf(stdout, "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n");
     fprintf(stdout, "Written by Prahl, Lehner, Granzer, Dorner, Polzer, Trisko, Schlatterbeck.\n");
