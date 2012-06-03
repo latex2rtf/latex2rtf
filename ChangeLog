@@ -1,4 +1,27 @@
 latex2rtf changes from 2.0.0
+r1187 | prahl
+	updated changelog
+
+r1186 | prahl
+	bump version number
+
+r1185 | prahl
+	add function to font.h
+
+r1184 | prahl
+	support \\begin{small} and \\accent23
+
+r1183 | prahl
+	improve czech style and inputenc
+
+r1182 | prahl
+	handle missing arguments in geometry package
+
+r1181 | prahl
+	fix compile error in WriteEquationAsMTEF
+
+r1180 | whennings
+	WH: updated changelog
 
 r1179 | whennings
     funct1.c: support french quotes in German mode
