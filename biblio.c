@@ -60,7 +60,7 @@ static biblioElem *newBiblio(char *newKey)
     return result;
 }
 
-static void printTable()
+static void printTable(void)
 {
 #ifdef VERBOSE_BIBLIO
     int i;

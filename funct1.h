@@ -190,5 +190,3 @@ int  TryConditionSet(char *command);
 void CmdAppendix(int code);
 void CmdAcronymItem(int code);
 void CmdLap(int code);
-
-

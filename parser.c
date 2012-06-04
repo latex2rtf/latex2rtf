@@ -68,8 +68,6 @@ static int g_parser_backslashes;
 static int g_track_line_number_stack[TRACK_LINE_NUMBER_MAX];
 static int g_track_line_number = -1;
 
-static void parseBracket();
-
 void PushTrackLineNumber(int flag)
 
 /***************************************************************************
@@ -904,6 +902,17 @@ char *getBraceRawParam(void)
 {
     return getBraceParam0(TRUE);
 }
+
+void ignoreBraceParam(void) {
+    char *p = getBraceParam();
+    if (NULL != p) free(p);
+}
+
+void  ignoreBracketParam(void) {
+    char *p = getBracketParam();
+    if (NULL != p) free(p);
+}
+
 
 char *getLeftRightParam(void)
 

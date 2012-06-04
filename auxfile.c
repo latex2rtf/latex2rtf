@@ -31,6 +31,7 @@
 #include "utils.h"
 #include "parser.h"
 #include "convert.h"
+#include "auxfile.h"
 
 /* List of commands to look for when parsing the aux file */
 /* TODO: put all commands in a CommandArray and create    */

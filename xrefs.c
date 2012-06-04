@@ -139,7 +139,7 @@ void set_bibpunct_style_paren(char *open, char *close)
     g_bibpunct_close = strdup(close);
 }
 
-void set_author_date_and_numbers_sep(char *ad, char *n)
+static void set_author_date_and_numbers_sep(char *ad, char *n)
 {
     safe_free(g_bibpunct_author_date_sep);
     g_bibpunct_author_date_sep = strdup(ad);

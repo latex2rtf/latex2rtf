@@ -184,13 +184,13 @@ char *strdup_together4(const char *s, const char *t, const char *u, const char *
 ******************************************************************************/
 char *strdup_nocomments(const char *s)
 {
-    char *p, *dup;
+    char *p, *duplicate;
 
     if (s == NULL)
         return NULL;
 
-    dup = (char *) malloc(strlen(s) + 1);
-    p = dup;
+    duplicate = (char *) malloc(strlen(s) + 1);
+    p = duplicate;
 
     while (*s) {
         while (*s == '%') {     /* remove comment */
@@ -207,7 +207,7 @@ char *strdup_nocomments(const char *s)
     }
   done:
     *p = '\0';
-    return dup;
+    return duplicate;
 }
 
 /******************************************************************************
@@ -215,14 +215,14 @@ char *strdup_nocomments(const char *s)
 ******************************************************************************/
 char *strdup_noblanks(const char *s)
 {
-    char *p, *dup;
+    char *p, *duplicate;
 
     if (s == NULL)
         return NULL;
     while (*s == ' ' || *s == '\n')
         s++;                    /* skip to non blank */
-    dup = (char *) malloc(strlen(s) + 1);
-    p = dup;
+    duplicate = (char *) malloc(strlen(s) + 1);
+    p = duplicate;
     while (*s) {
         *p = *s;
         if (*p != ' ' && *p != '\n')
@@ -230,7 +230,7 @@ char *strdup_noblanks(const char *s)
         s++;
     }
     *p = '\0';
-    return dup;
+    return duplicate;
 }
 
 /*************************************************************************
@@ -238,10 +238,10 @@ purpose: duplicate text with only a..z A..Z 0..9 and _
 **************************************************************************/
 char *strdup_nobadchars(const char *text)
 {
-    char *dup, *s;
+    char *duplicate, *s;
 
-    dup = strdup_noblanks(text);
-    s = dup;
+    duplicate = strdup_noblanks(text);
+    s = duplicate;
 
     while (*s) {
         if (!('a' <= *s && *s <= 'z') && !('A' <= *s && *s <= 'Z') && !('0' <= *s && *s <= '9'))
@@ -249,7 +249,7 @@ char *strdup_nobadchars(const char *text)
         s++;
     }
 
-    return dup;
+    return duplicate;
 }
 
 /******************************************************************************
@@ -257,31 +257,31 @@ char *strdup_nobadchars(const char *text)
 ******************************************************************************/
 char *strdup_printable(const char *s)
 {
-    char *dup;
+    char *duplicate;
     int i;
     
     if (s == NULL) return NULL;
 
-    dup = (char *) malloc(2*strlen(s));
+    duplicate = (char *) malloc(2*strlen(s));
 
     i=0;
     while (*s) {
         if (*s=='\r') {
-            dup[i++]='\\';
-            dup[i++]='r';
+            duplicate[i++]='\\';
+            duplicate[i++]='r';
          } else if (*s=='\n') {
-            dup[i++]='\\';
-            dup[i++]='n';
+            duplicate[i++]='\\';
+            duplicate[i++]='n';
          } else if (*s=='\t') {
-            dup[i++]='\\';
-            dup[i++]='t';
+            duplicate[i++]='\\';
+            duplicate[i++]='t';
          } else 
-            dup[i++]=*s;
+            duplicate[i++]=*s;
          s++;
     }
-    dup[i]='\0';
+    duplicate[i]='\0';
         
-    return dup;
+    return duplicate;
 }
 
 /******************************************************************************
@@ -747,30 +747,6 @@ int my_fgetc(FILE *f)
       
    returns number of characters read
 */
-
-int xmy_fgets(char *buffer, int maxBuffer, FILE *f) 
-{
-    int i = 0;
-    
-    while ( i < maxBuffer ) {
-        buffer[i] = my_fgetc(f);
-
-        if (buffer[i] == '\0') return i;           /* line ends with EOF */
-        
-        if (buffer[i] == '\n') {
-            buffer[i] = '\0';
-            i--;
-            if ( i >= 0 ) {
-                if ( buffer[i] != '\\' ) return i; /* usual case */
-                i--;                               /* discard '\\' */
-            }
-        }
-        i++;
-    } 
-    
-    buffer[maxBuffer] = '\0';
-    return maxBuffer;
-}
 
 char * my_fgets(char *buffer, int maxBuffer, FILE *f) 
 {

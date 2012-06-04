@@ -526,13 +526,14 @@ void CmdHatChar(int code)
 void CmdRingChar(int code)
 {
     int n = RtfFontNumber("STIXGeneral");
-    char c,d,*cParam;
+    char *cParam;
 
 	if (code == 1) {
+		char c, d;
 		c = getTexChar();
 		d = getTexChar();
 		if (c!='2' || d != '3')	{
-			fprintf(stderr, "sorry only \\accent23 is supported \n",cParam);
+			fprintf(stderr, "sorry only \\accent23 is supported \n");
 			return;
 		}
 	}
@@ -1308,7 +1309,7 @@ void CmdSymbol(int code)
     
 }
 
-static void TeXlogo()
+static void TeXlogo(void )
 
 /******************************************************************************
  purpose : prints the Tex logo in the RTF-File (D Taupin)
@@ -1320,7 +1321,7 @@ static void TeXlogo()
     fprintRTF("T{\\dn%d E}X", dnsize);
 }
 
-static void LaTeXlogo()
+static void LaTeXlogo(void)
 
 /******************************************************************************
  purpose : prints the LaTeX logo in the RTF-File (D Taupin)

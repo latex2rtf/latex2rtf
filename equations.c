@@ -682,6 +682,7 @@ static void WriteEquationAsRTF(int code, char **eq)
     FinishRtfEquation(code, EQ_Needed);
 }
 
+#ifdef MTEF_IMPLEMENTED
 static void WriteEquationAsMTEF(int code, char **eq)
 
 /******************************************************************************
@@ -698,6 +699,7 @@ static void WriteEquationAsMTEF(int code, char **eq)
 */
     FinishRtfEquation(code, EQ_Needed);
 }
+#endif
 
 /******************************************************************************
  purpose   : search an equation and determine the first label that appears
@@ -1675,7 +1677,6 @@ void CmdEqnArraySlashSlash(int height)
 void CmdSlashSlash(int height)
 {
     int restart_field=0;
-    int parindent;
     diagnostics(4, "CmdSlashSlash height = %d", height);
     
     if (g_processing_tabbing) {

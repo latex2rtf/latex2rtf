@@ -32,7 +32,6 @@ extern char TexModeName[7][25];
 
 void CmdBeginEnd(int code);
 void CmdEndParagraph(int code);
-void CmdIndent(int code);
 void CmdVspace(int code);
 void CmdLineSpacing(int code);
 void CmdSpacingEnviron(int code);

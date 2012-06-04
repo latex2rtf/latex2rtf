@@ -55,10 +55,6 @@ Authors:
 #define ALPHA_NUMBERING  1
 #define ROMAN_NUMBERING  2
 
-extern int twocolumn;          /* true if twocolumn-mode is enabled */
-
-void CmdPagestyle( /* @unused@ */ int code);
-void CmdHeader(int code);
 char *roman_item(int n, int upper);
 
 static int g_chapter_numbering = ARABIC_NUMBERING;

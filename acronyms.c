@@ -179,7 +179,7 @@ int               acroPrintWithPage = FALSE;
  * linear search, OK not completely efficient, but portable
  *
  */
-acroEntry *searchEntry(char *acDef)
+static acroEntry *searchEntry(char *acDef)
 {
     int i;
  
@@ -196,14 +196,14 @@ acroEntry *searchEntry(char *acDef)
 
 
 /* auxiliary functions */
-static void ConvertFmtString(char *fmt,char *str)
+static void ConvertFmtString(const char *fmt, const char *str)
 {
     char *buffer = (char *) malloc(strlen(fmt)+strlen(str)+1);
     sprintf(buffer,fmt,str);
     ConvertString(buffer);
 }
 
-static void ConvertFmt2String(char *fmt,char *s1,char *s2)
+static void ConvertFmt2String(const char *fmt, const char *s1, const char *s2)
 {
     char *buffer = (char *) malloc(strlen(fmt)+strlen(s1)+strlen(s2)+1);
     sprintf(buffer,fmt,s1,s2);

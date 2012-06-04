@@ -327,24 +327,24 @@ static char *SysGraphicsConvert(int opt, int offset, uint16_t dpi, const char *i
     }
 
     if (opt == CONVERT_SIMPLE) {
-        char format_simple[] = "convert '%s' '%s'";
+        const char format_simple[] = "convert '%s' '%s'";
         snprintf(cmd, N, format_simple, in, out_tmp);
     }
 
     if (opt == CONVERT_CROP) {
-        char format_crop[]   = "convert -trim +repage -units PixelsPerInch -density %d '%s' '%s'";
+        const char format_crop[]   = "convert -trim +repage -units PixelsPerInch -density %d '%s' '%s'";
         snprintf(cmd, N, format_crop, dpi, in, out_tmp);
     }
 
     if (opt == CONVERT_LATEX) {
         if (g_home_dir == NULL) {
-            char format_unix[] = "%slatex2png -d %d -o %d '%s'";
+            const char format_unix[] = "%slatex2png -d %d -o %d '%s'";
             if (g_script_dir)
                 snprintf(cmd, N, format_unix, g_script_dir, dpi, offset, in);
             else
                 snprintf(cmd, N, format_unix, "", dpi, offset, in);
         } else {
-            char format_unix[] = "%slatex2png -k -d %d -o %d -H '%s' '%s'";
+            const char format_unix[] = "%slatex2png -k -d %d -o %d -H '%s' '%s'";
             if (g_script_dir)
                 snprintf(cmd, N, format_unix, g_script_dir, dpi, offset, g_home_dir, in);
             else
@@ -353,7 +353,7 @@ static char *SysGraphicsConvert(int opt, int offset, uint16_t dpi, const char *i
     }
     
     if (opt == CONVERT_PDF) {
-        char format_unix[] = "gs -q -dNOPAUSE -dSAFER -dBATCH -sDEVICE=pngalpha -r%d -sOutputFile='%s' '%s'";
+        const char format_unix[] = "gs -q -dNOPAUSE -dSAFER -dBATCH -sDEVICE=pngalpha -r%d -sOutputFile='%s' '%s'";
         snprintf(cmd, N, format_unix, dpi, out_tmp, in);
     }
 

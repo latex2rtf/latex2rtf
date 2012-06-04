@@ -8,6 +8,9 @@ PKGMANDIR?=man
 #reasonable default set of compiler flags
 CFLAGS?=-g -Wall -Wno-write-strings
 
+#reasonable default set of compiler flags while developing
+#CFLAGS = -g -D_FORTIFY_SOURCE=2 -Wall -Waggregate-return -Wmissing-declarations -Wmissing-prototypes -Wredundant-decls -Wshadow -Wstrict-prototypes -Wformat=2
+
 PLATFORM?=-DUNIX   # Mac OS X, Linux, BSD
 #PLATFORM?=-DMSDOS # Windows/DOS
 #PLATFORM?=-DOS2   # OS/2 (does anyone still use this?)
