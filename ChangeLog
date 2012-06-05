@@ -1,4 +1,21 @@
 latex2rtf changes from 2.0.0
+
+r1192 | whennings
+	updated changelog and version.h
+
+r1191 | prahl
+	normalizing file attributes
+
+r1190 | prahl
+	tweaks to silence compiler warnings
+
+r1189 | whennings
+	test files babel_french.tex and qualisex.tex did not LaTeX properly, 
+	added \usepackage[T1]{fontenc}
+
+r1188 | whennings
+	documentation updated
+
 r1187 | prahl
 	updated changelog
 

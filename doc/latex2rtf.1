@@ -1,24 +1,24 @@
-.\" $Id: latex2rtf.1,v 1.7 2002/11/28 17:29:34 prahl Exp $
+.\" $Id: latex2rtf.1,v 1.8 2012/5/6 10:07:00 WH Exp $
 .\"
 .TH latex2rtf 1
 .SH NAME
 latex2rtf \- Convert a LaTeX file to an RTF file
 .SH SYNTAX
-latex2rtf [-hlpFSV] [ -d# ] [ -M# 
+latex2rtf [-hlpFSVW] [ -d# ] [ -D# ] [ -M# ]  [ -se#] [ -sf#] [ -t# ] [ -Z# 
 ] [ -a
 .I auxfile
 ] [ -b
 .I bblfile
 ] [ -C
 .I codepage
-] [ -D
-.I dots_per_inch
-] [ -i
+]  [ -i
 .I language
 ] [ -o
 .I outputfile
 ] [ -P
 .I /path/to/cfg
+] [ -T
+.I /path/to/tmp
 ] [
 .I inputfile
 ]
@@ -72,6 +72,19 @@ and range from 0 (only errors) to 6 (absurdly many messages). The default is
 Used to specify the number of dots per inch in equations that are converted to
 bitmaps and for graphics that must be converted.  Default is 300 dpi. 
 .TP
+.B \-f use fields
+-f0
+do not use fields in RTF.  This is handy when primitive RTF 
+editors are being used to view the RTF output.
+-f1  
+use fields for equations but not @code{\ref} and @code{\cite}.  
+-f2 
+use fields for \ref and \cite but not equations.  
+-f3
+use fields when possible.  This is the default and is most useful when
+the RTF file is being exported to be used in Word.  This retains the most
+information from the original LaTeX file.
+.TP
 .B \-F
 use LaTeX to create bitmaps for all figures.  This may help when figures are
 not translated properly.
@@ -109,13 +122,21 @@ and displayed equations to bitmaps.  Bitmap conversion requires a working
 latex2png script.  Producing bitmaps is slow.
 .TP
 .B \-p
-do not quote printed parentheses in mathematical formulas, as some versions of
+Escape printed parentheses in mathematical formulas, as some versions of
 Word (e.g Word 2000) have deep psychological problems with EQ fields using quoted parentheses.
 If Word displays some formulas with parentheses as 'Error!', try this option.
 See also the -S option.
 .TP 
 .B \-P /path/to/cfg
 used to specify the directory that contains the @code{.cfg} files
+.TP
+.B \-se#
+selects the scale for equation conversion, where # is the scale factor 
+(default 1.00).
+.TP
+.B \-sf#
+selects the scale for figure conversion, where # is the scale factor
+(default 1.00).
 .TP 
 .B \-S
 Use semicolons to separate arguments in RTF fields.
@@ -123,6 +144,14 @@ This is needed when the machine opening the RTF file
 has a version of Word that uses commas for decimal points.
 This also can fix displaying some formulas as 'Error!'
 You may also need to try the -p option.
+.TP
+.B \-t#
+selects the type of table conversion.
+-t1 convert tables to RTF (default)
+-t2 convert tables to bitmaps
+.TP
+.B \-T /path/to/tmp
+used to specify the folder where to put temporary files.
 .TP
 .B \-V
 Prints version on standard output and exits.
