@@ -486,8 +486,8 @@ executables are detected automatically. If for any reason this doesn't
 happen, these paths can be specified manually in the ``Environment'' 
 tab of the @ltor{}GUI shell window.
 
-If you need to start @ltor{}not from its own shell but from another 
-Windows application, you need to add the folder containing 
+If you need to start @ltor{}not from its own shell but from commandline 
+or another Windows application, you need to add the folder containing 
 the latex2png script and the helper programs to the search path.@*
 Some applications (e.g.@: Lyx) allow to temporarily add the path by
 specifying it in the options.@*
@@ -521,7 +521,7 @@ WinNT, Win2000, WinXP, Vista, Win7
 Right-click ``My Computer'' (German: ``Arbeitsplatz''), then select ``Properties'';
 @item
 NT: Click the ``Environment'' tab;@*
-XP: Click the ``Extended'' tab, then the ``Environment variables'' button;
+XP and up: Click the ``Advanced'' tab, then the ``Environment variables'' button;
 @item
 Find the line beginning with @file{PATH=} and insert the string @*
 @file{C:\PROGRA~1\latex2rtf;}@*
