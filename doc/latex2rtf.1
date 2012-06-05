@@ -76,12 +76,12 @@ bitmaps and for graphics that must be converted.  Default is 300 dpi.
 -f0
 do not use fields in RTF.  This is handy when primitive RTF 
 editors are being used to view the RTF output.
--f1  
-use fields for equations but not @code{\ref} and @code{\cite}.  
--f2 
-use fields for \ref and \cite but not equations.  
--f3
-use fields when possible.  This is the default and is most useful when
+.br 
+-f1 use fields for equations but not \\ref and \\cite.  
+.br 
+-f2 use fields for \\ref and \\cite but not equations.  
+.br 
+-f3 use fields when possible.  This is the default and is most useful when
 the RTF file is being exported to be used in Word.  This retains the most
 information from the original LaTeX file.
 .TP
@@ -115,11 +115,15 @@ is specified with the -o option, the resulting RTF is produced in a file with .t
 replaced by .rtf.
 .TP
 .B \-M#
-where # selects the type of equation conversion.  -M3 is the default and
-converts both inline and displayed equations to RTF.  -M6 converts inline 
-equations to RTF and displayed equations to bitmaps. -M12 converts inline 
-and displayed equations to bitmaps.  Bitmap conversion requires a working 
-latex2png script.  Producing bitmaps is slow.
+where # selects the type of equation conversion.  
+.br 
+-M3 is the default and converts both inline and displayed equations to RTF.  
+.br 
+-M6 converts inline equations to RTF and displayed equations to bitmaps. 
+.br 
+-M12 converts inline and displayed equations to bitmaps.  
+.br
+Bitmap conversion requires a working latex2png script.  Producing bitmaps is slow.
 .TP
 .B \-p
 Escape printed parentheses in mathematical formulas, as some versions of
@@ -147,7 +151,9 @@ You may also need to try the -p option.
 .TP
 .B \-t#
 selects the type of table conversion.
+.br 
 -t1 convert tables to RTF (default)
+.br 
 -t2 convert tables to bitmaps
 .TP
 .B \-T /path/to/tmp
