@@ -3,6 +3,15 @@ RTF format used by various text processors, most notably Word.
 
 For the Copyright of the Program see the file Copyright.
 
+Version 2.2.1 only contains minor changes needed to silence compiler
+warnings, update documentation, and improve package distribution.  
+No new functionality is included.
+
+Version 2.2.0 has a bunch of minor bug fixes, adds support for the 
+setspace package, adds support for \bibstyle, extends babel converage to
+include british, greek, and frenchb languages, fix \graphicspath, improve
+handling of cp1251 and support \accent23 for czech.
+
 As of verison 2.1.0, latex2rtf uses Unicode for all characters.  Since
 most fonts are missing some special math characters, it is recommended
 that the STIX fonts (http://www.mozilla.org/projects/mathml/fonts/)
