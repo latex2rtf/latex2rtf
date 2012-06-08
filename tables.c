@@ -1385,7 +1385,7 @@ void CmdTabbing(int code)
         fprintRTF("\\par\n");
     
         n_total = 0;
-        while (this_row && strlen(this_row) >= 0) {
+        while (this_row && strlen(this_row) > 0) {
             show_string(5, this_row, "row");
     
             TabbingGetColumnAlignments(this_row, align, &n, &next_left);
