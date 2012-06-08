@@ -1,4 +1,31 @@
-latex2rtf changes from 2.0.0
+##############
+## latex2rtf changes from 2.2.0
+##############
+
+r1199 | prahl
+add comments to README
+
+r1198 | prahl
+remove unneeded gcc options
+
+r1197 | prahl
+add all files for 'make fullcheck'
+
+r1196 | prahl
+Jussi Lehtola's linux Makefile patch
+
+r1195 | whennings
+updated documentation
+
+r1194 | whennings
+corrected manpage
+
+r1193 | whennings
+updated changelog and manpage
+
+##############
+## latex2rtf changes from 2.1.0
+##############
 
 r1192 | whennings
 	updated changelog and version.h
@@ -292,6 +319,10 @@ r1109 | whennings
     In graphics.c, changed path delimiter handling.
     In graphics.c, fixed creation of temporary file names.
     Updated documentation.
+
+##############
+## latex2rtf changes from 2.0.0
+##############
 
 r1108 | whennings
     In main.c, use of tmp directory for intermediate files enabled for DOS/Windows
