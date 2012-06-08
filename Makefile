@@ -6,7 +6,7 @@ RMDIR?=rm -rf
 PKGMANDIR?=man
 
 #reasonable default set of compiler flags
-CFLAGS?=-g -Wall -Wno-write-strings
+CFLAGS?=-Wall -Wno-write-strings
 
 #reasonable default set of compiler flags while developing
 #CFLAGS = -g -D_FORTIFY_SOURCE=2 -Wall -Waggregate-return -Wmissing-declarations -Wmissing-prototypes -Wredundant-decls -Wshadow -Wstrict-prototypes -Wformat=2
@@ -31,8 +31,8 @@ BINARY_NAME=latex2rtf$(EXE_SUFFIX)
 
 # Location of binary, man, info, and support files - adapt as needed
 BINDIR=/bin
-MANDIR=/$(PKGMANDIR)/man1
-INFODIR=/info
+MANDIR=/share/$(PKGMANDIR)/man1
+INFODIR=/share/info
 SUPPORTDIR=/share/latex2rtf
 CFGDIR=/share/latex2rtf/cfg
 
@@ -138,7 +138,7 @@ TEST=  \
 	test/cyrillic.tex            test/greek.tex          test/direct.tex        \
 	test/acronym.tex             test/acronym.bib        test/style.tex         \
 	test/enc_moroz_koi8.tex      test/enc_moroz_ot2.tex  test/enc_moroz_utf8.tex\
-	test/enc_ot2.tex      
+	test/enc_ot2.tex
 	
 OBJS=fonts.o direct.o encodings.o commands.o stack.o funct1.o tables.o \
 	chars.o ignore.o cfg.o main.o utils.o parser.o lengths.o counters.o \
@@ -213,14 +213,14 @@ install: latex2rtf doc/latex2rtf.1 $(CFGS) scripts/latex2png
 	$(MKDIR) $(DESTDIR)$(BINDIR)
 	$(MKDIR) $(DESTDIR)$(MANDIR)
 	$(MKDIR) $(DESTDIR)$(CFGDIR)
-	cp $(BINARY_NAME)     $(DESTDIR)$(BINDIR)
-	cp scripts/latex2png  $(DESTDIR)$(BINDIR)
-	cp doc/latex2rtf.1    $(DESTDIR)$(MANDIR)
-	cp doc/latex2png.1    $(DESTDIR)$(MANDIR)
-	cp $(CFGS)            $(DESTDIR)$(CFGDIR)
-	cp doc/latex2rtf.html $(DESTDIR)$(SUPPORTDIR)
-	cp doc/latex2rtf.pdf  $(DESTDIR)$(SUPPORTDIR)
-	cp doc/latex2rtf.txt  $(DESTDIR)$(SUPPORTDIR)
+	cp -p $(BINARY_NAME)     $(DESTDIR)$(BINDIR)
+	cp -p scripts/latex2png  $(DESTDIR)$(BINDIR)
+	cp -p doc/latex2rtf.1    $(DESTDIR)$(MANDIR)
+	cp -p doc/latex2png.1    $(DESTDIR)$(MANDIR)
+	cp -p $(CFGS)            $(DESTDIR)$(CFGDIR)
+	cp -p doc/latex2rtf.html $(DESTDIR)$(SUPPORTDIR)
+	cp -p doc/latex2rtf.pdf  $(DESTDIR)$(SUPPORTDIR)
+	cp -p doc/latex2rtf.txt  $(DESTDIR)$(SUPPORTDIR)
 	@echo "******************************************************************"
 	@echo "*** latex2rtf successfully installed as \"$(BINARY_NAME)\""
 	@echo "*** in directory \"$(DESTDIR)$(BINDIR)\""
@@ -238,7 +238,7 @@ install: latex2rtf doc/latex2rtf.1 $(CFGS) scripts/latex2png
 
 install-info: doc/latex2rtf.info
 	$(MKDIR) $(DESTDIR)$(INFODIR)
-	cp doc/latex2rtf.info $(DESTDIR)$(INFODIR)
+	cp -p doc/latex2rtf.info $(DESTDIR)$(INFODIR)
 	install-info --info-dir=$(DESTDIR)$(INFODIR) doc/latex2rtf.info
 
 realclean: checkdir clean
@@ -250,7 +250,7 @@ appleclean:
 	sudo xattr -r -d com.apple.FinderInfo ../trunk
 	sudo xattr -r -d com.apple.TextEncoding ../trunk
 	
-splint: 
+splint:
 	splint -weak $(SRCS) $(HDRS)
 	
 .PHONY: all check checkdir clean depend dist doc install install_info realclean latex2rtf uptodate releasedate splint fullcheck
