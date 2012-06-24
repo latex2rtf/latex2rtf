@@ -39,6 +39,7 @@ Authors:
 #include "lengths.h"
 #include "definitions.h"
 #include "funct1.h"
+#include "encodings.h"
 
 typedef struct InputStackType {
     char *string;
@@ -534,6 +535,31 @@ purpose: rewind the filepointer in the LaTeX-file by one
     diagnostics(6, "after ungetTexChar=<%c> backslashes=%d line=%ld", c, g_parser_backslashes, g_parser_line);
 }
 
+int skipBOM(int cThis)
+{
+    /* UTF8 Byte Order Mark */
+    if (cThis == 0xEF) {
+    	cThis == getRawTexChar();
+    	if (cThis == 0xBB) {
+     		cThis == getRawTexChar();
+    		if (cThis == 0xBF) {
+    			CmdFontEncoding(ENCODING_UTF8);
+     			cThis == getRawTexChar();
+     			diagnostics(2, "UTF 8 BOM encountered, now assuming UTF8 input");
+     		}
+    	}
+    }
+   		
+    /* UTF16 Byte Order Mark */
+    if (cThis == 0xFE) {
+    	cThis == getRawTexChar();
+    	if (cThis == 0xFF)
+     		diagnostics(2, "UTF 16 is not supported, you might try converting to UTF8");
+    }
+    
+    return cThis;
+}
+
 char getTexChar()
 
 /***************************************************************************
@@ -542,18 +568,11 @@ char getTexChar()
               It filters the input stream so that % is handled properly
 ****************************************************************************/
 {
-    char cThis;
-    char cSave = g_parser_lastChar;
-    char cSave2 = g_parser_penultimateChar;
+    int cThis;
 
     cThis = getRawTexChar();
-    while (cThis == '%' && even(g_parser_backslashes)) {
-        skipToEOL();
-        g_parser_penultimateChar = cSave2;
-        g_parser_lastChar = cSave;
-        cThis = getRawTexChar();
-    }
-
+    cThis = skipBOM(cThis);
+    
     if (cThis == '\\')
         g_parser_backslashes++;
     else
