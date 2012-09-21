@@ -40,6 +40,7 @@ This file is available from http://sourceforge.net/projects/latex2rtf/
 #include "preamble.h"
 #include "counters.h"
 #include "vertical.h"
+#include "fields.h"
 
 /* number of points (72/inch) in a meter */
 #define POINTS_PER_METER 2834.65
@@ -385,7 +386,7 @@ static char *SysGraphicsConvert(int opt, int offset, uint16_t dpi, const char *i
     }
         
 #endif
-    diagnostics(4, "`%s`", cmd);
+    diagnostics(3, "`%s`", cmd);
 
     err = system(cmd);
 
@@ -1365,7 +1366,7 @@ static void PutEpsFile(char *s, double height0, double width0, double scale, dou
 
     diagnostics(WARNING, "Rendering '%s'", s);
 
-    if (1) {
+    if (g_figure_include_converted) {
         png = eps_to_png(s);
         if (png) {
             PutPngFile(png, height0, width0, scale, baseline);
@@ -1374,22 +1375,13 @@ static void PutEpsFile(char *s, double height0, double width0, double scale, dou
         }
     }
 
-    if (0) {
-        pict = eps_to_pict(s);
-        if (pict) {
-            PutPictFile(pict, height0, width0, scale, baseline);
-            my_unlink(pict);
-            free(pict);
-        }
-    }
-
-    if (0) {
-        emf = eps_to_emf(s);
-        if (emf) {
-            PutEmfFile(emf, height0, width0, scale, baseline);
-            my_unlink(emf);
-            free(emf);
-        }
+    if (g_figure_comment_converted) {
+		diagnostics(3,"WriteEPSAsComment");
+//		startField(FIELD_COMMENT);
+		putRtfStrEscaped("[###");
+		putRtfStrEscaped(s);
+		putRtfStrEscaped("###]");
+//		endCurrentField();
     }
 }
 
