@@ -117,6 +117,12 @@ int g_equation_display_bitmap = FALSE;
 int g_equation_comment = FALSE;
 int g_equation_raw_latex = FALSE;
 int g_equation_mtef = FALSE;
+
+int g_figure_include_direct = TRUE;
+int g_figure_include_converted = TRUE;
+int g_figure_comment_direct = FALSE;
+int g_figure_comment_converted = FALSE;
+
 int g_tableofcontents = FALSE;
 
 int g_tabular_display_rtf = TRUE;
@@ -168,7 +174,7 @@ int main(int argc, char **argv)
     InitializeLatexLengths();
     InitializeBibliography();
     
-    while ((c = my_getopt(argc, argv, "lhpuvFSVWZ:o:a:b:d:f:i:s:u:C:D:M:P:T:t:")) != EOF) {
+    while ((c = my_getopt(argc, argv, "lhpuvFSVWZ:o:a:b:d:f:i:s:u:C:D:E:M:P:T:t:")) != EOF) {
         switch (c) {
             case 'a':
                 g_aux_name = optarg;
@@ -211,6 +217,18 @@ int main(int argc, char **argv)
                 g_dots_per_inch = (uint16_t) x;
                 if (g_dots_per_inch < 25 || g_dots_per_inch > 600)
                     diagnostics(WARNING, "Dots per inch must be between 25 and 600 dpi\n");
+                break;
+            case 'E':
+                sscanf(optarg, "%d", &x);
+                diagnostics(3, "Figure option = %s x=%d", optarg, x);
+                g_figure_include_direct    = (x &  1) ? TRUE : FALSE;
+                g_figure_include_converted = (x &  2) ? TRUE : FALSE;
+                g_figure_comment_direct    = (x &  4) ? TRUE : FALSE;
+                g_figure_comment_converted = (x &  8) ? TRUE : FALSE;
+                diagnostics(3, "Option g_figure_include_direct    = %d", g_figure_include_direct);
+                diagnostics(3, "Option g_figure_include_converted = %d", g_figure_include_converted);
+                diagnostics(3, "Option g_figure_comment_direct    = %d", g_figure_comment_direct);
+                diagnostics(3, "Option g_figure_comment_converted = %d", g_figure_comment_converted);
                 break;
             case 'F':
                 g_latex_figures = TRUE;
@@ -507,6 +525,13 @@ static void print_usage(void)
     fprintf(stdout, "       -f1          use fields for equations but not \\ref{} & \\cite{}\n");
     fprintf(stdout, "       -f2          use fields for \\cite{} & \\ref{}, but not equations\n");
     fprintf(stdout, "       -f3          use fields when possible (default)\n");
+    fprintf(stdout, "  -E#              figure handling\n");
+    fprintf(stdout, "       -E0          do not include any figures in RTF\n");
+    fprintf(stdout, "       -E1          include figures that need no conversion\n");
+    fprintf(stdout, "       -E2          include figures that need conversion\n");
+    fprintf(stdout, "       -E3          include all figures for insertion (default)\n");
+    fprintf(stdout, "       -E4          insert Word comment for figures that do not need conversion\n");
+    fprintf(stdout, "       -E8          insert Word comment for figures that need conversion\n");
     fprintf(stdout, "  -F               use LaTeX to convert all figures to bitmaps\n");
     fprintf(stdout, "  -D dpi           number of dots per inch for bitmaps\n");
     fprintf(stdout, "  -h               display help\n");

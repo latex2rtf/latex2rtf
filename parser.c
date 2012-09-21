@@ -539,12 +539,12 @@ int skipBOM(int cThis)
 {
     /* UTF8 Byte Order Mark */
     if (cThis == 0xEF) {
-    	cThis == getRawTexChar();
+    	cThis = getRawTexChar();
     	if (cThis == 0xBB) {
-     		cThis == getRawTexChar();
+     		cThis = getRawTexChar();
     		if (cThis == 0xBF) {
     			CmdFontEncoding(ENCODING_UTF8);
-     			cThis == getRawTexChar();
+     			cThis = getRawTexChar();
      			diagnostics(2, "UTF 8 BOM encountered, now assuming UTF8 input");
      		}
     	}
@@ -552,7 +552,7 @@ int skipBOM(int cThis)
    		
     /* UTF16 Byte Order Mark */
     if (cThis == 0xFE) {
-    	cThis == getRawTexChar();
+    	cThis = getRawTexChar();
     	if (cThis == 0xFF)
      		diagnostics(2, "UTF 16 is not supported, you might try converting to UTF8");
     }
