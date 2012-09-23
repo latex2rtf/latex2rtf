@@ -274,7 +274,7 @@ static char *ScanBbl(char *reference)
     if (buffer[i] == '.') i--;
     
     buffer[i+1] = '\0';
-    s = strdup(buffer);
+    s = strdup_nocomments(buffer);
     safe_free(buffer);
     return s;
 }
@@ -579,15 +579,22 @@ void CmdThebibliography(int code)
  ******************************************************************************/
 void CmdBibitem(int code)
 {
-    char *label, *key, *signet, *s, c;
+    char *label, *key, *signet, *s, *raw, *raw2, c;
 
     g_processing_list_environment = TRUE;
     CmdEndParagraph(0);
     startParagraph("bibitem", PARAGRAPH_FIRST);
 
     label = getBracketParam();
-    key = getBraceParam();
+    
+    raw = getBraceParam();
+    raw2 = strdup_nocomments(raw);
+    key = strdup_noblanks(raw2);
+    safe_free(raw);
+    safe_free(raw2);
+    
     signet = strdup_nobadchars(key);
+    
     s = ScanAux(BIBCITE_TOKEN, key, SCANAUX_NUMBER);
 
     if (label && !s) {          /* happens when file needs to be latex'ed again */

@@ -439,22 +439,18 @@ purpose: converts inputfile and writes result to outputfile
                 break;
 
             case '\t':
-                if (!g_processing_preamble)
-                	diagnostics(WARNING, "This should not happen, ignoring \\t");
+                diagnostics(WARNING, "This should not happen, ignoring \\t");
                 cThis = ' ';
                 break;
 
             case '\r':
-                if (!g_processing_preamble)
-                	diagnostics(WARNING, "This should not happen, ignoring \\r");
+                diagnostics(WARNING, "This should not happen, ignoring \\r");
                 cThis = ' ';
                 break;
 
             case '%':
-                if (!g_processing_preamble)
-                	diagnostics(WARNING, "This should not happen, ignoring %%");
-                else
-                	skipToEOL();
+                /*diagnostics(WARNING, "This should not happen, ignoring %%");*/
+                skipToEOL();
                 cThis = ' ';
                 break;
 
