@@ -553,6 +553,8 @@ static void print_usage(void)
     fprintf(stdout, "       -M12         inline and displayed equations to bitmaps\n");
     fprintf(stdout, "       -M16         insert Word comment field that the original equation text\n");
     fprintf(stdout, "       -M32         insert the raw LaTeX equation delimited by $...$ and \\[...\\]\n");
+    fprintf(stdout, "       -M64         make EPS displayed equations and comment in RTF\n");
+    fprintf(stdout, "       -M128        make EPS inline equations and comment in RTF\n");
     fprintf(stdout, "  -o outputfile    file for RTF output\n");
     fprintf(stdout, "  -p               option to avoid bug in Word for some equations\n");
     fprintf(stdout, "  -P path          paths to *.cfg & latex2png\n");

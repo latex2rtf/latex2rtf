@@ -837,13 +837,13 @@ void CmdEquation(int code)
     if (( inline_equation && g_equation_inline_bitmap ) || (!inline_equation && g_equation_display_bitmap))   
 		WriteEquationAsBitmapOrEPS(true_code, pre, eq, post, BITMAP);
 
+    if ((inline_equation && g_equation_inline_eps) || (!inline_equation && g_equation_display_eps))
+		WriteEquationAsBitmapOrEPS(true_code, pre, eq, post, EPS);
+
     if ((inline_equation && g_equation_inline_rtf) || (!inline_equation && g_equation_display_rtf)) {
         setCounter("equation", number);
         WriteEquationAsRTF(true_code, &eq);
     }
-
-    if ((inline_equation && g_equation_inline_eps) || (!inline_equation && g_equation_display_eps))
-		WriteEquationAsBitmapOrEPS(true_code, pre, eq, post, EPS);
 
 /* balance \begin{xxx} with \end{xxx} call */
     if (true_code == EQN_MATH     || true_code == EQN_DISPLAYMATH   ||
