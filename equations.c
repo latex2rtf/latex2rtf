@@ -663,9 +663,98 @@ static int EquationGetsNoNumber(const char *s)
   return FALSE;
 }
 
+/******************************************************************************
+ purpose   : Insert equation as latex 
+ ******************************************************************************/
+static void WriteEquationAsLatex(int true_code, int inline_equation, const char *pre, const char *eq, const char *post)
+{
+	if (inline_equation) {
+		fprintRTF("$");
+		putRtfStrEscaped(eq);
+		fprintRTF("$");
+	} else {
+		char *eq1 = strdup(eq);
+		str_delete(eq1,"\\nonumber");
+		str_delete(eq1,"\\notag");
+		fprintRTF("\\\\[");
+		if (true_code == EQN_DOLLAR_DOLLAR || true_code == EQN_BRACKET_OPEN  || 
+			true_code == EQN_EQUATION      || true_code == EQN_EQUATION_STAR ||
+			true_code == EQN_DISPLAYMATH )
+				putRtfStrEscaped(eq1);
+		else if (true_code == EQN_ARRAY    || true_code == EQN_ARRAY_STAR) {
+				putRtfStrEscaped("\\begin{align}");
+				putRtfStrEscaped(eq1);
+				putRtfStrEscaped("\\end{align}");
+		} else {
+				putRtfStrEscaped(pre);
+				putRtfStrEscaped(eq1);
+				putRtfStrEscaped(post);
+		}
+		fprintRTF("\\\\]");
+		free(eq1);
+	}
+}
+
+/******************************************************************************
+ purpose   : search an equation and determine the first label that appears
+ ******************************************************************************/
+static void SetEquationLabel(char *eq)
+{
+    char *t;
+    
+    if (g_suppress_equation_number) return;
+    if (eq==NULL || *eq=='\0') return;
+        
+    t = strstr(eq,"\\label");
+    if (t) {
+        t += strlen("\\label");
+        g_equation_label=getStringBraceParam(&t);
+        diagnostics(4, "Bitmap equation label = '%s'", g_equation_label);
+    }
+}
+
+/******************************************************************************
+ purpose   : Insert equation as latex 
+ ******************************************************************************/
+static void WriteEquationAsBitmapOrEPS(int true_code, char *pre, char *eq, char *post, conversion_t convertTo)
+{
+   if (true_code == EQN_ALIGN || true_code == EQN_ARRAY) {
+		char *s, *t;
+		
+		s = eq;
+		diagnostics(4, "eqnarray whole = <%s>", s);
+		do {
+			/* each line becomes separate bitmap */
+			t = strstr(s, "\\\\");
+			if (t) *t = '\0';
+			g_suppress_equation_number = EquationGetsNoNumber(s);
+			PrepareRtfEquation(true_code, FALSE);
+
+			if (true_code == EQN_ARRAY)
+				WriteLatexAsBitmapOrEPS("\\begin{eqnarray*}", s, "\\end{eqnarray*}",convertTo);
+			else
+				WriteLatexAsBitmapOrEPS("\\begin{align*}", s, "\\end{align*}",convertTo);
+
+			SetEquationLabel(s);
+			FinishRtfEquation(true_code, FALSE);
+			if (t) s = t + 2;
+		} while (t);
+			   
+	} else {
+		PrepareRtfEquation(true_code, FALSE);
+		if (true_code == EQN_EQUATION && g_amsmath_package)
+			g_suppress_equation_number = EquationGetsNoNumber(eq);
+		
+		if (true_code == EQN_ENSUREMATH) 
+			WriteLatexAsBitmapOrEPS("\\ensuremath{", eq, "}", convertTo);
+		else
+			WriteLatexAsBitmapOrEPS(pre, eq, post, convertTo);
+		SetEquationLabel(eq);
+		FinishRtfEquation(true_code, FALSE);
+	}
+}
 
 static void WriteEquationAsRTF(int code, char **eq)
-
 /******************************************************************************
  purpose   : Translate equation to RTF 
  ******************************************************************************/
@@ -681,6 +770,7 @@ static void WriteEquationAsRTF(int code, char **eq)
 /*    fprintRTF("}"); */
     FinishRtfEquation(code, EQ_Needed);
 }
+
 
 #ifdef MTEF_IMPLEMENTED
 static void WriteEquationAsMTEF(int code, char **eq)
@@ -700,24 +790,6 @@ static void WriteEquationAsMTEF(int code, char **eq)
     FinishRtfEquation(code, EQ_Needed);
 }
 #endif
-
-/******************************************************************************
- purpose   : search an equation and determine the first label that appears
- ******************************************************************************/
-static void SetEquationLabel(char *eq)
-{
-    char *t;
-    
-    if (g_suppress_equation_number) return;
-    if (eq==NULL || *eq=='\0') return;
-        
-    t = strstr(eq,"\\label");
-    if (t) {
-        t += strlen("\\label");
-        g_equation_label=getStringBraceParam(&t);
-        diagnostics(4, "Bitmap equation label = '%s'", g_equation_label);
-    }
-}
 
 /******************************************************************************
  purpose   : Handle everything associated with equations
@@ -748,85 +820,30 @@ void CmdEquation(int code)
 
     number = getCounter("equation");
 
-    if (g_equation_comment)
-        WriteEquationAsComment(pre, eq, post);
-
-    if (g_equation_raw_latex) {
-    	if (inline_equation) {
-			fprintRTF("$");
-			putRtfStrEscaped(eq);
-			fprintRTF("$");
-		} else {
-			char *eq1 = strdup(eq);
-			str_delete(eq1,"\\nonumber");
-			str_delete(eq1,"\\notag");
-			fprintRTF("\\\\[");
-			if (true_code == EQN_DOLLAR_DOLLAR || true_code == EQN_BRACKET_OPEN  || 
-				true_code == EQN_EQUATION      || true_code == EQN_EQUATION_STAR ||
-				true_code == EQN_DISPLAYMATH )
-					putRtfStrEscaped(eq1);
-			else if (true_code == EQN_ARRAY    || true_code == EQN_ARRAY_STAR) {
-					putRtfStrEscaped("\\begin{align}");
-					putRtfStrEscaped(eq1);
-					putRtfStrEscaped("\\end{align}");
-			} else {
-					putRtfStrEscaped(pre);
-					putRtfStrEscaped(eq1);
-					putRtfStrEscaped(post);
-			}
-			fprintRTF("\\\\]");
-			free(eq1);
-		}
-    }
-
     diagnostics(4, "inline=%d  inline_bitmap=%d", inline_equation, g_equation_inline_bitmap);
     diagnostics(4, "inline=%d display_bitmap=%d", inline_equation, g_equation_display_bitmap);
     diagnostics(4, "inline=%d  inline_rtf   =%d", inline_equation, g_equation_inline_rtf);
     diagnostics(4, "inline=%d display_rtf   =%d", inline_equation, g_equation_display_rtf);
+    diagnostics(4, "inline=%d  inline_eps   =%d", inline_equation, g_equation_inline_eps);
+    diagnostics(4, "inline=%d display_eps   =%d", inline_equation, g_equation_display_eps);
+
+    if (g_equation_comment)
+        WriteEquationAsComment(pre, eq, post);
+
+    if (g_equation_raw_latex) 
+        WriteEquationAsLatex(true_code, inline_equation, pre, eq, post);
 
     /* bitmap versions of equations */
-    if (( inline_equation && g_equation_inline_bitmap ) || 
-        (!inline_equation && g_equation_display_bitmap))   {
-        if (true_code == EQN_ALIGN || true_code == EQN_ARRAY) {
-            char *s, *t;
-
-            s = eq;
-            diagnostics(4, "eqnarray whole = <%s>", s);
-            do {
-                /* each line becomes separate bitmap */
-                t = strstr(s, "\\\\");
-                if (t) *t = '\0';
-                g_suppress_equation_number = EquationGetsNoNumber(s);
-                PrepareRtfEquation(true_code, FALSE);
-
-                if (true_code == EQN_ARRAY)
-                    WriteLatexAsBitmap("\\begin{eqnarray*}", s, "\\end{eqnarray*}");
-                else
-                    WriteLatexAsBitmap("\\begin{align*}", s, "\\end{align*}");
-
-                SetEquationLabel(s);
-                FinishRtfEquation(true_code, FALSE);
-                if (t) s = t + 2;
-            } while (t);
-                   
-        } else {
-            PrepareRtfEquation(true_code, FALSE);
-            if (true_code == EQN_EQUATION && g_amsmath_package)
-                g_suppress_equation_number = EquationGetsNoNumber(eq);
-            
-            if (true_code == EQN_ENSUREMATH) 
-                WriteLatexAsBitmap("\\ensuremath{", eq, "}");
-            else
-                WriteLatexAsBitmap(pre, eq, post);
-            SetEquationLabel(eq);
-            FinishRtfEquation(true_code, FALSE);
-        }
-   }
+    if (( inline_equation && g_equation_inline_bitmap ) || (!inline_equation && g_equation_display_bitmap))   
+		WriteEquationAsBitmapOrEPS(true_code, pre, eq, post, BITMAP);
 
     if ((inline_equation && g_equation_inline_rtf) || (!inline_equation && g_equation_display_rtf)) {
         setCounter("equation", number);
         WriteEquationAsRTF(true_code, &eq);
     }
+
+    if ((inline_equation && g_equation_inline_eps) || (!inline_equation && g_equation_display_eps))
+		WriteEquationAsBitmapOrEPS(true_code, pre, eq, post, EPS);
 
 /* balance \begin{xxx} with \end{xxx} call */
     if (true_code == EQN_MATH     || true_code == EQN_DISPLAYMATH   ||

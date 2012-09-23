@@ -36,13 +36,14 @@ help()
 cat <<HELP
 latex2png -- convert latex file to PNG image
 
-USAGE: latex2png [-d density] [-o offset] [-h] [-k] [-c] [-g] [-m] [-H home dir] file[.tex|.eps]
+USAGE: latex2png [-d density] [-o offset] [-h] [-e] [-k] [-c] [-g] [-m] [-H home dir] file[.tex|.eps]
 
 OPTIONS: 
          -c color image
          -g gray image  
          -m monochrome  (default)
-
+         -e create EPS file
+         
          -d density     (default 144 dpi)
          -o offset      = density/72+2
          -h             help
@@ -75,6 +76,7 @@ inline=0        # default to no special equation processing
 
 while [ -n "$1" ]; do
 case $1 in
+    -e) opt_eps=1;         shift 1;; #create eps file
     -g) out="-depth 8";    shift 1;; #gray
     -c) out="-depth 24";   shift 1;; #color
     -m) out="-monochrome"; shift 1;; #monochrome
@@ -99,6 +101,9 @@ fi
 # is it an eps file?
 if [ `echo $1 | ${GREP} -c eps` -eq 1 ] ; then
    ext="eps"
+   if [ $opt_eps ] ; then
+        exit 1
+   fi
 fi
 
 #process 'latex2png file.tex' and 'latex2png file' equivalently
@@ -133,6 +138,10 @@ if [ $ext = "tex" ] ; then
     if [ ! -e "$name.eps" ] ; then
         echo "latex2png: error: dvips failed to translate $name.dvi to $name.eps"
         exit 1
+    fi
+
+    if [ $opt_eps ] ; then
+        exit 0
     fi
     
 fi

@@ -7,10 +7,12 @@
 #define FIGURE_BOXEDEPSF       4
 #define FIGURE_PSFIG           5
 
+typedef enum {BITMAP, EPS} conversion_t;
+ 
 void PrepareDisplayedBitmap(char *the_type);
 void FinishDisplayedBitmap(void);
-void WriteLatexAsBitmap(char *pre, char *eq, char *post);
-void PutLatexFile(const char *tex_file_stem, double scale, const char *pre);
+void WriteLatexAsBitmapOrEPS(char *pre, char *eq, char *post, conversion_t convertTo);
+void PutLatexFile(const char *tex_file_stem, double scale, const char *pre, conversion_t convertTo);
 void CmdGraphics(int code);
 void CmdPicture(int code);
 void CmdPsPicture(int code);

@@ -1590,7 +1590,7 @@ void CmdFigure(int code)
             label = ExtractAndRemoveTag("\\label", figure_contents);
 
             PrepareDisplayedBitmap("figure");
-            WriteLatexAsBitmap("\\begin{figure}", figure_contents, "\\end{figure}");
+            WriteLatexAsBitmapOrEPS("\\begin{figure}", figure_contents, "\\end{figure}", BITMAP);
             FinishDisplayedBitmap();
             ConvertString(caption);
             safe_free(label);

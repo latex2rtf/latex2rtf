@@ -116,6 +116,8 @@ int g_equation_inline_bitmap = FALSE;
 int g_equation_display_bitmap = FALSE;
 int g_equation_comment = FALSE;
 int g_equation_raw_latex = FALSE;
+int g_equation_inline_eps = FALSE;
+int g_equation_display_eps = FALSE;
 int g_equation_mtef = FALSE;
 
 int g_figure_include_direct = TRUE;
@@ -242,17 +244,21 @@ int main(int argc, char **argv)
                 g_equation_inline_bitmap = (x &  8) ? TRUE : FALSE;
                 g_equation_comment       = (x & 16) ? TRUE : FALSE;
                 g_equation_raw_latex     = (x & 32) ? TRUE : FALSE;
-                g_equation_mtef          = (x & 64) ? TRUE : FALSE;
+                g_equation_display_eps   = (x & 64) ? TRUE : FALSE;
+                g_equation_inline_eps    = (x & 128)? TRUE : FALSE;
+                g_equation_mtef          = (x & 256)? TRUE : FALSE;
+                if (!g_equation_comment && !g_equation_inline_rtf && !g_equation_inline_bitmap && !g_equation_raw_latex && !g_equation_inline_eps)
+                    g_equation_inline_rtf = TRUE;
+                if (!g_equation_comment && !g_equation_display_rtf && !g_equation_display_bitmap && !g_equation_raw_latex && !g_equation_display_eps)
+                    g_equation_display_rtf = TRUE;
                 diagnostics(3, "Math option g_equation_display_rtf    = %d", g_equation_display_rtf);
                 diagnostics(3, "Math option g_equation_inline_rtf     = %d", g_equation_inline_rtf);
                 diagnostics(3, "Math option g_equation_display_bitmap = %d", g_equation_display_bitmap);
                 diagnostics(3, "Math option g_equation_inline_bitmap  = %d", g_equation_inline_bitmap);
                 diagnostics(3, "Math option g_equation_comment        = %d", g_equation_comment);
                 diagnostics(3, "Math option g_equation_raw_latex      = %d", g_equation_raw_latex);
-                if (!g_equation_comment && !g_equation_inline_rtf && !g_equation_inline_bitmap && !g_equation_raw_latex)
-                    g_equation_inline_rtf = TRUE;
-                if (!g_equation_comment && !g_equation_display_rtf && !g_equation_display_bitmap && !g_equation_raw_latex)
-                    g_equation_display_rtf = TRUE;
+                diagnostics(3, "Math option g_equation_display_eps    = %d", g_equation_display_eps);
+                diagnostics(3, "Math option g_equation_inline_eps     = %d", g_equation_inline_eps);
                 break;
 
             case 't':
@@ -728,6 +734,7 @@ static void ConvertLatexPreamble(void)
 purpose: reads the LaTeX preamble (to \begin{document} ) for the file
  ****************************************************************************/
 {
+    char *raw_latex;
     char t[] = "\\begin|{|document|}";
     FILE *rtf_file;
 
@@ -739,12 +746,15 @@ purpose: reads the LaTeX preamble (to \begin{document} ) for the file
     rtf_file = fRtf;
     fRtf = ERROUT;
     
-    g_preamble = getSpacedTexUntil(t, 1);
+    raw_latex = getSpacedTexUntil(t, 1);
 
     diagnostics(2, "Read LaTeX Preamble");
     diagnostics(5, "Entering ConvertString() from ConvertLatexPreamble");
 
-    show_string(5, g_preamble, "preamble"); 
+	g_preamble = strdup_nocomments(raw_latex);
+	free(raw_latex);
+	
+    show_string(2, g_preamble, "preamble"); 
 
     ConvertString(g_preamble);
     diagnostics(5, "Exiting ConvertString() from ConvertLatexPreamble");

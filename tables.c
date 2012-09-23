@@ -967,7 +967,7 @@ void CmdTabular(int code)
     if (g_tabular_display_bitmap) {
         char *pre = strdup_together4(begin,"{",cols,"}");
         PrepareDisplayedBitmap("tabular");
-        WriteLatexAsBitmap(pre, table, end);
+        WriteLatexAsBitmapOrEPS(pre, table, end, BITMAP);
         FinishDisplayedBitmap();
         free(pre);
     }
@@ -1367,7 +1367,7 @@ void CmdTabbing(int code)
 
     if (g_tabular_display_bitmap) {     
         PrepareDisplayedBitmap("tabbing");
-        WriteLatexAsBitmap("\\begin{tabbing}", table, end);
+        WriteLatexAsBitmapOrEPS("\\begin{tabbing}", table, end, BITMAP);
         FinishDisplayedBitmap();
     }
     
