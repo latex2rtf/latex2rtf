@@ -58,9 +58,9 @@ LaTeX2RTF
 @subtitle 
 A converter from @latex{}to RTF
 
-Edition 0.7.8
+Edition 0.7.9
 
-for program version 2.2.0
+for program version 2.2.2
 
 @author Georg Lehner,
 updated by Wilfried Hennings and Scott Prahl,
@@ -477,7 +477,7 @@ freely available for download at @uref{http://www.miktex.org/},
 The following versions were available at the time of writing 
 and used together with @ltor{}version 2.2.x: @*
 - MikTeX 2.9 @*
-- Ghostscript 9.05 @*
+- Ghostscript 9.06 @*
 - ImageMagick-6.7.7-5-Q8-windows-dll.exe
 
 
@@ -703,6 +703,27 @@ This value is also used when picture environments are converted to bitmaps as we
 as when EPS graphics are converted to png files.  The default value is 300 dots per
 inch.
 
+@item -E# selects whether figures are included in the rtf (default) or created 
+as external files with the filenames inserted in the rtf text.
+    @table @code
+    @item -E0
+    Do not include any figures in RTF.
+    @item -E1  
+    Include figures that need no conversion.  
+    @item -E2 
+    Include figures that need conversion.
+    @item -E3
+    Include all figures (default).
+    @item -E4 
+    Insert filenames for figures that do not need conversion.@*
+    After opening the rtf in a textprocessing or dtp program, a macro can search 
+    for the inserted filenames and insert the eps in their place.
+    @item -E8
+    Insert filenames for figures that need conversion.
+    @item -E12
+    Insert filenames for all figures.
+    @end table
+
 @item -f#
 where # selects which fields to use during conversion:
     @table @code
@@ -756,16 +777,21 @@ where # selects the type of equation conversion.  Use
     @item -M8   
     convert inline equations to bitmap
     @item -M16  
-    insert Word comment field that contains the original equation text
+    insert Word comment field that contains the raw LaTeX equation
     @item -M32  
-    insert the raw latex equation delimited by @code{$ ... $} for
+    insert the raw latex equation in the RTF text delimited by @code{$ ... $} for
     inline equations and by @code{\[ ... \]} for displayed equations.@*  
     This is useful when using version 6 of the MathType equation 
     editor, which converts typed or pasted TeX code into a MathType equation.@*
     Probably this could also be useful for use in OpenOffice, as OO has an 
     equation syntax which partially resembles TeX syntax.
+    @item -M64  
+    convert displayed equations to EPS files and insert filenames in RTF text.@*
+    After opening the rtf in a textprocessing or dtp program, a macro can search 
+    for the inserted filenames and insert the eps in their place.
+    @item -M128  
+    convert inline equations to EPS files and insert filenames in RTF text
     @end table
-    
 These switches can be combined to get different effects.  Handy examples are
     @table @code
     @item -M3   
@@ -774,6 +800,8 @@ These switches can be combined to get different effects.  Handy examples are
     convert inline equations to RTF and displayed equations to bitmaps
     @item -M12  
     convert both inline and displayed equations to bitmaps
+    @item -M192  
+    convert both inline and displayed equations to EPS and insert filenames in RTF text
     @end table
 Bitmap conversion requires that you have installed a working latex2png script.
 Producing bitmaps is slow.@*
@@ -1094,10 +1122,11 @@ for many of them.
 @section Equations
 @cindex equations
 
-There are five separate levels of equation translation based on the -M switch, 
+There are six separate levels of equation translation based on the -M switch, 
 see @ref{LaTeX2RTF Options}.
 Each equation is converted either to an EQ field or to a bitmap 
-or inserted as raw TeX code in the document. 
+or inserted as raw TeX code in the document or converted to an eps file with the
+eps file name inserted in the document text delimited by [###...###]. 
 
 This is an interim solution (for some definition of ``interim''). 
 Ideally the equations would become OLE equation objects in the
