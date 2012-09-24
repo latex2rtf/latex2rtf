@@ -1,7 +1,7 @@
     //////////////////////////////////////////////////////
     //                                                  //
     //      l2rshell (GUI for LaTeX2RTF converter)      //
-    //                 v.0.6.3 for win32                //
+    //                 v.0.6.4 for win32                //
     //    author: Mikhail Polianski (mnpol@mail.ru)     //
     //                                                  //
     //////////////////////////////////////////////////////
@@ -91,10 +91,10 @@ WORD* CreateDlg()
     pdlgtemplate=p=(PWORD)LocalAlloc(LPTR, 8000);
     // dialog template data
     DWORD lStyle=DS_3DLOOK|DS_CENTER|WS_MINIMIZEBOX|WS_VISIBLE|WS_CAPTION|WS_SYSMENU|DS_SHELLFONT;
-    DlgTemplate(p,lStyle,100,0,0,310,277,L"LaTeX2RTF"); //100 - total number of dialog items
+    DlgTemplate(p,lStyle,103,0,0,340,277,L"LaTeX2RTF"); //103 - total number of dialog items
     // group boxes
     lStyle=WS_CHILD|BS_GROUPBOX;
-    DlgItemTemplate(p,lStyle,15,103,280,73,ID_EQUATIONS_GROUP,L"button", NULL);
+    DlgItemTemplate(p,lStyle,15,85,320,71,ID_EQUATIONS_GROUP,L"button", NULL);
     DlgItemTemplate(p,lStyle,15,186,280,57,ID_BITMAPS_GROUP,L"button", NULL);
     DlgItemTemplate(p,lStyle,15,97,280,73,ID_RTF_GROUP,L"button", NULL);
     DlgItemTemplate(p,lStyle,15,174,135,57,ID_LANG_GROUP,L"button", NULL);
@@ -105,11 +105,11 @@ WORD* CreateDlg()
     // static text
     lStyle=WS_CHILD;
     DlgItemTemplate(p,lStyle,15,25,280,12,ID_TEXFILE_TEXT,L"static", NULL);
-    DlgItemTemplate(p,lStyle,15,65,70,12,ID_RTFFILE_TEXT,L"static", NULL);
-    DlgItemTemplate(p,lStyle,25,115,160,12,ID_EQUATIONS_TXT1,L"static", NULL);
-    DlgItemTemplate(p,lStyle,25,130,160,12,ID_EQUATIONS_TXT2,L"static", NULL);
-    DlgItemTemplate(p,lStyle,25,145,160,12,ID_EQUATIONS_TXT3,L"static", NULL);
-    DlgItemTemplate(p,lStyle,25,160,160,12,ID_TABLES_TXT,L"static", NULL);
+    DlgItemTemplate(p,lStyle,15,55,70,12,ID_RTFFILE_TEXT,L"static", NULL);
+    DlgItemTemplate(p,lStyle,25,97,160,12,ID_EQUATIONS_TXT1,L"static", NULL);
+    DlgItemTemplate(p,lStyle,25,112,160,12,ID_EQUATIONS_TXT2,L"static", NULL);
+    DlgItemTemplate(p,lStyle,25,127,160,12,ID_EQUATIONS_TXT3,L"static", NULL);
+    DlgItemTemplate(p,lStyle,25,142,160,12,ID_TABLES_TXT,L"static", NULL);
     DlgItemTemplate(p,lStyle,25,198,60,12,ID_BITMAPS_TXT1,L"static", NULL);
     DlgItemTemplate(p,lStyle,134,198,100,12,ID_BITMAPS_TXT2,L"static", NULL);
     DlgItemTemplate(p,lStyle,25,213,60,12,ID_BITMAPS_TXT3,L"static", NULL);
@@ -140,10 +140,10 @@ WORD* CreateDlg()
     DlgItemTemplate(p,lStyle,170,145,75,12,ID_ABOUT_TEXT11,L"static",L"Mikhail Polyanskiy");
     lStyle=WS_CHILD|ES_CENTER;
     DlgItemTemplate(p,lStyle,30,50,250,12,ID_ABOUT_TEXT01,L"static",NULL);
-    // edit contros
+    // edit controls
     lStyle=WS_CHILD|ES_AUTOHSCROLL|WS_BORDER;
-    DlgItemTemplate(p,lStyle,15,38,260,12,ID_TEXFILENAME,L"edit", NULL);
-    DlgItemTemplate(p,lStyle,15,78,260,12,ID_RTFFILENAME,L"edit", NULL);
+    DlgItemTemplate(p,lStyle,15,35,260,12,ID_TEXFILENAME,L"edit", NULL);
+    DlgItemTemplate(p,lStyle,15,65,260,12,ID_RTFFILENAME,L"edit", NULL);
     DlgItemTemplate(p,lStyle,15,30,260,12,ID_BBLFILENAME,L"edit", NULL);
     DlgItemTemplate(p,lStyle,15,55,260,12,ID_AUXFILENAME,L"edit", NULL);
     DlgItemTemplate(p,lStyle,15,80,260,12,ID_TMPDIRNAME,L"edit", NULL);  
@@ -162,8 +162,8 @@ WORD* CreateDlg()
     DlgItemTemplate(p,lStyle,175,259,60,15,ID_HELP,L"button", NULL);  // L"Help" button
     DlgItemTemplate(p,lStyle,245,259,60,15,ID_EXIT,L"button", NULL);  // L"Exit" button
     lStyle=WS_CHILD|BS_PUSHBUTTON;
-    DlgItemTemplate(p,lStyle,285,38,12,12,ID_TEXFILE_BUTTON,L"button", L"...");
-    DlgItemTemplate(p,lStyle,285,78,12,12,ID_RTFFILE_BUTTON,L"button", L"...");
+    DlgItemTemplate(p,lStyle,285,35,12,12,ID_TEXFILE_BUTTON,L"button", L"...");
+    DlgItemTemplate(p,lStyle,285,65,12,12,ID_RTFFILE_BUTTON,L"button", L"...");
     DlgItemTemplate(p,lStyle,285,30,12,12,ID_BBLFILE_BUTTON,L"button", L"...");
     DlgItemTemplate(p,lStyle,285,55,12,12,ID_AUXFILE_BUTTON,L"button",L"...");
     DlgItemTemplate(p,lStyle,285,80,12,12,ID_TMPDIR_BUTTON,L"button",L"...");
@@ -176,16 +176,19 @@ WORD* CreateDlg()
     DlgItemTemplate(p,lStyle,30,215,250,14,ID_GPL_BUTTON,L"button",NULL);
     // checkboxes
     lStyle=WS_CHILD|BS_AUTOCHECKBOX;
-    DlgItemTemplate(p,lStyle,85,65,210,8,ID_RTFDEF,L"button", NULL);
-    DlgItemTemplate(p,lStyle,160,114,40,12,ID_DISPLAYED_TO_RTF,L"button", L"RTF");
-    DlgItemTemplate(p,lStyle,220,114,40,12,ID_DISPLAYED_TO_BITMAP,L"button", L"bitmap");
-    DlgItemTemplate(p,lStyle,160,129,40,12,ID_INLINE_TO_RTF,L"button", L"RTF");
-    DlgItemTemplate(p,lStyle,220,129,40,12,ID_INLINE_TO_BITMAP,L"button", L"bitmap");
-    DlgItemTemplate(p,lStyle,160,144,55,12,ID_EQTEXTTOTEXT,L"button", NULL);
-    DlgItemTemplate(p,lStyle,220,144,70,12,ID_EQTEXTTOCOMM,L"button", NULL);
-    DlgItemTemplate(p,lStyle,160,159,40,12,ID_TABLES_TO_RTF,L"button", L"RTF");
-    DlgItemTemplate(p,lStyle,220,159,40,12,ID_TABLES_TO_BITMAP,L"button", L"bitmap");
+    DlgItemTemplate(p,lStyle,85,55,210,8,ID_RTFDEF,L"button", NULL);
+    DlgItemTemplate(p,lStyle,160,95,40,12,ID_DISPLAYED_TO_RTF,L"button", L"RTF");
+    DlgItemTemplate(p,lStyle,220,95,40,12,ID_DISPLAYED_TO_BITMAP,L"button", L"bitmap");
+    DlgItemTemplate(p,lStyle,280,95,40,12,ID_DISPLAYED_TO_EPS,L"button", L"EPS");
+    DlgItemTemplate(p,lStyle,160,110,40,12,ID_INLINE_TO_RTF,L"button", L"RTF");
+    DlgItemTemplate(p,lStyle,220,110,40,12,ID_INLINE_TO_BITMAP,L"button", L"bitmap");
+    DlgItemTemplate(p,lStyle,280,110,40,12,ID_INLINE_TO_EPS,L"button", L"EPS");
+    DlgItemTemplate(p,lStyle,160,125,55,12,ID_EQTEXTTOTEXT,L"button", NULL);
+    DlgItemTemplate(p,lStyle,220,125,70,12,ID_EQTEXTTOCOMM,L"button", NULL);
+    DlgItemTemplate(p,lStyle,160,140,40,12,ID_TABLES_TO_RTF,L"button", L"RTF");
+    DlgItemTemplate(p,lStyle,220,140,40,12,ID_TABLES_TO_BITMAP,L"button", L"bitmap");
     DlgItemTemplate(p,lStyle,25,227,265,12,ID_BMPFORFIG,L"button", NULL);
+    DlgItemTemplate(p,lStyle,25,165,265,12,ID_FIGSASFILENAMES,L"button", NULL);
     DlgItemTemplate(p,lStyle,85,20,210,8,ID_BBLDEF,L"button", NULL);
     DlgItemTemplate(p,lStyle,85,45,210,8,ID_AUXDEF,L"button",NULL);
     DlgItemTemplate(p,lStyle,85,70,210,8,ID_TMPDEF,L"button",NULL); 
@@ -210,7 +213,7 @@ WORD* CreateDlg()
     DlgItemTemplate(p,lStyle,100,40,110,240,ID_SHELLLANG,L"combobox", NULL);
     // tab control
     lStyle=WS_CHILD|WS_TABSTOP|WS_VISIBLE;
-    DlgItemTemplate(p,lStyle,5, 5, 300, 250,ID_TAB,(LPCTSTR)WC_TABCONTROL, NULL);
+    DlgItemTemplate(p,lStyle,5, 5, 390, 250,ID_TAB,(LPCTSTR)WC_TABCONTROL, NULL);
     // create dialog
     DialogBoxIndirect(hInstance, (LPDLGTEMPLATE)pdlgtemplate, NULL, (DLGPROC)DlgProc);
     LocalFree(LocalHandle(pdlgtemplate));
@@ -301,13 +304,16 @@ LRESULT CALLBACK DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             // Checkboxes (except "use default")
             SendMessage(GetDlgItem(hwnd, ID_DISPLAYED_TO_RTF), BM_SETCHECK, GetInitInt(L"displayed_to_rtf", 1), 0L);
             SendMessage(GetDlgItem(hwnd, ID_DISPLAYED_TO_BITMAP), BM_SETCHECK, GetInitInt(L"displayed_to_bitmap", 0), 0L);
+            SendMessage(GetDlgItem(hwnd, ID_DISPLAYED_TO_EPS), BM_SETCHECK, GetInitInt(L"displayed_to_eps", 0), 0L);
             SendMessage(GetDlgItem(hwnd, ID_INLINE_TO_RTF), BM_SETCHECK, GetInitInt(L"inline_to_rtf", 1), 0L);
             SendMessage(GetDlgItem(hwnd, ID_INLINE_TO_BITMAP), BM_SETCHECK, GetInitInt(L"inline_to_bitmap", 0), 0L);
+            SendMessage(GetDlgItem(hwnd, ID_INLINE_TO_EPS), BM_SETCHECK, GetInitInt(L"inline_to_eps", 0), 0L);
             SendMessage(GetDlgItem(hwnd, ID_EQTEXTTOTEXT), BM_SETCHECK, GetInitInt(L"eqtexttotext", 0), 0L);
             SendMessage(GetDlgItem(hwnd, ID_EQTEXTTOCOMM), BM_SETCHECK, GetInitInt(L"eqtexttocomm", 0), 0L);
             SendMessage(GetDlgItem(hwnd, ID_TABLES_TO_RTF), BM_SETCHECK, GetInitInt(L"tables_to_rtf", 1), 0L);
             SendMessage(GetDlgItem(hwnd, ID_TABLES_TO_BITMAP), BM_SETCHECK, GetInitInt(L"tables_to_bitmap", 0), 0L);
             SendMessage(GetDlgItem(hwnd, ID_BMPFORFIG), BM_SETCHECK, GetInitInt(L"bmpforfig", 0), 0L);
+            SendMessage(GetDlgItem(hwnd, ID_FIGSASFILENAMES), BM_SETCHECK, GetInitInt(L"figsasfilenames", 0), 0L);
             SendMessage(GetDlgItem(hwnd, ID_PARANTHESES), BM_SETCHECK, GetInitInt(L"parantheses", 0), 0L);
             SendMessage(GetDlgItem(hwnd, ID_SEMICOLONS), BM_SETCHECK, GetInitInt(L"semicolons", 0), 0L);
             SendMessage(GetDlgItem(hwnd, ID_USEEQFIELDS), BM_SETCHECK, GetInitInt(L"useeqfields", 1), 0L);
@@ -783,6 +789,9 @@ void Run(HWND hwnd)
         if(SendMessage(GetDlgItem(hwnd, ID_BMPFORFIG), BM_GETCHECK, 0, 0L))
             lstrcat(out_str, L" -F");
             
+        if(SendMessage(GetDlgItem(hwnd, ID_FIGSASFILENAMES), BM_GETCHECK, 0, 0L))
+            lstrcat(out_str, L" -E12");
+
         i=SendMessage(GetDlgItem(hwnd, ID_USEEQFIELDS), BM_GETCHECK, 0, 0L)+2*SendMessage(GetDlgItem(hwnd, ID_USEREFFIELDS), BM_GETCHECK, 0, 0L);
         if(i!= 3)
         {
@@ -804,7 +813,9 @@ void Run(HWND hwnd)
             SendMessage(GetDlgItem(hwnd, ID_INLINE_TO_RTF), BM_GETCHECK, 0, 0L)*2 +
             SendMessage(GetDlgItem(hwnd, ID_INLINE_TO_BITMAP), BM_GETCHECK, 0, 0L)*8 +
             SendMessage(GetDlgItem(hwnd, ID_EQTEXTTOCOMM), BM_GETCHECK, 0, 0L)*16 +
-            SendMessage(GetDlgItem(hwnd, ID_EQTEXTTOTEXT), BM_GETCHECK, 0, 0L)*32;
+            SendMessage(GetDlgItem(hwnd, ID_EQTEXTTOTEXT), BM_GETCHECK, 0, 0L)*32 +
+            SendMessage(GetDlgItem(hwnd, ID_DISPLAYED_TO_EPS), BM_GETCHECK, 0, 0L)*64 +
+            SendMessage(GetDlgItem(hwnd, ID_INLINE_TO_EPS), BM_GETCHECK, 0, 0L)*128;
         if(i!=3)
         {
             wsprintf(str, L" -M%d", i);
@@ -882,7 +893,7 @@ void Run(HWND hwnd)
 
         GetWindowsDirectory(str, MAX_PATH); // Default directory for CMD.exe (to avoid error message)
 
-        // if(MessageBox(hwnd, out_str, L"l2rshell: command line", MB_OKCANCEL) == IDOK) // for Beta version only
+         // if(MessageBox(hwnd, out_str, L"l2rshell: command line", MB_OKCANCEL) == IDOK) // for Beta version only
             ShellExecute(hwnd, NULL, L"cmd", out_str, str, SW_SHOWNORMAL);     
         
     }
@@ -924,8 +935,10 @@ void SetTab(HWND hwnd, int tabctrl_item)
     ShowWindow(GetDlgItem(hwnd, ID_EQUATIONS_TXT3), show_hide);
     ShowWindow(GetDlgItem(hwnd, ID_DISPLAYED_TO_RTF), show_hide);
     ShowWindow(GetDlgItem(hwnd, ID_DISPLAYED_TO_BITMAP), show_hide);
+    ShowWindow(GetDlgItem(hwnd, ID_DISPLAYED_TO_EPS), show_hide);
     ShowWindow(GetDlgItem(hwnd, ID_INLINE_TO_RTF), show_hide);
     ShowWindow(GetDlgItem(hwnd, ID_INLINE_TO_BITMAP), show_hide);
+    ShowWindow(GetDlgItem(hwnd, ID_INLINE_TO_EPS), show_hide);
     ShowWindow(GetDlgItem(hwnd, ID_TABLES_TXT), show_hide);
     ShowWindow(GetDlgItem(hwnd, ID_TABLES_TO_RTF), show_hide);
     ShowWindow(GetDlgItem(hwnd, ID_TABLES_TO_BITMAP), show_hide);
@@ -933,6 +946,7 @@ void SetTab(HWND hwnd, int tabctrl_item)
     ShowWindow(GetDlgItem(hwnd, ID_EQTEXTTOCOMM), show_hide);
     ShowWindow(GetDlgItem(hwnd, ID_BITMAPS_GROUP), show_hide);
     ShowWindow(GetDlgItem(hwnd, ID_BMPFORFIG), show_hide);
+    ShowWindow(GetDlgItem(hwnd, ID_FIGSASFILENAMES), show_hide);
     ShowWindow(GetDlgItem(hwnd, ID_BITMAPS_TXT1), show_hide);
     ShowWindow(GetDlgItem(hwnd, ID_BITMAPS_TXT2), show_hide);
     ShowWindow(GetDlgItem(hwnd, ID_BITMAPS_TXT3), show_hide);
@@ -1104,6 +1118,7 @@ void ChangeTheLanguage(HWND hwnd)
     SendMessage(GetDlgItem(hwnd, ID_BITMAPS_TXT3), WM_SETTEXT, 0, (LPARAM)GetLngString(hwnd, L"113", L"Scale:", str));
     SendMessage(GetDlgItem(hwnd, ID_BITMAPS_TXT4), WM_SETTEXT, 0, (LPARAM)GetLngString(hwnd, L"114", L"(equations)", str));
     SendMessage(GetDlgItem(hwnd, ID_BITMAPS_TXT5), WM_SETTEXT, 0, (LPARAM)GetLngString(hwnd, L"115", L"(bitmaps)", str));
+    SendMessage(GetDlgItem(hwnd, ID_FIGSASFILENAMES), WM_SETTEXT, 0, (LPARAM)GetLngString(hwnd, L"116", L"Insert all figures as filenames", str));
     
     SendMessage(GetDlgItem(hwnd, ID_TMPDIR_TEXT), WM_SETTEXT, 0, (LPARAM)GetLngString(hwnd, L"200", L"TMP dir:", str));
     SendMessage(GetDlgItem(hwnd, ID_BBLFILE_TEXT), WM_SETTEXT, 0, (LPARAM)GetLngString(hwnd, L"201", L"BBL file:", str));
@@ -1457,7 +1472,7 @@ WCHAR* GetVersionString(WCHAR* str)   //returned value is 'str'
 {
     WCHAR inifile[MAX_PATH];
     
-    lstrcpy(str, L"LaTeX2RTF  +   l2rshell v.0.6.3");
+    lstrcpy(str, L"LaTeX2RTF  +   l2rshell v.0.6.4");
     
     GetModuleFileName(NULL, inifile, MAX_PATH);
     getdir(inifile);
@@ -1471,12 +1486,14 @@ void ConvertToSomething(HWND hwnd)
 {
     if( !SendMessage(GetDlgItem(hwnd, ID_DISPLAYED_TO_RTF), BM_GETCHECK, 0, 0L) &&
         !SendMessage(GetDlgItem(hwnd, ID_DISPLAYED_TO_BITMAP), BM_GETCHECK, 0, 0L) &&
+        !SendMessage(GetDlgItem(hwnd, ID_DISPLAYED_TO_EPS), BM_GETCHECK, 0, 0L) &&
         !SendMessage(GetDlgItem(hwnd, ID_EQTEXTTOTEXT), BM_GETCHECK, 0, 0L) &&
         !SendMessage(GetDlgItem(hwnd, ID_EQTEXTTOCOMM), BM_GETCHECK, 0, 0L) )
     SendMessage(GetDlgItem(hwnd, ID_DISPLAYED_TO_RTF), BM_SETCHECK, 1, 0L);
         
     if( !SendMessage(GetDlgItem(hwnd, ID_INLINE_TO_RTF), BM_GETCHECK, 0, 0L) &&
         !SendMessage(GetDlgItem(hwnd, ID_INLINE_TO_BITMAP), BM_GETCHECK, 0, 0L) &&
+        !SendMessage(GetDlgItem(hwnd, ID_INLINE_TO_EPS), BM_GETCHECK, 0, 0L) &&
         !SendMessage(GetDlgItem(hwnd, ID_EQTEXTTOTEXT), BM_GETCHECK, 0, 0L) &&
         !SendMessage(GetDlgItem(hwnd, ID_EQTEXTTOCOMM), BM_GETCHECK, 0, 0L) )
     SendMessage(GetDlgItem(hwnd, ID_INLINE_TO_RTF), BM_SETCHECK, 1, 0L);
@@ -1575,10 +1592,14 @@ void SaveUserData(HWND hwnd)
     WritePrivateProfileString(L"l2rshell", L"displayed_to_rtf", str, inifile);
     wsprintf(str, L"%d", SendMessage(GetDlgItem(hwnd, ID_DISPLAYED_TO_BITMAP), BM_GETCHECK, 0, 0L));
     WritePrivateProfileString(L"l2rshell", L"displayed_to_bitmap", str, inifile);
+    wsprintf(str, L"%d", SendMessage(GetDlgItem(hwnd, ID_DISPLAYED_TO_EPS), BM_GETCHECK, 0, 0L));
+    WritePrivateProfileString(L"l2rshell", L"displayed_to_eps", str, inifile);
     wsprintf(str, L"%d", SendMessage(GetDlgItem(hwnd, ID_INLINE_TO_RTF), BM_GETCHECK, 0, 0L));
     WritePrivateProfileString(L"l2rshell", L"inline_to_rtf", str, inifile);
     wsprintf(str, L"%d", SendMessage(GetDlgItem(hwnd, ID_INLINE_TO_BITMAP), BM_GETCHECK, 0, 0L));
     WritePrivateProfileString(L"l2rshell", L"inline_to_bitmap", str, inifile);
+    wsprintf(str, L"%d", SendMessage(GetDlgItem(hwnd, ID_INLINE_TO_EPS), BM_GETCHECK, 0, 0L));
+    WritePrivateProfileString(L"l2rshell", L"inline_to_eps", str, inifile);
     wsprintf(str, L"%d", SendMessage(GetDlgItem(hwnd, ID_EQTEXTTOTEXT), BM_GETCHECK, 0, 0L));
     WritePrivateProfileString(L"l2rshell", L"eqtexttotext", str, inifile);
     wsprintf(str, L"%d", SendMessage(GetDlgItem(hwnd, ID_EQTEXTTOCOMM), BM_GETCHECK, 0, 0L));
@@ -1591,6 +1612,8 @@ void SaveUserData(HWND hwnd)
     
     wsprintf(str, L"%d", SendMessage(GetDlgItem(hwnd, ID_BMPFORFIG), BM_GETCHECK, 0, 0L));
     WritePrivateProfileString(L"l2rshell", L"bmpforfig", str, inifile);
+    wsprintf(str, L"%d", SendMessage(GetDlgItem(hwnd, ID_FIGSASFILENAMES), BM_GETCHECK, 0, 0L));
+    WritePrivateProfileString(L"l2rshell", L"figsasfilenames", str, inifile);
     wsprintf(str, L"%d", SendMessage(GetDlgItem(hwnd, ID_PARANTHESES), BM_GETCHECK, 0, 0L));
     WritePrivateProfileString(L"l2rshell", L"parantheses", str, inifile);
     wsprintf(str, L"%d", SendMessage(GetDlgItem(hwnd, ID_SEMICOLONS), BM_GETCHECK, 0, 0L));

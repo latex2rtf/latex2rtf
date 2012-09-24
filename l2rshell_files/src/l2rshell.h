@@ -47,6 +47,8 @@
 #define ID_EQUATIONS_TXT3                   1050
 #define ID_EQTEXTTOTEXT                     1051
 #define ID_EQTEXTTOCOMM                     1052
+#define ID_DISPLAYED_TO_EPS                 1053
+#define ID_INLINE_TO_EPS                    1054
 
 #define ID_BITMAPS_GROUP                    1060
 #define ID_BITMAPS_TXT1                     1061
@@ -61,6 +63,7 @@
 #define ID_EQSCALE_UPDOWN                   1070
 #define ID_FIGSCALE_UPDOWN                  1071
 #define ID_BMPFORFIG                        1072
+#define ID_FIGSASFILENAMES                  1073
 
 #define ID_RTF_GROUP                        1080
 #define ID_PARANTHESES                      1081

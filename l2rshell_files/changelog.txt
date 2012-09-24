@@ -1,5 +1,11 @@
 Note: l2rshell is compiled with http://www.bloodshed.net/devcpp.html
 
+
+0.6.4 (2012-09-24)
+1) added checkboxes for options -M64 -M128 and -E#
+ 
+--------------------------------------------------------------------------------------------
+
 0.6.3 (2010-11-19)
 1) added a checkbox to choose writing debug output to file
    and an input field for specifying the filename for debug output

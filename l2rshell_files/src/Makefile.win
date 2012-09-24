@@ -7,9 +7,9 @@ WINDRES = windres.exe
 RES  = L2RSHELL_private.res
 OBJ  = l2rshell.o $(RES)
 LINKOBJ  = l2rshell.o $(RES)
-LIBS =  -L"lib" -mwindows C:/Dev-Cpp/lib/libcomctl32.a C:/Dev-Cpp/lib/libshell32.a  
-INCS =  -I"include" 
-CXXINCS =  -I"lib/gcc/mingw32/3.4.2/include"  -I"include/c++/3.4.2/backward"  -I"include/c++/3.4.2/mingw32"  -I"include/c++/3.4.2"  -I"include" 
+LIBS =  -L"D:/Dev-Cpp/lib" -mwindows D:/Dev-Cpp/lib/libcomctl32.a D:/Dev-Cpp/lib/libshell32.a  
+INCS =  -I"D:/Dev-Cpp/include" 
+CXXINCS =  -I"D:/Dev-Cpp/lib/gcc/mingw32/3.4.2/include"  -I"D:/Dev-Cpp/include/c++/3.4.2/backward"  -I"D:/Dev-Cpp/include/c++/3.4.2/mingw32"  -I"D:/Dev-Cpp/include/c++/3.4.2"  -I"D:/Dev-Cpp/include" 
 BIN  = l2rshell.exe
 CXXFLAGS = $(CXXINCS)  
 CFLAGS = $(INCS)   
@@ -26,7 +26,7 @@ clean: clean-custom
 $(BIN): $(OBJ)
 	$(CPP) $(LINKOBJ) -o "l2rshell.exe" $(LIBS)
 
-l2rshell.o: l2rshell.cpp l2rshell.h dlg.h
+l2rshell.o: l2rshell.cpp l2rshell.h D:/Dev-Cpp/include/windows.h   D:/Dev-Cpp/include/commctrl.h D:/Dev-Cpp/include/shlobj.h   D:/Dev-Cpp/include/stdio.h D:/Dev-Cpp/include/sys/types.h   D:/Dev-Cpp/include/math.h dlg.h
 	$(CPP) -c l2rshell.cpp -o l2rshell.o $(CXXFLAGS)
 
 L2RSHELL_private.res: L2RSHELL_private.rc 

@@ -18,6 +18,6 @@
 #define LEGAL_TRADEMARKS	""
 #define ORIGINAL_FILENAME	"l2rshell.exe"
 #define PRODUCT_NAME	"latex2rtf"
-#define PRODUCT_VERSION	"2.1.1"
+#define PRODUCT_VERSION	"2.2.2"
 
 #endif /*L2RSHELL_PRIVATE_H*/
