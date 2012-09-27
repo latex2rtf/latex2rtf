@@ -21,9 +21,11 @@
 #
 
 DVIPS="dvips -q -l 1 -E -R"
-LATEX="latex --interaction batchmode"
+LATEX="latex --interaction batchmode --output-format dvi"
 CONVERT="convert"
 GREP="grep"
+AWK="awk"
+SED="sed"
 # !!!!!!!!!!!!!!!! Note !!!!!!!!!!!!!!
 # Under MS Windows, although this script runs under bash shell,
 # LaTeX is run in the Windows environment and thus needs the ";" as separator.
@@ -141,6 +143,34 @@ if [ $ext = "tex" ] ; then
     fi
 
     if [ $opt_eps ] ; then
+        if [ $inline -eq 1 ] ; then
+           # extract the BoundingBox of the eps with adjustment stuff
+           # parameters are: llx lly urx ury
+           bbb=`${GREP} -C 0 %%BoundingBox: $name.eps`
+           llydraft=$(echo $bbb | $AWK -F" " '{print $3}' )
+           urydraft=$(echo $bbb | $AWK -F" " '{print $5}' )
+           # now create an eps without the adjustment stuff
+           $SED -e "s/\^I_g//" $name.tex >$name.tmp
+           rm $name.tex
+           mv $name.tmp $name.tex
+           $LATEX $name > /dev/null
+           $DVIPS -o $name.eps $name.dvi
+           # extract the BoundingBox of the eps without adjustment stuff
+           bbb=`${GREP} -C 0 %%BoundingBox: $name.eps`
+           llyfin=$(echo $bbb | $AWK -F" " '{print $3}' )
+           uryfin=$(echo $bbb | $AWK -F" " '{print $5}' )
+           # use the maximum y extension
+           if [ "$llydraft" -lt "$llyfin" ] ; then
+              $SED -e "/%%BoundingBox:/s/$llyfin/$llydraft/" $name.eps >$name.tmp
+              rm $name.eps
+              mv $name.tmp $name.eps
+           fi
+           if [ "$urydraft" -gt "$uryfin" ] ; then
+              $SED -e "/%%BoundingBox:/s/$uryfin/$urydraft/" $name.eps >$name.tmp
+              rm $name.eps
+              mv $name.tmp $name.eps
+           fi
+        fi
         exit 0
     fi
     

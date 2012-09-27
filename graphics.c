@@ -941,16 +941,16 @@ static unsigned char * getPngChunk(FILE *fp, char *s)
     return data;    
 }
 
-static void InsertFigureAsComment(const char *s)
+static void InsertFigureAsComment(const char *s, int hinline)
 {
 	if (!s) return;
 	if (*s=='\0') return;
-	
-//		startField(FIELD_COMMENT);
+
+  if (hinline == 1) fprintRTF("{\\dn10 ");
 		putRtfStrEscaped("[###");
 		putRtfStrEscaped(s);
 		putRtfStrEscaped("###]");
-//		endCurrentField();
+  if (hinline == 1) fprintRTF("}");
 }
 
 /******************************************************************************
@@ -1134,13 +1134,8 @@ static void PutPngFile(char *png, double height_goal, double width_goal, double 
         s = strdup_new_extension(png, ".png", ".eps");
         else if (strstr(png, ".PNG") != NULL)
         s = strdup_new_extension(png, ".PNG", ".eps");
-		InsertFigureAsComment(s);
+		InsertFigureAsComment(s, 0);
 
-//		startField(FIELD_COMMENT);
-		putRtfStrEscaped("[###");
-		putRtfStrEscaped(s);
-		putRtfStrEscaped("###]");
-//		endCurrentField();
     }
 
 }
@@ -1436,12 +1431,10 @@ static void PutEpsFile(char *s, double height0, double width0, double scale, dou
     }
 
     if (g_figure_comment_converted) {
-		diagnostics(3,"Write EPS as Comment");
-//		startField(FIELD_COMMENT);
+		diagnostics(3,"Insert EPS file name in text");
 		putRtfStrEscaped("[###");
 		putRtfStrEscaped(s);
 		putRtfStrEscaped("###]");
-//		endCurrentField();
     }
 }
 
@@ -1610,7 +1603,7 @@ static double GetBaseline(const char *tex_file_stem, const char *pre)
 /******************************************************************************
  purpose   : Convert LaTeX to Bitmap and insert in RTF file
  ******************************************************************************/
-void PutLatexFile(const char *tex_file_stem, double scale, const char *pre, conversion_t convertTo)
+void PutLatexFile(const char *tex_file_stem, double scale, const char *pre, conversion_t convertTo, int hinline)
 {
     char *png_file_name = NULL;
     char *tmp_path;
@@ -1633,7 +1626,7 @@ void PutLatexFile(const char *tex_file_stem, double scale, const char *pre, conv
     	if (NULL == tmp_path)
         	diagnostics(WARNING, "PutLatexFile failed to convert '%s.tex' to '%s'",tex_file_stem,eps_file_name);
         else 
-			InsertFigureAsComment(eps_file_name);
+			InsertFigureAsComment(eps_file_name, hinline);
 			
         safe_free(eps_file_name);
         return;
@@ -1740,7 +1733,12 @@ static char *SaveEquationAsFile(const char *post_begin_document,
     
     if ( streq(pre, "$") || streq(pre, "\\begin{math}") || streq(pre, "\\(") ) {
         fprintf(f, "%%INLINE_DOT_ON_BASELINE\n");
-        fprintf(f, "%s\n.\\quad %s\n%s", pre, eq, post);
+        if ((g_equation_inline_eps) || (g_equation_display_eps)) {
+        fprintf(f, "%s\n^I_g%s\n%s", pre, eq, post);  
+        }
+        else {
+        fprintf(f, "%s\n.\\quad %s\n%s", pre, eq, post);  
+        }
     } else if (strstr(pre, "equation"))
         fprintf(f, "$$%s$$", eq);
     else
@@ -1815,6 +1813,7 @@ void WriteLatexAsBitmapOrEPS(char *pre, char *eq, char *post, conversion_t conve
 {
     char *p, *abbrev, *latex_to_convert;
     char *name = NULL;
+    int hinline;
     
     /* go to a bit a trouble to give the user some feedback */
     latex_to_convert = strdup_together3(pre,eq,post);
@@ -1824,6 +1823,7 @@ void WriteLatexAsBitmapOrEPS(char *pre, char *eq, char *post, conversion_t conve
     safe_free(latex_to_convert);
         
     if (eq == NULL) return;
+    hinline = 0;
 
 /* suppress bitmap equation numbers in eqnarrays with zero or one \label{}'s*/
     if (pre && streq(pre, "\\begin{eqnarray}")) {
@@ -1852,8 +1852,10 @@ void WriteLatexAsBitmapOrEPS(char *pre, char *eq, char *post, conversion_t conve
         name = SaveEquationAsFile(p, pre, eq, post);
         safe_free(p);
         
-    } else 
+    } else  {
         name = SaveEquationAsFile(NULL, pre, eq, post);
+        if ( streq(pre, "$") || streq(pre, "\\begin{math}") || streq(pre, "\\(") ) hinline=1;
+        }
     
     if (name) {
         if (strstr(pre, "music") 
@@ -1863,9 +1865,9 @@ void WriteLatexAsBitmapOrEPS(char *pre, char *eq, char *post, conversion_t conve
             || strstr(pre, "tabbing")
             || strstr(pre, "psgraph")
             || strstr(pre, "pspicture")) 
-            PutLatexFile(name, g_png_figure_scale, pre, convertTo);
+            PutLatexFile(name, g_png_figure_scale, pre, convertTo, hinline);
         else
-            PutLatexFile(name, g_png_equation_scale, pre, convertTo);
+            PutLatexFile(name, g_png_equation_scale, pre, convertTo, hinline);
 
         safe_free(name);
     }

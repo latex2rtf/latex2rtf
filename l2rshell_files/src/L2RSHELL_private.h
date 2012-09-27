@@ -5,13 +5,13 @@
 #define L2RSHELL_PRIVATE_H
 
 /* VERSION DEFINITIONS */
-#define VER_STRING	"0.6.3.0"
+#define VER_STRING	"0.6.4.0"
 #define VER_MAJOR	0
 #define VER_MINOR	6
-#define VER_RELEASE	3
+#define VER_RELEASE	4
 #define VER_BUILD	0
 #define COMPANY_NAME	""
-#define FILE_VERSION	"0.6.3"
+#define FILE_VERSION	"0.6.4"
 #define FILE_DESCRIPTION	"Shell for latex2rtf"
 #define INTERNAL_NAME	""
 #define LEGAL_COPYRIGHT	"(c) Mikhail Polianski / GNU General Public License"
