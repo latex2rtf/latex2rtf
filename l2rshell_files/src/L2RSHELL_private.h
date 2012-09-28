@@ -5,19 +5,19 @@
 #define L2RSHELL_PRIVATE_H
 
 /* VERSION DEFINITIONS */
-#define VER_STRING	"0.6.4.0"
+#define VER_STRING	"0.6.5.0"
 #define VER_MAJOR	0
 #define VER_MINOR	6
-#define VER_RELEASE	4
+#define VER_RELEASE	5
 #define VER_BUILD	0
 #define COMPANY_NAME	""
-#define FILE_VERSION	"0.6.4"
+#define FILE_VERSION	"0.6.5"
 #define FILE_DESCRIPTION	"Shell for latex2rtf"
 #define INTERNAL_NAME	""
 #define LEGAL_COPYRIGHT	"(c) Mikhail Polianski / GNU General Public License"
 #define LEGAL_TRADEMARKS	""
 #define ORIGINAL_FILENAME	"l2rshell.exe"
 #define PRODUCT_NAME	"latex2rtf"
-#define PRODUCT_VERSION	"2.2.2"
+#define PRODUCT_VERSION	"2.2.4"
 
 #endif /*L2RSHELL_PRIVATE_H*/

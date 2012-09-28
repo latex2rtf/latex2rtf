@@ -1,11 +1,11 @@
     //////////////////////////////////////////////////////
     //                                                  //
     //      l2rshell (GUI for LaTeX2RTF converter)      //
-    //                 v.0.6.4 for win32                //
+    //                 v.0.6.5 for win32                //
     //    author: Mikhail Polianski (mnpol@mail.ru)     //
     //                                                  //
     //////////////////////////////////////////////////////
-    //     -> version number is also in line 1460       //
+    //     -> version number is also in line 1475       //
 //
 // libcomctl32 library has to be included into compiler options
 #include "l2rshell.h"
@@ -91,7 +91,7 @@ WORD* CreateDlg()
     pdlgtemplate=p=(PWORD)LocalAlloc(LPTR, 8000);
     // dialog template data
     DWORD lStyle=DS_3DLOOK|DS_CENTER|WS_MINIMIZEBOX|WS_VISIBLE|WS_CAPTION|WS_SYSMENU|DS_SHELLFONT;
-    DlgTemplate(p,lStyle,102,0,0,340,277,L"LaTeX2RTF"); //102 - total number of dialog items
+    DlgTemplate(p,lStyle,103,0,0,340,277,L"LaTeX2RTF"); //103 - total number of dialog items
     // group boxes
     lStyle=WS_CHILD|BS_GROUPBOX;
     DlgItemTemplate(p,lStyle,15,85,320,71,ID_EQUATIONS_GROUP,L"button", NULL);
@@ -188,7 +188,7 @@ WORD* CreateDlg()
     DlgItemTemplate(p,lStyle,160,140,40,12,ID_TABLES_TO_RTF,L"button", L"RTF");
     DlgItemTemplate(p,lStyle,220,140,40,12,ID_TABLES_TO_BITMAP,L"button", L"bitmap");
     DlgItemTemplate(p,lStyle,25,227,265,12,ID_BMPFORFIG,L"button", NULL);
-//    DlgItemTemplate(p,lStyle,25,165,265,12,ID_FIGSASFILENAMES,L"button", NULL);
+    DlgItemTemplate(p,lStyle,25,165,265,12,ID_FIGSASFILENAMES,L"button", NULL);
     DlgItemTemplate(p,lStyle,85,20,210,8,ID_BBLDEF,L"button", NULL);
     DlgItemTemplate(p,lStyle,85,45,210,8,ID_AUXDEF,L"button",NULL);
     DlgItemTemplate(p,lStyle,85,70,210,8,ID_TMPDEF,L"button",NULL); 
@@ -313,7 +313,7 @@ LRESULT CALLBACK DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             SendMessage(GetDlgItem(hwnd, ID_TABLES_TO_RTF), BM_SETCHECK, GetInitInt(L"tables_to_rtf", 1), 0L);
             SendMessage(GetDlgItem(hwnd, ID_TABLES_TO_BITMAP), BM_SETCHECK, GetInitInt(L"tables_to_bitmap", 0), 0L);
             SendMessage(GetDlgItem(hwnd, ID_BMPFORFIG), BM_SETCHECK, GetInitInt(L"bmpforfig", 0), 0L);
-//            SendMessage(GetDlgItem(hwnd, ID_FIGSASFILENAMES), BM_SETCHECK, GetInitInt(L"figsasfilenames", 0), 0L);
+            SendMessage(GetDlgItem(hwnd, ID_FIGSASFILENAMES), BM_SETCHECK, GetInitInt(L"figsasfilenames", 0), 0L);
             SendMessage(GetDlgItem(hwnd, ID_PARANTHESES), BM_SETCHECK, GetInitInt(L"parantheses", 0), 0L);
             SendMessage(GetDlgItem(hwnd, ID_SEMICOLONS), BM_SETCHECK, GetInitInt(L"semicolons", 0), 0L);
             SendMessage(GetDlgItem(hwnd, ID_USEEQFIELDS), BM_SETCHECK, GetInitInt(L"useeqfields", 1), 0L);
@@ -789,8 +789,8 @@ void Run(HWND hwnd)
         if(SendMessage(GetDlgItem(hwnd, ID_BMPFORFIG), BM_GETCHECK, 0, 0L))
             lstrcat(out_str, L" -F");
             
-//        if(SendMessage(GetDlgItem(hwnd, ID_FIGSASFILENAMES), BM_GETCHECK, 0, 0L))
-//            lstrcat(out_str, L" -E12");
+        if(SendMessage(GetDlgItem(hwnd, ID_FIGSASFILENAMES), BM_GETCHECK, 0, 0L))
+            lstrcat(out_str, L" -E12");
 
         i=SendMessage(GetDlgItem(hwnd, ID_USEEQFIELDS), BM_GETCHECK, 0, 0L)+2*SendMessage(GetDlgItem(hwnd, ID_USEREFFIELDS), BM_GETCHECK, 0, 0L);
         if(i!= 3)
@@ -946,7 +946,7 @@ void SetTab(HWND hwnd, int tabctrl_item)
     ShowWindow(GetDlgItem(hwnd, ID_EQTEXTTOCOMM), show_hide);
     ShowWindow(GetDlgItem(hwnd, ID_BITMAPS_GROUP), show_hide);
     ShowWindow(GetDlgItem(hwnd, ID_BMPFORFIG), show_hide);
-//    ShowWindow(GetDlgItem(hwnd, ID_FIGSASFILENAMES), show_hide);
+    ShowWindow(GetDlgItem(hwnd, ID_FIGSASFILENAMES), show_hide);
     ShowWindow(GetDlgItem(hwnd, ID_BITMAPS_TXT1), show_hide);
     ShowWindow(GetDlgItem(hwnd, ID_BITMAPS_TXT2), show_hide);
     ShowWindow(GetDlgItem(hwnd, ID_BITMAPS_TXT3), show_hide);
@@ -1118,7 +1118,7 @@ void ChangeTheLanguage(HWND hwnd)
     SendMessage(GetDlgItem(hwnd, ID_BITMAPS_TXT3), WM_SETTEXT, 0, (LPARAM)GetLngString(hwnd, L"113", L"Scale:", str));
     SendMessage(GetDlgItem(hwnd, ID_BITMAPS_TXT4), WM_SETTEXT, 0, (LPARAM)GetLngString(hwnd, L"114", L"(equations)", str));
     SendMessage(GetDlgItem(hwnd, ID_BITMAPS_TXT5), WM_SETTEXT, 0, (LPARAM)GetLngString(hwnd, L"115", L"(bitmaps)", str));
-//    SendMessage(GetDlgItem(hwnd, ID_FIGSASFILENAMES), WM_SETTEXT, 0, (LPARAM)GetLngString(hwnd, L"116", L"Insert all figures as filenames", str));
+    SendMessage(GetDlgItem(hwnd, ID_FIGSASFILENAMES), WM_SETTEXT, 0, (LPARAM)GetLngString(hwnd, L"116", L"Insert all figures as filenames", str));
     
     SendMessage(GetDlgItem(hwnd, ID_TMPDIR_TEXT), WM_SETTEXT, 0, (LPARAM)GetLngString(hwnd, L"200", L"TMP dir:", str));
     SendMessage(GetDlgItem(hwnd, ID_BBLFILE_TEXT), WM_SETTEXT, 0, (LPARAM)GetLngString(hwnd, L"201", L"BBL file:", str));
@@ -1472,7 +1472,7 @@ WCHAR* GetVersionString(WCHAR* str)   //returned value is 'str'
 {
     WCHAR inifile[MAX_PATH];
     
-    lstrcpy(str, L"LaTeX2RTF  +   l2rshell v.0.6.4");
+    lstrcpy(str, L"LaTeX2RTF  +   l2rshell v.0.6.5");
     
     GetModuleFileName(NULL, inifile, MAX_PATH);
     getdir(inifile);
@@ -1612,8 +1612,8 @@ void SaveUserData(HWND hwnd)
     
     wsprintf(str, L"%d", SendMessage(GetDlgItem(hwnd, ID_BMPFORFIG), BM_GETCHECK, 0, 0L));
     WritePrivateProfileString(L"l2rshell", L"bmpforfig", str, inifile);
-//    wsprintf(str, L"%d", SendMessage(GetDlgItem(hwnd, ID_FIGSASFILENAMES), BM_GETCHECK, 0, 0L));
-//    WritePrivateProfileString(L"l2rshell", L"figsasfilenames", str, inifile);
+    wsprintf(str, L"%d", SendMessage(GetDlgItem(hwnd, ID_FIGSASFILENAMES), BM_GETCHECK, 0, 0L));
+    WritePrivateProfileString(L"l2rshell", L"figsasfilenames", str, inifile);
     wsprintf(str, L"%d", SendMessage(GetDlgItem(hwnd, ID_PARANTHESES), BM_GETCHECK, 0, 0L));
     WritePrivateProfileString(L"l2rshell", L"parantheses", str, inifile);
     wsprintf(str, L"%d", SendMessage(GetDlgItem(hwnd, ID_SEMICOLONS), BM_GETCHECK, 0, 0L));

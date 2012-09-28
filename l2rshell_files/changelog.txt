@@ -1,7 +1,7 @@
 Note: l2rshell is compiled with http://www.bloodshed.net/devcpp.html
 
 
-0.6.4 (2012-09-24)
+0.6.5 (2012-09-28)
 1) added checkboxes for options -M64 -M128 and -E#
  
 --------------------------------------------------------------------------------------------

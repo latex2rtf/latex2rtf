@@ -60,7 +60,7 @@ A converter from @latex{}to RTF
 
 Edition 0.7.9
 
-for program version 2.2.3
+for program version 2.2.4
 
 @author Georg Lehner,
 updated by Wilfried Hennings and Scott Prahl,
@@ -706,7 +706,7 @@ inch.
 @item -E# selects whether figures are included in the rtf (default) or created 
 as external files with the filenames inserted in the rtf text.
 
-The options -E4, -E8 and -E12 are experimental and currently conflict with -M12.
+The options -E4, -E8 and -E12 are experimental and may not work as expected.
 
     @table @code
     @item -E0
