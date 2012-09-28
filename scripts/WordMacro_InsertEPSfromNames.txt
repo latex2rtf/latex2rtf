@@ -1,0 +1,53 @@
+Sub InsertEPSfromNames()
+'
+' replaces [###filename.eps###] by the actual eps graphic
+'
+Dim epsnamlen, mypos As Integer
+Dim epsname As String
+
+Selection.Find.ClearFormatting
+Selection.HomeKey Unit:=wdStory
+Do While Selection.Find.Execute _
+        (FindText:="[###", _
+        Forward:=True, _
+        Wrap:=wdFindStop, _
+        Format:=False, _
+        MatchCase:=False, _
+        MatchWholeWord:=False, _
+        MatchWildcards:=False, _
+        MatchSoundsLike:=False, _
+        MatchAllWordForms:=False) = True
+    Selection.Extend
+    With Selection.Find
+        .Text = "###]"
+        .Replacement.Text = ""
+        .Forward = True
+        .Wrap = wdFindStop
+        .Format = False
+        .MatchCase = False
+        .MatchWholeWord = False
+        .MatchWildcards = False
+        .MatchSoundsLike = False
+        .MatchAllWordForms = False
+    End With
+    Selection.Find.Execute
+    epsname = Application.Selection.Text
+    epsnamlen = Len(epsname) - 8
+    epsname = Mid(epsname, 5, epsnamlen)
+    mypos = Selection.Font.Position
+    With Selection
+       .ExtendMode = False
+    End With
+    
+    Selection.InlineShapes.AddPicture _
+       FileName:=epsname, _
+       LinkToFile:=False, SaveWithDocument:=True
+       
+    Selection.MoveLeft Unit:=wdCharacter, Count:=1, Extend:=wdExtend
+    With Selection.Font
+       .Position = mypos
+    End With
+    Selection.MoveRight Unit:=wdCharacter, Count:=1, Extend:=wdMove
+Loop
+End Sub
+
