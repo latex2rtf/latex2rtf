@@ -320,18 +320,18 @@ and --- with some delay --- on CTAN sites:
 e.g., @uref{http://www.dante.de} or @uref{http://www.ctan.org}.
 
 The DOS package will also run under all MS Windows versions
-up to Vista, except 64bit systems. 
+up to Windows 7, except 64bit systems. 
 It requires an i386 processor or better.@*
 It should only be used on older Microsoft systems.@*
 For Win9x, ME, NT, or newer, you should use the win or win-NO-GUI package.
 
 The win-NO-GUI package only runs under Win32 
-(Win9x, ME, NT, 2000, XP, 2003, Vista, probably also Win7).
+(Win9x, ME, NT, 2000, XP, 2003, Vista, Win7).
 From @ltor{}version 2.0.0 up it also runs on 64bit systems.
 
 The win package is the win-NO-GUI package plus graphical user 
 interface (GUI) shell (l2rshell) and installer.@*
-It only runs under Win NT, 2000, XP, 2003 and Vista, probably also Win7.@*
+It only runs under Win NT, 2000, XP, 2003, Vista, and Win7.@*
 From @ltor{}version 2.0.0 up it also runs on 64bit systems.
 
 The win64 package (only @ltor{}version 1.9.19) is the win package
@@ -426,7 +426,7 @@ from @uref{http://sourceforge.net/projects/latex2rtf/,SourceForge}@*
 
 The DOS package contains a precompiled executable 
 which should run under plain DOS and also in the command prompt 
-(or ``console'') of any MS Windows system including Vista
+(or ``console'') of any MS Windows system including Vista and Windows 7
 but not on 64bit systems.@*
 
 To install the DOS or win-no-GUI package of @ltor{}, extract all files 
@@ -456,7 +456,7 @@ for plain DOS.
 @section Win32 systems
 
 To install @ltor{}on a Win32 system (WinNT, Win2000, WinXP, 
-WinVista, Win7), download the win package,
+Vista, Win7), download the win package,
 execute the @file{latex2rtf-x.x.x_win.exe} 
 (where x.x.x is the version number) and follow the instructions.
 
@@ -706,7 +706,7 @@ inch.
 @item -E# selects whether figures are included in the rtf (default) or created 
 as external files with the filenames inserted in the rtf text.
 
-This option is experimental and currently conflicts with -M12
+The options -E4, -E8 and -E12 are experimental and currently conflict with -M12.
 
     @table @code
     @item -E0
@@ -789,11 +789,9 @@ where # selects the type of equation conversion.  Use
     Probably this could also be useful for use in OpenOffice, as OO has an 
     equation syntax which partially resembles TeX syntax.
     @item -M64  
-    convert displayed equations to EPS files and insert filenames in RTF text.@*
-    After opening the rtf in a textprocessing or dtp program, a macro can search 
-    for the inserted filenames and insert the eps in their place.
+    convert displayed equations to EPS files and insert filenames in RTF text.
     @item -M128  
-    convert inline equations to EPS files and insert filenames in RTF text
+    convert inline equations to EPS files and insert filenames in RTF text.
     @end table
 These switches can be combined to get different effects.  Handy examples are
     @table @code
@@ -806,14 +804,25 @@ These switches can be combined to get different effects.  Handy examples are
     @item -M192  
     convert both inline and displayed equations to EPS and insert filenames in RTF text
     @end table
-Bitmap conversion requires that you have installed a working latex2png script.
+Conversion to bitmaps or eps requires that you have installed a working latex2png script.
 Producing bitmaps is slow.@*
 When running the DOS version, conversion to bitmaps works for the first 26
 equations but fails for the rest with the message@*
 "latex2png: pipe error: Too many open files (EMFILE)".@*
 This is probably a bug in the djgpp 2.04 compiler.@*
 The Windows version, compiled with MinGW, successfully 
-converts at least 500 equations to bitmaps.
+converts at least 500 equations to bitmaps.@*
+When -M64, -M128 or both are specified, equations are converted to
+individual eps files, the filenames of which are literally inserted in
+the rtf file, delimited by [###...###]. After loading the rtf file in a
+text processing program, a macro can be run which searches for "[###"
+and "###]", extracts the filename, and inserts the eps in that place.
+The Windows installer package contains the code of such a macro for
+Word2010 in the file "WordMacro_InsertEPSfromNames.txt" in subfolder 
+"scripts". (This macro may also run on other versions of Word but 
+it was only tested on Word2010.) In Word, the inserted eps graphics 
+display in bad quality on the screen and on non-postscript printers 
+but can be printed in high quality on postscript and pdf printers. 
 
 @item -o outputfile
 Unless an @file{outputfile} is specified with the @code{-o} option, the resulting RTF
