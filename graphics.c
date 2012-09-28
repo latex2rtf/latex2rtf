@@ -1075,7 +1075,6 @@ static void PutPngFile(char *png, double height_goal, double width_goal, double 
         
     diagnostics(WARNING,"Encoding  '%s'",png);
 
-    if (g_figure_include_converted) {
     GetPngSize(png, &w_pixels, &h_pixels, &xres, &yres, &bad_res);
     if (w_pixels == 0 || h_pixels == 0) return;
 
@@ -1126,18 +1125,6 @@ static void PutPngFile(char *png, double height_goal, double width_goal, double 
     PutHexFile(fp);
     fprintRTF("}\n");
     fclose(fp);
-    }
-
-    if (0 && g_figure_comment_converted) {
-		diagnostics(3,"Write EPS as Comment");
-    if (strstr(png, ".png") != NULL)
-        s = strdup_new_extension(png, ".png", ".eps");
-        else if (strstr(png, ".PNG") != NULL)
-        s = strdup_new_extension(png, ".PNG", ".eps");
-		InsertFigureAsComment(s, 0);
-
-    }
-
 }
 
 /******************************************************************************
@@ -1400,14 +1387,24 @@ static void PutWmfFile(char *s, double height0, double width0, double scale, dou
 static void PutPdfFile(char *s, double height0, double width0, double scale, double baseline)
 {
     char *png;
-    diagnostics(WARNING, "Rendering '%s'", s);
+    if (g_figure_include_converted) {
+		diagnostics(WARNING, "Rendering '%s'", s);
+		diagnostics(3,"Converting PDF to PNG and inserting into RTF.");
+	
+		png = pdf_to_png(s);
+		
+		if (png) {
+			PutPngFile(png, height0, width0, scale, baseline);
+			my_unlink(png);
+			safe_free(png);
+		}
+    }
 
-    png = pdf_to_png(s);
-    
-    if (png) {
-        PutPngFile(png, height0, width0, scale, baseline);
-        my_unlink(png);
-        safe_free(png);
+    if (g_figure_comment_converted) {
+		diagnostics(3,"Inserting PDF file name in text");
+		putRtfStrEscaped("[###");
+		putRtfStrEscaped(s);
+		putRtfStrEscaped("###]");
     }
 }
 
@@ -1418,9 +1415,8 @@ static void PutEpsFile(char *s, double height0, double width0, double scale, dou
 {
     char *png, *emf, *pict;
 
-    diagnostics(WARNING, "Rendering '%s'", s);
-
     if (g_figure_include_converted) {
+    	diagnostics(WARNING, "Rendering '%s'", s);
 		diagnostics(3,"Converting EPS to PNG and inserting in RTF.");
         png = eps_to_png(s);
         if (png) {
