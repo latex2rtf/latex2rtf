@@ -171,12 +171,16 @@ if [ $ext = "tex" ] ; then
               mv $name.tmp $name.eps
            fi
         fi
+        if [ $opt_k -eq 0 ] ; then
+            rm -f $name.dvi $name.aux $name.log
+        fi
         exit 0
     fi
     
 fi
 
-$CONVERT $out -units PixelsPerInch -density ${opt_d}x${opt_d} -trim +repage $name.eps $name.png
+# WH: added "-type PaletteMatte" to ensure compatibility with older versions of Word and with IrfanView
+$CONVERT $out -units PixelsPerInch -density ${opt_d}x${opt_d} -trim +repage $name.eps -type PaletteMatte $name.png
 
 if [ ! -e "$name.png" ] ; then
     echo "latex2png: error: convert (ImageMagick) failed to translate $name.eps to $name.png"
@@ -202,7 +206,7 @@ if [ $inline -eq 1 ] ; then
 	# strip the initial dot and white space on the left
 	# we must keep the white space on the bottom so we add border on the east
 	# so that the bottom does not get trimmed away
-	$CONVERT $name-tmp.png -chop ${width}x0 -gravity East -background black -splice 1x0 -trim +repage $name.png
+	$CONVERT $name-tmp.png -chop ${width}x0 -gravity East -background white -splice 1x0 -trim +repage -type PaletteMatte $name.png
 
 	# extract first column of png and stick it in a bitmap
 	$CONVERT $name-tmp.png -crop 1x0 +repage $name.pbm

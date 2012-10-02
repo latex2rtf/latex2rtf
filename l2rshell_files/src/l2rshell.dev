@@ -64,7 +64,7 @@ LegalCopyright=(c) Mikhail Polianski / GNU General Public License
 LegalTrademarks=
 OriginalFilename=l2rshell.exe
 ProductName=latex2rtf
-ProductVersion=2.2.4
+ProductVersion=2.3.0
 AutoIncBuildNr=0
 
 [Unit3]

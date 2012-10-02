@@ -34,11 +34,11 @@ SUPPORTDIR=/share/latex2rtf
 CFGDIR=/share/latex2rtf/cfg
 
 #Uncomment next 5 lines for Windows
-#BINDIR=$(DESTDIR)
-#MANDIR=$(DESTDIR)
-#INFODIR=$(DESTDIR)
-#SUPPORTDIR=$(DESTDIR)
-#CFGDIR=$(DESTDIR)/cfg
+#BINDIR=
+#MANDIR=
+#INFODIR=
+#SUPPORTDIR=
+#CFGDIR=/cfg
 
 # Nothing to change below this line - except:
 # for Windows, change "all : checkdir latex2rtf" to "all : latex2rtf"

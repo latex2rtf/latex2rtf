@@ -60,7 +60,7 @@ A converter from @latex{}to RTF
 
 Edition 0.7.9
 
-for program version 2.2.4
+for program version 2.3.0
 
 @author Georg Lehner,
 updated by Wilfried Hennings and Scott Prahl,
@@ -221,7 +221,7 @@ into another language, under the above conditions for modified versions,
 except that this permission notice may be stated in a translation
 approved by the Free Software Foundation.
 
-@c This document applies to version 2.2.0 of @ltor{}.
+@c This document applies to version 2.3.0 of @ltor{}.
 @end ifnottex
 
 
@@ -475,10 +475,10 @@ freely available for download at @uref{http://www.miktex.org/},
 @uref{http://www.imagemagick.org} and @uref{http://www.ghostscript.com}
 
 The following versions were available at the time of writing 
-and used together with @ltor{}version 2.2.x: @*
+and used together with @ltor{}version 2.3.x: @*
 - MikTeX 2.9 @*
 - Ghostscript 9.06 @*
-- ImageMagick-6.7.7-5-Q8-windows-dll.exe
+- ImageMagick-6.7.9-Q8-windows-dll.exe
 
 
 If MikTeX, ImageMagick and Ghostscript are installed, the paths to their 
@@ -718,14 +718,19 @@ The options -E4, -E8 and -E12 are experimental and may not work as expected.
     @item -E3
     Include all figures (default).
     @item -E4 
-    Insert filenames for figures that do not need conversion.@*
-    After opening the rtf in a textprocessing or dtp program, a macro can search 
-    for the inserted filenames and insert the eps in their place.
+    Insert filenames for figures that do not need conversion.
     @item -E8
     Insert filenames for figures that need conversion.
     @item -E12
     Insert filenames for all figures.
     @end table
+With options -E4, -E8 and -E12, pdf and ps are converted to eps 
+and the eps filenames inserted. Bitmap files are inserted in
+their original format.
+After opening the rtf in a textprocessing or dtp program, 
+a macro can search for the inserted filenames 
+and insert the files in their places.
+
 
 @item -f#
 where # selects which fields to use during conversion:
@@ -1472,7 +1477,8 @@ does not produce a Warning message if PACKAGE is encountered, e.g.,
 intended to process contents of unknown environment as if it were 
 plain @latex{}, e.g.@: `@code{\environ,ENVCMD.}' @*
 Therefore `@code{\begin@{environ@} text
-\end@{environ@}}' would be converted to `text'. Doesn't work in @ltor{}version 2.1.0.
+\end@{environ@}}' would be converted to `text'. 
+Doesn't work in @ltor{}version 2.1.0 up to and including 2.3.0.
 @item ENVIRONMENT
 ignores contents of that environment, e.g., with `@code{\ifhtml,ENVIRONMENT.}'',
 `@code{\begin@{ifhtml@} text \end@{ifhtml@}}' ignores `text'.
@@ -1608,7 +1614,7 @@ For subscription to these lists visit the page:
 or
 @uref{http://lists.sourceforge.net/lists/listinfo/latex2rtf-developers, developers list}
 
-As of June 2012, version 2.2.0 of @ltor{}is available. 
+As of October 2012, version 2.3.0 of @ltor{}is available. 
 
 The contents of this manual were composed by copying shamelessly what was
 available in the original sources and documentation.

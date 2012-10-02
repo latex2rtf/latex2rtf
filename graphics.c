@@ -151,6 +151,7 @@ static void PutEmfFile (char *, double, double, double, double);
 static void PutWmfFile (char *, double, double, double, double);
 static void PutPdfFile (char *, double, double, double, double);
 static void PutEpsFile (char *, double, double, double, double);
+static void PutPsFile  (char *, double, double, double, double);
 static void PutTiffFile(char *, double, double, double, double);
 static void PutGifFile (char *, double, double, double, double);
 
@@ -163,7 +164,7 @@ static GraphConvertElement GraphConvertTable[] = {
     { ".eps",  PutEpsFile  },
     { ".tiff", PutTiffFile },
     { ".tif",  PutTiffFile },
-    { ".ps",   PutEpsFile  },
+    { ".ps",   PutPsFile   },
     { ".pict", PutPictFile },
     { ".emf",  PutEmfFile  },
     { ".wmf",  PutWmfFile  },
@@ -215,11 +216,12 @@ void CmdGraphicsPath(int code)
     safe_free(directories);
 }
 
-#define CONVERT_SIMPLE 1
-#define CONVERT_CROP   2
+#define CONVERT_SIMPLE        1
+#define CONVERT_CROP          2
 #define CONVERT_LATEX_TO_PNG  3
 #define CONVERT_LATEX_TO_EPS  4
-#define CONVERT_PDF    5
+#define CONVERT_PDF           5
+#define CONVERT_PS_TO_EPS     6
 
 static char *g_psset_info   = NULL;
 static char *g_psstyle_info = NULL;
@@ -375,6 +377,11 @@ static char *SysGraphicsConvert(int opt, int offset, uint16_t dpi, const char *i
         snprintf(cmd, N, format_unix, dpi, out_tmp, in);
     }
 
+    if (opt == CONVERT_PS_TO_EPS) {
+        const char format_unix[] = "eps2eps '%s' '%s'";
+        snprintf(cmd, N, format_unix, in, out_tmp);
+    }
+
 #else
 
     if (opt == CONVERT_SIMPLE) {
@@ -410,6 +417,11 @@ static char *SysGraphicsConvert(int opt, int offset, uint16_t dpi, const char *i
     if (opt == CONVERT_PDF) {
         char format_xp[] = "bash pdf2pnga \"%s\" \"%s\" %d";
         snprintf(cmd, N, format_xp, in, out_tmp, dpi);
+    }
+
+    if (opt == CONVERT_PS_TO_EPS) {
+        char format_xp[] = "eps2eps \"%s\" \"%s\"";
+        snprintf(cmd, N, format_xp, in, out_tmp);
     }
         
 #endif
@@ -1386,7 +1398,8 @@ static void PutWmfFile(char *s, double height0, double width0, double scale, dou
  ******************************************************************************/
 static void PutPdfFile(char *s, double height0, double width0, double scale, double baseline)
 {
-    char *png;
+    char *png, *pdf, *eps, *out;
+    
     if (g_figure_include_converted) {
 		diagnostics(WARNING, "Rendering '%s'", s);
 		diagnostics(3,"Converting PDF to PNG and inserting into RTF.");
@@ -1401,10 +1414,27 @@ static void PutPdfFile(char *s, double height0, double width0, double scale, dou
     }
 
     if (g_figure_comment_converted) {
-		diagnostics(3,"Inserting PDF file name in text");
-		putRtfStrEscaped("[###");
-		putRtfStrEscaped(s);
-		putRtfStrEscaped("###]");
+    diagnostics(3,"Converting PDF to EPS and inserting file name in text");
+    eps = strdup_new_extension(s, ".pdf", ".eps");
+    if (eps == NULL) {
+        eps = strdup_new_extension(s, ".PDF", ".eps");
+        if (eps == NULL)
+            return;
+    }
+
+    pdf = strdup_together(g_home_dir, s);
+    eps = strdup_together(g_home_dir, eps);
+    out = SysGraphicsConvert(CONVERT_PS_TO_EPS, 0, g_dots_per_inch, pdf, eps);
+        
+    if (out != NULL) {
+		    putRtfStrEscaped("[###");
+		    putRtfStrEscaped(eps);
+		    putRtfStrEscaped("###]");
+        free(out);
+    }
+    
+    free(pdf);
+    free(eps);
     }
 }
 
@@ -1413,11 +1443,11 @@ static void PutPdfFile(char *s, double height0, double width0, double scale, dou
  ******************************************************************************/
 static void PutEpsFile(char *s, double height0, double width0, double scale, double baseline)
 {
-    char *png, *emf, *pict;
+    char *png, *eps;
 
     if (g_figure_include_converted) {
     	diagnostics(WARNING, "Rendering '%s'", s);
-		diagnostics(3,"Converting EPS to PNG and inserting in RTF.");
+		  diagnostics(3,"Converting EPS to PNG and inserting in RTF.");
         png = eps_to_png(s);
         if (png) {
             PutPngFile(png, height0, width0, scale, baseline);
@@ -1427,10 +1457,48 @@ static void PutEpsFile(char *s, double height0, double width0, double scale, dou
     }
 
     if (g_figure_comment_converted) {
-		diagnostics(3,"Insert EPS file name in text");
-		putRtfStrEscaped("[###");
-		putRtfStrEscaped(s);
-		putRtfStrEscaped("###]");
+		  diagnostics(3,"Inserting EPS file name in text");
+		  putRtfStrEscaped("[###");
+		  putRtfStrEscaped(eps);
+		  putRtfStrEscaped("###]");
+      free (eps);  
+    }
+}
+/******************************************************************************
+ purpose   : convert ps to png and insert in RTF file
+ ******************************************************************************/
+static void PutPsFile(char *s, double height0, double width0, double scale, double baseline)
+{
+    char *png, *eps, *out;
+
+    if (g_figure_include_converted) {
+    	diagnostics(WARNING, "Rendering '%s'", s);
+		  diagnostics(3,"Converting PS to PNG and inserting in RTF.");
+        png = eps_to_png(s);
+        if (png) {
+            PutPngFile(png, height0, width0, scale, baseline);
+            my_unlink(png);
+            free(png);
+        }
+    }
+
+    if (g_figure_comment_converted) {
+		  diagnostics(3,"Inserting PS file name in text");
+      eps = strdup_new_extension(s, ".ps", ".eps");
+      if (eps == NULL) { 
+        eps = strdup_new_extension(s, ".PS", ".eps");
+        if (eps == NULL) { 
+		       diagnostics(ERROR,"PutPsFile: Graphicsfile hat not .ps extension");
+           return;
+        }
+      }  
+    	diagnostics(3,"Converting PS to EPS");
+      out = SysGraphicsConvert(CONVERT_PS_TO_EPS, 0, g_dots_per_inch, s, eps);
+      free (out);  
+		  putRtfStrEscaped("[###");
+		  putRtfStrEscaped(eps);
+		  putRtfStrEscaped("###]");
+      free (eps);  
     }
 }
 

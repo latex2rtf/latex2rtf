@@ -2,6 +2,67 @@
 ## latex2rtf changes from 2.2.0
 ##############
 
+r1216 | whennings
+WH: graphics.c: added conversion of pdf and ps to eps 
+when inserting graphics file names (-E4 -E8 and -E12)
+latex2png: added convert parameter "-type PaletteMatte" for eps to png, 
+resolving Patches item #3519195
+Makefile: fixed wrong default cfg dir in Windows version of Makefile
+incremented version to 2.3.0
+
+r1215 | whennings
+WH: given that the conflict between -E12 and -M12 options is now fixed,
+reactivated -E option in GUI shell and incremented version to 2.2.4
+
+r1214 | prahl
+make -M12 and -E12 work together
+
+r1213 | whennings
+WH: added code for Word Macro InsertEPSfromNames
+
+r1212 | whennings
+WH: updated documentation
+
+r1211 | whennings
+WH: baseline adjustment when including eps file names (-M64 and -M128)
+-E option removed from GUI shell because it conflicts with -M12
+version number increased to 2.2.3
+
+r1210 | whennings
+WH: version of Windows GUI shell supporting -E#, -M64 and -M128
+
+r1209 | whennings
+WH: modified parameter description in main.c
+WH: changed version.h to version 2.2.2
+WH: modified documentation for new options
+
+r1208 | prahl
+update usage
+
+r1207 | prahl
+fix should not happen warnings
+
+r1206 | prahl
+new options for eps eqns and fix preamble bug
+
+r1205 | whennings
+WH: added insertion of eps file names for png files
+
+r1204 | prahl
+support eps with new options
+
+r1203 | prahl
+infrastructure for figure comments
+
+r1202 | prahl
+handle UTF8 Byte Order Mark
+
+r1201 | prahl
+update changelog
+
+r1200 | prahl
+correct tautologic statement
+
 r1199 | prahl
 add comments to README
 
