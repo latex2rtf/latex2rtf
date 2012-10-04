@@ -19,10 +19,10 @@ latex2rtf.pdf : latex2rtf.texi
 	chmod 644 latex2rtf.pdf
 
 latex2pn.txt: latex2png.1
-	nroff -man <latex2png.1 | perl -pe 's/.\x08//g' > latex2pn.txt
+	man ./latex2png.1 | col -b > latex2pn.txt
 
 latex2rt.txt: latex2rtf.1
-	nroff -man <latex2rtf.1 | perl -pe 's/.\x08//g' > latex2rt.txt
+	man ./latex2rtf.1 | col -b > latex2rt.txt
 
 web/manpage.html: header.html footer.html latex2rtf.1
 	man ./latex2rtf.1 | man2html --pgsize=100000 --bare > mid.html
@@ -57,6 +57,7 @@ install: web/usage.html web/manpage.html web/latex2png.html
 clean:
 	rm -f *.aux *.toc *.fn *.fns *.ky *.log *.pg *.tp *.vr *.vrs \
 	*.cp *.cps *.ind *.ilg *.tmp
+	rm -f latex2rt.txt latex2pn.txt
 
 realclean:	clean
 	rm -f latex2rtf.pdf latex2rtf.info latex2rtf.txt latex2rtf.html

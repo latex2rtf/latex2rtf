@@ -1,6 +1,4 @@
-.\" $Id: latex2rtf.1,v 1.8 2012/5/6 10:07:00 WH Exp $
-.\"
-.TH latex2rtf 1
+.TH LATEX2RTF "1" "October 2012" "latex2rtf 2.3" "User Commands"
 .SH NAME
 latex2rtf \- Convert a LaTeX file to an RTF file
 .SH SYNTAX
@@ -72,6 +70,24 @@ and range from 0 (only errors) to 6 (absurdly many messages). The default is
 Used to specify the number of dots per inch in equations that are converted to
 bitmaps and for graphics that must be converted.  Default is 300 dpi. 
 .TP
+.B \-E# 
+where # selects the type of figure handling desired.  RTF does not support insertion
+of PS, PDF, or EPS file types.  These figures must be converted to a bitmap format
+and then inserted.  One trick is to insert the filenames into the RTF file and then
+in post-processing, insert the file.  These options can be added together.
+.br 
+-E3 insert all figures (DEFAULT)
+.br 
+-E0 no figures in the RTF
+.br 
+-E1 insert figures having RTF-supported formats
+.br 
+-E2 convert and insert unsupported figure formats 
+.br
+-E4 insert only filenames for supported file formats
+.br 
+-E8 insert only filenames for unsupported file formats
+.TP
 .B \-f use fields
 -f0
 do not use fields in RTF.  This is handy when primitive RTF 
@@ -117,11 +133,32 @@ replaced by .rtf.
 .B \-M#
 where # selects the type of equation conversion.  
 .br 
--M3 is the default and converts both inline and displayed equations to RTF.  
+-M1 displayed equations to RTF
 .br 
--M6 converts inline equations to RTF and displayed equations to bitmaps. 
+-M2 inline equations to RTF
+.br 
+-M4 displayed equations to bitmap
+.br 
+-M8 inline equations to bitmap
+.br 
+-M16 insert Word comment field containing the raw LaTeX equation
+.br 
+-M32 insert raw LaTeX equation delimited by $...$ and \\[...\\]
+.br 
+-M64 displayed equations to EPS files with filenames in RTF
+.br 
+-M128 inline equations to EPS files with filenames in RTF
+.br 
+.TP
+These options may be added together to get different results
+.br
+-M0 no equations fields in the RTF.  
+.br
+-M3 converts both inline and displayed equations to RTF (DEFAULT).  
 .br 
 -M12 converts inline and displayed equations to bitmaps.  
+.br
+-M192 converts inline and displayed equations to eps files and inserts a tag in RTF.  
 .br
 Bitmap conversion requires a working latex2png script.  Producing bitmaps is slow.
 .TP
