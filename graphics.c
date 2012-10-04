@@ -1443,7 +1443,7 @@ static void PutPdfFile(char *s, double height0, double width0, double scale, dou
  ******************************************************************************/
 static void PutEpsFile(char *s, double height0, double width0, double scale, double baseline)
 {
-    char *png, *eps;
+    char *png;
 
     if (g_figure_include_converted) {
     	diagnostics(WARNING, "Rendering '%s'", s);
@@ -1459,9 +1459,8 @@ static void PutEpsFile(char *s, double height0, double width0, double scale, dou
     if (g_figure_comment_converted) {
 		  diagnostics(3,"Inserting EPS file name in text");
 		  putRtfStrEscaped("[###");
-		  putRtfStrEscaped(eps);
+		  putRtfStrEscaped(s);
 		  putRtfStrEscaped("###]");
-      free (eps);  
     }
 }
 /******************************************************************************

@@ -1584,7 +1584,7 @@ void CmdFigure(int code)
                 fprintRTF("%d about here]", getCounter("endfloatfigure"));
             }
         } else if (g_latex_figures) {
-            char *caption, *label;
+            char *caption, *new_caption, *label;
 
             caption = ExtractAndRemoveTag("\\caption", figure_contents);
             label = ExtractAndRemoveTag("\\label", figure_contents);
@@ -1592,9 +1592,11 @@ void CmdFigure(int code)
             PrepareDisplayedBitmap("figure");
             WriteLatexAsBitmapOrEPS("\\begin{figure}", figure_contents, "\\end{figure}", BITMAP);
             FinishDisplayedBitmap();
-            ConvertString(caption);
+            new_caption = strdup_together3("\\caption{", caption, "}");
+            ConvertString(new_caption);
             safe_free(label);
             safe_free(caption);
+            safe_free(new_caption);
         } else {
             startParagraph("figure", PARAGRAPH_GENERIC);
             ConvertString(figure_contents);
