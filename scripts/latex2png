@@ -31,7 +31,7 @@ SED="sed"
 # LaTeX is run in the Windows environment and thus needs the ";" as separator.
 TEXINPSEP=":" #Unix
 #TEXINPSEP=";"  #MS Windows
-VERSION="1.8"
+VERSION="1.9"
 
 help()
 {
@@ -44,7 +44,7 @@ OPTIONS:
          -c color image
          -g gray image  
          -m monochrome  (default)
-         -e create EPS file
+         -e only create EPS files
          
          -d density     (default 144 dpi)
          -o offset      = density/72+2
