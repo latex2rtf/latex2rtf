@@ -22,7 +22,9 @@
 
 DVIPS="dvips -q -l 1 -E -R"
 LATEX="latex --interaction batchmode --output-format dvi"
+PDFLATEX="latex --interaction batchmode --output-format pdf"
 CONVERT="convert"
+PDF2EPS="eps2eps"
 GREP="grep"
 AWK="awk"
 SED="sed"
@@ -31,7 +33,7 @@ SED="sed"
 # LaTeX is run in the Windows environment and thus needs the ";" as separator.
 TEXINPSEP=":" #Unix
 #TEXINPSEP=";"  #MS Windows
-VERSION="1.9"
+VERSION="1.10"
 
 help()
 {
@@ -130,18 +132,27 @@ if [ $ext = "tex" ] ; then
 
     $LATEX $name > /dev/null
     
-    if [ ! -e "$name.dvi" ] ; then
-        echo "latex2png: error: latex failed to translate $name.tex to $name.dvi"
-        exit 1
+    if [ -e "$name.dvi" ] ; then
+       $DVIPS -o $name.eps $name.dvi
+       if [ ! -e "$name.eps" ] ; then
+         echo "latex2png: error: dvips failed to translate $name.dvi to $name.eps"
+         exit 1
+       fi
+    else
+       echo "latex2png: latex failed to translate $name.tex to $name.dvi, trying pdflatex"
+       $PDFLATEX $name > /dev/null
+       if [ -e "$name.pdf" ] ; then
+          $PDF2EPS $name.pdf $name.eps
+          if [ ! -e "$name.eps" ] ; then
+             echo "latex2png: error: eps2eps failed to translate $name.pdf to $name.eps"
+             exit 1
+          fi
+       else
+          echo "latex2png: error: latex failed to translate $name.tex to $name.pdf"
+          exit 1
+       fi
     fi
-    
-    $DVIPS -o $name.eps $name.dvi
-    
-    if [ ! -e "$name.eps" ] ; then
-        echo "latex2png: error: dvips failed to translate $name.dvi to $name.eps"
-        exit 1
-    fi
-
+ 
     if [ $opt_eps ] ; then
         if [ $inline -eq 1 ] ; then
            # extract the BoundingBox of the eps with adjustment stuff
@@ -179,8 +190,8 @@ if [ $ext = "tex" ] ; then
     
 fi
 
-# WH: added "-type PaletteMatte" to ensure compatibility with older versions of Word and with IrfanView
-$CONVERT $out -units PixelsPerInch -density ${opt_d}x${opt_d} -trim +repage $name.eps -type PaletteMatte $name.png
+# WH: added "-type TrueColor" to ensure compatibility with older versions of Word and with IrfanView
+$CONVERT -units PixelsPerInch -density ${opt_d}x${opt_d} -trim +repage $name.eps -type TrueColor $out $name.png
 
 if [ ! -e "$name.png" ] ; then
     echo "latex2png: error: convert (ImageMagick) failed to translate $name.eps to $name.png"
@@ -206,7 +217,7 @@ if [ $inline -eq 1 ] ; then
 	# strip the initial dot and white space on the left
 	# we must keep the white space on the bottom so we add border on the east
 	# so that the bottom does not get trimmed away
-	$CONVERT $name-tmp.png -chop ${width}x0 -gravity East -background white -splice 1x0 -trim +repage -type PaletteMatte $name.png
+	$CONVERT $name-tmp.png -chop ${width}x0 -gravity East -background white -splice 1x0 -trim +repage $name.png
 
 	# extract first column of png and stick it in a bitmap
 	$CONVERT $name-tmp.png -crop 1x0 +repage $name.pbm
@@ -217,9 +228,9 @@ if [ $inline -eq 1 ] ; then
 fi
 
 if [ $opt_k -eq 0 ] ; then
-    rm -f $name.dvi $name.aux $name.log $name-tmp.png
+    rm -f $name-tmp.png
     if [ $ext = "tex" ] ; then
-        rm -f $name.eps
+        rm -f $name.dvi $name.aux $name.log $name.out $name.pdf $name.eps
     fi
 fi
 
