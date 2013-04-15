@@ -983,7 +983,7 @@ char *getTexUntil(char *target, int raw)
      returns: NULL if not found
  **************************************************************************/
 {
-    enum { BUFFSIZE = 16000 };
+    enum { BUFFSIZE = 200000 };
     char *s;
     char buffer[BUFFSIZE];
     int last_i = -1;

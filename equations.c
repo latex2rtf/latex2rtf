@@ -718,7 +718,7 @@ static void SetEquationLabel(char *eq)
  ******************************************************************************/
 static void WriteEquationAsBitmapOrEPS(int true_code, char *pre, char *eq, char *post, conversion_t convertTo)
 {
-   if (true_code == EQN_ALIGN || true_code == EQN_ARRAY) {
+  if (true_code == EQN_ARRAY) {
 		char *s, *t;
 		
 		s = eq;
@@ -729,17 +729,21 @@ static void WriteEquationAsBitmapOrEPS(int true_code, char *pre, char *eq, char 
 			if (t) *t = '\0';
 			g_suppress_equation_number = EquationGetsNoNumber(s);
 			PrepareRtfEquation(true_code, FALSE);
-
-			if (true_code == EQN_ARRAY)
-				WriteLatexAsBitmapOrEPS("\\begin{eqnarray*}", s, "\\end{eqnarray*}",convertTo);
-			else
-				WriteLatexAsBitmapOrEPS("\\begin{align*}", s, "\\end{align*}",convertTo);
-
+			WriteLatexAsBitmapOrEPS("\\begin{eqnarray*}", s, "\\end{eqnarray*}",convertTo);
 			SetEquationLabel(s);
 			FinishRtfEquation(true_code, FALSE);
-			if (t) s = t + 2;
+		 if (t) s = t + 2;
 		} while (t);
 			   
+	} else if (true_code == EQN_ALIGN) {
+		char *s;
+		
+		s = eq;
+		diagnostics(4, "align whole = <%s>", s);
+			PrepareRtfEquation(true_code, FALSE);
+			WriteLatexAsBitmapOrEPS("\\begin{align*}", s, "\\end{align*}",convertTo);
+			SetEquationLabel(s);
+			FinishRtfEquation(true_code, FALSE);
 	} else {
 		PrepareRtfEquation(true_code, FALSE);
 		if (true_code == EQN_EQUATION && g_amsmath_package)

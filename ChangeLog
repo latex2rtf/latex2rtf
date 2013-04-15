@@ -2,6 +2,32 @@
 ## latex2rtf changes from 2.3.0
 ##############
 
+r1221 | whennings
+uploading changes to new svn repository:
+-do not split equations at \\ in align environments
+   even when converting to bitmap or eps
+-latex2png: suppress verbose messages unless opt_k (debugging) is set
+-creating html files in doc/web removed from doc/Makefile in Unix distribution
+   (but not in SVN repository)
+-(Windows l2rshell) Find MikTeX also when that is user installed and not added to PATH
+-in graphics.c, fixed incorrect handling of tmp_dir
+-in latex2png, delete existing output files before conversion
+-in latex2png, changed parameter in call to xelatex
+-in graphics.c, adding tmp_path to PutPdfFile and PutPsFile
+-modified latex2png script to that it also tries xelatex
+-increased buffer size in parser.c for an extra large \begin{environment} ... \end{environment}
+
+r1220 | whennings
+WH: modified latex2png script -
+- also try conversion with pdflatex
+- in call of ImageMagick convert, changed to "-type TrueColor" for better quality of png bitmaps
+
+r1219 | prahl
+update man pages
+
+r1218 | prahl
+bump version number of latex2png
+
 r1217 | whennings
 WH: graphics.c: fixed bug in "PutEpsFile" (variable eps was undefined)
 fixed bug in funct1.c (figure numbers missing with "-F" option, patch tracker no.3537371)

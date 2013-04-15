@@ -57,14 +57,14 @@ Build=0
 LanguageID=1033
 CharsetID=1252
 CompanyName=
-FileVersion=0.6.5
+FileVersion=0.6.6
 FileDescription=Shell for latex2rtf
 InternalName=
 LegalCopyright=(c) Mikhail Polianski / GNU General Public License
 LegalTrademarks=
 OriginalFilename=l2rshell.exe
 ProductName=latex2rtf
-ProductVersion=2.3.0
+ProductVersion=2.3.2a
 AutoIncBuildNr=0
 
 [Unit3]

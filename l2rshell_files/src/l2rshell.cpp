@@ -1,11 +1,11 @@
     //////////////////////////////////////////////////////
     //                                                  //
     //      l2rshell (GUI for LaTeX2RTF converter)      //
-    //                 v.0.6.5 for win32                //
+    //                 v.0.6.6 for win32                //
     //    author: Mikhail Polianski (mnpol@mail.ru)     //
     //                                                  //
     //////////////////////////////////////////////////////
-    //     -> version number is also in line 1475       //
+    //     -> version number is also in line 1499       //
 //
 // libcomctl32 library has to be included into compiler options
 #include "l2rshell.h"
@@ -893,7 +893,7 @@ void Run(HWND hwnd)
 
         GetWindowsDirectory(str, MAX_PATH); // Default directory for CMD.exe (to avoid error message)
 
-         // if(MessageBox(hwnd, out_str, L"l2rshell: command line", MB_OKCANCEL) == IDOK) // for Beta version only
+        //  if(MessageBox(hwnd, out_str, L"l2rshell: command line", MB_OKCANCEL) == IDOK) // for Beta version only
             ShellExecute(hwnd, NULL, L"cmd", out_str, str, SW_SHOWNORMAL);     
         
     }
@@ -1280,8 +1280,10 @@ bool FindLatex(WCHAR* str)
     
     // If path specified in the PATH environment variable
     if(FindExecutable(L"latex", NULL, str)>(HINSTANCE)32)
+    {
         isinstalled = 1;
-    
+        return isinstalled;
+    }
     // Check for the path in the registry (MikTeX v<=2.4)
     RegOpenKeyEx(HKEY_LOCAL_MACHINE, L"Software\\MiK\\MiKTeX\\CurrentVersion\\MiKTeX", 0, KEY_READ, &hkey1); 
     if(RegQueryValueEx(hkey1, L"Install Root", NULL, &dwType, (LPBYTE)str, &dwrd)==ERROR_SUCCESS)
@@ -1290,8 +1292,9 @@ bool FindLatex(WCHAR* str)
         isinstalled = 1;
     }
     RegCloseKey(hkey1);
+    if(isinstalled) return isinstalled;
     
-    // Check for the path in the registry (MikTeX v>=2.5)
+    // Check for the path in the registry (MikTeX v>=2.5, global install)
     RegOpenKeyEx(HKEY_LOCAL_MACHINE, L"Software\\MiKTeX.org\\MiKTeX", 0, KEY_READ, &hkey1);
     i=0;
     while(RegEnumKey(hkey1, i, str1, dwrd) == ERROR_SUCCESS)
@@ -1301,6 +1304,27 @@ bool FindLatex(WCHAR* str)
         lstrcat(str2, L"\\Core");
         RegOpenKeyEx(HKEY_LOCAL_MACHINE, str2, 0, KEY_READ, &hkey2);
         if(RegQueryValueEx(hkey2, L"Install", NULL, &dwType, (LPBYTE)str2, &dwrd)==ERROR_SUCCESS)
+        {
+            isinstalled = 1;
+            lstrcpy(str, str2);
+            lstrcat(str, L"\\miktex\\bin\\latex.exe");
+        }
+        RegCloseKey(hkey2);
+        i++;
+    }
+    RegCloseKey(hkey1);
+    if(isinstalled) return isinstalled;
+
+    // Check for the path in the registry (MikTeX v>=2.5, user install)
+    RegOpenKeyEx(HKEY_CURRENT_USER, L"Software\\MiKTeX.org\\MiKTeX", 0, KEY_READ, &hkey1);
+    i=0;
+    while(RegEnumKey(hkey1, i, str1, dwrd) == ERROR_SUCCESS)
+    {
+        lstrcpy(str2, L"Software\\MiKTeX.org\\MiKTeX\\");
+        lstrcat(str2, str1);
+        lstrcat(str2, L"\\Core");
+        RegOpenKeyEx(HKEY_CURRENT_USER, str2, 0, KEY_READ, &hkey2);
+        if(RegQueryValueEx(hkey2, L"UserInstall", NULL, &dwType, (LPBYTE)str2, &dwrd)==ERROR_SUCCESS)
         {
             isinstalled = 1;
             lstrcpy(str, str2);
@@ -1472,7 +1496,7 @@ WCHAR* GetVersionString(WCHAR* str)   //returned value is 'str'
 {
     WCHAR inifile[MAX_PATH];
     
-    lstrcpy(str, L"LaTeX2RTF  +   l2rshell v.0.6.5");
+    lstrcpy(str, L"LaTeX2RTF  +   l2rshell v.0.6.6");
     
     GetModuleFileName(NULL, inifile, MAX_PATH);
     getdir(inifile);

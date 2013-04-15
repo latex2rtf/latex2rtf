@@ -19,14 +19,14 @@ FILETYPE VFT_APP
 		 BLOCK "040904E4"
 		 {
 			 VALUE "CompanyName", ""
-			 VALUE "FileVersion", "0.6.5"
+			 VALUE "FileVersion", "0.6.6"
 			 VALUE "FileDescription", "Shell for latex2rtf"
 			 VALUE "InternalName", ""
 			 VALUE "LegalCopyright", "(c) Mikhail Polianski / GNU General Public License"
 			 VALUE "LegalTrademarks", ""
 			 VALUE "OriginalFilename", "l2rshell.exe"
 			 VALUE "ProductName", "latex2rtf"
-			 VALUE "ProductVersion", "2.3.0"
+			 VALUE "ProductVersion", "2.3.2a"
 		 }
 	 }
   BLOCK "VarFileInfo"
