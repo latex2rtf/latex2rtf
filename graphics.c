@@ -2004,7 +2004,7 @@ static char *exists_with_any_extension(const char *dir, const char *name, const 
     
     /* else try the different directories in the graphics path */
     for (i=0; i<nGraphicsPathElems; i++) {
-        newpath = strdup_together(dir,graphicsPath[i]);
+        newpath = strdup_together(graphicsPath[i], dir);
         diagnostics(4,"does '%s%s%s' exist?",newpath,name,ext);
         x = exists_with_extension(newpath,name,ext);
         safe_free(newpath);

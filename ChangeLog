@@ -2,20 +2,25 @@
 ## latex2rtf changes from 2.3.0
 ##############
 
+r1222 | whennings
+WH: fixed bug ticket #148 "graphicspath not working"
+
 r1221 | whennings
-uploading changes to new svn repository:
--do not split equations at \\ in align environments
-   even when converting to bitmap or eps
--latex2png: suppress verbose messages unless opt_k (debugging) is set
--creating html files in doc/web removed from doc/Makefile in Unix distribution
+WH: incremented version to 2.3.2
+do not split equations at \\ in align environments
+    even when converting to bitmap or eps
+latex2png: suppress verbose messages unless opt_k (debugging) is set
+creating html files in doc/web removed from doc/Makefile in Unix distribution
    (but not in SVN repository)
--(Windows l2rshell) Find MikTeX also when that is user installed and not added to PATH
--in graphics.c, fixed incorrect handling of tmp_dir
--in latex2png, delete existing output files before conversion
--in latex2png, changed parameter in call to xelatex
--in graphics.c, adding tmp_path to PutPdfFile and PutPsFile
--modified latex2png script to that it also tries xelatex
--increased buffer size in parser.c for an extra large \begin{environment} ... \end{environment}
+(Windows l2rshell) Find MikTeX also when that is user installed and not added to PATH
+fixed typo in version.h
+in graphics.c, fixed incorrect handling of tmp_dir
+in latex2png, delete existing output files before conversion
+in latex2png, changed parameter in call to xelatex
+in graphics.c, adding tmp_path to PutPdfFile and PutPsFile
+latex2png script for unix (previous upload was for Windows, sorry)
+modified latex2png script to that it also tries xelatex
+increased buffer size in parser.c for an extra large \begin{environment} ... \end{environment}
 
 r1220 | whennings
 WH: modified latex2png script -
