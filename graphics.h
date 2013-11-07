@@ -12,7 +12,6 @@ typedef enum {BITMAP, EPS} conversion_t;
 void PrepareDisplayedBitmap(char *the_type);
 void FinishDisplayedBitmap(void);
 void WriteLatexAsBitmapOrEPS(char *pre, char *eq, char *post, conversion_t convertTo);
-void PutLatexFile(const char *tex_file_stem, double scale, const char *pre, conversion_t convertTo, int hinline);
 void CmdGraphics(int code);
 void CmdPicture(int code);
 void CmdPsPicture(int code);
@@ -23,12 +22,4 @@ void CmdTikzlib(int code);
 void CmdPsset(int code);
 void CmdNewPsStyle(int code);
 void CmdGraphicsPath(int code);
-void PutPdfFile(char *s, double height0, double width0, double scale, double baseline);
-
-typedef void PutFileFnc(char *, double, double, double, double);
-
-typedef struct {
-    char       *extension;
-    PutFileFnc *encoder;
-} GraphConvertElement;
 #endif

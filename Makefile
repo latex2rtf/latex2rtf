@@ -211,7 +211,6 @@ install: latex2rtf doc/latex2rtf.1 $(CFGS) scripts/latex2png
 	$(MKDIR) $(DESTDIR)$(BINDIR)
 	$(MKDIR) $(DESTDIR)$(MANDIR)
 	$(MKDIR) $(DESTDIR)$(CFGDIR)
-	cp -p $(BINARY_NAME)     $(DESTDIR)$(BINDIR)
 	cp -p scripts/latex2png  $(DESTDIR)$(BINDIR)
 	cp -p doc/latex2rtf.1    $(DESTDIR)$(MANDIR)
 	cp -p doc/latex2png.1    $(DESTDIR)$(MANDIR)
@@ -219,6 +218,7 @@ install: latex2rtf doc/latex2rtf.1 $(CFGS) scripts/latex2png
 	cp -p doc/latex2rtf.html $(DESTDIR)$(SUPPORTDIR)
 	cp -p doc/latex2rtf.pdf  $(DESTDIR)$(SUPPORTDIR)
 	cp -p doc/latex2rtf.txt  $(DESTDIR)$(SUPPORTDIR)
+	cp -p $(BINARY_NAME)     $(DESTDIR)$(BINDIR)
 	@echo "******************************************************************"
 	@echo "*** latex2rtf successfully installed as \"$(BINARY_NAME)\""
 	@echo "*** in directory \"$(DESTDIR)$(BINDIR)\""

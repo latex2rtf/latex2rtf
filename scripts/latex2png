@@ -17,7 +17,7 @@
 # (portable gray map) file that can be used to determine the 
 # height of the equation baseline
 #
-set -x  # uncomment for debugging
+# set -x  # uncomment for debugging
 #
 
 DVIPS="dvips -q -l 1 -E -R"

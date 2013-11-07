@@ -144,16 +144,23 @@ typedef struct _GdiCommentMultiFormats {
  table for graphics format handling
  **********************************/
 
-void PutPictFile(char *, double, double, double, double);
-void PutPngFile (char *, double, double, double, double);
-void PutJpegFile(char *, double, double, double, double);
-void PutEmfFile (char *, double, double, double, double);
-void PutWmfFile (char *, double, double, double, double);
-void PutPdfFile (char *, double, double, double, double);
-void PutEpsFile (char *, double, double, double, double);
-void PutPsFile  (char *, double, double, double, double);
-void PutTiffFile(char *, double, double, double, double);
-void PutGifFile (char *, double, double, double, double);
+typedef void PutFileFnc(char *, double, double, double, double);
+
+typedef struct {
+    char       *extension;
+    PutFileFnc *encoder;
+} GraphConvertElement;
+
+static void PutPictFile(char *, double, double, double, double);
+static void PutPngFile (char *, double, double, double, double);
+static void PutJpegFile(char *, double, double, double, double);
+static void PutEmfFile (char *, double, double, double, double);
+static void PutWmfFile (char *, double, double, double, double);
+static void PutPdfFile (char *, double, double, double, double);
+static void PutEpsFile (char *, double, double, double, double);
+static void PutPsFile  (char *, double, double, double, double);
+static void PutTiffFile(char *, double, double, double, double);
+static void PutGifFile (char *, double, double, double, double);
 
 GraphConvertElement GraphConvertTable[] = {
     { ".png",  PutPngFile  },
@@ -859,7 +866,7 @@ static void PutHexFile(FILE * fp)
 /******************************************************************************
      purpose : Include .pict file in RTF
  ******************************************************************************/
-void PutPictFile(char *s, double height0, double width0, double scale, double baseline)
+static void PutPictFile(char *s, double height0, double width0, double scale, double baseline)
 {
     FILE *fp;
     char *pict;
@@ -1084,7 +1091,7 @@ On entry baseline should be in pixels.
 \picscaleyN Vertical scaling as a percentage
 
 ******************************************************************************/
-void PutPngFile(char *png, double height_goal, double width_goal, double scale, double baseline)
+static void PutPngFile(char *png, double height_goal, double width_goal, double scale, double baseline)
 {
     FILE *fp;
     double xres,yres;
@@ -1151,7 +1158,7 @@ void PutPngFile(char *png, double height_goal, double width_goal, double scale, 
 /******************************************************************************
      purpose : Include .jpeg file in RTF
  ******************************************************************************/
-void PutJpegFile(char *s, double height0, double width0, double scale, double baseline)
+static void PutJpegFile(char *s, double height0, double width0, double scale, double baseline)
 {
     FILE *fp;
     char *jpg;
@@ -1217,7 +1224,7 @@ void PutJpegFile(char *s, double height0, double width0, double scale, double ba
     fclose(fp);
 }
 
-void PutEmfFile(char *s, double height0, double width0, double scale, double baseline)
+static void PutEmfFile(char *s, double height0, double width0, double scale, double baseline)
 {
     FILE *fp;
     char *emf;
@@ -1310,7 +1317,7 @@ void PutEmfFile(char *s, double height0, double width0, double scale, double bas
 /******************************************************************************
  purpose   : Insert WMF file (from g_home_dir) into RTF file
  ******************************************************************************/
-void PutWmfFile(char *s, double height0, double width0, double scale, double baseline)
+static void PutWmfFile(char *s, double height0, double width0, double scale, double baseline)
 {
     FILE *fp;
     char *wmf;
@@ -1405,7 +1412,7 @@ void PutWmfFile(char *s, double height0, double width0, double scale, double bas
 /******************************************************************************
  purpose   : convert pdf to png and insert in RTF file
  ******************************************************************************/
-void PutPdfFile(char *s, double height0, double width0, double scale, double baseline)
+static void PutPdfFile(char *s, double height0, double width0, double scale, double baseline)
 {
     char *png, *pdf, *eps, *out, *tmp_dir;
     
@@ -1453,7 +1460,7 @@ void PutPdfFile(char *s, double height0, double width0, double scale, double bas
 /******************************************************************************
  purpose   : convert eps to png and insert in RTF file
  ******************************************************************************/
-void PutEpsFile(char *s, double height0, double width0, double scale, double baseline)
+static void PutEpsFile(char *s, double height0, double width0, double scale, double baseline)
 {
     char *png;
 
@@ -1478,7 +1485,7 @@ void PutEpsFile(char *s, double height0, double width0, double scale, double bas
 /******************************************************************************
  purpose   : convert ps to png and insert in RTF file
  ******************************************************************************/
-void PutPsFile(char *s, double height0, double width0, double scale, double baseline)
+static void PutPsFile(char *s, double height0, double width0, double scale, double baseline)
 {
     char *png, *ps, *eps, *out, *tmp_dir;
 
@@ -1524,7 +1531,7 @@ void PutPsFile(char *s, double height0, double width0, double scale, double base
 /******************************************************************************
  purpose   : Insert TIFF file (from g_home_dir) into RTF file as a PNG image
  ******************************************************************************/
-void PutTiffFile(char *s, double height0, double width0, double scale, double baseline)
+static void PutTiffFile(char *s, double height0, double width0, double scale, double baseline)
 {
     char *tiff, *png, *out;
 
@@ -1552,7 +1559,7 @@ void PutTiffFile(char *s, double height0, double width0, double scale, double ba
 /******************************************************************************
  purpose   : Insert GIF file (from g_home_dir) into RTF file as a PNG image
  ******************************************************************************/
-void PutGifFile(char *s, double height0, double width0, double scale, double baseline)
+static void PutGifFile(char *s, double height0, double width0, double scale, double baseline)
 {
     char *gif, *png, *out;
         
@@ -1686,7 +1693,7 @@ static double GetBaseline(const char *tex_file_stem, const char *pre)
 /******************************************************************************
  purpose   : Convert LaTeX to Bitmap and insert in RTF file
  ******************************************************************************/
-void PutLatexFile(const char *tex_file_stem, double scale, const char *pre, conversion_t convertTo, int hinline)
+static void PutLatexFile(const char *tex_file_stem, double scale, const char *pre, conversion_t convertTo, int hinline)
 {
     char *png_file_name = NULL;
     char *tmp_path;
