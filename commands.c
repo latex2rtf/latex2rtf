@@ -49,6 +49,7 @@ Authors:
 #include "labels.h"
 #include "acronyms.h"
 #include "biblio.h"
+#include "tikz.h"
 
 static int iEnvCount = 0;               /* number of current environments */
 static CommandArray *Environments[100]; /* call chain for current environments */
@@ -381,6 +382,8 @@ static CommandArray commands[] = {
     { "newacroplural", CmdAcrodef,        ACRONYM_NEWACROPLURAL },
     { "harvardcite",   CmdAuxHarvardCite, 0 },
     { "bibcite",       CmdBibCite,        0 },
+    
+    {"usetikzlibrary",CmdTikzlib, 0},
     
     {"", NULL, 0}
 };
@@ -800,6 +803,8 @@ static CommandArray params[] = {
 	{"LARGE", CmdFontSizeEnviron, 34},
 	{"huge", CmdFontSizeEnviron, 40},
 	{"Huge", CmdFontSizeEnviron, 50}, 
+
+    {"tikzpicture",CmdTikzPicture, 0},
 	
 	{"", NULL, 0}
 };                              /* end of list */

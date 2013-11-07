@@ -144,18 +144,18 @@ typedef struct _GdiCommentMultiFormats {
  table for graphics format handling
  **********************************/
 
-static void PutPictFile(char *, double, double, double, double);
-static void PutPngFile (char *, double, double, double, double);
-static void PutJpegFile(char *, double, double, double, double);
-static void PutEmfFile (char *, double, double, double, double);
-static void PutWmfFile (char *, double, double, double, double);
-static void PutPdfFile (char *, double, double, double, double);
-static void PutEpsFile (char *, double, double, double, double);
-static void PutPsFile  (char *, double, double, double, double);
-static void PutTiffFile(char *, double, double, double, double);
-static void PutGifFile (char *, double, double, double, double);
+void PutPictFile(char *, double, double, double, double);
+void PutPngFile (char *, double, double, double, double);
+void PutJpegFile(char *, double, double, double, double);
+void PutEmfFile (char *, double, double, double, double);
+void PutWmfFile (char *, double, double, double, double);
+void PutPdfFile (char *, double, double, double, double);
+void PutEpsFile (char *, double, double, double, double);
+void PutPsFile  (char *, double, double, double, double);
+void PutTiffFile(char *, double, double, double, double);
+void PutGifFile (char *, double, double, double, double);
 
-static GraphConvertElement GraphConvertTable[] = {
+GraphConvertElement GraphConvertTable[] = {
     { ".png",  PutPngFile  },
     { ".pdf",  PutPdfFile  },
     { ".jpg",  PutJpegFile },
@@ -814,18 +814,24 @@ static void AdjustScaling(double h, double w, double target_h, double target_w, 
         diagnostics(5,"AdjustScaling target_h=%f target_w=%f", target_h, target_w);
 
         if (target_h != 0 && h != 0) 
-                *sy = (uint16_t) my_rint(100.0 * target_h / h);
+            *sy = (uint16_t) my_rint(100.0 * target_h / h);
         else
-                *sy = (uint16_t) my_rint(s * 100);
+            *sy = (uint16_t) my_rint(s * 100);
         
         if (target_w == 0 || w == 0)
-                *sx = *sy;
+            *sx = *sy;
         else
-                *sx = (uint16_t) my_rint(100.0 * target_w / w);
+            *sx = (uint16_t) my_rint(100.0 * target_w / w);
 
         /* catch the case when width is specified, but not height */
         if (target_h == 0 && target_w != 0)
-                *sy = *sx;
+            *sy = *sx;
+
+        /* special case if both are zero then just set scaling to one */
+        if (target_h == 0 && target_w == 0) {
+            *sx = 100. * s;
+            *sy = 100. * s;
+        }
 
         diagnostics(5,"AdjustScaling xscale=%d yscale=%d", *sx, *sy);
 }
@@ -850,7 +856,7 @@ static void PutHexFile(FILE * fp)
 /******************************************************************************
      purpose : Include .pict file in RTF
  ******************************************************************************/
-static void PutPictFile(char *s, double height0, double width0, double scale, double baseline)
+void PutPictFile(char *s, double height0, double width0, double scale, double baseline)
 {
     FILE *fp;
     char *pict;
@@ -1075,7 +1081,7 @@ On entry baseline should be in pixels.
 \picscaleyN Vertical scaling as a percentage
 
 ******************************************************************************/
-static void PutPngFile(char *png, double height_goal, double width_goal, double scale, double baseline)
+void PutPngFile(char *png, double height_goal, double width_goal, double scale, double baseline)
 {
     FILE *fp;
     double xres,yres;
@@ -1142,7 +1148,7 @@ static void PutPngFile(char *png, double height_goal, double width_goal, double 
 /******************************************************************************
      purpose : Include .jpeg file in RTF
  ******************************************************************************/
-static void PutJpegFile(char *s, double height0, double width0, double scale, double baseline)
+void PutJpegFile(char *s, double height0, double width0, double scale, double baseline)
 {
     FILE *fp;
     char *jpg;
@@ -1208,7 +1214,7 @@ static void PutJpegFile(char *s, double height0, double width0, double scale, do
     fclose(fp);
 }
 
-static void PutEmfFile(char *s, double height0, double width0, double scale, double baseline)
+void PutEmfFile(char *s, double height0, double width0, double scale, double baseline)
 {
     FILE *fp;
     char *emf;
@@ -1282,7 +1288,7 @@ static void PutEmfFile(char *s, double height0, double width0, double scale, dou
     fprintRTF("\n{\\pict\\emfblip\\picw%ld\\pich%ld", w, h);
     fprintRTF("\\picwgoal%ld\\pichgoal%ld\n", width * 20, height * 20);
 
-        AdjustScaling(height*20,width*20,height0,width0,scale,&sx,&sy);
+    AdjustScaling(height*20,width*20,height0,width0,scale,&sx,&sy);
     if (sx != 100 && sy != 100)
         fprintRTF("\\picscalex%d\\picscaley%d", sx,sy);
 
@@ -1301,7 +1307,7 @@ static void PutEmfFile(char *s, double height0, double width0, double scale, dou
 /******************************************************************************
  purpose   : Insert WMF file (from g_home_dir) into RTF file
  ******************************************************************************/
-static void PutWmfFile(char *s, double height0, double width0, double scale, double baseline)
+void PutWmfFile(char *s, double height0, double width0, double scale, double baseline)
 {
     FILE *fp;
     char *wmf;
@@ -1396,7 +1402,7 @@ static void PutWmfFile(char *s, double height0, double width0, double scale, dou
 /******************************************************************************
  purpose   : convert pdf to png and insert in RTF file
  ******************************************************************************/
-static void PutPdfFile(char *s, double height0, double width0, double scale, double baseline)
+void PutPdfFile(char *s, double height0, double width0, double scale, double baseline)
 {
     char *png, *pdf, *eps, *out, *tmp_dir;
     
@@ -1444,7 +1450,7 @@ static void PutPdfFile(char *s, double height0, double width0, double scale, dou
 /******************************************************************************
  purpose   : convert eps to png and insert in RTF file
  ******************************************************************************/
-static void PutEpsFile(char *s, double height0, double width0, double scale, double baseline)
+void PutEpsFile(char *s, double height0, double width0, double scale, double baseline)
 {
     char *png;
 
@@ -1469,7 +1475,7 @@ static void PutEpsFile(char *s, double height0, double width0, double scale, dou
 /******************************************************************************
  purpose   : convert ps to png and insert in RTF file
  ******************************************************************************/
-static void PutPsFile(char *s, double height0, double width0, double scale, double baseline)
+void PutPsFile(char *s, double height0, double width0, double scale, double baseline)
 {
     char *png, *ps, *eps, *out, *tmp_dir;
 
@@ -1515,7 +1521,7 @@ static void PutPsFile(char *s, double height0, double width0, double scale, doub
 /******************************************************************************
  purpose   : Insert TIFF file (from g_home_dir) into RTF file as a PNG image
  ******************************************************************************/
-static void PutTiffFile(char *s, double height0, double width0, double scale, double baseline)
+void PutTiffFile(char *s, double height0, double width0, double scale, double baseline)
 {
     char *tiff, *png, *out;
 
@@ -1543,7 +1549,7 @@ static void PutTiffFile(char *s, double height0, double width0, double scale, do
 /******************************************************************************
  purpose   : Insert GIF file (from g_home_dir) into RTF file as a PNG image
  ******************************************************************************/
-static void PutGifFile(char *s, double height0, double width0, double scale, double baseline)
+void PutGifFile(char *s, double height0, double width0, double scale, double baseline)
 {
     char *gif, *png, *out;
         

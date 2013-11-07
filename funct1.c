@@ -2289,7 +2289,7 @@ static int NumForColor(char * color)
         n = 92;
     else if (strcmp(color, "PurpleHeart") == 0)
         n = 93;
-    else if (strcmp(color, "PurpleMountains’Majesty") == 0)
+    else if (strcmp(color, "PurpleMountainMajesty") == 0)
         n = 94;
     else if (strcmp(color, "PurplePizzazz") == 0)
         n = 95;

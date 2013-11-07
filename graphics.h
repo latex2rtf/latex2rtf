@@ -21,6 +21,7 @@ void CmdMusic(int code);
 void CmdPsset(int code);
 void CmdNewPsStyle(int code);
 void CmdGraphicsPath(int code);
+void PutPdfFile(char *s, double height0, double width0, double scale, double baseline);
 
 typedef void PutFileFnc(char *, double, double, double, double);
 
