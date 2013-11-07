@@ -49,7 +49,6 @@ Authors:
 #include "labels.h"
 #include "acronyms.h"
 #include "biblio.h"
-#include "tikz.h"
 
 static int iEnvCount = 0;               /* number of current environments */
 static CommandArray *Environments[100]; /* call chain for current environments */

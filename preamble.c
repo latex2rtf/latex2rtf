@@ -541,6 +541,8 @@ static void setDocumentOptions(char *optionlist)
         } else if (strcmp(option,"ifpdf") == 0) {
             diagnostics(WARNING, "Trivial support for the ifpdf package");
             ConvertString("\\newif\\ifpdf");
+        } else if (strcmp(option,"tikz") == 0) {
+            diagnostics(WARNING, "basic support for tikz");
         } else {
             diagnostics(WARNING, "Package/option '%s' unknown.", option);
         }

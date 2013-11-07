@@ -52,7 +52,7 @@ void TikzToPng(char *tikzcode, char *exts);
   purpose: handle \begin{tikzpicture} ... \end{tikzpicture}
            by converting to png image and inserting
  ******************************************************************************/
-void CmdTikzPicture(int code)
+void CmdTikzPicture2(int code)
 {
 	char *pre, *post, *tikzcode, *param;	
 
@@ -63,7 +63,7 @@ void CmdTikzPicture(int code)
 		post = strdup("\\end{tikzpicture}");
 		tikzcode=getTexUntil(post,0);
 		TikzToPng(tikzcode,param);
-		ConvertString(post);  /* to balance the \begin{picture} */
+		ConvertString(post);  /* to balance \begin{tikzpicture} */
 		free(pre);
 		free(post);
 		free(tikzcode);
@@ -83,7 +83,7 @@ void TikzToPng(char *tikzcode,char *exts)
 	file_number++;
 
     tmp_dir = getTmpPath();
-	snprintf(name,15,"t2p_%04d",file_number);
+	snprintf(name,15,"tikz_%04d",file_number);
 	fullname = strdup_together(tmp_dir,name);
 
 	texname = strdup_together(fullname,".tex");
@@ -91,15 +91,19 @@ void TikzToPng(char *tikzcode,char *exts)
 	auxname = strdup_together(fullname,".aux");
 	logname = strdup_together(fullname,".log");
 
+	fprintf(stderr, "\ntikz file name ='%s'\n", texname);
+
 	f = fopen(texname, "w");
 
     fprintf(f,"\\documentclass[varwidth=true,border=10pt]{standalone}\n");
     fprintf(f,"\\usepackage{mathtext}\n");
+/*
     fprintf(f,"\\usepackage[T2A]{fontenc}\n");
-/*    fprintf(f,"\\usepackage[%s]{inputenc}\n",g_charset_encoding_name);*/
-    fprintf(f,"\\usepackage[russian]{babel}\n");
+    fprintf(f,"\\usepackage[%s]{inputenc}\n",g_charset_encoding_name);
+    fprintf(f,"\\usepackage[russian]{babel}\n"); 
+*/
     fprintf(f,"\\usepackage{tikz}\n");
-	fprintf(f,"\\usepackage{gnuplot-lua-tikz}\n");
+/*	fprintf(f,"\\usepackage{gnuplot-lua-tikz}\n");*/
 
     fprintf(f,"\\begin{document}\n");
 
@@ -117,10 +121,14 @@ void TikzToPng(char *tikzcode,char *exts)
 	fprintf(f,"\\end{document}\n");
     fclose(f);
 
+
+/*
+void PutLatexFile(const char *tex_file_stem, double scale, const char *pre, conversion_t convertTo, int hinline);
+
     cmd_len = strlen("pdflatex") + strlen(texname) + 32 + strlen(" >/dev/null");
 	cmd = (char *)malloc(cmd_len);
 
-    snprintf(cmd, cmd_len, "pdflatex %s >/dev/null",texname);
+    snprintf(cmd, cmd_len, "pdflatex '%s' >/dev/null", texname);
 
     oldcwd = (char *) malloc(1024);
 	getcwd(oldcwd,1024);
@@ -128,10 +136,11 @@ void TikzToPng(char *tikzcode,char *exts)
 	err = system(cmd);
 	chdir(oldcwd);
 	free(cmd);
-
+*/
     /* convert the pdf to a png and insert */
-    if (!err) PutPdfFile(pdfname,0,0,g_png_figure_scale,0);
-
+    
+    if (0 && !err) PutPdfFile(pdfname,0,0,g_png_figure_scale,0);
+/*
     remove(texname);
 	remove(auxname);
 	remove(pdfname);
@@ -139,6 +148,7 @@ void TikzToPng(char *tikzcode,char *exts)
 
     free(oldcwd);
     free(fullname);
+*/
 	free(texname);
 	free(auxname);
 	free(pdfname);

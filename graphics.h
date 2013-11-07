@@ -18,6 +18,8 @@ void CmdPicture(int code);
 void CmdPsPicture(int code);
 void CmdPsGraph(int code);
 void CmdMusic(int code);
+void CmdTikzPicture(int code);
+void CmdTikzlib(int code);
 void CmdPsset(int code);
 void CmdNewPsStyle(int code);
 void CmdGraphicsPath(int code);
