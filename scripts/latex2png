@@ -17,7 +17,7 @@
 # (portable gray map) file that can be used to determine the 
 # height of the equation baseline
 #
-# set -x  # uncomment for debugging
+#set -x  # uncomment for debugging
 #
 
 DVIPS="dvips -q -l 1 -E -R"
@@ -32,9 +32,9 @@ SED="sed"
 # !!!!!!!!!!!!!!!! Note !!!!!!!!!!!!!!
 # Under MS Windows, although this script runs under bash shell,
 # LaTeX is run in the Windows environment and thus needs the ";" as separator.
-TEXINPSEP=":" #Unix
-#TEXINPSEP=";"  #MS Windows
-VERSION="1.10"
+#TEXINPSEP=":" #Unix
+TEXINPSEP=";"  #MS Windows
+VERSION="1.40"
 
 help()
 {
@@ -131,10 +131,15 @@ fi
 if [ $ext = "tex" ] ; then
 
     inline=`${GREP} -c INLINE_DOT_ON_BASELINE $name.$ext`
+
     tikz=`${GREP} -c tikzpicture $name.$ext`
 
+    rm -f $name.dvi
+    rm -f $name.pdf
+    rm -f $name.eps
+    rm -f $name.png
+
     $LATEX $name > /dev/null
-    
     if [ $tikz -eq 2 ] ; then
        $XELATEX $name > /dev/null
        if [ -e "$name.pdf" ] ; then
@@ -151,11 +156,15 @@ if [ $ext = "tex" ] ; then
     elif [ -e "$name.dvi" ] ; then
        $DVIPS -o $name.eps $name.dvi
        if [ ! -e "$name.eps" ] ; then
-         echo "latex2png: error: dvips failed to translate $name.dvi to $name.eps"
+         if [ $opt_k -eq 1 ] ; then
+            echo "latex2png: error: dvips failed to translate $name.dvi to $name.eps"
+         fi
          exit 1
        fi
     else
-       echo "latex2png: latex failed to translate $name.tex to $name.dvi, trying pdflatex"
+       if [ $opt_k -eq 1 ] ; then
+          echo "latex2png: latex failed to translate $name.tex to $name.dvi, trying pdflatex"
+       fi
        $PDFLATEX $name > /dev/null
        if [ -e "$name.pdf" ] ; then
           $PDF2EPS $name.pdf $name.eps
@@ -164,8 +173,20 @@ if [ $ext = "tex" ] ; then
              exit 1
           fi
        else
-          echo "latex2png: error: latex failed to translate $name.tex to $name.pdf"
-          exit 1
+          if [ $opt_k -eq 1 ] ; then
+             echo "latex2png: pdflatex failed to translate $name.tex to $name.pdf, trying xelatex"
+          fi
+          $XELATEX $name > /dev/null
+          if [ -e "$name.pdf" ] ; then
+             $PDF2EPS $name.pdf $name.eps
+             if [ ! -e "$name.eps" ] ; then
+                echo "latex2png: error: eps2eps failed to translate $name.pdf to $name.eps"
+                exit 1
+             fi
+          else
+             echo "latex2png: error: xelatex failed to translate $name.tex to $name.pdf"
+             exit 1
+          fi
        fi
     fi
  
@@ -179,9 +200,34 @@ if [ $ext = "tex" ] ; then
            # now create an eps without the adjustment stuff
            $SED -e "s/\^I_g//" $name.tex >$name.tmp
            rm $name.tex
+           rm -f $name.pdf
+           rm $name.eps
            mv $name.tmp $name.tex
            $LATEX $name > /dev/null
-           $DVIPS -o $name.eps $name.dvi
+           if [ -e "$name.dvi" ] ; then
+              $DVIPS -o $name.eps $name.dvi
+           else
+              if [ $opt_k -eq 1 ] ; then
+                 echo "latex2png: latex failed to translate $name.tex w/o adj to $name.dvi, trying pdflatex"
+              fi
+              $PDFLATEX $name > /dev/null
+              if [ ! -e "$name.pdf" ] ; then
+                 if [ $opt_k -eq 1 ] ; then
+                    echo "latex2png: pdflatex failed to translate $name.tex w/o adj to $name.pdf, trying xelatex"
+                 fi
+                 $XELATEX $name > /dev/null
+                 if [ ! -e "$name.pdf" ] ; then
+                    echo "latex2png: error: xelatex failed to translate $name.tex w/o adj to $name.pdf"
+                    exit 1
+                 fi
+              fi
+              $PDF2EPS $name.pdf $name.eps
+           fi
+           if [ ! -e "$name.eps" ] ; then
+              echo "latex2png: error: failed to translate $name.tex to $name.eps"
+              exit 1
+           fi
+
            # extract the BoundingBox of the eps without adjustment stuff
            bbb=`${GREP} -C 0 %%BoundingBox: $name.eps`
            llyfin=$(echo $bbb | $AWK -F" " '{print $3}' )
@@ -199,7 +245,7 @@ if [ $ext = "tex" ] ; then
            fi
         fi
         if [ $opt_k -eq 0 ] ; then
-            rm -f $name.dvi $name.aux $name.log
+            rm -f $name.dvi $name.aux $name.log $name.out
         fi
         exit 0
     fi

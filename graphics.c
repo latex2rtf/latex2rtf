@@ -2433,7 +2433,11 @@ void CmdTikzPicture(int code)
     picture = getTexUntil(post, 0);
 
     PrepareDisplayedBitmap("picture");
-    WriteLatexAsBitmapOrEPS("\\begin{tikzpicture}", picture, post, BITMAP);
+    if (g_figure_comment_converted) {
+      WriteLatexAsBitmapOrEPS("\\begin{tikzpicture}", picture, post, EPS);
+    } else {
+      WriteLatexAsBitmapOrEPS("\\begin{tikzpicture}", picture, post, BITMAP);
+    }
     FinishDisplayedBitmap();
 
     ConvertString(post);    /* to balance \begin{tikzpicture} */

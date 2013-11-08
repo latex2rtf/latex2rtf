@@ -2,8 +2,32 @@
 ## latex2rtf changes from 2.3.0
 ##############
 
+r1229 | whennings
+WH: added conversion of tikz picture to eps (option -E8)
+re-included r1221 modification to latex2png script so that it also tries pdflatex and xelatex
+incremented version to 2.3.4
+
+r1228 | prahl
+add test tikzpicture file
+
+r1227 | prahl
+replace static keywords and clean up graphics.h
+
+r1226 | prahl
+updated latex2png to work with tikzpictures.
+
+r1225 | prahl
+backing out many of the changes need for tikz.  Much simpler method used now.
+
+r1224 | prahl
+include the tikz files that I forgot
+
+r1223 | prahl
+Add tikz support
+
 r1222 | whennings
-WH: fixed bug ticket #148 "graphicspath not working"
+WH: incremented version to 2.3.3
+fixed bug ticket #148 "graphicspath not working"
 
 r1221 | whennings
 WH: incremented version to 2.3.2
