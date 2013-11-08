@@ -2,6 +2,15 @@
 ## latex2rtf changes from 2.3.0
 ##############
 
+r1231 | whennings
+WH: changed latex2png for cases where "grep -c tikzpicture" >2
+added trying pdflatex before trying xelatex
+added test file "membrane-ions.tex"
+
+r1230 | whennings
+WH: changed latex2png to unix version (previous upload erroneously was DOS/Win version)
+added tikz.rtf to test/Makefile
+
 r1229 | whennings
 WH: added conversion of tikz picture to eps (option -E8)
 re-included r1221 modification to latex2png script so that it also tries pdflatex and xelatex

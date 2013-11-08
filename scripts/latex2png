@@ -139,32 +139,7 @@ if [ $ext = "tex" ] ; then
     rm -f $name.eps
     rm -f $name.png
 
-    $LATEX $name > /dev/null
-    if [ $tikz -eq 2 ] ; then
-       $XELATEX $name > /dev/null
-       if [ -e "$name.pdf" ] ; then
-          $PDF2EPS $name.pdf $name.eps
-          if [ ! -e "$name.eps" ] ; then
-             echo "latex2png: error: $PDF2EPS failed to translate $name.pdf to $name.eps"
-             exit 1
-          fi
-       else
-          echo "latex2png: error: $XELATEX failed to translate $name.tex to $name.pdf"
-          exit 1
-       fi
-    
-    elif [ -e "$name.dvi" ] ; then
-       $DVIPS -o $name.eps $name.dvi
-       if [ ! -e "$name.eps" ] ; then
-         if [ $opt_k -eq 1 ] ; then
-            echo "latex2png: error: dvips failed to translate $name.dvi to $name.eps"
-         fi
-         exit 1
-       fi
-    else
-       if [ $opt_k -eq 1 ] ; then
-          echo "latex2png: latex failed to translate $name.tex to $name.dvi, trying pdflatex"
-       fi
+    if [ $tikz -gt 1 ] ; then
        $PDFLATEX $name > /dev/null
        if [ -e "$name.pdf" ] ; then
           $PDF2EPS $name.pdf $name.eps
@@ -180,12 +155,50 @@ if [ $ext = "tex" ] ; then
           if [ -e "$name.pdf" ] ; then
              $PDF2EPS $name.pdf $name.eps
              if [ ! -e "$name.eps" ] ; then
+                echo "latex2png: error: $PDF2EPS failed to translate $name.pdf to $name.eps"
+                exit 1
+             fi
+          else
+             echo "latex2png: error: $XELATEX failed to translate $name.tex to $name.pdf"
+             exit 1
+          fi
+       fi
+    else
+       $LATEX $name > /dev/null
+       if [ -e "$name.dvi" ] ; then
+          $DVIPS -o $name.eps $name.dvi
+          if [ ! -e "$name.eps" ] ; then
+            if [ $opt_k -eq 1 ] ; then
+               echo "latex2png: error: dvips failed to translate $name.dvi to $name.eps"
+            fi
+            exit 1
+          fi
+       else
+          if [ $opt_k -eq 1 ] ; then
+             echo "latex2png: latex failed to translate $name.tex to $name.dvi, trying pdflatex"
+          fi
+          $PDFLATEX $name > /dev/null
+          if [ -e "$name.pdf" ] ; then
+             $PDF2EPS $name.pdf $name.eps
+             if [ ! -e "$name.eps" ] ; then
                 echo "latex2png: error: eps2eps failed to translate $name.pdf to $name.eps"
                 exit 1
              fi
           else
-             echo "latex2png: error: xelatex failed to translate $name.tex to $name.pdf"
-             exit 1
+             if [ $opt_k -eq 1 ] ; then
+                echo "latex2png: pdflatex failed to translate $name.tex to $name.pdf, trying xelatex"
+             fi
+             $XELATEX $name > /dev/null
+             if [ -e "$name.pdf" ] ; then
+                $PDF2EPS $name.pdf $name.eps
+                if [ ! -e "$name.eps" ] ; then
+                   echo "latex2png: error: eps2eps failed to translate $name.pdf to $name.eps"
+                   exit 1
+                fi
+             else
+                echo "latex2png: error: xelatex failed to translate $name.tex to $name.pdf"
+                exit 1
+             fi
           fi
        fi
     fi

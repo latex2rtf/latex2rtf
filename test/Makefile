@@ -34,7 +34,7 @@ BIB_TESTS=  bib_apacite.rtf        bib_harvard.rtf        bib_super.rtf      \
 FIG_TESTS=  fig_endfloat.rtf  fig_test.rtf      fig_test3.rtf \
             fig_size.rtf      fig_test2.rtf     fig_test4.rtf \
             picture.rtf       fig_subfig.rtf    fig_png.rtf \
-            graphicspath.rtf  tikz.rtf
+            graphicspath.rtf  tikz.rtf          membrane-ions.rtf
 
 ENC_TESTS= 	enc_applemac.rtf enc_cp437.rtf  enc_cp865.rtf    enc_latin2.rtf enc_latin5.rtf \
 			enc_cp1250.rtf   enc_cp850.rtf  enc_decmulti.rtf enc_latin3.rtf enc_latin9.rtf\
