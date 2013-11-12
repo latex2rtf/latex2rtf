@@ -12,11 +12,11 @@ You can do the following to help the development of LaTeX2RTF:
 
 3) Submit a bug report
 	- use the bug report form at Sourceforge (you will need to register)
-	  (http://sourceforge.net/tracker/?group_id=22654&atid=375737)
+	  (http://sourceforge.net/p/latex2rtf/bugs/)
 
 4) Request a feature which you consider to be important but not present in LaTeX2RTF yet
 	- use the feature request form at Sourceforge
-	  (http://sourceforge.net/tracker/?func=add&group_id=22654&atid=375740)
+	  (http://sourceforge.net/p/latex2rtf/feature-requests/)
 
 5) Join the LaTeX2RTF mailing list and give a support to LaTeX2RTF users
 	- subscribe for the LaTex2RTF user's mailing list at Sourceforge
