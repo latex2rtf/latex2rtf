@@ -705,7 +705,8 @@ This value is also used when picture environments are converted to bitmaps as we
 as when EPS graphics are converted to png files.  The default value is 300 dots per
 inch.
 
-@item -E# selects whether figures are included in the rtf (default) or created 
+@item -E# 
+selects whether figures are included in the rtf (default) or created 
 as external files with the filenames inserted in the rtf text.
 
 The options -E4, -E8 and -E12 are experimental and may not work as expected.
