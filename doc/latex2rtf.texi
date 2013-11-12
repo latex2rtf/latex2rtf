@@ -60,7 +60,7 @@ A converter from @latex{}to RTF
 
 Edition 0.7.9
 
-for program version 2.3.0
+for program version 2.3.4
 
 @author Georg Lehner,
 updated by Wilfried Hennings and Scott Prahl,
@@ -68,7 +68,7 @@ with contributions by Mikhail Polianski
 
 @page
 @vskip 0pt plus 1 filll
-Copyright @copyright{} 1998-2012 Georg Lehner, Wilfried Hennings, Scott Prahl
+Copyright @copyright{} 1998-2013 Georg Lehner, Wilfried Hennings, Scott Prahl
 
 Permission is granted to make and distribute verbatim copies of this
 manual provided the copyright notice and this permission notice are
@@ -221,7 +221,7 @@ into another language, under the above conditions for modified versions,
 except that this permission notice may be stated in a translation
 approved by the Free Software Foundation.
 
-@c This document applies to version 2.3.0 of @ltor{}.
+@c This document applies to version 2.3.4 of @ltor{}.
 @end ifnottex
 
 
@@ -332,7 +332,9 @@ From @ltor{}version 2.0.0 up it also runs on 64bit systems.
 The win package is the win-NO-GUI package plus graphical user 
 interface (GUI) shell (l2rshell) and installer.@*
 It only runs under Win NT, 2000, XP, 2003, Vista, and Win7.@*
-From @ltor{}version 2.0.0 up it also runs on 64bit systems.
+From @ltor{}version 2.0.0 up it should also run on 64bit systems,
+however the program authors have not (yet) access to a 64bit system and 
+cannot test @ltor{}on 64bit.
 
 The win64 package (only @ltor{}version 1.9.19) is the win package
 but with 32bit versions of the shell utilities so that it also runs
@@ -477,8 +479,8 @@ freely available for download at @uref{http://www.miktex.org/},
 The following versions were available at the time of writing 
 and used together with @ltor{}version 2.3.x: @*
 - MikTeX 2.9 @*
-- Ghostscript 9.06 @*
-- ImageMagick-6.7.9-Q8-windows-dll.exe
+- Ghostscript 9.10 @*
+- ImageMagick-6.8.7-5-Q8-x86-dll.exe
 
 
 If MikTeX, ImageMagick and Ghostscript are installed, the paths to their 
@@ -560,11 +562,11 @@ by using bash.exe instead of command.com.
 If you want a MacOS X version, make sure that you have installed the developer tools CD
 that is appropriate for your OS version, and then follow the directions above for a
 @acronym{UNIX} installation.  Alternatively you can install using fink
-@uref{http://fink.sourceforge.net/} or as an i-installer package 
-@uref{http://www.rna.nl/ii.html}.
+@uref{http://www.finkproject.org/} and @uref{http://sourceforge.net/projects/fink/}.
 
-As of 2006-01-30 there also is a GUI shell for Macintosh.@*
-See @uref{http://www.inf.ethz.ch/personal/fischerk/LaTeX2rtf/index.html}
+As of 2006-01-30 there was a GUI shell for Macintosh at@*
+@uref{http://www.inf.ethz.ch/personal/fischerk/LaTeX2rtf/index.html} @*
+but now (Nov. 2013) this is not available anymore.
 
 There is a PPC port of an old version 1.9k for Classic MacOS @ltor{}. 
 To convert a @latex{}file using this version,  drag the file onto the @ltor{}icon.  The
@@ -724,12 +726,14 @@ The options -E4, -E8 and -E12 are experimental and may not work as expected.
     @item -E12
     Insert filenames for all figures.
     @end table
-With options -E4, -E8 and -E12, pdf and ps are converted to eps 
-and the eps filenames inserted. Bitmap files are inserted in
-their original format.
+With options -E8 and -E12, pdf and ps graphics as well as 
+tikz graphics are converted to eps 
+and the eps filenames inserted in the document text. 
+With -E4 and -E12, bitmap files are inserted in their original format.
 After opening the rtf in a textprocessing or dtp program, 
 a macro can search for the inserted filenames 
-and insert the files in their places.
+and insert the files in their places. 
+Further info is in the description of the -M option.
 
 
 @item -f#
@@ -1478,7 +1482,7 @@ intended to process contents of unknown environment as if it were
 plain @latex{}, e.g.@: `@code{\environ,ENVCMD.}' @*
 Therefore `@code{\begin@{environ@} text
 \end@{environ@}}' would be converted to `text'. 
-Doesn't work in @ltor{}version 2.1.0 up to and including 2.3.0.
+Doesn't work in @ltor{}version 2.1.0 up to and including 2.3.4.
 @item ENVIRONMENT
 ignores contents of that environment, e.g., with `@code{\ifhtml,ENVIRONMENT.}'',
 `@code{\begin@{ifhtml@} text \end@{ifhtml@}}' ignores `text'.
@@ -1614,7 +1618,7 @@ For subscription to these lists visit the page:
 or
 @uref{http://lists.sourceforge.net/lists/listinfo/latex2rtf-developers, developers list}
 
-As of October 2012, version 2.3.0 of @ltor{}is available. 
+As of November 2013, version 2.3.4 of @ltor{}is available. 
 
 The contents of this manual were composed by copying shamelessly what was
 available in the original sources and documentation.
@@ -2612,6 +2616,8 @@ Ignored
 @item Theta
 
 @item theta
+
+@item tikzpicture
 
 @item times
 
