@@ -1832,8 +1832,9 @@ static char *SaveEquationAsFile(const char *post_begin_document,
         else {
         fprintf(f, "%s\n.\\quad %s\n%s", pre, eq, post);  
         }
-    } else if (strstr(pre, "equation"))
-        fprintf(f, "$$%s$$", eq);
+    } 
+/*    else if (strstr(pre, "equation"))
+        fprintf(f, "$$%s$$", eq);  removed WH 2014-01-17*/
     else
         fprintf(f, "%s\n%s\n%s", pre, eq, post);
 

@@ -5,7 +5,7 @@ set rtfpath=%l2rpath%\cfg
 
 rem set folder containing Ghostscript executables here:
 %l2rpath%\which gswin32c >nul
-if errorlevel 1 SET PATH=C:\Progra~1\gs\gs9.06\bin;C:\Progra~1\gs\gs9.06\lib;%PATH%
+if errorlevel 1 SET PATH=C:\Progra~1\gs\gs9.10\bin;C:\Progra~1\gs\gs9.10\lib;%PATH%
 
 rem set folder containing ImageMagick executables here:
 %l2rpath%\which identify >nul
