@@ -2,6 +2,26 @@
 ## latex2rtf changes from 2.3.0
 ##############
 
+r1236 | whennings
+a) in graphics.c commented-out lines 1836-1837
+   which caused \begin{equation}...\end{equation}
+   to be output to l2r_nnnn.tex as $$...$$
+b) in latex2png script, changed order in which to try conversion
+   from latex-dvi / pdflatex / xelatex
+   to   pdflatex  / xelatex  / latex
+
+r1235 | whennings
+WH: update sourceforge links in l2rshell "you can help"
+
+r1234 | whennings
+WH: fixed a typo in documentation
+
+r1233 | whennings
+WH: updated documentation for tikz support
+
+r1232 | prahl
+add another tikz test file
+
 r1231 | whennings
 WH: changed latex2png for cases where "grep -c tikzpicture" >2
 added trying pdflatex before trying xelatex

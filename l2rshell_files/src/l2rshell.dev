@@ -52,7 +52,7 @@ BuildCmd=$(CPP) -c l2rshell.cpp -o l2rshell.o $(CXXFLAGS)
 [VersionInfo]
 Major=0
 Minor=6
-Release=5
+Release=6
 Build=0
 LanguageID=1033
 CharsetID=1252
@@ -64,7 +64,7 @@ LegalCopyright=(c) Mikhail Polianski / GNU General Public License
 LegalTrademarks=
 OriginalFilename=l2rshell.exe
 ProductName=latex2rtf
-ProductVersion=2.3.2a
+ProductVersion=2.3.6
 AutoIncBuildNr=0
 
 [Unit3]
