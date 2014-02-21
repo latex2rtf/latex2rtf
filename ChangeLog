@@ -2,6 +2,12 @@
 ## latex2rtf changes from 2.3.0
 ##############
 
+r1238 | whennings
+updated address of FSF in GPL license text in 3 more files
+
+r1237 | whennings
+updated address of FSF in GPL license text
+
 r1236 | whennings
 a) in graphics.c commented-out lines 1836-1837
    which caused \begin{equation}...\end{equation}
