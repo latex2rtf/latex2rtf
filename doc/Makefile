@@ -1,5 +1,5 @@
 all:	latex2rtf.info latex2rtf.pdf latex2rtf.txt \
-		latex2pn.txt latex2rt.txt 
+		latex2pn.txt latex2rt.txt latex2rtf.html 
 
 latex2rtf.html:	latex2rtf.texi
 	makeinfo --html --no-split --no-headers latex2rtf.texi > latex2rtf.html

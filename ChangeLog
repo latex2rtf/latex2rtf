@@ -2,6 +2,15 @@
 ## latex2rtf changes from 2.3.0
 ##############
 
+r1239 | whennings
+a) in doc\Makefile added latex2rtf.html to rule "all"
+b) in graphics.c restored lines 1836-1837
+   and changed outputting \begin{equation}...\end{equation}
+   to outputting \begin{displaymath}...\end{displaymath}
+   Reason: In the l2r_nnnn.tex file, \begin{equation}...\end{equation} 
+   can not reliably be replaced by $$...$$, but the equation snippet 
+   must not be numbered, as the number is inserted as rtf code.
+
 r1238 | whennings
 updated address of FSF in GPL license text in 3 more files
 
