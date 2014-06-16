@@ -2,6 +2,10 @@
 ## latex2rtf changes from 2.3.0
 ##############
 
+r1240 | whennings
+convert.c line 398 blank after exclamation mark removed
+convert.c line 410 blank after question mark removed
+
 r1239 | whennings
 a) in doc\Makefile added latex2rtf.html to rule "all"
 b) in graphics.c restored lines 1836-1837

@@ -395,7 +395,7 @@ purpose: converts inputfile and writes result to outputfile
                     if ((cNext = getTexChar()) && cNext == '`') {
                         fprintRTF("\\'a1 ");
                     } else {
-                        fprintRTF("! ");
+                        fprintRTF("!");      /* WH 2014-06-16: Blank removed, was fprintRTF("! ") */
                         ungetTexChar(cNext);
                     }
                 }
@@ -406,8 +406,8 @@ purpose: converts inputfile and writes result to outputfile
                 if ((cNext = getTexChar()) && cNext == '`') {
                     fprintRTF("\\'bf ");
                 } else {
-                    fprintRTF("? ");
-                    ungetTexChar(cNext);
+                    fprintRTF("?");
+                    ungetTexChar(cNext);     /* WH 2014-06-16: Blank removed, was fprintRTF("? ") */
                 }
                 break;
 
