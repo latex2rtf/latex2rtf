@@ -58,9 +58,9 @@ LaTeX2RTF
 @subtitle 
 A converter from @latex{}to RTF
 
-Edition 0.7.9
+Edition 0.7.10
 
-for program version 2.3.4
+for program version 2.3.9
 
 @author Georg Lehner,
 updated by Wilfried Hennings and Scott Prahl,
@@ -68,7 +68,7 @@ with contributions by Mikhail Polianski
 
 @page
 @vskip 0pt plus 1 filll
-Copyright @copyright{} 1998-2013 Georg Lehner, Wilfried Hennings, Scott Prahl
+Copyright @copyright{} 1998-2014 Georg Lehner, Wilfried Hennings, Scott Prahl
 
 Permission is granted to make and distribute verbatim copies of this
 manual provided the copyright notice and this permission notice are
@@ -115,7 +115,7 @@ Installation
 * Obtaining LaTeX2RTF::         
 * UNIX::                        
 * DOS or Windows::              
-* Win32 systems::               
+* MS Windows systems::               
 * Macintosh::                   
 * Problems Compiling::          
 * Problems with make check::    
@@ -202,7 +202,7 @@ Citation Commands
 @ifnottex
 
 Copyright 1998-2002 Georg Lehner,
-updates Copyright 1999-2012 by Wilfried Hennings and Scott Prahl,
+updates Copyright 1999-2014 by Wilfried Hennings and Scott Prahl,
 with contributions by Mikhail Polianski.
 
 Permission is granted to make and distribute verbatim copies of this
@@ -221,7 +221,7 @@ into another language, under the above conditions for modified versions,
 except that this permission notice may be stated in a translation
 approved by the Free Software Foundation.
 
-@c This document applies to version 2.3.4 of @ltor{}.
+@c This document applies to version 2.3.9 of @ltor{}.
 @end ifnottex
 
 
@@ -293,7 +293,7 @@ For more details on RTF the specification consult the links at @uref{http://late
 * Obtaining LaTeX2RTF::         
 * UNIX::                        
 * DOS or Windows::              
-* Win32 systems::               
+* MS Windows systems::               
 * Macintosh::                   
 * Problems Compiling::          
 * Problems with make check::    
@@ -364,7 +364,7 @@ default compiler command in the Makefile is @code{CC=gcc}.
 From version 1.9.13 up, @ltor{}supports conversion of @latex{}equations to
 bitmaps using the shell script @file{latex2png}, found in @file{scripts/}.  
 @file{latex2png} requires that
-both @latex{}and @file{ImageMagick} are installed. 
+@latex{}, @file{Ghostscript} and @file{ImageMagick} are installed. 
 @ltor{}will translate documents without a working @file{latex2png}, but some
 features will be missing.  You can verify that the @file{latex2png} script
 is working by typing @code{make} in the @file{scripts/} directory.
@@ -414,8 +414,8 @@ Just define @env{RTFPATH} to be the path for the new location of the @file{cfg}
 directory.
 
 
-@node DOS or Windows, Win32 systems, UNIX, Installation
-@section DOS
+@node DOS or Windows, MS Windows systems, UNIX, Installation
+@section plain DOS
 
 The @acronym{UNIX} and Mac packages do not contain an executable for DOS 
 or Windows. You may compile it yourself (with djgpp or MinGW)
@@ -454,10 +454,10 @@ possible because Ghostscript and ImageMagick are not available
 for plain DOS.
 
 
-@node Win32 systems, Macintosh, DOS or Windows, Installation
-@section Win32 systems
+@node MS Windows systems, Macintosh, DOS or Windows, Installation
+@section MS Windows systems
 
-To install @ltor{}on a Win32 system (WinNT, Win2000, WinXP, 
+To install @ltor{}on a MS Windows system (WinNT, Win2000, WinXP, 
 Vista, Win7), download the win package,
 execute the @file{latex2rtf-x.x.x_win.exe} 
 (where x.x.x is the version number) and follow the instructions.
@@ -477,10 +477,10 @@ freely available for download at @uref{http://www.miktex.org/},
 @uref{http://www.imagemagick.org} and @uref{http://www.ghostscript.com}
 
 The following versions were available at the time of writing 
-and used together with @ltor{}version 2.3.x: @*
+and tested with @ltor{}version 2.3.9: @*
 - MikTeX 2.9 @*
-- Ghostscript 9.10 @*
-- ImageMagick-6.8.7-5-Q8-x86-dll.exe
+- Ghostscript 9.10 or 9.15 @*
+- ImageMagick-6.8.9-8-Q16-x86-dll.exe
 
 
 If MikTeX, ImageMagick and Ghostscript are installed, the paths to their 
@@ -556,7 +556,7 @@ or Windows ME); this should be solved now
 by using bash.exe instead of command.com. 
 
 
-@node Macintosh, Problems Compiling, Win32 systems, Installation
+@node Macintosh, Problems Compiling, MS Windows systems, Installation
 @section Macintosh
 
 If you want a MacOS X version, make sure that you have installed the developer tools CD
@@ -995,7 +995,7 @@ the old 2.09 version of @code{\documentstyle[options]@{format#@}} and the newer
 @node Unicode Support, Input Encoding, LaTeX2e, Features
 @section Unicode Support
 
-As of version 1.9.17, @ltor{}has limited unicode support.  @latex{}files
+As of version 1.9.17 and up, @ltor{}has limited unicode support.  @latex{}files
 that use unicode sequences are just emitted directly into the RTF file.@*
 Symbols and odd characters in math sequences may also be converted to
 a unicode sequence. Some of them need the STIXGeneral fonts 
@@ -1102,7 +1102,7 @@ apacite, apalike, authordate, harvard, natbib (also with apanat1b).
 These packages have many, many options and you may encounter
 problems with formatting in special cases.
 
-As of @ltor{}1.9.17, the natbib command bibpunct is supported.
+As of @ltor{}1.9.17 and up, the natbib command bibpunct is supported.
 
 Footnotes are implemented and appear at the bottom of each page.  
 @cindex footnotes
@@ -1231,7 +1231,6 @@ TrueType (ttf) version of the fonts. But stixfonts.org only supplies
 the Open Type (otf) version.
 TrueType versions of the fonts can be downloaded from 
 @uref{http://sites.google.com/site/olegueret/stixfonts-ttf}.
-
 
 @end itemize
 

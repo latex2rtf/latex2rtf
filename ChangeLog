@@ -2,6 +2,14 @@
 ## latex2rtf changes from 2.3.0
 ##############
 
+r1241 | whennings
+Use eps2eps from Ghostscript instead of from MikTeX distribution. 
+ Therefore changed the order of program folders in PATH setting
+ in l2rshell.exe (windows GUI) as well as in l2rprep.bat
+Modified latex2png script for compatibility with Ghostscript 9.14 and newer
+(gs 9.14 and newer use a different eps2eps script producing better quality eps 
+ files on the expense of containing binary stuff)
+
 r1240 | whennings
 convert.c line 398 blank after exclamation mark removed
 convert.c line 410 blank after question mark removed

@@ -32,9 +32,9 @@ SED="sed"
 # !!!!!!!!!!!!!!!! Note !!!!!!!!!!!!!!
 # Under MS Windows, although this script runs under bash shell,
 # LaTeX is run in the Windows environment and thus needs the ";" as separator.
-#TEXINPSEP=":" #Unix
-TEXINPSEP=";"  #MS Windows
-VERSION="1.40"
+TEXINPSEP=":" #Unix
+#TEXINPSEP=";"  #MS Windows
+VERSION="1.50"
 
 help()
 {
@@ -49,8 +49,8 @@ OPTIONS:
          -m monochrome  (default)
          -e only create EPS files
          
-         -d density     (default 144 dpi)
-         -o offset      = density/72+2
+         -d density     (default 300 dpi)
+         -o offset      (default 5)
          -h             help
          -H /home/dir   directory to be included in search path (default '.')
          -k             keep intermediate files (for debugging)
@@ -224,12 +224,12 @@ if [ $ext = "tex" ] ; then
            uryfin=$(echo $bbb | $AWK -F" " '{print $5}' )
            # use the maximum y extension
            if [ "$llydraft" -lt "$llyfin" ] ; then
-              $SED -e "/%%BoundingBox:/s/$llyfin/$llydraft/" $name.eps >$name.tmp
+              $SED -b -e "/%%BoundingBox:/s/$llyfin/$llydraft/" $name.eps >$name.tmp
               rm $name.eps
               mv $name.tmp $name.eps
            fi
            if [ "$urydraft" -gt "$uryfin" ] ; then
-              $SED -e "/%%BoundingBox:/s/$uryfin/$urydraft/" $name.eps >$name.tmp
+              $SED -b -e "/%%BoundingBox:/s/$uryfin/$urydraft/" $name.eps >$name.tmp
               rm $name.eps
               mv $name.tmp $name.eps
            fi
