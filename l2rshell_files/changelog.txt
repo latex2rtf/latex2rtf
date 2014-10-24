@@ -1,6 +1,12 @@
 Note: l2rshell is compiled with http://www.bloodshed.net/devcpp.html
 
 
+0.6.7 (2014-10-24)
+1) exchanged order of program folders in PATH setting 
+   so that ghostscript folder comes before miktex folder
+ 
+--------------------------------------------------------------------------------------------
+
 0.6.5 (2012-09-28)
 1) added checkboxes for options -M64 -M128 and -E#
  

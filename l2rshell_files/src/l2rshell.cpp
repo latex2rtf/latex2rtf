@@ -1,7 +1,7 @@
     //////////////////////////////////////////////////////
     //                                                  //
     //      l2rshell (GUI for LaTeX2RTF converter)      //
-    //                 v.0.6.6 for win32                //
+    //                 v.0.6.7 for win32                //
     //    author: Mikhail Polianski (mnpol@mail.ru)     //
     //                                                  //
     //////////////////////////////////////////////////////
@@ -705,11 +705,6 @@ void Run(HWND hwnd)
         lstrcat(out_str, str);
         lstrcat(out_str, L";");
         
-        SendMessage(GetDlgItem(hwnd, ID_LATEX), WM_GETTEXT, MAX_PATH, (LPARAM)str);
-        getdir(str);
-        lstrcat(out_str, str);
-        lstrcat(out_str, L";");
-        
         SendMessage(GetDlgItem(hwnd, ID_IMAGICK), WM_GETTEXT, MAX_PATH, (LPARAM)str);
         getdir(str);
         lstrcat(out_str, str);
@@ -725,6 +720,11 @@ void Run(HWND hwnd)
         getdir(str);
         lstrcat(out_str, str);
         lstrcat(out_str, L"\\lib;");
+        
+        SendMessage(GetDlgItem(hwnd, ID_LATEX), WM_GETTEXT, MAX_PATH, (LPARAM)str);
+        getdir(str);
+        lstrcat(out_str, str);
+        lstrcat(out_str, L";");
         
         GetSystemDirectory(str, MAX_PATH);
         lstrcat(out_str, str);
@@ -1496,7 +1496,7 @@ WCHAR* GetVersionString(WCHAR* str)   //returned value is 'str'
 {
     WCHAR inifile[MAX_PATH];
     
-    lstrcpy(str, L"LaTeX2RTF  +   l2rshell v.0.6.6");
+    lstrcpy(str, L"LaTeX2RTF  +   l2rshell v.0.6.7");
     
     GetModuleFileName(NULL, inifile, MAX_PATH);
     getdir(inifile);
