@@ -1794,7 +1794,7 @@ void CmdKeywords(int code)
 	fprintRTF("{{\\b ");
 	ConvertBabelName("KEYWORDS");
 	fprintRTF("}\\tab\n");
-	fprintRTF(keywords);
+	fprintRTF("%s",keywords);
 	fprintRTF("\n}\n");
 	CmdEndParagraph(0);
 	CmdVspace(VSPACE_SMALL_SKIP);

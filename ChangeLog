@@ -2,6 +2,16 @@
 ## latex2rtf changes from 2.3.0
 ##############
 
+r1244 | whennings
+in funct1.c line 1797 added "%s" format 
+  to fix a potential vulnerability in processing the \keywords command
+
+r1243 | whennings
+(making up) unix version of latex2png script
+
+r1242 | whennings
+(making up) l2rshell source for v.2.3.9 r1241
+
 r1241 | whennings
 Use eps2eps from Ghostscript instead of from MikTeX distribution. 
  Therefore changed the order of program folders in PATH setting
