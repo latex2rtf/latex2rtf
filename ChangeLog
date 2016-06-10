@@ -2,9 +2,15 @@
 ## latex2rtf changes from 2.3.0
 ##############
 
+r1245 | whennings
+increased malloc size for character array by one to allow terminating null character
+in definitions.c line 157, graphics.c line 1882, tables.c line 1548 and line 1561
+released as v.2.3.11
+
 r1244 | whennings
 in funct1.c line 1797 added "%s" format 
   to fix a potential vulnerability in processing the \keywords command
+released as v.2.3.10
 
 r1243 | whennings
 (making up) unix version of latex2png script

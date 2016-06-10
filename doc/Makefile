@@ -14,7 +14,7 @@ latex2rtf.txt:  latex2rtf.texi
 	chmod 644 latex2rtf.txt
 
 latex2rtf.pdf : latex2rtf.texi
-	texi2dvi --pdf latex2rtf.texi
+	texi2pdf latex2rtf.texi
 	chmod 644 latex2rtf.pdf
 
 latex2pn.txt: latex2png.1

@@ -154,7 +154,7 @@ static char *expandmacro(char *macro, char *opt_param, int params)
 
     diagnostics(5, "expandmacro: buff_size = %d\n", buff_size);
     if(buff_size > 0)
-        buffer = (char*) calloc(sizeof(char) * buff_size, sizeof(char));
+        buffer = (char*) calloc(sizeof(char) * (buff_size+1), sizeof(char));
     
     expanded = buffer;
 

@@ -1,7 +1,3 @@
-\def\LaTeX{L\kern-.36em\raise.3ex\hbox{\sc a}\kern-.15em\TeX}
-\def\LaTeXe{\LaTeX\kern.15em 2$_\varepsilon$}
-\def\BibTeX{B\kern-.05em{\sc i\kern-.025em b}\kern-.08em\TeX}
-
 \input texinfo  
 @c -*-texinfo-*-
 @c %**start of header
@@ -17,50 +13,49 @@ notice identical to this one except for the removal of this paragraph
 (this paragraph not being relevant to the printed manual).
 @end ignore 
 
+@ifnottex
 @macro latex {}
-@ifnottex
 LaTeX
-@end ifnottex
-@iftex
-@LaTeX{}
-@end iftex
 @end macro
+@end ifnottex
+@tex
+\gdef\latex{L\kern-.36em\raise.3ex\hbox{\sc a}\kern-.15em\TeX}
+@end tex
 
+@ifnottex
 @macro bibtex {}
-@ifnottex
 BibTeX
-@end ifnottex
-@iftex
-@BibTeX{}
-@end iftex
 @end macro
+@end ifnottex
+@tex
+\gdef\bibtex{B\kern-.05em{\sc i\kern-.025em b}\kern-.08em\TeX}
+@end tex
 
+@ifnottex
 @macro latexe {}
-@ifnottex
 LaTeX2e
-@end ifnottex
-@iftex
-@LaTeXe{}
-@end iftex
 @end macro
+@end ifnottex
+@tex
+\gdef\latexe{L\kern-.36em\raise.3ex\hbox{\sc a}\kern-.15em\TeX\kern.15em 2$_\varepsilon$}
+@end tex
 
-@macro ltor {}
 @ifnottex
+@macro ltor {}
 LaTeX2RTF
-@end ifnottex
-@iftex
-@LaTeX{}2RTF
-@end iftex
 @end macro
+@end ifnottex
+@tex
+\gdef\ltor{L\kern-.36em\raise.3ex\hbox{\sc a}\kern-.15em\TeX2RTF}
+@end tex
 
 @titlepage 
 @title @ltor{}
-@subtitle 
-A converter from @latex{}to RTF
+@subtitle A converter from @latex{} to RTF
 
-Edition 0.7.10
+Edition 0.7.11
 
-for program version 2.3.9
+for program version 2.3.11
 
 @author Georg Lehner,
 updated by Wilfried Hennings and Scott Prahl,
@@ -68,7 +63,7 @@ with contributions by Mikhail Polianski
 
 @page
 @vskip 0pt plus 1 filll
-Copyright @copyright{} 1998-2014 Georg Lehner, Wilfried Hennings, Scott Prahl
+Copyright @copyright{} 1998-2016 Georg Lehner, Wilfried Hennings, Scott Prahl
 
 Permission is granted to make and distribute verbatim copies of this
 manual provided the copyright notice and this permission notice are
@@ -91,7 +86,7 @@ approved by the Free Software Foundation.
 @node Top, Introduction, (dir), (dir)
 @top LaTeX2RTF
 
-This file documents @ltor{}, a converter that translates @latex{}to RTF.
+This file documents @ltor{}, a converter that translates @latex{} to RTF.
 @end ifnottex
 
 @menu
@@ -202,7 +197,7 @@ Citation Commands
 @ifnottex
 
 Copyright 1998-2002 Georg Lehner,
-updates Copyright 1999-2014 by Wilfried Hennings and Scott Prahl,
+updates Copyright 1999-2016 by Wilfried Hennings and Scott Prahl,
 with contributions by Mikhail Polianski.
 
 Permission is granted to make and distribute verbatim copies of this
@@ -221,61 +216,61 @@ into another language, under the above conditions for modified versions,
 except that this permission notice may be stated in a translation
 approved by the Free Software Foundation.
 
-@c This document applies to version 2.3.9 of @ltor{}.
+@c This document applies to version 2.3.11 of @ltor{}.
 @end ifnottex
 
 
 @node Introduction, Installation, Top, Top
 @chapter  Introduction
 
-@ltor{}is a translator program from @latex{}text into ``rich text
+@ltor{} is a translator program from @latex{} text into ``rich text
 format'' files. These files are commonly referred to as RTF files. RTF
 is a published standard format by Microsoft. This standard can be
 ambiguous in places and Microsoft ignores parts of the standard it finds
 inconvenient, but RTF is widely used by many WYSIWIG text editors and is
 supported by Microsoft Word and most text processors.
 
-@ltor{}translates the text and as much of the formatting information
-from @latex{}to RTF. Be forewarned that the typeset output is not
-nearly as good as what you would get from using @latex{}directly. So,
+@ltor{} translates the text and as much of the formatting information
+from @latex{} to RTF. Be forewarned that the typeset output is not
+nearly as good as what you would get from using @latex{} directly. So,
 why bother translating? Consider,
 
 @enumerate
 @item
-You use @latex{}and hate everything beginning with MS-@enddots{}
+You use @latex{} and hate everything beginning with MS-@enddots{}
 Nevertheless, you have to share your documents with people who don't
 even know that there are alternatives to MS-@enddots{}
       
 @item
-You know somebody who frequently sends you very fine @latex{}documents.
+You know somebody who frequently sends you very fine @latex{} documents.
 Unfortunately, you are ``on the other side'' and need to import her
 files, steal some part, and then desktop publish it in your fine
 MS-@dots{} environment.
       
 @item
-You like @latex{}and @bibtex{}. You interact with the rest of the
+You like @latex{} and @bibtex{}. You interact with the rest of the
 world. You know someone that wants to include your writing in a Word
 document.
 
 @end enumerate
 
-There are drawbacks to the conversion process. In fact, don't expect any @latex{}file to
+There are drawbacks to the conversion process. In fact, don't expect any @latex{} file to
 be converted as you would like, don't expect it to be converted without errors or
-warnings, and don't be especially surprised when it doesn't convert at all.  @ltor{}is
+warnings, and don't be especially surprised when it doesn't convert at all.  @ltor{} is
 known to have many bugs and many missing features. Paradoxically, this number seems to
 grow more and more with each day.  However, we can categorically state that there are some
-special cases in which a @latex{}file will be translated to RTF satisfactorily by
+special cases in which a @latex{} file will be translated to RTF satisfactorily by
 @ltor{}---This was sort of disclaimer, ok? OK!
 
-@latex{}is a system for typesetting text and therefore it focuses on the logical
+@latex{} is a system for typesetting text and therefore it focuses on the logical
 structure of a document, whilst RTF is meant to be a transport format for a family of
 Desktop Publishing Software, dealing mostly with the design of a text.
 
-Although the commands and styles in @latex{}are much more flexible and
+Although the commands and styles in @latex{} are much more flexible and
 standardized than in RTF, only a small subset of commands has been implemented to date 
 (@pxref{Unimplemented Features}).
 
-Some of the capabilities of @ltor{}are restricted in scope or buggy (@pxref{Known Bugs}).
+Some of the capabilities of @ltor{} are restricted in scope or buggy (@pxref{Known Bugs}).
 
 @cindex RTF sucks
 RTF is a moving target, because Microsoft does not stop inventing new extensions and
@@ -311,10 +306,10 @@ Note: In this manual, the terms "directory" and "folder" are used interchangeabl
 @node Obtaining LaTeX2RTF, UNIX, General, Installation
 @section Obtaining @ltor{}
 
-@ltor{}is available for many Unix Platforms, for the Macintosh, and for MS-DOS, 
+@ltor{} is available for many Unix Platforms, for the Macintosh, and for MS-DOS, 
 including all versions of MS Windows.
 
-The latest version of @ltor{}is available at 
+The latest version of @ltor{} is available at 
 @uref{http://sourceforge.net/projects/latex2rtf/,SourceForge} 
 and --- with some delay --- on CTAN sites: 
 e.g., @uref{http://www.dante.de} or @uref{http://www.ctan.org}.
@@ -327,19 +322,17 @@ For Win9x, ME, NT, or newer, you should use the win or win-NO-GUI package.
 
 The win-NO-GUI package only runs under Win32 
 (Win9x, ME, NT, 2000, XP, 2003, Vista, Win7).
-From @ltor{}version 2.0.0 up it also runs on 64bit systems.
+From @ltor{} version 2.0.0 up it also runs on 64bit systems.
 
 The win package is the win-NO-GUI package plus graphical user 
 interface (GUI) shell (l2rshell) and installer.@*
 It only runs under Win NT, 2000, XP, 2003, Vista, and Win7.@*
-From @ltor{}version 2.0.0 up it should also run on 64bit systems,
-however the program authors have not (yet) access to a 64bit system and 
-cannot test @ltor{}on 64bit.
+From @ltor{} version 2.0.0 up it also runs on 64bit systems.
 
-The win64 package (only @ltor{}version 1.9.19) is the win package
+The win64 package (only @ltor{} version 1.9.19) is the win package
 but with 32bit versions of the shell utilities so that it also runs
-on 64bit systems. From @ltor{}version 2.0.0 up, there is no separate
-win64 package, as the win32 package will also run on 64bit systems.
+on 64bit systems. From @ltor{} version 2.0.0 up, there is no separate
+win64 package, as the win32 package also runs on 64bit systems.
 
 There are a few people working on @ltor{}, and some more make 
 contributions, coordinated by
@@ -361,11 +354,11 @@ On some machines the cc compiler will issue errors. Therefore the
 default compiler command in the Makefile is @code{CC=gcc}.
 
 @item
-From version 1.9.13 up, @ltor{}supports conversion of @latex{}equations to
+From version 1.9.13 up, @ltor{} supports conversion of @latex{} equations to
 bitmaps using the shell script @file{latex2png}, found in @file{scripts/}.  
 @file{latex2png} requires that
 @latex{}, @file{Ghostscript} and @file{ImageMagick} are installed. 
-@ltor{}will translate documents without a working @file{latex2png}, but some
+@ltor{} will translate documents without a working @file{latex2png}, but some
 features will be missing.  You can verify that the @file{latex2png} script
 is working by typing @code{make} in the @file{scripts/} directory.
 
@@ -396,7 +389,7 @@ the contents of the @file{cfg/} directory to the location specified by
  
 @item @code{make check}
 
-[OPTIONAL] This tests @ltor{}on a variety of @latex{}files.  Expect
+[OPTIONAL] This tests @ltor{} on a variety of @latex{} files.  Expect
 a whole lot of warnings, but no outright errors. (On IBM AIX, use @code{gmake check}.)
 Note that this will check the basic functionality of the @file{latex2png}
 script, and then that of @file{latex2rtf}.
@@ -457,38 +450,40 @@ for plain DOS.
 @node MS Windows systems, Macintosh, DOS or Windows, Installation
 @section MS Windows systems
 
-To install @ltor{}on a MS Windows system (WinNT, Win2000, WinXP, 
+To install @ltor{} on a MS Windows system (WinNT, Win2000, WinXP, 
 Vista, Win7), download the win package,
 execute the @file{latex2rtf-x.x.x_win.exe} 
 (where x.x.x is the version number) and follow the instructions.
 
 Note: The installer and GUI shell do not support Win9x and WinMe
-since @ltor{}v.1.9.17. 
+since @ltor{} v.1.9.17. 
 If you have one of these systems, you should use the 
 win-NO-GUI package (1.9.19 and up) of @ltor{}. 
 
-To start the program double-click the @ltor{}icon, 
+To start the program double-click the @ltor{} icon, 
 or drag and drop a @file{.tex} file onto the icon.
 
-If your @latex{}document refers to external graphic files, e.g.@: eps, 
+If your @latex{} document refers to external graphic files, e.g.@: eps, 
 or you want to use the option to convert equations to bitmaps,
 you must have LaTeX, ImageMagick and Ghostscript installed. These programs are 
 freely available for download at @uref{http://www.miktex.org/}, 
 @uref{http://www.imagemagick.org} and @uref{http://www.ghostscript.com}
 
 The following versions were available at the time of writing 
-and tested with @ltor{}version 2.3.9: @*
+and tested with @ltor{} version 2.3.11: @*
 - MikTeX 2.9 @*
-- Ghostscript 9.10 or 9.15 @*
-- ImageMagick-6.8.9-8-Q16-x86-dll.exe
+- Ghostscript 9.19 @*
+- ImageMagick-7.0.1-8-Q16-x86-dll.exe
 
+When installing ImageMagick, be sure to choose (check)@* 
+"Install legacy utilities (e.g. convert)"
 
 If MikTeX, ImageMagick and Ghostscript are installed, the paths to their 
 executables are detected automatically. If for any reason this doesn't 
 happen, these paths can be specified manually in the ``Environment'' 
-tab of the @ltor{}GUI shell window.
+tab of the @ltor{} GUI shell window.
 
-If you need to start @ltor{}not from its own shell but from commandline 
+If you need to start @ltor{} not from its own shell but from commandline 
 or another Windows application, you need to add the folder containing 
 the latex2png script and the helper programs to the search path.@*
 Some applications (e.g.@: Lyx) allow to temporarily add the path by
@@ -547,7 +542,7 @@ If you DO use the GUI (l2rshell.exe), the TeX, ImageMagick and Ghostscript folde
 are automatically added to the search path by the GUI.
 
 When equations are to be converted to bitmaps, for each equation
-@ltor{}first writes a temporary l2r_nnnn.tex file to disk which consists 
+@ltor{} first writes a temporary l2r_nnnn.tex file to disk which consists 
 of only the equation to be converted. It then sends the call 
 for @file{"bash latex2png l2r_nnnn.tex"} to the operating system. @*
 In previous versions of latex2rtf, some users got the message 
@@ -569,15 +564,15 @@ As of 2006-01-30 there was a GUI shell for Macintosh at@*
 but now (Nov. 2013) this is not available anymore.
 
 There is a PPC port of an old version 1.9k for Classic MacOS @ltor{}. 
-To convert a @latex{}file using this version,  drag the file onto the @ltor{}icon.  The
+To convert a @latex{} file using this version,  drag the file onto the @ltor{} icon.  The
 translation is best if there are @file{.aux} and @file{.bbl} files in the same folder as
-the @file{.tex} file to be converted.  These should be generated using @latex{}and
+the @file{.tex} file to be converted.  These should be generated using @latex{} and
 @file{bibtex}.
 
 @node Problems Compiling, Problems with make check, Macintosh, Installation
 @section Problems Compiling
 
-The code for @ltor{}is standard @acronym{ANSI} C.  Some possible pitfalls
+The code for @ltor{} is standard @acronym{ANSI} C.  Some possible pitfalls
 are
 @itemize @bullet
 @item Not correctly defining your compiler in the Makefile.
@@ -596,7 +591,7 @@ options.
 @section Problems with @code{make check}
 
 All the files in the @file{test} directory are converted (with varying degrees
-of success) using @ltor{}and are tested before most CVS check-ins and with
+of success) using @ltor{} and are tested before most CVS check-ins and with
 all released tarballs.  There will be many warning messages, but there should
 be no actual error messages.  If you do not have a working latex2png script, then
 some of the files will fail to be translated.
@@ -613,17 +608,17 @@ some of the files will fail to be translated.
 @node General Assumptions, LaTeX2RTF Options, Using LaTeX2RTF, Using LaTeX2RTF
 @section General Assumptions
 
-@ltor{}assumes that the @file{.tex} file you want to convert is a valid 
-@latex{}document.  The chances of a successful @ltor{}conversion are slightly better than the
+@ltor{} assumes that the @file{.tex} file you want to convert is a valid 
+@latex{} document.  The chances of a successful @ltor{} conversion are slightly better than the
 proverbial snowball's if the @file{.tex} file doesn't @code{latex} properly.  Use 
-@latex{}to find and correct errors before using @ltor{}.@*
+@latex{} to find and correct errors before using @ltor{}.@*
 @ltor{} also needs the @file{.aux} file and @file{.bbl} file 
 which are generated by running @code{latex} on the @file{.tex} file
 
 To correctly convert font names you must edit the @file{fonts.cfg} configuration file.
-This file is used to specify the needed font names and how the @latex{}default font names
-should be converted to RTF (@pxref{Font Configuration}). @latex{}variables and user
-defined commands are not evaluated. They will be simply ignored. To let @ltor{}know the
+This file is used to specify the needed font names and how the @latex{} default font names
+should be converted to RTF (@pxref{Font Configuration}). @latex{} variables and user
+defined commands are not evaluated. They will be simply ignored. To let @ltor{} know the
 names of variables you can add them in the @file{ignore.cfg} file (@pxref{Ignore Command}).
 
 The environment variable RTFPATH may contain a search path for the support files (all
@@ -635,7 +630,7 @@ In the DOS and Windows versions the search path is separated by `;' in the Unix 
 the paths themselves apply `\' and `/'. A separator may appear at the beginning or ending
 of RTFPATH.
 
-Make sure that the configuration files are in the correct directory (or folder). @ltor{}will need at
+Make sure that the configuration files are in the correct directory (or folder). @ltor{} will need at
 least @file{fonts.cfg}, @file{direct.cfg}, @file{ignore.cfg}, @file{english.cfg}. You may
 have to change one ore more of them to suit your needs (@pxref{Configuration}).
 
@@ -644,9 +639,9 @@ have to change one ore more of them to suit your needs (@pxref{Configuration}).
 @xref{Reporting Bugs}, for information on how to reach the maintainer.
 
 @node LaTeX2RTF Options, Debugging, General Assumptions, Using LaTeX2RTF
-@section @ltor{}Options
+@section @ltor{} Options
 
-The @ltor{}command converts a @latex{}file into RTF text format. The text and
+The @ltor{} command converts a @latex{} file into RTF text format. The text and
 much of the formatting information is translated to RTF making the new file
 look similar to the original.  The command line syntax is:
 
@@ -671,17 +666,17 @@ specify an @file{.aux} file (for table and figure references) that
 differs from @file{inputfile.aux}. If this is omitted, the name of the
 inputfile with the suffix replaced @file{.aux'}will be taken.  You must
 provide both files (@file{.tex} and the @file{.aux}) to be able to
-convert cross-references in a @latex{}file.  The @file{.aux} is created
+convert cross-references in a @latex{} file.  The @file{.aux} is created
 by running the @file{inputfile.tex} through @code{latex}.
 
 @item -b bblfile
-Unless an @file{bblfile} is specified with the @code{-b} option, @ltor{}uses a
+Unless an @file{bblfile} is specified with the @code{-b} option, @ltor{} uses a
 @file{inputfile.bbl}.  The @file{bblfile} file is used for citations and is typically
 created by running @file{inputfile.aux} through @file{bibtex}.
 
 @item -C codepage
-used to specify the character set (code page) used in the @latex{}document. This is only
-important when non-ansi characters are included in the @latex{}document. Typically this
+used to specify the character set (code page) used in the @latex{} document. This is only
+important when non-ansi characters are included in the @latex{} document. Typically this
 is done in a @latexe{} file by using @code{\usepackage[codepage]@{inputenc@}}
 and in this case you need not specify the -C codepage option.
 If NO @code{\usepackage[codepage]@{inputenc@}} is in the @latexe{} file, you must
@@ -753,7 +748,7 @@ where # selects which fields to use during conversion:
     @item -f3
     use fields when possible.  This is the default and is most useful when
     the RTF file is being exported to be used in Word.  This retains the most
-    information from the original @latex{}file.
+    information from the original @latex{} file.
     @end table
 
 @item -F
@@ -765,7 +760,7 @@ a functional version of ImageMagick on your machine to work properly.
 a short usage description
 
 @item -i language
-used to set the idiom or language used by the @latex{}document.  Typically, this is
+used to set the idiom or language used by the @latex{} document.  Typically, this is
 specified in a @latexe{} document by including @code{\usepackage[language]@{babel@}} where
 @code{language} is one of the languages supported by the @code{babel} package.   All
 languages listed in the babel system are supported so far as translations for ``Chapter,''
@@ -866,11 +861,11 @@ enclosed in single (Unix, Mac) or double (DOS, Windows) quotes.@*
 Examples:@*
 (Unix:) @code{latex2rtf -P ./cfg/:./scripts/ foo}@*
 (DOS/Windows:) @code{latex2rt -P "C:\Program Files\latex2rtf\cfg" foo}@*
-Note that without specifying the -P option, @ltor{}tries to find its cfg files 
+Note that without specifying the -P option, @ltor{} tries to find its cfg files 
 in the following locations:@*
 1. the folder specified by the environment variable @code{RTFPATH}, if this variable exists;@*
 2. The folder @code{%PROGRAMFILES%\latex2rtf\cfg}, if the variable 
-@code{PROGRAMFILES} exists -- this is the folder in which @ltor{}is installed 
+@code{PROGRAMFILES} exists -- this is the folder in which @ltor{} is installed 
 by the Windows GUI installer with default settings;@*
 3. the folder specified at compilation time by the variable
 @code{CFGDIR}. This is set in the Makefile. The DOS version is compiled
@@ -906,9 +901,9 @@ has a version of Windows that uses `,' for decimal points.
 used to specify the folder where to put temporary files.
 The path can be absolute, e.g.@: @code{/path/to/tmp} or relative 
 to the folder where the .tex input file is in, e.g.@: @code{tmp} or @code{./tmp}.@*
-If you call @ltor{}from the commandline (e.g.@: under Linux or 
+If you call @ltor{} from the commandline (e.g.@: under Linux or 
 when called as export filter by LyX), make sure that the tmp folder exists. 
-Only the @ltor{}Windows shell tries to create the tmp folder, 
+Only the @ltor{} Windows shell tries to create the tmp folder, 
 the command line program doesn't.
 
 @item -W
@@ -921,7 +916,7 @@ is useful for files that are not cleanly converted by @ltor{}.
 @end table
 
 With no arguments other than switches starting with a ``-'', 
-@ltor{}acts as a filter, i.e., it reads from @code{stdin} and writes 
+@ltor{} acts as a filter, i.e., it reads from @code{stdin} and writes 
 to @code{stdout}.
 In addition, diagnostic messages are sent to @code{stderr}. 
 If these standard channels are not redirected using @code{<} 
@@ -930,7 +925,7 @@ and both output and error messages are printed on the screen.
 To redirect warnings and error messages to a file 
 ``latex2rtf.log'', append @code{2>latex2rtf.log} to the command line.
 
-If a non-switch argument is present, @ltor{}assumes it is the name of
+If a non-switch argument is present, @ltor{} assumes it is the name of
 the input file. The file must have extension ``.tex'' but the extension
 is optional. The output file is constructed from the input file name
 by removing the extension ``.tex'' and adding ``.rtf''.
@@ -939,7 +934,7 @@ by removing the extension ``.tex'' and adding ``.rtf''.
 @section Debugging
 
 With the @option{-d} option you can specify how much processing information
-@ltor{}reports.
+@ltor{} reports.
 If there is a logfile specified the output goes to this file. Nonetheless
 Warnings and Errors are logged to stderr always. They can be redirected 
 to a file ``latex2rtf.log'' by appending @code{2>latex2rtf.log} 
@@ -966,7 +961,7 @@ Show processing of characters as they are output as well
 @node Features, Configuration, Using LaTeX2RTF, Top
 @chapter Features
 
-In this chapter you find what styles is @ltor{}supposed to translate
+In this chapter you find what styles is @ltor{} supposed to translate
 correctly to RTF.
 
 @menu
@@ -988,14 +983,14 @@ correctly to RTF.
 @node LaTeX2e, Unicode Support, Features, Features
 @section LaTeX2e
 
-@ltor{}understands most of the commands introduced with @latexe{}.  It translates both
+@ltor{} understands most of the commands introduced with @latexe{}.  It translates both
 the old 2.09 version of @code{\documentstyle[options]@{format#@}} and the newer
 @code{\documentclass[options]@{format@}}.  
 
 @node Unicode Support, Input Encoding, LaTeX2e, Features
 @section Unicode Support
 
-As of version 1.9.17 and up, @ltor{}has limited unicode support.  @latex{}files
+As of version 1.9.17 and up, @ltor{} has limited unicode support.  @latex{} files
 that use unicode sequences are just emitted directly into the RTF file.@*
 Symbols and odd characters in math sequences may also be converted to
 a unicode sequence. Some of them need the STIXGeneral fonts 
@@ -1003,7 +998,7 @@ a unicode sequence. Some of them need the STIXGeneral fonts
 where the rtf file is to be displayed or printed. 
 
 Support for unicode encoded input 
-is activated by the @latex{}command @*
+is activated by the @latex{} command @*
 @code{\usepackage[utf8]@{inputenc@}} @*
 or @*
 @code{\usepackage[utf8x]@{inputenc@}}.
@@ -1013,7 +1008,7 @@ or @*
 @section Input Encoding
 
 It is not necesary to specify the @option{-C} option if you use @code{\usepackage@{isolatin1@}}
-or @code{\documentstyle[isolatin1]@{...@}}. @ltor{}automagically detects these
+or @code{\documentstyle[isolatin1]@{...@}}. @ltor{} automagically detects these
 packages/style options and switches to processing of ISO-Latin1 codes.  The following
 encodings are supported: ansinew, applemac, cp437, cp437de, cp850, cp852, cp865,
 decmulti, cp1250, cp1252, latin1, latin2, latin3, latin4, latin5, latin9, next,
@@ -1034,17 +1029,17 @@ latin, scottish, croatian, lsorbian, serbian, czech, french, magyar,
 slovak, danish, galician, norsk, slovene.
 
 The only thing that these files do is to translate various words usually
-emitted by @latex{}during processing.  For example, this ensures that the
-@ltor{}will provide the correct translation of the word ``Chapter'' in
+emitted by @latex{} during processing.  For example, this ensures that the
+@ltor{} will provide the correct translation of the word ``Chapter'' in
 the converted document.
 
 You can select any of the above languages using the @option{-l} option.  This
-is not needed if your @latex{}file contains @code{\usepackage[language]@{babel@}}.
+is not needed if your @latex{} file contains @code{\usepackage[language]@{babel@}}.
 
 Encountering the @option{german} package or babel option (by H. Partl of the
-Vienna University) makes @ltor{}behave like that: German Quotes, German
+Vienna University) makes @ltor{} behave like that: German Quotes, German
 Umlauts by @code{"a}, etc@enddots{}  This support is programmed directly 
-into @ltor{}and supporting similar features for other languages will require 
+into @ltor{} and supporting similar features for other languages will require 
 patching the source code.
 
 There is similar support for @option{french} packages.
@@ -1070,17 +1065,17 @@ is opened.  To update the page references you must select the entire document
 
 @cindex bibliography
 Bibliographic references currently require that a valid @file{.aux} file be
-present.  This is where @ltor{}obtains the reference numbers.  It would be
-nice if @ltor{}just automatically numbered the references when there was
-no @file{.aux} file, but @ltor{}does not do this yet.
+present.  This is where @ltor{} obtains the reference numbers.  It would be
+nice if @ltor{} just automatically numbered the references when there was
+no @file{.aux} file, but @ltor{} does not do this yet.
  
 @cindex bibliography, BibTeX
 @cindex BibTeX
-@ltor{}relies on @bibtex{} to convert and format bibliographic entries.
+@ltor{} relies on @bibtex{} to convert and format bibliographic entries.
 Usually the style file for a particular @bibtex{} format does not use
-any special @latex{}commands and therefore the bibliography file
-@file{file.bbl} can be processed by @ltor{}without difficulty. As a
-consequence, @ltor{}can handle most bibliography styles without
+any special @latex{} commands and therefore the bibliography file
+@file{file.bbl} can be processed by @ltor{} without difficulty. As a
+consequence, @ltor{} can handle most bibliography styles without
 problem.
 
 @cindex bibliography, apacite
@@ -1097,12 +1092,12 @@ problem.
 @cindex apanat1b
 There are several latex style packages that add additional
 latex commands to enhance bibliographic formatting.
-@ltor{}currently supports the following bibliographic packages:@*
+@ltor{} currently supports the following bibliographic packages:@*
 apacite, apalike, authordate, harvard, natbib (also with apanat1b).
 These packages have many, many options and you may encounter
 problems with formatting in special cases.
 
-As of @ltor{}1.9.17 and up, the natbib command bibpunct is supported.
+As of @ltor{} 1.9.17 and up, the natbib command bibpunct is supported.
 
 Footnotes are implemented and appear at the bottom of each page.  
 @cindex footnotes
@@ -1120,9 +1115,9 @@ entire file and update the page references and fields by pressing @code{F9}.
 Currently, there is no support for @code{\labels} of @code{\item}s in enumerate environments.
 
 The conversion of cross-references is not perfect because of the different
-mechanisms in the @latex{}and Word worlds.  In particular, if there are 
+mechanisms in the @latex{} and Word worlds.  In particular, if there are 
 multiple @code{\label} in a figure, table, or section environment then only the first
-gets processed.  It is also possible to confuse the @ltor{}in eqnarray environments.
+gets processed.  It is also possible to confuse the @ltor{} in eqnarray environments.
 
 @node Page Formatting, Equations, Cross References, Features
 @section Page Formatting
@@ -1133,7 +1128,7 @@ gets processed.  It is also possible to confuse the @ltor{}in eqnarray environme
 @cindex double spacing
 @cindex setspace package
 
-@ltor{}will handle some basic page formatting options, including
+@ltor{} will handle some basic page formatting options, including
 \doublespacing (as implemented in the setspace package), and the margin
 setting options provided by the geometry package including commands in the
 ratio, centering and margin families. Not all geometry options are
@@ -1161,8 +1156,8 @@ is opened. e.g.@: in English versions of MS Windows, the default parameter separ
 is the comma, in German versions the default is the semicolon. If the parameter 
 in the RTF file does not match the Windows setting, some EQ fields are not 
 interpreted correctly. You can check and set the separator in [Windows control panel 
-- country settings - numbers - list separator]. By default, @ltor{}uses
-the comma as separator. If @ltor{}is called with the command line parameter -S ,
+- country settings - numbers - list separator]. By default, @ltor{} uses
+the comma as separator. If @ltor{} is called with the command line parameter -S ,
 the semicolon is inserted as parameter delimiter. 
 
 Theoretically, according to the Word help file, parentheses `(' or `)' in 
@@ -1171,16 +1166,16 @@ Despite this, adding escapes usually produces a worse result than doing nothing.
 If Word displays some formulas with parentheses as ``Error!'', you might try 
 the -p option as a last resort.
 
-It is also possible to convert an EQ field generated by @ltor{}to an
+It is also possible to convert an EQ field generated by @ltor{} to an
 Equation Editor object by opening the rtf file in Word and double-clicking on
 the equation. However there are bugs in the interface between Word and Equation 
 Editor which prevent symbols in font Symbol or MTExtra to be converted correctly. 
 The full commercial version of the Equation Editor, called MathType, handles
 this conversion correctly.
 
-If you have MathType version 6 or later, an even better way to convert @latex{}equations to
-MathType is letting @ltor{}write the @latex{}code of the equations verbatim in the 
-rtf file (option -M32), then open the rtf file in Word, select the @latex{}code of 
+If you have MathType version 6 or later, an even better way to convert @latex{} equations to
+MathType is letting @ltor{} write the @latex{} code of the equations verbatim in the 
+rtf file (option -M32), then open the rtf file in Word, select the @latex{} code of 
 an equation, cut it to the clipboard, open MathType, and paste the code.
 MathType will convert the code into an equation. Wilfried tried to automate this 
 in a Word macro, but this fails because the macro does not wait until MathType is
@@ -1240,7 +1235,7 @@ TrueType versions of the fonts can be downloaded from
 @cindex tables
 
 Conversion of tabular and tabbing environments is somewhat lame.  The 
-main difficulty is that @latex{}(and html) will size the columns of
+main difficulty is that @latex{} (and html) will size the columns of
 a table automatically.  There is no such feature in RTF.  Consequently,
 the conversion defaults to making all the columns have equal size.  This
 is suboptimal and should be revised. 
@@ -1267,7 +1262,7 @@ If there is no @code{\pagestyle} command, the RTF output is generated as with
 plain pagestyle, i.e. each page has its page number centered at the bottom.
 
 You must turn this off with the \pagestyle@{empty@} command in 
-the @latex{}file if you don't want pagenumbers.
+the @latex{} file if you don't want pagenumbers.
 The headings and myheadings styles are silently ignored by now.
 The twosided option to the \documentstyle or \documentclass produces the
 corresponding RTF tokens.
@@ -1280,15 +1275,15 @@ Note that these features require RTF Version 1.4.
 Hyperlatex support is largely broken at the moment, but continues to improve.
 
 Otfried Schwarzkopf has created the ``Hyperlatex Markup Language'' which is a
-``little package that allows you to use @latex{}to prepare documents in HTML.''
+``little package that allows you to use @latex{} to prepare documents in HTML.''
 It brings an Emacs lisp program with it to convert the Hyperlatex file to HTML.
 Hyperlatex can be obtained from the CTAN-sites, see @ref{Obtaining LaTeX2RTF}.
 There are two convenient commands that avoid typing: \link and \xlink that
 generate an ``internal'' label which then is used in the following \Ref and
 \Pageref commands.
 
-@latex{}makes it possible to write `\link@{anchor@}[ltx]@{label@}', which typesets:
-`anchor ltx'. @ltor{}does NOT support this aproach since the optional
+@latex{} makes it possible to write `\link@{anchor@}[ltx]@{label@}', which typesets:
+`anchor ltx'. @ltor{} does NOT support this aproach since the optional
 parameter is thrown away right now, see @ref{LaTeX2RTF under Development}.
 
 Note that you have to update your @file{.cfg} files if you are upgrading, since
@@ -1326,12 +1321,12 @@ and rename cfg/styleAPA.cfg to style.cfg before starting @ltor{}.
 @cindex direct.cfg
 @cindex ignore.cfg
 
-On processing input @ltor{}first converts the @latex{}special
+On processing input @ltor{} first converts the @latex{} special
 characters. If it encounters one of the standard commands it is
-converted internally. If a command is not known to @ltor{}it is first
+converted internally. If a command is not known to @ltor{} it is first
 looked up in @file{direct.cfg} and the RTF code specified there is
 output. If not found there it is looked up in the section
-@file{ignore.cfg}. This file includes a lot of @latex{}commands that do
+@file{ignore.cfg}. This file includes a lot of @latex{} commands that do
 not affect the output (cross reference information and the like), or
 that we are not able or willing to convert to RTF.
 
@@ -1342,15 +1337,15 @@ WARNING: command: `foo' not found - ignored
 
 @noindent 
 and you don't need `foo' in your RTF document. It would be nice to send
-your additions to the @ltor{}mailing list for inclusion in later
+your additions to the @ltor{} mailing list for inclusion in later
 distributions.
 
-@ltor{}accepts Unix, MS-DOS, and Macintosh line ending codes (\n, \r\n
+@ltor{} accepts Unix, MS-DOS, and Macintosh line ending codes (\n, \r\n
 and \r).  The files it creates get the line ending for the platform on
-which @ltor{}was compiled.
+which @ltor{} was compiled.
 
-The @latex{}file may have been created with a wide variety of character
-sets.  If the @latex{}lacks the @code{\package[codepage]@{inputenc@}}
+The @latex{} file may have been created with a wide variety of character
+sets.  If the @latex{} lacks the @code{\package[codepage]@{inputenc@}}
 definition, then you may need to use the command line switch to manually
 select the proper code page (@pxref{Input Encoding}).
 
@@ -1360,8 +1355,8 @@ select the proper code page (@pxref{Input Encoding}).
 @cindex %latex2rtf
 @cindex iflatextortf
 
-Starting with @ltor{}1.9.18, there is a handy method for controlling which content
-should be processed by @latex{}or by @ltor{}.  Control is achieved using the
+Starting with @ltor{} 1.9.18, there is a handy method for controlling which content
+should be processed by @latex{} or by @ltor{}.  Control is achieved using the
 standard @code{\if} facility of @TeX{}.  If you include the following line in
 the preamble of your document (i.e., before @code{\begin@{document@}})
 
@@ -1371,8 +1366,8 @@ the preamble of your document (i.e., before @code{\begin@{document@}})
 
 Then you will create a new @code{\iflatextortf} command in @latex{}.  
 @TeX{} sets the value of this to @code{false} by default.  Now,
-@ltor{}internally sets @code{\iflatextortf} to be true, and to ensure that
-this is always the case, @ltor{}ignores the command @code{\latextortffalse}.
+@ltor{} internally sets @code{\iflatextortf} to be true, and to ensure that
+this is always the case, @ltor{} ignores the command @code{\latextortffalse}.
 This means that you can control how different applications
 process your document by 
 
@@ -1387,13 +1382,13 @@ This code is processed only by latex
 Note that @code{\iflatextortf} will only work within a section; you
 cannot use this command to conditionally parse code that crosses section
 boundaries. Also, it will only work on complete table or figure
-environments. Due to the mechanism used by @ltor{}in processing these
+environments. Due to the mechanism used by @ltor{} in processing these
 environments, at this time the only way to conditionally parse tables
 and figures is to include two complete versions of the environment in
 question, nested within an appropriate @code{\iflatex2rtf} structure.
 
-@ltor{}versions 1.9.15 to 1.9.18 had the ability to hide contents from @latex{}
-but expose them to @ltor{}by starting a line with @code{%latex2rtf:}.  This
+@ltor{} versions 1.9.15 to 1.9.18 had the ability to hide contents from @latex{}
+but expose them to @ltor{} by starting a line with @code{%latex2rtf:}.  This
 code was horribly broken, and it was removed.  The same functionality is readily
 achieved using the @code{\iflatextortf} mechanism.  For example, the old
 method allowed 
@@ -1413,13 +1408,13 @@ This code is processed only by latex2rtf
 @node Output Formatting, Direct Conversion, Conditional Parsing, Configuration
 @section Output Formatting 
 
-On writing output, @ltor{}generates the operating system specific line ending code
+On writing output, @ltor{} generates the operating system specific line ending code
 (@code{\n} on Unix, @code{\r\n} on DOS or Windows), depending on which system
-@ltor{}was compiled.
+@ltor{} was compiled.
 As both should be legal to any RTF Reader the resulting RTF rendering should
 not be affected.
 
-@ltor{}does not offer a whole lot of flexibility in how files are translated,
+@ltor{} does not offer a whole lot of flexibility in how files are translated,
 but it does offer some.  This flexibility resides in four files @file{direct.cfg},
 @file{ignore.cfg}, @file{fonts.cfg}, and @file{language.cfg}.  These filese
 are documented in the next four sections.
@@ -1427,10 +1422,10 @@ are documented in the next four sections.
 @node Direct Conversion, Ignore Command, Output Formatting, Configuration
 @section Direct Conversion 
 
-The file @file{direct.cfg} is used for converting @latex{}commands by simple text
-replacement. The format consists of lines with a @latex{}command with backslash
+The file @file{direct.cfg} is used for converting @latex{} commands by simple text
+replacement. The format consists of lines with a @latex{} command with backslash
 followed by comma. The rest of the line until a @samp{.} character will be written
-to the RTF file when the command is found in the @latex{}file. Lines
+to the RTF file when the command is found in the @latex{} file. Lines
 starting with a @samp{#} character are ignored. After the @samp{.} everything is ignored
 to end of line. To select a specific font use @code{*fontname*}, where 
 @code{fontname} be defined in @file{fonts.cfg}.
@@ -1453,7 +1448,7 @@ not.  It was all very tedious to figure out a mechanism that was ``least broken.
 @section Ignore Command 
 
 The file @file{ignore.cfg} is used for defining how to ignore specific commands. This
-file is used for recognition of @latex{}variables, user defined variables, and
+file is used for recognition of @latex{} variables, user defined variables, and
 some simple commands. All variables are ignored but the converter must know the
 names to correctly ignore assignments to variables. Lines in this file consist
 of a variable name with backslash, followed by comma and the type of the
@@ -1482,7 +1477,7 @@ intended to process contents of unknown environment as if it were
 plain @latex{}, e.g.@: `@code{\environ,ENVCMD.}' @*
 Therefore `@code{\begin@{environ@} text
 \end@{environ@}}' would be converted to `text'. 
-Doesn't work in @ltor{}version 2.1.0 up to and including 2.3.4.
+Doesn't work in @ltor{} version 2.1.0 up to and including 2.3.4.
 @item ENVIRONMENT
 ignores contents of that environment, e.g., with `@code{\ifhtml,ENVIRONMENT.}'',
 `@code{\begin@{ifhtml@} text \end@{ifhtml@}}' ignores `text'.
@@ -1501,19 +1496,19 @@ line. Example:
 The file @file{fonts.cfg} contains the font name mapping.  For example, this
 file determines what font is used to represent @code{\rm} characters in the RTF file.  
 
-A line consists of a font name in @latex{}followed by comma and a font
+A line consists of a font name in @latex{} followed by comma and a font
 name in RTF. The end is marked by a @samp{.}. No spaces are allowed. The
-@latex{}font will be converted to the RTF font when it is found
-in the @latex{}file. If multiple translations for the same @latex{}font are
-specified, only the first is used. All fonts in a @latex{}file that are
+@latex{} font will be converted to the RTF font when it is found
+in the @latex{} file. If multiple translations for the same @latex{} font are
+specified, only the first is used. All fonts in a @latex{} file that are
 not in this file will be mapped to the default font. All RTF fonts
 listed in this file will be in every RTF file header whether used or
 not.  Lines starting with a @samp{#} character are ignored. After the
 @samp{.} everything is ignored to end of line. 
 
 To add a RTF font not
-used as substitute for a @latex{}font --- for example a Symbol font used
-in @file{direct.cfg} --- use a dummy @latex{}name like in the following
+used as substitute for a @latex{} font --- for example a Symbol font used
+in @file{direct.cfg} --- use a dummy @latex{} name like in the following
 @example
 Dummy3,MathematicalSymbols.
 @end example
@@ -1527,7 +1522,7 @@ default fonts are named Roman @code{\rm}, Slanted @code{\sl}, Sans Serif
 
 The file(s) @file{language.cfg} control the translation of @latex{}'s ``hardcoded''
 sectioning names.
-The standard @latex{}styles have some fixed Title names like `Part', `Reference'
+The standard @latex{} styles have some fixed Title names like `Part', `Reference'
 or `Bibliography' that appeared in English or German in the output with the
 original versions of @ltor{}. 
 
@@ -1538,10 +1533,10 @@ The format is really simple.
 @node Error Messages and Logging, History, Configuration, Top
 @chapter Error Messages and Logging 
 
-As stated in the Debugging section, @ltor{}provides a means to control 
+As stated in the Debugging section, @ltor{} provides a means to control 
 the amount of debugging information through the @option{-d#} switch.  
 By using a debugging level of 4, you can get a pretty good idea of what
-@latex{}command caused the problem and what line that command might be
+@latex{} command caused the problem and what line that command might be
 found on. Warnings and error messages are output to stderr and by default 
 listed in the console window. They can be redirected to a file 
 ``latex2rtf.log'' by appending @code{2>latex2rtf.log} to the command line.
@@ -1554,11 +1549,11 @@ apear in the documentation (@pxref{Reporting Bugs}).
 @item Error messages
 always abort the program and are caused by conditions that prevent
 further conversion of the input file.  Typically this is cause by
-@ltor{}getting hopelessly confused by the number of braces in the
-@latex{}file.
+@ltor{} getting hopelessly confused by the number of braces in the
+@latex{} file.
 
 @item Warning messages
-inform you, that there is some conversion loss from @latex{}to RTF, or that
+inform you, that there is some conversion loss from @latex{} to RTF, or that
 the output file has some restrictions on some RTF Readers. Most of these 
 warnings can be supressed by add the offending command to the @file{ignore.cfg}
 file.
@@ -1571,7 +1566,7 @@ inputfile':line: Error|Warning: message
 @end example
 
 You can also control the level of debugging output by inserting @code{\verbositylevel@{#@}}
-in the @latex{}file.  This is very handy if you have a large @latex{}file
+in the @latex{} file.  This is very handy if you have a large @latex{} file
 that is failing in only a small section.  For example,
 @example
 problem free latex file ....
@@ -1596,15 +1591,15 @@ at times.  @xref{Known Bugs}.
 @cindex History of the program
 @cindex Copyright issues
 
-In 1994 the first Version of @ltor{}was written by Fernando Dorner and Andreas Granzer of
+In 1994 the first Version of @ltor{} was written by Fernando Dorner and Andreas Granzer of
 the Viena University supervised by Ralf Schlatterbeck in a one-semester course. They
-created a simple @latex{}parser and added most of the infrastructure for the program.
-This was version 1.0 of @ltor{}.  In 1995, work on @ltor{}was continued in another
-one-semester course by Friedrich Polzer and Gerhard Trisko. The result was @ltor{}version
-1.5.  Ralf Schlatterbeck (ralf ``at'' zoo.priv.at) maintained and extended @ltor{}until
+created a simple @latex{} parser and added most of the infrastructure for the program.
+This was version 1.0 of @ltor{}.  In 1995, work on @ltor{} was continued in another
+one-semester course by Friedrich Polzer and Gerhard Trisko. The result was @ltor{} version
+1.5.  Ralf Schlatterbeck (ralf ``at'' zoo.priv.at) maintained and extended @ltor{} until
 1998.
 
-In 1998 Georg Lehner (jorge_lehner ``at'' gmx.net) found the reference to @ltor{}on the
+In 1998 Georg Lehner (jorge_lehner ``at'' gmx.net) found the reference to @ltor{} on the
 @uref{http://tug.org/utilities/texconv/index.html, TeX Conversion Webpage} of
 Wilfried Hennings and added some functionality and took
 over the maintainence of the program.  The last version release by Georg is 1.8aa.
@@ -1618,7 +1613,7 @@ For subscription to these lists visit the page:
 or
 @uref{http://lists.sourceforge.net/lists/listinfo/latex2rtf-developers, developers list}
 
-As of November 2013, version 2.3.4 of @ltor{}is available. 
+As of June 2016, version 2.3.11 of @ltor{} is available. 
 
 The contents of this manual were composed by copying shamelessly what was
 available in the original sources and documentation.
@@ -1640,7 +1635,7 @@ available in the original sources and documentation.
 
 @itemize @bullet
 @item 
-@ltor{}ignores some optional parameters of @code{\documentstyle} 
+@ltor{} ignores some optional parameters of @code{\documentstyle} 
 @item 
 Add the code to produce the corresponding chapter, section, and page
 numbering with headings and myheadings pagestyles. Implement
@@ -1650,7 +1645,7 @@ To support @code{\tableofcontents} there would be two approaches:
 Transfer sectioning information, title text and then produce page
 numbers by the rtf- reader. Scan and label all of the sectioning
 commands while reading and then construct the sectioning information
-using these labels. Needs two passes on @latex{}input.
+using these labels. Needs two passes on @latex{} input.
 @end itemize
 
 @node Missing options, Known Bugs, Unimplemented Features, LaTeX2RTF under Development
@@ -1678,10 +1673,10 @@ getopt package.
 The first parameter of a \link@{anchor@}[ltx]@{label@} is converted to
 the rtf-output. Label is stored to hyperref for later use, the optional
 parameter is ignored. [ltx] should be processed as Otfried recommends
-it, to use for exclusive @latex{}output.e.g:
+it, to use for exclusive @latex{} output.e.g:
 \link@{readhere@}[~\Ref]@{explaining: chapter@}. Since
-@{explaining:chapter@} is yet read by @latex{}and hyperlatex when [...]
-is evaluated it produces the correct reference. @ltor{}is only
+@{explaining:chapter@} is yet read by @latex{} and hyperlatex when [...]
+is evaluated it produces the correct reference. @ltor{} is only
 strolling from left to right through the text and can't remember what
 she will see in the future.
 @item 
@@ -1693,11 +1688,11 @@ input filename. (`.aux', `.bbl', @code{\input}).
 @section Reporting Bugs 
 
 Report bugs to to the bug tracking system at @uref{http://sourceforge.net/projects/latex2rtf/,SourceForge}. 
-Only report bugs for the latest version of @ltor{}that is available.  
+Only report bugs for the latest version of @ltor{} that is available.  
  Please provide the following information and observe the following
 guidelines when reporting a bug in the program:
 @enumerate
-@item State the version of @ltor{}that you are using.  You can get the version by
+@item State the version of @ltor{} that you are using.  You can get the version by
 specifying the @option{-V} option to @ltor{}. 
 
 @item Specify the your operating system and version. Be sure to check the file `Makefile'
@@ -1706,10 +1701,10 @@ there may be settings which are needed to compile successfully. Do this before s
 a bug report.
 
 @item If the program produces wrong output or does not work for you, include a short
-@latex{}file along with a description of the problem.  Isolating the bug into a small
-@latex{}file does two things.  First, it provides a file that can be used to test future
-versions of @ltor{}and second, it certainly improves the chances that the bug will get
-some attention.  Do not send me large @latex{}or RTF files, I simply do not have the time
+@latex{} file along with a description of the problem.  Isolating the bug into a small
+@latex{} file does two things.  First, it provides a file that can be used to test future
+versions of @ltor{} and second, it certainly improves the chances that the bug will get
+some attention.  Do not send me large @latex{} or RTF files, I simply do not have the time
 to wade through large files to search for a bug!
 
 @item Be patient. I am maintaining the program in my free time. I did not
@@ -1740,7 +1735,7 @@ Put warnings everywhere applicable about producing RTF 1.4 tokens.
 @item  
 Provide an Error and Warning recovery guide to the user.
 @item  
-Add a chapter with lists of all @latex{}commands that convert, and that
+Add a chapter with lists of all @latex{} commands that convert, and that
 do not convert to RTF, including their status (for future releases,
 never, partially functional, ...).
 @end itemize
@@ -1748,12 +1743,12 @@ never, partially functional, ...).
 @node LaTeX Commands,  , Todo List, LaTeX2RTF under Development
 @section Command List
 
-Listed here are all the @latex{}commands currently parsed by @ltor{}.
+Listed here are all the @latex{} commands currently parsed by @ltor{}.
 Note: inclusion in this list does not mean that a command is fully and
 correctly handled by @ltor{}. In some cases the commands here are
 place-holders only, and are not implemented at all. The list is provided
 to encourage developers to note any departures from the behaviour that
-@latex{}users will expect. The location of the commands is noted to
+@latex{} users will expect. The location of the commands is noted to
 assist anyone interested in hacking on the C source code. This list is a
 work in progress, and may not be immediately useful to general users,
 other than to indicate those commands that we have at least contemplated
@@ -2075,7 +2070,7 @@ Ignored
 @item doteq
 
 @item dotfill
-There is no rtf code for dotfill; @ltor{}inserts an ellipsis only.
+There is no rtf code for dotfill; @ltor{} inserts an ellipsis only.
 
 @item dots
 
