@@ -1,6 +1,6 @@
 /* main.c - LaTeX to RTF conversion program
 
-Copyright (C) 1995-2012 The Free Software Foundation
+Copyright (C) 1995-2017 The Free Software Foundation
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -363,9 +363,13 @@ int main(int argc, char **argv)
         } else 
             g_tex_name = strdup_together(basename, ".tex");
         
-        if (g_rtf_name == NULL) 
+        if (g_rtf_name == NULL) {
             g_rtf_name = strdup_together3(g_home_dir,basename,".rtf");
+        } else if (g_rtf_name = g_tex_name) {
+        diagnostics(ERROR, "rtf file must be different from tex file");
+        }
     }
+        
 
     if (g_aux_name == NULL && basename != NULL)
         g_aux_name = strdup_together(basename, ".aux");

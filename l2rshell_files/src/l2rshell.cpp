@@ -1,7 +1,7 @@
     //////////////////////////////////////////////////////
     //                                                  //
     //      l2rshell (GUI for LaTeX2RTF converter)      //
-    //                 v.0.6.7 for win32                //
+    //                 v.0.6.8 for win32                //
     //    author: Mikhail Polianski (mnpol@mail.ru)     //
     //                                                  //
     //////////////////////////////////////////////////////
@@ -530,7 +530,7 @@ LRESULT CALLBACK DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                 break;
                 
                 case ID_RTFFILE_BUTTON:
-                    SendMessage(GetDlgItem(hwnd, ID_TEXFILENAME), WM_GETTEXT, MAX_PATH, (LPARAM)str);
+                    SendMessage(GetDlgItem(hwnd, ID_RTFFILENAME), WM_GETTEXT, MAX_PATH, (LPARAM)str);
                     if(FileDialog(hwnd, L"RTF (*.rtf)\0*.rtf\0All Files (*.*)\0*.*\0\0", str, OFN_HIDEREADONLY|OFN_NOCHANGEDIR, L"rtf", 0))
                     {
                         getfilename(str);
@@ -541,7 +541,7 @@ LRESULT CALLBACK DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                 break;
                 
                 case ID_BBLFILE_BUTTON:
-                    SendMessage(GetDlgItem(hwnd, ID_TEXFILENAME), WM_GETTEXT, MAX_PATH, (LPARAM)str);
+                    SendMessage(GetDlgItem(hwnd, ID_BBLFILENAME), WM_GETTEXT, MAX_PATH, (LPARAM)str);
                     if(FileDialog(hwnd, L"BBL (*.bbl)\0*.bbl\0All Files (*.*)\0*.*\0\0", str, OFN_FILEMUSTEXIST|OFN_NOCHANGEDIR, L"bbl", 1))
                     {
                         getfilename(str);
@@ -552,7 +552,7 @@ LRESULT CALLBACK DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                 break;
                 
                 case ID_AUXFILE_BUTTON:
-                    SendMessage(GetDlgItem(hwnd, ID_TEXFILENAME), WM_GETTEXT, MAX_PATH, (LPARAM)str);
+                    SendMessage(GetDlgItem(hwnd, ID_AUXFILENAME), WM_GETTEXT, MAX_PATH, (LPARAM)str);
                     if(FileDialog(hwnd, L"AUX (*.aux)\0*.aux\0All Files (*.*)\0*.*\0\0", str, OFN_FILEMUSTEXIST|OFN_NOCHANGEDIR, L"aux", 1))
                     {
                         getfilename(str);
@@ -563,7 +563,7 @@ LRESULT CALLBACK DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                 break;
                 
                 case ID_TMPDIR_BUTTON:
-                    SendMessage(GetDlgItem(hwnd, ID_TEXFILENAME), WM_GETTEXT, MAX_PATH, (LPARAM)str);
+                    SendMessage(GetDlgItem(hwnd, ID_TMPDIRNAME), WM_GETTEXT, MAX_PATH, (LPARAM)str);
                     if(PathDialog(hwnd, str))
                     {
                         SetDlgItemText(hwnd, ID_TMPDIRNAME, str);
@@ -1496,7 +1496,7 @@ WCHAR* GetVersionString(WCHAR* str)   //returned value is 'str'
 {
     WCHAR inifile[MAX_PATH];
     
-    lstrcpy(str, L"LaTeX2RTF  +   l2rshell v.0.6.7");
+    lstrcpy(str, L"LaTeX2RTF  +   l2rshell v.0.6.8");
     
     GetModuleFileName(NULL, inifile, MAX_PATH);
     getdir(inifile);

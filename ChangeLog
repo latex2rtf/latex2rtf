@@ -2,6 +2,12 @@
 ## latex2rtf changes from 2.3.0
 ##############
 
+r1246 | whennings
+added error message if output file is equal to input file
+fixed windows gui shell handling of output file choice
+(default output file extension was .tex!)
+released as v.1.3.12
+
 r1245 | whennings
 increased malloc size for character array by one to allow terminating null character
 in definitions.c line 157, graphics.c line 1882, tables.c line 1548 and line 1561
