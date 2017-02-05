@@ -53,9 +53,9 @@ LaTeX2RTF
 @title @ltor{}
 @subtitle A converter from @latex{} to RTF
 
-Edition 0.7.11
+Edition 0.7.12
 
-for program version 2.3.11
+for program version 2.3.12
 
 @author Georg Lehner,
 updated by Wilfried Hennings and Scott Prahl,
@@ -63,7 +63,7 @@ with contributions by Mikhail Polianski
 
 @page
 @vskip 0pt plus 1 filll
-Copyright @copyright{} 1998-2016 Georg Lehner, Wilfried Hennings, Scott Prahl
+Copyright @copyright{} 1998-2017 Georg Lehner, Wilfried Hennings, Scott Prahl
 
 Permission is granted to make and distribute verbatim copies of this
 manual provided the copyright notice and this permission notice are
@@ -197,7 +197,7 @@ Citation Commands
 @ifnottex
 
 Copyright 1998-2002 Georg Lehner,
-updates Copyright 1999-2016 by Wilfried Hennings and Scott Prahl,
+updates Copyright 1999-2017 by Wilfried Hennings and Scott Prahl,
 with contributions by Mikhail Polianski.
 
 Permission is granted to make and distribute verbatim copies of this
@@ -216,7 +216,7 @@ into another language, under the above conditions for modified versions,
 except that this permission notice may be stated in a translation
 approved by the Free Software Foundation.
 
-@c This document applies to version 2.3.11 of @ltor{}.
+@c This document applies to version 2.3.12 of @ltor{}.
 @end ifnottex
 
 
@@ -321,12 +321,12 @@ It should only be used on older Microsoft systems.@*
 For Win9x, ME, NT, or newer, you should use the win or win-NO-GUI package.
 
 The win-NO-GUI package only runs under Win32 
-(Win9x, ME, NT, 2000, XP, 2003, Vista, Win7).
+(Win9x, ME, NT, 2000, XP, 2003, Vista, Win7, probably Win8 and Win10).
 From @ltor{} version 2.0.0 up it also runs on 64bit systems.
 
 The win package is the win-NO-GUI package plus graphical user 
 interface (GUI) shell (l2rshell) and installer.@*
-It only runs under Win NT, 2000, XP, 2003, Vista, and Win7.@*
+It only runs under Win NT, 2000, XP, 2003, Vista, Win7 and newer.@*
 From @ltor{} version 2.0.0 up it also runs on 64bit systems.
 
 The win64 package (only @ltor{} version 1.9.19) is the win package
@@ -346,9 +346,9 @@ project pages for the latest news.
 To install, 
 @enumerate
 @item
-Edit @file{Makefile} for your local configuration.  In particular, pay attention
-to the @env{PREFIX} variable.  If you do not have root access you might wish 
-to set the makefile variable @env{PREFIX} to be your home directory. 
+Edit @file{MAKEFILE} for your local configuration.  In particular, pay attention
+to the @env{DESTDIR} variable (MAKEFILE line 21).  If you do not have root access 
+you might wish to set the makefile variable @env{DESTDIR} to be your home directory. 
 
 On some machines the cc compiler will issue errors. Therefore the 
 default compiler command in the Makefile is @code{CC=gcc}.
@@ -1613,7 +1613,7 @@ For subscription to these lists visit the page:
 or
 @uref{http://lists.sourceforge.net/lists/listinfo/latex2rtf-developers, developers list}
 
-As of June 2016, version 2.3.11 of @ltor{} is available. 
+As of Januar 2017, version 2.3.12 of @ltor{} is available. 
 
 The contents of this manual were composed by copying shamelessly what was
 available in the original sources and documentation.
