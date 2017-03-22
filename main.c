@@ -365,7 +365,7 @@ int main(int argc, char **argv)
         
         if (g_rtf_name == NULL) {
             g_rtf_name = strdup_together3(g_home_dir,basename,".rtf");
-        } else if (g_rtf_name = g_tex_name) {
+        } else if (strcmp(g_rtf_name, g_tex_name) == 0) {
         diagnostics(ERROR, "rtf file must be different from tex file");
         }
     }
