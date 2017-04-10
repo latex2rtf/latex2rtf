@@ -714,7 +714,7 @@ static void SetEquationLabel(char *eq)
 }
 
 /******************************************************************************
- purpose   : Insert equation as latex 
+ purpose   : Insert equation as bitmap or eps
  ******************************************************************************/
 static void WriteEquationAsBitmapOrEPS(int true_code, char *pre, char *eq, char *post, conversion_t convertTo)
 {
