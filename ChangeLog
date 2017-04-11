@@ -2,9 +2,12 @@
 ## latex2rtf changes from 2.3.0
 ##############
 
+r1250 | whennings
+fixed bug when \int was followed by \left or \right
+released as v.2.3.14
+
 r1249 | whennings
 added support for package bm, supporting \bm (bold math)
-released as v.2.3.14
 
 r1248 | whennings
 fixed bug in main.c line 368: comparison changed to using strcmp() (was =)

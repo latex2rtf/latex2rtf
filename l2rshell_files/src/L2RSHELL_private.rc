@@ -4,7 +4,7 @@
 #include <windows.h> // include for version info constants
 
 
-A ICON MOVEABLE PURE LOADONCALL DISCARDABLE "l2rshell.ico"
+A ICON "l2rshell.ico"
 
 //
 // TO CHANGE VERSION INFORMATION, EDIT PROJECT OPTIONS...
@@ -15,23 +15,22 @@ PRODUCTVERSION 0,6,8,0
 FILETYPE VFT_APP
 {
   BLOCK "StringFileInfo"
-	 {
-		 BLOCK "040904E4"
-		 {
-			 VALUE "CompanyName", ""
-			 VALUE "FileVersion", "0.6.8"
-			 VALUE "FileDescription", "Shell for latex2rtf"
-			 VALUE "InternalName", ""
-			 VALUE "LegalCopyright", "(c) Mikhail Polianski / GNU General Public License"
-			 VALUE "LegalTrademarks", ""
-			 VALUE "OriginalFilename", "l2rshell.exe"
-			 VALUE "ProductName", "latex2rtf"
-			 VALUE "ProductVersion", "2.3.12"
-		 }
-	 }
+  {
+    BLOCK "040904E4"
+    {
+      VALUE "CompanyName", ""
+      VALUE "FileVersion", "0.6.8.0"
+      VALUE "FileDescription", "Shell for latex2rtf"
+      VALUE "InternalName", ""
+      VALUE "LegalCopyright", "(c) Mikhail Polianski / GNU General Public License"
+      VALUE "LegalTrademarks", ""
+      VALUE "OriginalFilename", "l2rshell.exe"
+      VALUE "ProductName", "latex2rtf"
+      VALUE "ProductVersion", "2.3.14"
+    }
+  }
   BLOCK "VarFileInfo"
-	 {
-		 VALUE "Translation", 0x0409, 1252
-	 }
+  {
+    VALUE "Translation", 0x0409, 1252
+  }
 }
-

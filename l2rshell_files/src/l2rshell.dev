@@ -3,7 +3,7 @@ FileName=l2rshell.dev
 Name=l2rshell
 UnitCount=3
 Type=0
-Ver=1
+Ver=2
 ObjFiles=
 Includes=
 Libs=
@@ -24,10 +24,12 @@ Folders=
 CommandLine=
 IncludeVersionInfo=1
 SupportXPThemes=0
-CompilerSet=0
-CompilerSettings=0000000000000000000000
+CompilerSet=3
+CompilerSettings=0000000100000000000000000
 UseCustomMakefile=0
 CustomMakefile=
+LogOutput=
+LogOutputEnabled=0
 
 [Unit1]
 FileName=l2rshell.h
@@ -57,15 +59,16 @@ Build=0
 LanguageID=1033
 CharsetID=1252
 CompanyName=
-FileVersion=0.6.8
+FileVersion=0.6.8.0
 FileDescription=Shell for latex2rtf
 InternalName=
 LegalCopyright=(c) Mikhail Polianski / GNU General Public License
 LegalTrademarks=
 OriginalFilename=l2rshell.exe
 ProductName=latex2rtf
-ProductVersion=2.3.12
+ProductVersion=2.3.14
 AutoIncBuildNr=0
+SyncProduct=0
 
 [Unit3]
 FileName=dlg.h
