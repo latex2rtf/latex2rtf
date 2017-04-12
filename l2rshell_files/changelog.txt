@@ -1,5 +1,9 @@
 Note: l2rshell is compiled with http://www.bloodshed.net/devcpp.html
 
+0.6.8 (2017-02-04)
+default output file extension in the file selection window set to .rtf (was .tex)
+ 
+--------------------------------------------------------------------------------------------
 
 0.6.7 (2014-10-24)
 1) exchanged order of program folders in PATH setting 
