@@ -1095,7 +1095,7 @@ parameter: type of operand
     
     /* is there an exponent/subscript ? */
     cThis = getNonBlank();
-
+    possible_limits = TRUE;     /* WH added 2017-04-12 */
     if (cThis == '\\') {        /* accept \nolimits and \limits */
         ungetTexChar(cThis);
         command = getSimpleCommand();
@@ -1209,15 +1209,18 @@ parameter: type of operand
     }
 
     if (command) {
-        if (strcmp(command, "\\left") == 0) {
-            CmdLeftRight(0);
-            }
-        else if (strcmp(command, "\\right") == 0) {
-            CmdLeftRight(1);
-            }
-        else{
+        if (strcmp(command, "\\left") == 0) {         /* WH added 2017-04-11 */
+            CmdLeftRight(0);                          /* WH added 2017-04-11 */
+            }                                         /* WH added 2017-04-11 */
+        else if (strcmp(command, "\\right") == 0) {   /* WH added 2017-04-11 */
+            CmdLeftRight(1);                          /* WH added 2017-04-11 */
+            }                                         /* WH added 2017-04-11 */
+        else if (strcmp(command, "\\frac") == 0) {    /* WH added 2017-04-12 */
+            CmdFraction(0);                           /* WH added 2017-04-12 */
+            }                                         /* WH added 2017-04-12 */
+        else{                                         /* WH added 2017-04-11 */
         ConvertString(command);
-            }
+            }                                         /* WH added 2017-04-11 */
         free(command);
     }
     if (lower_limit)
