@@ -1,7 +1,7 @@
     //////////////////////////////////////////////////////
     //                                                  //
     //      l2rshell (GUI for LaTeX2RTF converter)      //
-    //                 v.0.6.8 for win32                //
+    //                 v.0.6.9 for win32                //
     //    author: Mikhail Polianski (mnpol@mail.ru)     //
     //                                                  //
     //////////////////////////////////////////////////////
@@ -690,11 +690,14 @@ LRESULT CALLBACK DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 void Run(HWND hwnd)
 {
-    int i;
+    void lstrcatS(HWND, WCHAR*, int, WCHAR*);
+	int i;
+	int MAX7PATH;
     WCHAR str[MAX_PATH];
     WCHAR strfl[MAX_PATH];
     WCHAR out_str[7*MAX_PATH];
     WIN32_FIND_DATA findfiledata;
+    MAX7PATH = 7 * MAX_PATH;
     
     SendMessage(GetDlgItem(hwnd, ID_TEXFILENAME), WM_GETTEXT, MAX_PATH, (LPARAM)str);
     if(FindFirstFile(str, &findfiledata)!=INVALID_HANDLE_VALUE)
@@ -702,108 +705,108 @@ void Run(HWND hwnd)
         lstrcpy(out_str, L"/C PATH=");
         GetModuleFileName(NULL, str, MAX_PATH);
         getdir(str);
-        lstrcat(out_str, str);
-        lstrcat(out_str, L";");
+        lstrcatS(hwnd, out_str, MAX7PATH, str);
+        lstrcatS(hwnd, out_str, MAX7PATH, L";");
         
         SendMessage(GetDlgItem(hwnd, ID_IMAGICK), WM_GETTEXT, MAX_PATH, (LPARAM)str);
         getdir(str);
-        lstrcat(out_str, str);
-        lstrcat(out_str, L";");
+        lstrcatS(hwnd, out_str, MAX7PATH, str);
+        lstrcatS(hwnd, out_str, MAX7PATH, L";");
         
         SendMessage(GetDlgItem(hwnd, ID_GS), WM_GETTEXT, MAX_PATH, (LPARAM)str);
         getdir(str);
-        lstrcat(out_str, str);
-        lstrcat(out_str, L";");
+        lstrcatS(hwnd, out_str, MAX7PATH, str);
+        lstrcatS(hwnd, out_str, MAX7PATH, L";");
         
         SendMessage(GetDlgItem(hwnd, ID_GS), WM_GETTEXT, MAX_PATH, (LPARAM)str);
         getdir(str);
         getdir(str);
-        lstrcat(out_str, str);
-        lstrcat(out_str, L"\\lib;");
+        lstrcatS(hwnd, out_str, MAX7PATH, str);
+        lstrcatS(hwnd, out_str, MAX7PATH, L"\\lib;");
         
         SendMessage(GetDlgItem(hwnd, ID_LATEX), WM_GETTEXT, MAX_PATH, (LPARAM)str);
         getdir(str);
-        lstrcat(out_str, str);
-        lstrcat(out_str, L";");
+        lstrcatS(hwnd, out_str, MAX7PATH, str);
+        lstrcatS(hwnd, out_str, MAX7PATH, L";");
         
         GetSystemDirectory(str, MAX_PATH);
-        lstrcat(out_str, str);
-        lstrcat(out_str, L";");
+        lstrcatS(hwnd, out_str, MAX7PATH, str);
+        lstrcatS(hwnd, out_str, MAX7PATH, L";");
         
         GetWindowsDirectory(str, MAX_PATH);
-        lstrcat(out_str, str);
+        lstrcatS(hwnd, out_str, MAX7PATH, str);
 
         lstrcat(out_str, L" & set RTFPATH=");
         SendMessage(GetDlgItem(hwnd, ID_CONFIG), WM_GETTEXT, MAX_PATH, (LPARAM)str);
-        lstrcat(out_str, str);
-        lstrcat(out_str, L";");
+        lstrcatS(hwnd, out_str, MAX7PATH, str);
+        lstrcatS(hwnd, out_str, MAX7PATH, L";");
 
         lstrcat(out_str, L" & pushd ");
         SendMessage(GetDlgItem(hwnd, ID_TEXFILENAME), WM_GETTEXT, MAX_PATH, (LPARAM)str);
         getdir(str);
-        lstrcat(out_str, str);
+        lstrcatS(hwnd, out_str, MAX7PATH, str);
         
         if(!SendMessage(GetDlgItem(hwnd, ID_TMPDEF), BM_GETCHECK, 0, 0L))
         {
             SendMessage(GetDlgItem(hwnd, ID_TMPDIRNAME), WM_GETTEXT, MAX_PATH, (LPARAM)str);
-            lstrcat(out_str, L" & mkdir ");        
-            lstrcat(out_str, str);
+            lstrcatS(hwnd, out_str, MAX7PATH, L" & mkdir ");        
+            lstrcatS(hwnd, out_str, MAX7PATH, str);
         }
         
-        lstrcat(out_str, L" & latex2rt");
+        lstrcatS(hwnd, out_str, MAX7PATH, L" & latex2rt");
         
         if(SendMessage(GetDlgItem(hwnd, ID_CODEPAGE), CB_GETCURSEL, 0, 0L))
         {
-            lstrcat(out_str, L" -C ");
+            lstrcatS(hwnd, out_str, MAX7PATH, L" -C ");
             SendMessage(GetDlgItem(hwnd, ID_CODEPAGE), CB_GETLBTEXT, SendMessage(GetDlgItem(hwnd, ID_CODEPAGE), CB_GETCURSEL, 0, 0L), (LPARAM)str);
-            lstrcat(out_str, str);
+            lstrcatS(hwnd, out_str, MAX7PATH, str);
         }
             
         if(SendMessage(GetDlgItem(hwnd, ID_DEBUGLEVEL), CB_GETCURSEL, 0, 0L)!=1)
         {
             wsprintf(str, L" -d%d", SendMessage(GetDlgItem(hwnd, ID_DEBUGLEVEL), CB_GETCURSEL, 0, 0L));
-            lstrcat(out_str, str);
+            lstrcatS(hwnd, out_str, MAX7PATH, str);
         }
         
         SendMessage(GetDlgItem(hwnd, ID_BMPRES), WM_GETTEXT, 4, (LPARAM)str);
         if(lstrcmp(str, L"300"))
         {
-            lstrcat(out_str, L" -D");
-            lstrcat(out_str, str);
+            lstrcatS(hwnd, out_str, MAX7PATH, L" -D");
+            lstrcatS(hwnd, out_str, MAX7PATH, str);
         }
         
         SendMessage(GetDlgItem(hwnd, ID_EQSCALE), WM_GETTEXT, 6, (LPARAM)str);
         if(lstrcmp(str, L"1.00") && lstrcmp(str, L"1,00"))
         {
-            lstrcat(out_str, L" -se");
-            lstrcat(out_str, str);
+            lstrcatS(hwnd, out_str, MAX7PATH, L" -se");
+            lstrcatS(hwnd, out_str, MAX7PATH, str);
         }
         
         SendMessage(GetDlgItem(hwnd, ID_FIGSCALE), WM_GETTEXT, 6, (LPARAM)str);
         if(lstrcmp(str, L"1.00") && lstrcmp(str, L"1,00"))
         {
-            lstrcat(out_str, L" -sf");
-            lstrcat(out_str, str);
+            lstrcatS(hwnd, out_str, MAX7PATH, L" -sf");
+            lstrcatS(hwnd, out_str, MAX7PATH, str);
         }
         
         if(SendMessage(GetDlgItem(hwnd, ID_BMPFORFIG), BM_GETCHECK, 0, 0L))
-            lstrcat(out_str, L" -F");
+            lstrcatS(hwnd, out_str, MAX7PATH, L" -F");
             
         if(SendMessage(GetDlgItem(hwnd, ID_FIGSASFILENAMES), BM_GETCHECK, 0, 0L))
-            lstrcat(out_str, L" -E12");
+            lstrcatS(hwnd, out_str, MAX7PATH, L" -E12");
 
         i=SendMessage(GetDlgItem(hwnd, ID_USEEQFIELDS), BM_GETCHECK, 0, 0L)+2*SendMessage(GetDlgItem(hwnd, ID_USEREFFIELDS), BM_GETCHECK, 0, 0L);
         if(i!= 3)
         {
             wsprintf(str, L" -f%d", i);
-            lstrcat(out_str, str);
+            lstrcatS(hwnd, out_str, MAX7PATH, str);
         }
         
         if(SendMessage(GetDlgItem(hwnd, ID_LANG), CB_GETCURSEL, 0, 0L))
         {
-            lstrcat(out_str, L" -i ");
+            lstrcatS(hwnd, out_str, MAX7PATH, L" -i ");
             SendMessage(GetDlgItem(hwnd, ID_LANG), CB_GETLBTEXT , SendMessage(GetDlgItem(hwnd, ID_LANG), CB_GETCURSEL, 0, 0L), (LPARAM)str);
-            lstrcat(out_str, str);
+            lstrcatS(hwnd, out_str, MAX7PATH, str);
         }
         
         ConvertToSomething(hwnd);
@@ -819,7 +822,7 @@ void Run(HWND hwnd)
         if(i!=3)
         {
             wsprintf(str, L" -M%d", i);
-            lstrcat(out_str, str);
+            lstrcatS(hwnd, out_str, MAX7PATH, str);
         }
         
         i = SendMessage(GetDlgItem(hwnd, ID_TABLES_TO_RTF), BM_GETCHECK, 0, 0L)+ 
@@ -827,69 +830,69 @@ void Run(HWND hwnd)
         if(i!=1)
         {
             wsprintf(str, L" -t%d", i);
-            lstrcat(out_str, str);
+            lstrcatS(hwnd, out_str, MAX7PATH, str);
         }
         
         if(SendMessage(GetDlgItem(hwnd, ID_PARANTHESES), BM_GETCHECK, 0, 0L))
-            lstrcat(out_str, L" -p");
+            lstrcatS(hwnd, out_str, MAX7PATH, L" -p");
             
         if(SendMessage(GetDlgItem(hwnd, ID_SEMICOLONS), BM_GETCHECK, 0, 0L))
-            lstrcat(out_str, L" -S");
+            lstrcatS(hwnd, out_str, MAX7PATH, L" -S");
             
         if(SendMessage(GetDlgItem(hwnd, ID_WARNINGSINRTF), BM_GETCHECK, 0, 0L))
-            lstrcat(out_str, L" -W");
+            lstrcatS(hwnd, out_str, MAX7PATH, L" -W");
             
         if(SendMessage(GetDlgItem(hwnd, ID_ADDEXTRA), CB_GETCURSEL, 0, 0L))
         {
             wsprintf(str, L" -Z%d", SendMessage(GetDlgItem(hwnd, ID_ADDEXTRA), CB_GETCURSEL, 0, 0L));
-            lstrcat(out_str, str);
+            lstrcatS(hwnd, out_str, MAX7PATH, str);
         }
         
         if(!SendMessage(GetDlgItem(hwnd, ID_TMPDEF), BM_GETCHECK, 0, 0L))
         {
-            lstrcat(out_str, L" -T ");
+            lstrcatS(hwnd, out_str, MAX7PATH, L" -T ");
             SendMessage(GetDlgItem(hwnd, ID_TMPDIRNAME), WM_GETTEXT, MAX_PATH, (LPARAM)str);
-            lstrcat(out_str, str);
+            lstrcatS(hwnd, out_str, MAX7PATH, str);
         }
             
         if(!SendMessage(GetDlgItem(hwnd, ID_AUXDEF), BM_GETCHECK, 0, 0L))
         {
-            lstrcat(out_str, L" -a ");
+            lstrcatS(hwnd, out_str, MAX7PATH, L" -a ");
             SendMessage(GetDlgItem(hwnd, ID_AUXFILENAME), WM_GETTEXT, MAX_PATH, (LPARAM)str);
-            lstrcat(out_str, str);
+            lstrcatS(hwnd, out_str, MAX7PATH, str);
         }
             
         if(!SendMessage(GetDlgItem(hwnd, ID_BBLDEF), BM_GETCHECK, 0, 0L))
         {
-            lstrcat(out_str, L" -b ");
+            lstrcatS(hwnd, out_str, MAX7PATH, L" -b ");
             SendMessage(GetDlgItem(hwnd, ID_BBLFILENAME), WM_GETTEXT, MAX_PATH, (LPARAM)str);
-            lstrcat(out_str, str);
+            lstrcatS(hwnd, out_str, MAX7PATH, str);
         }
         
         if(!SendMessage(GetDlgItem(hwnd, ID_RTFDEF), BM_GETCHECK, 0, 0L))
         {
-            lstrcat(out_str, L" -o ");
+            lstrcatS(hwnd, out_str, MAX7PATH, L" -o ");
             SendMessage(GetDlgItem(hwnd, ID_RTFFILENAME), WM_GETTEXT, MAX_PATH, (LPARAM)str);
-            lstrcat(out_str, str);
+            lstrcatS(hwnd, out_str, MAX7PATH, str);
         }
         
-        lstrcat(out_str, L" ");
+        lstrcatS(hwnd, out_str, MAX7PATH, L" ");
         SendMessage(GetDlgItem(hwnd, ID_TEXFILENAME), WM_GETTEXT, MAX_PATH, (LPARAM)str);
         getfilename(str);
-        lstrcat(out_str, str);
+        lstrcatS(hwnd, out_str, MAX7PATH, str);
         
         if(SendMessage(GetDlgItem(hwnd, ID_DEBUGTOFILE), BM_GETCHECK, 0, 0L))
         {
             wsprintf(str, L" 2>");
-            lstrcat(out_str, str);
+            lstrcatS(hwnd, out_str, MAX7PATH, str);
             SendMessage(GetDlgItem(hwnd, ID_DEBUGFILENAME), WM_GETTEXT, MAX_PATH, (LPARAM)str);
-            lstrcat(out_str, str);
+            lstrcatS(hwnd, out_str, MAX7PATH, str);
             lstrcpy(strfl,L"The debugging output will be written to file ");
-            lstrcat(strfl, str);
+            lstrcatS(hwnd, strfl, MAX7PATH, str);
            // MessageBox(hwnd, strfl, L"LaTeX2RTF", MB_OK);
         }
         
-        lstrcat(out_str, L" & popd & pause");
+        lstrcatS(hwnd, out_str, MAX7PATH, L" & popd & pause");
 
         GetWindowsDirectory(str, MAX_PATH); // Default directory for CMD.exe (to avoid error message)
 
@@ -1496,7 +1499,7 @@ WCHAR* GetVersionString(WCHAR* str)   //returned value is 'str'
 {
     WCHAR inifile[MAX_PATH];
     
-    lstrcpy(str, L"LaTeX2RTF  +   l2rshell v.0.6.8");
+    lstrcpy(str, L"LaTeX2RTF  +   l2rshell v.0.6.9");
     
     GetModuleFileName(NULL, inifile, MAX_PATH);
     getdir(inifile);
@@ -1688,4 +1691,15 @@ void SaveUserData(HWND hwnd)
     WritePrivateProfileString(L"l2rshell", L"imagick", str, inifile);
     SendMessage(GetDlgItem(hwnd, ID_GS), WM_GETTEXT, MAX_PATH, (LPARAM)str);
     WritePrivateProfileString(L"l2rshell", L"gs", str, inifile);
+}
+void lstrcatS(HWND hwnd, WCHAR* out_str, int len, WCHAR* str)
+{
+    if ((wcslen(out_str) + wcslen(str)) < len)
+      {
+      lstrcat(out_str, str);
+      }
+    else
+      {
+      MessageBox(hwnd, out_str, L"l2rshell: exceeds maximum length", MB_OKCANCEL);
+      }  
 }
