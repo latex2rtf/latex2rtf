@@ -1,1 +1,1 @@
-char *Version = "2.3.15 r1252 (released Apr 12 2017)";
+char *Version = "2.3.16 r1254 (released May 12 2017)";
