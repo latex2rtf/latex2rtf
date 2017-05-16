@@ -2,28 +2,26 @@ latex2rtf is a translator program that translates LaTeX text into the
 RTF format used by various text processors, most notably Word.
 
 For the Copyright of the Program see the file Copyright.
+Version 2.3.16 fixes ukrainian.cfg and
+adds check for buffer overflow during construction 
+of command line for latex2rt.exe in l2rshell.cpp
 
-Version 2.2.1 only contains minor changes needed to silence compiler
-warnings, update documentation, and improve package distribution.  
-No new functionality is included.
+Version 2.3.15 fixes a bug when \int was followed by \frac
+Version 2.3.14 fixes a bug when \int was followed by \left or \right
+and adds support for package bm, supporting \bm (bold math)
 
-Version 2.2.0 has a bunch of minor bug fixes, adds support for the 
-setspace package, adds support for \bibstyle, extends babel converage to
-include british, greek, and frenchb languages, fix \graphicspath, improve
-handling of cp1251 and support \accent23 for czech.
+Version 2.3.13 fixes a bug in main.c line 368
+where a comparison was made using "=". Changed to using strcmp()
+!! Does not affect the windows version !!
 
-As of verison 2.1.0, latex2rtf uses Unicode for all characters.  Since
-most fonts are missing some special math characters, it is recommended
-that the STIX fonts (http://www.mozilla.org/projects/mathml/fonts/)
-be installed for best results.  
-
-As of version 1.9.13, latex2rtf supports converting equations to
-bitmaps.  This requires TeX and ImageMagick.  See scripts/README.
+Version 2.3.12 fixes two bugs:
+- if output file is equal to input file, input file was deleted. Added check for file id equality.
+- in windows gui shell, default output file extension in the file selection window was .tex. Changed to .rtf
 
 To install (on a UNIX system)
 - Edit Makefile for your local configuration.  The default install
   is reasonable, but if you do not have root access, then you might
-  need to set $PREFIX to be your home directory.
+  need to set $DESTDIR to be your home directory.
 - make
 - If this is not your first-time installation, you may want to preserve
   your old configuration (*.cfg) files. Copy them to a safe place before

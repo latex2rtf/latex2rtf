@@ -2,6 +2,14 @@
 ## latex2rtf changes from 2.3.0
 ##############
 
+r1256 | whennings
+committing updated README
+as released as v.2.3.16
+
+r1255 | whennings
+committing updated l2rshell files
+as released as v.2.3.16
+
 r1254 | whennings
 in l2rshell.cpp, added check for buffer overflow 
  during construction of command line for latex2rt.exe
