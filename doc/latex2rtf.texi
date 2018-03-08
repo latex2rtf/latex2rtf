@@ -384,8 +384,8 @@ Note that the Makefile does not contain a rule for make uninstall.@*
 This is by design.@*
 On modern Linux distributions, you would prefer to install @ltor{} by the package manager
 of your distribution, which also provides an easy means for update and uninstallation.@*
-If your package manager does not provide the @ltor() package 
-or you need to install @ltor() from the sources for some other reason,
+If your package manager does not provide the @ltor{} package 
+or you need to install @ltor{} from the sources for some other reason,
 you should consider using @code{checkinstall} which creates a package for your
 package manager which then can be installed and uninstalled by the package manager.
 
