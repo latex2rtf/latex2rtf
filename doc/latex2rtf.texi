@@ -53,9 +53,9 @@ LaTeX2RTF
 @title @ltor{}
 @subtitle A converter from @latex{} to RTF
 
-Edition 0.7.12
+Edition 0.7.13
 
-for program version 2.3.12
+for program version 2.3.12 and up
 
 @author Georg Lehner,
 updated by Wilfried Hennings and Scott Prahl,
@@ -63,7 +63,7 @@ with contributions by Mikhail Polianski
 
 @page
 @vskip 0pt plus 1 filll
-Copyright @copyright{} 1998-2017 Georg Lehner, Wilfried Hennings, Scott Prahl
+Copyright @copyright{} 1998-2018 Georg Lehner, Wilfried Hennings, Scott Prahl
 
 Permission is granted to make and distribute verbatim copies of this
 manual provided the copyright notice and this permission notice are
@@ -197,7 +197,7 @@ Citation Commands
 @ifnottex
 
 Copyright 1998-2002 Georg Lehner,
-updates Copyright 1999-2017 by Wilfried Hennings and Scott Prahl,
+updates Copyright 1999-2018 by Wilfried Hennings and Scott Prahl,
 with contributions by Mikhail Polianski.
 
 Permission is granted to make and distribute verbatim copies of this
@@ -216,7 +216,7 @@ into another language, under the above conditions for modified versions,
 except that this permission notice may be stated in a translation
 approved by the Free Software Foundation.
 
-@c This document applies to version 2.3.12 of @ltor{}.
+@c This document applies to versions 2.3.12 and up of @ltor{}.
 @end ifnottex
 
 
@@ -380,6 +380,16 @@ for tsch-like shells @code{setenv XPG4_GREP /usr/xpg4/bin/grep}.
 
 @item @code{make install}
 
+Note that the Makefile does not contain a rule for make uninstall.@*
+This is by design.@*
+On modern Linux distributions, you would prefer to install @ltor{} by the package manager
+of your distribution, which also provides an easy means for update and uninstallation.@*
+If your package manager does not provide the @ltor() package 
+or you need to install @ltor() from the sources for some other reason,
+you should consider using @code{checkinstall} which creates a package for your
+package manager which then can be installed and uninstalled by the package manager.
+
+If you nevertheless need to run @code{make install}, note the following:@*
 If your @code{mkdir} doesn't support the @option{-p} option, then create
 the necessary directories by hand and remove the option from the
 @code{$MKDIR} variable. If you have other problems, just copy
