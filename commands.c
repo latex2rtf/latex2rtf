@@ -45,6 +45,7 @@ Authors:
 #include "graphics.h"
 #include "vertical.h"
 #include "encodings.h"
+#include "proof.h"
 
 #include "labels.h"
 #include "acronyms.h"
@@ -805,6 +806,7 @@ static CommandArray params[] = {
 	{"Huge", CmdFontSizeEnviron, 50}, 
 
     {"tikzpicture",CmdTikzPicture, 0},
+    {"proof",CmdProof, 0},
 	
 	{"", NULL, 0}
 };                              /* end of list */
