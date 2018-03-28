@@ -2,6 +2,12 @@
 ## latex2rtf changes from 2.3.0
 ##############
 
+r1263 | whennings
+add missing source files utf8_support.c, utf8_support.h, proof.c, proof.h, test/html.sty
+
+r1262 | whennings
+updating source files for release 2.3.17
+
 r1261 | whennings
 adding support for non-ascii characters in verbatim blocks 
 and theorem captions and support for the proof environment
