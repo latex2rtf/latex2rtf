@@ -5,7 +5,7 @@
     //    author: Mikhail Polianski (mnpol@mail.ru)     //
     //                                                  //
     //////////////////////////////////////////////////////
-    //     -> version number is also in line 1499       //
+    //     -> version number is also in line 1502       //
 //
 // libcomctl32 library has to be included into compiler options
 #include "l2rshell.h"
