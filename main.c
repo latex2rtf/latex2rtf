@@ -176,6 +176,9 @@ int main(int argc, char **argv)
     InitializeLatexLengths();
     InitializeBibliography();
     
+    ReadCfg();
+    InitializeDocumentFont(TexFontNumber("Roman"), 20, F_SHAPE_UPRIGHT, F_SERIES_MEDIUM, ENCODING_1252);
+	
     while ((c = my_getopt(argc, argv, "lhpuvFSVWZ:o:a:b:d:f:i:s:u:C:D:E:M:P:T:t:")) != EOF) {
         switch (c) {
             case 'a':
@@ -400,12 +403,9 @@ int main(int argc, char **argv)
         diagnostics(2, "home directory is <%s>", (g_home_dir) ? g_home_dir : "");
     }
 
-    ReadCfg();
-
     if (PushSource(g_tex_name, NULL) == 0) {
         OpenRtfFile(g_rtf_name, &fRtf);
 
-        InitializeDocumentFont(TexFontNumber("Roman"), 20, F_SHAPE_UPRIGHT, F_SERIES_MEDIUM, ENCODING_1252);
         PushTrackLineNumber(TRUE);
 
         ConvertWholeDocument();

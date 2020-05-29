@@ -91,6 +91,7 @@ void CmdList(int code);
 #define COUNTER_SET   2
 #define COUNTER_ADD   3
 #define COUNTER_VALUE 4
+#define COUNTER_INCR  5
 
 void CmdCounter(int code);
 

@@ -1,9 +1,9 @@
-CC:=gcc
-TAR:=gnutar
-RM:=rm -f
-MKDIR:=mkdir -p
-RMDIR:=rm -rf
-PKGMANDIR:=man
+CC=gcc
+TAR?=gnutar
+RM?=rm -f
+MKDIR?=mkdir -p
+RMDIR?=rm -rf
+PKGMANDIR?=man
 
 #reasonable flags for developing
 #CFLAGS = -g -D_FORTIFY_SOURCE=2 -Wall -Waggregate-return -Wmissing-declarations -Wmissing-prototypes -Wredundant-decls -Wshadow -Wstrict-prototypes -Wformat=2
@@ -18,20 +18,20 @@ PLATFORM?=-DMSDOS # Windows/DOS
 
 #Base directory - adapt as needed
 # Unix:
-#DESTDIR?=/usr/local
+#PREFIX?=/usr/local
 #Uncomment next 2 lines for Windows
 DESTDIR_DRIVE=C:
-DESTDIR?=$(DESTDIR_DRIVE)/PROGRA~1/latex2rtf
+PREFIX?=$(DESTDIR_DRIVE)/PROGRA~1/latex2rtf
 
 #Name of executable binary --- beware of 8.3 restriction under DOS
 BINARY_NAME=latex2rt$(EXE_SUFFIX)
 
 # Location of binary, man, info, and support files - adapt as needed
-BINDIR=/bin
-MANDIR=/share/$(PKGMANDIR)/man1
-INFODIR=/share/info
-SUPPORTDIR=/share/latex2rtf
-CFGDIR=/share/latex2rtf/cfg
+BINDIR=$(PREFIX)/bin
+MANDIR=$(PREFIX)/share/$(PKGMANDIR)/man1
+INFODIR=$(PREFIX)/share/info
+SUPPORTDIR=$(PREFIX)/share/latex2rtf
+CFGDIR=$(PREFIX)/share/latex2rtf/cfg
 
 #Uncomment next 5 lines for Windows
 BINDIR=
@@ -53,13 +53,13 @@ SRCS=commands.c chars.c direct.c encodings.c fonts.c funct1.c tables.c ignore.c 
 	main.c stack.c cfg.c utils.c parser.c lengths.c counters.c letterformat.c \
 	preamble.c equations.c convert.c xrefs.c definitions.c graphics.c \
 	mygetopt.c styles.c preparse.c vertical.c fields.c \
-	labels.c biblio.c acronyms.c auxfile.c utf8_support.c proof.c
+	labels.c biblio.c acronyms.c auxfile.c
 
 HDRS=commands.h chars.h direct.h encodings.h fonts.h funct1.h tables.h ignore.h \
     main.h stack.h cfg.h utils.h parser.h lengths.h counters.h letterformat.h \
     preamble.h equations.h convert.h xrefs.h definitions.h graphics.h encoding_tables.h \
     version.h mygetopt.h styles.h preparse.h vertical.h fields.h labels.h biblio.h acronyms.h \
-	auxfile.h proof.h utf8_support.h
+	auxfile.h
 
 CFGS=cfg/fonts.cfg cfg/direct.cfg cfg/ignore.cfg cfg/style.cfg \
     cfg/afrikaans.cfg cfg/bahasa.cfg cfg/basque.cfg cfg/brazil.cfg cfg/breton.cfg \
@@ -143,18 +143,21 @@ OBJS=fonts.o direct.o encodings.o commands.o stack.o funct1.o tables.o \
 	chars.o ignore.o cfg.o main.o utils.o parser.o lengths.o counters.o \
 	preamble.o letterformat.o equations.o convert.o xrefs.o definitions.o graphics.o \
 	mygetopt.o styles.o preparse.o vertical.o fields.o \
-	labels.o biblio.o auxfile.o acronyms.o utf8_support.o proof.o
+	labels.o biblio.o auxfile.o	acronyms.o
 
-all : latex2rtf # Windows: remove "checkdir"
+all : latex2rtf    # Windows: remove "checkdir"
 
 latex2rtf: $(OBJS) $(HDRS)
 	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJS)	$(LIBS) -o $(BINARY_NAME)
 
 cfg.o: Makefile cfg.c
-	$(CC) $(CFLAGS) -DCFGDIR=\"$(DESTDIR)$(CFGDIR)\" -c cfg.c -o cfg.o
+	$(CC) $(CFLAGS) -DCFGDIR=\"$(CFGDIR)\" $(PLATFORM) -c $*.c
 
 main.o: Makefile main.c
-	$(CC) $(CFLAGS) -DCFGDIR=\"$(DESTDIR)$(CFGDIR)\" -c main.c -o main.o
+	$(CC) $(CFLAGS) -DCFGDIR=\"$(CFGDIR)\" $(PLATFORM) -c $*.c
+
+%.o: Makefile %.c
+	$(CC) $(CFLAGS) $(PLATFORM) -c $*.c
 
 check test: latex2rtf
 	cd test && $(MAKE) clean
@@ -223,12 +226,12 @@ install: latex2rtf doc/latex2rtf.1 $(CFGS) scripts/latex2png
 	cp -p $(BINARY_NAME)     $(DESTDIR)$(BINDIR)
 	@echo "******************************************************************"
 	@echo "*** latex2rtf successfully installed as \"$(BINARY_NAME)\""
-	@echo "*** in directory \"$(DESTDIR)$(BINDIR)\""
+	@echo "*** in directory \"$(BINDIR)\""
 	@echo "***"
 	@echo "*** \"make install-info\" will install TeXInfo files "
 	@echo "***"
 	@echo "*** latex2rtf was compiled to search for its configuration files in"
-	@echo "***           \"$(DESTDIR)$(CFGDIR)\" "
+	@echo "***           \"$(CFGDIR)\" "
 	@echo "***"
 	@echo "*** If the configuration files are moved then either"
 	@echo "***   1) set the environment variable RTFPATH to this new location, or"

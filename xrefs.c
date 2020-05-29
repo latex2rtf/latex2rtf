@@ -1639,9 +1639,9 @@ void CmdNatbibCite(int code)
 
     pretext = getBracketParam();
     option = getBracketParam();
-    if (!option) {
+    if (option == NULL) {
         option = pretext;
-        pretext = '\0';
+        pretext = NULL;
     }
     if (code != CITE_P && code != CITE_P_STAR && code != CITE_YEAR_P)
         g_current_cite_paren = FALSE;

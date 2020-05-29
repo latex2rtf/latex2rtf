@@ -53,9 +53,9 @@ LaTeX2RTF
 @title @ltor{}
 @subtitle A converter from @latex{} to RTF
 
-Edition 0.7.13
+Edition 0.7.2
 
-for program version 2.3.12 and up
+for program version 2.3.18 and up
 
 @author Georg Lehner,
 updated by Wilfried Hennings and Scott Prahl,
@@ -216,7 +216,7 @@ into another language, under the above conditions for modified versions,
 except that this permission notice may be stated in a translation
 approved by the Free Software Foundation.
 
-@c This document applies to versions 2.3.12 and up of @ltor{}.
+@c This document applies to versions 2.3.18 and up of @ltor{}.
 @end ifnottex
 
 

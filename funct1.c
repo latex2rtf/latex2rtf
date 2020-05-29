@@ -50,7 +50,6 @@ Authors:
 #include "styles.h"
 #include "graphics.h"
 #include "vertical.h"
-#include "utf8_support.h"
 
 #define ARABIC_NUMBERING 0
 #define ALPHA_NUMBERING  1
@@ -258,13 +257,7 @@ void CmdBeginEnd(int code)
             CmdEndParagraph(0);
             CmdVspace(VSPACE_SMALL_SKIP);
             startParagraph("theorem", PARAGRAPH_FIRST);
-            fprintRTF("{\\b ");
-            if (CurrentFontEncoding() == ENCODING_UTF8) {
-                putRtfUtf8StrEscaped(str);
-            } else {
-                putRtfStrEscaped(str);
-            }
-            fprintRTF("} {\\i ");
+            fprintRTF("{\\b %s} {\\i ", str);
             PushBrace();
             if (option)
                 free(option);
@@ -761,8 +754,11 @@ void CmdCounter(int code)
         else
             setCounter(s, num);
 
-    } else if (code == COUNTER_NEW)
+    } else if (code == COUNTER_NEW) {
         setCounter(s, 0);
+	} else if (code == COUNTER_INCR) {
+		incrementCounter(s);
+	}
 
     free(s);
 }
@@ -1189,11 +1185,7 @@ void CmdVerbatim(int code)
         else if (true_code == VERBATIM_1 || true_code == VERBATIM_2) {
 
             show_string(5, verbatim_text, "verbatim");
-            if (CurrentFontEncoding() == ENCODING_UTF8) {
-                putRtfUtf8StrEscaped(verbatim_text);
-            } else {
-                putRtfStrEscaped(verbatim_text);
-            }
+            putRtfStrEscaped(verbatim_text);
         }
 
         free(verbatim_text);

@@ -45,7 +45,6 @@ Authors:
 #include "graphics.h"
 #include "vertical.h"
 #include "encodings.h"
-#include "proof.h"
 
 #include "labels.h"
 #include "acronyms.h"
@@ -286,7 +285,7 @@ static CommandArray commands[] = {
     {"includeonly", CmdIgnoreParameter, No_Opt_One_NormParam},
     {"nocite", CmdNoCite, No_Opt_One_NormParam},
     {"stepcounter", CmdIgnoreParameter, No_Opt_One_NormParam},
-    {"refstepcounter", CmdIgnoreParameter, No_Opt_One_NormParam},
+    {"refstepcounter", CmdCounter, COUNTER_INCR},
     {"fnsymbol", CmdIgnoreParameter, No_Opt_One_NormParam},
     {"Alph", CmdIgnoreParameter, No_Opt_One_NormParam},
     {"alph", CmdIgnoreParameter, No_Opt_One_NormParam},
@@ -806,7 +805,6 @@ static CommandArray params[] = {
 	{"Huge", CmdFontSizeEnviron, 50}, 
 
     {"tikzpicture",CmdTikzPicture, 0},
-    {"proof",CmdProof, 0},
 	
 	{"", NULL, 0}
 };                              /* end of list */

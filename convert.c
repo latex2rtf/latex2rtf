@@ -825,7 +825,7 @@ returns: success or not
     if (TryVariableIgnore(cCommand))
         return;
 
-    if (TryConditionSet(cCommand))
+    if (TryTheCounter(cCommand))
         return;
 
     diagnostics(WARNING, "Unknown command '\\%s'", cCommand);

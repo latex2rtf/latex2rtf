@@ -2,6 +2,17 @@
 ## latex2rtf changes from 2.3.0
 ##############
 
+r1266 | whennings
+resolving "latex2rtf ignores '-C'" (Michael Artmann 2018-09-08)
+cleaning up Makefile, isolating DESTDIR from PREFIX (Pedro Andres Aranda Gutierrez 2018-12-28)
+adding support for user defined counters accessed through \the<counter> (Pedro Andres Aranda Gutierrez 2018-12-28)
+
+r1265 | whennings
+reverting unwanted deletes
+
+r1264 | whennings
+updating Changelog
+
 r1263 | whennings
 add missing source files utf8_support.c, utf8_support.h, proof.c, proof.h, test/html.sty
 
