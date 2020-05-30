@@ -3,12 +3,17 @@ RTF format used by various text processors, most notably Word.
 
 For the Copyright of the Program see the file Copyright.
 
-Version 2.3.18 adds support for user defined counters accessed through \the<counter> (Pedro Andres Aranda Gutierrez 2018-12-28),
-resolves "latex2rtf ignores '-C'" (Michael Artmann 2018-09-08) and
-cleans up Makefile, isolating DESTDIR from PREFIX (Pedro Andres Aranda Gutierrez 2018-12-28)
+Version 2.3.18 resolves "latex2rtf ignores '-C'" 
+   (Michael Artmann 2018-09-08),
+adds support for user defined counters accessed through 
+   \the<counter> (Pedro Andres Aranda Gutierrez 2018-12-28),
+cleans up Makefile, isolating DESTDIR from PREFIX 
+   (Pedro Andres Aranda Gutierrez 2018-12-28),
+adds hebrew.cfg
 
-Version 2.3.17 adds support for non-ascii characters in verbatim blocks 
-and theorem captions and support for the proof environment
+Version 2.3.17 adds support for non-ascii characters in verbatim blocks
+and theorem captions (Alex Itkes 2018-03-14) 
+and support for the proof environment  (Alex Itkes 2018-03-19)
 
 Version 2.3.16 fixes ukrainian.cfg and
 adds check for buffer overflow during construction 
@@ -53,7 +58,7 @@ To install (on a UNIX system)
 - If this is not your first-time installation, you may want to preserve
   your old configuration (*.cfg) files. Copy them to a safe place before
   installing.
-- make install
+- [sudo] make install
 
 - make check   (expect warnings but no errors)
      [OPTIONAL] This tests LaTeX2RTF on a variety of LaTeX files.

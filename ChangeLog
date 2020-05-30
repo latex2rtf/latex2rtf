@@ -2,10 +2,14 @@
 ## latex2rtf changes from 2.3.0
 ##############
 
+r1267 | whennings
+cleaning up Makefile (Windows)
+
 r1266 | whennings
 resolving "latex2rtf ignores '-C'" (Michael Artmann 2018-09-08)
 cleaning up Makefile, isolating DESTDIR from PREFIX (Pedro Andres Aranda Gutierrez 2018-12-28)
 adding support for user defined counters accessed through \the<counter> (Pedro Andres Aranda Gutierrez 2018-12-28)
+adding hebrew.cfg
 
 r1265 | whennings
 reverting unwanted deletes

@@ -21,7 +21,7 @@ PLATFORM?=-DUNIX   # Mac OS X, Linux, BSD
 PREFIX?=/usr/local
 #Uncomment next 2 lines for Windows
 #DESTDIR_DRIVE=C:
-#DESTDIR?=$(DESTDIR_DRIVE)/PROGRA~1/latex2rtf
+#PREFIX?=$(DESTDIR_DRIVE)/PROGRA~1/latex2rtf
 
 #Name of executable binary --- beware of 8.3 restriction under DOS
 BINARY_NAME=latex2rtf$(EXE_SUFFIX)
