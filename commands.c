@@ -1148,7 +1148,7 @@ globals: command-functions have side effects or recursive calls
     /* search backwards through chain of environments*/
     for (iEnv = iEnvCount - 1; iEnv >= 0; iEnv--) {
     
-        /* test every command in the current enviroment */
+        /* test every command in the current environment */
         iCommand = 0;
         while (strcmp(Environments[iEnv][iCommand].cmd_name, "") != 0) {
 
@@ -1181,7 +1181,7 @@ void CallParamFunc(char *cCommand, int AddParam)
 purpose: Try to call the environment-function for the commandname
 params:  cCommand - string with command name
      AddParam - param "ORed"(||) to the int param of command-funct
-returns: sucess or not
+returns: success or not
 globals: command-functions have side effects or recursive calls
  ****************************************************************************/
 {

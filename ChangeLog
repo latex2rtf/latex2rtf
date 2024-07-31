@@ -705,11 +705,11 @@ r1084 | prahl
     to getBraceParam().
 
 r1083 | prahl
-    update changlog for 2.1 release
+    update changelog for 2.1 release
 
 r1082 | prahl
     touch version.h 
-    update dependancies in Makefile
+    update dependencies in Makefile
     add Makefile target to remove OS X metadata
 
 r1081 | prahl
@@ -1092,7 +1092,7 @@ r992 | prahl
     add direct.tex to the package
     
 r991 | whennings
-    fixed a bug and addes STIXGeneral to two more characters in direct.cfg.
+    fixed a bug and added STIXGeneral to two more characters in direct.cfg.
     added direct.tex as test file for all characters in direct.cfg
     
 r990 | prahl

@@ -169,7 +169,7 @@ static int countTabularColumns(const char *format)
 }
 
 /******************************************************************************
- purpose: convert the crazy tabular format string to something useable
+ purpose: convert the crazy tabular format string to something usable
           and return a point to that structure.
  ******************************************************************************/
 static TabularT *NewTabularFromFormat(const char *format)

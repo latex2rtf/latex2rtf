@@ -1836,7 +1836,7 @@ CmdTitlepage(int code)
 /******************************************************************************
   purpose: \begin{titlepage} ... \end{titlepage}
            add pagebreaks before and after this environment
-           need to add code to supress page numbering and display
+           need to add code to suppress page numbering and display
  ******************************************************************************/
 {
     CmdNewPage(NewPage);
@@ -1885,7 +1885,7 @@ void CmdColsep(int code)
         fprintRTF("\\cell}{\\pard\\intbl ");
         /*
         if (colFmt == NULL)
-            diagnostics(WARNING, "Fatal, Fatal! CmdColsep called whith colFmt == NULL.");
+            diagnostics(WARNING, "Fatal, Fatal! CmdColsep called with colFmt == NULL.");
         else
             fprintRTF("\\q%c ", colFmt[actCol]);
         */

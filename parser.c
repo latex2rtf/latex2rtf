@@ -717,7 +717,7 @@ char *getDelimitedText(char left, char right, int raw)
         last_char_was_backslash = (buffer[size] == '\\') ? TRUE : FALSE;
     }
 
-    buffer[size] = '\0';        /* overwrite final delimeter */
+    buffer[size] = '\0';        /* overwrite final delimiter */
     if (size == SCAN_BUFFER_SIZE-1) {
         diagnostics(WARNING, "Could not find closing '%c' in %d chars", right, SCAN_BUFFER_SIZE);
         return strdup(" NOT FOUND ");

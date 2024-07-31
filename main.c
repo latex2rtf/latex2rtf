@@ -830,7 +830,7 @@ void putRtfCharEscaped(char cThis)
 
 /****************************************************************************
 purpose: output a single escaped character to the RTF file
-         this is primarily useful for the verbatim-like enviroments
+         this is primarily useful for the verbatim-like environments
  ****************************************************************************/
 {
     if (getTexMode() == MODE_VERTICAL)
@@ -849,7 +849,7 @@ purpose: output a single escaped character to the RTF file
 
 /****************************************************************************
 purpose: output a string with escaped characters to the RTF file
-         this is primarily useful for the verbatim-like enviroments
+         this is primarily useful for the verbatim-like environments
  ****************************************************************************/
 void putRtfStrEscaped(const char * string)
 {

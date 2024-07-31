@@ -547,7 +547,7 @@ Click "OK"
 If you do NOT use the GUI (l2rshell.exe),
 either the folders where TeX, ImageMagick and Ghostscript are installed
 must also be in your search path, or you must edit the file @file{L2RPREP.BAT}, 
-ensure that the pathes in this file point to the folders where 
+ensure that the paths in this file point to the folders where
 TeX, ImageMagick and Ghostscript are installed on your machine,
 and call @file{l2rprep} before calling @file{latex2rt}. @*
 Or you edit @file{l2r.bat} and call @file{l2r} instead of
@@ -852,7 +852,7 @@ filename is formed by removing @file{.tex} from the @file{inputfile} and appendi
 @item -p
 Escape parentheses in mathematical formulas.  This has no effect unless EQ fields
 are being generated.  When this option is used, then a `(' or `)' that appears
-in an EQ field will be preceeded by a backslash.  Despite documentation to the
+in an EQ field will be preceded by a backslash.  Despite documentation to the
 contrary (which says that all parentheses should be escaped), adding escapes usually
 produces a worse result than doing nothing. If Word displays some formulas with 
 parentheses as ``Error!'', you might try this option as a last resort.
@@ -1022,7 +1022,7 @@ or @*
 @node Input Encoding, Language Support, Unicode Support, Features
 @section Input Encoding
 
-It is not necesary to specify the @option{-C} option if you use @code{\usepackage@{isolatin1@}}
+It is not necessary to specify the @option{-C} option if you use @code{\usepackage@{isolatin1@}}
 or @code{\documentstyle[isolatin1]@{...@}}. @ltor{} automagically detects these
 packages/style options and switches to processing of ISO-Latin1 codes.  The following
 encodings are supported: ansinew, applemac, cp437, cp437de, cp850, cp852, cp865,
@@ -1298,7 +1298,7 @@ generate an ``internal'' label which then is used in the following \Ref and
 \Pageref commands.
 
 @latex{} makes it possible to write `\link@{anchor@}[ltx]@{label@}', which typesets:
-`anchor ltx'. @ltor{} does NOT support this aproach since the optional
+`anchor ltx'. @ltor{} does NOT support this approach since the optional
 parameter is thrown away right now, see @ref{LaTeX2RTF under Development}.
 
 Note that you have to update your @file{.cfg} files if you are upgrading, since
@@ -1478,7 +1478,7 @@ numeric value with following unit of measure
 ignores anything to the first character after @samp{=} and from there to next
 space. e.g., @code{\setbox\bak=\hbox}
 @item COMMAND
-ignores anything to next @samp{\} and from there to the occurence of anything
+ignores anything to next @samp{\} and from there to the occurrence of anything
 but a letter e.g., @code{\newbox\bak}
 @item  SINGLE
 ignores single command e.g., @code{\noindent}
@@ -1559,7 +1559,7 @@ listed in the console window. They can be redirected to a file
 @table @samp
 @item Fatal error messages
 indicate a bug in the source code. PLEASE report them, if they do not
-apear in the documentation (@pxref{Reporting Bugs}).
+appear in the documentation (@pxref{Reporting Bugs}).
 
 @item Error messages
 always abort the program and are caused by conditions that prevent
@@ -1570,7 +1570,7 @@ further conversion of the input file.  Typically this is cause by
 @item Warning messages
 inform you, that there is some conversion loss from @latex{} to RTF, or that
 the output file has some restrictions on some RTF Readers. Most of these 
-warnings can be supressed by add the offending command to the @file{ignore.cfg}
+warnings can be suppressed by add the offending command to the @file{ignore.cfg}
 file.
 @end table
 
@@ -1617,7 +1617,7 @@ one-semester course by Friedrich Polzer and Gerhard Trisko. The result was @ltor
 In 1998 Georg Lehner (jorge_lehner ``at'' gmx.net) found the reference to @ltor{} on the
 @uref{http://tug.org/utilities/texconv/index.html, TeX Conversion Webpage} of
 Wilfried Hennings and added some functionality and took
-over the maintainence of the program.  The last version release by Georg is 1.8aa.
+over the maintenance of the program.  The last version release by Georg is 1.8aa.
 The bulk of development post 1.8aa was done by Scott Prahl.  
 Wilfried Hennings now coordinates the development of the program and maintains the project
 on @uref{http://sourceforge.net/projects/latex2rtf/,SourceForge} where there are also
@@ -1628,7 +1628,7 @@ For subscription to these lists visit the page:
 or
 @uref{http://lists.sourceforge.net/lists/listinfo/latex2rtf-developers, developers list}
 
-As of Januar 2017, version 2.3.12 of @ltor{} is available. 
+As of January 2017, version 2.3.12 of @ltor{} is available.
 
 The contents of this manual were composed by copying shamelessly what was
 available in the original sources and documentation.

@@ -8,7 +8,7 @@ installation:
 2) copy cfg/* to c:/usr/local/share/latex2rtf/cfg or to other
    directory , use switch -P , example: latex2rtf -P e:/home/l2r/cfg
 
-requiered:
+required:
 ==========
 emx runtime,tex,sh,gsos2
 
