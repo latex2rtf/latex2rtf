@@ -1,0 +1,32 @@
+name: Tests
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: >
+          sudo apt-get update
+
+          sudo apt-get install -y
+          make gcc
+          man texinfo texlive-binaries
+          texlive-latex-base texlive-bibtex-extra texlive-fonts-recommended texlive-latex-recommended texlive-latex-extra
+
+      - name: Build
+        run: make install
+
+      - name: Test
+        run: make check
+
+      - name: Clean
+        run: make clean
