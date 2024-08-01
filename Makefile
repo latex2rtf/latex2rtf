@@ -211,19 +211,7 @@ releasedate:
 doc: doc/latex2rtf.texi doc/Makefile
 	cd doc && $(MAKE) -k
 
-install: latex2rtf doc/latex2rtf.1 $(CFGS) scripts/latex2png
-	cd doc && $(MAKE)
-	$(MKDIR) $(DESTDIR)$(BINDIR)
-	$(MKDIR) $(DESTDIR)$(MANDIR)
-	$(MKDIR) $(DESTDIR)$(CFGDIR)
-	cp -p scripts/latex2png  $(DESTDIR)$(BINDIR)
-	cp -p doc/latex2rtf.1    $(DESTDIR)$(MANDIR)
-	cp -p doc/latex2png.1    $(DESTDIR)$(MANDIR)
-	cp -p $(CFGS)            $(DESTDIR)$(CFGDIR)
-	cp -p doc/latex2rtf.html $(DESTDIR)$(SUPPORTDIR)
-	cp -p doc/latex2rtf.pdf  $(DESTDIR)$(SUPPORTDIR)
-	cp -p doc/latex2rtf.txt  $(DESTDIR)$(SUPPORTDIR)
-	cp -p $(BINARY_NAME)     $(DESTDIR)$(BINDIR)
+install: install-bin install-doc
 	@echo "******************************************************************"
 	@echo "*** latex2rtf successfully installed as \"$(BINARY_NAME)\""
 	@echo "*** in directory \"$(BINDIR)\""
@@ -238,6 +226,21 @@ install: latex2rtf doc/latex2rtf.1 $(CFGS) scripts/latex2png
 	@echo "***   2) use the command line option -P /path/to/cfg, or"
 	@echo "***   3) edit the Makefile and recompile"
 	@echo "******************************************************************"
+
+install-doc: doc
+	cp -p doc/latex2rtf.html $(DESTDIR)$(SUPPORTDIR)
+	cp -p doc/latex2rtf.pdf  $(DESTDIR)$(SUPPORTDIR)
+	cp -p doc/latex2rtf.txt  $(DESTDIR)$(SUPPORTDIR)
+
+install-bin: latex2rtf doc/latex2rtf.1 $(CFGS) scripts/latex2png
+	$(MKDIR) $(DESTDIR)$(BINDIR)
+	$(MKDIR) $(DESTDIR)$(MANDIR)
+	$(MKDIR) $(DESTDIR)$(CFGDIR)
+	cp -p scripts/latex2png  $(DESTDIR)$(BINDIR)
+	cp -p doc/latex2rtf.1    $(DESTDIR)$(MANDIR)
+	cp -p doc/latex2png.1    $(DESTDIR)$(MANDIR)
+	cp -p $(CFGS)            $(DESTDIR)$(CFGDIR)
+	cp -p $(BINARY_NAME)     $(DESTDIR)$(BINDIR)
 
 install-info: doc/latex2rtf.info
 	$(MKDIR) $(DESTDIR)$(INFODIR)
@@ -256,7 +259,7 @@ appleclean:
 splint:
 	splint -weak $(SRCS) $(HDRS)
 	
-.PHONY: all check checkdir clean depend dist doc install install_info realclean latex2rtf uptodate releasedate splint fullcheck
+.PHONY: all check checkdir clean depend dist doc install install-info realclean uptodate releasedate splint fullcheck install-doc install-bin
 
 # created using "make depend"
 commands.o: commands.c cfg.h main.h convert.h chars.h fonts.h preamble.h \
