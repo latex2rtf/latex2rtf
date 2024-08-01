@@ -6,13 +6,12 @@ on:
   pull_request:
     branches: [ "main" ]
 
-env:
-  PREFIX: ${GITHUB_WORKSPACE}/inst
-
 jobs:
   linux:
     name: Linux
     runs-on: ubuntu-latest
+    env:
+      PREFIX: ${GITHUB_WORKSPACE}/inst
     steps:
       - uses: actions/checkout@v4
 
@@ -44,6 +43,8 @@ jobs:
   macos:
     name: macOS
     runs-on: macos-latest
+    env:
+      PREFIX: ${GITHUB_WORKSPACE}/inst
     steps:
       - uses: actions/checkout@v4
 
@@ -81,8 +82,8 @@ jobs:
             mingw-w64-x86_64-texlive-bin mingw-w64-x86_64-texlive-latex-recommended mingw-w64-x86_64-texlive-latex-extra
             mingw-w64-x86_64-texlive-bibtex-extra mingw-w64-x86_64-texlive-fonts-recommended mingw-w64-x86_64-texlive-plain-generic
 
-      - name: Update PREFIX
-        run: echo "PREFIX=$(cygpath -u $PREFIX)" >> $GITHUB_ENV
+      - name: Set PREFIX with cygpath
+        run: echo "PREFIX=$(cygpath -u ${GITHUB_WORKSPACE}/inst)" >> $GITHUB_ENV
 
       - name: Build
         run: make
@@ -91,4 +92,8 @@ jobs:
         run: make install
 
       - name: Test
+        run: make check
+
+      - name: Test with cmd
+        shell: cmd
         run: make check
