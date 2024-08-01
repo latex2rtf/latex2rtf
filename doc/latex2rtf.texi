@@ -7,6 +7,11 @@
 @dircategory Document Preparation
 @c %**end of header
 
+@dircategory TeX
+@direntry
+* latex2rtf: (latex2rtf).   A converter from LaTeX to RTF.
+@end direntry
+
 @ignore Permission is granted to process this file through TeX and print
 the results, provided the printed document carries a copying permission
 notice identical to this one except for the removal of this paragraph
