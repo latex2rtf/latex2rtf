@@ -93,7 +93,3 @@ jobs:
 
       - name: Test
         run: make check
-
-      - name: Test with cmd
-        shell: cmd
-        run: make check
