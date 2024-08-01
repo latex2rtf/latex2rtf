@@ -1,11 +1,11 @@
 .TH LATEX2PNG "1" "October 2012" "latex2png 1.9\n" "User Commands"
 .SH NAME
-latex2png \- manual page for latex2png 1.1
+latex2png \- Convert a LaTeX file to a PNG image
 .SH DESCRIPTION
 latex2png \fB\-\-\fR Convert a LaTeX file to a PNG image
-.PP
-USAGE: latex2png [-d density] [-h] [-k] [-c] [-g] [-m] [-H home dir] file[.tex|.eps]
-.PP
+.SH SYNOPSIS
+latex2png [\-d density] [\-h] [\-k] [\-c] [\-g] [\-m] [\-H home dir] file[.tex|.eps]
+.SH DESCRIPTION
 The
 .I latex2png
 command converts a LaTeX file into a PNG image.  The first page is
@@ -13,7 +13,7 @@ translated into an image at the specified resolution.
 .I latex2png
 can also be used to convert encapsulated postscript (EPS) files to
 PNG images.  
-.SS "OPTIONS:"
+.SH OPTIONS
 .HP
 \fB\-c\fR produce color image
 .TP
@@ -39,7 +39,7 @@ that it needs to include.
 (default)
 .TP
 \fB\-v\fR version
-.SS "EXAMPLES:"
+.SH EXAMPLES
 .TP
 latex2png \fB\-d\fR 144 /tmp/file
 #create /tmp/file.png at 144 dpi
