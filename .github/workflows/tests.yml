@@ -65,6 +65,8 @@ jobs:
     defaults:
       run:
         shell: msys2 {0}
+    env:
+      PLATFORM: -DMSDOS
     steps:
       - uses: actions/checkout@v4
 
@@ -77,15 +79,13 @@ jobs:
             make mingw-w64-x86_64-gcc
             man mingw-w64-x86_64-texinfo
             mingw-w64-x86_64-texlive-bin mingw-w64-x86_64-texlive-latex-recommended mingw-w64-x86_64-texlive-latex-extra
-            mingw-w64-x86_64-texlive-bibtex-extra mingw-w64-x86_64-texlive-fonts-recommended
+            mingw-w64-x86_64-texlive-bibtex-extra mingw-w64-x86_64-texlive-fonts-recommended mingw-w64-x86_64-texlive-plain-generic
 
       - name: Build
-        run: make -f Makefile.msys
+        run: make
 
       - name: Install
-        run: make -f Makefile.msys install
-        continue-on-error: true
+        run: make install
 
       - name: Test
-        run: make -f Makefile.msys check
-        continue-on-error: true
+        run: make check
