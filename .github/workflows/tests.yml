@@ -81,6 +81,9 @@ jobs:
             mingw-w64-x86_64-texlive-bin mingw-w64-x86_64-texlive-latex-recommended mingw-w64-x86_64-texlive-latex-extra
             mingw-w64-x86_64-texlive-bibtex-extra mingw-w64-x86_64-texlive-fonts-recommended mingw-w64-x86_64-texlive-plain-generic
 
+      - name: Update PREFIX
+        run: echo "PREFIX=$(cygpath -u $PREFIX)" >> $GITHUB_ENV
+
       - name: Build
         run: make
 
