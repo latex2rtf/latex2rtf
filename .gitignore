@@ -27,3 +27,8 @@ latex2rtf
 *.su
 *.idb
 *.pdb
+
+# Coverage
+*.gcno
+*.gcda
+coverage_html/
