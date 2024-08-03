@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       PREFIX: ${GITHUB_WORKSPACE}/inst
+      CFLAGS: -g --coverage
+      LDFLAGS: -lgcov --coverage
     steps:
       - uses: actions/checkout@v4
 
@@ -24,6 +26,7 @@ jobs:
           man texinfo texlive-binaries
           texlive-latex-base texlive-latex-recommended texlive-latex-extra
           texlive-bibtex-extra texlive-fonts-recommended
+          lcov
 
       - name: Build
         run: make
@@ -34,11 +37,20 @@ jobs:
       - name: Test
         run: make check
 
+      - name: Create coverage report
+        run: |
+          lcov --capture --directory . --output-file coverage.info
+          lcov --list coverage.info
+          # genhtml -o ./coverage_html --ignore-errors source --num-spaces 2 coverage.info
+
+      - name: Upload coverage report
+        uses: codecov/codecov-action@v4
+        with:
+          file: coverage.info
+          token: ${{ secrets.CODECOV_TOKEN }}
+
       - name: Clean
         run: make clean
-
-      - name: Distribution
-        run: TAR=tar make dist
 
   macos:
     name: macOS
