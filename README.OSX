@@ -6,7 +6,7 @@ For the Copyright of the Program see the file Copyright.
 
 latex2rtf does not require a TeX implementation, nor does it require
 that ImageMagick be installed.  However, latex2rtf does make use of
-the auxilary files created by LaTeX and BibTeX --- specifically the
+the auxiliary files created by LaTeX and BibTeX --- specifically the
 .aux and .bbl files if they are available.  Latex2rtf will convert
 equations to bitmaps with the right set of options.  This facility
 requires that both a working TeX implementation as well as a working

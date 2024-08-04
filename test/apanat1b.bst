@@ -66,7 +66,7 @@ ENTRY
         %
     pages
     publisher
-    school       % for theses
+    school       % for thesis
     series       % not used
     symposium    % for lectures
     text         % for literals
@@ -2360,7 +2360,7 @@ FUNCTION {lecture}
 %                                                           %
 %                                                           %
 %                                                           %
-%                        THESES                             %
+%                        THESIS                             %
 %                                                           %
 %                                                           %
 %                                                           %
@@ -2388,7 +2388,7 @@ FUNCTION {format.type.school}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %
-    % phd theses, etc.
+    % phd thesis, etc.
     % call with
     %   "default.published.thesis" "default.unpublished.thesis" thesis
     %
@@ -2453,7 +2453,7 @@ FUNCTION {thesis}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %
-    % phd theses, etc.
+    % phd thesis, etc.
     %
 FUNCTION {phdthesis}
 { "\BPhD"  "\BUPhD"  thesis }
@@ -2461,7 +2461,7 @@ FUNCTION {phdthesis}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %
-    % master's theses, etc.
+    % master's thesis, etc.
     %
 FUNCTION {mastersthesis}
 { "\BMTh"  "\BUMTh"  thesis }

@@ -24,7 +24,7 @@ Authors:
     1998-2000 Georg Lehner
     2001-2002 Scott Prahl
 
- * LEG200698 I would have prefered to make the reading of the language file
+ * LEG200698 I would have preferred to make the reading of the language file
  * separate, since the language is known some steps after reading the
  * configuration files. Since the search functions rely on the index into
  * configinfo this is not trivial. So I reread the language file to the array

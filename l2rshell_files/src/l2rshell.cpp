@@ -22,7 +22,7 @@ void changeext(WCHAR*, WCHAR*);   //example: changeext(L"file.tex", L".rtf") wil
 void getdir(WCHAR*);              //example: getdir(L"C:\\directory\\file.tex") --''-- "C:\\directory"
 void getfilename(WCHAR*);         //example: getfilename(L"C:\\directory\\file.tex") --''-- "file.tex"
 void ChangeTheLanguage(HWND);     //changes the user interface language
-void ConvertToSomething(HWND);    //checks if equations and table converted at least to something. If not require convertion to RTF
+void ConvertToSomething(HWND);    //checks if equations and table converted at least to something. If not require conversion to RTF
 void ResetLangCombo(HWND);        //resets the "language" combobox contents
 void ResetCodepageCombo(HWND);    //resets the "codepage" combobox contents
 void ResetShellLangCombo(HWND);   //resets the Shell language combobox contents

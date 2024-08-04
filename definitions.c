@@ -158,7 +158,7 @@ static char *expandmacro(char *macro, char *opt_param, int params)
     
     expanded = buffer;
 
-    /* convert "\csname " but leave inital backslash */
+    /* convert "\csname " but leave initial backslash */
     while ((cs = strstr(dmacro, "\\csname ")) != NULL)
         my_strcpy(cs+1, cs + strlen("\\csname "));
     while ((cs = strstr(dmacro, "\\csname")) != NULL)

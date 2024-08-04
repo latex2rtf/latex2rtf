@@ -1565,7 +1565,7 @@ void CmdFrenchAbbrev(int code)
 }
 
 /******************************************************************************
- * purpose : \celcius and \degreecelsius from SIUnits.sty
+ * purpose : \celsius and \degreecelsius from SIUnits.sty
  * ******************************************************************************/
 void CmdDegreeCelsius(int code) 
 {

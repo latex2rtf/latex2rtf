@@ -236,20 +236,20 @@ $   type/out=vmslib.dat sys$input
 !          might look like. They are site specific and the locations of the
 !          library and include files need almost certainly to be changed.
 !
-! Location: All of the libaries can be found at the following addresses
+! Location: All of the libraries can be found at the following addresses
 !
 !   Xvmsutils: http://www.no-ip.info/vms/sw/xvmsutils.htmlx
 !
 !X11VMS   # pubbin:x11vmsshr.exe # x11vms: # vmsutil.h    # HAVE_X11VMS
 $   write sys$output "New driver file vmslib.dat created."
-$   write sys$output "Please customize libary locations for your site"
+$   write sys$output "Please customize library locations for your site"
 $   write sys$output "and afterwards re-execute vms_make.com"
 $   write sys$output "Exiting..."
 $   close/nolog optf
 $   exit
 $ endif
 $!
-$! Init symbols used to hold CPP definitons and include path
+$! Init symbols used to hold CPP definitions and include path
 $!
 $ libdefs = ""
 $ libincs = ""

@@ -87,7 +87,7 @@ char *my_strcpy(char *dest, const char *src)
 
 
 /******************************************************************************
- purpose:  count the number of occurences of the string t in the string s
+ purpose:  count the number of occurrences of the string t in the string s
 ******************************************************************************/
 int strstr_count(const char *s, char *t)
 {
@@ -341,7 +341,7 @@ char *strdup_noendblanks(const char *s)
 }
 
 /******************************************************************************
- purpose:  replaces all occurences of target in s with blanks
+ purpose:  replaces all occurrences of target in s with blanks
 ******************************************************************************/
 void str_blank_out(char *s, const char *target)
 {
@@ -361,7 +361,7 @@ void str_blank_out(char *s, const char *target)
 }
 
 /******************************************************************************
- purpose:  deletes all occurences of target in s
+ purpose:  deletes all occurrences of target in s
 ******************************************************************************/
 void str_delete(char *s, const char *target)
 {
@@ -698,7 +698,7 @@ my_strlcat(char *dst, const char *src, size_t siz)
 
 
 /*
- * handy litte portable file existance check
+ * handy little portable file existence check
  */
 int file_exists(char *fname)
 {

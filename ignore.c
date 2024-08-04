@@ -96,11 +96,11 @@ returns : TRUE if variable was ignored correctly, otherwise FALSE
 #  MEASURE       numeric value with following unit of measure
 #  OTHER         ignores anything to the first character after '='
 #                and from there to next space. eg. \setbox\bak=\hbox
-#  COMMAND       ignores anything to next '\' and from there to occurence
+#  COMMAND       ignores anything to next '\' and from there to occurrence
 #                of anything but a letter. eg. \newbox\bak
-#  PARAMETER     ignores a command with one paramter
+#  PARAMETER     ignores a command with one parameter
 #  PACKAGE       does not produce a Warning message if PACKAGE is encountered
-#  ENVCMD        proceses contents of unknown environment as if it were plain latex
+#  ENVCMD        processes contents of unknown environment as if it were plain latex
 #  ENVIRONMENT   ignores contents of that environment
  ****************************************************************************/
 int TryVariableIgnore(const char *command)

@@ -4,7 +4,7 @@ LaTeX2RTF
 	version 1.9 by Scott Prahl
 	
 There is a Classic PPC Mac port of the 1.9h of latex2rtf.
-There is no reason that a 68K port is impossible, I just accidently
+There is no reason that a 68K port is impossible, I just accidentally
 deleted the 68K project from my Codewarrior project. 
 
 The standard unix distribution compiles and works fine under MacOS X.

@@ -1,5 +1,5 @@
 /*
- * Description: Contains declarations for generic recursive parsering
+ * Description: Contains declarations for generic recursive parsing
  * routines and other help routines for parsing LaTeX code
  * 
  * 26th June 1998 - Created initial version - fb                            LEG

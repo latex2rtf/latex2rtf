@@ -52,7 +52,7 @@
 % \psscalefirst width= or height= specifies the size of the figure
 % 		before rotation.
 % \psrotatefirst (default) width= or height= specifies the size of the
-% 		 figure after rotation.  Asymetric figures will
+% 		 figure after rotation.  Asymmetric figures will
 % 		 appear to shrink.
 %
 % \psfigurepath{dir:dir:...}  sets the path to search for the figure
@@ -117,7 +117,7 @@
 }
 
 %% Here's how you define your figure path.  Should be set up with null
-%% default and a user useable definition.
+%% default and a user usable definition.
 
 \def\figurepath{./:}
 \def\psfigurepath#1{\edef\figurepath{#1:}}
@@ -170,7 +170,7 @@
 % @psdo control structure -- similar to Latex @for.
 % I redefined these with different names so that psfig can
 % be used with TeX as well as LaTeX, and so that it will not 
-% be vunerable to future changes in LaTeX's internal
+% be vulnerable to future changes in LaTeX's internal
 % control structure,
 %
 \def\@nnil{\@nil}
@@ -841,11 +841,11 @@
 \def\compute@sizes{
 	\compute@bb
 	\if@scalefirst\if@angle
-% at this point the bounding box has been adjsuted correctly for
+% at this point the bounding box has been adjusted correctly for
 % rotation.  PSFIG does all of its scaling using \@bbh and \@bbw.  If
 % a width= or height= was specified along with \psscalefirst, then the
 % width=/height= value needs to be adjusted to match the new (rotated)
-% bounding box size (specifed in \@bbw and \@bbh).
+% bounding box size (specified in \@bbw and \@bbh).
 %    \ps@bbw       width=
 %    -------  =  ---------- 
 %    \@bbw       new width=
@@ -943,7 +943,7 @@
 % "clip=" is a switch and takes no value, but the `=' must be present.
 \def\psfig#1{\vbox {
 	% do a zero width hard space so that a single
-	% \psfig in a centering enviornment will behave nicely
+	% \psfig in a centering environment will behave nicely
 	%{\setbox0=\hbox{\ }\ \hskip-\wd0}
 	%
 	\ps@init@parms
