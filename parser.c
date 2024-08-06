@@ -138,7 +138,7 @@ char *CurrentFileName(void)
 {
     char *s = "(Not set)";
 
-    if (g_parser_stack[g_parser_depth].file_name)
+    if (g_parser_depth >= 0 && g_parser_stack[g_parser_depth].file_name)
         return g_parser_stack[g_parser_depth].file_name;
     else
         return s;
@@ -322,7 +322,7 @@ void PopSource(void)
         g_parser_line = g_parser_stack[g_parser_depth].file_line;
     }
 
-    if (g_parser_file)
+    if (g_parser_depth >= 0 && g_parser_file)
         diagnostics(4, "Resuming Source File '%s'", g_parser_stack[g_parser_depth].file_name);
     else {
         diagnostics(5, "Resuming Source string");
