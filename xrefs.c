@@ -2070,9 +2070,9 @@ static void ConvertBraceParam(char *pre, char *post)
     char *t=NULL;
     s = getBraceParam();
     if (strlen(s)>0) {
-    	t = strdup_together3(pre,s,post);
-    	ConvertString(t);
-    	safe_free(t);
+        t = strdup_together3(pre,s,post);
+        ConvertString(t);
+        safe_free(t);
     }
     safe_free(s);
 }

@@ -428,7 +428,7 @@ void ReadLanguage(char *lang)
     FILE *fp;
     char *langfn;
 
-	if (lang == NULL) return;
+    if (lang == NULL) return;
     langfn = strdup_together(lang, ".cfg");
 
     fp = (FILE *) open_cfg(langfn, TRUE);

@@ -72,7 +72,7 @@ exit 0
 }
 
 opt_d=300       # default to 300 dpi
-opt_o=5	        # default for 300 dpi
+opt_o=5         # default for 300 dpi
 opt_k=0         # default to killing intermediate files
 home_dir="."    # default to current directory
 ext="tex"       # default to latex input
@@ -257,21 +257,21 @@ fi
 # 
 if [ $inline -eq 1 ] ; then
 
-	mv $name.png $name-tmp.png
-	
-	# remove fewer pixels from the left side on small images
-	width=`identify -format "%[fx:w-2]" $name-tmp.png`
-	if [ ${width} -gt ${opt_o} ] ; then
-		width=${opt_o}
-	fi
-	
-	# strip the initial dot and white space on the left
-	# we must keep the white space on the bottom so we add border on the east
-	# so that the bottom does not get trimmed away
-	$CONVERT $name-tmp.png -chop ${width}x0 -gravity East -background white -splice 1x0 -trim +repage $name.png
+    mv $name.png $name-tmp.png
 
-	# extract first column of png and stick it in a bitmap
-	$CONVERT $name-tmp.png -crop 1x0 +repage $name.pbm
+    # remove fewer pixels from the left side on small images
+    width=`identify -format "%[fx:w-2]" $name-tmp.png`
+    if [ ${width} -gt ${opt_o} ] ; then
+        width=${opt_o}
+    fi
+
+    # strip the initial dot and white space on the left
+    # we must keep the white space on the bottom so we add border on the east
+    # so that the bottom does not get trimmed away
+    $CONVERT $name-tmp.png -chop ${width}x0 -gravity East -background white -splice 1x0 -trim +repage $name.png
+
+    # extract first column of png and stick it in a bitmap
+    $CONVERT $name-tmp.png -crop 1x0 +repage $name.pbm
 
     if [ $opt_k -eq 0 ] ; then
         rm -f $name-tmp.ppm

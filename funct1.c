@@ -280,8 +280,8 @@ void CmdBeginEnd(int code)
     } else {
         diagnostics(5, "\\end{%s}", s);
         (void) CallParamFunc(s, OFF);
-    	if (strcmp(s, "setspace") != 0 && strcmp(s, "doublespace") != 0) 
-        	CmdIndent(INDENT_INHIBIT);
+        if (strcmp(s, "setspace") != 0 && strcmp(s, "doublespace") != 0)
+            CmdIndent(INDENT_INHIBIT);
     }
     free(s);
 }
@@ -443,7 +443,7 @@ void CmdAppendix(int code)
 {
     g_chapter_numbering = ALPHA_NUMBERING;
     if (g_document_type == FORMAT_ARTICLE)
-    	g_section_numbering = ALPHA_NUMBERING;
+        g_section_numbering = ALPHA_NUMBERING;
     g_appendix=1;
     setCounter("chapter",0);
     setCounter("section", 0);
@@ -497,9 +497,9 @@ parameter: code: type of section-recursion-level
             if (getCounter("chapter") > 0) CmdNewPage(NewPage);
             startParagraph("chapter0", PARAGRAPH_SECTION_TITLE);
             if (g_appendix)
-            	chapter_name=GetBabelName("APPENDIXNAME");
+                chapter_name=GetBabelName("APPENDIXNAME");
             else
-            	chapter_name=GetBabelName("CHAPTERNAME");
+                chapter_name=GetBabelName("CHAPTERNAME");
             ConvertString(chapter_name);
             if (code == SECT_CHAPTER && getCounter("secnumdepth") >= -1) {
                 incrementCounter("chapter");
@@ -756,9 +756,9 @@ void CmdCounter(int code)
 
     } else if (code == COUNTER_NEW) {
         setCounter(s, 0);
-	} else if (code == COUNTER_INCR) {
-		incrementCounter(s);
-	}
+    } else if (code == COUNTER_INCR) {
+        incrementCounter(s);
+    }
 
     free(s);
 }
@@ -841,7 +841,7 @@ void CmdQuote(int code)
             CmdVspace(VSPACE_SMALL_SKIP);
             setLeftMarginIndent(getLeftMarginIndent()+512);
             setRightMarginIndent(getRightMarginIndent()+512);
-        	setLength("parindent", 15 * DefaultFontSize());
+            setLength("parindent", 15 * DefaultFontSize());
         }
         else {
             PushEnvironment(QUOTATION_MODE);
@@ -849,7 +849,7 @@ void CmdQuote(int code)
             CmdVspace(VSPACE_SMALL_SKIP);
             setLeftMarginIndent(getLeftMarginIndent()+512);
             setRightMarginIndent(getRightMarginIndent()+512);
-        	setLength("parindent", 15 * DefaultFontSize());
+            setLength("parindent", 15 * DefaultFontSize());
         }
     }
     else {
@@ -1791,18 +1791,18 @@ void CmdKeywords(int code)
 {
     char *keywords = getBraceParam();
     if (NULL != keywords) {
-	CmdEndParagraph(0);
-	CmdVspace(VSPACE_SMALL_SKIP);
-	startParagraph("Normal", PARAGRAPH_FIRST);
-	fprintRTF("{{\\b ");
-	ConvertBabelName("KEYWORDS");
-	fprintRTF("}\\tab\n");
-	fprintRTF("%s",keywords);
-	fprintRTF("\n}\n");
-	CmdEndParagraph(0);
-	CmdVspace(VSPACE_SMALL_SKIP);
+    CmdEndParagraph(0);
+    CmdVspace(VSPACE_SMALL_SKIP);
+    startParagraph("Normal", PARAGRAPH_FIRST);
+    fprintRTF("{{\\b ");
+    ConvertBabelName("KEYWORDS");
+    fprintRTF("}\\tab\n");
+    fprintRTF("%s",keywords);
+    fprintRTF("\n}\n");
+    CmdEndParagraph(0);
+    CmdVspace(VSPACE_SMALL_SKIP);
 
-	free(keywords);
+    free(keywords);
     }
 }
 

@@ -762,16 +762,16 @@ char * my_fgets(char *buffer, int maxBuffer, FILE *f)
         
         /* skip TeX comments */
         while (buffer[i] == '%' && cLast != '\\' && buffer[i] != '\0') {
-        	do {
-        		buffer[i] = my_fgetc(f);
-        	} while (buffer[i] == '\0' || buffer[i] == '\n');
-        	
-        	if (buffer[i] == '\0') return buffer;
-        	do {
-        		buffer[i] = my_fgetc(f);
-        	} while (buffer[i] == '\0' || buffer[i] == ' ');
-        	if (buffer[i] == '\0') return buffer;
-        	
+            do {
+                buffer[i] = my_fgetc(f);
+            } while (buffer[i] == '\0' || buffer[i] == '\n');
+
+            if (buffer[i] == '\0') return buffer;
+            do {
+                buffer[i] = my_fgetc(f);
+            } while (buffer[i] == '\0' || buffer[i] == ' ');
+            if (buffer[i] == '\0') return buffer;
+
         }
 
         if (buffer[i] == '\n') {

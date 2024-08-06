@@ -668,31 +668,31 @@ static int EquationGetsNoNumber(const char *s)
  ******************************************************************************/
 static void WriteEquationAsLatex(int true_code, int inline_equation, const char *pre, const char *eq, const char *post)
 {
-	if (inline_equation) {
-		fprintRTF("$");
-		putRtfStrEscaped(eq);
-		fprintRTF("$");
-	} else {
-		char *eq1 = strdup(eq);
-		str_delete(eq1,"\\nonumber");
-		str_delete(eq1,"\\notag");
-		fprintRTF("\\\\[");
-		if (true_code == EQN_DOLLAR_DOLLAR || true_code == EQN_BRACKET_OPEN  || 
-			true_code == EQN_EQUATION      || true_code == EQN_EQUATION_STAR ||
-			true_code == EQN_DISPLAYMATH )
-				putRtfStrEscaped(eq1);
-		else if (true_code == EQN_ARRAY    || true_code == EQN_ARRAY_STAR) {
-				putRtfStrEscaped("\\begin{align}");
-				putRtfStrEscaped(eq1);
-				putRtfStrEscaped("\\end{align}");
-		} else {
-				putRtfStrEscaped(pre);
-				putRtfStrEscaped(eq1);
-				putRtfStrEscaped(post);
-		}
-		fprintRTF("\\\\]");
-		free(eq1);
-	}
+    if (inline_equation) {
+        fprintRTF("$");
+        putRtfStrEscaped(eq);
+        fprintRTF("$");
+    } else {
+        char *eq1 = strdup(eq);
+        str_delete(eq1,"\\nonumber");
+        str_delete(eq1,"\\notag");
+        fprintRTF("\\\\[");
+        if (true_code == EQN_DOLLAR_DOLLAR || true_code == EQN_BRACKET_OPEN  ||
+            true_code == EQN_EQUATION      || true_code == EQN_EQUATION_STAR ||
+            true_code == EQN_DISPLAYMATH )
+                putRtfStrEscaped(eq1);
+        else if (true_code == EQN_ARRAY    || true_code == EQN_ARRAY_STAR) {
+                putRtfStrEscaped("\\begin{align}");
+                putRtfStrEscaped(eq1);
+                putRtfStrEscaped("\\end{align}");
+        } else {
+                putRtfStrEscaped(pre);
+                putRtfStrEscaped(eq1);
+                putRtfStrEscaped(post);
+        }
+        fprintRTF("\\\\]");
+        free(eq1);
+    }
 }
 
 /******************************************************************************
@@ -719,43 +719,43 @@ static void SetEquationLabel(char *eq)
 static void WriteEquationAsBitmapOrEPS(int true_code, char *pre, char *eq, char *post, conversion_t convertTo)
 {
   if (true_code == EQN_ARRAY) {
-		char *s, *t;
-		
-		s = eq;
-		diagnostics(4, "eqnarray whole = <%s>", s);
-		do {
-			/* each line becomes separate bitmap */
-			t = strstr(s, "\\\\");
-			if (t) *t = '\0';
-			g_suppress_equation_number = EquationGetsNoNumber(s);
-			PrepareRtfEquation(true_code, FALSE);
-			WriteLatexAsBitmapOrEPS("\\begin{eqnarray*}", s, "\\end{eqnarray*}",convertTo);
-			SetEquationLabel(s);
-			FinishRtfEquation(true_code, FALSE);
-		 if (t) s = t + 2;
-		} while (t);
-			   
-	} else if (true_code == EQN_ALIGN) {
-		char *s;
-		
-		s = eq;
-		diagnostics(4, "align whole = <%s>", s);
-			PrepareRtfEquation(true_code, FALSE);
-			WriteLatexAsBitmapOrEPS("\\begin{align*}", s, "\\end{align*}",convertTo);
-			SetEquationLabel(s);
-			FinishRtfEquation(true_code, FALSE);
-	} else {
-		PrepareRtfEquation(true_code, FALSE);
-		if (true_code == EQN_EQUATION && g_amsmath_package)
-			g_suppress_equation_number = EquationGetsNoNumber(eq);
-		
-		if (true_code == EQN_ENSUREMATH) 
-			WriteLatexAsBitmapOrEPS("\\ensuremath{", eq, "}", convertTo);
-		else
-			WriteLatexAsBitmapOrEPS(pre, eq, post, convertTo);
-		SetEquationLabel(eq);
-		FinishRtfEquation(true_code, FALSE);
-	}
+        char *s, *t;
+
+        s = eq;
+        diagnostics(4, "eqnarray whole = <%s>", s);
+        do {
+            /* each line becomes separate bitmap */
+            t = strstr(s, "\\\\");
+            if (t) *t = '\0';
+            g_suppress_equation_number = EquationGetsNoNumber(s);
+            PrepareRtfEquation(true_code, FALSE);
+            WriteLatexAsBitmapOrEPS("\\begin{eqnarray*}", s, "\\end{eqnarray*}",convertTo);
+            SetEquationLabel(s);
+            FinishRtfEquation(true_code, FALSE);
+         if (t) s = t + 2;
+        } while (t);
+
+    } else if (true_code == EQN_ALIGN) {
+        char *s;
+
+        s = eq;
+        diagnostics(4, "align whole = <%s>", s);
+            PrepareRtfEquation(true_code, FALSE);
+            WriteLatexAsBitmapOrEPS("\\begin{align*}", s, "\\end{align*}",convertTo);
+            SetEquationLabel(s);
+            FinishRtfEquation(true_code, FALSE);
+    } else {
+        PrepareRtfEquation(true_code, FALSE);
+        if (true_code == EQN_EQUATION && g_amsmath_package)
+            g_suppress_equation_number = EquationGetsNoNumber(eq);
+
+        if (true_code == EQN_ENSUREMATH)
+            WriteLatexAsBitmapOrEPS("\\ensuremath{", eq, "}", convertTo);
+        else
+            WriteLatexAsBitmapOrEPS(pre, eq, post, convertTo);
+        SetEquationLabel(eq);
+        FinishRtfEquation(true_code, FALSE);
+    }
 }
 
 static void WriteEquationAsRTF(int code, char **eq)
@@ -839,10 +839,10 @@ void CmdEquation(int code)
 
     /* bitmap versions of equations */
     if (( inline_equation && g_equation_inline_bitmap ) || (!inline_equation && g_equation_display_bitmap))   
-		WriteEquationAsBitmapOrEPS(true_code, pre, eq, post, BITMAP);
+        WriteEquationAsBitmapOrEPS(true_code, pre, eq, post, BITMAP);
 
     if ((inline_equation && g_equation_inline_eps) || (!inline_equation && g_equation_display_eps))
-		WriteEquationAsBitmapOrEPS(true_code, pre, eq, post, EPS);
+        WriteEquationAsBitmapOrEPS(true_code, pre, eq, post, EPS);
 
     if ((inline_equation && g_equation_inline_rtf) || (!inline_equation && g_equation_display_rtf)) {
         setCounter("equation", number);
@@ -1299,7 +1299,7 @@ static void simpleRTFScript(int super)
 {
     char *s = NULL;
 
-	if (getTexMode()==MODE_VERTICAL) changeTexMode(MODE_HORIZONTAL);
+    if (getTexMode()==MODE_VERTICAL) changeTexMode(MODE_HORIZONTAL);
     s=getBraceParam();
     fprintRTF("{\\%s%d\\fs%d ", super ? "up" : "dn", script_shift(), script_size());
     ConvertString(s);
@@ -1731,9 +1731,9 @@ void CmdSlashSlash(int height)
     /* we are ending a line in an environment that is unknown
        so just start a new line with the whatever was used last */
 //    parindent = getLength("parindent");
-//	CmdIndent(INDENT_NONE);
-	startParagraph("last", PARAGRAPH_SLASHSLASH);
-//	CmdIndent(parindent);
+//    CmdIndent(INDENT_NONE);
+    startParagraph("last", PARAGRAPH_SLASHSLASH);
+//    CmdIndent(parindent);
     
     if (restart_field) 
         startField(FIELD_EQ);

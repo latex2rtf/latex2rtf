@@ -253,7 +253,7 @@ void preParse(char **body, char **header, char **label)
         else
             diagnostics(6, "[%ld] xchar=%03d '%c' (backslash count=%d)", section_buffer_end, (int) cThis, cThis, bs_count);
 
-		cThis = skipBOM(cThis);
+        cThis = skipBOM(cThis);
 
         add_chr_to_buffer(cThis);
 

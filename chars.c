@@ -528,18 +528,18 @@ void CmdRingChar(int code)
     int n = RtfFontNumber("STIXGeneral");
     char *cParam;
 
-	if (code == 1) {
-		char c, d;
-		c = getTexChar();
-		d = getTexChar();
-		if (c!='2' || d != '3')	{
-			fprintf(stderr, "sorry only \\accent23 is supported \n");
-			return;
-		}
-	}
+    if (code == 1) {
+        char c, d;
+        c = getTexChar();
+        d = getTexChar();
+        if (c!='2' || d != '3') {
+            fprintf(stderr, "sorry only \\accent23 is supported \n");
+            return;
+        }
+    }
 
     cParam = getBraceParam();
-	    
+
     switch (cParam[0]) {
         case 'A':
             fprintRTF("\\'c5");

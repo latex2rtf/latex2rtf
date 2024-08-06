@@ -99,32 +99,32 @@ void setPackageBabel(char *option)
        comma = strchr(language,',');
        if (comma != NULL) *comma = '\0';
            
-	   if (strstr(language, "german")) { /* also catches ngerman */
-			GermanMode = TRUE;
-			PushEnvironment(GERMAN_MODE);
-			ReadLanguage("german");
-			return;
-		}
-	
-		if (strstr(language, "french")) { /* also frenchb */
-			FrenchMode = TRUE;
-			PushEnvironment(FRENCH_MODE);
-		}
-	
-		if (strstr(language, "russian")) {
-			RussianMode = TRUE;
-			PushEnvironment(RUSSIAN_MODE);
-		}
-	
-		if (strstr(language, "czech")) {
-			CzechMode = TRUE;
-			PushEnvironment(CZECH_MODE);
-			if (CurrentFontEncoding()==ENCODING_1252) /* has not been set already */
-				CmdFontEncoding(ENCODING_LATIN_2);
-		}
-	
-		ReadLanguage(language);
-		language = (comma) ? comma+1 : NULL;
+       if (strstr(language, "german")) { /* also catches ngerman */
+            GermanMode = TRUE;
+            PushEnvironment(GERMAN_MODE);
+            ReadLanguage("german");
+            return;
+        }
+
+        if (strstr(language, "french")) { /* also frenchb */
+            FrenchMode = TRUE;
+            PushEnvironment(FRENCH_MODE);
+        }
+
+        if (strstr(language, "russian")) {
+            RussianMode = TRUE;
+            PushEnvironment(RUSSIAN_MODE);
+        }
+
+        if (strstr(language, "czech")) {
+            CzechMode = TRUE;
+            PushEnvironment(CZECH_MODE);
+            if (CurrentFontEncoding()==ENCODING_1252) /* has not been set already */
+                CmdFontEncoding(ENCODING_LATIN_2);
+        }
+
+        ReadLanguage(language);
+        language = (comma) ? comma+1 : NULL;
     }
     safe_free(replica);
 }
@@ -1504,7 +1504,7 @@ static void WriteColorTable(void)
     fprintRTF("\\red247\\green128\\blue161;\n");    /* Pink Sherbet */  
     fprintRTF("\\red142\\green69\\blue133;\n"); /* Plum */  
     fprintRTF("\\red116\\green66\\blue200;\n"); /* Purple Heart */  
-    fprintRTF("\\red157\\green129\\blue186;\n");    /* Purple Mountains’ Majesty */ 
+    fprintRTF("\\red157\\green129\\blue186;\n");    /* Purple Mountains' Majesty */
     fprintRTF("\\red255\\green29\\blue206;\n"); /* Purple Pizzazz */    
     fprintRTF("\\red255\\green73\\blue108;\n"); /* Radical Red */   
     fprintRTF("\\red214\\green138\\blue89;\n"); /* Raw Sienna */    

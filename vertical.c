@@ -262,7 +262,7 @@ void startParagraph(const char *style, int indenting)
     if (strcmp(style,"last")==0) {
         diagnostics(4,"using last style = '%s'",last_style);
         if (indenting != PARAGRAPH_SLASHSLASH)
-        	indenting = last_indent;
+            indenting = last_indent;
         strcpy(the_style,last_style);
     } else {
         diagnostics(4,"using style = '%s'",style);
@@ -420,9 +420,9 @@ void startParagraph(const char *style, int indenting)
     }
      
     if (indenting == PARAGRAPH_SECTION_TITLE && !FrenchMode)
-    	next_paragraph_after_section = TRUE;
+        next_paragraph_after_section = TRUE;
     else
-    	next_paragraph_after_section = FALSE;
+        next_paragraph_after_section = FALSE;
 
 }
 
@@ -456,8 +456,8 @@ void CmdHfill(int code)
      for now, just make sure that we are in horizontal mode.
  ******************************************************************************/
 {
-	if (getTexMode()==MODE_VERTICAL) 
-		changeTexMode(MODE_HORIZONTAL);
+    if (getTexMode()==MODE_VERTICAL)
+        changeTexMode(MODE_HORIZONTAL);
 }
 
 void CmdVspace(int code)
@@ -480,33 +480,33 @@ void CmdVspace(int code)
 
         case VSPACE_VSKIP:
             vspace = getDimension();
-    		if (getTexMode() != MODE_VERTICAL) {
-            	CmdEndParagraph(0);
-            	CmdIndent(INDENT_INHIBIT);
-            }    		
+            if (getTexMode() != MODE_VERTICAL) {
+                CmdEndParagraph(0);
+                CmdIndent(INDENT_INHIBIT);
+            }
             break;
 
         case VSPACE_SMALL_SKIP:
             vspace = getLength("smallskipamount");
-    		if (getTexMode() != MODE_VERTICAL) {
-            	CmdEndParagraph(0);
-            	CmdIndent(INDENT_INHIBIT);
-            }    		
+            if (getTexMode() != MODE_VERTICAL) {
+                CmdEndParagraph(0);
+                CmdIndent(INDENT_INHIBIT);
+            }
             break;
 
         case VSPACE_MEDIUM_SKIP:
             vspace = getLength("medskipamount");
-    		if (getTexMode() != MODE_VERTICAL) {
-            	CmdEndParagraph(0);
-            	CmdIndent(INDENT_INHIBIT);
+            if (getTexMode() != MODE_VERTICAL) {
+                CmdEndParagraph(0);
+                CmdIndent(INDENT_INHIBIT);
             }
             break;
 
         case VSPACE_BIG_SKIP:
             vspace = getLength("bigskipamount");
-    		if (getTexMode() != MODE_VERTICAL) {
-            	CmdEndParagraph(0);
-            	CmdIndent(INDENT_INHIBIT);
+            if (getTexMode() != MODE_VERTICAL) {
+                CmdEndParagraph(0);
+                CmdIndent(INDENT_INHIBIT);
             }
             break;
     }
@@ -575,30 +575,30 @@ void CmdLineSpacing(int code)
  ******************************************************************************/
 void CmdSpacingEnviron(int code)
 {
-	char *sizeParam;
-	static int originalSpacing=240;
-	float spacing;
+    char *sizeParam;
+    static int originalSpacing=240;
+    float spacing;
     int true_code = code & ~ON;
 
     if (code & ON) {
-		originalSpacing = getLineSpacing();
-		if (true_code==2)
-			setLineSpacing(480);
-		else {
-			sizeParam = getBraceParam();
-			if (*sizeParam) {     	
-				sscanf(sizeParam, "%f", &spacing);
-				setLineSpacing((int)240*spacing);
-				free(sizeParam);       	
-			}
-		}
-		PushEnvironment(SPACING_MODE);
-		return;
-	}
-	
-	CmdEndParagraph(0);
-	PopEnvironment();
-	setLineSpacing(originalSpacing);
+        originalSpacing = getLineSpacing();
+        if (true_code==2)
+            setLineSpacing(480);
+        else {
+            sizeParam = getBraceParam();
+            if (*sizeParam) {
+                sscanf(sizeParam, "%f", &spacing);
+                setLineSpacing((int)240*spacing);
+                free(sizeParam);
+            }
+        }
+        PushEnvironment(SPACING_MODE);
+        return;
+    }
+
+    CmdEndParagraph(0);
+    PopEnvironment();
+    setLineSpacing(originalSpacing);
 }
 
 void CmdAlign(int code)

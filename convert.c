@@ -763,7 +763,7 @@ returns: success or not
         case '3':
             if (mode == MODE_VERTICAL)
                 changeTexMode(MODE_HORIZONTAL);
-            fprintRTF("{\\'df}");   /* german symbol 'แ' */
+            fprintRTF("{\\'df}");   /* german symbol 'รก' */
             return;
     }
 

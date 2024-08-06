@@ -539,22 +539,22 @@ int skipBOM(int cThis)
 {
     /* UTF8 Byte Order Mark */
     if (cThis == 0xEF) {
-    	cThis = getRawTexChar();
-    	if (cThis == 0xBB) {
-     		cThis = getRawTexChar();
-    		if (cThis == 0xBF) {
-    			CmdFontEncoding(ENCODING_UTF8);
-     			cThis = getRawTexChar();
-     			diagnostics(2, "UTF 8 BOM encountered, now assuming UTF8 input");
-     		}
-    	}
+        cThis = getRawTexChar();
+        if (cThis == 0xBB) {
+            cThis = getRawTexChar();
+            if (cThis == 0xBF) {
+                CmdFontEncoding(ENCODING_UTF8);
+                cThis = getRawTexChar();
+                diagnostics(2, "UTF 8 BOM encountered, now assuming UTF8 input");
+            }
+        }
     }
-   		
+
     /* UTF16 Byte Order Mark */
     if (cThis == 0xFE) {
-    	cThis = getRawTexChar();
-    	if (cThis == 0xFF)
-     		diagnostics(2, "UTF 16 is not supported, you might try converting to UTF8");
+        cThis = getRawTexChar();
+        if (cThis == 0xFF)
+            diagnostics(2, "UTF 16 is not supported, you might try converting to UTF8");
     }
     
     return cThis;
@@ -706,13 +706,13 @@ char *getDelimitedText(char left, char right, int raw)
         }
 
         else if (buffer[size] == right && brace_level == 0) 
-        	lefts_needed--;
+            lefts_needed--;
         
         else if (buffer[size] == '{') 
-        	brace_level++;
+            brace_level++;
         
         else if (buffer[size] == '}') 
-        	brace_level--;
+            brace_level--;
 
         last_char_was_backslash = (buffer[size] == '\\') ? TRUE : FALSE;
     }

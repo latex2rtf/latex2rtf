@@ -203,9 +203,9 @@ static void appendGraphicsPath (char *newPath)
     
     /* path must end with a '/' */
     if (*(newPath+strlen(newPath)-1) == '/')
-    	add = strdup(newPath);
+        add = strdup(newPath);
     else
-    	add = strdup_together(newPath,"/");
+        add = strdup_together(newPath,"/");
     graphicsPath[nGraphicsPathElems++] = add;
     diagnostics (WARNING, "Included %s in graphics search path", add);
 }
@@ -521,8 +521,8 @@ static int has_extension(const char *s, const char *ext)
 static char *has_graphic_extension(const char *s)
 {
     GraphConvertElement *thisFormat;
-	diagnostics(4,"testing for graphics extension '%s'",s);
-	
+    diagnostics(4,"testing for graphics extension '%s'",s);
+
     for (thisFormat = GraphConvertTable; thisFormat->extension != NULL; thisFormat++) {
         if (has_extension(s,thisFormat->extension)) 
             return strdup(thisFormat->extension);
@@ -537,44 +537,44 @@ static char *has_graphic_extension(const char *s)
  ******************************************************************************/
 static void split_filename(const char *f, char **dir, char **name, char **ext)
 {
-	char *s, *t, *x;
-	
-	*dir = NULL;
-	*name = NULL;
-	*ext = NULL;
-	
-	if (f == NULL) return;
-	
-	/* first figure out the directory */
-	s = strrchr(f,'/');
-	if (s) {
-	    t = strdup(f);
-	    x = strrchr(t,'/')+1;
-	    *x = '\0';
-		if (*f == '/') {                /* absolute names start with '/' */
-	    	*dir=t;
-	    } else if (g_home_dir) {        /* names are relative to home_dir */
-	    	*dir = strdup_together(g_home_dir, t);
-	    	safe_free(t);
-	    } else {                        
-	    	*dir=t;
-	    }
-	    s++;
-	} else {
-		if (g_home_dir)
-			*dir = strdup(g_home_dir);
-		s = (char *) f;
-	}
+    char *s, *t, *x;
+
+    *dir = NULL;
+    *name = NULL;
+    *ext = NULL;
+
+    if (f == NULL) return;
+
+    /* first figure out the directory */
+    s = strrchr(f,'/');
+    if (s) {
+        t = strdup(f);
+        x = strrchr(t,'/')+1;
+        *x = '\0';
+        if (*f == '/') {                /* absolute names start with '/' */
+            *dir=t;
+        } else if (g_home_dir) {        /* names are relative to home_dir */
+            *dir = strdup_together(g_home_dir, t);
+            safe_free(t);
+        } else {
+            *dir=t;
+        }
+        s++;
+    } else {
+        if (g_home_dir)
+            *dir = strdup(g_home_dir);
+        s = (char *) f;
+    }
         
-	*name = strdup(s);
+    *name = strdup(s);
     *ext = has_graphic_extension(s);
 
-	if (*ext) {
-		t = *name + strlen(*name) - strlen(*ext);
-		*t = '\0';
-	} 
-	
-	diagnostics(5,"filename='%s', dir='%s', name='%s', ext='%s'", f, *dir, *name, *ext);
+    if (*ext) {
+        t = *name + strlen(*name) - strlen(*ext);
+        *t = '\0';
+    }
+
+    diagnostics(5,"filename='%s', dir='%s', name='%s', ext='%s'", f, *dir, *name, *ext);
 }
 
 
@@ -971,14 +971,14 @@ static unsigned char * getPngChunk(FILE *fp, char *s)
 
 static void InsertFigureAsComment(const char *s, int hinline)
 {
-	if (!s) return;
-	if (*s=='\0') return;
+    if (!s) return;
+    if (*s=='\0') return;
 
-  if (hinline == 1) fprintRTF("{\\dn10 ");
-		putRtfStrEscaped("[###");
-		putRtfStrEscaped(s);
-		putRtfStrEscaped("###]");
-  if (hinline == 1) fprintRTF("}");
+    if (hinline == 1) fprintRTF("{\\dn10 ");
+    putRtfStrEscaped("[###");
+    putRtfStrEscaped(s);
+    putRtfStrEscaped("###]");
+    if (hinline == 1) fprintRTF("}");
 }
 
 /******************************************************************************
@@ -1131,7 +1131,7 @@ static void PutPngFile(char *png, double height_goal, double width_goal, double 
     diagnostics(4, "picwgoal   = %8lu twips,      pichgoal    = %8lu twips", w_twips, h_twips);
     diagnostics(4, "xres       = %8.2f pix/meter, yres        = %8.2f pix/meter", xres, yres);
     diagnostics(4, "xres       = %8.2f pix/inch,   yres        = %8.2f pix/inch", xres*72.0/POINTS_PER_METER, yres*72.0/POINTS_PER_METER);
-        diagnostics(4, "scale      = %8.3f", scale);
+    diagnostics(4, "scale      = %8.3f", scale);
     diagnostics(4, "width_goal = %8d twips,      height_goal = %8d twips", (int)width_goal, (int)height_goal);
     diagnostics(4, "baseline   = %8.3g twips", baseline);
     diagnostics(4, "sx         = %8lu percent,    sy          = %8lu percent", sx, sy);
@@ -1417,43 +1417,43 @@ static void PutPdfFile(char *s, double height0, double width0, double scale, dou
     char *png, *pdf, *eps, *out, *tmp_dir;
     
     if (g_figure_include_converted) {
-		diagnostics(WARNING, "Rendering '%s'", s);
-		diagnostics(3,"Converting PDF to PNG and inserting into RTF.");
-	
-		png = pdf_to_png(s);
-		
-		if (png) {
-			PutPngFile(png, height0, width0, scale, baseline);
-			my_unlink(png);
-			safe_free(png);
-		}
+        diagnostics(WARNING, "Rendering '%s'", s);
+        diagnostics(3,"Converting PDF to PNG and inserting into RTF.");
+
+        png = pdf_to_png(s);
+
+        if (png) {
+            PutPngFile(png, height0, width0, scale, baseline);
+            my_unlink(png);
+            safe_free(png);
+        }
     }
 
     if (g_figure_comment_converted) {
-       diagnostics(3,"Converting PDF to EPS and inserting file name in text");
-       eps = strdup_new_extension(s, ".pdf", ".eps");
-       if (eps == NULL) {
-           eps = strdup_new_extension(s, ".PDF", ".eps");
-           if (eps == NULL) {
-		          diagnostics(ERROR,"PutPdfFile: Graphicsfile hat not .pdf extension");
-              return;
-           }   
-       }
+        diagnostics(3,"Converting PDF to EPS and inserting file name in text");
+        eps = strdup_new_extension(s, ".pdf", ".eps");
+        if (eps == NULL) {
+            eps = strdup_new_extension(s, ".PDF", ".eps");
+            if (eps == NULL) {
+                diagnostics(ERROR,"PutPdfFile: Graphicsfile hat not .pdf extension");
+                return;
+            }
+        }
 
-       tmp_dir = getTmpPath();
-       pdf = strdup_together(g_home_dir, s);
-       out = SysGraphicsConvert(CONVERT_PS_TO_EPS, 0, g_dots_per_inch, pdf, eps);
-        
-       if (out != NULL) {
-           eps = strdup_together(tmp_dir, eps);
-           putRtfStrEscaped("[###");
-           putRtfStrEscaped(eps);
-           putRtfStrEscaped("###]");
-           free(out);
-       }
-       free (tmp_dir);
-       free (pdf);
-       free (eps);
+        tmp_dir = getTmpPath();
+        pdf = strdup_together(g_home_dir, s);
+        out = SysGraphicsConvert(CONVERT_PS_TO_EPS, 0, g_dots_per_inch, pdf, eps);
+
+        if (out != NULL) {
+            eps = strdup_together(tmp_dir, eps);
+            putRtfStrEscaped("[###");
+            putRtfStrEscaped(eps);
+            putRtfStrEscaped("###]");
+            free(out);
+        }
+        free (tmp_dir);
+        free (pdf);
+        free (eps);
     }
 }
 
@@ -1465,8 +1465,8 @@ static void PutEpsFile(char *s, double height0, double width0, double scale, dou
     char *png;
 
     if (g_figure_include_converted) {
-    	diagnostics(WARNING, "Rendering '%s'", s);
-		  diagnostics(3,"Converting EPS to PNG and inserting in RTF.");
+        diagnostics(WARNING, "Rendering '%s'", s);
+        diagnostics(3,"Converting EPS to PNG and inserting in RTF.");
         png = eps_to_png(s);
         if (png) {
             PutPngFile(png, height0, width0, scale, baseline);
@@ -1476,10 +1476,10 @@ static void PutEpsFile(char *s, double height0, double width0, double scale, dou
     }
 
     if (g_figure_comment_converted) {
-		  diagnostics(3,"Inserting EPS file name in text");
-		  putRtfStrEscaped("[###");
-		  putRtfStrEscaped(s);
-		  putRtfStrEscaped("###]");
+        diagnostics(3,"Inserting EPS file name in text");
+        putRtfStrEscaped("[###");
+        putRtfStrEscaped(s);
+        putRtfStrEscaped("###]");
     }
 }
 /******************************************************************************
@@ -1490,8 +1490,8 @@ static void PutPsFile(char *s, double height0, double width0, double scale, doub
     char *png, *ps, *eps, *out, *tmp_dir;
 
     if (g_figure_include_converted) {
-    	diagnostics(WARNING, "Rendering '%s'", s);
-		  diagnostics(3,"Converting PS to PNG and inserting in RTF.");
+        diagnostics(WARNING, "Rendering '%s'", s);
+        diagnostics(3,"Converting PS to PNG and inserting in RTF.");
         png = eps_to_png(s);
         if (png) {
             PutPngFile(png, height0, width0, scale, baseline);
@@ -1506,25 +1506,25 @@ static void PutPsFile(char *s, double height0, double width0, double scale, doub
        if (eps == NULL) { 
            eps = strdup_new_extension(s, ".PS", ".eps");
            if (eps == NULL) { 
-		          diagnostics(ERROR,"PutPsFile: Graphicsfile hat not .ps extension");
-              return;
-           }
-       }
-  
+                diagnostics(ERROR,"PutPsFile: Graphicsfile hat not .ps extension");
+                return;
+            }
+        }
+
        tmp_dir = getTmpPath();
        ps  = strdup_together(g_home_dir, s);
        out = SysGraphicsConvert(CONVERT_PS_TO_EPS, 0, g_dots_per_inch, ps, eps);
 
-       if (out != NULL) {
-           eps = strdup_together(tmp_dir, eps);
-           putRtfStrEscaped("[###");
-           putRtfStrEscaped(eps);
-           putRtfStrEscaped("###]");
-           free (out);
-       }      
-       free (tmp_dir);
-       free (ps);  
-       free (eps);  
+        if (out != NULL) {
+            eps = strdup_together(tmp_dir, eps);
+            putRtfStrEscaped("[###");
+            putRtfStrEscaped(eps);
+            putRtfStrEscaped("###]");
+            free (out);
+        }
+        free (tmp_dir);
+        free (ps);
+        free (eps);
     }
 }
 
@@ -1708,16 +1708,16 @@ static void PutLatexFile(const char *tex_file_stem, double scale, const char *pr
     double max_fig_size = 32767.0 / 20.0;  /* in twips */
         
     if (convertTo == EPS) {
-    	char *eps_file_name = NULL;
+        char *eps_file_name = NULL;
         eps_file_name = strdup_together(tex_file_stem, ".eps");
         diagnostics(1, "Converting LaTeX to EPS...");
         tmp_path = SysGraphicsConvert(CONVERT_LATEX_TO_EPS, bmoffset, png_resolution, tex_file_stem, eps_file_name);
 
-    	if (NULL == tmp_path)
-        	diagnostics(WARNING, "PutLatexFile failed to convert '%s.tex' to '%s'",tex_file_stem,eps_file_name);
+        if (NULL == tmp_path)
+            diagnostics(WARNING, "PutLatexFile failed to convert '%s.tex' to '%s'",tex_file_stem,eps_file_name);
         else 
-			InsertFigureAsComment(eps_file_name, hinline);
-			
+            InsertFigureAsComment(eps_file_name, hinline);
+
         safe_free(eps_file_name);
         return;
     }
@@ -2270,37 +2270,37 @@ void CmdGraphics(int code)
     }
 
     if (filename) {
-    	GraphConvertElement *thisFormat;
-		char *fullpathname=NULL;
-		char *dir=NULL;
-		char *name=NULL;
-		char *ext=NULL;
-		
+        GraphConvertElement *thisFormat;
+        char *fullpathname=NULL;
+        char *dir=NULL;
+        char *name=NULL;
+        char *ext=NULL;
+
         changeTexMode(MODE_HORIZONTAL);
 
         split_filename(filename,&dir,&name,&ext);
         
         if (ext) {
-        	fullpathname=exists_with_any_extension(dir,name,ext);
-        	if (fullpathname) {
-				for (thisFormat = GraphConvertTable; thisFormat->extension; thisFormat++) {
-					if (strcasecmp(ext,thisFormat->extension) == 0) break;
-				}
-			}
+            fullpathname=exists_with_any_extension(dir,name,ext);
+            if (fullpathname) {
+                for (thisFormat = GraphConvertTable; thisFormat->extension; thisFormat++) {
+                    if (strcasecmp(ext,thisFormat->extension) == 0) break;
+                }
+            }
         } else {   
             /* implicit extension in file name ... try all of them until one is found */
-			for (thisFormat = GraphConvertTable; thisFormat->extension; thisFormat++) {
-        		fullpathname=exists_with_any_extension(dir,name,thisFormat->extension);
-				if (fullpathname) break;
-			}   
+            for (thisFormat = GraphConvertTable; thisFormat->extension; thisFormat++) {
+                fullpathname=exists_with_any_extension(dir,name,thisFormat->extension);
+                if (fullpathname) break;
+            }
        }
        
-	   if (fullpathname && thisFormat->extension) {
-			diagnostics(2,"located graphics file as '%s'",fullpathname);
-			thisFormat->encoder(fullpathname, height, width, scale, baseline);
-	   } else 
-			diagnostics(WARNING, "The graphics file '%s' was not found", filename); 
-		
+       if (fullpathname && thisFormat->extension) {
+            diagnostics(2,"located graphics file as '%s'",fullpathname);
+            thisFormat->encoder(fullpathname, height, width, scale, baseline);
+       } else
+            diagnostics(WARNING, "The graphics file '%s' was not found", filename);
+
        safe_free(dir);
        safe_free(name);
        safe_free(ext);
@@ -2436,9 +2436,9 @@ void CmdTikzPicture(int code)
 
     PrepareDisplayedBitmap("picture");
     if (g_figure_comment_converted) {
-      WriteLatexAsBitmapOrEPS("\\begin{tikzpicture}", picture, post, EPS);
+        WriteLatexAsBitmapOrEPS("\\begin{tikzpicture}", picture, post, EPS);
     } else {
-      WriteLatexAsBitmapOrEPS("\\begin{tikzpicture}", picture, post, BITMAP);
+        WriteLatexAsBitmapOrEPS("\\begin{tikzpicture}", picture, post, BITMAP);
     }
     FinishDisplayedBitmap();
 
@@ -2477,5 +2477,5 @@ void CmdTikzlib(int code)
     char *tikzlib = getBraceParam();
     tikzlibsnum++;
     if (tikzlibsnum<32)
-    	tikzlibs[tikzlibsnum-1]=tikzlib;
+        tikzlibs[tikzlibsnum-1]=tikzlib;
 }

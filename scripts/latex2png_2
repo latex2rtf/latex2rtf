@@ -48,13 +48,13 @@ OPTIONS:
          -d density     (default 144 dpi)
          -o offset      = density/72+2
          -h help        (default '.')
-         -H /home/dir	directory to be included in search path
-         -k         	keep intermediate files (for debugging)
+         -H /home/dir   directory to be included in search path
+         -k             keep intermediate files (for debugging)
 
 EXAMPLE: 
-		 latex2png -d 144 /tmp/file   #create /tmp/file.png at 144 dpi
-		 latex2png file.eps           #create file.png
-		 latex2png file.tex           #create file.png via latex
+         latex2png -d 144 /tmp/file   #create /tmp/file.png at 144 dpi
+         latex2png file.eps           #create file.png
+         latex2png file.tex           #create file.png via latex
          latex2png -H . /tmp/file     #search the cwd for image files
 
 HELP
@@ -67,13 +67,13 @@ echo "latex2png $VERSION"
 exit 0
 }
 
-opt_d=144		# default to 144 dpi
-opt_o=4			# default for 144 dpi
-opt_k=0			# default to killing intermediate files
-home_dir="."	# default to current directory
-ext="tex"		# default to latex input
-out="ppm"		# default to color output
-inline=0		# default to no special equation processing
+opt_d=144       # default to 144 dpi
+opt_o=4         # default for 144 dpi
+opt_k=0         # default to killing intermediate files
+home_dir="."    # default to current directory
+ext="tex"       # default to latex input
+out="ppm"       # default to color output
+inline=0        # default to no special equation processing
 
 while [ -n "$1" ]; do
 case $1 in
@@ -100,7 +100,7 @@ fi
 
 # is it an eps file?
 if [ `echo $1 | ${GREP} -c eps$` -eq 1 ] ; then
-	ext="eps"
+    ext="eps"
 fi
 
 #process 'latex2png file.tex' and 'latex2png file' equivalently
@@ -115,36 +115,36 @@ cd $dir
 
 # does the input file exist?
 if [ ! -f "$name.$ext" ] ; then
-	echo "error: input file $name.$ext does not exist"
-	exit 1
+    echo "error: input file $name.$ext does not exist"
+    exit 1
 fi
 
 rm -f $name.png
 
 if [ $ext = "tex" ] ; then
 
-	inline=`${GREP} -c INLINE_DOT_ON_BASELINE $name.$ext`
+    inline=`${GREP} -c INLINE_DOT_ON_BASELINE $name.$ext`
 
-	$LATEX $name > /dev/null
-	
-	if [ ! -e "$name.dvi" ] ; then
-		echo "error: latex failed to translate $name.tex to $name.dvi"
-		exit 1
-	fi
-	
-	$DVIPS -o $name.eps $name.dvi
-	
-	if [ ! -e "$name.eps" ] ; then
-		echo "error: dvips failed to translate $name.dvi to $name.eps"
-		exit 1
-	fi
+    $LATEX $name > /dev/null
+
+    if [ ! -e "$name.dvi" ] ; then
+        echo "error: latex failed to translate $name.tex to $name.dvi"
+        exit 1
+    fi
+
+    $DVIPS -o $name.eps $name.dvi
+
+    if [ ! -e "$name.eps" ] ; then
+        echo "error: dvips failed to translate $name.dvi to $name.eps"
+        exit 1
+    fi
 fi
 
 $GHOSTSCRIPT -sDEVICE=$out -r${opt_d} -sOutputFile=$name.$out $name.eps 2> /dev/null
 
 if [ ! -e "$name.$out" ] ; then
-	echo "error: ghostscript failed to translate $name.eps to $name.$out"
-	exit 1
+    echo "error: ghostscript failed to translate $name.eps to $name.$out"
+    exit 1
 fi
 
 # $inline is for images of equations that include an extra dot on the baseline
@@ -154,20 +154,20 @@ fi
 #    in $name.tmp.png is removed to create the final image $name.png
 # 
 if [ $inline -eq 1 ] ; then
-	rm -f $name.pbm $name.tmp.$out
-	
-	$PNMCROP $name.$out > $name.tmp.$out
+    rm -f $name.pbm $name.tmp.$out
 
-	$PNMCUT -width 1 $name.tmp.$out | $PPMTOPGM | $PGMTOPBM > $name.pbm
+    $PNMCROP $name.$out > $name.tmp.$out
 
-#	offset=`expr ${opt_d} / 72 + 2`
-	$PNMCUT -left $opt_o $name.tmp.$out | $PNMCROP | $PNMTOPNG > $name.png
-	
-	if [ $opt_k -eq 0 ] ; then
-		rm -f $name.tmp.$out
-	fi
+    $PNMCUT -width 1 $name.tmp.$out | $PPMTOPGM | $PGMTOPBM > $name.pbm
+
+#   offset=`expr ${opt_d} / 72 + 2`
+    $PNMCUT -left $opt_o $name.tmp.$out | $PNMCROP | $PNMTOPNG > $name.png
+
+    if [ $opt_k -eq 0 ] ; then
+        rm -f $name.tmp.$out
+    fi
 else
-	$PNMCROP $name.$out | $PNMTOPNG > $name.png
+    $PNMCROP $name.$out | $PNMTOPNG > $name.png
 fi
 
 if [ ! -e "$name.png" ] ; then
@@ -179,12 +179,12 @@ if [ $opt_k -eq 0 ] ; then
 
     rm -f $name.dvi $name.aux $name.log
 
-	if [ $ext != "eps" ] ; then
-		rm -f $name.eps
-	fi
+    if [ $ext != "eps" ] ; then
+        rm -f $name.eps
+    fi
 
-	if [ $inline -eq 0 -o $out != "pbm" ] ; then
-    		rm -f $name.$out
+    if [ $inline -eq 0 -o $out != "pbm" ] ; then
+            rm -f $name.$out
     fi
 fi
 

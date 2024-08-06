@@ -178,7 +178,7 @@ int main(int argc, char **argv)
     
     ReadCfg();
     InitializeDocumentFont(TexFontNumber("Roman"), 20, F_SHAPE_UPRIGHT, F_SERIES_MEDIUM, ENCODING_1252);
-	
+
     while ((c = my_getopt(argc, argv, "lhpuvFSVWZ:o:a:b:d:f:i:s:u:C:D:E:M:P:T:t:")) != EOF) {
         switch (c) {
             case 'a':
@@ -757,9 +757,9 @@ purpose: reads the LaTeX preamble (to \begin{document} ) for the file
     diagnostics(2, "Read LaTeX Preamble");
     diagnostics(5, "Entering ConvertString() from ConvertLatexPreamble");
 
-	g_preamble = strdup_nocomments(raw_latex);
-	free(raw_latex);
-	
+    g_preamble = strdup_nocomments(raw_latex);
+    free(raw_latex);
+
     show_string(2, g_preamble, "preamble"); 
 
     ConvertString(g_preamble);

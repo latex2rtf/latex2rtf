@@ -145,22 +145,22 @@ int TryTheCounter(char *theCommand)
   Purpose: see if this is a \the<counter> for a defined counter
 */
 {
-	char *varCandidate = NULL;
-	int varValue;
+    char *varCandidate = NULL;
+    int varValue;
 
-	if (strlen(theCommand) <= 3)
-		return FALSE;
-	if (strncmp(theCommand, "the", 3) != 0)
-		return FALSE;
-	varCandidate = &theCommand[3];
-	varValue = existsCounter(varCandidate);
+    if (strlen(theCommand) <= 3)
+        return FALSE;
+    if (strncmp(theCommand, "the", 3) != 0)
+        return FALSE;
+    varCandidate = &theCommand[3];
+    varValue = existsCounter(varCandidate);
 
-	if (varValue == -1) {
-		diagnostics(WARNING, "Can '%s' reference a variable?", varCandidate);
-	} else {
-		varValue = getCounter(varCandidate);
-		/* diagnostics(WARNING, "Assuming '%s' is a variable: [%d]", varCandidate, varValue); */
-		fprintRTF("%d", varValue);
-	}
-	return TRUE;
+    if (varValue == -1) {
+        diagnostics(WARNING, "Can '%s' reference a variable?", varCandidate);
+    } else {
+        varValue = getCounter(varCandidate);
+        /* diagnostics(WARNING, "Assuming '%s' is a variable: [%d]", varCandidate, varValue); */
+        fprintRTF("%d", varValue);
+    }
+    return TRUE;
 }

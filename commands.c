@@ -794,19 +794,19 @@ static CommandArray params[] = {
     {"spacing", CmdSpacingEnviron, 0},
     
     {"small", CmdFontSizeEnviron, 12},
-	{"tiny", CmdFontSizeEnviron, 10},
-	{"scriptsize", CmdFontSizeEnviron, 14},
-	{"footnotesize", CmdFontSizeEnviron, 16},
-	{"normalsize", CmdFontSizeEnviron, 20},
-	{"large", CmdFontSizeEnviron, 24},
-	{"Large", CmdFontSizeEnviron, 28},
-	{"LARGE", CmdFontSizeEnviron, 34},
-	{"huge", CmdFontSizeEnviron, 40},
-	{"Huge", CmdFontSizeEnviron, 50}, 
+    {"tiny", CmdFontSizeEnviron, 10},
+    {"scriptsize", CmdFontSizeEnviron, 14},
+    {"footnotesize", CmdFontSizeEnviron, 16},
+    {"normalsize", CmdFontSizeEnviron, 20},
+    {"large", CmdFontSizeEnviron, 24},
+    {"Large", CmdFontSizeEnviron, 28},
+    {"LARGE", CmdFontSizeEnviron, 34},
+    {"huge", CmdFontSizeEnviron, 40},
+    {"Huge", CmdFontSizeEnviron, 50},
 
     {"tikzpicture",CmdTikzPicture, 0},
-	
-	{"", NULL, 0}
+
+    {"", NULL, 0}
 };                              /* end of list */
 
 

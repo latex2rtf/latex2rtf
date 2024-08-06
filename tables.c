@@ -361,8 +361,8 @@ static void TabularGetRow(const char *tabular_text, char **row, char **next_row,
         if (!slash && *s =='}') brace--;        
 
         if (slash && strncmp(s,"tabularnewline", 14) == 0) {
-    		tabularnewline = TRUE;
-    		break;
+            tabularnewline = TRUE;
+            break;
         }
     }
 
@@ -381,11 +381,11 @@ static void TabularGetRow(const char *tabular_text, char **row, char **next_row,
     if (*s == '\0') 
         return;
 
-	if (tabularnewline) {
-		*next_row = s+14;
-		return;
-	}
-	
+    if (tabularnewline) {
+        *next_row = s+14;
+        return;
+    }
+
     /* move after \\ */
     s++;
 

@@ -458,7 +458,7 @@ void CmdFontSizeEnviron(int code)
       RtfFontInfo[FontInfoDepth].size, RtfFontInfo[FontInfoDepth].shape, RtfFontInfo[FontInfoDepth].series);
 
     if (!(code & ON)) return;
-	CmdFontSize(true_code);
+    CmdFontSize(true_code);
 
     diagnostics(6, "CmdFontSizeEnviron (after) depth=%d, family=%d, size=%d, shape=%d, series=%d",
       FontInfoDepth, RtfFontInfo[FontInfoDepth].family,
@@ -739,7 +739,7 @@ void CmdFontEncoding(int code)
   purpose: sets the current RTF encoding
  ******************************************************************************/
 {
-/* 	fprintf(stderr,"setting encoding from %d to %d\n",RtfFontInfo[FontInfoDepth].encoding,code);*/
+/*  fprintf(stderr,"setting encoding from %d to %d\n",RtfFontInfo[FontInfoDepth].encoding,code);*/
     RtfFontInfo[FontInfoDepth].encoding = code;
     diagnostics(6, "CurrentFontSeries -- encoding=%d", RtfFontInfo[FontInfoDepth].encoding);
 }

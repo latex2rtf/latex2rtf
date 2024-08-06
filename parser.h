@@ -49,7 +49,7 @@ int     CurrentFileDescriptor(void);
 int     getParserDepth(void);
 int     getSlashSlashParam(void);
 
-void	ignoreBraceParam(void);
-void	ignoreBracketParam(void);
+void    ignoreBraceParam(void);
+void    ignoreBracketParam(void);
 
 #endif

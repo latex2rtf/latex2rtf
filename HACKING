@@ -30,22 +30,22 @@ The translator is structured like this (from main.c):
 
 static void ConvertWholeDocument(void)
 {
-    ConvertLatexPreamble();
-    WriteRtfHeader();
+    ConvertLatexPreamble();
+    WriteRtfHeader();
 
-    preParse(&body, &sec_head, &label);
-	
-    ConvertString(body);
+    preParse(&body, &sec_head, &label);
 
-    while (strcmp(sec_head,"\\end{document}")!=0) {
-        preParse(&body, &sec_head2, &g_section_label);
-        ConvertString(sec_head);
-        ConvertString(body);
-        sec_head = sec_head2;
-    }
+    ConvertString(body);
+
+    while (strcmp(sec_head,"\\end{document}")!=0) {
+        preParse(&body, &sec_head2, &g_section_label);
+        ConvertString(sec_head);
+        ConvertString(body);
+        sec_head = sec_head2;
+    }
 }
 
-The LaTeX preamble is read and parsed.  The RTF header is emitted.  Then each
+The LaTeX preamble is read and parsed.  The RTF header is emitted.  Then each
 section is processed one at a time.  This is important because RTF requires that
 the document be specified pretty completely before anything else happens:
 
@@ -61,7 +61,7 @@ void WriteRtfHeader(void)
 }
 
 ConvertString() calls Convert() which basically looks at a character and
-translates it the its RTF equivalent.  If the character is the start of a LaTeX
+translates it the its RTF equivalent.  If the character is the start of a LaTeX
 command then the command is looked up in the tables at the start of commands.c 
 and the proper subroutine is called to handle the details.
 
@@ -107,7 +107,3 @@ TeX existed long before Unicode or any standard character set beyond the
 lower 128 ASCII characters.  RTF is also old and did not add support for
 unicode until well after latex2rtf was started.  Consequently RTF support
 for unicode characters is hit-or-miss.
-
-
-
-
