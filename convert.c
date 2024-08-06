@@ -54,7 +54,7 @@ void ConvertString(const char *string)
      purpose : converts string in TeX-format to Rtf-format
  ******************************************************************************/
 {
-    if (string == NULL || string == '\0')
+    if (string == NULL || *string == '\0')
         return;
 
     if (PushSource(NULL, string) == 0) {
